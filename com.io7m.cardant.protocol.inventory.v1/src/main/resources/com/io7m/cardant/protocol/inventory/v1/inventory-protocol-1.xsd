@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:ip1="urn:com.io7m.cardant.inventory.protocol:1"
+            xmlns:iv1="urn:com.io7m.cardant.inventory:1"
+            targetNamespace="urn:com.io7m.cardant.inventory.protocol:1">
+
+  <xsd:import namespace="urn:com.io7m.cardant.inventory:1"/>
+
+  <xsd:annotation>
+    <xsd:documentation>
+      The messages for the v1 inventory protocol.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="CommandLoginUsernamePassword">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to log in with a username and password.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="user"
+                     type="xsd:token"
+                     use="required"/>
+      <xsd:attribute name="password"
+                     type="xsd:string"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandTagList">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list tags.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="CommandTagsPut">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to write tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:Tags"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandTagsDelete">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to delete tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:Tags"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandItemCreate">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to create an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="iv1:UuidType"
+                     use="required"/>
+      <xsd:attribute name="name"
+                     type="xsd:string"
+                     use="required"/>
+      <xsd:attribute name="count"
+                     type="xsd:unsignedLong"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandItemUpdate">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to update an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="iv1:UuidType"
+                     use="required"/>
+      <xsd:attribute name="name"
+                     type="xsd:string"
+                     use="required"/>
+      <xsd:attribute name="count"
+                     type="xsd:unsignedLong"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandItemList">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list items.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="ResponseOK">
+    <xsd:annotation>
+      <xsd:documentation>
+        A command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="1">
+        <xsd:group ref="iv1:Elements"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ResponseError">
+    <xsd:annotation>
+      <xsd:documentation>
+        A command failed.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="ip1:ResponseErrorDetail"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="status"
+                     type="xsd:integer"
+                     use="required"/>
+      <xsd:attribute name="message"
+                     type="xsd:string"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ResponseErrorDetail">
+    <xsd:annotation>
+      <xsd:documentation>
+        Extra information about a failed command.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="message"
+                     type="xsd:string"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="Responses">
+    <xsd:annotation>
+      <xsd:documentation>
+        The set of responses.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:choice>
+      <xsd:element ref="ip1:ResponseError"/>
+      <xsd:element ref="ip1:ResponseOK"/>
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:element name="Transaction">
+    <xsd:annotation>
+      <xsd:documentation>
+        A transaction containing a list of commands to be executed atomically.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:group ref="ip1:Commands"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="Commands">
+    <xsd:annotation>
+      <xsd:documentation>
+        The set of commands.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:choice>
+      <xsd:element ref="ip1:CommandItemCreate"/>
+      <xsd:element ref="ip1:CommandItemList"/>
+      <xsd:element ref="ip1:CommandItemUpdate"/>
+      <xsd:element ref="ip1:CommandLoginUsernamePassword"/>
+      <xsd:element ref="ip1:CommandTagList"/>
+      <xsd:element ref="ip1:CommandTagsPut"/>
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:group name="Messages">
+    <xsd:annotation>
+      <xsd:documentation>
+        The set of messages.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:choice>
+      <xsd:element ref="ip1:Transaction"/>
+      <xsd:group ref="ip1:Commands"/>
+      <xsd:group ref="ip1:Responses"/>
+    </xsd:choice>
+  </xsd:group>
+
+</xsd:schema>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:inv="urn:com.io7m.cardant.inventory:1"
+            targetNamespace="urn:com.io7m.cardant.inventory:1">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      A schema describing the format of inventory data.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:simpleType name="UuidType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A UUID value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="TagNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A tag name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="127"/>
+      <xsd:pattern value="[\p{Lu}\p{Ll}\d\\-_]{1,127}"/>
+      <xsd:whiteSpace value="collapse"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An item name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemMetadataNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An item metadata name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemMetadataValueType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An item metadata value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="1023"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MediaType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A media type value (such as "text/plain").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="RelationType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A relation value (such as "image").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="HashAlgorithmType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A hash algorithm name (such as "SHA-256").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="32"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="HashValueType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A hash value (such as "5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="256"/>
+      <xsd:pattern value="[a-f0-9]{1,256}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Tag">
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="name"
+                     type="inv:TagNameType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Tags">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="inv:Tag"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemMetadata">
+    <xsd:complexType mixed="true">
+      <xsd:simpleContent>
+        <xsd:extension base="inv:ItemMetadataValueType">
+          <xsd:attribute name="name"
+                         use="required"
+                         type="inv:ItemMetadataNameType"/>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemMetadatas">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="inv:ItemMetadata"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemAttachmentData">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:base64Binary"/>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="ItemAttachment">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="1">
+        <xsd:element ref="inv:ItemAttachmentData"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="id"
+                     use="required"
+                     type="inv:UuidType"/>
+      <xsd:attribute name="mediaType"
+                     use="required"
+                     type="inv:MediaType"/>
+      <xsd:attribute name="relation"
+                     use="required"
+                     type="inv:RelationType"/>
+      <xsd:attribute name="size"
+                     use="required"
+                     type="xsd:unsignedLong"/>
+      <xsd:attribute name="hashAlgorithm"
+                     use="required"
+                     type="inv:HashAlgorithmType"/>
+      <xsd:attribute name="hashValue"
+                     use="required"
+                     type="inv:HashValueType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemAttachments">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="inv:ItemAttachment"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Item">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="inv:ItemMetadatas"/>
+        <xsd:element ref="inv:Tags"/>
+        <xsd:element ref="inv:ItemAttachments"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="id"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute type="inv:ItemNameType"
+                     use="required"
+                     name="name"/>
+      <xsd:attribute type="xsd:integer"
+                     use="required"
+                     name="count"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Items">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="inv:Item"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="Elements">
+    <xsd:choice>
+      <xsd:element ref="inv:Item"/>
+      <xsd:element ref="inv:ItemAttachment"/>
+      <xsd:element ref="inv:ItemAttachments"/>
+      <xsd:element ref="inv:ItemMetadata"/>
+      <xsd:element ref="inv:ItemMetadatas"/>
+      <xsd:element ref="inv:Items"/>
+      <xsd:element ref="inv:Tag"/>
+      <xsd:element ref="inv:Tags"/>
+    </xsd:choice>
+  </xsd:group>
+
+</xsd:schema>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Tags xmlns="urn:com.io7m.cardant.inventory:1">
+  <Tag id="1f68ddf6-2584-4b3c-a212-5ecf37bb7400"
+       name="Control"/>
+  <Tag id="039fe875-ee52-4b83-8a8c-09497d9983af"
+       name="Automation"/>
+  <Tag id="9710ede2-f7f5-4751-a9e2-78d0e7796fd2"
+       name="Current"/>
+</Tags>
+

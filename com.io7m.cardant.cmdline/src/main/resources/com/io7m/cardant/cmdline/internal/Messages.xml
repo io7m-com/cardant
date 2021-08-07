@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="cmdVersionHelp">The "version" command displays the current application version.</entry>
+
+  <entry key="cmdServerHelp"><![CDATA[
+The server command starts a server. The command, internally,
+opens a database and starts a server that stays running in the
+foreground. The command is intended to be used under process
+supervision systems such as daemontools[0] or runit[1].
+
+[0] https://cr.yp.to/daemontools.html
+[1] http://smarden.org/runit/
+]]></entry>
+
+</properties>

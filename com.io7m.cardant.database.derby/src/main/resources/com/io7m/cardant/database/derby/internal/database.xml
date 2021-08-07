@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Schemas xmlns="urn:com.io7m.cardant.database.statements:1:0">
+  <Schema versionCurrent="0">
+    <Statement><![CDATA[
+create schema cardant
+]]>
+    </Statement>
+
+    <Comment>
+      The schema version table stores the current version of the database schema. Implementations are expected to query
+      this table on connecting to the database in order to ensure that the calling code is compatible with the tables in
+      the database.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.schema_version (
+  version_lock   char(1) not null default 'X',
+  version_number bigint  not null,
+
+  constraint check_lock_primary primary key (version_lock),
+  constraint check_lock_locked check (version_lock = 'X')
+)
+]]>
+    </Statement>
+  </Schema>
+
+  <Schema versionCurrent="1">
+    <Comment>
+      The tags table contains the list of tags.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.tags (
+  tag_id    char(16) for bit data not null primary key,
+  tag_name  varchar(128)          not null,
+
+  constraint unique_tags unique (tag_name)
+)
+]]></Statement>
+
+    <Comment>
+      The items table contains the list of items.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.items (
+  item_id     char(16) for bit data not null primary key,
+  item_name   varchar(128)          not null,
+  item_count  bigint                not null,
+
+  constraint check_natural_count check (item_count >= 0)
+)
+]]></Statement>
+
+    <Comment>
+      The item_tags table contains the tags applied to each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.item_tags (
+  tag_item_id  char(16) for bit data not null,
+  tag_id       char(16) for bit data not null,
+
+  constraint unique_tagging  unique (tag_item_id, tag_id),
+  constraint tag_item_exists foreign key (tag_item_id) references cardant.items (item_id),
+  constraint tag_tag_exists  foreign key (tag_id)      references cardant.tags (tag_id)
+)
+]]></Statement>
+
+    <Comment>
+      The item_attachments table contains attachments for each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.item_attachments (
+  attachment_id              char(16) for bit data not null primary key,
+  attachment_item_id         char(16) for bit data not null,
+  attachment_media_type      varchar(128)          not null,
+  attachment_relation        varchar(128)          not null,
+  attachment_hash_algorithm  varchar(32)           not null,
+  attachment_hash_value      varchar(256)          not null,
+  attachment_data            blob                  not null,
+  attachment_data_used       bigint                not null,
+
+  constraint attachment_item_exists foreign key (attachment_item_id) references cardant.items (item_id),
+  constraint check_natural_data check (attachment_data_used >= 0)
+)
+]]></Statement>
+
+    <Comment>
+      The item_metadata table contains metadata for each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.item_metadata (
+  metadata_item_id  char(16) for bit data not null,
+  metadata_name     varchar(128)          not null,
+  metadata_value    varchar(1024)         not null,
+
+  constraint metadata_item_exists foreign key (metadata_item_id) references cardant.items (item_id),
+  constraint metadata_name_unique unique (metadata_item_id, metadata_name)
+)
+]]></Statement>
+
+    <Comment>
+      The users table contains authentication information for users.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.users (
+  user_id         char(16) for bit data not null primary key,
+  user_name       varchar(64)           not null,
+  user_pass_hash  varchar(256)          not null,
+  user_pass_salt  varchar(256)          not null,
+  user_pass_algo  varchar(32)           not null,
+
+  constraint unique_name unique (user_name)
+)
+]]></Statement>
+
+  </Schema>
+</Schemas>
