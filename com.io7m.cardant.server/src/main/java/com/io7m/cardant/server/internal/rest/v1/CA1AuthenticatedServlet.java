@@ -19,6 +19,9 @@ package com.io7m.cardant.server.internal.rest.v1;
 import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
+import com.io7m.cardant.server.internal.CAServerMessages;
+import com.io7m.cardant.server.internal.rest.CAServerEventType;
+import com.io7m.cardant.server.internal.rest.CAServerLoginFailed;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.SubmissionPublisher;
 
 /**
  * The type of servlets that require authentication.
@@ -37,15 +41,23 @@ import java.util.Objects;
 
 public abstract class CA1AuthenticatedServlet extends HttpServlet
 {
+  private final CAServerMessages messages;
+  private final SubmissionPublisher<CAServerEventType> events;
   private final CA1InventoryMessageSerializerFactoryType serializers;
   private URI clientURI;
   private HttpServletResponse response;
 
   protected CA1AuthenticatedServlet(
-    final CA1InventoryMessageSerializerFactoryType inSerializers)
+    final SubmissionPublisher<CAServerEventType> inEvents,
+    final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAServerMessages inMessages)
   {
+    this.events =
+      Objects.requireNonNull(inEvents, "inEvents");
     this.serializers =
       Objects.requireNonNull(inSerializers, "serializers");
+    this.messages =
+      Objects.requireNonNull(inMessages, "messages");
   }
 
   private static String clientOf(
@@ -151,7 +163,8 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
       }
 
       this.logger().debug("unauthenticated!");
-      this.sendError(401, "Unauthorized");
+      this.sendError(401, this.messages.format("errorUnauthorized"));
+      this.events.submit(new CAServerLoginFailed());
     } catch (final Exception e) {
       throw new IOException(e);
     } finally {
@@ -173,5 +186,10 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
     } catch (final SerializeException | IOException e) {
       this.logger().error("error sending error response: ", e);
     }
+  }
+
+  protected final CAServerMessages messages()
+  {
+    return this.messages;
   }
 }

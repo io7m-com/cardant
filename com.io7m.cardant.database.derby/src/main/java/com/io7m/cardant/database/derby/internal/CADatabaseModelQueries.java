@@ -177,6 +177,7 @@ public final class CADatabaseModelQueries
     SELECT
       cia.attachment_id,
       cia.attachment_item_id,
+      cia.attachment_description,
       cia.attachment_media_type,
       cia.attachment_relation,
       cia.attachment_hash_algorithm,
@@ -191,6 +192,7 @@ public final class CADatabaseModelQueries
     INSERT INTO cardant.item_attachments (
       attachment_id,
       attachment_item_id,
+      attachment_description,
       attachment_media_type,
       attachment_relation,
       attachment_hash_algorithm,
@@ -198,13 +200,14 @@ public final class CADatabaseModelQueries
       attachment_data,
       attachment_data_used
     ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?
+      ?, ?, ?, ?, ?, ?, ?, ?, ?
     )
     """;
 
   private static final String ITEM_ATTACHMENT_PUT_UPDATE = """
     UPDATE cardant.item_attachments
-      SET attachment_media_type = ?,
+      SET attachment_description = ?,
+          attachment_media_type = ?,
           attachment_relation = ?,
           attachment_hash_algorithm = ?,
           attachment_hash_value = ?,
@@ -217,6 +220,7 @@ public final class CADatabaseModelQueries
     SELECT
       cia.attachment_id,
       cia.attachment_item_id,
+      cia.attachment_description,
       cia.attachment_media_type,
       cia.attachment_relation,
       cia.attachment_hash_algorithm,
@@ -427,12 +431,13 @@ public final class CADatabaseModelQueries
            connection.prepareStatement(ITEM_ATTACHMENT_PUT_INSERT)) {
       statement.setBytes(1, attachmentIdBytes(attachment.id()));
       statement.setBytes(2, itemIdBytes(attachment.itemId()));
-      statement.setString(3, attachment.mediaType());
-      statement.setString(4, attachment.relation());
-      statement.setString(5, attachment.hashAlgorithm());
-      statement.setString(6, attachment.hashValue());
-      statement.setBlob(7, blob);
-      statement.setLong(8, Integer.toUnsignedLong(dataLength));
+      statement.setString(3, attachment.description());
+      statement.setString(4, attachment.mediaType());
+      statement.setString(5, attachment.relation());
+      statement.setString(6, attachment.hashAlgorithm());
+      statement.setString(7, attachment.hashValue());
+      statement.setBlob(8, blob);
+      statement.setLong(9, Integer.toUnsignedLong(dataLength));
       statement.executeUpdate();
     }
   }
@@ -451,14 +456,15 @@ public final class CADatabaseModelQueries
 
     try (var statement =
            connection.prepareStatement(ITEM_ATTACHMENT_PUT_UPDATE)) {
-      statement.setString(1, attachment.mediaType());
-      statement.setString(2, attachment.relation());
-      statement.setString(3, attachment.hashAlgorithm());
-      statement.setString(4, attachment.hashValue());
-      statement.setBlob(5, blob);
-      statement.setLong(6, Integer.toUnsignedLong(dataLength));
-      statement.setBytes(7, attachmentIdBytes(attachment.id()));
-      statement.setBytes(8, itemIdBytes(attachment.itemId()));
+      statement.setString(1, attachment.description());
+      statement.setString(2, attachment.mediaType());
+      statement.setString(3, attachment.relation());
+      statement.setString(4, attachment.hashAlgorithm());
+      statement.setString(5, attachment.hashValue());
+      statement.setBlob(6, blob);
+      statement.setLong(7, Integer.toUnsignedLong(dataLength));
+      statement.setBytes(8, attachmentIdBytes(attachment.id()));
+      statement.setBytes(9, itemIdBytes(attachment.itemId()));
       statement.executeUpdate();
     }
   }
@@ -485,6 +491,7 @@ public final class CADatabaseModelQueries
     return new CAItemAttachment(
       attachmentIdFromBytes(result.getBytes("attachment_id")),
       itemIdFromBytes(result.getBytes("attachment_item_id")),
+      result.getString("attachment_description"),
       result.getString("attachment_media_type"),
       result.getString("attachment_relation"),
       size,
@@ -501,6 +508,7 @@ public final class CADatabaseModelQueries
     return new CAItemAttachment(
       attachmentIdFromBytes(result.getBytes("attachment_id")),
       itemIdFromBytes(result.getBytes("attachment_item_id")),
+      result.getString("attachment_description"),
       result.getString("attachment_media_type"),
       result.getString("attachment_relation"),
       result.getLong("attachment_data_used"),

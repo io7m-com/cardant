@@ -17,6 +17,7 @@
 package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
+import com.io7m.cardant.database.api.CADatabaseEventType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
 import org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource;
@@ -25,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.concurrent.Flow;
+import java.util.concurrent.SubmissionPublisher;
 
 /**
  * A Derby database.
@@ -37,18 +40,23 @@ public final class CADatabaseDerby implements CADatabaseType
 
   private final CADatabaseMessages messages;
   private final EmbeddedConnectionPoolDataSource dataSource;
+  private final SubmissionPublisher<CADatabaseEventType> events;
 
   /**
    * A Derby database.
    *
+   * @param inEvents     An event receiver
    * @param inDataSource A data source
    * @param inMessages   A set of messages
    */
 
   public CADatabaseDerby(
+    final SubmissionPublisher<CADatabaseEventType> inEvents,
     final CADatabaseMessages inMessages,
     final EmbeddedConnectionPoolDataSource inDataSource)
   {
+    this.events =
+      Objects.requireNonNull(inEvents, "inEvents");
     this.messages =
       Objects.requireNonNull(inMessages, "inMessages");
     this.dataSource =
@@ -73,8 +81,21 @@ public final class CADatabaseDerby implements CADatabaseType
   }
 
   @Override
+  public Flow.Publisher<CADatabaseEventType> events()
+  {
+    return this.events;
+  }
+
+  @Override
   public void close()
   {
     LOG.debug("close");
+    this.events.close();
+  }
+
+  void publishEvent(
+    final CADatabaseEventType event)
+  {
+    this.events.submit(event);
   }
 }

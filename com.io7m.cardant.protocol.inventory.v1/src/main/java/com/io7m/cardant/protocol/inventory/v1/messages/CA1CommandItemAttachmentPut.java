@@ -14,14 +14,30 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.protocol.inventory.v1.messages;
+
+import com.io7m.cardant.model.CAItemAttachment;
+
+import java.util.Objects;
+
 /**
- * Inventory system (Database API).
+ * The "update item attachment" command.
+ *
+ * @param attachment The item attachment
  */
 
-module com.io7m.cardant.database.api
+public record CA1CommandItemAttachmentPut(
+  CAItemAttachment attachment
+) implements CA1InventoryCommandType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * The "update item attachment" command.
+   *
+   * @param attachment The item attachment
+   */
 
-  exports com.io7m.cardant.database.api;
+  public CA1CommandItemAttachmentPut
+  {
+    Objects.requireNonNull(attachment, "attachment");
+  }
 }

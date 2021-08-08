@@ -14,9 +14,9 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package com.io7m.cardant.database.derby.internal;
 
+import com.io7m.cardant.database.api.CADatabaseEventTransactionCommitted;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
@@ -32,8 +32,8 @@ import java.util.Objects;
  * A database transaction.
  */
 
-public final class CADatabaseDerbyTransaction implements
-  CADatabaseTransactionType
+public final class CADatabaseDerbyTransaction
+  implements CADatabaseTransactionType
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CADatabaseDerbyTransaction.class);
@@ -65,6 +65,7 @@ public final class CADatabaseDerbyTransaction implements
     try {
       LOG.trace("commit");
       this.connection.sqlConnection().commit();
+      this.connection.database().publishEvent(new CADatabaseEventTransactionCommitted());
     } catch (final SQLException e) {
       throw this.messages.ofSQLException("errorConnectionCommit", e);
     }

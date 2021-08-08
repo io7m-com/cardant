@@ -18,6 +18,9 @@ package com.io7m.cardant.protocol.inventory.v1.internal;
 
 import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.model.xml.CAInventorySerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerType;
+import com.io7m.cardant.protocol.inventory.v1.CA1InventorySchemas;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
@@ -26,9 +29,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventorySchemas;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseErrorDetail;
@@ -227,6 +228,30 @@ public final class CA1InventoryMessageSerializer
     writer.writeAttribute("count", String.valueOf(itemUpdate.count()));
   }
 
+  private void writeCommandItemAttachmentPut(
+    final XMLStreamWriter writer,
+    final CA1CommandItemAttachmentPut itemAttachmentPut)
+    throws XMLStreamException, IOException, SerializeException
+  {
+    writer.writeStartElement(PROTO_NAMESPACE, "CommandItemAttachmentPut");
+    this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
+    writer.writeAttribute(
+      "item",
+      itemAttachmentPut.attachment().itemId().id().toString());
+    writer.writeCharacters("\n");
+    writer.flush();
+    this.stream.flush();
+
+    try (var subOutput = CloseShieldOutputStream.wrap(this.stream)) {
+      this.serializers.serialize(
+        this.target,
+        subOutput,
+        itemAttachmentPut.attachment());
+    }
+
+    writer.writeEndElement();
+  }
+
   private void writeTransaction(
     final XMLStreamWriter writer,
     final CA1InventoryTransaction transaction)
@@ -259,6 +284,8 @@ public final class CA1InventoryMessageSerializer
       this.writeCommandItemCreate(writer, itemCreate);
     } else if (command instanceof CA1CommandItemUpdate itemUpdate) {
       this.writeCommandItemUpdate(writer, itemUpdate);
+    } else if (command instanceof CA1CommandItemAttachmentPut itemAttachmentPut) {
+      this.writeCommandItemAttachmentPut(writer, itemAttachmentPut);
     } else {
       throw new IllegalStateException("Unexpected command: " + command);
     }

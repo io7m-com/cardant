@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="errorUnauthorized">Unauthorized</entry>
+  <entry key="errorTransaction">At least one command within the transaction failed.</entry>
+  <entry key="errorUnexpectedInput">Expected a command or a transaction.</entry>
+  <entry key="indexedMessage">Command [{0}] {1}: {2}</entry>
+</properties>

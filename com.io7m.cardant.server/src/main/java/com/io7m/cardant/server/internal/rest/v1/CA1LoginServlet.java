@@ -22,12 +22,15 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
 import com.io7m.cardant.model.CAUsers;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
+import com.io7m.cardant.server.internal.rest.CAServerEventType;
+import com.io7m.cardant.server.internal.rest.CAServerLoginFailed;
+import com.io7m.cardant.server.internal.rest.CAServerLoginSucceeded;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +44,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.SubmissionPublisher;
 
 /**
  * A servlet that performs authentication.
@@ -53,21 +57,26 @@ public final class CA1LoginServlet extends HttpServlet
 
   private final CA1InventoryMessageSerializerFactoryType serializers;
   private final CADatabaseType database;
+  private final SubmissionPublisher<CAServerEventType> events;
   private final CA1InventoryMessageParserFactoryType parsers;
 
   /**
    * Construct a servlet.
    *
+   * @param inEvents      An event sink
    * @param inParsers     A provider of inventory message parsers
    * @param inSerializers A provider of inventory message serializers
    * @param inDatabase    A database
    */
 
   public CA1LoginServlet(
+    final SubmissionPublisher<CAServerEventType> inEvents,
     final CA1InventoryMessageParserFactoryType inParsers,
     final CA1InventoryMessageSerializerFactoryType inSerializers,
     final CADatabaseType inDatabase)
   {
+    this.events =
+      Objects.requireNonNull(inEvents, "inEvents");
     this.parsers =
       Objects.requireNonNull(inParsers, "parsers");
     this.serializers =
@@ -129,6 +138,7 @@ public final class CA1LoginServlet extends HttpServlet
         this.sendMessage(
           response,
           new CA1ResponseError(401, "Login failed", List.of()));
+        this.events.submit(new CAServerLoginFailed());
         return;
       }
 
@@ -139,6 +149,7 @@ public final class CA1LoginServlet extends HttpServlet
           session.setAttribute("userName", creds.user());
           response.setStatus(200);
           this.sendMessage(response, new CA1ResponseOK(Optional.empty()));
+          this.events.submit(new CAServerLoginSucceeded());
           return;
         }
       }
@@ -148,6 +159,7 @@ public final class CA1LoginServlet extends HttpServlet
       this.sendMessage(
         response,
         new CA1ResponseError(401, "Login failed", List.of()));
+      this.events.submit(new CAServerLoginFailed());
     } catch (final IOException e) {
       LOG.error("i/o: ", e);
       throw e;

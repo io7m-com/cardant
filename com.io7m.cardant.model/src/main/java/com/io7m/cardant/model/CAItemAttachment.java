@@ -24,6 +24,7 @@ import java.util.Optional;
  *
  * @param id            The ID
  * @param itemId        The item ID
+ * @param description   The attachment description
  * @param mediaType     The attachment media type
  * @param relation      The attachment relation
  * @param size          The attachment size in bytes
@@ -35,6 +36,7 @@ import java.util.Optional;
 public record CAItemAttachment(
   CAItemAttachmentID id,
   CAItemID itemId,
+  String description,
   String mediaType,
   String relation,
   long size,
@@ -48,6 +50,7 @@ public record CAItemAttachment(
    *
    * @param id            The ID
    * @param itemId        The item ID
+   * @param description   The attachment description
    * @param mediaType     The attachment media type
    * @param relation      The attachment relation
    * @param size          The attachment size in bytes
@@ -60,6 +63,7 @@ public record CAItemAttachment(
   {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(itemId, "itemId");
+    Objects.requireNonNull(description, "description");
     Objects.requireNonNull(mediaType, "mediaType");
     Objects.requireNonNull(relation, "relation");
     Objects.requireNonNull(hashAlgorithm, "hashAlgorithm");

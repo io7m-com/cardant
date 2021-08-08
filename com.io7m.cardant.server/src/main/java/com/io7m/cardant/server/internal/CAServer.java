@@ -24,13 +24,21 @@ import com.io7m.cardant.server.api.CAServerDatabaseConfigurationType;
 import com.io7m.cardant.server.api.CAServerDatabaseLocalConfiguration;
 import com.io7m.cardant.server.api.CAServerDatabaseRemoteConfiguration;
 import com.io7m.cardant.server.api.CAServerType;
+import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.Objects;
+import java.util.concurrent.SubmissionPublisher;
 
 /**
  * A server.
@@ -45,12 +53,16 @@ public final class CAServer implements CAServerType
   private final CloseableCollectionType<?> resources;
   private final CADatabaseType database;
   private final CAJettyServer jetty;
+  private final CAServerMetrics metrics;
+  private final CAServerMetricsBean metricsBean;
 
   private CAServer(
     final CAServerConfiguration inConfiguration,
     final CloseableCollectionType<?> inResources,
     final CADatabaseType inDatabase,
-    final CAJettyServer inJetty)
+    final CAJettyServer inJetty,
+    final CAServerMetrics inMetrics,
+    final CAServerMetricsBean inMetricsBean)
   {
     this.configuration =
       Objects.requireNonNull(inConfiguration, "configuration");
@@ -60,6 +72,10 @@ public final class CAServer implements CAServerType
       Objects.requireNonNull(inDatabase, "database");
     this.jetty =
       Objects.requireNonNull(inJetty, "jetty");
+    this.metrics =
+      Objects.requireNonNull(inMetrics, "metrics");
+    this.metricsBean =
+      Objects.requireNonNull(inMetricsBean, "metricsBean");
   }
 
   /**
@@ -89,11 +105,34 @@ public final class CAServer implements CAServerType
       });
     resources.add(database);
 
+    final var metricsBean =
+      new CAServerMetricsBean();
+
+    final var commandEvents =
+      new SubmissionPublisher<CAServerEventType>();
+    resources.add(commandEvents);
+
+    final var metrics =
+      new CAServerMetrics(
+        database.events(),
+        commandEvents,
+        metricsBean
+      );
+
     final var jetty =
-      CAJettyServer.create(configuration.http(), database);
+      CAJettyServer.create(configuration.http(), commandEvents, database);
     resources.add(jetty);
 
-    final var server = new CAServer(configuration, resources, database, jetty);
+    final var server =
+      new CAServer(
+        configuration,
+        resources,
+        database,
+        jetty,
+        metrics,
+        metricsBean
+      );
+
     server.start();
     return server;
   }
@@ -102,10 +141,10 @@ public final class CAServer implements CAServerType
     final CAServerDatabaseConfigurationType database)
   {
     if (database instanceof CAServerDatabaseLocalConfiguration local) {
-      return CADatabaseParameters.builder()
-        .setCreate(local.create())
-        .setPath(local.file().toString())
-        .build();
+      return new CADatabaseParameters(
+        local.file().toString(),
+        local.create()
+      );
     }
     if (database instanceof CAServerDatabaseRemoteConfiguration remote) {
       throw new IllegalStateException("Unimplemented code!");
@@ -113,9 +152,27 @@ public final class CAServer implements CAServerType
     throw new IllegalStateException();
   }
 
+  private void setupMetrics()
+  {
+    try {
+      final var server =
+        ManagementFactory.getPlatformMBeanServer();
+      final var objectName =
+        new ObjectName("com.io7m.cardant:name=Metrics");
+
+      server.registerMBean(this.metricsBean, objectName);
+    } catch (final MalformedObjectNameException
+      | InstanceAlreadyExistsException
+      | MBeanRegistrationException
+      | NotCompliantMBeanException e) {
+      LOG.error("unable to register metrics bean: ", e);
+    }
+  }
+
   private void start()
     throws Exception
   {
+    this.setupMetrics();
     this.jetty.start();
   }
 

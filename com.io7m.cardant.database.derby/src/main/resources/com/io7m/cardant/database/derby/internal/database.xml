@@ -76,6 +76,7 @@ create table cardant.item_tags (
 create table cardant.item_attachments (
   attachment_id              char(16) for bit data not null primary key,
   attachment_item_id         char(16) for bit data not null,
+  attachment_description     varchar(256)          not null,
   attachment_media_type      varchar(128)          not null,
   attachment_relation        varchar(128)          not null,
   attachment_hash_algorithm  varchar(32)           not null,

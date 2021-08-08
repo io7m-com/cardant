@@ -14,28 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
+package com.io7m.cardant.server.internal;
 
-import com.io7m.immutables.styles.ImmutablesStyleType;
-import org.immutables.value.Value;
+import com.io7m.jxtrand.vanilla.JXTAbstractStrings;
+
+import java.io.IOException;
+import java.util.Locale;
 
 /**
- * Parameters to open a database.
+ * Server strings.
  */
 
-@Value.Immutable
-@ImmutablesStyleType
-public interface CADatabaseParametersType
+public final class CAServerMessages extends JXTAbstractStrings
 {
-  /**
-   * @return The path to the database
-   */
-
-  String path();
-
-  /**
-   * @return {@code true} if the database should be created if it does not exist
-   */
-
-  boolean create();
+  CAServerMessages(
+    final Locale locale)
+    throws IOException
+  {
+    super(
+      locale,
+      CAServerMessages.class,
+      "/com/io7m/cardant/server/internal",
+      "Messages"
+    );
+  }
 }

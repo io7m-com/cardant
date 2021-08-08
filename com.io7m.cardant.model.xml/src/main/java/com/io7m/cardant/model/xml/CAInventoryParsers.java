@@ -20,9 +20,12 @@ import com.io7m.anethum.common.ParseStatus;
 import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.cardant.model.CAInventoryElementType;
+import com.io7m.cardant.model.CAItemAttachment;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.xml.internal.CAInventoryParser;
+import com.io7m.cardant.model.xml.internal.CAItemAttachmentParser;
 import com.io7m.cardant.model.xml.internal.CAItemsParser;
 import com.io7m.cardant.model.xml.internal.CATagParser;
 import com.io7m.cardant.model.xml.internal.CATagsParser;
@@ -100,6 +103,19 @@ public final class CAInventoryParsers
   public static BTElementHandlerConstructorType<?, CATags> tagsParser()
   {
     return CATagsParser::new;
+  }
+
+  /**
+   * @param itemID The item that will own the attachment
+   *
+   * @return An item attachment parser
+   */
+
+  public static BTElementHandlerConstructorType<?, CAItemAttachment>
+  itemAttachmentParser(
+    final CAItemID itemID)
+  {
+    return context -> new CAItemAttachmentParser(itemID, context);
   }
 
   @Override

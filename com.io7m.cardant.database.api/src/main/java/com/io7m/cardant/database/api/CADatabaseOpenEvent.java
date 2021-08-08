@@ -14,14 +14,32 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.database.api;
+
+import java.util.Objects;
+import java.util.OptionalDouble;
+
 /**
- * Inventory system (Database API).
+ * An event published by a database in the process of being opened.
+ *
+ * @param message  The progress message
+ * @param progress The progress value in the range [0, 1]
  */
 
-module com.io7m.cardant.database.api
+public record CADatabaseOpenEvent(
+  String message,
+  OptionalDouble progress)
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * An event published by a database in the process of being opened.
+   *
+   * @param message  The progress message
+   * @param progress The progress value in the range [0, 1]
+   */
 
-  exports com.io7m.cardant.database.api;
+  public CADatabaseOpenEvent
+  {
+    Objects.requireNonNull(message, "message");
+    Objects.requireNonNull(progress, "progress");
+  }
 }

@@ -14,14 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.server.internal.rest;
+
 /**
- * Inventory system (Database API).
+ * The type of server events related to command executions.
  */
 
-module com.io7m.cardant.database.api
+public sealed interface CAServerEventType
+  permits CAServerCommandExecuted,
+  CAServerCommandFailed,
+  CAServerLoginFailed,
+  CAServerLoginSucceeded
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
 
-  exports com.io7m.cardant.database.api;
 }

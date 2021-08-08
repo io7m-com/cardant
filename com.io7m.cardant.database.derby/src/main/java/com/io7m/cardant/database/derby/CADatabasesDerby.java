@@ -16,8 +16,8 @@
 
 package com.io7m.cardant.database.derby;
 
-import com.io7m.cardant.database.api.CADatabaseEvent;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseOpenEvent;
 import com.io7m.cardant.database.api.CADatabaseParameters;
 import com.io7m.cardant.database.api.CADatabaseProviderType;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -41,6 +41,7 @@ import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.concurrent.SubmissionPublisher;
 import java.util.function.Consumer;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_GENERAL;
@@ -88,7 +89,7 @@ public final class CADatabasesDerby implements CADatabaseProviderType
   private static void upgradeDatabase(
     final Connection connection,
     final Optional<BigInteger> currentVersionOpt,
-    final Consumer<CADatabaseEvent> safeEvents)
+    final Consumer<CADatabaseOpenEvent> safeEvents)
     throws IOException, SQLException
   {
     final var url =
@@ -118,7 +119,7 @@ public final class CADatabasesDerby implements CADatabaseProviderType
   private static void executeRevisions(
     final Connection connection,
     final NavigableMap<BigInteger, CADatabaseSchemaDecl> revisions,
-    final Consumer<CADatabaseEvent> events)
+    final Consumer<CADatabaseOpenEvent> events)
     throws SQLException
   {
     try {
@@ -164,10 +165,10 @@ public final class CADatabasesDerby implements CADatabaseProviderType
       }
 
       events.accept(
-        CADatabaseEvent.builder()
-          .setMessage("Committing database changes")
-          .setProgress(OptionalDouble.of(1.0))
-          .build()
+        new CADatabaseOpenEvent(
+          "Committing database changes",
+          OptionalDouble.of(1.0)
+        )
       );
 
       LOG.debug("commit");
@@ -179,7 +180,7 @@ public final class CADatabasesDerby implements CADatabaseProviderType
   }
 
   private static void executing(
-    final Consumer<CADatabaseEvent> events,
+    final Consumer<CADatabaseOpenEvent> events,
     final String statement,
     final int statementCurrent,
     final int statementCount)
@@ -187,17 +188,16 @@ public final class CADatabasesDerby implements CADatabaseProviderType
     final var progress = (double) statementCurrent / (double) statementCount;
 
     events.accept(
-      CADatabaseEvent.builder()
-        .setMessage("Executing: " + statement)
-        .setProgress(OptionalDouble.of(progress))
-        .build()
-    );
+      new CADatabaseOpenEvent(
+        "Executing: %s".formatted(statement),
+        OptionalDouble.of(progress)
+      ));
   }
 
   @Override
   public CADatabaseType open(
     final CADatabaseParameters parameters,
-    final Consumer<CADatabaseEvent> events)
+    final Consumer<CADatabaseOpenEvent> events)
     throws CADatabaseException
   {
     Objects.requireNonNull(parameters, "parameters");
@@ -206,7 +206,7 @@ public final class CADatabasesDerby implements CADatabaseProviderType
     final var path = parameters.path();
     LOG.info("open: {}", path);
 
-    final Consumer<CADatabaseEvent> safeEvents = databaseEvent -> {
+    final Consumer<CADatabaseOpenEvent> safeEvents = databaseEvent -> {
       try {
         events.accept(databaseEvent);
       } catch (final Exception e) {
@@ -227,7 +227,11 @@ public final class CADatabasesDerby implements CADatabaseProviderType
         this.getSchemaVersion(connection),
         safeEvents);
 
-      return new CADatabaseDerby(this.messages, dataSource);
+      return new CADatabaseDerby(
+        new SubmissionPublisher<>(),
+        this.messages,
+        dataSource
+      );
     } catch (final Exception e) {
       throw new CADatabaseException(
         ERROR_GENERAL,

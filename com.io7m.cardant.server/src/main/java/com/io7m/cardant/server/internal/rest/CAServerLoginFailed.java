@@ -14,14 +14,13 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.server.internal.rest;
+
 /**
- * Inventory system (Database API).
+ * A user failed to authenticate.
  */
 
-module com.io7m.cardant.database.api
+public record CAServerLoginFailed() implements CAServerEventType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
 
-  exports com.io7m.cardant.database.api;
 }

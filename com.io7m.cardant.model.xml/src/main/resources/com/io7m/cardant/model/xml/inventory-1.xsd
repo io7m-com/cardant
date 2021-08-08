@@ -78,6 +78,17 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <xsd:simpleType name="ItemAttachmentDescriptionType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An attachment description.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="255"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
   <xsd:simpleType name="RelationType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -169,6 +180,9 @@
       <xsd:attribute name="id"
                      use="required"
                      type="inv:UuidType"/>
+      <xsd:attribute name="description"
+                     use="required"
+                     type="inv:ItemAttachmentDescriptionType"/>
       <xsd:attribute name="mediaType"
                      use="required"
                      type="inv:MediaType"/>

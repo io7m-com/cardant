@@ -20,6 +20,7 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
 import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
+import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.cardant.server.internal.rest.v1.CA1CommandServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1LoginServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1ServletHolder;
@@ -36,7 +37,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.SubmissionPublisher;
 
 /**
  * An internal Jetty server.
@@ -56,22 +59,30 @@ public final class CAJettyServer implements Closeable
    * Create a Jetty server.
    *
    * @param configuration The configuration
+   * @param serverEvents  The server event sink
    * @param database      The database
    *
    * @return A new server
+   *
+   * @throws IOException On I/O errors
    */
 
   public static CAJettyServer create(
     final CAServerHTTPConfiguration configuration,
+    final SubmissionPublisher<CAServerEventType> serverEvents,
     final CADatabaseType database)
+    throws IOException
   {
     Objects.requireNonNull(configuration, "configuration");
+    Objects.requireNonNull(serverEvents, "commandEvents");
     Objects.requireNonNull(database, "database");
 
     final var inventorySerializers =
       new CA1InventoryMessageSerializers();
     final var inventoryParsers =
       new CA1InventoryMessageParsers();
+    final var messages =
+      new CAServerMessages(Locale.getDefault());
 
     final var server = new Server();
     final var serverConnector = new ServerConnector(server);
@@ -87,6 +98,7 @@ public final class CAJettyServer implements Closeable
       new CA1ServletHolder<>(
         CA1LoginServlet.class, () -> {
         return new CA1LoginServlet(
+          serverEvents,
           inventoryParsers,
           inventorySerializers,
           database
@@ -98,8 +110,10 @@ public final class CAJettyServer implements Closeable
       new CA1ServletHolder<>(
         CA1CommandServlet.class, () -> {
         return new CA1CommandServlet(
+          serverEvents,
           inventoryParsers,
           inventorySerializers,
+          messages,
           database
         );
       }),

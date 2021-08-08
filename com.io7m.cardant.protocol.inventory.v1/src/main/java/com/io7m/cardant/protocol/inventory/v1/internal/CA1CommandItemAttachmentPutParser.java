@@ -20,21 +20,25 @@ import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
+import com.io7m.cardant.model.CAItemAttachment;
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.xml.CAInventoryParsers;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
+import org.xml.sax.Attributes;
 
-import java.util.ArrayList;
 import java.util.Map;
+
+import static com.io7m.cardant.model.xml.CAInventorySchemas.element1;
 
 /**
  * A parser.
  */
 
-public final class CA1TransactionParser
-  implements BTElementHandlerType<CA1InventoryCommandType, CA1InventoryTransaction>
+public final class CA1CommandItemAttachmentPutParser
+  implements BTElementHandlerType<CAItemAttachment, CA1CommandItemAttachmentPut>
 {
-  private final ArrayList<CA1InventoryCommandType> commands;
+  private CAItemID itemId;
+  private CAItemAttachment attachment;
 
   /**
    * Create a parser.
@@ -42,32 +46,46 @@ public final class CA1TransactionParser
    * @param context The parsing context
    */
 
-  public CA1TransactionParser(
+  public CA1CommandItemAttachmentPutParser(
     final BTElementParsingContextType context)
   {
-    this.commands = new ArrayList<CA1InventoryCommandType>();
+
   }
 
   @Override
-  public Map<BTQualifiedName,
-    BTElementHandlerConstructorType<?, ? extends CA1InventoryCommandType>> onChildHandlersRequested(
+  public Map<BTQualifiedName, BTElementHandlerConstructorType<?, ? extends CAItemAttachment>>
+  onChildHandlersRequested(
     final BTElementParsingContextType context)
   {
-    return CA1InventoryMessageParsers.commandParsers();
+    return Map.ofEntries(
+      Map.entry(
+        element1("ItemAttachment"),
+        CAInventoryParsers.itemAttachmentParser(this.itemId)
+      )
+    );
+  }
+
+  @Override
+  public void onElementStart(
+    final BTElementParsingContextType context,
+    final Attributes attributes)
+    throws Exception
+  {
+    this.itemId = CAItemID.of(attributes.getValue("item"));
   }
 
   @Override
   public void onChildValueProduced(
     final BTElementParsingContextType context,
-    final CA1InventoryCommandType value)
+    final CAItemAttachment received)
   {
-    this.commands.add(value);
+    this.attachment = received;
   }
 
   @Override
-  public CA1InventoryTransaction onElementFinished(
+  public CA1CommandItemAttachmentPut onElementFinished(
     final BTElementParsingContextType context)
   {
-    return new CA1InventoryTransaction(this.commands);
+    return new CA1CommandItemAttachmentPut(this.attachment);
   }
 }

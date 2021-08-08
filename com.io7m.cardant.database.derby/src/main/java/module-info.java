@@ -29,10 +29,10 @@ module com.io7m.cardant.database.derby
   requires static org.osgi.annotation.versioning;
 
   requires transitive com.io7m.cardant.database.api;
-  requires com.io7m.cardant.model;
 
   requires com.io7m.blackthorne.api;
   requires com.io7m.blackthorne.jxe;
+  requires com.io7m.cardant.model;
   requires com.io7m.jaffirm.core;
   requires com.io7m.junreachable.core;
   requires com.io7m.jxe.core;

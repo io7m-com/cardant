@@ -16,28 +16,12 @@
 
 package com.io7m.cardant.database.api;
 
-import com.io7m.immutables.styles.ImmutablesStyleType;
-import org.immutables.value.Value;
-
-import java.util.OptionalDouble;
-
 /**
  * A database event.
  */
 
-@ImmutablesStyleType
-@Value.Immutable
-public interface CADatabaseEventType
+public sealed interface CADatabaseEventType
+  permits CADatabaseEventTransactionType
 {
-  /**
-   * @return A humanly-readable event message
-   */
 
-  String message();
-
-  /**
-   * @return The completion progress for the current operation
-   */
-
-  OptionalDouble progress();
 }

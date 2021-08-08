@@ -14,31 +14,53 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
+package com.io7m.cardant.server.internal;
 
-import java.io.Closeable;
-import java.util.concurrent.Flow;
+import javax.management.MXBean;
 
 /**
- * An open database.
+ * The type of server metrics.
  */
 
-public interface CADatabaseType extends Closeable
+// CHECKSTYLE:OFF
+@MXBean
+public interface CAServerMetricsMXBean
 {
-  /**
-   * Open a new database connection.
-   *
-   * @return A new database connection
-   *
-   * @throws CADatabaseException On errors
-   */
-
-  CADatabaseConnectionType openConnection()
-    throws CADatabaseException;
+  // CHECKSTYLE:ON
 
   /**
-   * @return An observable stream of database events
+   * @return The number of database transactions that have been created
    */
 
-  Flow.Publisher<CADatabaseEventType> events();
+  long getDatabaseTransactionsCreated();
+
+  /**
+   * @return The number of database transactions that have been committed
+   */
+
+  long getDatabaseTransactionsCommitted();
+
+  /**
+   * @return The number of server commands that have been executed
+   */
+
+  long getServerCommandsExecuted();
+
+  /**
+   * @return The number of server commands that failed to execute
+   */
+
+  long getServerCommandsFailed();
+
+  /**
+   * @return The number of server logins that failed
+   */
+
+  long getServerLoginsFailed();
+
+  /**
+   * @return The number of server logins that succeeded
+   */
+
+  long getServerLoginsSuceeded();
 }

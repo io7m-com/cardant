@@ -19,6 +19,7 @@ package com.io7m.cardant.protocol.inventory.v1;
 import com.io7m.anethum.common.ParseStatus;
 import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTQualifiedName;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemAttachmentPutParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemCreateParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemListParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemUpdateParser;
@@ -137,6 +138,10 @@ public final class CA1InventoryMessageParsers
       Map.entry(
         element1("CommandItemUpdate"),
         CA1CommandItemUpdateParser::new
+      ),
+      Map.entry(
+        element1("CommandItemAttachmentPut"),
+        CA1CommandItemAttachmentPutParser::new
       ),
       Map.entry(
         element1("CommandItemList"),

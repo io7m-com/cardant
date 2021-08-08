@@ -14,14 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.database.api;
+
+import java.util.Objects;
+
 /**
- * Inventory system (Database API).
+ * Database configuration parameters.
+ *
+ * @param path   The path to the database
+ * @param create {@code true} if the database should be created if it does not exist
  */
 
-module com.io7m.cardant.database.api
+public record CADatabaseParameters(
+  String path,
+  boolean create
+)
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * Database configuration parameters.
+   *
+   * @param path   The path to the database
+   * @param create {@code true} if the database should be created if it does not exist
+   */
 
-  exports com.io7m.cardant.database.api;
+  public CADatabaseParameters
+  {
+    Objects.requireNonNull(path, "path");
+  }
 }

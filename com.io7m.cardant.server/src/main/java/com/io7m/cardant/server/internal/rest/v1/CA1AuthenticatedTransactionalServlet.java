@@ -20,12 +20,15 @@ import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
+import com.io7m.cardant.server.internal.CAServerMessages;
+import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.SubmissionPublisher;
 
 /**
  * A servlet that executes within a database transaction.
@@ -38,11 +41,13 @@ public abstract class CA1AuthenticatedTransactionalServlet
   private final CA1InventoryMessageParserFactoryType parsers;
 
   protected CA1AuthenticatedTransactionalServlet(
+    final SubmissionPublisher<CAServerEventType> inEvents,
     final CA1InventoryMessageParserFactoryType inParsers,
     final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAServerMessages inMessages,
     final CADatabaseType inDatabase)
   {
-    super(inSerializers);
+    super(inEvents, inSerializers, inMessages);
 
     this.parsers =
       Objects.requireNonNull(inParsers, "parsers");
@@ -88,7 +93,11 @@ public abstract class CA1AuthenticatedTransactionalServlet
 
     try (var connection = this.database.openConnection()) {
       try (var transaction = connection.beginTransaction()) {
-        this.serviceTransactional(transaction, request, servletResponse, session);
+        this.serviceTransactional(
+          transaction,
+          request,
+          servletResponse,
+          session);
       }
     } catch (final Exception e) {
       throw new IOException(e);

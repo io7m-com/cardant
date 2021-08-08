@@ -114,6 +114,24 @@
     </xsd:annotation>
   </xsd:element>
 
+  <xsd:element name="CommandItemAttachmentPut">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to put an item attachment.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:ItemAttachment"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="item"
+                     type="iv1:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="ResponseOK">
     <xsd:annotation>
       <xsd:documentation>
@@ -201,6 +219,7 @@
     </xsd:annotation>
 
     <xsd:choice>
+      <xsd:element ref="ip1:CommandItemAttachmentPut"/>
       <xsd:element ref="ip1:CommandItemCreate"/>
       <xsd:element ref="ip1:CommandItemList"/>
       <xsd:element ref="ip1:CommandItemUpdate"/>

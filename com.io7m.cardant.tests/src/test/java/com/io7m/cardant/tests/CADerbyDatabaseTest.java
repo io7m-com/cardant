@@ -16,8 +16,8 @@
 
 package com.io7m.cardant.tests;
 
-import com.io7m.cardant.database.api.CADatabaseEvent;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseOpenEvent;
 import com.io7m.cardant.database.api.CADatabaseParameters;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.derby.CADatabasesDerby;
@@ -65,7 +65,7 @@ public final class CADerbyDatabaseTest
     LoggerFactory.getLogger(CADerbyDatabaseTest.class);
 
   private Path directory;
-  private ArrayList<CADatabaseEvent> events;
+  private ArrayList<CADatabaseOpenEvent> events;
   private Path databaseDirectory;
 
   private static <T> SortedSet<T> setOf(
@@ -83,7 +83,7 @@ public final class CADerbyDatabaseTest
     this.databaseDirectory =
       this.directory.resolve("database");
 
-    this.events = new ArrayList<CADatabaseEvent>();
+    this.events = new ArrayList<CADatabaseOpenEvent>();
   }
 
   @AfterEach
@@ -95,7 +95,7 @@ public final class CADerbyDatabaseTest
   }
 
   private void logEvent(
-    final CADatabaseEvent event)
+    final CADatabaseOpenEvent event)
   {
     LOG.debug("event: {}", event);
     this.events.add(event);
@@ -108,10 +108,10 @@ public final class CADerbyDatabaseTest
     final var databases = new CADatabasesDerby(Locale.getDefault());
 
     final var parameters =
-      CADatabaseParameters.builder()
-        .setCreate(true)
-        .setPath(this.databaseDirectory.toAbsolutePath().toString())
-        .build();
+      new CADatabaseParameters(
+        this.databaseDirectory.toAbsolutePath().toString(),
+        true
+      );
 
     try (var database = databases.open(parameters, this::logEvent)) {
       try (var connection = database.openConnection()) {
@@ -579,6 +579,7 @@ public final class CADerbyDatabaseTest
         new CAItemAttachment(
           attachmentID,
           item0,
+          "Item description",
           "text/plain",
           "nothing",
           5L,
@@ -599,6 +600,7 @@ public final class CADerbyDatabaseTest
         new CAItemAttachment(
           attachmentID,
           item0,
+          "Item description 2",
           "text/plain",
           "nothing",
           7L,
@@ -619,6 +621,7 @@ public final class CADerbyDatabaseTest
         new CAItemAttachment(
           attachmentID,
           item0,
+          "Item description 2",
           "text/plain",
           "nothing",
           7L,
@@ -664,6 +667,7 @@ public final class CADerbyDatabaseTest
         new CAItemAttachment(
           CAItemAttachmentID.random(),
           item0,
+          "Item description",
           "text/plain",
           "nothing",
           5L,
@@ -691,6 +695,7 @@ public final class CADerbyDatabaseTest
           new CAItemAttachment(
             CAItemAttachmentID.random(),
             item0,
+            "Item description",
             "text/plain",
             "nothing",
             5L,
@@ -709,6 +714,7 @@ public final class CADerbyDatabaseTest
           new CAItemAttachment(
             CAItemAttachmentID.random(),
             item0,
+            "Item description 2",
             "text/plain",
             "nothing",
             5L,
@@ -725,6 +731,7 @@ public final class CADerbyDatabaseTest
           new CAItemAttachment(
             CAItemAttachmentID.random(),
             item0,
+            "Item description 2",
             "text/plain",
             "nothing",
             5L,

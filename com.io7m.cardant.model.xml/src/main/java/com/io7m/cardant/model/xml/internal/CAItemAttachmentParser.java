@@ -65,6 +65,7 @@ public final class CAItemAttachmentParser
     this.result = new CAItemAttachment(
       new CAItemAttachmentID(UUID.fromString(attributes.getValue("id"))),
       this.itemId,
+      attributes.getValue("description"),
       attributes.getValue("mediaType"),
       attributes.getValue("relation"),
       Long.parseUnsignedLong(attributes.getValue("size")),
@@ -95,6 +96,7 @@ public final class CAItemAttachmentParser
       this.result = new CAItemAttachment(
         this.result.id(),
         this.result.itemId(),
+        this.result.description(),
         this.result.mediaType(),
         this.result.relation(),
         this.result.size(),

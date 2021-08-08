@@ -14,14 +14,12 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.server.internal.rest;
+
 /**
- * Inventory system (Database API).
+ * A user successfully authenticated.
  */
 
-module com.io7m.cardant.database.api
+public record CAServerLoginSucceeded() implements CAServerEventType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
-
-  exports com.io7m.cardant.database.api;
 }

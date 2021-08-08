@@ -17,6 +17,7 @@
 package com.io7m.cardant.tests;
 
 import com.io7m.anethum.common.ParseException;
+import com.io7m.cardant.database.api.CADatabaseEventType;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerConfigurationParserFactoryType;
 import com.io7m.cardant.server.api.CAServerFactoryType;
@@ -24,8 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.ServiceLoader;
+import java.util.concurrent.Flow;
 
 public final class CAServerDemo
 {
@@ -54,9 +57,46 @@ public final class CAServerDemo
         .orElseThrow();
 
     final CAServerConfiguration configuration =
-      configurations.parseFile(configurationFile);
+      configurations.parseFileWithContext(
+        FileSystems.getDefault(), configurationFile);
 
-    try (var ignored = servers.createServer(configuration)) {
+    try (var server = servers.createServer(configuration)) {
+      server.database()
+        .events()
+        .subscribe(new Flow.Subscriber<CADatabaseEventType>()
+        {
+          private Flow.Subscription subscription;
+
+          @Override
+          public void onSubscribe(
+            final Flow.Subscription subscription)
+          {
+            this.subscription = subscription;
+            this.subscription.request(1L);
+          }
+
+          @Override
+          public void onNext(
+            final CADatabaseEventType item)
+          {
+            LOG.debug("event: {}", item);
+            this.subscription.request(1L);
+          }
+
+          @Override
+          public void onError(
+            final Throwable throwable)
+          {
+
+          }
+
+          @Override
+          public void onComplete()
+          {
+
+          }
+        });
+
       while (true) {
         try {
           Thread.sleep(1_000L);

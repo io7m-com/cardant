@@ -26,7 +26,7 @@ import com.io7m.blackthorne.api.BTElementParsingContextType;
 public final class CADatabaseV1StatementParser
   implements BTElementHandlerType<Object, String>
 {
-  private StringBuilder text;
+  private final StringBuilder text;
 
   /**
    * A statement parser.

@@ -16,6 +16,8 @@
 
 import com.io7m.cardant.model.xml.CAInventoryParserFactoryType;
 import com.io7m.cardant.model.xml.CAInventoryParsers;
+import com.io7m.cardant.model.xml.CAInventorySerializerFactoryType;
+import com.io7m.cardant.model.xml.CAInventorySerializers;
 
 /**
  * Inventory system (Model XML).
@@ -35,6 +37,8 @@ module com.io7m.cardant.model.xml
 
   provides CAInventoryParserFactoryType
     with CAInventoryParsers;
+  provides CAInventorySerializerFactoryType
+    with CAInventorySerializers;
 
   exports com.io7m.cardant.model.xml;
 }

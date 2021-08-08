@@ -37,6 +37,6 @@ public interface CADatabaseProviderType
 
   CADatabaseType open(
     CADatabaseParameters parameters,
-    Consumer<CADatabaseEvent> events)
+    Consumer<CADatabaseOpenEvent> events)
     throws CADatabaseException;
 }

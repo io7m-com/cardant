@@ -48,6 +48,7 @@ module com.io7m.cardant.server
   requires org.eclipse.jetty.servlet;
   requires org.slf4j;
   requires com.io7m.cardant.model.xml;
+  requires com.io7m.jxtrand.vanilla;
 
   provides CAServerFactoryType
     with CAServers;

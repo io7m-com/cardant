@@ -25,6 +25,9 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
 import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
@@ -32,14 +35,16 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryResponseType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseErrorDetail;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
+import com.io7m.cardant.server.internal.CAServerMessages;
+import com.io7m.cardant.server.internal.rest.CAServerCommandExecuted;
+import com.io7m.cardant.server.internal.rest.CAServerCommandFailed;
+import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -50,7 +55,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.SubmissionPublisher;
 
 /**
  * Construct a command servlet.
@@ -62,23 +69,30 @@ public final class CA1CommandServlet
   private static final Logger LOG =
     LoggerFactory.getLogger(CA1CommandServlet.class);
 
+  private final SubmissionPublisher<CAServerEventType> events;
   private CADatabaseTransactionType transaction;
   private HttpServletResponse response;
   private CAModelCADatabaseQueriesType queries;
 
   /**
    * Construct a command servlet.
-   * @param inParsers The parsers
+   *
+   * @param inEvents      The event publisher
+   * @param inParsers     The parsers
    * @param inSerializers The serializers
-   * @param inDatabase The database
+   * @param inDatabase    The database
+   * @param inMessages    The server string resources
    */
 
   public CA1CommandServlet(
+    final SubmissionPublisher<CAServerEventType> inEvents,
     final CA1InventoryMessageParserFactoryType inParsers,
     final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAServerMessages inMessages,
     final CADatabaseType inDatabase)
   {
-    super(inParsers, inSerializers, inDatabase);
+    super(inEvents, inParsers, inSerializers, inMessages, inDatabase);
+    this.events = Objects.requireNonNull(inEvents, "inEvents");
   }
 
   @Override
@@ -148,7 +162,7 @@ public final class CA1CommandServlet
       return this.executeTransaction(received);
     }
     if (message instanceof CA1InventoryCommandType received) {
-      return this.executeCommand(received);
+      return this.executeCommandAccounted(received);
     }
     if (message instanceof CA1InventoryResponseType received) {
       return this.executeResponse(received);
@@ -163,7 +177,7 @@ public final class CA1CommandServlet
   {
     return new CA1ResponseError(
       400,
-      "Expected a transaction or command.",
+      this.messages().format("errorUnexpectedInput"),
       List.of()
     );
   }
@@ -176,26 +190,57 @@ public final class CA1CommandServlet
 
     final var details = new ArrayList<CA1ResponseErrorDetail>();
     final var commands = msgTransaction.commands();
+    final var messages = this.messages();
     for (int index = 0; index < commands.size(); ++index) {
       final var command = commands.get(index);
-      mostRecent = this.executeCommand(command);
+      mostRecent = this.executeCommandAccounted(command);
       if (mostRecent instanceof CA1ResponseError error) {
         failed = true;
         final var indexedMessage =
-          String.format(
-            "Command [%d] %s: %s",
-            Integer.valueOf(index),
-            command.getClass().getSimpleName(),
-            error.message()
-          );
+          messages
+            .format(
+              "indexedMessage",
+              Integer.valueOf(index),
+              command.getClass().getSimpleName(),
+              error.message()
+            );
         details.add(new CA1ResponseErrorDetail(indexedMessage));
       }
     }
 
     if (failed) {
-      return new CA1ResponseError(500, "At least one command failed", details);
+      return new CA1ResponseError(
+        500,
+        messages.format("errorTransaction"),
+        details
+      );
     }
     return mostRecent;
+  }
+
+  private CA1InventoryResponseType executeCommandAccounted(
+    final CA1InventoryCommandType command)
+  {
+    final var result = this.executeCommand(command);
+    if (result instanceof CA1ResponseOK) {
+      this.commandExecuted();
+      return result;
+    }
+    if (result instanceof CA1ResponseError) {
+      this.commandFailed();
+      return result;
+    }
+    throw new IllegalStateException();
+  }
+
+  private void commandFailed()
+  {
+    this.events.submit(new CAServerCommandFailed());
+  }
+
+  private void commandExecuted()
+  {
+    this.events.submit(new CAServerCommandExecuted());
   }
 
   private CA1InventoryResponseType executeCommand(
@@ -219,8 +264,28 @@ public final class CA1CommandServlet
     if (command instanceof CA1CommandItemList) {
       return this.executeCommandItemList();
     }
+    if (command instanceof CA1CommandItemAttachmentPut itemAttachmentPut) {
+      return this.executeCommandItemAttachmentPut(itemAttachmentPut);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CA1InventoryResponseType executeCommandItemAttachmentPut(
+    final CA1CommandItemAttachmentPut itemAttachmentPut)
+  {
+    try {
+      this.queries.itemAttachmentPut(itemAttachmentPut.attachment());
+      return new CA1ResponseOK(Optional.empty());
+    } catch (final CADatabaseException e) {
+      return switch (e.errorCode()) {
+        case ERROR_NONEXISTENT, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
+          400,
+          e.getMessage(),
+          List.of());
+        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+      };
+    }
   }
 
   private CA1InventoryResponseType executeCommandTagsDelete(

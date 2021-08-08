@@ -14,14 +14,14 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.database.api;
+
 /**
- * Inventory system (Database API).
+ * A transaction was created.
  */
 
-module com.io7m.cardant.database.api
+public record CADatabaseEventTransactionCreated()
+  implements CADatabaseEventTransactionType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
 
-  exports com.io7m.cardant.database.api;
 }

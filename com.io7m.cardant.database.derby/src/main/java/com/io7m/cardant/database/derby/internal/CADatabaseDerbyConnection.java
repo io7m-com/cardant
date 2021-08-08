@@ -17,6 +17,7 @@
 package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
+import com.io7m.cardant.database.api.CADatabaseEventTransactionCreated;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.jaffirm.core.Preconditions;
@@ -67,15 +68,16 @@ final class CADatabaseDerbyConnection implements CADatabaseConnectionType
     }
   }
 
-  @Override
-  public CADatabaseTransactionType beginTransaction()
-  {
-    return new CADatabaseDerbyTransaction(this.messages, this);
-  }
-
   CADatabaseDerby database()
   {
     return this.database;
+  }
+
+  @Override
+  public CADatabaseTransactionType beginTransaction()
+  {
+    this.database.publishEvent(new CADatabaseEventTransactionCreated());
+    return new CADatabaseDerbyTransaction(this.messages, this);
   }
 
   Connection sqlConnection()

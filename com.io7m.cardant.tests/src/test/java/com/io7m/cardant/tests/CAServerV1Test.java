@@ -20,13 +20,19 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemAttachment;
+import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.CAUsers;
+import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
+import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
@@ -34,8 +40,6 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePa
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsPut;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
@@ -66,9 +70,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class CAServerV1Test
@@ -678,6 +684,104 @@ public final class CAServerV1Test
 
       assertEquals(200, response.statusCode());
       assertEquals(Optional.of(new CAItems(Set.of())), message.data());
+    }
+  }
+
+  /**
+   * Adding and updating attachments works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemsCreateAttachments()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var item0 = CAItem.create();
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemCreate(
+            item0.id(),
+            item0.name(),
+            item0.count()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    final var itemAttachment =
+      new CAItemAttachment(
+        CAItemAttachmentID.random(),
+        item0.id(),
+        "An attachment.",
+        "text/plain",
+        "Datasheet",
+        10L,
+        "SHA-256",
+        "fbf8a33d8c8a1dccd71642c39b2f4b6622d93fccb4d73de2924c355603db9043",
+        Optional.of(new CAByteArray("ABCD123456".getBytes(UTF_8)))
+      );
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemAttachmentPut(itemAttachment));
+
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    final var attachmentWithout =
+      new CAItemAttachment(
+        itemAttachment.id(),
+        itemAttachment.itemId(),
+        itemAttachment.description(),
+        itemAttachment.mediaType(),
+        itemAttachment.relation(),
+        itemAttachment.size(),
+        itemAttachment.hashAlgorithm(),
+        itemAttachment.hashValue(),
+        Optional.empty()
+      );
+
+    final var attachments = new TreeMap<CAItemAttachmentID, CAItemAttachment>();
+    attachments.put(itemAttachment.id(), attachmentWithout);
+
+    final var itemWith =
+      new CAItem(
+        item0.id(),
+        item0.name(),
+        item0.count(),
+        Collections.emptySortedMap(),
+        attachments,
+        Collections.emptySortedSet()
+      );
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemList());
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(new CAItems(Set.of(itemWith))), message.data());
     }
   }
 

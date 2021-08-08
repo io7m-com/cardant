@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.tests;
 
-import com.io7m.cardant.database.api.CADatabaseEvent;
+import com.io7m.cardant.database.api.CADatabaseOpenEvent;
 import com.io7m.cardant.database.api.CADatabaseParameters;
 import com.io7m.cardant.database.derby.CADatabasesDerby;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
@@ -62,13 +62,15 @@ public final class CAUserCreateDemo
       (CAServerDatabaseLocalConfiguration) configuration.database();
 
     final var databaseParameters =
-      CADatabaseParameters.builder()
-        .setPath(databaseLocalConfiguration.file().toString())
-        .setCreate(false)
-        .build();
+      new CADatabaseParameters(
+        databaseLocalConfiguration.file().toString(),
+        false
+      );
 
-    final Consumer<CADatabaseEvent> events = databaseEvent -> {
+    final Consumer<CADatabaseOpenEvent> events = databaseEvent -> {
+
     };
+
     try (var database = new CADatabasesDerby()
       .open(databaseParameters, events)) {
       try (var connection = database.openConnection()) {

@@ -32,6 +32,7 @@
     </Tags>
     <ItemAttachments>
       <ItemAttachment id="94b649f5-88f1-4c81-baaf-0036df9f2bab"
+                      description="A description."
                       mediaType="text/plain"
                       relation="info"
                       size="505"

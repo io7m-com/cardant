@@ -46,6 +46,10 @@
     </dependency>
 
     <dependency>
+      <groupId>com.io7m.jxtrand</groupId>
+      <artifactId>com.io7m.jxtrand.vanilla</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.io7m.blackthorne</groupId>
       <artifactId>com.io7m.blackthorne.api</artifactId>
     </dependency>

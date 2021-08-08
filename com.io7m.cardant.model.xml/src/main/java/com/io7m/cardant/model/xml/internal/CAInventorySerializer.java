@@ -33,6 +33,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.SortedMap;
 
@@ -42,8 +43,12 @@ import java.util.SortedMap;
 
 public final class CAInventorySerializer implements CAInventorySerializerType
 {
+  private static final String NAMESPACE =
+    CAInventorySchemas.inventory1Namespace().toString();
+
   private final XMLOutputFactory writers;
   private final OutputStream stream;
+  private final Base64.Encoder base64;
   private boolean namespace;
 
   /**
@@ -61,6 +66,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
       Objects.requireNonNull(inWriters, "writers");
     this.stream =
       Objects.requireNonNull(inStream, "stream");
+    this.base64 =
+      Base64.getMimeEncoder();
   }
 
   private void serializeItem(
@@ -68,9 +75,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     final CAItem item)
     throws XMLStreamException
   {
-    final var namespaceURI = CAInventorySchemas.inventory1Namespace().toString();
-    writer.writeStartElement(namespaceURI, "Item");
-    this.writeNamespaceIfRequired(writer, namespaceURI);
+    writer.writeStartElement(NAMESPACE, "Item");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
     writer.writeAttribute("id", item.id().id().toString());
     writer.writeAttribute("name", item.name());
     writer.writeAttribute("count", String.valueOf(item.count()));
@@ -82,14 +88,43 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     writer.writeEndElement();
   }
 
+  private void serializeItemAttachment(
+    final XMLStreamWriter writer,
+    final CAItemAttachment itemAttachment)
+    throws XMLStreamException
+  {
+    writer.writeStartElement(NAMESPACE, "ItemAttachment");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+
+    writer.writeAttribute("id", itemAttachment.id().id().toString());
+    writer.writeAttribute("description", itemAttachment.description());
+    writer.writeAttribute("mediaType", itemAttachment.mediaType());
+    writer.writeAttribute("relation", itemAttachment.relation());
+    writer.writeAttribute("size", String.valueOf(itemAttachment.size()));
+    writer.writeAttribute("hashAlgorithm", itemAttachment.hashAlgorithm());
+    writer.writeAttribute("hashValue", itemAttachment.hashValue());
+
+    final var data = itemAttachment.data();
+    if (data.isPresent()) {
+      writer.writeStartElement(NAMESPACE, "ItemAttachmentData");
+      this.writeNamespaceIfRequired(writer, NAMESPACE);
+      writer.writeCharacters(this.base64.encodeToString(data.get().data()));
+      writer.writeEndElement();
+    }
+
+    writer.writeEndElement();
+  }
+
   private void serializeItemAttachments(
     final XMLStreamWriter writer,
     final SortedMap<CAItemAttachmentID, CAItemAttachment> attachments)
     throws XMLStreamException
   {
-    final var namespaceURI = CAInventorySchemas.inventory1Namespace().toString();
-    writer.writeStartElement(namespaceURI, "ItemAttachments");
-    this.writeNamespaceIfRequired(writer, namespaceURI);
+    writer.writeStartElement(NAMESPACE, "ItemAttachments");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    for (final var entry : attachments.entrySet()) {
+      this.serializeItemAttachment(writer, entry.getValue());
+    }
     writer.writeEndElement();
   }
 
@@ -98,9 +133,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     final SortedMap<String, CAItemMetadata> metadata)
     throws XMLStreamException
   {
-    final var namespaceURI = CAInventorySchemas.inventory1Namespace().toString();
-    writer.writeStartElement(namespaceURI, "ItemMetadatas");
-    this.writeNamespaceIfRequired(writer, namespaceURI);
+    writer.writeStartElement(NAMESPACE, "ItemMetadatas");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
     writer.writeEndElement();
   }
 
@@ -120,9 +154,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     final CAItems items)
     throws XMLStreamException
   {
-    final var namespaceURI = CAInventorySchemas.inventory1Namespace().toString();
-    writer.writeStartElement(namespaceURI, "Items");
-    this.writeNamespaceIfRequired(writer, namespaceURI);
+    writer.writeStartElement(NAMESPACE, "Items");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
 
     for (final var item : items.items()) {
       this.serializeItem(writer, item);
@@ -135,9 +168,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     final CATag tag)
     throws XMLStreamException
   {
-    final var namespaceURI = CAInventorySchemas.inventory1Namespace().toString();
-    writer.writeEmptyElement(namespaceURI, "Tag");
-    this.writeNamespaceIfRequired(writer, namespaceURI);
+    writer.writeEmptyElement(NAMESPACE, "Tag");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
     writer.writeAttribute("id", tag.id().toString());
     writer.writeAttribute("name", tag.name());
   }
@@ -147,9 +179,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     final CATags tags)
     throws XMLStreamException
   {
-    final var namespaceURI = CAInventorySchemas.inventory1Namespace().toString();
-    writer.writeStartElement(namespaceURI, "Tags");
-    this.writeNamespaceIfRequired(writer, namespaceURI);
+    writer.writeStartElement(NAMESPACE, "Tags");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
 
     for (final var tag : tags.tags()) {
       this.serializeTag(writer, tag);
@@ -170,8 +201,7 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     final XMLStreamWriter writer)
     throws XMLStreamException
   {
-    final var namespaceURI = CAInventorySchemas.inventory1Namespace().toString();
-    writer.setPrefix("ci", namespaceURI);
+    writer.setPrefix("ci", NAMESPACE);
   }
 
   @Override
@@ -193,6 +223,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
         this.serializeItems(writer, items);
       } else if (value instanceof CAItem item) {
         this.serializeItem(writer, item);
+      } else if (value instanceof CAItemAttachment itemAttachment) {
+        this.serializeItemAttachment(writer, itemAttachment);
       } else {
         throw new IllegalStateException();
       }
