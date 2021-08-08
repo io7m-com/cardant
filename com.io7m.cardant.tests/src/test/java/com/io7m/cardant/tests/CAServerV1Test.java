@@ -748,19 +748,7 @@ public final class CAServerV1Test
       assertEquals(Optional.empty(), message.data());
     }
 
-    final var attachmentWithout =
-      new CAItemAttachment(
-        itemAttachment.id(),
-        itemAttachment.itemId(),
-        itemAttachment.description(),
-        itemAttachment.mediaType(),
-        itemAttachment.relation(),
-        itemAttachment.size(),
-        itemAttachment.hashAlgorithm(),
-        itemAttachment.hashValue(),
-        Optional.empty()
-      );
-
+    final var attachmentWithout = itemAttachment.withoutData();
     final var attachments = new TreeMap<CAItemAttachmentID, CAItemAttachment>();
     attachments.put(itemAttachment.id(), attachmentWithout);
 

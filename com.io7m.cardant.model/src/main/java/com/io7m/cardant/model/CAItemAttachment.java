@@ -84,4 +84,23 @@ public record CAItemAttachment(
       }
     }
   }
+
+  /**
+   * @return This attachment without any associated data
+   */
+
+  public CAItemAttachment withoutData()
+  {
+    return new CAItemAttachment(
+      this.id,
+      this.itemId,
+      this.description,
+      this.mediaType,
+      this.relation,
+      this.size,
+      this.hashAlgorithm,
+      this.hashValue,
+      Optional.empty()
+    );
+  }
 }
