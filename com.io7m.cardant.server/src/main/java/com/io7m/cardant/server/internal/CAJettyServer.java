@@ -20,13 +20,14 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
 import com.io7m.cardant.server.api.CAServerConfiguration;
-import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.cardant.server.internal.rest.v1.CA1AttachmentServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1CommandServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1LoginServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1ServletHolder;
 import org.eclipse.jetty.jmx.MBeanContainer;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
@@ -87,7 +88,18 @@ public final class CAJettyServer implements Closeable
       new CAServerMessages(Locale.getDefault());
 
     final var server = new Server();
-    final var serverConnector = new ServerConnector(server);
+
+    final var serverHTTPConfiguration =
+      new HttpConfiguration();
+
+    serverHTTPConfiguration.setSendServerVersion(false);
+    serverHTTPConfiguration.setSendDateHeader(false);
+    serverHTTPConfiguration.setSendXPoweredBy(false);
+
+    final var serverHTTPConnections =
+      new HttpConnectionFactory(serverHTTPConfiguration);
+    final var serverConnector =
+      new ServerConnector(server, serverHTTPConnections);
 
     final var httpConfiguration = configuration.http();
     serverConnector.setPort(httpConfiguration.port());
