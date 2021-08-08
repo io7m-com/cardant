@@ -185,7 +185,7 @@ public final class CADatabaseModelQueries
       cia.attachment_data,
       cia.attachment_data_used
     FROM cardant.item_attachments cia
-      WHERE attachment_id = ? AND attachment_item_id = ?
+      WHERE attachment_id = ?
     """;
 
   private static final String ITEM_ATTACHMENT_PUT_INSERT = """
@@ -613,7 +613,6 @@ public final class CADatabaseModelQueries
   private static Optional<CAItemAttachment> itemAttachmentGetInner(
     final Connection connection,
     final CAItemAttachmentID id,
-    final CAItemID itemId,
     final boolean withData)
     throws SQLException, IOException
   {
@@ -621,7 +620,6 @@ public final class CADatabaseModelQueries
       try (var statement =
              connection.prepareStatement(ITEM_ATTACHMENT_GET)) {
         statement.setBytes(1, attachmentIdBytes(id));
-        statement.setBytes(2, itemIdBytes(itemId));
         try (var result = statement.executeQuery()) {
           if (result.next()) {
             return Optional.of(itemAttachmentFromResultWithData(result));
@@ -634,7 +632,6 @@ public final class CADatabaseModelQueries
     try (var statement =
            connection.prepareStatement(ITEM_ATTACHMENT_GET)) {
       statement.setBytes(1, attachmentIdBytes(id));
-      statement.setBytes(2, itemIdBytes(itemId));
       try (var result = statement.executeQuery()) {
         if (result.next()) {
           return Optional.of(itemAttachmentFromResultWithoutData(result));
@@ -1194,11 +1191,7 @@ public final class CADatabaseModelQueries
       this.itemCheck(connection, attachment.itemId());
 
       final var existing =
-        itemAttachmentGetInner(
-          connection,
-          attachment.id(),
-          attachment.itemId(),
-          false);
+        itemAttachmentGetInner(connection, attachment.id(), false);
 
       if (existing.isPresent()) {
         itemAttachmentPutUpdate(connection, attachment, data);
@@ -1225,19 +1218,14 @@ public final class CADatabaseModelQueries
 
   @Override
   public Optional<CAItemAttachment> itemAttachmentGet(
-    final CAItemID item,
     final CAItemAttachmentID id,
     final boolean withData)
     throws CADatabaseException
   {
-    Objects.requireNonNull(item, "item");
     Objects.requireNonNull(id, "id");
 
     return this.withSQLConnection(
-      connection -> {
-        this.itemCheck(connection, item);
-        return itemAttachmentGetInner(connection, id, item, withData);
-      });
+      connection -> itemAttachmentGetInner(connection, id, withData));
   }
 
   @Override

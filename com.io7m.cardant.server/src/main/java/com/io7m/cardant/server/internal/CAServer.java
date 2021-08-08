@@ -24,6 +24,8 @@ import com.io7m.cardant.server.api.CAServerDatabaseConfigurationType;
 import com.io7m.cardant.server.api.CAServerDatabaseLocalConfiguration;
 import com.io7m.cardant.server.api.CAServerDatabaseRemoteConfiguration;
 import com.io7m.cardant.server.api.CAServerType;
+import com.io7m.cardant.server.internal.metrics.CAServerMetrics;
+import com.io7m.cardant.server.internal.metrics.CAServerMetricsBean;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
@@ -120,7 +122,7 @@ public final class CAServer implements CAServerType
       );
 
     final var jetty =
-      CAJettyServer.create(configuration.http(), commandEvents, database);
+      CAJettyServer.create(configuration, commandEvents, database);
     resources.add(jetty);
 
     final var server =

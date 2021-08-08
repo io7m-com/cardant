@@ -21,6 +21,7 @@ import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
@@ -41,6 +42,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseErrorDetail;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
+import com.io7m.cardant.server.api.CAServerConfigurationLimits;
 import com.io7m.cardant.server.internal.CAServerMessages;
 import com.io7m.cardant.server.internal.rest.CAServerCommandExecuted;
 import com.io7m.cardant.server.internal.rest.CAServerCommandFailed;
@@ -59,8 +61,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.SubmissionPublisher;
 
+import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
+
 /**
- * Construct a command servlet.
+ * A command servlet.
  */
 
 public final class CA1CommandServlet
@@ -70,6 +74,7 @@ public final class CA1CommandServlet
     LoggerFactory.getLogger(CA1CommandServlet.class);
 
   private final SubmissionPublisher<CAServerEventType> events;
+  private final CAServerConfigurationLimits limits;
   private CADatabaseTransactionType transaction;
   private HttpServletResponse response;
   private CAModelCADatabaseQueriesType queries;
@@ -82,17 +87,20 @@ public final class CA1CommandServlet
    * @param inSerializers The serializers
    * @param inDatabase    The database
    * @param inMessages    The server string resources
+   * @param inLimits      The server limits
    */
 
   public CA1CommandServlet(
     final SubmissionPublisher<CAServerEventType> inEvents,
     final CA1InventoryMessageParserFactoryType inParsers,
     final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAServerConfigurationLimits inLimits,
     final CAServerMessages inMessages,
     final CADatabaseType inDatabase)
   {
     super(inEvents, inParsers, inSerializers, inMessages, inDatabase);
     this.events = Objects.requireNonNull(inEvents, "inEvents");
+    this.limits = Objects.requireNonNull(inLimits, "limits");
   }
 
   @Override
@@ -148,9 +156,7 @@ public final class CA1CommandServlet
             msgResponse
           );
       }
-    } catch (final CADatabaseException e) {
-      this.sendError(500, e.getMessage());
-    } catch (final SerializeException | IOException e) {
+    } catch (final CADatabaseException | SerializeException | IOException e) {
       this.sendError(500, e.getMessage());
     }
   }
@@ -275,7 +281,31 @@ public final class CA1CommandServlet
     final CA1CommandItemAttachmentPut itemAttachmentPut)
   {
     try {
-      this.queries.itemAttachmentPut(itemAttachmentPut.attachment());
+      final var attachment =
+        itemAttachmentPut.attachment();
+      final var sizeLimitOpt =
+        this.limits.itemAttachmentMaximumSizeOctets();
+
+      if (sizeLimitOpt.isPresent()) {
+        final var sizeLimit =
+          sizeLimitOpt.getAsLong();
+
+        final var data =
+          attachment.data()
+            .orElseThrow(() -> new CADatabaseException(
+              ERROR_PARAMETERS_INVALID,
+              this.messages().format("errorAttachmentMissingData"))
+            );
+
+        if (exceedsSizeLimit(sizeLimit, data)) {
+          throw new CADatabaseException(
+            ERROR_PARAMETERS_INVALID,
+            this.messages().format("errorAttachmentTooLarge")
+          );
+        }
+      }
+
+      this.queries.itemAttachmentPut(attachment);
       return new CA1ResponseOK(Optional.empty());
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {
@@ -286,6 +316,16 @@ public final class CA1CommandServlet
         default -> new CA1ResponseError(500, e.getMessage(), List.of());
       };
     }
+  }
+
+  private static boolean exceedsSizeLimit(
+    final long sizeLimit,
+    final CAByteArray data)
+  {
+    final var sizeReceived =
+      Integer.toUnsignedLong(data.data().length);
+
+    return Long.compareUnsigned(sizeReceived, sizeLimit) > 0;
   }
 
   private CA1InventoryResponseType executeCommandTagsDelete(

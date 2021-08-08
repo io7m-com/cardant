@@ -23,22 +23,26 @@ import java.util.Objects;
  *
  * @param http     Configuration information for the internal HTTP server
  * @param database Configuration information for the database
+ * @param limits   Configuration information regarding server limits
  */
 
 public record CAServerConfiguration(
   CAServerHTTPConfiguration http,
-  CAServerDatabaseConfigurationType database)
+  CAServerDatabaseConfigurationType database,
+  CAServerConfigurationLimits limits)
 {
   /**
    * A server configuration.
    *
    * @param http     Configuration information for the internal HTTP server
    * @param database Configuration information for the database
+   * @param limits   Configuration information regarding server limits
    */
 
   public CAServerConfiguration
   {
     Objects.requireNonNull(http, "http");
     Objects.requireNonNull(database, "database");
+    Objects.requireNonNull(limits, "limits");
   }
 }

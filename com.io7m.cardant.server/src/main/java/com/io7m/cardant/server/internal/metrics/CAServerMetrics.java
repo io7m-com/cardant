@@ -14,7 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.internal;
+package com.io7m.cardant.server.internal.metrics;
 
 import com.io7m.cardant.database.api.CADatabaseEventTransactionCommitted;
 import com.io7m.cardant.database.api.CADatabaseEventTransactionCreated;

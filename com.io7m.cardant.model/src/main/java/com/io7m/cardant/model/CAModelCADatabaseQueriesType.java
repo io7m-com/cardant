@@ -255,19 +255,17 @@ public interface CAModelCADatabaseQueriesType extends CADatabaseQueriesType
     throws CADatabaseException;
 
   /**
-   * Retrieve the attachments associated with an item.
+   * Retrieve the attachment with the given ID.
    *
-   * @param item     The item
    * @param id       The attachment ID
    * @param withData {@code true} if the attachment data should be retrieved
    *
-   * @return The attachments
+   * @return The attachment
    *
    * @throws CADatabaseException On database errors
    */
 
   Optional<CAItemAttachment> itemAttachmentGet(
-    CAItemID item,
     CAItemAttachmentID id,
     boolean withData)
     throws CADatabaseException;

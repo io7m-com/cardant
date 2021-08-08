@@ -14,11 +14,12 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.internal;
+package com.io7m.cardant.server.internal.configurations;
 
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerDatabaseLocalConfiguration;
 import com.io7m.cardant.server.api.CAServerDatabaseRemoteConfiguration;
+import com.io7m.cardant.server.internal.CASchemas;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -31,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.OptionalLong;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -94,9 +96,33 @@ public final class CAConfigurationSerializer
       this.start();
       this.serializeDatabase();
       this.serializeHTTP();
+      this.serializeLimits();
       this.finish();
     } catch (final XMLStreamException | TransformerException e) {
       throw new IOException(e);
+    }
+  }
+
+  private void serializeLimits()
+    throws XMLStreamException
+  {
+    final var limits = this.configuration.limits();
+    this.writer.writeStartElement(CONFIG_NAMESPACE, "Limits");
+    this.writeLimitOptional(
+      limits.itemAttachmentMaximumSizeOctets(),
+      "itemAttachmentMaximumSizeOctets"
+    );
+    this.writer.writeEndElement();
+  }
+
+  private void writeLimitOptional(
+    final OptionalLong option,
+    final String name)
+    throws XMLStreamException
+  {
+    if (option.isPresent()) {
+      final var limit = option.getAsLong();
+      this.writer.writeAttribute(name, Long.toUnsignedString(limit));
     }
   }
 

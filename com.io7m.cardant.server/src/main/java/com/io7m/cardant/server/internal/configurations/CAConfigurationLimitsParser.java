@@ -14,39 +14,34 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.internal;
+package com.io7m.cardant.server.internal.configurations;
 
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
-import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
+import com.io7m.cardant.server.api.CAServerConfigurationLimits;
 import org.xml.sax.Attributes;
 
-import java.nio.file.FileSystem;
-import java.util.Objects;
+import java.util.OptionalLong;
 
 /**
  * A parser.
  */
 
-public final class CAConfigurationHTTPParser
-  implements BTElementHandlerType<Object, CAServerHTTPConfiguration>
+public final class CAConfigurationLimitsParser
+  implements BTElementHandlerType<Object, CAServerConfigurationLimits>
 {
-  private final FileSystem fileSystem;
-  private CAServerHTTPConfiguration result;
+  private CAServerConfigurationLimits limits;
 
   /**
    * Construct a parser.
    *
-   * @param inFileSystem The filesystem
-   * @param context      The parse context
+   * @param context The parse context
    */
 
-  public CAConfigurationHTTPParser(
-    final FileSystem inFileSystem,
+  public CAConfigurationLimitsParser(
     final BTElementParsingContextType context)
   {
-    this.fileSystem =
-      Objects.requireNonNull(inFileSystem, "fileSystem");
+
   }
 
   @Override
@@ -54,16 +49,21 @@ public final class CAConfigurationHTTPParser
     final BTElementParsingContextType context,
     final Attributes attributes)
   {
-    this.result = new CAServerHTTPConfiguration(
-      Integer.parseInt(attributes.getValue("port")),
-      this.fileSystem.getPath(attributes.getValue("sessionDirectory"))
-    );
+    this.limits = CAServerConfigurationLimits.create();
+
+    final var text =
+      attributes.getValue("itemAttachmentMaximumSizeOctets");
+    if (text != null) {
+      this.limits = new CAServerConfigurationLimits(
+        OptionalLong.of(Long.parseUnsignedLong(text))
+      );
+    }
   }
 
   @Override
-  public CAServerHTTPConfiguration onElementFinished(
+  public CAServerConfigurationLimits onElementFinished(
     final BTElementParsingContextType context)
   {
-    return this.result;
+    return this.limits;
   }
 }

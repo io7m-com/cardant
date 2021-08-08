@@ -618,17 +618,7 @@ public final class CADerbyDatabaseTest
       }
 
       final var attachment0WithoutData =
-        new CAItemAttachment(
-          attachmentID,
-          item0,
-          "Item description 2",
-          "text/plain",
-          "nothing",
-          7L,
-          "SHA-256",
-          "aa838baa048b2ca558d671b30f8c0a2ef7eeec70502a6fffccaefa837da07661",
-          Optional.empty()
-        );
+        attachment0p.withoutData();
 
       {
         final var attachments = queries.itemAttachments(item0, false);
@@ -640,14 +630,14 @@ public final class CADerbyDatabaseTest
 
       {
         final var attachment =
-          queries.itemAttachmentGet(item0, attachment0p.id(), true)
+          queries.itemAttachmentGet(attachment0p.id(), true)
             .orElseThrow();
         assertEquals(attachment0p, attachment);
       }
 
       {
         final var attachment =
-          queries.itemAttachmentGet(item0, attachment0p.id(), false)
+          queries.itemAttachmentGet(attachment0p.id(), false)
             .orElseThrow();
         assertEquals(attachment0WithoutData, attachment);
       }

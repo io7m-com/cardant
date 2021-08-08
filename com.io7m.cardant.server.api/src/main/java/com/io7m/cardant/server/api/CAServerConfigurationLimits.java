@@ -14,53 +14,41 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.internal;
+package com.io7m.cardant.server.api;
 
-import javax.management.MXBean;
+import java.util.Objects;
+import java.util.OptionalLong;
 
 /**
- * The type of server metrics.
+ * Server-imposed limits.
+ *
+ * @param itemAttachmentMaximumSizeOctets The maximum size in bytes of an attachment
  */
 
-// CHECKSTYLE:OFF
-@MXBean
-public interface CAServerMetricsMXBean
+public record CAServerConfigurationLimits(
+  OptionalLong itemAttachmentMaximumSizeOctets)
 {
-  // CHECKSTYLE:ON
-
   /**
-   * @return The number of database transactions that have been created
+   * Server-imposed limits.
+   *
+   * @param itemAttachmentMaximumSizeOctets The maximum size in bytes of an attachment
    */
 
-  long getDatabaseTransactionsCreated();
+  public CAServerConfigurationLimits
+  {
+    Objects.requireNonNull(
+      itemAttachmentMaximumSizeOctets,
+      "itemAttachmentMaximumSizeOctets");
+  }
 
   /**
-   * @return The number of database transactions that have been committed
+   * @return A configuration using the default settings
    */
 
-  long getDatabaseTransactionsCommitted();
-
-  /**
-   * @return The number of server commands that have been executed
-   */
-
-  long getServerCommandsExecuted();
-
-  /**
-   * @return The number of server commands that failed to execute
-   */
-
-  long getServerCommandsFailed();
-
-  /**
-   * @return The number of server logins that failed
-   */
-
-  long getServerLoginsFailed();
-
-  /**
-   * @return The number of server logins that succeeded
-   */
-
-  long getServerLoginsSuceeded();
+  public static CAServerConfigurationLimits create()
+  {
+    return new CAServerConfigurationLimits(
+      OptionalLong.of(1_000_000L)
+    );
+  }
 }

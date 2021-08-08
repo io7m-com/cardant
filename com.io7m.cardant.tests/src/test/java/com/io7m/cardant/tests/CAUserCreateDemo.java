@@ -28,6 +28,7 @@ import com.io7m.cardant.server.api.CAServerDatabaseLocalConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.ServiceLoader;
@@ -56,7 +57,8 @@ public final class CAUserCreateDemo
         .orElseThrow();
 
     final CAServerConfiguration configuration =
-      configurations.parseFile(configurationFile);
+      configurations.parseFileWithContext(
+        FileSystems.getDefault(), configurationFile);
 
     final var databaseLocalConfiguration =
       (CAServerDatabaseLocalConfiguration) configuration.database();

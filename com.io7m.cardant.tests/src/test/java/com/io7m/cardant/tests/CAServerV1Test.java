@@ -46,6 +46,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
 import com.io7m.cardant.server.CAServers;
 import com.io7m.cardant.server.api.CAServerConfiguration;
+import com.io7m.cardant.server.api.CAServerConfigurationLimits;
 import com.io7m.cardant.server.api.CAServerDatabaseLocalConfiguration;
 import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 import com.io7m.cardant.server.api.CAServerType;
@@ -69,6 +70,7 @@ import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -114,7 +116,10 @@ public final class CAServerV1Test
     final var serverConfiguration =
       new CAServerConfiguration(
         new CAServerHTTPConfiguration(10000, this.sessionDirectory),
-        new CAServerDatabaseLocalConfiguration(this.databaseDirectory, true)
+        new CAServerDatabaseLocalConfiguration(this.databaseDirectory, true),
+        new CAServerConfigurationLimits(
+          OptionalLong.of(100L)
+        )
       );
 
     this.servers =
@@ -770,6 +775,77 @@ public final class CAServerV1Test
 
       assertEquals(200, response.statusCode());
       assertEquals(Optional.of(new CAItems(Set.of(itemWith))), message.data());
+    }
+  }
+
+  /**
+   * Exceeding the attachment size limit produces an error.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemsCreateAttachmentTooLarge()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var item0 = CAItem.create();
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemCreate(
+            item0.id(),
+            item0.name(),
+            item0.count()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    final var itemAttachment =
+      new CAItemAttachment(
+        CAItemAttachmentID.random(),
+        item0.id(),
+        "An attachment.",
+        "text/plain",
+        "Datasheet",
+        256,
+        "SHA-256",
+        "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+        Optional.of(new CAByteArray(new byte[256]))
+      );
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemAttachmentPut(itemAttachment));
+
+      final var message =
+        (CA1ResponseError) this.parse(response);
+
+      assertEquals(400, response.statusCode());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemList());
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(new CAItems(Set.of(item0))), message.data());
     }
   }
 

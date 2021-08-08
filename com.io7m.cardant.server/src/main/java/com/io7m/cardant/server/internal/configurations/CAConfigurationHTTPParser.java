@@ -14,32 +14,39 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.internal;
+package com.io7m.cardant.server.internal.configurations;
 
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
-import com.io7m.cardant.server.api.CAServerDatabaseRemoteConfiguration;
+import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 import org.xml.sax.Attributes;
+
+import java.nio.file.FileSystem;
+import java.util.Objects;
 
 /**
  * A parser.
  */
 
-public final class CADatabaseRemoteParser
-  implements BTElementHandlerType<Object, CAServerDatabaseRemoteConfiguration>
+public final class CAConfigurationHTTPParser
+  implements BTElementHandlerType<Object, CAServerHTTPConfiguration>
 {
-  private CAServerDatabaseRemoteConfiguration result;
+  private final FileSystem fileSystem;
+  private CAServerHTTPConfiguration result;
 
   /**
    * Construct a parser.
    *
-   * @param context The parse context
+   * @param inFileSystem The filesystem
+   * @param context      The parse context
    */
 
-  public CADatabaseRemoteParser(
+  public CAConfigurationHTTPParser(
+    final FileSystem inFileSystem,
     final BTElementParsingContextType context)
   {
-
+    this.fileSystem =
+      Objects.requireNonNull(inFileSystem, "fileSystem");
   }
 
   @Override
@@ -47,14 +54,14 @@ public final class CADatabaseRemoteParser
     final BTElementParsingContextType context,
     final Attributes attributes)
   {
-    this.result = new CAServerDatabaseRemoteConfiguration(
-      attributes.getValue("host"),
-      Integer.parseInt(attributes.getValue("port"))
+    this.result = new CAServerHTTPConfiguration(
+      Integer.parseInt(attributes.getValue("port")),
+      this.fileSystem.getPath(attributes.getValue("sessionDirectory"))
     );
   }
 
   @Override
-  public CAServerDatabaseRemoteConfiguration onElementFinished(
+  public CAServerHTTPConfiguration onElementFinished(
     final BTElementParsingContextType context)
   {
     return this.result;

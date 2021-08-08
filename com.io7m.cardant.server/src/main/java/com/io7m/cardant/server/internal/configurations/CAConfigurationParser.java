@@ -14,13 +14,14 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.internal;
+package com.io7m.cardant.server.internal.configurations;
 
 import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.cardant.server.api.CAServerConfiguration;
+import com.io7m.cardant.server.api.CAServerConfigurationLimits;
 import com.io7m.cardant.server.api.CAServerDatabaseConfigurationType;
 import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 
@@ -40,6 +41,7 @@ public final class CAConfigurationParser
   private final FileSystem fileSystem;
   private CAServerDatabaseConfigurationType database;
   private CAServerHTTPConfiguration http;
+  private CAServerConfigurationLimits limits;
 
   /**
    * Construct a parser.
@@ -54,6 +56,8 @@ public final class CAConfigurationParser
   {
     this.fileSystem =
       Objects.requireNonNull(inFileSystem, "fileSystem");
+    this.limits =
+      CAServerConfigurationLimits.create();
   }
 
   @Override
@@ -72,6 +76,10 @@ public final class CAConfigurationParser
       Map.entry(
         element1("HTTP"),
         c -> new CAConfigurationHTTPParser(this.fileSystem, c)
+      ),
+      Map.entry(
+        element1("Limits"),
+        CAConfigurationLimitsParser::new
       )
     );
   }
@@ -90,12 +98,16 @@ public final class CAConfigurationParser
       this.http = received;
       return;
     }
+    if (result instanceof CAServerConfigurationLimits received) {
+      this.limits = received;
+      return;
+    }
   }
 
   @Override
   public CAServerConfiguration onElementFinished(
     final BTElementParsingContextType context)
   {
-    return new CAServerConfiguration(this.http, this.database);
+    return new CAServerConfiguration(this.http, this.database, this.limits);
   }
 }

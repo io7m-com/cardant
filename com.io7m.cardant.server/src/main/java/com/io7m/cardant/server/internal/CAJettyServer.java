@@ -19,8 +19,10 @@ package com.io7m.cardant.server.internal;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
+import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
+import com.io7m.cardant.server.internal.rest.v1.CA1AttachmentServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1CommandServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1LoginServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1ServletHolder;
@@ -68,7 +70,7 @@ public final class CAJettyServer implements Closeable
    */
 
   public static CAJettyServer create(
-    final CAServerHTTPConfiguration configuration,
+    final CAServerConfiguration configuration,
     final SubmissionPublisher<CAServerEventType> serverEvents,
     final CADatabaseType database)
     throws IOException
@@ -86,7 +88,9 @@ public final class CAJettyServer implements Closeable
 
     final var server = new Server();
     final var serverConnector = new ServerConnector(server);
-    serverConnector.setPort(configuration.port());
+
+    final var httpConfiguration = configuration.http();
+    serverConnector.setPort(httpConfiguration.port());
     server.addConnector(serverConnector);
 
     /*
@@ -113,11 +117,25 @@ public final class CAJettyServer implements Closeable
           serverEvents,
           inventoryParsers,
           inventorySerializers,
+          configuration.limits(),
           messages,
           database
         );
       }),
       "/v1/command"
+    );
+    servlets.addServlet(
+      new CA1ServletHolder<>(
+        CA1AttachmentServlet.class, () -> {
+        return new CA1AttachmentServlet(
+          serverEvents,
+          inventoryParsers,
+          inventorySerializers,
+          messages,
+          database
+        );
+      }),
+      "/v1/attachment"
     );
 
     /*
@@ -129,7 +147,7 @@ public final class CAJettyServer implements Closeable
     final var sessionHandler = new SessionHandler();
 
     final var sessionStore = new FileSessionDataStore();
-    sessionStore.setStoreDir(configuration.sessionDirectory().toFile());
+    sessionStore.setStoreDir(httpConfiguration.sessionDirectory().toFile());
 
     final var sessionCache = new DefaultSessionCache(sessionHandler);
     sessionCache.setSessionDataStore(sessionStore);
