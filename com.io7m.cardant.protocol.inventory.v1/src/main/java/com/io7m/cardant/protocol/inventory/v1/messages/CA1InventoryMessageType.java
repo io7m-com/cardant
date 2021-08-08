@@ -14,37 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
-
-import com.io7m.cardant.model.CAItemID;
-
-import java.util.Objects;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
 /**
- * The "create item" command.
- *
- * @param id    The item ID
- * @param name  The item name
- * @param count The item count
+ * The type of authentication messages.
  */
 
-public record CA1CommandItemCreate(
-  CAItemID id,
-  String name,
-  long count
-) implements CA1InventoryCommandType
+public sealed interface CA1InventoryMessageType
+  permits CA1InventoryCommandType, CA1InventoryResponseType,
+  CA1InventoryTransaction
 {
-  /**
-   * The "create item" command.
-   *
-   * @param id    The item ID
-   * @param name  The item name
-   * @param count The item count
-   */
 
-  public CA1CommandItemCreate
-  {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(name, "name");
-  }
 }

@@ -14,35 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.internal;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
-import com.io7m.blackthorne.api.BTElementHandlerType;
-import com.io7m.blackthorne.api.BTElementParsingContextType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
+import com.io7m.cardant.model.CAInventoryElementType;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
- * A parser.
+ * The successful response message.
+ *
+ * @param data The data
  */
 
-public final class CA1CommandItemListParser
-  implements BTElementHandlerType<Object, CA1CommandItemList>
+public record CA1ResponseOK(
+  Optional<CAInventoryElementType> data
+) implements CA1InventoryResponseType
 {
   /**
-   * Create a parser.
+   * Construct a message.
    *
-   * @param context The parsing context
+   * @param data The data
    */
 
-  public CA1CommandItemListParser(
-    final BTElementParsingContextType context)
+  public CA1ResponseOK
   {
-
-  }
-
-  @Override
-  public CA1CommandItemList onElementFinished(
-    final BTElementParsingContextType context)
-  {
-    return new CA1CommandItemList();
+    Objects.requireNonNull(data, "data");
   }
 }

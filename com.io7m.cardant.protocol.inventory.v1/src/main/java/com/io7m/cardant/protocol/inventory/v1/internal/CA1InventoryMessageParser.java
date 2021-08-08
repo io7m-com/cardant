@@ -25,7 +25,7 @@ import com.io7m.blackthorne.api.BTParseErrorType;
 import com.io7m.blackthorne.jxe.BlackthorneJXE;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventorySchemas;
 import com.io7m.jxe.core.JXEXInclude;
 

@@ -14,29 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
-import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.model.CAItemID;
 
 import java.util.Objects;
 
 /**
- * The "put tags" command.
+ * The "create item" command.
  *
- * @param tags The tags
+ * @param id    The item ID
+ * @param name  The item name
+ * @param count The item count
  */
 
-public record CA1CommandTagsPut(CATags tags)
-  implements CA1InventoryCommandType
+public record CA1CommandItemCreate(
+  CAItemID id,
+  String name,
+  long count
+) implements CA1InventoryCommandType
 {
   /**
-   * The "put tags" command.
+   * The "create item" command.
    *
-   * @param tags The tags
+   * @param id    The item ID
+   * @param name  The item name
+   * @param count The item count
    */
 
-  public CA1CommandTagsPut
+  public CA1CommandItemCreate
   {
-    Objects.requireNonNull(tags, "tags");
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(name, "name");
   }
 }

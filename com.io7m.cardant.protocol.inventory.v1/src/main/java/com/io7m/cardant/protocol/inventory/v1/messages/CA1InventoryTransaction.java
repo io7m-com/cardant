@@ -14,14 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
+package com.io7m.cardant.protocol.inventory.v1.messages;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
- * The "list items" command.
+ * An inventory transaction.
+ *
+ * @param commands The commands within the transaction
  */
 
-public record CA1CommandItemList()
-  implements CA1InventoryCommandType
+public record CA1InventoryTransaction(List<CA1InventoryCommandType> commands)
+  implements CA1InventoryMessageType
 {
+  /**
+   * An inventory transaction.
+   *
+   * @param commands The commands within the transaction
+   */
 
+  public CA1InventoryTransaction
+  {
+    Objects.requireNonNull(commands, "commands");
+  }
 }

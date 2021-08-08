@@ -18,7 +18,7 @@ package com.io7m.cardant.server.internal.rest.v1;
 
 import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.CA1ResponseError;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

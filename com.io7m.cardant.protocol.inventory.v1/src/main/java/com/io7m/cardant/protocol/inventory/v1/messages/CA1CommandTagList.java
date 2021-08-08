@@ -14,15 +14,14 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
 /**
- * The type of authentication messages.
+ * The "list tags" command.
  */
 
-public sealed interface CA1InventoryMessageType
-  permits CA1InventoryCommandType, CA1InventoryResponseType,
-  CA1InventoryTransaction
+public record CA1CommandTagList()
+  implements CA1InventoryCommandType
 {
 
 }

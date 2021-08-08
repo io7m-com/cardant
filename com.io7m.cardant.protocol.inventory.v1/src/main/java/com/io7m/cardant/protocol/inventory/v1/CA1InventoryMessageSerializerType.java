@@ -17,6 +17,7 @@
 package com.io7m.cardant.protocol.inventory.v1;
 
 import com.io7m.anethum.api.SerializerType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 
 /**
  * A serializer for V1 inventory messages.

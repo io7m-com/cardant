@@ -24,7 +24,7 @@ import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.xml.CAInventoryParsers;
 import com.io7m.cardant.model.xml.CAInventorySchemas;
-import com.io7m.cardant.protocol.inventory.v1.CA1CommandTagsDelete;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
 
 import java.util.Map;
 import java.util.TreeSet;

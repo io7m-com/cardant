@@ -20,9 +20,9 @@ import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryCommandType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryTransaction;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
 
 import java.util.ArrayList;
 import java.util.Map;

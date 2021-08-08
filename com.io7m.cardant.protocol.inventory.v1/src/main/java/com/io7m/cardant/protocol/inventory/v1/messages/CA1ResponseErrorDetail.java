@@ -14,29 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
-
-import com.io7m.cardant.model.CATags;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
 import java.util.Objects;
 
 /**
- * The "delete tags" command.
+ * Extra detail for an error response.
  *
- * @param tags The tags
+ * @param message The message
  */
 
-public record CA1CommandTagsDelete(CATags tags)
-  implements CA1InventoryCommandType
+public record CA1ResponseErrorDetail(
+  String message
+)
 {
   /**
-   * The "delete tags" command.
+   * Construct a message.
    *
-   * @param tags The tags
+   * @param message The message
    */
 
-  public CA1CommandTagsDelete
+  public CA1ResponseErrorDetail
   {
-    Objects.requireNonNull(tags, "tags");
+    Objects.requireNonNull(message, "message");
   }
 }

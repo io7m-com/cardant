@@ -14,31 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
-
-import com.io7m.cardant.model.CAInventoryElementType;
-
-import java.util.Objects;
-import java.util.Optional;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
 /**
- * The successful response message.
- *
- * @param data The data
+ * The base type of inventory responses.
  */
 
-public record CA1ResponseOK(
-  Optional<CAInventoryElementType> data
-) implements CA1InventoryResponseType
+public sealed interface CA1InventoryResponseType
+  extends CA1InventoryMessageType
+  permits CA1ResponseError, CA1ResponseOK
 {
-  /**
-   * Construct a message.
-   *
-   * @param data The data
-   */
 
-  public CA1ResponseOK
-  {
-    Objects.requireNonNull(data, "data");
-  }
 }

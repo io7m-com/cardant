@@ -14,36 +14,29 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
-import java.util.List;
+import com.io7m.cardant.model.CATags;
+
 import java.util.Objects;
 
 /**
- * The failure response message.
+ * The "put tags" command.
  *
- * @param status  The status code
- * @param message The message
- * @param details The error details, if any
+ * @param tags The tags
  */
 
-public record CA1ResponseError(
-  int status,
-  String message,
-  List<CA1ResponseErrorDetail> details
-) implements CA1InventoryResponseType
+public record CA1CommandTagsPut(CATags tags)
+  implements CA1InventoryCommandType
 {
   /**
-   * Construct a message.
+   * The "put tags" command.
    *
-   * @param status  The status code
-   * @param message The message
-   * @param details The error details, if any
+   * @param tags The tags
    */
 
-  public CA1ResponseError
+  public CA1CommandTagsPut
   {
-    Objects.requireNonNull(message, "message");
-    Objects.requireNonNull(details, "details");
+    Objects.requireNonNull(tags, "tags");
   }
 }

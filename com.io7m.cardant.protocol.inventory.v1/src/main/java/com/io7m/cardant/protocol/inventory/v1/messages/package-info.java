@@ -14,14 +14,13 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
-
 /**
- * The "list tags" command.
+ * Inventory system (V1 Authentication Protocol [Messages]).
  */
 
-public record CA1CommandTagList()
-  implements CA1InventoryCommandType
-{
+@Export
+@Version("1.0.0")
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
-}
+import org.osgi.annotation.bundle.Export;
+import org.osgi.annotation.versioning.Version;

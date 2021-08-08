@@ -14,28 +14,32 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
- * An inventory transaction.
+ * The "login using username and password" message.
  *
- * @param commands The commands within the transaction
+ * @param user     The username
+ * @param password The password
  */
 
-public record CA1InventoryTransaction(List<CA1InventoryCommandType> commands)
-  implements CA1InventoryMessageType
+public record CA1CommandLoginUsernamePassword(
+  String user,
+  String password
+) implements CA1InventoryCommandType
 {
   /**
-   * An inventory transaction.
+   * Construct a message.
    *
-   * @param commands The commands within the transaction
+   * @param user     The username
+   * @param password The password
    */
 
-  public CA1InventoryTransaction
+  public CA1CommandLoginUsernamePassword
   {
-    Objects.requireNonNull(commands, "commands");
+    Objects.requireNonNull(user, "user");
+    Objects.requireNonNull(password, "password");
   }
 }

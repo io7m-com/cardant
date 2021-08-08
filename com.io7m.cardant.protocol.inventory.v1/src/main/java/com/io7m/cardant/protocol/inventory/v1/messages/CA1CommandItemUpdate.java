@@ -14,15 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
+package com.io7m.cardant.protocol.inventory.v1.messages;
+
+import com.io7m.cardant.model.CAItemID;
+
+import java.util.Objects;
 
 /**
- * The base type of inventory responses.
+ * The "update item" command.
+ *
+ * @param id    The item ID
+ * @param count The item count
+ * @param name  The item name
  */
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits CA1ResponseError, CA1ResponseOK
+public record CA1CommandItemUpdate(
+  CAItemID id,
+  String name,
+  long count
+) implements CA1InventoryCommandType
 {
+  /**
+   * The "update item" command.
+   *
+   * @param id    The item ID
+   * @param count The item count
+   * @param name  The item name
+   */
 
+  public CA1CommandItemUpdate
+  {
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(name, "name");
+  }
 }

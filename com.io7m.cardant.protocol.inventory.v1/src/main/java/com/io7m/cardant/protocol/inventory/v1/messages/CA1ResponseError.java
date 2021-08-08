@@ -14,21 +14,36 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1;
+package com.io7m.cardant.protocol.inventory.v1.messages;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
- * The base type of V1 inventory protocol messages.
+ * The failure response message.
+ *
+ * @param status  The status code
+ * @param message The message
+ * @param details The error details, if any
  */
 
-public sealed interface CA1InventoryCommandType
-  extends CA1InventoryMessageType
-  permits CA1CommandItemCreate,
-  CA1CommandItemList,
-  CA1CommandItemUpdate,
-  CA1CommandLoginUsernamePassword,
-  CA1CommandTagList,
-  CA1CommandTagsDelete,
-  CA1CommandTagsPut
+public record CA1ResponseError(
+  int status,
+  String message,
+  List<CA1ResponseErrorDetail> details
+) implements CA1InventoryResponseType
 {
+  /**
+   * Construct a message.
+   *
+   * @param status  The status code
+   * @param message The message
+   * @param details The error details, if any
+   */
 
+  public CA1ResponseError
+  {
+    Objects.requireNonNull(message, "message");
+    Objects.requireNonNull(details, "details");
+  }
 }

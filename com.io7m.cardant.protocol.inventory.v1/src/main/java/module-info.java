@@ -47,4 +47,5 @@ module com.io7m.cardant.protocol.inventory.v1
     with CA1InventoryMessageParsers;
 
   exports com.io7m.cardant.protocol.inventory.v1;
+  exports com.io7m.cardant.protocol.inventory.v1.messages;
 }

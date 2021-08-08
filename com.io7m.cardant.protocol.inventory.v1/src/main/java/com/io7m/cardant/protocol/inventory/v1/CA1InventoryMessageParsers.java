@@ -30,6 +30,9 @@ import com.io7m.cardant.protocol.inventory.v1.internal.CA1InventoryMessageParser
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1ResponseErrorParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1ResponseOKParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1TransactionParser;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryResponseType;
 
 import java.io.InputStream;
 import java.net.URI;

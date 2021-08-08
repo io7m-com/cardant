@@ -22,7 +22,7 @@ import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.xml.CAInventoryParsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1ResponseOK;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
 import org.xml.sax.Attributes;
 
 import java.util.Map;

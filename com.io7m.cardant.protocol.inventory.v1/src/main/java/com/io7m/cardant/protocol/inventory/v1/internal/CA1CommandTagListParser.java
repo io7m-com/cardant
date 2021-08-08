@@ -18,7 +18,7 @@ package com.io7m.cardant.protocol.inventory.v1.internal;
 
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
-import com.io7m.cardant.protocol.inventory.v1.CA1CommandTagList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
 
 /**
  * A parser.

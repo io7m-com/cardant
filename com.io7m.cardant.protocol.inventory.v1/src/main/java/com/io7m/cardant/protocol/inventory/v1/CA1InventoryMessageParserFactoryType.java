@@ -17,6 +17,7 @@
 package com.io7m.cardant.protocol.inventory.v1;
 
 import com.io7m.anethum.api.ParserFactoryType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 
 /**
  * A factory of parsers for V1 inventory messages.
