@@ -12,10 +12,6 @@
       </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:unique name="APINamesUnique">
-      <xsd:selector xpath="v:API/v:Version"/>
-      <xsd:field xpath="@name"/>
-    </xsd:unique>
     <xsd:unique name="APIBaseURIsUnique">
       <xsd:selector xpath="v:API/v:Version"/>
       <xsd:field xpath="@baseURI"/>
