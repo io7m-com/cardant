@@ -16,24 +16,28 @@
 
 package com.io7m.cardant.protocol.inventory.v1.messages;
 
+import com.io7m.cardant.model.CAItemAttachmentID;
+
+import java.util.Objects;
+
 /**
- * The base type of V1 inventory protocol messages.
+ * The "remove item attachment" command.
+ *
+ * @param attachment The item attachment
  */
 
-public sealed interface CA1InventoryCommandType
-  extends CA1InventoryMessageType
-  permits CA1CommandItemAttachmentPut,
-  CA1CommandItemAttachmentRemove,
-  CA1CommandItemCreate,
-  CA1CommandItemList,
-  CA1CommandItemMetadataPut,
-  CA1CommandItemMetadataRemove,
-  CA1CommandItemRemove,
-  CA1CommandItemUpdate,
-  CA1CommandLoginUsernamePassword,
-  CA1CommandTagList,
-  CA1CommandTagsDelete,
-  CA1CommandTagsPut
+public record CA1CommandItemAttachmentRemove(
+  CAItemAttachmentID attachment
+) implements CA1InventoryCommandType
 {
+  /**
+   * The "remove item attachment" command.
+   *
+   * @param attachment The item attachment
+   */
 
+  public CA1CommandItemAttachmentRemove
+  {
+    Objects.requireNonNull(attachment, "attachment");
+  }
 }

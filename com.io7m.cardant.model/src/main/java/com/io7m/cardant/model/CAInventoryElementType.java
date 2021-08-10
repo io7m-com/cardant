@@ -21,13 +21,13 @@ package com.io7m.cardant.model;
  */
 
 public sealed interface CAInventoryElementType
-  permits
-  CAItem,
+  permits CAItem,
+  CAItemAttachment,
+  CAItemMetadata,
+  CAItemMetadatas,
   CAItems,
   CATag,
-  CATags,
-  CAItemAttachment,
-  CAItemMetadata
+  CATags
 {
 
 }

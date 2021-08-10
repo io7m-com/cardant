@@ -106,6 +106,20 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="CommandItemRemove">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to remove an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="iv1:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="CommandItemList">
     <xsd:annotation>
       <xsd:documentation>
@@ -124,6 +138,56 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="iv1:ItemAttachment"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="item"
+                     type="iv1:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandItemAttachmentRemove">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to remove an item attachment.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="attachment"
+                     type="iv1:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandItemMetadataPut">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to put item metadata.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:ItemMetadatas"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="item"
+                     type="iv1:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandItemMetadataRemove">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to remove item metadata.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:ItemMetadatas"/>
       </xsd:sequence>
 
       <xsd:attribute name="item"
@@ -220,8 +284,12 @@
 
     <xsd:choice>
       <xsd:element ref="ip1:CommandItemAttachmentPut"/>
+      <xsd:element ref="ip1:CommandItemAttachmentRemove"/>
       <xsd:element ref="ip1:CommandItemCreate"/>
       <xsd:element ref="ip1:CommandItemList"/>
+      <xsd:element ref="ip1:CommandItemMetadataPut"/>
+      <xsd:element ref="ip1:CommandItemMetadataRemove"/>
+      <xsd:element ref="ip1:CommandItemRemove"/>
       <xsd:element ref="ip1:CommandItemUpdate"/>
       <xsd:element ref="ip1:CommandLoginUsernamePassword"/>
       <xsd:element ref="ip1:CommandTagList"/>

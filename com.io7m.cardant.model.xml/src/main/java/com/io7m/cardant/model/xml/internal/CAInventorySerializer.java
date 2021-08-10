@@ -22,6 +22,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemMetadatas;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
@@ -115,6 +116,18 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     writer.writeEndElement();
   }
 
+  private void serializeItemMetadata(
+    final XMLStreamWriter writer,
+    final CAItemMetadata value)
+    throws XMLStreamException
+  {
+    writer.writeStartElement(NAMESPACE, "ItemMetadata");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("name", value.name());
+    writer.writeCharacters(value.value());
+    writer.writeEndElement();
+  }
+
   private void serializeItemAttachments(
     final XMLStreamWriter writer,
     final SortedMap<CAItemAttachmentID, CAItemAttachment> attachments)
@@ -135,6 +148,11 @@ public final class CAInventorySerializer implements CAInventorySerializerType
   {
     writer.writeStartElement(NAMESPACE, "ItemMetadatas");
     this.writeNamespaceIfRequired(writer, NAMESPACE);
+
+    for (final var entry : metadata.entrySet()) {
+      this.serializeItemMetadata(writer, entry.getValue());
+    }
+
     writer.writeEndElement();
   }
 
@@ -225,8 +243,12 @@ public final class CAInventorySerializer implements CAInventorySerializerType
         this.serializeItem(writer, item);
       } else if (value instanceof CAItemAttachment itemAttachment) {
         this.serializeItemAttachment(writer, itemAttachment);
+      } else if (value instanceof CAItemMetadata itemMetadata) {
+        this.serializeItemMetadata(writer, itemMetadata);
+      } else if (value instanceof CAItemMetadatas itemMetadatas) {
+        this.serializeItemMetadatas(writer, itemMetadatas.metadatas());
       } else {
-        throw new IllegalStateException();
+        throw new IllegalStateException("Unrecognized message: " + value);
       }
 
       this.finish(writer);

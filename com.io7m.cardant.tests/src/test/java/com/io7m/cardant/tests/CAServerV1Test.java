@@ -24,6 +24,8 @@ import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemMetadatas;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
 import com.io7m.cardant.model.CATag;
@@ -33,8 +35,12 @@ import com.io7m.cardant.model.CAUsers;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
@@ -493,6 +499,28 @@ public final class CAServerV1Test
       assertEquals(200, response.statusCode());
       assertEquals(Optional.of(new CAItems(Set.of(item1))), message.data());
     }
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemRemove(item0.id()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemList());
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(new CAItems(Set.of())), message.data());
+    }
   }
 
   /**
@@ -577,6 +605,94 @@ public final class CAServerV1Test
             item0.id(),
             item0.name(),
             item0.count()));
+      final var message =
+        (CA1ResponseError) this.parse(response);
+
+      assertEquals(400, response.statusCode());
+    }
+  }
+
+  /**
+   * Updating metadata for a nonexistent item fails.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemsUpdateMetadataNonexistent()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var item0 = CAItem.create();
+
+    final var metadata = new TreeMap<String, CAItemMetadata>();
+    final var meta0 = new CAItemMetadata(item0.id(), "A", "0");
+    metadata.put(meta0.name(), meta0);
+    final var meta1 = new CAItemMetadata(item0.id(), "B", "1");
+    metadata.put(meta1.name(), meta1);
+    final var meta2 = new CAItemMetadata(item0.id(), "C", "2");
+    metadata.put(meta2.name(), meta2);
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemMetadataPut(
+            item0.id(),
+            new CAItemMetadatas(metadata)));
+      final var message =
+        (CA1ResponseError) this.parse(response);
+
+      assertEquals(400, response.statusCode());
+    }
+  }
+
+  /**
+   * Removing metadata for a nonexistent item fails.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemsRemoveMetadataNonexistent()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var item0 = CAItem.create();
+
+    final var metadata = new TreeMap<String, CAItemMetadata>();
+    final var meta0 = new CAItemMetadata(item0.id(), "A", "0");
+    metadata.put(meta0.name(), meta0);
+    final var meta1 = new CAItemMetadata(item0.id(), "B", "1");
+    metadata.put(meta1.name(), meta1);
+    final var meta2 = new CAItemMetadata(item0.id(), "C", "2");
+    metadata.put(meta2.name(), meta2);
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemMetadataRemove(
+            item0.id(),
+            new CAItemMetadatas(metadata)));
       final var message =
         (CA1ResponseError) this.parse(response);
 
@@ -693,7 +809,7 @@ public final class CAServerV1Test
   }
 
   /**
-   * Adding and updating attachments works.
+   * Adding, updating, and removing attachments works.
    *
    * @throws Exception On errors
    */
@@ -776,6 +892,27 @@ public final class CAServerV1Test
       assertEquals(200, response.statusCode());
       assertEquals(Optional.of(new CAItems(Set.of(itemWith))), message.data());
     }
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemAttachmentRemove(itemAttachment.id()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemList());
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(new CAItems(Set.of(item0))), message.data());
+    }
   }
 
   /**
@@ -846,6 +983,125 @@ public final class CAServerV1Test
 
       assertEquals(200, response.statusCode());
       assertEquals(Optional.of(new CAItems(Set.of(item0))), message.data());
+    }
+  }
+
+  /**
+   * Adding, updating, and removing metadatas works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemsCreateMetadata()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var item0 = CAItem.create();
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemCreate(
+            item0.id(),
+            item0.name(),
+            item0.count()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    final var metadata = new TreeMap<String, CAItemMetadata>();
+    final var meta0 = new CAItemMetadata(item0.id(), "A", "0");
+    metadata.put(meta0.name(), meta0);
+    final var meta1 = new CAItemMetadata(item0.id(), "B", "1");
+    metadata.put(meta1.name(), meta1);
+    final var meta2 = new CAItemMetadata(item0.id(), "C", "2");
+    metadata.put(meta2.name(), meta2);
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemMetadataPut(
+            item0.id(),
+            new CAItemMetadatas(metadata)));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+    }
+
+    final var itemWith =
+      new CAItem(
+        item0.id(),
+        item0.name(),
+        item0.count(),
+        metadata,
+        item0.attachments(),
+        item0.tags()
+      );
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemList());
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(new CAItems(Set.of(itemWith))), message.data());
+    }
+
+    final var metadataRemove = new TreeMap<String, CAItemMetadata>();
+    metadataRemove.put(meta1.name(), meta1);
+    metadataRemove.put(meta2.name(), meta2);
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemMetadataRemove(
+            item0.id(),
+            new CAItemMetadatas(metadataRemove)));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+    }
+
+    final var metadataRemoved = new TreeMap<String, CAItemMetadata>();
+    metadataRemoved.put(meta0.name(), meta0);
+
+    final var itemWithRemoved =
+      new CAItem(
+        item0.id(),
+        item0.name(),
+        item0.count(),
+        metadataRemoved,
+        item0.attachments(),
+        item0.tags()
+      );
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemList());
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(new CAItems(Set.of(itemWithRemoved))), message.data());
     }
   }
 

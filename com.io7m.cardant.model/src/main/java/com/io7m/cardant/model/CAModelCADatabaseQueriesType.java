@@ -271,6 +271,18 @@ public interface CAModelCADatabaseQueriesType extends CADatabaseQueriesType
     throws CADatabaseException;
 
   /**
+   * Remove the attachment with the given ID.
+   *
+   * @param id The attachment ID
+   *
+   * @throws CADatabaseException On database errors
+   */
+
+  void itemAttachmentRemove(
+    CAItemAttachmentID id)
+    throws CADatabaseException;
+
+  /**
    * Create or update the given user.
    *
    * @param user The user

@@ -29,9 +29,9 @@ import com.io7m.cardant.server.api.CAServerConfigurationParserFactoryType;
 import com.io7m.cardant.server.api.CAServerConfigurationParserType;
 import com.io7m.cardant.server.api.CAServerConfigurationSerializerFactoryType;
 import com.io7m.cardant.server.api.CAServerConfigurationSerializerType;
+import com.io7m.cardant.server.internal.CASchemas;
 import com.io7m.cardant.server.internal.configurations.CAConfigurationParser;
 import com.io7m.cardant.server.internal.configurations.CAConfigurationSerializer;
-import com.io7m.cardant.server.internal.CASchemas;
 import com.io7m.jxe.core.JXEXInclude;
 
 import javax.xml.stream.XMLOutputFactory;

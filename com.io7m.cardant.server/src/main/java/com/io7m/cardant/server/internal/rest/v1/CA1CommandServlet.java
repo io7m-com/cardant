@@ -29,8 +29,12 @@ import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
@@ -267,14 +271,70 @@ public final class CA1CommandServlet
     if (command instanceof CA1CommandItemUpdate itemUpdate) {
       return this.executeCommandItemUpdate(itemUpdate);
     }
+    if (command instanceof CA1CommandItemRemove itemRemove) {
+      return this.executeCommandItemRemove(itemRemove);
+    }
     if (command instanceof CA1CommandItemList) {
       return this.executeCommandItemList();
     }
     if (command instanceof CA1CommandItemAttachmentPut itemAttachmentPut) {
       return this.executeCommandItemAttachmentPut(itemAttachmentPut);
     }
+    if (command instanceof CA1CommandItemAttachmentRemove itemAttachmentRemove) {
+      return this.executeCommandItemAttachmentRemove(itemAttachmentRemove);
+    }
+    if (command instanceof CA1CommandItemMetadataPut itemMetadataPut) {
+      return this.executeCommandItemMetadataPut(itemMetadataPut);
+    }
+    if (command instanceof CA1CommandItemMetadataRemove itemMetadataRemove) {
+      return this.executeCommandItemMetadataRemove(itemMetadataRemove);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CA1InventoryResponseType executeCommandItemMetadataPut(
+    final CA1CommandItemMetadataPut itemMetadataPut)
+  {
+    try {
+      final var metadatas =
+        itemMetadataPut.metadatas().metadatas();
+
+      for (final var metadata : metadatas.values()) {
+        this.queries.itemMetadataPut(metadata);
+      }
+      return new CA1ResponseOK(Optional.empty());
+    } catch (final CADatabaseException e) {
+      return switch (e.errorCode()) {
+        case ERROR_NONEXISTENT, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
+          400,
+          e.getMessage(),
+          List.of());
+        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+      };
+    }
+  }
+
+  private CA1InventoryResponseType executeCommandItemMetadataRemove(
+    final CA1CommandItemMetadataRemove itemMetadataRemove)
+  {
+    try {
+      final var metadatas =
+        itemMetadataRemove.metadatas().metadatas();
+
+      for (final var metadata : metadatas.values()) {
+        this.queries.itemMetadataRemove(metadata);
+      }
+      return new CA1ResponseOK(Optional.empty());
+    } catch (final CADatabaseException e) {
+      return switch (e.errorCode()) {
+        case ERROR_NONEXISTENT, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
+          400,
+          e.getMessage(),
+          List.of());
+        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+      };
+    }
   }
 
   private CA1InventoryResponseType executeCommandItemAttachmentPut(
@@ -315,6 +375,17 @@ public final class CA1CommandServlet
           List.of());
         default -> new CA1ResponseError(500, e.getMessage(), List.of());
       };
+    }
+  }
+
+  private CA1InventoryResponseType executeCommandItemAttachmentRemove(
+    final CA1CommandItemAttachmentRemove itemAttachmentRemove)
+  {
+    try {
+      this.queries.itemAttachmentRemove(itemAttachmentRemove.attachment());
+      return new CA1ResponseOK(Optional.empty());
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
     }
   }
 
@@ -396,6 +467,18 @@ public final class CA1CommandServlet
           List.of());
         default -> new CA1ResponseError(500, e.getMessage(), List.of());
       };
+    }
+  }
+
+  private CA1InventoryResponseType executeCommandItemRemove(
+    final CA1CommandItemRemove itemRemove)
+  {
+    try {
+      final var itemId = itemRemove.id();
+      this.queries.itemDelete(itemId);
+      return new CA1ResponseOK(Optional.empty());
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
     }
   }
 

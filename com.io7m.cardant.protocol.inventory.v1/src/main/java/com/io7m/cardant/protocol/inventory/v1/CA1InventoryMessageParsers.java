@@ -20,8 +20,12 @@ import com.io7m.anethum.common.ParseStatus;
 import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemAttachmentPutParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemAttachmentRemoveParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemCreateParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemListParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataPutParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataRemoveParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemRemoveParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemUpdateParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandLoginUsernamePasswordParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandTagListParser;
@@ -140,8 +144,24 @@ public final class CA1InventoryMessageParsers
         CA1CommandItemUpdateParser::new
       ),
       Map.entry(
+        element1("CommandItemRemove"),
+        CA1CommandItemRemoveParser::new
+      ),
+      Map.entry(
         element1("CommandItemAttachmentPut"),
         CA1CommandItemAttachmentPutParser::new
+      ),
+      Map.entry(
+        element1("CommandItemAttachmentRemove"),
+        CA1CommandItemAttachmentRemoveParser::new
+      ),
+      Map.entry(
+        element1("CommandItemMetadataPut"),
+        CA1CommandItemMetadataPutParser::new
+      ),
+      Map.entry(
+        element1("CommandItemMetadataRemove"),
+        CA1CommandItemMetadataRemoveParser::new
       ),
       Map.entry(
         element1("CommandItemList"),

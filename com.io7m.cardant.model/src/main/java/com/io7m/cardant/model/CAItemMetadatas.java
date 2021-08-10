@@ -26,6 +26,7 @@ import java.util.SortedMap;
  */
 
 public record CAItemMetadatas(SortedMap<String, CAItemMetadata> metadatas)
+  implements CAInventoryElementType
 {
   /**
    * A set of metadata values for an item.

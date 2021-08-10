@@ -21,8 +21,12 @@ import com.io7m.cardant.model.xml.CAInventorySerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventorySchemas;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
@@ -228,6 +232,16 @@ public final class CA1InventoryMessageSerializer
     writer.writeAttribute("count", String.valueOf(itemUpdate.count()));
   }
 
+  private void writeCommandItemRemove(
+    final XMLStreamWriter writer,
+    final CA1CommandItemRemove itemRemove)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(PROTO_NAMESPACE, "CommandItemRemove");
+    this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
+    writer.writeAttribute("id", itemRemove.id().id().toString());
+  }
+
   private void writeCommandItemAttachmentPut(
     final XMLStreamWriter writer,
     final CA1CommandItemAttachmentPut itemAttachmentPut)
@@ -250,6 +264,66 @@ public final class CA1InventoryMessageSerializer
     }
 
     writer.writeEndElement();
+  }
+
+  private void writeCommandItemMetadataPut(
+    final XMLStreamWriter writer,
+    final CA1CommandItemMetadataPut itemMetadataPut)
+    throws XMLStreamException, IOException, SerializeException
+  {
+    writer.writeStartElement(PROTO_NAMESPACE, "CommandItemMetadataPut");
+    this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
+    writer.writeAttribute(
+      "item",
+      itemMetadataPut.itemID().id().toString());
+    writer.writeCharacters("\n");
+    writer.flush();
+    this.stream.flush();
+
+    try (var subOutput = CloseShieldOutputStream.wrap(this.stream)) {
+      this.serializers.serialize(
+        this.target,
+        subOutput,
+        itemMetadataPut.metadatas());
+    }
+
+    writer.writeEndElement();
+  }
+
+  private void writeCommandItemMetadataRemove(
+    final XMLStreamWriter writer,
+    final CA1CommandItemMetadataRemove itemMetadataRemove)
+    throws XMLStreamException, IOException, SerializeException
+  {
+    writer.writeStartElement(PROTO_NAMESPACE, "CommandItemMetadataRemove");
+    this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
+    writer.writeAttribute(
+      "item",
+      itemMetadataRemove.itemID().id().toString());
+    writer.writeCharacters("\n");
+    writer.flush();
+    this.stream.flush();
+
+    try (var subOutput = CloseShieldOutputStream.wrap(this.stream)) {
+      this.serializers.serialize(
+        this.target,
+        subOutput,
+        itemMetadataRemove.metadatas());
+    }
+
+    writer.writeEndElement();
+  }
+
+  private void writeCommandItemAttachmentRemove(
+    final XMLStreamWriter writer,
+    final CA1CommandItemAttachmentRemove itemAttachmentRemove)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(PROTO_NAMESPACE, "CommandItemAttachmentRemove");
+    this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
+    writer.writeAttribute(
+      "attachment",
+      itemAttachmentRemove.attachment().id().toString());
   }
 
   private void writeTransaction(
@@ -284,8 +358,16 @@ public final class CA1InventoryMessageSerializer
       this.writeCommandItemCreate(writer, itemCreate);
     } else if (command instanceof CA1CommandItemUpdate itemUpdate) {
       this.writeCommandItemUpdate(writer, itemUpdate);
+    } else if (command instanceof CA1CommandItemRemove itemRemove) {
+      this.writeCommandItemRemove(writer, itemRemove);
     } else if (command instanceof CA1CommandItemAttachmentPut itemAttachmentPut) {
       this.writeCommandItemAttachmentPut(writer, itemAttachmentPut);
+    } else if (command instanceof CA1CommandItemMetadataPut itemMetadataPut) {
+      this.writeCommandItemMetadataPut(writer, itemMetadataPut);
+    } else if (command instanceof CA1CommandItemMetadataRemove itemMetadataRemove) {
+      this.writeCommandItemMetadataRemove(writer, itemMetadataRemove);
+    } else if (command instanceof CA1CommandItemAttachmentRemove itemAttachmentRemove) {
+      this.writeCommandItemAttachmentRemove(writer, itemAttachmentRemove);
     } else {
       throw new IllegalStateException("Unexpected command: " + command);
     }

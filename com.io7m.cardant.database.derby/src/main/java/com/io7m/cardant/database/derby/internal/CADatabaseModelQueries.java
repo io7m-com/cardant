@@ -237,6 +237,11 @@ public final class CADatabaseModelQueries
       WHERE attachment_item_id = ?
     """;
 
+  private static final String ITEM_ATTACHMENT_REMOVE = """
+    DELETE FROM cardant.item_attachments
+      WHERE attachment_id = ?
+    """;
+
   private static final String USER_GET = """
     SELECT
       u.user_id,
@@ -749,6 +754,17 @@ public final class CADatabaseModelQueries
     }
   }
 
+  private static void itemAttachmentRemoveInner(
+    final Connection connection,
+    final CAItemAttachmentID id)
+    throws SQLException
+  {
+    try (var statement = connection.prepareStatement(ITEM_ATTACHMENT_REMOVE)) {
+      statement.setBytes(1, uuidBytes(id.id()));
+      statement.executeUpdate();
+    }
+  }
+
   private CADatabaseException duplicateItem(
     final CAItemID id)
   {
@@ -1226,6 +1242,19 @@ public final class CADatabaseModelQueries
 
     return this.withSQLConnection(
       connection -> itemAttachmentGetInner(connection, id, withData));
+  }
+
+  @Override
+  public void itemAttachmentRemove(
+    final CAItemAttachmentID id)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(id, "id");
+
+    this.withSQLConnection(connection -> {
+      itemAttachmentRemoveInner(connection, id);
+      return null;
+    });
   }
 
   @Override
