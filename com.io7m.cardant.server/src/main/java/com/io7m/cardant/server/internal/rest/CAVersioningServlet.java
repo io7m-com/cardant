@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Objects;
 
+import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantVersioningXML;
+
 /**
  * An API versioning advertiser.
  */
@@ -89,6 +91,8 @@ public final class CAVersioningServlet extends HttpServlet
     this.clientURI = makeClientURI(request);
 
     try {
+      servletResponse.setContentType(applicationCardantVersioningXML());
+
       try (var outputStream = servletResponse.getOutputStream()) {
         this.serializers.serialize(
           this.clientURI,

@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.SubmissionPublisher;
 
+import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
+
 /**
  * The type of servlets that require authentication.
  */
@@ -178,6 +180,7 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
   {
     try {
       this.response.setStatus(status);
+      this.response.setContentType(applicationCardantXML());
       this.serializers.serialize(
         this.clientURI(),
         this.response.getOutputStream(),

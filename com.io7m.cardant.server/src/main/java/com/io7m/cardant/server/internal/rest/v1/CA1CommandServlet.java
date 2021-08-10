@@ -66,6 +66,7 @@ import java.util.Optional;
 import java.util.concurrent.SubmissionPublisher;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
+import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
 
 /**
  * A command servlet.
@@ -141,6 +142,7 @@ public final class CA1CommandServlet
       if (msgResponse instanceof CA1ResponseOK) {
         this.transaction.commit();
         this.response.setStatus(200);
+        this.response.setContentType(applicationCardantXML());
         this.serializers()
           .serialize(
             this.clientURI(),
@@ -153,6 +155,7 @@ public final class CA1CommandServlet
       if (msgResponse instanceof CA1ResponseError error) {
         this.transaction.rollback();
         this.response.setStatus(error.status());
+        this.response.setContentType(applicationCardantXML());
         this.serializers()
           .serialize(
             this.clientURI(),

@@ -46,6 +46,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.SubmissionPublisher;
 
+import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
+
 /**
  * A servlet that performs authentication.
  */
@@ -113,11 +115,13 @@ public final class CA1LoginServlet extends HttpServlet
     final CA1InventoryMessageType message)
     throws IOException, SerializeException
   {
+    response.setContentType(applicationCardantXML());
     try (var output = response.getOutputStream()) {
       this.serializers.serialize(URI.create("urn:output"), output, message);
       output.flush();
     }
   }
+
 
   @Override
   protected void service(
