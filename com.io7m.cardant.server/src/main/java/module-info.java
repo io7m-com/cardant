@@ -36,19 +36,20 @@ module com.io7m.cardant.server
 
   requires com.io7m.blackthorne.api;
   requires com.io7m.blackthorne.jxe;
+  requires com.io7m.cardant.model.xml;
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.protocol.inventory.v1;
+  requires com.io7m.cardant.protocol.versioning;
   requires com.io7m.jlexing.core;
   requires com.io7m.jmulticlose.core;
   requires com.io7m.jxe.core;
+  requires com.io7m.jxtrand.vanilla;
   requires java.management;
   requires java.xml;
   requires org.eclipse.jetty.jmx;
   requires org.eclipse.jetty.server;
   requires org.eclipse.jetty.servlet;
   requires org.slf4j;
-  requires com.io7m.cardant.model.xml;
-  requires com.io7m.jxtrand.vanilla;
 
   provides CAServerFactoryType
     with CAServers;

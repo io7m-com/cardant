@@ -30,6 +30,7 @@
     <module>com.io7m.cardant.server.api</module>
     <module>com.io7m.cardant.server</module>
     <module>com.io7m.cardant.tests</module>
+    <module>com.io7m.cardant.protocol.versioning</module>
   </modules>
 
   <properties>

@@ -19,8 +19,13 @@ package com.io7m.cardant.server.internal;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
+import com.io7m.cardant.protocol.versioning.CAVersioningMessageSerializers;
+import com.io7m.cardant.protocol.versioning.messages.CAAPI;
+import com.io7m.cardant.protocol.versioning.messages.CAVersion;
+import com.io7m.cardant.protocol.versioning.messages.CAVersioningAPIVersioning;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
+import com.io7m.cardant.server.internal.rest.CAVersioningServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1AttachmentServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1CommandServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1LoginServlet;
@@ -40,8 +45,11 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.SubmissionPublisher;
 
 /**
@@ -86,6 +94,19 @@ public final class CAJettyServer implements Closeable
       new CA1InventoryMessageParsers();
     final var messages =
       new CAServerMessages(Locale.getDefault());
+    final var versioningSerializers =
+      new CAVersioningMessageSerializers();
+
+    final var versioningAll =
+      CAVersioningAPIVersioning.of(
+        CAAPI.of(
+          new CAVersion(
+            "urn:com.io7m.cardant.inventory.protocol:1",
+            "/v1",
+            1L
+          )
+        )
+      );
 
     final var server = new Server();
 
@@ -112,6 +133,14 @@ public final class CAJettyServer implements Closeable
     final var servlets = new ServletContextHandler();
     servlets.addServlet(
       new CA1ServletHolder<>(
+        CAVersioningServlet.class,
+        () -> new CAVersioningServlet(versioningSerializers, versioningAll)
+      ),
+      "/"
+    );
+
+    servlets.addServlet(
+      new CA1ServletHolder<>(
         CA1LoginServlet.class, () -> {
         return new CA1LoginServlet(
           serverEvents,
@@ -122,6 +151,7 @@ public final class CAJettyServer implements Closeable
       }),
       "/v1/login"
     );
+
     servlets.addServlet(
       new CA1ServletHolder<>(
         CA1CommandServlet.class, () -> {
@@ -136,6 +166,7 @@ public final class CAJettyServer implements Closeable
       }),
       "/v1/command"
     );
+
     servlets.addServlet(
       new CA1ServletHolder<>(
         CA1AttachmentServlet.class, () -> {
@@ -186,6 +217,12 @@ public final class CAJettyServer implements Closeable
 
     server.setHandler(statsHandler);
     return new CAJettyServer(server);
+  }
+
+  private static <T extends Comparable<T>> SortedSet<T> setOf(
+    final T... items)
+  {
+    return new TreeSet<>(List.of(items));
   }
 
   /**

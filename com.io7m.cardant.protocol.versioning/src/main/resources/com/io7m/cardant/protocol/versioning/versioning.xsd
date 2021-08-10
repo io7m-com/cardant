@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:v="urn:com.io7m.cardant.server.versioning:1"
+            targetNamespace="urn:com.io7m.cardant.server.versioning:1">
+
+  <xsd:element name="APIVersioning">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1"
+                    maxOccurs="unbounded">
+        <xsd:element ref="v:API"/>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:unique name="APINamesUnique">
+      <xsd:selector xpath="v:API/v:Version"/>
+      <xsd:field xpath="@name"/>
+    </xsd:unique>
+    <xsd:unique name="APIBaseURIsUnique">
+      <xsd:selector xpath="v:API/v:Version"/>
+      <xsd:field xpath="@baseURI"/>
+    </xsd:unique>
+  </xsd:element>
+
+  <xsd:element name="API">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1"
+                    maxOccurs="unbounded">
+        <xsd:element ref="v:Version"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Version">
+    <xsd:complexType>
+      <xsd:attribute name="name"
+                     type="xsd:string"
+                     use="required"/>
+      <xsd:attribute name="baseURI"
+                     type="xsd:anyURI"
+                     use="required"/>
+      <xsd:attribute name="version"
+                     type="xsd:unsignedLong"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>
