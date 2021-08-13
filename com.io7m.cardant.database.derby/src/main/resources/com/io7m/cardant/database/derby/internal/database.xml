@@ -105,6 +105,72 @@ create table cardant.item_metadata (
 ]]></Statement>
 
     <Comment>
+      The locations table contains a list of locations that can contain items.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.locations (
+  location_id           char(16) for bit data not null primary key,
+  location_description  varchar(256)          not null
+)
+]]></Statement>
+
+    <Comment>
+      The item_locations table contains a list of associations between items and locations.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.item_locations (
+  item_location_id       char(16) for bit data not null,
+  item_location_item_id  char(16) for bit data not null,
+  item_location_count    bigint                not null,
+
+  constraint location_exists foreign key (item_location_id)      references cardant.locations (location_id),
+  constraint item_exists     foreign key (item_location_item_id) references cardant.items (item_id),
+  constraint check_location_natural_count check (item_location_count >= 0)
+)
+]]></Statement>
+
+    <Statement><![CDATA[
+create procedure cardant.item_locations_enforce_counts ()
+  language java
+  parameter style java
+  reads sql data
+  external name 'com.io7m.cardant.database.derby.internal.CADerbyItemCounts.checkUpdatedItemCounts'
+]]></Statement>
+
+    <Statement><![CDATA[
+create trigger cardant.item_locations_enforce_counts_update_trigger
+  after update on cardant.item_locations
+    referencing new_table as new_item_locations
+      for each statement
+         call cardant.item_locations_enforce_counts ()
+]]></Statement>
+
+    <Statement><![CDATA[
+create trigger cardant.item_locations_enforce_counts_insert_trigger
+  after insert on cardant.item_locations
+    referencing new_table as new_item_locations
+      for each statement
+         call cardant.item_locations_enforce_counts ()
+]]></Statement>
+
+    <Statement><![CDATA[
+insert into cardant.items (item_id, item_name, item_count)
+  values (X'9ffb24df557543abcbde2d943610e2cd', 'item', 200)
+]]></Statement>
+
+    <Statement><![CDATA[
+insert into cardant.locations (location_id, location_description)
+  values (X'542c8692a858e6a9f84a413a051fc8b2', 'location')
+]]></Statement>
+
+    <Statement><![CDATA[
+insert into cardant.item_locations (item_location_id, item_location_item_id, item_location_count)
+  values (X'542c8692a858e6a9f84a413a051fc8b2', X'9ffb24df557543abcbde2d943610e2cd', 200)
+]]></Statement>
+
+    <Comment>
       The users table contains authentication information for users.
     </Comment>
 
