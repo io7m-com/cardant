@@ -32,6 +32,7 @@ import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.xml.internal.CAInventoryParser;
 import com.io7m.cardant.model.xml.internal.CAItemAttachmentParser;
 import com.io7m.cardant.model.xml.internal.CAItemMetadatasParser;
+import com.io7m.cardant.model.xml.internal.CAItemParser;
 import com.io7m.cardant.model.xml.internal.CAItemRepositAddParser;
 import com.io7m.cardant.model.xml.internal.CAItemRepositMoveParser;
 import com.io7m.cardant.model.xml.internal.CAItemRepositRemoveParser;
@@ -74,6 +75,10 @@ public final class CAInventoryParsers
   private static Map<BTQualifiedName, BTElementHandlerConstructorType<?, CAInventoryElementType>> makeRootElements()
   {
     return Map.ofEntries(
+      Map.entry(
+        element1("Item"),
+        CAItemParser::new
+      ),
       Map.entry(
         element1("Items"),
         CAItemsParser::new

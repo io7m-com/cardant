@@ -43,6 +43,7 @@ import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
@@ -527,6 +528,83 @@ public final class CAServerV1Test
 
       assertEquals(200, response.statusCode());
       assertEquals(Optional.of(new CAItems(Set.of())), message.data());
+    }
+  }
+
+  /**
+   * Adding and retrieving items works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemsCreateGet()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var item0 = CAItem.create();
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemCreate(
+            item0.id(),
+            item0.name()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemGet(item0.id()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(item0), message.data());
+    }
+  }
+
+  /**
+   * Retrieving nonexistent items fails.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemsGetNonexistent()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemGet(CAItemID.random()));
+      final var message =
+        (CA1ResponseError) this.parse(response);
+
+      assertEquals(404, response.statusCode());
     }
   }
 

@@ -32,6 +32,7 @@ import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFacto
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
@@ -68,6 +69,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.function.Function;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
 import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
@@ -305,8 +307,29 @@ public final class CA1CommandServlet
     if (command instanceof CA1CommandItemReposit itemReposit) {
       return this.executeCommandItemReposit(itemReposit);
     }
+    if (command instanceof CA1CommandItemGet itemGet) {
+      return this.executeCommandItemGet(itemGet);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CA1InventoryResponseType executeCommandItemGet(
+    final CA1CommandItemGet itemGet)
+  {
+    try {
+      final var itemOpt = this.queries.itemGet(itemGet.id());
+      if (itemOpt.isEmpty()) {
+        return new CA1ResponseError(
+          404,
+          this.messages().format("errorNoSuchItem"),
+          List.of()
+        );
+      }
+      return new CA1ResponseOK(itemOpt.map(Function.identity()));
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
+    }
   }
 
   private CA1InventoryResponseType executeCommandItemReposit(

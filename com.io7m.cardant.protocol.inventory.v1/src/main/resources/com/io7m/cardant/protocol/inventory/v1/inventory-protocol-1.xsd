@@ -122,6 +122,20 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="CommandItemGet">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to get an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="iv1:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="CommandItemRemove">
     <xsd:annotation>
       <xsd:documentation>
@@ -314,6 +328,7 @@
       <xsd:element ref="ip1:CommandItemAttachmentPut"/>
       <xsd:element ref="ip1:CommandItemAttachmentRemove"/>
       <xsd:element ref="ip1:CommandItemCreate"/>
+      <xsd:element ref="ip1:CommandItemGet"/>
       <xsd:element ref="ip1:CommandItemList"/>
       <xsd:element ref="ip1:CommandItemMetadataPut"/>
       <xsd:element ref="ip1:CommandItemMetadataRemove"/>

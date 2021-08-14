@@ -22,6 +22,7 @@ import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemAttachmentPutParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemAttachmentRemoveParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemCreateParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemGetParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemListParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataPutParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataRemoveParser;
@@ -181,6 +182,10 @@ public final class CA1InventoryMessageParsers
       Map.entry(
         element1("CommandItemReposit"),
         CA1CommandItemRepositParser::new
+      ),
+      Map.entry(
+        element1("CommandItemGet"),
+        CA1CommandItemGetParser::new
       )
     );
   }

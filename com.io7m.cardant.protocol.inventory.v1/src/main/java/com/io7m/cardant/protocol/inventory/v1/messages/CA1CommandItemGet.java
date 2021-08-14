@@ -16,28 +16,27 @@
 
 package com.io7m.cardant.protocol.inventory.v1.messages;
 
+import com.io7m.cardant.model.CAItemID;
+
+import java.util.Objects;
+
 /**
- * The base type of V1 inventory protocol messages.
+ * The "get item" command.
+ *
+ * @param id The item ID
  */
 
-public sealed interface CA1InventoryCommandType
-  extends CA1InventoryMessageType
-  permits CA1CommandItemAttachmentPut,
-  CA1CommandItemAttachmentRemove,
-  CA1CommandItemCreate,
-  CA1CommandItemGet,
-  CA1CommandItemList,
-  CA1CommandItemMetadataPut,
-  CA1CommandItemMetadataRemove,
-  CA1CommandItemRemove,
-  CA1CommandItemReposit,
-  CA1CommandItemUpdate,
-  CA1CommandLocationList,
-  CA1CommandLocationPut,
-  CA1CommandLoginUsernamePassword,
-  CA1CommandTagList,
-  CA1CommandTagsDelete,
-  CA1CommandTagsPut
+public record CA1CommandItemGet(CAItemID id)
+  implements CA1InventoryCommandType
 {
+  /**
+   * The "get item" command.
+   *
+   * @param id The item ID
+   */
 
+  public CA1CommandItemGet
+  {
+    Objects.requireNonNull(id, "id");
+  }
 }

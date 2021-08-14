@@ -1050,6 +1050,11 @@ public final class CADerbyDatabaseTest
           queries.itemGet(item0.id()).orElseThrow();
         assertEquals(0L, itemUpdated.count());
       }
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0.id());
+      this.expectedUpdates.add(location.id());
+      transaction.commit();
     });
   }
 
@@ -1211,6 +1216,12 @@ public final class CADerbyDatabaseTest
           queries.itemGet(item0.id()).orElseThrow();
         assertEquals(100L, itemUpdated.count());
       }
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0.id());
+      this.expectedUpdates.add(location0.id());
+      this.expectedUpdates.add(location1.id());
+      transaction.commit();
     });
   }
 }
