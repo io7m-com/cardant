@@ -17,7 +17,7 @@
 package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesUsersType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesUsersType;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 
@@ -35,9 +35,8 @@ import java.util.Optional;
 
 public final class CADatabaseModelQueriesUsers
   extends CADatabaseModelQueriesAbstract
-  implements CAModelCADatabaseQueriesUsersType
+  implements CAModelDatabaseQueriesUsersType
 {
-
   private static final String USER_GET = """
     SELECT
       u.user_id,
@@ -183,6 +182,8 @@ public final class CADatabaseModelQueriesUsers
       } else {
         userPutInsert(connection, user);
       }
+
+      this.publishUpdate(user.id());
       return null;
     });
   }

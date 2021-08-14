@@ -14,14 +14,33 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
+package com.io7m.cardant.model;
+
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * A database event.
+ * Data in the model database was updated.
+ *
+ * @param updated The objects that were updated
+ * @param removed The items that were removed
  */
 
-public sealed interface CADatabaseEventType
-  permits CADatabaseEventDataType, CADatabaseEventTransactionType
+public record CAModelDatabaseEventUpdated(
+  Set<CAIdType> updated,
+  Set<CAIdType> removed)
+  implements CAModelDatabaseEventType
 {
+  /**
+   * Data in the model database was updated.
+   *
+   * @param updated The objects that were updated
+   * @param removed The items that were removed
+   */
 
+  public CAModelDatabaseEventUpdated
+  {
+    Objects.requireNonNull(updated, "updated");
+    Objects.requireNonNull(removed, "removed");
+  }
 }

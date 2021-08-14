@@ -14,14 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
+package com.io7m.cardant.model;
+
+import com.io7m.cardant.database.api.CADatabaseEventDataType;
 
 /**
- * A database event.
+ * The type of model database events.
  */
 
-public sealed interface CADatabaseEventType
-  permits CADatabaseEventDataType, CADatabaseEventTransactionType
+public sealed interface CAModelDatabaseEventType
+  extends CADatabaseEventDataType
+  permits CAModelDatabaseEventUpdated
 {
 
 }

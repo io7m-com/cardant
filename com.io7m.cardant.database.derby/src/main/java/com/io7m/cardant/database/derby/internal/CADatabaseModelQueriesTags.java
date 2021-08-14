@@ -17,8 +17,9 @@
 package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesTagsType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesTagsType;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,7 +29,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_DUPLICATE;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
@@ -40,7 +40,7 @@ import static com.io7m.cardant.database.derby.internal.CADerbyConstants.LANG_DUP
 
 public final class CADatabaseModelQueriesTags extends
   CADatabaseModelQueriesAbstract
-  implements CAModelCADatabaseQueriesTagsType
+  implements CAModelDatabaseQueriesTagsType
 {
   private static final String TAG_INSERT = """
     INSERT INTO cardant.tags (tag_id, tag_name) 
@@ -87,7 +87,7 @@ public final class CADatabaseModelQueriesTags extends
     throws SQLException
   {
     try (var statement = connection.prepareStatement(TAG_INSERT)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(tag.id()));
+      statement.setBytes(1, CADatabaseBytes.tagIdBytes(tag.id()));
       statement.setString(2, tag.name());
       statement.executeUpdate();
     }
@@ -100,7 +100,7 @@ public final class CADatabaseModelQueriesTags extends
   {
     try (var statement = connection.prepareStatement(TAG_UPDATE)) {
       statement.setString(1, tag.name());
-      statement.setBytes(2, CADatabaseBytes.uuidBytes(tag.id()));
+      statement.setBytes(2, CADatabaseBytes.tagIdBytes(tag.id()));
       statement.executeUpdate();
     }
   }
@@ -110,18 +110,18 @@ public final class CADatabaseModelQueriesTags extends
     throws SQLException
   {
     return new CATag(
-      CADatabaseBytes.uuidFromBytes(result.getBytes("tag_id")),
+      CADatabaseBytes.tagIdFromBytes(result.getBytes("tag_id")),
       result.getString("tag_name")
     );
   }
 
   private static Optional<CATag> tagGetInner(
     final Connection connection,
-    final UUID id)
+    final CATagID id)
     throws SQLException
   {
     try (var statement = connection.prepareStatement(TAG_GET)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(id));
+      statement.setBytes(1, CADatabaseBytes.tagIdBytes(id));
 
       try (var result = statement.executeQuery()) {
         if (!result.next()) {
@@ -134,11 +134,11 @@ public final class CADatabaseModelQueriesTags extends
 
   void tagCheck(
     final Connection connection,
-    final UUID id)
+    final CATagID id)
     throws SQLException, CADatabaseException
   {
     try (var statement = connection.prepareStatement(TAG_GET)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(id));
+      statement.setBytes(1, CADatabaseBytes.tagIdBytes(id));
 
       try (var result = statement.executeQuery()) {
         if (!result.next()) {
@@ -150,7 +150,7 @@ public final class CADatabaseModelQueriesTags extends
 
   @Override
   public Optional<CATag> tagGet(
-    final UUID id)
+    final CATagID id)
     throws CADatabaseException
   {
     Objects.requireNonNull(id, "id");
@@ -173,6 +173,8 @@ public final class CADatabaseModelQueriesTags extends
         } else {
           tagCreate(connection, tag);
         }
+
+        this.publishUpdate(tag.id());
         return null;
       } catch (final SQLException e) {
         switch (e.getSQLState()) {
@@ -191,7 +193,7 @@ public final class CADatabaseModelQueriesTags extends
     Objects.requireNonNull(tag, "tag");
 
     this.withSQLConnection(connection -> {
-      final var idBytes = CADatabaseBytes.uuidBytes(tag.id());
+      final var idBytes = CADatabaseBytes.tagIdBytes(tag.id());
       try (var statement =
              connection.prepareStatement(ITEM_TAG_REMOVE_ALL_BY_TAG)) {
         statement.setBytes(1, idBytes);
@@ -202,6 +204,8 @@ public final class CADatabaseModelQueriesTags extends
         statement.setBytes(1, idBytes);
         statement.executeUpdate();
       }
+
+      this.publishRemove(tag.id());
       return null;
     });
   }
@@ -235,11 +239,11 @@ public final class CADatabaseModelQueriesTags extends
   }
 
   private CADatabaseException noSuchTag(
-    final UUID id)
+    final CATagID id)
   {
     return new CADatabaseException(
       ERROR_NONEXISTENT,
-      this.messages.format("errorNonexistent", id, "Tag"),
+      this.messages.format("errorNonexistent", id.id(), "Tag"),
       new NoSuchElementException()
     );
   }

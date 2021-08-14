@@ -104,7 +104,7 @@ public final class CAInventoryParsersTest
       assertEquals("Current", tag.name());
       assertEquals(
         "9710ede2-f7f5-4751-a9e2-78d0e7796fd2",
-        tag.id().toString());
+        tag.id().id().toString());
     }
 
     {
@@ -112,7 +112,7 @@ public final class CAInventoryParsersTest
       assertEquals("Automation", tag.name());
       assertEquals(
         "039fe875-ee52-4b83-8a8c-09497d9983af",
-        tag.id().toString());
+        tag.id().id().toString());
     }
 
     {
@@ -120,7 +120,7 @@ public final class CAInventoryParsersTest
       assertEquals("Control", tag.name());
       assertEquals(
         "1f68ddf6-2584-4b3c-a212-5ecf37bb7400",
-        tag.id().toString());
+        tag.id().id().toString());
     }
 
     assertEquals(3, item.tags().size());
@@ -154,19 +154,19 @@ public final class CAInventoryParsersTest
     {
       final var tag = iter.next();
       assertEquals("Current", tag.name());
-      assertEquals("9710ede2-f7f5-4751-a9e2-78d0e7796fd2", tag.id().toString());
+      assertEquals("9710ede2-f7f5-4751-a9e2-78d0e7796fd2", tag.id().id().toString());
     }
 
     {
       final var tag = iter.next();
       assertEquals("Automation", tag.name());
-      assertEquals("039fe875-ee52-4b83-8a8c-09497d9983af", tag.id().toString());
+      assertEquals("039fe875-ee52-4b83-8a8c-09497d9983af", tag.id().id().toString());
     }
 
     {
       final var tag = iter.next();
       assertEquals("Control", tag.name());
-      assertEquals("1f68ddf6-2584-4b3c-a212-5ecf37bb7400", tag.id().toString());
+      assertEquals("1f68ddf6-2584-4b3c-a212-5ecf37bb7400", tag.id().id().toString());
     }
 
     assertEquals(3, tags.tags().size());

@@ -19,7 +19,7 @@ package com.io7m.cardant.tests;
 import com.io7m.cardant.database.api.CADatabaseOpenEvent;
 import com.io7m.cardant.database.api.CADatabaseParameters;
 import com.io7m.cardant.database.derby.CADatabasesDerby;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.CAUsers;
 import com.io7m.cardant.server.api.CAServerConfiguration;
@@ -78,7 +78,7 @@ public final class CAUserCreateDemo
       try (var connection = database.openConnection()) {
         try (var transaction = connection.beginTransaction()) {
           final var queries =
-            transaction.queries(CAModelCADatabaseQueriesType.class);
+            transaction.queries(CAModelDatabaseQueriesType.class);
           queries.userPut(CAUsers.createUser(
             SecureRandom.getInstanceStrong(),
             CAUserID.random(),

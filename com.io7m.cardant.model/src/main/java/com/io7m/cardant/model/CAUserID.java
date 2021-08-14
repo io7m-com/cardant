@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 
 public record CAUserID(UUID id)
-  implements Comparable<CAUserID>
+  implements Comparable<CAUserID>, CAIdType
 {
   /**
    * The unique ID of a user.

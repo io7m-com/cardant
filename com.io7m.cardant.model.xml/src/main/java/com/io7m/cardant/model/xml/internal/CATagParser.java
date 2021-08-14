@@ -19,9 +19,8 @@ package com.io7m.cardant.model.xml.internal;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
 import org.xml.sax.Attributes;
-
-import java.util.UUID;
 
 /**
  * A parser.
@@ -49,7 +48,7 @@ public final class CATagParser implements BTElementHandlerType<Object, CATag>
     final Attributes attributes)
   {
     this.result = new CATag(
-      UUID.fromString(attributes.getValue("id")),
+      CATagID.of(attributes.getValue("id")),
       attributes.getValue("name")
     );
   }

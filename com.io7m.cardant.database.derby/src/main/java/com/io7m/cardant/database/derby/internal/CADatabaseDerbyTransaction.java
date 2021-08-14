@@ -20,13 +20,15 @@ import com.io7m.cardant.database.api.CADatabaseEventTransactionCommitted;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.junreachable.UnimplementedCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * A database transaction.
@@ -40,6 +42,7 @@ public final class CADatabaseDerbyTransaction
 
   private final CADatabaseMessages messages;
   private final CADatabaseDerbyConnection connection;
+  private final HashMap<Class<?>, CADatabaseTransactionListenerType> listeners;
 
   CADatabaseDerbyTransaction(
     final CADatabaseMessages inMessages,
@@ -49,6 +52,8 @@ public final class CADatabaseDerbyTransaction
       Objects.requireNonNull(inMessages, "messages");
     this.connection =
       Objects.requireNonNull(inConnection, "connection");
+    this.listeners =
+      new HashMap<>(1);
   }
 
   @Override
@@ -65,7 +70,9 @@ public final class CADatabaseDerbyTransaction
     try {
       LOG.trace("commit");
       this.connection.sqlConnection().commit();
-      this.connection.database().publishEvent(new CADatabaseEventTransactionCommitted());
+      final var database = this.connection.database();
+      database.publishEvent(new CADatabaseEventTransactionCommitted());
+      this.listeners.values().forEach(listener -> listener.onCommit(this));
     } catch (final SQLException e) {
       throw this.messages.ofSQLException("errorConnectionCommit", e);
     }
@@ -78,9 +85,37 @@ public final class CADatabaseDerbyTransaction
     try {
       LOG.trace("rollback");
       this.connection.sqlConnection().rollback();
+      this.listeners.values().forEach(listener -> listener.onRollback(this));
     } catch (final SQLException e) {
       throw this.messages.ofSQLException("errorConnectionRollback", e);
     }
+  }
+
+  /**
+   * Register a listener, or return an existing one.
+   *
+   * @param clazz        The listener class
+   * @param newListeners The listener constructor
+   * @param <T>          The type of listener
+   *
+   * @return A new or existing listener
+   */
+
+  <T extends CADatabaseTransactionListenerType>
+  T registerListener(
+    final Class<T> clazz,
+    final Supplier<T> newListeners)
+  {
+    Objects.requireNonNull(clazz, "clazz");
+    Objects.requireNonNull(newListeners, "listeners");
+
+    final var listener = this.listeners.get(clazz);
+    if (listener != null) {
+      return (T) listener;
+    }
+    final var newListener = newListeners.get();
+    this.listeners.put(clazz, newListener);
+    return newListener;
   }
 
   /**
@@ -104,9 +139,8 @@ public final class CADatabaseDerbyTransaction
   @Override
   public <P extends CADatabaseQueriesType> P queries(
     final Class<P> queriesClass)
-    throws CADatabaseException
   {
-    if (Objects.equals(queriesClass, CAModelCADatabaseQueriesType.class)) {
+    if (Objects.equals(queriesClass, CAModelDatabaseQueriesType.class)) {
       return (P) new CADatabaseModelQueries(this);
     }
 

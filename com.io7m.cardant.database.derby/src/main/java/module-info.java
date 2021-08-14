@@ -45,4 +45,5 @@ module com.io7m.cardant.database.derby
   provides CADatabaseProviderType with CADatabasesDerby;
 
   exports com.io7m.cardant.database.derby;
+  exports com.io7m.cardant.database.derby.internal;
 }

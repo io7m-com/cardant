@@ -18,7 +18,6 @@ package com.io7m.cardant.model;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.UNICODE_CHARACTER_CLASS;
@@ -31,7 +30,7 @@ import static java.util.regex.Pattern.UNICODE_CHARACTER_CLASS;
  */
 
 public record CATag(
-  UUID id,
+  CATagID id,
   String name
 ) implements CAInventoryElementType, Comparable<CATag>
 {

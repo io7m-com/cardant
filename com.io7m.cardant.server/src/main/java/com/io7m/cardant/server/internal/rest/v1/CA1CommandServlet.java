@@ -25,7 +25,7 @@ import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocations;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
@@ -86,7 +86,7 @@ public final class CA1CommandServlet
   private final CAServerConfigurationLimits limits;
   private CADatabaseTransactionType transaction;
   private HttpServletResponse response;
-  private CAModelCADatabaseQueriesType queries;
+  private CAModelDatabaseQueriesType queries;
 
   /**
    * Construct a command servlet.
@@ -131,7 +131,7 @@ public final class CA1CommandServlet
     final CA1InventoryMessageType message;
     try {
       this.queries =
-        dbTransaction.queries(CAModelCADatabaseQueriesType.class);
+        dbTransaction.queries(CAModelDatabaseQueriesType.class);
       message =
         this.parsers().parse(this.clientURI(), request.getInputStream());
     } catch (final CADatabaseException | ParseException | IOException e) {

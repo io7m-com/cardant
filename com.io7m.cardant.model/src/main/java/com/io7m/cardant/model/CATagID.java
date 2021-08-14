@@ -16,56 +16,72 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.cardant.database.api.CADatabaseException;
-
-import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
- * Model database queries (Users).
+ * The unique ID of a tag.
+ *
+ * @param id The ID value
  */
 
-public interface CAModelCADatabaseQueriesUsersType
+public record CATagID(UUID id)
+  implements Comparable<CATagID>, CAIdType
 {
   /**
-   * Create or update the given user.
+   * The unique ID of a tag.
    *
-   * @param user The user
-   *
-   * @throws CADatabaseException On database errors
+   * @param id The ID value
    */
 
-  void userPut(CAUser user)
-    throws CADatabaseException;
+  public CATagID
+  {
+    Objects.requireNonNull(id, "id");
+  }
 
   /**
-   * @param id The user id
+   * Construct an ID.
    *
-   * @return The user with the given ID
+   * @param id The ID value
    *
-   * @throws CADatabaseException On database errors
+   * @return An ID
    */
 
-  Optional<CAUser> userGet(CAUserID id)
-    throws CADatabaseException;
+  public static CATagID of(
+    final String id)
+  {
+    return new CATagID(UUID.fromString(id));
+  }
 
   /**
-   * @param name The user name
+   * Construct an ID.
    *
-   * @return The user with the given name
+   * @param id The ID value
    *
-   * @throws CADatabaseException On database errors
+   * @return An ID
    */
 
-  Optional<CAUser> userGetByName(String name)
-    throws CADatabaseException;
+  public static CATagID of(
+    final UUID id)
+  {
+    return new CATagID(id);
+  }
 
   /**
-   * @return The list of users in the database
+   * Construct an ID using a pseudorandom value.
    *
-   * @throws CADatabaseException On database errors
+   * @return An ID
    */
 
-  Map<CAUserID, CAUser> userList()
-    throws CADatabaseException;
+  public static CATagID random()
+  {
+    return new CATagID(UUID.randomUUID());
+  }
+
+  @Override
+  public int compareTo(
+    final CATagID other)
+  {
+    return this.id.compareTo(other.id);
+  }
 }

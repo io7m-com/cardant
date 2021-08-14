@@ -27,7 +27,7 @@ import java.util.SortedMap;
  * Model database queries (Items).
  */
 
-public interface CAModelCADatabaseQueriesItemsType
+public interface CAModelDatabaseQueriesItemsType
 {
   /**
    * Retrieve the item with the given ID, if one exists.

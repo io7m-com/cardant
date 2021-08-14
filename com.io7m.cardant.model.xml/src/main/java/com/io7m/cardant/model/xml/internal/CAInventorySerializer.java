@@ -194,7 +194,7 @@ public final class CAInventorySerializer implements CAInventorySerializerType
   {
     writer.writeEmptyElement(NAMESPACE, "Tag");
     this.writeNamespaceIfRequired(writer, NAMESPACE);
-    writer.writeAttribute("id", tag.id().toString());
+    writer.writeAttribute("id", tag.id().id().toString());
     writer.writeAttribute("name", tag.name());
   }
 

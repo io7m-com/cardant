@@ -28,7 +28,7 @@ import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesItemsType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesItemsType;
 import com.io7m.cardant.model.CATag;
 import org.apache.derby.shared.common.error.DerbySQLIntegrityConstraintViolationException;
 
@@ -61,7 +61,7 @@ import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.locationI
 
 public final class CADatabaseModelQueriesItems
   extends CADatabaseModelQueriesAbstract
-  implements CAModelCADatabaseQueriesItemsType
+  implements CAModelDatabaseQueriesItemsType
 {
   private static final String ITEM_CREATE = """
     INSERT INTO cardant.items (item_id, item_name, item_count) 
@@ -385,7 +385,7 @@ public final class CADatabaseModelQueriesItems
     );
   }
 
-  private static Object itemTagRemoveInner(
+  private Object itemTagRemoveInner(
     final Connection connection,
     final CAItemID item,
     final CATag tag)
@@ -393,13 +393,15 @@ public final class CADatabaseModelQueriesItems
   {
     try (var statement = connection.prepareStatement(ITEM_TAG_REMOVE)) {
       statement.setBytes(1, CADatabaseBytes.uuidBytes(item.id()));
-      statement.setBytes(2, CADatabaseBytes.uuidBytes(tag.id()));
+      statement.setBytes(2, CADatabaseBytes.tagIdBytes(tag.id()));
       statement.executeUpdate();
     }
+
+    this.publishUpdate(item);
     return null;
   }
 
-  private static Object itemTagAddInner(
+  private Object itemTagAddInner(
     final Connection connection,
     final CAItemID item,
     final CATag tag)
@@ -407,9 +409,11 @@ public final class CADatabaseModelQueriesItems
   {
     try (var statement = connection.prepareStatement(ITEM_TAG_ADD)) {
       statement.setBytes(1, CADatabaseBytes.uuidBytes(item.id()));
-      statement.setBytes(2, CADatabaseBytes.uuidBytes(tag.id()));
+      statement.setBytes(2, CADatabaseBytes.tagIdBytes(tag.id()));
       statement.executeUpdate();
     }
+
+    this.publishUpdate(item);
     return null;
   }
 
@@ -508,7 +512,7 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private static Object itemMetadataRemoveInner(
+  private Object itemMetadataRemoveInner(
     final Connection connection,
     final CAItemMetadata metadata)
     throws SQLException
@@ -519,6 +523,8 @@ public final class CADatabaseModelQueriesItems
       statement.setString(2, metadata.name());
       statement.executeUpdate();
     }
+
+    this.publishUpdate(metadata.itemId());
     return null;
   }
 
@@ -540,7 +546,7 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private static void itemAttachmentRemoveInner(
+  private void itemAttachmentRemoveInner(
     final Connection connection,
     final CAItemAttachmentID id)
     throws SQLException
@@ -549,6 +555,7 @@ public final class CADatabaseModelQueriesItems
       statement.setBytes(1, CADatabaseBytes.uuidBytes(id.id()));
       statement.executeUpdate();
     }
+    this.publishRemove(id);
   }
 
   private static void itemRepositInnerRemoveDelete(
@@ -646,7 +653,7 @@ public final class CADatabaseModelQueriesItems
     Objects.requireNonNull(id, "id");
 
     this.withSQLConnection(connection -> {
-      itemAttachmentRemoveInner(connection, id);
+      this.itemAttachmentRemoveInner(connection, id);
       return null;
     });
   }
@@ -675,12 +682,15 @@ public final class CADatabaseModelQueriesItems
 
     if (reposit instanceof CAItemRepositAdd add) {
       this.itemRepositInnerAdd(connection, item, add);
+      this.publishUpdate(item.id());
       return;
     } else if (reposit instanceof CAItemRepositRemove remove) {
       this.itemRepositInnerRemove(connection, item, remove);
+      this.publishUpdate(item.id());
       return;
     } else if (reposit instanceof CAItemRepositMove move) {
       this.itemRepositInnerMove(connection, move);
+      this.publishUpdate(item.id());
       return;
     } else {
       throw new IllegalStateException("Unexpected reposit: " + reposit);
@@ -798,6 +808,7 @@ public final class CADatabaseModelQueriesItems
     }
 
     this.checkItemCountInvariant(connection, item, count);
+    this.publishUpdate(item);
   }
 
   private void itemRepositInnerAddUpdate(
@@ -881,6 +892,8 @@ public final class CADatabaseModelQueriesItems
         statement.setLong(3, 0L);
         statement.executeUpdate();
       }
+
+      this.publishUpdate(id);
       return null;
     });
   }
@@ -961,6 +974,10 @@ public final class CADatabaseModelQueriesItems
   {
     Objects.requireNonNull(item, "item");
 
+    final var currentItem =
+      this.itemGet(item)
+        .orElseThrow(() -> this.noSuchItem(item.id()));
+
     this.withSQLConnection(connection -> {
       final var itemIdBytes = CADatabaseBytes.itemIdBytes(item);
       try (var statement =
@@ -983,6 +1000,12 @@ public final class CADatabaseModelQueriesItems
         statement.setBytes(1, itemIdBytes);
         statement.executeUpdate();
       }
+
+      currentItem.attachments()
+        .keySet()
+        .forEach(this::publishRemove);
+
+      this.publishRemove(item);
       return null;
     });
   }
@@ -999,8 +1022,8 @@ public final class CADatabaseModelQueriesItems
     this.withSQLConnection(connection -> {
       this.itemCheck(connection, item);
       this.tags.tagCheck(connection, tag.id());
-      itemTagRemoveInner(connection, item, tag);
-      return itemTagAddInner(connection, item, tag);
+      this.itemTagRemoveInner(connection, item, tag);
+      return this.itemTagAddInner(connection, item, tag);
     });
   }
 
@@ -1016,7 +1039,7 @@ public final class CADatabaseModelQueriesItems
     this.withSQLConnection(connection -> {
       this.itemCheck(connection, item);
       this.tags.tagCheck(connection, tag.id());
-      return itemTagRemoveInner(connection, item, tag);
+      return this.itemTagRemoveInner(connection, item, tag);
     });
   }
 
@@ -1079,7 +1102,7 @@ public final class CADatabaseModelQueriesItems
 
     this.withSQLConnection(connection -> {
       this.itemCheck(connection, metadata.itemId());
-      return itemMetadataRemoveInner(connection, metadata);
+      return this.itemMetadataRemoveInner(connection, metadata);
     });
   }
 
@@ -1108,6 +1131,9 @@ public final class CADatabaseModelQueriesItems
       } else {
         itemAttachmentPutInsert(connection, attachment, data);
       }
+
+      this.publishUpdate(attachment.itemId());
+      this.publishUpdate(attachment.id());
       return null;
     });
   }

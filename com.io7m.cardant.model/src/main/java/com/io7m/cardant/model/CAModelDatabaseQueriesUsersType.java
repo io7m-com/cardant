@@ -16,72 +16,56 @@
 
 package com.io7m.cardant.model;
 
-import java.util.Objects;
-import java.util.UUID;
+import com.io7m.cardant.database.api.CADatabaseException;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
- * The unique ID of an item.
- *
- * @param id The ID value
+ * Model database queries (Users).
  */
 
-public record CAItemID(UUID id)
-  implements Comparable<CAItemID>, CAIdType
+public interface CAModelDatabaseQueriesUsersType
 {
   /**
-   * The unique ID of an item.
+   * Create or update the given user.
    *
-   * @param id The ID value
+   * @param user The user
+   *
+   * @throws CADatabaseException On database errors
    */
 
-  public CAItemID
-  {
-    Objects.requireNonNull(id, "id");
-  }
+  void userPut(CAUser user)
+    throws CADatabaseException;
 
   /**
-   * Construct an ID.
+   * @param id The user id
    *
-   * @param id The ID value
+   * @return The user with the given ID
    *
-   * @return An ID
+   * @throws CADatabaseException On database errors
    */
 
-  public static CAItemID of(
-    final String id)
-  {
-    return new CAItemID(UUID.fromString(id));
-  }
+  Optional<CAUser> userGet(CAUserID id)
+    throws CADatabaseException;
 
   /**
-   * Construct an ID.
+   * @param name The user name
    *
-   * @param id The ID value
+   * @return The user with the given name
    *
-   * @return An ID
+   * @throws CADatabaseException On database errors
    */
 
-  public static CAItemID of(
-    final UUID id)
-  {
-    return new CAItemID(id);
-  }
+  Optional<CAUser> userGetByName(String name)
+    throws CADatabaseException;
 
   /**
-   * Construct an ID using a pseudorandom value.
+   * @return The list of users in the database
    *
-   * @return An ID
+   * @throws CADatabaseException On database errors
    */
 
-  public static CAItemID random()
-  {
-    return new CAItemID(UUID.randomUUID());
-  }
-
-  @Override
-  public int compareTo(
-    final CAItemID other)
-  {
-    return this.id.compareTo(other.id);
-  }
+  Map<CAUserID, CAUser> userList()
+    throws CADatabaseException;
 }

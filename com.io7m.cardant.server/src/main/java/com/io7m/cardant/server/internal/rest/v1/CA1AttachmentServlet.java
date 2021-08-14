@@ -19,7 +19,7 @@ package com.io7m.cardant.server.internal.rest.v1;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemAttachmentID;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
 import com.io7m.cardant.server.internal.CAServerMessages;
@@ -95,7 +95,7 @@ public final class CA1AttachmentServlet
 
     try {
       final var queries =
-        dbTransaction.queries(CAModelCADatabaseQueriesType.class);
+        dbTransaction.queries(CAModelDatabaseQueriesType.class);
       final var attachmentOpt =
         queries.itemAttachmentGet(id, true);
 

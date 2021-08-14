@@ -18,6 +18,7 @@ package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CATagID;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -75,5 +76,17 @@ public final class CADatabaseBytes
     final CAItemID id)
   {
     return uuidBytes(id.id());
+  }
+
+  static byte[] tagIdBytes(
+    final CATagID id)
+  {
+    return uuidBytes(id.id());
+  }
+
+  static CATagID tagIdFromBytes(
+    final byte[] bytes)
+  {
+    return new CATagID(uuidFromBytes(bytes));
   }
 }

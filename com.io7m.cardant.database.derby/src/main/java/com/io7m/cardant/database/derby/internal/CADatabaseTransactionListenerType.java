@@ -14,14 +14,27 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
+package com.io7m.cardant.database.derby.internal;
 
 /**
- * A database event.
+ * A listener for transaction events.
  */
 
-public sealed interface CADatabaseEventType
-  permits CADatabaseEventDataType, CADatabaseEventTransactionType
+public interface CADatabaseTransactionListenerType
 {
+  /**
+   * Called on rollback.
+   *
+   * @param transaction The transaction
+   */
 
+  void onRollback(CADatabaseDerbyTransaction transaction);
+
+  /**
+   * Called on commit.
+   *
+   * @param transaction The transaction
+   */
+
+  void onCommit(CADatabaseDerbyTransaction transaction);
 }

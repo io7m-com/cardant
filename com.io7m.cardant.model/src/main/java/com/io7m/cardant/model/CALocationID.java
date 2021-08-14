@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 
 public record CALocationID(UUID id)
-  implements Comparable<CALocationID>
+  implements Comparable<CALocationID>, CAIdType
 {
   /**
    * The unique ID of a location.

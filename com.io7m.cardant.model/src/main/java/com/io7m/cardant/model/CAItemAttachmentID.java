@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 
 public record CAItemAttachmentID(UUID id)
-  implements Comparable<CAItemAttachmentID>
+  implements Comparable<CAItemAttachmentID>, CAIdType
 {
   /**
    * The unique ID of an attachment.

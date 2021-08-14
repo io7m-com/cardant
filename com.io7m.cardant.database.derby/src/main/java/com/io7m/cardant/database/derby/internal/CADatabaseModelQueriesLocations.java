@@ -19,7 +19,7 @@ package com.io7m.cardant.database.derby.internal;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesLocationsType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesLocationsType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,7 +35,7 @@ import java.util.TreeMap;
 
 public final class CADatabaseModelQueriesLocations
   extends CADatabaseModelQueriesAbstract
-  implements CAModelCADatabaseQueriesLocationsType
+  implements CAModelDatabaseQueriesLocationsType
 {
   private static final String LOCATION_PUT_INSERT = """
     INSERT INTO cardant.locations (
@@ -129,7 +129,8 @@ public final class CADatabaseModelQueriesLocations
   }
 
   @Override
-  public void locationPut(final CALocation location)
+  public void locationPut(
+    final CALocation location)
     throws CADatabaseException
   {
     Objects.requireNonNull(location, "location");
@@ -141,6 +142,8 @@ public final class CADatabaseModelQueriesLocations
       } else {
         locationPutInsert(connection, location);
       }
+
+      this.publishUpdate(location.id());
       return null;
     });
   }
@@ -150,9 +153,9 @@ public final class CADatabaseModelQueriesLocations
     throws CADatabaseException
   {
     Objects.requireNonNull(id, "id");
-    return this.withSQLConnection(connection -> locationGetInner(
-      connection,
-      id));
+    return this.withSQLConnection(
+      connection -> locationGetInner(connection, id)
+    );
   }
 
   @Override
@@ -172,5 +175,4 @@ public final class CADatabaseModelQueriesLocations
       }
     });
   }
-
 }

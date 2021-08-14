@@ -17,6 +17,7 @@
 package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.model.CAIdType;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -31,12 +32,31 @@ import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_GENERAL;
 public abstract class CADatabaseModelQueriesAbstract
 {
   private final CADatabaseDerbyTransaction transaction;
+  private final CADatabaseModelTransactionListener listener;
 
   protected CADatabaseModelQueriesAbstract(
     final CADatabaseDerbyTransaction inTransaction)
   {
     this.transaction =
       Objects.requireNonNull(inTransaction, "transaction");
+
+    this.listener =
+      this.transaction.registerListener(
+        CADatabaseModelTransactionListener.class,
+        CADatabaseModelTransactionListener::new
+      );
+  }
+
+  protected final void publishUpdate(
+    final CAIdType id)
+  {
+    this.listener.publishUpdate(id);
+  }
+
+  protected final void publishRemove(
+    final CAIdType id)
+  {
+    this.listener.publishRemove(id);
   }
 
   protected final <T> T withSQLConnection(

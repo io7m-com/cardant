@@ -20,7 +20,7 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CAUsers;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
@@ -188,7 +188,7 @@ public final class CA1LoginServlet extends HttpServlet
     try (var connection = this.database.openConnection()) {
       try (var transaction = connection.beginTransaction()) {
         final var queries =
-          transaction.queries(CAModelCADatabaseQueriesType.class);
+          transaction.queries(CAModelDatabaseQueriesType.class);
 
         final var userName = creds.user();
         final var userOpt = queries.userGetByName(userName);

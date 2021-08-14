@@ -16,12 +16,14 @@
 
 package com.io7m.cardant.tests;
 
+import com.io7m.cardant.database.api.CADatabaseEventType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseOpenEvent;
 import com.io7m.cardant.database.api.CADatabaseParameters;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.derby.CADatabasesDerby;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
@@ -32,8 +34,10 @@ import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseEventUpdated;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import org.junit.jupiter.api.AfterEach;
@@ -51,10 +55,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.Flow;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_DUPLICATE;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
@@ -71,12 +77,16 @@ public final class CADerbyDatabaseTest
 
   private Path directory;
   private ArrayList<CADatabaseOpenEvent> events;
+  private ArrayList<CAModelDatabaseEventUpdated> updates;
   private Path databaseDirectory;
+  private HashSet<CAIdType> expectedUpdates;
+  private HashSet<CAIdType> expectedRemoves;
+  private int expectedChangeCount;
 
   private static <T> SortedSet<T> setOf(
     final T... items)
   {
-    return new TreeSet<T>(List.of(items));
+    return new TreeSet<>(List.of(items));
   }
 
   @BeforeEach
@@ -88,13 +98,23 @@ public final class CADerbyDatabaseTest
     this.databaseDirectory =
       this.directory.resolve("database");
 
-    this.events = new ArrayList<CADatabaseOpenEvent>();
+    this.events = new ArrayList<>();
+    this.updates = new ArrayList<>();
+    this.expectedUpdates = new HashSet<CAIdType>();
+    this.expectedRemoves = new HashSet<CAIdType>();
   }
 
   @AfterEach
   public void tearDown()
     throws IOException
   {
+    LOG.debug("checking expected changes");
+    assertEquals(this.expectedChangeCount, this.updates.size());
+    if (this.expectedChangeCount > 0) {
+      assertEquals(this.expectedUpdates, this.updates.get(0).updated());
+      assertEquals(this.expectedRemoves, this.updates.get(0).removed());
+    }
+
     LOG.debug("deleting {}", this.directory);
     CATestDirectories.deleteDirectory(this.directory);
   }
@@ -118,12 +138,51 @@ public final class CADerbyDatabaseTest
         true
       );
 
+    final var subscriber =
+      new Flow.Subscriber<CADatabaseEventType>()
+      {
+        private Flow.Subscription sub;
+
+        @Override
+        public void onSubscribe(
+          final Flow.Subscription subscription)
+        {
+          this.sub = subscription;
+          subscription.request(1L);
+        }
+
+        @Override
+        public void onNext(
+          final CADatabaseEventType item)
+        {
+          if (item instanceof CAModelDatabaseEventUpdated updated) {
+            CADerbyDatabaseTest.this.updates.add(updated);
+          }
+          this.sub.request(1L);
+        }
+
+        @Override
+        public void onError(
+          final Throwable throwable)
+        {
+
+        }
+
+        @Override
+        public void onComplete()
+        {
+
+        }
+      };
+
     try (var database = databases.open(parameters, this::logEvent)) {
+      database.events().subscribe(subscriber);
+
       try (var connection = database.openConnection()) {
         try (var transaction = connection.beginTransaction()) {
           withDatabase.call(
             transaction,
-            transaction.queries(CAModelCADatabaseQueriesType.class)
+            transaction.queries(CAModelDatabaseQueriesType.class)
           );
         }
       }
@@ -135,11 +194,9 @@ public final class CADerbyDatabaseTest
     throws Exception
   {
     this.withDatabase((transaction, queries) -> {
-      final var id = UUID.randomUUID();
-
       final var tag0 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       queries.tagPut(tag0);
@@ -156,6 +213,10 @@ public final class CADerbyDatabaseTest
         final var retrieved = queries.tagGet(tag0.id()).orElseThrow();
         assertEquals(tag0Renamed, retrieved);
       }
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(tag0.id());
+      transaction.commit();
     });
   }
 
@@ -166,12 +227,12 @@ public final class CADerbyDatabaseTest
     this.withDatabase((transaction, queries) -> {
       final var tag0 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       final var tag1 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       queries.tagPut(tag0);
@@ -193,19 +254,19 @@ public final class CADerbyDatabaseTest
       final var tagsPut = new TreeSet<CATag>();
       tagsPut.addAll(List.of(
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0"),
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG1"),
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG2"),
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG3"),
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG4")
       ));
 
@@ -215,6 +276,10 @@ public final class CADerbyDatabaseTest
 
       final var tagsGet = queries.tagList();
       assertEquals(tagsPut, tagsGet);
+
+      this.expectedChangeCount = 1;
+      tagsPut.forEach(tag -> this.expectedUpdates.add(tag.id()));
+      transaction.commit();
     });
   }
 
@@ -256,6 +321,10 @@ public final class CADerbyDatabaseTest
         final var retrieved = queries.itemGet(id).orElseThrow();
         assertEquals(item0p0, retrieved);
       }
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0.id());
+      transaction.commit();
     });
   }
 
@@ -319,17 +388,17 @@ public final class CADerbyDatabaseTest
 
       final var tag0 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       final var tag1 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG1");
 
       final var tag2 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG2");
 
       queries.itemCreate(item0);
@@ -356,6 +425,14 @@ public final class CADerbyDatabaseTest
       queries.itemTagRemove(item1, tag1);
       assertEquals(setOf(), queries.itemTagList(item0));
       assertEquals(setOf(), queries.itemTagList(item1));
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(tag0.id());
+      this.expectedUpdates.add(tag1.id());
+      this.expectedUpdates.add(tag2.id());
+      this.expectedUpdates.add(item0);
+      this.expectedUpdates.add(item1);
+      transaction.commit();
     });
   }
 
@@ -368,7 +445,7 @@ public final class CADerbyDatabaseTest
 
       final var tag0 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       final var with = new TreeSet<CATag>();
@@ -384,6 +461,12 @@ public final class CADerbyDatabaseTest
 
       queries.tagDelete(tag0);
       assertEquals(Collections.emptySortedSet(), queries.itemTagList(item0));
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0);
+      this.expectedUpdates.add(tag0.id());
+      this.expectedRemoves.add(tag0.id());
+      transaction.commit();
     });
   }
 
@@ -396,7 +479,7 @@ public final class CADerbyDatabaseTest
 
       final var tag0 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       assertEquals(setOf(), queries.tagList());
@@ -408,6 +491,12 @@ public final class CADerbyDatabaseTest
       assertEquals(setOf(tag0), queries.itemTagList(item0));
 
       queries.itemDelete(item0);
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0);
+      this.expectedUpdates.add(tag0.id());
+      this.expectedRemoves.add(item0);
+      transaction.commit();
     });
   }
 
@@ -420,7 +509,7 @@ public final class CADerbyDatabaseTest
 
       final var tag0 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       queries.itemCreate(item0);
@@ -430,7 +519,7 @@ public final class CADerbyDatabaseTest
           CADatabaseException.class,
           () -> queries.itemTagAdd(item0, tag0)
         );
-      assertTrue(ex.getMessage().contains(tag0.id().toString()));
+      assertTrue(ex.getMessage().contains(tag0.id().id().toString()));
       assertEquals(ERROR_NONEXISTENT, ex.errorCode());
     });
   }
@@ -444,7 +533,7 @@ public final class CADerbyDatabaseTest
 
       final var tag0 =
         new CATag(
-          UUID.randomUUID(),
+          CATagID.random(),
           "TAG0");
 
       queries.tagPut(tag0);
@@ -502,6 +591,10 @@ public final class CADerbyDatabaseTest
         assertEquals(1, metas.size());
         assertEquals(meta1p, metas.get("Colour"));
       }
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0);
+      transaction.commit();
     });
   }
 
@@ -519,6 +612,11 @@ public final class CADerbyDatabaseTest
 
       queries.itemMetadataPut(meta0);
       queries.itemDelete(item0);
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0);
+      this.expectedRemoves.add(item0);
+      transaction.commit();
     });
   }
 
@@ -600,6 +698,11 @@ public final class CADerbyDatabaseTest
             .orElseThrow();
         assertEquals(attachment0WithoutData, attachment);
       }
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0);
+      this.expectedUpdates.add(attachmentID);
+      transaction.commit();
     });
   }
 
@@ -627,6 +730,13 @@ public final class CADerbyDatabaseTest
 
       queries.itemAttachmentPut(attachment0);
       queries.itemDelete(item0);
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0);
+      this.expectedUpdates.add(attachment0.id());
+      this.expectedRemoves.add(item0);
+      this.expectedRemoves.add(attachment0.id());
+      transaction.commit();
     });
   }
 
@@ -639,10 +749,18 @@ public final class CADerbyDatabaseTest
 
       queries.itemCreate(item0);
 
+      final var attach0 =
+        CAItemAttachmentID.random();
+      final var attach1 =
+        CAItemAttachmentID.random();
+      final var attach2 =
+        CAItemAttachmentID.random();
+
       {
+
         final var attachment0 =
           new CAItemAttachment(
-            CAItemAttachmentID.random(),
+            attach0,
             item0,
             "Item description",
             "text/plain",
@@ -659,9 +777,10 @@ public final class CADerbyDatabaseTest
       }
 
       {
+
         final var attachment0 =
           new CAItemAttachment(
-            CAItemAttachmentID.random(),
+            attach1,
             item0,
             "Item description 2",
             "text/plain",
@@ -678,7 +797,7 @@ public final class CADerbyDatabaseTest
       {
         final var attachment0 =
           new CAItemAttachment(
-            CAItemAttachmentID.random(),
+            attach2,
             item0,
             "Item description 2",
             "text/plain",
@@ -693,6 +812,11 @@ public final class CADerbyDatabaseTest
           queries.itemAttachmentPut(attachment0);
         });
       }
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(item0);
+      this.expectedUpdates.add(attach1);
+      transaction.commit();
     });
   }
 
@@ -753,6 +877,10 @@ public final class CADerbyDatabaseTest
         List.of(userAlt),
         List.copyOf(queries.userList().values())
       );
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(user.id());
+      transaction.commit();
     });
   }
 
@@ -762,7 +890,7 @@ public final class CADerbyDatabaseTest
   {
     final var tag =
       new CATag(
-        UUID.randomUUID(),
+        CATagID.random(),
         "TAG");
 
     this.withDatabase((transaction, queries) -> {
@@ -773,13 +901,16 @@ public final class CADerbyDatabaseTest
       final var rtag = queries.tagGet(tag.id()).orElseThrow();
       assertEquals(tag, rtag);
     });
+
+    this.expectedChangeCount = 1;
+    this.expectedUpdates.add(tag.id());
   }
 
   interface WithDatabaseType
   {
     void call(
       CADatabaseTransactionType transaction,
-      CAModelCADatabaseQueriesType queries)
+      CAModelDatabaseQueriesType queries)
       throws Exception;
   }
 
@@ -836,6 +967,10 @@ public final class CADerbyDatabaseTest
         List.of(locationAlt),
         List.copyOf(queries.locationList().values())
       );
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(location.id());
+      transaction.commit();
     });
   }
 

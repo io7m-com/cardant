@@ -17,11 +17,11 @@
 package com.io7m.cardant.database.api;
 
 /**
- * A database event.
+ * The type of database events relating to data changes.
  */
 
-public sealed interface CADatabaseEventType
-  permits CADatabaseEventDataType, CADatabaseEventTransactionType
+public non-sealed interface CADatabaseEventDataType
+  extends CADatabaseEventType
 {
 
 }

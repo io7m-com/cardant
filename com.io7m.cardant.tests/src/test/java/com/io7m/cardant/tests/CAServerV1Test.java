@@ -32,8 +32,9 @@ import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.CAUsers;
@@ -378,9 +379,9 @@ public final class CAServerV1Test
     }
 
     final var tagSet = new TreeSet<CATag>();
-    tagSet.add(new CATag(UUID.randomUUID(), "tag0"));
-    tagSet.add(new CATag(UUID.randomUUID(), "tag1"));
-    tagSet.add(new CATag(UUID.randomUUID(), "tag2"));
+    tagSet.add(new CATag(CATagID.random(), "tag0"));
+    tagSet.add(new CATag(CATagID.random(), "tag1"));
+    tagSet.add(new CATag(CATagID.random(), "tag2"));
     final var tags = new CATags(tagSet);
 
     {
@@ -1279,7 +1280,7 @@ public final class CAServerV1Test
     try (final var connection = this.database.openConnection()) {
       try (var transaction = connection.beginTransaction()) {
         final var queries =
-          transaction.queries(CAModelCADatabaseQueriesType.class);
+          transaction.queries(CAModelDatabaseQueriesType.class);
         queries.userPut(CAUsers.createUser(
           SecureRandom.getInstanceStrong(),
           CAUserID.random(),

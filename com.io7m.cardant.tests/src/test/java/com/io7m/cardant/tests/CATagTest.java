@@ -17,6 +17,7 @@
 package com.io7m.cardant.tests;
 
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -46,7 +47,7 @@ public final class CATagTest
     final String text)
   {
     return DynamicTest.dynamicTest("testValid_%s".formatted(text), () -> {
-      new CATag(UUID.randomUUID(), text);
+      new CATag(CATagID.random(), text);
     });
   }
 
@@ -55,7 +56,7 @@ public final class CATagTest
   {
     return DynamicTest.dynamicTest("testInvalid_%s".formatted(text), () -> {
       try {
-        new CATag(UUID.randomUUID(), text);
+        new CATag(CATagID.random(), text);
         Assertions.fail();
       } catch (final IllegalArgumentException e) {
         // OK

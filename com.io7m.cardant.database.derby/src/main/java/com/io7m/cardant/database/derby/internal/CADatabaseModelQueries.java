@@ -25,8 +25,9 @@ import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
+import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 
@@ -35,14 +36,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.UUID;
 
 /**
  * Internal database calls for the inventory.
  */
 
 public final class CADatabaseModelQueries
-  implements CAModelCADatabaseQueriesType
+  implements CAModelDatabaseQueriesType
 {
   private final CADatabaseModelQueriesLocations locations;
   private final CADatabaseModelQueriesTags tags;
@@ -213,7 +213,8 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public Optional<CATag> tagGet(final UUID id)
+  public Optional<CATag> tagGet(
+    final CATagID id)
     throws CADatabaseException
   {
     return this.tags.tagGet(id);

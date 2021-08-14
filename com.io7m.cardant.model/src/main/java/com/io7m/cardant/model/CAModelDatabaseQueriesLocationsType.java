@@ -19,56 +19,42 @@ package com.io7m.cardant.model;
 import com.io7m.cardant.database.api.CADatabaseException;
 
 import java.util.Optional;
-import java.util.SortedSet;
-import java.util.UUID;
+import java.util.SortedMap;
 
 /**
- * Model database queries (Tags).
+ * Model database queries (Locations).
  */
 
-public interface CAModelCADatabaseQueriesTagsType
+public interface CAModelDatabaseQueriesLocationsType
 {
   /**
-   * Retrieve the tag with the given ID, if one exists.
+   * Create or update the given location.
    *
-   * @param id The ID
-   *
-   * @return The tag, if any
+   * @param location The location
    *
    * @throws CADatabaseException On database errors
    */
 
-  Optional<CATag> tagGet(UUID id)
+  void locationPut(CALocation location)
     throws CADatabaseException;
 
   /**
-   * Create or update the given tag.
+   * @param id The location id
    *
-   * @param tag The tag
+   * @return The location with the given ID
    *
    * @throws CADatabaseException On database errors
    */
 
-  void tagPut(CATag tag)
+  Optional<CALocation> locationGet(CALocationID id)
     throws CADatabaseException;
 
   /**
-   * Delete the given tag. The tag will be removed from any items it is associated with.
-   *
-   * @param tag The tag
+   * @return The list of locations in the database
    *
    * @throws CADatabaseException On database errors
    */
 
-  void tagDelete(CATag tag)
-    throws CADatabaseException;
-
-  /**
-   * @return The available tags
-   *
-   * @throws CADatabaseException On database errors
-   */
-
-  SortedSet<CATag> tagList()
+  SortedMap<CALocationID, CALocation> locationList()
     throws CADatabaseException;
 }

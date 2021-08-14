@@ -16,45 +16,23 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.cardant.database.api.CADatabaseException;
-
-import java.util.Optional;
-import java.util.SortedMap;
+import java.util.UUID;
 
 /**
- * Model database queries (Locations).
+ * The type of ID values in the model.
  */
 
-public interface CAModelCADatabaseQueriesLocationsType
+public sealed interface CAIdType
+  permits
+  CAItemAttachmentID,
+  CAItemID,
+  CALocationID,
+  CATagID,
+  CAUserID
 {
   /**
-   * Create or update the given location.
-   *
-   * @param location The location
-   *
-   * @throws CADatabaseException On database errors
+   * @return The raw ID value
    */
 
-  void locationPut(CALocation location)
-    throws CADatabaseException;
-
-  /**
-   * @param id The location id
-   *
-   * @return The location with the given ID
-   *
-   * @throws CADatabaseException On database errors
-   */
-
-  Optional<CALocation> locationGet(CALocationID id)
-    throws CADatabaseException;
-
-  /**
-   * @return The list of locations in the database
-   *
-   * @throws CADatabaseException On database errors
-   */
-
-  SortedMap<CALocationID, CALocation> locationList()
-    throws CADatabaseException;
+  UUID id();
 }

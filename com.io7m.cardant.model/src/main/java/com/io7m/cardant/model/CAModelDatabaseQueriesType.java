@@ -22,12 +22,12 @@ import com.io7m.cardant.database.api.CADatabaseQueriesType;
  * Model database queries.
  */
 
-public interface CAModelCADatabaseQueriesType
+public interface CAModelDatabaseQueriesType
   extends CADatabaseQueriesType,
-  CAModelCADatabaseQueriesTagsType,
-  CAModelCADatabaseQueriesUsersType,
-  CAModelCADatabaseQueriesLocationsType,
-  CAModelCADatabaseQueriesItemsType
+  CAModelDatabaseQueriesTagsType,
+  CAModelDatabaseQueriesUsersType,
+  CAModelDatabaseQueriesLocationsType,
+  CAModelDatabaseQueriesItemsType
 {
 
 }
