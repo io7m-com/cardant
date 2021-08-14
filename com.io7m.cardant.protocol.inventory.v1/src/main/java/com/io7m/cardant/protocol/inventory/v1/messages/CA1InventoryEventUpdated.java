@@ -14,25 +14,35 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.protocol.inventory.v1.messages;
+
+import com.io7m.cardant.model.CAIdType;
+
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * The type of inventory elements.
+ * The objects in the inventory were updated.
+ *
+ * @param updated The objects that were updated
+ * @param removed The objects that were removed
  */
 
-public sealed interface CAInventoryElementType
-  permits CAIds,
-  CAIdType,
-  CAItem,
-  CAItemAttachment,
-  CAItemMetadata,
-  CAItemMetadatas,
-  CAItemRepositType,
-  CAItems,
-  CALocation,
-  CALocations,
-  CATag,
-  CATags
+public record CA1InventoryEventUpdated(
+  Set<CAIdType> updated,
+  Set<CAIdType> removed)
+  implements CA1InventoryEventType
 {
+  /**
+   * The objects in the inventory were updated.
+   *
+   * @param updated The objects that were updated
+   * @param removed The objects that were removed
+   */
 
+  public CA1InventoryEventUpdated
+  {
+    Objects.requireNonNull(updated, "updated");
+    Objects.requireNonNull(removed, "removed");
+  }
 }

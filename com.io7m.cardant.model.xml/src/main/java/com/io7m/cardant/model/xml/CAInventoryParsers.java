@@ -19,6 +19,8 @@ package com.io7m.cardant.model.xml;
 import com.io7m.anethum.common.ParseStatus;
 import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTQualifiedName;
+import com.io7m.cardant.model.CAIdType;
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemID;
@@ -29,18 +31,24 @@ import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.model.xml.internal.CAIdsParser;
 import com.io7m.cardant.model.xml.internal.CAInventoryParser;
+import com.io7m.cardant.model.xml.internal.CAItemAttachmentIDParser;
 import com.io7m.cardant.model.xml.internal.CAItemAttachmentParser;
+import com.io7m.cardant.model.xml.internal.CAItemIDParser;
 import com.io7m.cardant.model.xml.internal.CAItemMetadatasParser;
 import com.io7m.cardant.model.xml.internal.CAItemParser;
 import com.io7m.cardant.model.xml.internal.CAItemRepositAddParser;
 import com.io7m.cardant.model.xml.internal.CAItemRepositMoveParser;
 import com.io7m.cardant.model.xml.internal.CAItemRepositRemoveParser;
 import com.io7m.cardant.model.xml.internal.CAItemsParser;
+import com.io7m.cardant.model.xml.internal.CALocationIDParser;
 import com.io7m.cardant.model.xml.internal.CALocationParser;
 import com.io7m.cardant.model.xml.internal.CALocationsParser;
+import com.io7m.cardant.model.xml.internal.CATagIDParser;
 import com.io7m.cardant.model.xml.internal.CATagParser;
 import com.io7m.cardant.model.xml.internal.CATagsParser;
+import com.io7m.cardant.model.xml.internal.CAUserIDParser;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -75,6 +83,30 @@ public final class CAInventoryParsers
   private static Map<BTQualifiedName, BTElementHandlerConstructorType<?, CAInventoryElementType>> makeRootElements()
   {
     return Map.ofEntries(
+      Map.entry(
+        element1("IDs"),
+        CAIdsParser::new
+      ),
+      Map.entry(
+        element1("ItemID"),
+        CAItemIDParser::new
+      ),
+      Map.entry(
+        element1("ItemAttachmentID"),
+        CAItemAttachmentIDParser::new
+      ),
+      Map.entry(
+        element1("UserID"),
+        CAUserIDParser::new
+      ),
+      Map.entry(
+        element1("LocationID"),
+        CALocationIDParser::new
+      ),
+      Map.entry(
+        element1("TagID"),
+        CATagIDParser::new
+      ),
       Map.entry(
         element1("Item"),
         CAItemParser::new
@@ -192,6 +224,45 @@ public final class CAInventoryParsers
   itemRepositMoveParser()
   {
     return CAItemRepositMoveParser::new;
+  }
+
+  /**
+   * @return A set of ID parsers
+   */
+
+  public static Map<BTQualifiedName, BTElementHandlerConstructorType<?, ? extends CAIdType>> idParsers()
+  {
+    return Map.ofEntries(
+      Map.entry(
+        element1("ItemID"),
+        CAItemIDParser::new
+      ),
+      Map.entry(
+        element1("ItemAttachmentID"),
+        CAItemAttachmentIDParser::new
+      ),
+      Map.entry(
+        element1("UserID"),
+        CAUserIDParser::new
+      ),
+      Map.entry(
+        element1("LocationID"),
+        CALocationIDParser::new
+      ),
+      Map.entry(
+        element1("TagID"),
+        CATagIDParser::new
+      )
+    );
+  }
+
+  /**
+   * @return A IDs parser
+   */
+
+  public static BTElementHandlerConstructorType<?, ? extends CAIds> idsParsers()
+  {
+    return CAIdsParser::new;
   }
 
   @Override

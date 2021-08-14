@@ -17,10 +17,13 @@
 package com.io7m.cardant.model.xml.internal;
 
 import com.io7m.anethum.common.SerializeException;
+import com.io7m.cardant.model.CAIdType;
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemMetadatas;
 import com.io7m.cardant.model.CAItemRepositAdd;
@@ -29,9 +32,12 @@ import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.xml.CAInventorySchemas;
 import com.io7m.cardant.model.xml.CAInventorySerializerType;
 
@@ -338,6 +344,10 @@ public final class CAInventorySerializer implements CAInventorySerializerType
         this.serializeLocation(writer, location);
       } else if (value instanceof CAItemRepositType reposit) {
         this.serializeItemReposit(writer, reposit);
+      } else if (value instanceof CAIdType id) {
+        this.serializeId(writer, id);
+      } else if (value instanceof CAIds ids) {
+        this.serializeIds(writer, ids);
       } else {
         throw new IllegalStateException("Unrecognized message: " + value);
       }
@@ -346,6 +356,89 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     } catch (final XMLStreamException e) {
       throw new SerializeException(e.getMessage(), e);
     }
+  }
+
+  private void serializeIds(
+    final XMLStreamWriter writer,
+    final CAIds ids)
+    throws XMLStreamException
+  {
+    writer.writeStartElement(NAMESPACE, "IDs");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    for (final var id : ids.ids()) {
+      this.serializeId(writer, id);
+    }
+    writer.writeEndElement();
+  }
+
+  private void serializeId(
+    final XMLStreamWriter writer,
+    final CAIdType id)
+    throws XMLStreamException
+  {
+    if (id instanceof CAItemID itemID) {
+      this.serializeItemId(writer, itemID);
+    } else if (id instanceof CAItemAttachmentID itemAttachmentID) {
+      this.serializeItemAttachmentId(writer, itemAttachmentID);
+    } else if (id instanceof CALocationID locationID) {
+      this.serializeLocationId(writer, locationID);
+    } else if (id instanceof CATagID tagID) {
+      this.serializeTagId(writer, tagID);
+    } else if (id instanceof CAUserID userID) {
+      this.serializeUserId(writer, userID);
+    } else {
+      throw new IllegalStateException("Unrecognized message: " + id);
+    }
+  }
+
+  private void serializeUserId(
+    final XMLStreamWriter writer,
+    final CAUserID id)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "UserID");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("value", id.id().toString());
+  }
+
+  private void serializeTagId(
+    final XMLStreamWriter writer,
+    final CATagID id)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "TagID");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("value", id.id().toString());
+  }
+
+  private void serializeLocationId(
+    final XMLStreamWriter writer,
+    final CALocationID id)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "LocationID");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("value", id.id().toString());
+  }
+
+  private void serializeItemAttachmentId(
+    final XMLStreamWriter writer,
+    final CAItemAttachmentID id)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "ItemAttachmentID");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("value", id.id().toString());
+  }
+
+  private void serializeItemId(
+    final XMLStreamWriter writer,
+    final CAItemID id)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "ItemID");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("value", id.id().toString());
   }
 
   @Override

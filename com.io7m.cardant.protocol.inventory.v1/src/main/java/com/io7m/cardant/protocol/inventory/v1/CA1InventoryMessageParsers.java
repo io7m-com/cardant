@@ -36,11 +36,13 @@ import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandLoginUsernamePa
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandTagListParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandTagsDeleteParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandTagsPutParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1EventUpdatedParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1InventoryMessageParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1ResponseErrorParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1ResponseOKParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1TransactionParser;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryResponseType;
 
@@ -89,12 +91,28 @@ public final class CA1InventoryMessageParsers
       BTElementHandlerConstructorType<?, ? extends CA1InventoryMessageType>> result = new HashMap<>();
     result.putAll(responseParsers());
     result.putAll(commandParsers());
+    result.putAll(eventParsers());
 
     result.put(
       element1("Transaction"),
       CA1TransactionParser::new
     );
     return result;
+  }
+
+  /**
+   * @return The set of parsers for events
+   */
+
+  public static Map<BTQualifiedName,
+    BTElementHandlerConstructorType<?, ? extends CA1InventoryEventType>> eventParsers()
+  {
+    return Map.ofEntries(
+      Map.entry(
+        element1("EventUpdated"),
+        CA1EventUpdatedParser::new
+      )
+    );
   }
 
   /**

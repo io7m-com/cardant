@@ -14,26 +14,49 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.model.xml.internal;
+
+import com.io7m.blackthorne.api.BTElementHandlerType;
+import com.io7m.blackthorne.api.BTElementParsingContextType;
+import com.io7m.cardant.model.CAItemID;
+import org.xml.sax.Attributes;
 
 import java.util.UUID;
 
 /**
- * The type of ID values in the model.
+ * A parser.
  */
 
-public sealed interface CAIdType
-  extends CAInventoryElementType
-  permits
-  CAItemAttachmentID,
-  CAItemID,
-  CALocationID,
-  CATagID,
-  CAUserID
+public final class CAItemIDParser
+  implements BTElementHandlerType<Object, CAItemID>
 {
+  private CAItemID result;
+
   /**
-   * @return The raw ID value
+   * Construct a parser.
+   *
+   * @param context The parse context
    */
 
-  UUID id();
+  public CAItemIDParser(
+    final BTElementParsingContextType context)
+  {
+
+  }
+
+  @Override
+  public void onElementStart(
+    final BTElementParsingContextType context,
+    final Attributes attributes)
+  {
+    this.result =
+      new CAItemID(UUID.fromString(attributes.getValue("value")));
+  }
+
+  @Override
+  public CAItemID onElementFinished(
+    final BTElementParsingContextType context)
+  {
+    return this.result;
+  }
 }

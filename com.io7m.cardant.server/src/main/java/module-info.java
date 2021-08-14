@@ -46,6 +46,7 @@ module com.io7m.cardant.server
   requires com.io7m.jxtrand.vanilla;
   requires java.management;
   requires java.xml;
+  requires org.apache.commons.io;
   requires org.eclipse.jetty.jmx;
   requires org.eclipse.jetty.server;
   requires org.eclipse.jetty.servlet;

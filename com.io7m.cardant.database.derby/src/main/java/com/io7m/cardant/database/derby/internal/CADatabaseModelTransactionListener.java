@@ -59,6 +59,10 @@ public final class CADatabaseModelTransactionListener
   public void onCommit(
     final CADatabaseDerbyTransaction transaction)
   {
+    if (this.updates.isEmpty() && this.removes.isEmpty()) {
+      return;
+    }
+
     transaction.connection()
       .database()
       .publishEvent(new CAModelDatabaseEventUpdated(

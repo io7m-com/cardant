@@ -14,25 +14,16 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.protocol.inventory.v1.internal;
 
 /**
- * The type of inventory elements.
+ * The subset of "event updated" values.
  */
 
-public sealed interface CAInventoryElementType
-  permits CAIds,
-  CAIdType,
-  CAItem,
-  CAItemAttachment,
-  CAItemMetadata,
-  CAItemMetadatas,
-  CAItemRepositType,
-  CAItems,
-  CALocation,
-  CALocations,
-  CATag,
-  CATags
+public sealed interface CA1EventUpdatedSubsetType
+  permits
+  CA1EventUpdatedRemoved,
+  CA1EventUpdatedUpdated
 {
 
 }

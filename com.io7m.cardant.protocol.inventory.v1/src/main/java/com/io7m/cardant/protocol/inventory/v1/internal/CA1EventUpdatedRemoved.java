@@ -14,25 +14,20 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.protocol.inventory.v1.internal;
+
+import com.io7m.cardant.model.CAIdType;
+
+import java.util.Set;
 
 /**
- * The type of inventory elements.
+ * A set of objects were removed.
+ *
+ * @param values The object IDs
  */
 
-public sealed interface CAInventoryElementType
-  permits CAIds,
-  CAIdType,
-  CAItem,
-  CAItemAttachment,
-  CAItemMetadata,
-  CAItemMetadatas,
-  CAItemRepositType,
-  CAItems,
-  CALocation,
-  CALocations,
-  CATag,
-  CATags
+public record CA1EventUpdatedRemoved(Set<CAIdType> values)
+  implements CA1EventUpdatedSubsetType
 {
 
 }

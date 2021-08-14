@@ -28,6 +28,7 @@ import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.cardant.server.internal.rest.CAVersioningServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1AttachmentServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1CommandServlet;
+import com.io7m.cardant.server.internal.rest.v1.CA1EventServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1LoginServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1ServletHolder;
 import org.eclipse.jetty.jmx.MBeanContainer;
@@ -165,6 +166,19 @@ public final class CAJettyServer implements Closeable
         );
       }),
       "/v1/command"
+    );
+
+    servlets.addServlet(
+      new CA1ServletHolder<>(
+        CA1EventServlet.class, () -> {
+        return new CA1EventServlet(
+          serverEvents,
+          inventorySerializers,
+          messages,
+          database
+        );
+      }),
+      "/v1/events"
     );
 
     servlets.addServlet(

@@ -17,7 +17,7 @@
 package com.io7m.cardant.protocol.inventory.v1.messages;
 
 /**
- * The base type of inventory responses.
+ * The base type of V1 inventory protocol responses.
  */
 
 public sealed interface CA1InventoryResponseType

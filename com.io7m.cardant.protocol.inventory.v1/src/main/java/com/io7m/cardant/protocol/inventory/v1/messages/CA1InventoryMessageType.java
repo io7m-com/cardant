@@ -17,12 +17,12 @@
 package com.io7m.cardant.protocol.inventory.v1.messages;
 
 /**
- * The type of authentication messages.
+ * The base type of V1 inventory protocol messages.
  */
 
 public sealed interface CA1InventoryMessageType
-  permits
-  CA1InventoryCommandType,
+  permits CA1InventoryCommandType,
+  CA1InventoryEventType,
   CA1InventoryResponseType,
   CA1InventoryTransaction
 {

@@ -14,25 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
 /**
- * The type of inventory elements.
+ * The base type of V1 inventory protocol events.
  */
 
-public sealed interface CAInventoryElementType
-  permits CAIds,
-  CAIdType,
-  CAItem,
-  CAItemAttachment,
-  CAItemMetadata,
-  CAItemMetadatas,
-  CAItemRepositType,
-  CAItems,
-  CALocation,
-  CALocations,
-  CATag,
-  CATags
+public sealed interface CA1InventoryEventType
+  extends CA1InventoryMessageType
+  permits CA1InventoryEventUpdated
 {
 
 }

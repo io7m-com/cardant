@@ -17,6 +17,7 @@
 package com.io7m.cardant.protocol.inventory.v1.internal;
 
 import com.io7m.anethum.common.SerializeException;
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.xml.CAInventorySerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerType;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventorySchemas;
@@ -38,6 +39,8 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventUpdated;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
@@ -408,6 +411,43 @@ public final class CA1InventoryMessageSerializer
     writer.writeEndElement();
   }
 
+  private void writeEvent(
+    final XMLStreamWriter writer,
+    final CA1InventoryEventType event)
+    throws XMLStreamException, SerializeException, IOException
+  {
+    if (event instanceof CA1InventoryEventUpdated updated) {
+      this.writeEventUpdated(writer, updated);
+    } else {
+      throw new IllegalStateException("Unexpected event: " + event);
+    }
+  }
+
+  private void writeEventUpdated(
+    final XMLStreamWriter writer,
+    final CA1InventoryEventUpdated updated)
+    throws XMLStreamException, SerializeException, IOException
+  {
+    writer.writeStartElement(PROTO_NAMESPACE, "EventUpdated");
+    this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
+
+    writer.writeStartElement(PROTO_NAMESPACE, "Updated");
+    writer.writeCharacters("\n");
+    try (var subOutput = CloseShieldOutputStream.wrap(this.stream)) {
+      this.serializers.serialize(this.target, subOutput, new CAIds(updated.updated()));
+      subOutput.flush();
+    }
+    writer.writeEndElement();
+
+    writer.writeStartElement(PROTO_NAMESPACE, "Removed");
+    writer.writeCharacters("\n");
+    try (var subOutput = CloseShieldOutputStream.wrap(this.stream)) {
+      this.serializers.serialize(this.target, subOutput, new CAIds(updated.removed()));
+      subOutput.flush();
+    }
+    writer.writeEndElement();
+  }
+
   private void writeCommand(
     final XMLStreamWriter writer,
     final CA1InventoryCommandType command)
@@ -491,6 +531,8 @@ public final class CA1InventoryMessageSerializer
         this.writeResponseError(writer, error);
       } else if (message instanceof CA1ResponseOK ok) {
         this.writeResponseOK(writer, ok);
+      } else if (message instanceof CA1InventoryEventType event) {
+        this.writeEvent(writer, event);
       } else if (message instanceof CA1InventoryTransaction transaction) {
         this.writeTransaction(writer, transaction);
       } else {

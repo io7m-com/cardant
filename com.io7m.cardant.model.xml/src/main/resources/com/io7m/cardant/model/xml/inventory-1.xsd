@@ -337,6 +337,64 @@
     </xsd:choice>
   </xsd:group>
 
+  <xsd:element name="ItemID">
+    <xsd:complexType>
+      <xsd:attribute name="value"
+                     use="required"
+                     type="inv:UuidType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemAttachmentID">
+    <xsd:complexType>
+      <xsd:attribute name="value"
+                     use="required"
+                     type="inv:UuidType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UserID">
+    <xsd:complexType>
+      <xsd:attribute name="value"
+                     use="required"
+                     type="inv:UuidType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="TagID">
+    <xsd:complexType>
+      <xsd:attribute name="value"
+                     use="required"
+                     type="inv:UuidType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="LocationID">
+    <xsd:complexType>
+      <xsd:attribute name="value"
+                     use="required"
+                     type="inv:UuidType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="ID">
+    <xsd:choice>
+      <xsd:element ref="inv:ItemAttachmentID"/>
+      <xsd:element ref="inv:ItemID"/>
+      <xsd:element ref="inv:LocationID"/>
+      <xsd:element ref="inv:TagID"/>
+      <xsd:element ref="inv:UserID"/>
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:element name="IDs">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:group ref="inv:ID"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:group name="Elements">
     <xsd:choice>
       <xsd:element ref="inv:Item"/>
@@ -349,6 +407,8 @@
       <xsd:element ref="inv:Locations"/>
       <xsd:element ref="inv:Tag"/>
       <xsd:element ref="inv:Tags"/>
+      <xsd:element ref="inv:IDs"/>
+      <xsd:group ref="inv:ID"/>
       <xsd:group ref="inv:ItemReposit"/>
     </xsd:choice>
   </xsd:group>

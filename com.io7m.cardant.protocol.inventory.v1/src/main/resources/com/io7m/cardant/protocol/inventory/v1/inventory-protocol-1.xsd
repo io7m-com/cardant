@@ -316,6 +316,45 @@
     </xsd:choice>
   </xsd:group>
 
+  <xsd:element name="EventUpdated">
+    <xsd:annotation>
+      <xsd:documentation>
+        The inventory was updated.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Updated">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element ref="iv1:IDs"/>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="Removed">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element ref="iv1:IDs"/>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="Events">
+    <xsd:annotation>
+      <xsd:documentation>
+        The set of events.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:choice>
+      <xsd:element ref="ip1:EventUpdated"/>
+    </xsd:choice>
+  </xsd:group>
+
   <xsd:element name="Transaction">
     <xsd:annotation>
       <xsd:documentation>
@@ -368,6 +407,7 @@
     <xsd:choice>
       <xsd:element ref="ip1:Transaction"/>
       <xsd:group ref="ip1:Commands"/>
+      <xsd:group ref="ip1:Events"/>
       <xsd:group ref="ip1:Responses"/>
     </xsd:choice>
   </xsd:group>

@@ -16,23 +16,26 @@
 
 package com.io7m.cardant.model;
 
+import java.util.Objects;
+import java.util.Set;
+
 /**
- * The type of inventory elements.
+ * A set of IDs.
+ *
+ * @param ids The ids
  */
 
-public sealed interface CAInventoryElementType
-  permits CAIds,
-  CAIdType,
-  CAItem,
-  CAItemAttachment,
-  CAItemMetadata,
-  CAItemMetadatas,
-  CAItemRepositType,
-  CAItems,
-  CALocation,
-  CALocations,
-  CATag,
-  CATags
+public record CAIds(Set<CAIdType> ids)
+  implements CAInventoryElementType
 {
+  /**
+   * A set of ids.
+   *
+   * @param ids The ids
+   */
 
+  public CAIds
+  {
+    Objects.requireNonNull(ids, "ids");
+  }
 }
