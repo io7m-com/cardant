@@ -39,6 +39,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRem
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemReposit;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationGet;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
@@ -310,8 +311,29 @@ public final class CA1CommandServlet
     if (command instanceof CA1CommandItemGet itemGet) {
       return this.executeCommandItemGet(itemGet);
     }
+    if (command instanceof CA1CommandLocationGet locationGet) {
+      return this.executeCommandLocationGet(locationGet);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CA1InventoryResponseType executeCommandLocationGet(
+    final CA1CommandLocationGet get)
+  {
+    try {
+      final var itemOpt = this.queries.locationGet(get.id());
+      if (itemOpt.isEmpty()) {
+        return new CA1ResponseError(
+          404,
+          this.messages().format("errorNoSuchLocation"),
+          List.of()
+        );
+      }
+      return new CA1ResponseOK(itemOpt.map(Function.identity()));
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
+    }
   }
 
   private CA1InventoryResponseType executeCommandItemGet(

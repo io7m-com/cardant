@@ -13,6 +13,20 @@
     </xsd:documentation>
   </xsd:annotation>
 
+  <xsd:element name="CommandLocationGet">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to get a location.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="iv1:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="CommandLocationPut">
     <xsd:annotation>
       <xsd:documentation>
@@ -335,6 +349,7 @@
       <xsd:element ref="ip1:CommandItemRemove"/>
       <xsd:element ref="ip1:CommandItemReposit"/>
       <xsd:element ref="ip1:CommandItemUpdate"/>
+      <xsd:element ref="ip1:CommandLocationGet"/>
       <xsd:element ref="ip1:CommandLocationList"/>
       <xsd:element ref="ip1:CommandLocationPut"/>
       <xsd:element ref="ip1:CommandLoginUsernamePassword"/>

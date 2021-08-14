@@ -50,6 +50,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRem
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemReposit;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationGet;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
@@ -90,7 +91,6 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1288,9 +1288,10 @@ public final class CAServerV1Test
 
     {
       final var response =
-        this.send(URI_COMMAND,
-                  new CA1CommandItemReposit(
-                    new CAItemRepositAdd(itemId, location.id(), 1000L)));
+        this.send(
+          URI_COMMAND,
+          new CA1CommandItemReposit(
+            new CAItemRepositAdd(itemId, location.id(), 1000L)));
       final var message =
         (CA1ResponseOK) this.parse(response);
 
@@ -1309,6 +1310,88 @@ public final class CAServerV1Test
       final var items = (CAItems) message.data().orElseThrow();
       final var item = items.items().iterator().next();
       assertEquals(1000L, item.count());
+    }
+  }
+
+
+  /**
+   * Adding and retrieving locations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationsCreateGet()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var location0 =
+      new CALocation(
+        CALocationID.random(),
+        "location",
+        "location description");
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandLocationPut(location0));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandLocationGet(location0.id()));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.of(location0), message.data());
+    }
+  }
+
+  /**
+   * Retrieving nonexistent locations fails.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationsGetNonexistent()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    {
+      final var response =
+        this.send(
+          URI_COMMAND,
+          new CA1CommandLocationGet(CALocationID.random()));
+      final var message =
+        (CA1ResponseError) this.parse(response);
+
+      assertEquals(404, response.statusCode());
     }
   }
 

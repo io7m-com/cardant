@@ -6,6 +6,7 @@
   <entry key="errorMissingId">Missing a required id parameter.</entry>
   <entry key="errorNoSuchAttachment">No such attachment.</entry>
   <entry key="errorNoSuchItem">No such item.</entry>
+  <entry key="errorNoSuchLocation">No such location.</entry>
   <entry key="errorTransaction">At least one command within the transaction failed.</entry>
   <entry key="errorUnauthorized">Unauthorized</entry>
   <entry key="errorUnexpectedInput">Expected a command or a transaction.</entry>
