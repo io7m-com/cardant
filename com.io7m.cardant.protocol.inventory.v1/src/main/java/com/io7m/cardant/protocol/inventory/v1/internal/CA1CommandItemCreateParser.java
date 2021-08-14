@@ -52,10 +52,8 @@ public final class CA1CommandItemCreateParser
       CAItemID.of(attributes.getValue("id"));
     final var name =
       attributes.getValue("name");
-    final var count =
-      Long.parseUnsignedLong(attributes.getValue("count"));
 
-    this.result = new CA1CommandItemCreate(itemId, name, count);
+    this.result = new CA1CommandItemCreate(itemId, name);
   }
 
   @Override

@@ -14,17 +14,36 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.messages;
+package com.io7m.cardant.model;
+
+import java.util.Objects;
 
 /**
- * The base type of inventory responses.
+ * A location.
+ *
+ * @param id          The location ID
+ * @param name        The location name
+ * @param description The location description
  */
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits
-  CA1ResponseError,
-  CA1ResponseOK
+public record CALocation(
+  CALocationID id,
+  String name,
+  String description
+) implements CAInventoryElementType
 {
+  /**
+   * Construct a location.
+   *
+   * @param id          The location ID
+   * @param name        The location name
+   * @param description The location description
+   */
 
+  public CALocation
+  {
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(description, "description");
+  }
 }

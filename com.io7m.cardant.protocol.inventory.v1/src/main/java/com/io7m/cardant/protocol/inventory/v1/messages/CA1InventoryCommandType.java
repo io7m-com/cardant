@@ -22,7 +22,8 @@ package com.io7m.cardant.protocol.inventory.v1.messages;
 
 public sealed interface CA1InventoryCommandType
   extends CA1InventoryMessageType
-  permits CA1CommandItemAttachmentPut,
+  permits
+  CA1CommandItemAttachmentPut,
   CA1CommandItemAttachmentRemove,
   CA1CommandItemCreate,
   CA1CommandItemList,
@@ -30,6 +31,8 @@ public sealed interface CA1InventoryCommandType
   CA1CommandItemMetadataRemove,
   CA1CommandItemRemove,
   CA1CommandItemUpdate,
+  CA1CommandLocationList,
+  CA1CommandLocationPut,
   CA1CommandLoginUsernamePassword,
   CA1CommandTagList,
   CA1CommandTagsDelete,

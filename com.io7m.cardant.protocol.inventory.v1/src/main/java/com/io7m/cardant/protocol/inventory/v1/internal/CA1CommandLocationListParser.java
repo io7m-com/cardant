@@ -14,34 +14,38 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.messages;
+package com.io7m.cardant.protocol.inventory.v1.internal;
 
-import com.io7m.cardant.model.CAItemID;
-
-import java.util.Objects;
+import com.io7m.blackthorne.api.BTElementHandlerType;
+import com.io7m.blackthorne.api.BTElementParsingContextType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
 
 /**
- * The "create item" command.
- *
- * @param id   The item ID
- * @param name The item name
+ * A parser.
  */
 
-public record CA1CommandItemCreate(
-  CAItemID id,
-  String name
-) implements CA1InventoryCommandType
+public final class CA1CommandLocationListParser
+  implements BTElementHandlerType<Object, CA1CommandLocationList>
 {
+  private CA1CommandLocationPut result;
+
   /**
-   * The "create item" command.
+   * Create a parser.
    *
-   * @param id   The item ID
-   * @param name The item name
+   * @param context The parsing context
    */
 
-  public CA1CommandItemCreate
+  public CA1CommandLocationListParser(
+    final BTElementParsingContextType context)
   {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(name, "name");
+
+  }
+
+  @Override
+  public CA1CommandLocationList onElementFinished(
+    final BTElementParsingContextType context)
+  {
+    return new CA1CommandLocationList();
   }
 }

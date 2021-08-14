@@ -24,6 +24,8 @@ import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemMetadatas;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.xml.CAInventorySchemas;
@@ -206,6 +208,32 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     writer.writeEndElement();
   }
 
+  private void serializeLocations(
+    final XMLStreamWriter writer,
+    final CALocations locations)
+    throws XMLStreamException
+  {
+    writer.writeStartElement(NAMESPACE, "Locations");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+
+    for (final var location : locations.locations().values()) {
+      this.serializeLocation(writer, location);
+    }
+    writer.writeEndElement();
+  }
+
+  private void serializeLocation(
+    final XMLStreamWriter writer,
+    final CALocation location)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "Location");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("id", location.id().id().toString());
+    writer.writeAttribute("name", location.name());
+    writer.writeAttribute("description", location.description());
+  }
+
   private void finish(
     final XMLStreamWriter writer)
     throws XMLStreamException
@@ -247,6 +275,10 @@ public final class CAInventorySerializer implements CAInventorySerializerType
         this.serializeItemMetadata(writer, itemMetadata);
       } else if (value instanceof CAItemMetadatas itemMetadatas) {
         this.serializeItemMetadatas(writer, itemMetadatas.metadatas());
+      } else if (value instanceof CALocations locations) {
+        this.serializeLocations(writer, locations);
+      } else if (value instanceof CALocation location) {
+        this.serializeLocation(writer, location);
       } else {
         throw new IllegalStateException("Unrecognized message: " + value);
       }

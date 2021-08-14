@@ -24,4 +24,16 @@
 
   <entry key="errorAttachmentMissingData">Cannot update an attachment with missing data.</entry>
 
+  <entry key="errorItemCountStoreInvariant"><![CDATA[The sum of the stored items does not match the expected item count.
+  Item:           {0}
+  Expected Count: {1}
+  Received Count: {2}
+]]></entry>
+
+  <entry key="errorItemCountTooManyRemoved"><![CDATA[Attempted to remove too many items.
+  Item:              {0}
+  Starting Count:    {1}
+  Attempted Removal: {2}
+]]></entry>
+
 </properties>

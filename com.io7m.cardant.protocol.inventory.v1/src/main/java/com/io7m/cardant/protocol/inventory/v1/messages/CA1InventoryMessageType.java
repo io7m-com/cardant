@@ -21,7 +21,9 @@ package com.io7m.cardant.protocol.inventory.v1.messages;
  */
 
 public sealed interface CA1InventoryMessageType
-  permits CA1InventoryCommandType, CA1InventoryResponseType,
+  permits
+  CA1InventoryCommandType,
+  CA1InventoryResponseType,
   CA1InventoryTransaction
 {
 

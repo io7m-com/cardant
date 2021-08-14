@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
@@ -36,6 +37,8 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsPut;
@@ -292,8 +295,36 @@ public final class CA1CommandServlet
     if (command instanceof CA1CommandItemMetadataRemove itemMetadataRemove) {
       return this.executeCommandItemMetadataRemove(itemMetadataRemove);
     }
+    if (command instanceof CA1CommandLocationPut locationPut) {
+      return this.executeCommandLocationPut(locationPut);
+    }
+    if (command instanceof CA1CommandLocationList locationList) {
+      return this.executeCommandLocationList(locationList);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CA1InventoryResponseType executeCommandLocationList(
+    final CA1CommandLocationList locationList)
+  {
+    try {
+      return new CA1ResponseOK(Optional.of(
+        new CALocations(this.queries.locationList())));
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
+    }
+  }
+
+  private CA1InventoryResponseType executeCommandLocationPut(
+    final CA1CommandLocationPut locationPut)
+  {
+    try {
+      this.queries.locationPut(locationPut.location());
+      return new CA1ResponseOK(Optional.empty());
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
+    }
   }
 
   private CA1InventoryResponseType executeCommandItemMetadataPut(
@@ -441,7 +472,6 @@ public final class CA1CommandServlet
       final var itemId = itemCreate.id();
       this.queries.itemCreate(itemId);
       this.queries.itemNameSet(itemId, itemCreate.name());
-      this.queries.itemCountSet(itemId, itemCreate.count());
       return new CA1ResponseOK(Optional.empty());
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {
@@ -460,7 +490,6 @@ public final class CA1CommandServlet
     try {
       final var itemId = itemUpdate.id();
       this.queries.itemNameSet(itemId, itemUpdate.name());
-      this.queries.itemCountSet(itemId, itemUpdate.count());
       return new CA1ResponseOK(Optional.empty());
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {

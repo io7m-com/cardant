@@ -14,17 +14,16 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.messages;
+package com.io7m.cardant.database.derby.internal;
 
-/**
- * The base type of inventory responses.
- */
+import com.io7m.cardant.database.api.CADatabaseException;
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits
-  CA1ResponseError,
-  CA1ResponseOK
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+interface CADatabaseWithSQLConnectionType<T>
 {
-
+  T call(Connection connection)
+    throws SQLException, CADatabaseException, IOException;
 }

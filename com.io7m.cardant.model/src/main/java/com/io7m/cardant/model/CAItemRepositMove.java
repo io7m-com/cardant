@@ -14,34 +14,39 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.messages;
-
-import com.io7m.cardant.model.CAItemID;
+package com.io7m.cardant.model;
 
 import java.util.Objects;
 
 /**
- * The "create item" command.
+ * An operation that moves a set of items from one storage location to another.
  *
- * @param id   The item ID
- * @param name The item name
+ * @param item         The item
+ * @param fromLocation The source storage location
+ * @param toLocation   The target storage location
+ * @param count        The item count
  */
 
-public record CA1CommandItemCreate(
-  CAItemID id,
-  String name
-) implements CA1InventoryCommandType
+public record CAItemRepositMove(
+  CAItemID item,
+  CALocationID fromLocation,
+  CALocationID toLocation,
+  long count)
+  implements CAItemRepositType
 {
   /**
-   * The "create item" command.
+   * An operation that moves a set of items from one storage location to another.
    *
-   * @param id   The item ID
-   * @param name The item name
+   * @param item         The item
+   * @param fromLocation The source storage location
+   * @param toLocation   The target storage location
+   * @param count        The item count
    */
 
-  public CA1CommandItemCreate
+  public CAItemRepositMove
   {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(fromLocation, "fromLocation");
+    Objects.requireNonNull(toLocation, "toLocation");
   }
 }

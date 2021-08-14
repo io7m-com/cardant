@@ -13,6 +13,28 @@
     </xsd:documentation>
   </xsd:annotation>
 
+  <xsd:element name="CommandLocationPut">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to create or update a location.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:Location"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CommandLocationList">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list locations.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
   <xsd:element name="CommandLoginUsernamePassword">
     <xsd:annotation>
       <xsd:documentation>
@@ -80,9 +102,6 @@
       <xsd:attribute name="name"
                      type="xsd:string"
                      use="required"/>
-      <xsd:attribute name="count"
-                     type="xsd:unsignedLong"
-                     use="required"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -99,9 +118,6 @@
                      use="required"/>
       <xsd:attribute name="name"
                      type="xsd:string"
-                     use="required"/>
-      <xsd:attribute name="count"
-                     type="xsd:unsignedLong"
                      use="required"/>
     </xsd:complexType>
   </xsd:element>
@@ -291,6 +307,8 @@
       <xsd:element ref="ip1:CommandItemMetadataRemove"/>
       <xsd:element ref="ip1:CommandItemRemove"/>
       <xsd:element ref="ip1:CommandItemUpdate"/>
+      <xsd:element ref="ip1:CommandLocationList"/>
+      <xsd:element ref="ip1:CommandLocationPut"/>
       <xsd:element ref="ip1:CommandLoginUsernamePassword"/>
       <xsd:element ref="ip1:CommandTagList"/>
       <xsd:element ref="ip1:CommandTagsPut"/>

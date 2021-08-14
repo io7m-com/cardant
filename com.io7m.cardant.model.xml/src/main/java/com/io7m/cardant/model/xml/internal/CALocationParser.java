@@ -14,30 +14,34 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.internal;
+package com.io7m.cardant.model.xml.internal;
 
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
 import org.xml.sax.Attributes;
+
+import java.util.UUID;
 
 /**
  * A parser.
  */
 
-public final class CA1CommandItemUpdateParser
-  implements BTElementHandlerType<Object, CA1CommandItemUpdate>
+public final class CALocationParser
+  implements BTElementHandlerType<Object, CALocation>
 {
-  private CA1CommandItemUpdate result;
+  private CALocationID locationId;
+  private String name;
+  private String description;
 
   /**
-   * Create a parser.
+   * Construct a parser.
    *
-   * @param context The parsing context
+   * @param context The parse context
    */
 
-  public CA1CommandItemUpdateParser(
+  public CALocationParser(
     final BTElementParsingContextType context)
   {
 
@@ -48,17 +52,22 @@ public final class CA1CommandItemUpdateParser
     final BTElementParsingContextType context,
     final Attributes attributes)
   {
-    final var itemId =
-      CAItemID.of(attributes.getValue("id"));
-    final var name =
+    this.locationId =
+      new CALocationID(UUID.fromString(attributes.getValue("id")));
+    this.name =
       attributes.getValue("name");
-    this.result = new CA1CommandItemUpdate(itemId, name);
+    this.description =
+      attributes.getValue("description");
   }
 
   @Override
-  public CA1CommandItemUpdate onElementFinished(
+  public CALocation onElementFinished(
     final BTElementParsingContextType context)
   {
-    return this.result;
+    return new CALocation(
+      this.locationId,
+      this.name,
+      this.description
+    );
   }
 }

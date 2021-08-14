@@ -17,14 +17,11 @@
 package com.io7m.cardant.protocol.inventory.v1.messages;
 
 /**
- * The base type of inventory responses.
+ * The "list locations" command.
  */
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits
-  CA1ResponseError,
-  CA1ResponseOK
+public record CA1CommandLocationList()
+  implements CA1InventoryCommandType
 {
 
 }

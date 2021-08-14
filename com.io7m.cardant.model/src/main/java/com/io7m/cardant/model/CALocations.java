@@ -14,17 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.messages;
+package com.io7m.cardant.model;
+
+import java.util.Objects;
+import java.util.SortedMap;
 
 /**
- * The base type of inventory responses.
+ * A set of locations.
+ *
+ * @param locations The locations
  */
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits
-  CA1ResponseError,
-  CA1ResponseOK
+public record CALocations(SortedMap<CALocationID, CALocation> locations)
+  implements CAInventoryElementType
 {
+  /**
+   * A set of locations.
+   *
+   * @param locations The locations
+   */
 
+  public CALocations
+  {
+    Objects.requireNonNull(locations, "locations");
+  }
 }

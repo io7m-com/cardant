@@ -14,17 +14,26 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.messages;
+package com.io7m.cardant.model;
 
 /**
- * The base type of inventory responses.
+ * The type of item reposit operations.
  */
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits
-  CA1ResponseError,
-  CA1ResponseOK
+public sealed interface CAItemRepositType
+  permits CAItemRepositAdd,
+  CAItemRepositMove,
+  CAItemRepositRemove
 {
+  /**
+   * @return The item ID
+   */
 
+  CAItemID item();
+
+  /**
+   * @return The item count
+   */
+
+  long count();
 }

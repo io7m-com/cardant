@@ -23,23 +23,20 @@ import java.util.Objects;
 /**
  * The "update item" command.
  *
- * @param id    The item ID
- * @param count The item count
- * @param name  The item name
+ * @param id   The item ID
+ * @param name The item name
  */
 
 public record CA1CommandItemUpdate(
   CAItemID id,
-  String name,
-  long count
+  String name
 ) implements CA1InventoryCommandType
 {
   /**
    * The "update item" command.
    *
-   * @param id    The item ID
-   * @param count The item count
-   * @param name  The item name
+   * @param id   The item ID
+   * @param name The item name
    */
 
   public CA1CommandItemUpdate

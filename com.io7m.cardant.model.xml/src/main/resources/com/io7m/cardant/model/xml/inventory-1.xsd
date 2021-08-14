@@ -45,6 +45,28 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <xsd:simpleType name="LocationNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A location name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="LocationDescriptionType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A location description value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="1023"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
   <xsd:simpleType name="ItemMetadataNameType">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -139,6 +161,29 @@
       <xsd:sequence minOccurs="0"
                     maxOccurs="unbounded">
         <xsd:element ref="inv:Tag"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Location">
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="name"
+                     type="inv:LocationNameType"
+                     use="required"/>
+      <xsd:attribute name="description"
+                     type="inv:LocationDescriptionType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Locations">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="inv:Location"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -247,6 +292,8 @@
       <xsd:element ref="inv:ItemMetadata"/>
       <xsd:element ref="inv:ItemMetadatas"/>
       <xsd:element ref="inv:Items"/>
+      <xsd:element ref="inv:Location"/>
+      <xsd:element ref="inv:Locations"/>
       <xsd:element ref="inv:Tag"/>
       <xsd:element ref="inv:Tags"/>
     </xsd:choice>

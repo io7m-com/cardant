@@ -27,6 +27,11 @@ import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositMove;
+import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAModelCADatabaseQueriesType;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CAUser;
@@ -251,52 +256,6 @@ public final class CADerbyDatabaseTest
         final var retrieved = queries.itemGet(id).orElseThrow();
         assertEquals(item0p0, retrieved);
       }
-
-      final var item0p1 =
-        new CAItem(
-          id,
-          "ITEM0",
-          23L,
-          new TreeMap<>(),
-          new TreeMap<>(),
-          Collections.emptySortedSet());
-
-      queries.itemCountSet(id, 23L);
-
-      {
-        final var retrieved = queries.itemGet(id).orElseThrow();
-        assertEquals(item0p1, retrieved);
-      }
-    });
-  }
-
-  @Test
-  public void testItemSetCountNegative0()
-    throws Exception
-  {
-    this.withDatabase((transaction, queries) -> {
-      final var id = CAItemID.random();
-
-      queries.itemCreate(id);
-
-      final var ex = assertThrows(CADatabaseException.class, () -> {
-        queries.itemCountSet(id, -1L);
-      });
-      assertEquals(ERROR_PARAMETERS_INVALID, ex.errorCode());
-    });
-  }
-
-  @Test
-  public void testItemSetCountNonexistent0()
-    throws Exception
-  {
-    this.withDatabase((transaction, queries) -> {
-      final var id = CAItemID.random();
-
-      final var ex = assertThrows(CADatabaseException.class, () -> {
-        queries.itemCountSet(id, 0L);
-      });
-      assertEquals(ERROR_NONEXISTENT, ex.errorCode());
     });
   }
 
@@ -822,5 +781,301 @@ public final class CADerbyDatabaseTest
       CADatabaseTransactionType transaction,
       CAModelCADatabaseQueriesType queries)
       throws Exception;
+  }
+
+
+  @Test
+  public void testLocationNonexistent()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      assertEquals(
+        Optional.empty(),
+        queries.locationGet(CALocationID.random())
+      );
+    });
+  }
+
+  @Test
+  public void testLocationNone()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      assertEquals(
+        Map.of(),
+        queries.userList()
+      );
+    });
+  }
+
+  @Test
+  public void testLocationPutGet()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var location = new CALocation(
+        CALocationID.random(),
+        "location",
+        "description"
+      );
+
+      queries.locationPut(location);
+      assertEquals(Optional.of(location), queries.locationGet(location.id()));
+
+      final var locationAlt = new CALocation(
+        location.id(),
+        "location1",
+        "description1"
+      );
+
+      queries.locationPut(locationAlt);
+      assertEquals(
+        Optional.of(locationAlt),
+        queries.locationGet(location.id()));
+      assertEquals(
+        List.of(locationAlt),
+        List.copyOf(queries.locationList().values())
+      );
+    });
+  }
+
+  @Test
+  public void testItemRepositAddRemove()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var item0 =
+        new CAItem(
+          CAItemID.random(),
+          "",
+          0L,
+          new TreeMap<>(),
+          new TreeMap<>(),
+          Collections.emptySortedSet()
+        );
+
+      queries.itemCreate(item0.id());
+
+      final var location =
+        new CALocation(
+          CALocationID.random(),
+          "location",
+          "location description"
+        );
+
+      queries.locationPut(location);
+      queries.itemReposit(
+        new CAItemRepositAdd(
+          item0.id(),
+          location.id(),
+          100L)
+      );
+
+      {
+        final var itemUpdated =
+          queries.itemGet(item0.id()).orElseThrow();
+        assertEquals(100L, itemUpdated.count());
+      }
+
+      queries.itemReposit(
+        new CAItemRepositAdd(
+          item0.id(),
+          location.id(),
+          100L)
+      );
+
+      {
+        final var itemUpdated =
+          queries.itemGet(item0.id()).orElseThrow();
+        assertEquals(200L, itemUpdated.count());
+      }
+
+      queries.itemReposit(
+        new CAItemRepositRemove(
+          item0.id(),
+          location.id(),
+          100L)
+      );
+
+      {
+        final var itemUpdated =
+          queries.itemGet(item0.id()).orElseThrow();
+        assertEquals(100L, itemUpdated.count());
+      }
+
+      queries.itemReposit(
+        new CAItemRepositRemove(
+          item0.id(),
+          location.id(),
+          100L)
+      );
+
+      {
+        final var itemUpdated =
+          queries.itemGet(item0.id()).orElseThrow();
+        assertEquals(0L, itemUpdated.count());
+      }
+    });
+  }
+
+  @Test
+  public void testItemRepositAddRemoveTooMany()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var item0 =
+        new CAItem(
+          CAItemID.random(),
+          "",
+          0L,
+          new TreeMap<>(),
+          new TreeMap<>(),
+          Collections.emptySortedSet()
+        );
+
+      queries.itemCreate(item0.id());
+
+      final var location =
+        new CALocation(
+          CALocationID.random(),
+          "location",
+          "location description"
+        );
+
+      queries.locationPut(location);
+      queries.itemReposit(
+        new CAItemRepositAdd(
+          item0.id(),
+          location.id(),
+          100L)
+      );
+
+      final var ex =
+        assertThrows(CADatabaseException.class, () -> {
+          queries.itemReposit(
+            new CAItemRepositRemove(
+              item0.id(),
+              location.id(),
+              101L)
+          );
+        });
+      assertEquals(ERROR_PARAMETERS_INVALID, ex.errorCode());
+    });
+  }
+
+  @Test
+  public void testItemRepositNoItem()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var location =
+        new CALocation(
+          CALocationID.random(),
+          "location",
+          "location description"
+        );
+
+      queries.locationPut(location);
+
+      final var ex =
+        assertThrows(CADatabaseException.class, () -> {
+          queries.itemReposit(
+            new CAItemRepositAdd(
+              CAItemID.random(),
+              location.id(),
+              100L)
+          );
+        });
+
+      assertEquals(ERROR_NONEXISTENT, ex.errorCode());
+    });
+  }
+
+  @Test
+  public void testItemRepositNoLocation()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var item0 =
+        new CAItem(
+          CAItemID.random(),
+          "",
+          0L,
+          new TreeMap<>(),
+          new TreeMap<>(),
+          Collections.emptySortedSet()
+        );
+
+      queries.itemCreate(item0.id());
+
+      final var ex =
+        assertThrows(CADatabaseException.class, () -> {
+          queries.itemReposit(
+            new CAItemRepositAdd(
+              item0.id(),
+              CALocationID.random(),
+              100L)
+          );
+        });
+
+      assertEquals(ERROR_NONEXISTENT, ex.errorCode());
+    });
+  }
+
+  @Test
+  public void testItemRepositMove()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var item0 =
+        new CAItem(
+          CAItemID.random(),
+          "",
+          0L,
+          new TreeMap<>(),
+          new TreeMap<>(),
+          Collections.emptySortedSet()
+        );
+
+      queries.itemCreate(item0.id());
+
+      final var location0 =
+        new CALocation(
+          CALocationID.random(),
+          "location0",
+          "location description0"
+        );
+      final var location1 =
+        new CALocation(
+          CALocationID.random(),
+          "location1",
+          "location description1"
+        );
+
+      queries.locationPut(location0);
+      queries.locationPut(location1);
+
+      queries.itemReposit(
+        new CAItemRepositAdd(
+          item0.id(),
+          location0.id(),
+          100L)
+      );
+
+      queries.itemReposit(
+        new CAItemRepositMove(
+          item0.id(),
+          location0.id(),
+          location1.id(),
+          50L
+        )
+      );
+
+      {
+        final var itemUpdated =
+          queries.itemGet(item0.id()).orElseThrow();
+        assertEquals(100L, itemUpdated.count());
+      }
+    });
   }
 }

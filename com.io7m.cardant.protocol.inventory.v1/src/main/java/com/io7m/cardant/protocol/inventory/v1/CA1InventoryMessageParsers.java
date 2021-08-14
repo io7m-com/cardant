@@ -27,6 +27,8 @@ import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataPut
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataRemoveParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemRemoveParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemUpdateParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandLocationListParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandLocationPutParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandLoginUsernamePasswordParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandTagListParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandTagsDeleteParser;
@@ -166,6 +168,14 @@ public final class CA1InventoryMessageParsers
       Map.entry(
         element1("CommandItemList"),
         CA1CommandItemListParser::new
+      ),
+      Map.entry(
+        element1("CommandLocationPut"),
+        CA1CommandLocationPutParser::new
+      ),
+      Map.entry(
+        element1("CommandLocationList"),
+        CA1CommandLocationListParser::new
       )
     );
   }

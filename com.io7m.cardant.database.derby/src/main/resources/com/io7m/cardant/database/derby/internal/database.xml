@@ -105,6 +105,38 @@ create table cardant.item_metadata (
 ]]></Statement>
 
     <Comment>
+      The locations table contains storage/deployment locations for each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.locations (
+  location_id           char(16) for bit data not null primary key,
+  location_name         varchar(128)          not null,
+  location_description  varchar(1024)         not null
+)
+]]></Statement>
+
+    <Statement><![CDATA[
+create table cardant.item_locations (
+  item_id              char(16) for bit data not null,
+  item_location        char(16) for bit data not null,
+  count                bigint                not null,
+
+  constraint unique_item_location unique (item_id, item_location),
+  constraint item_id_exists       foreign key (item_id)       references cardant.items (item_id),
+  constraint item_location_exists foreign key (item_location) references cardant.locations (location_id),
+
+  constraint check_item_location_count check (count > 0)
+)
+]]></Statement>
+
+    <Statement><![CDATA[
+create view cardant.item_locations_summed (item_id, item_count)
+  as select il.item_id, sum (il.count) from cardant.item_locations as il
+    group by il.item_id
+]]></Statement>
+
+    <Comment>
       The users table contains authentication information for users.
     </Comment>
 

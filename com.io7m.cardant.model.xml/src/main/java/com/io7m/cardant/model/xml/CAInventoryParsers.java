@@ -23,12 +23,15 @@ import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadatas;
+import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.xml.internal.CAInventoryParser;
 import com.io7m.cardant.model.xml.internal.CAItemAttachmentParser;
 import com.io7m.cardant.model.xml.internal.CAItemMetadatasParser;
 import com.io7m.cardant.model.xml.internal.CAItemsParser;
+import com.io7m.cardant.model.xml.internal.CALocationParser;
+import com.io7m.cardant.model.xml.internal.CALocationsParser;
 import com.io7m.cardant.model.xml.internal.CATagParser;
 import com.io7m.cardant.model.xml.internal.CATagsParser;
 
@@ -76,6 +79,14 @@ public final class CAInventoryParsers
       Map.entry(
         element1("Tag"),
         CATagParser::new
+      ),
+      Map.entry(
+        element1("Locations"),
+        CALocationsParser::new
+      ),
+      Map.entry(
+        element1("Location"),
+        CALocationParser::new
       )
     );
   }
@@ -131,6 +142,15 @@ public final class CAInventoryParsers
     final CAItemID itemId)
   {
     return context -> new CAItemMetadatasParser(itemId, context);
+  }
+
+  /**
+   * @return The location parsers
+   */
+
+  public static BTElementHandlerConstructorType<?, CALocation> locationParser()
+  {
+    return CALocationParser::new;
   }
 
   @Override

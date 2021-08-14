@@ -16,20 +16,25 @@
 
 package com.io7m.cardant.protocol.inventory.v1.internal;
 
+import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
-import org.xml.sax.Attributes;
+import com.io7m.blackthorne.api.BTQualifiedName;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.xml.CAInventoryParsers;
+import com.io7m.cardant.model.xml.CAInventorySchemas;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
+
+import java.util.Map;
 
 /**
  * A parser.
  */
 
-public final class CA1CommandItemUpdateParser
-  implements BTElementHandlerType<Object, CA1CommandItemUpdate>
+public final class CA1CommandLocationPutParser
+  implements BTElementHandlerType<CALocation, CA1CommandLocationPut>
 {
-  private CA1CommandItemUpdate result;
+  private CA1CommandLocationPut result;
 
   /**
    * Create a parser.
@@ -37,26 +42,36 @@ public final class CA1CommandItemUpdateParser
    * @param context The parsing context
    */
 
-  public CA1CommandItemUpdateParser(
+  public CA1CommandLocationPutParser(
     final BTElementParsingContextType context)
   {
 
   }
 
   @Override
-  public void onElementStart(
-    final BTElementParsingContextType context,
-    final Attributes attributes)
+  public Map<BTQualifiedName, BTElementHandlerConstructorType<?, ? extends CALocation>>
+  onChildHandlersRequested(
+    final BTElementParsingContextType context)
   {
-    final var itemId =
-      CAItemID.of(attributes.getValue("id"));
-    final var name =
-      attributes.getValue("name");
-    this.result = new CA1CommandItemUpdate(itemId, name);
+    return Map.ofEntries(
+      Map.entry(
+        CAInventorySchemas.element1("Location"),
+        CAInventoryParsers.locationParser()
+      )
+    );
   }
 
   @Override
-  public CA1CommandItemUpdate onElementFinished(
+  public void onChildValueProduced(
+    final BTElementParsingContextType context,
+    final CALocation received)
+    throws Exception
+  {
+    this.result = new CA1CommandLocationPut(received);
+  }
+
+  @Override
+  public CA1CommandLocationPut onElementFinished(
     final BTElementParsingContextType context)
   {
     return this.result;

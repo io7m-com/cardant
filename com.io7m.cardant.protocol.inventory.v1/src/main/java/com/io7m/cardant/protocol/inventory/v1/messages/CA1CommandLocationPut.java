@@ -16,15 +16,27 @@
 
 package com.io7m.cardant.protocol.inventory.v1.messages;
 
+import com.io7m.cardant.model.CALocation;
+
+import java.util.Objects;
+
 /**
- * The base type of inventory responses.
+ * The "location put" command.
+ *
+ * @param location The location id
  */
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits
-  CA1ResponseError,
-  CA1ResponseOK
+public record CA1CommandLocationPut(CALocation location)
+  implements CA1InventoryCommandType
 {
+  /**
+   * The "location put" command.
+   *
+   * @param location The location
+   */
 
+  public CA1CommandLocationPut
+  {
+    Objects.requireNonNull(location, "location");
+  }
 }

@@ -14,17 +14,35 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.v1.messages;
+package com.io7m.cardant.model;
+
+import java.util.Objects;
 
 /**
- * The base type of inventory responses.
+ * An operation that adds a set of items to a storage location.
+ *
+ * @param item     The item
+ * @param location The storage location
+ * @param count    The item count
  */
 
-public sealed interface CA1InventoryResponseType
-  extends CA1InventoryMessageType
-  permits
-  CA1ResponseError,
-  CA1ResponseOK
+public record CAItemRepositAdd(
+  CAItemID item,
+  CALocationID location,
+  long count)
+  implements CAItemRepositType
 {
+  /**
+   * An operation that adds a set of items to a storage location.
+   *
+   * @param item     The item
+   * @param location The storage location
+   * @param count    The item count
+   */
 
+  public CAItemRepositAdd
+  {
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(location, "location");
+  }
 }
