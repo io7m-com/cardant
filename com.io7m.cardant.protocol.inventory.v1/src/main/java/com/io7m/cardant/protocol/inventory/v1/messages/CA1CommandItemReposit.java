@@ -14,27 +14,30 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.protocol.inventory.v1.messages;
+
+import com.io7m.cardant.model.CAItemRepositType;
+
+import java.util.Objects;
 
 /**
- * The type of item reposit operations.
+ * The "reposit item" command.
+ *
+ * @param reposit The item reposit operation
  */
 
-public sealed interface CAItemRepositType
-  extends CAInventoryElementType
-  permits CAItemRepositAdd,
-  CAItemRepositMove,
-  CAItemRepositRemove
+public record CA1CommandItemReposit(
+  CAItemRepositType reposit
+) implements CA1InventoryCommandType
 {
   /**
-   * @return The item ID
+   * The "reposit item" command.
+   *
+   * @param reposit The item reposit operation
    */
 
-  CAItemID item();
-
-  /**
-   * @return The item count
-   */
-
-  long count();
+  public CA1CommandItemReposit
+  {
+    Objects.requireNonNull(reposit, "reposit");
+  }
 }

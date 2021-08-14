@@ -284,6 +284,59 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="ItemRepositAdd">
+    <xsd:complexType>
+      <xsd:attribute name="item"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="location"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="count"
+                     type="xsd:unsignedLong"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemRepositRemove">
+    <xsd:complexType>
+      <xsd:attribute name="item"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="location"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="count"
+                     type="xsd:unsignedLong"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemRepositMove">
+    <xsd:complexType>
+      <xsd:attribute name="item"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="fromLocation"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="toLocation"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="count"
+                     type="xsd:unsignedLong"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="ItemReposit">
+    <xsd:choice>
+      <xsd:element ref="inv:ItemRepositAdd"/>
+      <xsd:element ref="inv:ItemRepositMove"/>
+      <xsd:element ref="inv:ItemRepositRemove"/>
+    </xsd:choice>
+  </xsd:group>
+
   <xsd:group name="Elements">
     <xsd:choice>
       <xsd:element ref="inv:Item"/>
@@ -296,6 +349,7 @@
       <xsd:element ref="inv:Locations"/>
       <xsd:element ref="inv:Tag"/>
       <xsd:element ref="inv:Tags"/>
+      <xsd:group ref="inv:ItemReposit"/>
     </xsd:choice>
   </xsd:group>
 

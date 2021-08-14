@@ -23,6 +23,10 @@ import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemMetadatas;
+import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositMove;
+import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocations;
@@ -234,6 +238,59 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     writer.writeAttribute("description", location.description());
   }
 
+  private void serializeItemReposit(
+    final XMLStreamWriter writer,
+    final CAItemRepositType reposit)
+    throws XMLStreamException
+  {
+    if (reposit instanceof CAItemRepositAdd add) {
+      this.serializeItemRepositAdd(writer, add);
+    } else if (reposit instanceof CAItemRepositRemove remove) {
+      this.serializeItemRepositRemove(writer, remove);
+    } else if (reposit instanceof CAItemRepositMove move) {
+      this.serializeItemRepositMove(writer, move);
+    } else {
+      throw new IllegalStateException("Unexpected message: " + reposit);
+    }
+  }
+
+  private void serializeItemRepositMove(
+    final XMLStreamWriter writer,
+    final CAItemRepositMove move)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "ItemRepositMove");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("item", move.item().id().toString());
+    writer.writeAttribute("fromLocation", move.fromLocation().id().toString());
+    writer.writeAttribute("toLocation", move.toLocation().id().toString());
+    writer.writeAttribute("count", Long.toUnsignedString(move.count()));
+  }
+
+  private void serializeItemRepositRemove(
+    final XMLStreamWriter writer,
+    final CAItemRepositRemove remove)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "ItemRepositRemove");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("item", remove.item().id().toString());
+    writer.writeAttribute("location", remove.location().id().toString());
+    writer.writeAttribute("count", Long.toUnsignedString(remove.count()));
+  }
+
+  private void serializeItemRepositAdd(
+    final XMLStreamWriter writer,
+    final CAItemRepositAdd add)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "ItemRepositAdd");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("item", add.item().id().toString());
+    writer.writeAttribute("location", add.location().id().toString());
+    writer.writeAttribute("count", Long.toUnsignedString(add.count()));
+  }
+
   private void finish(
     final XMLStreamWriter writer)
     throws XMLStreamException
@@ -279,6 +336,8 @@ public final class CAInventorySerializer implements CAInventorySerializerType
         this.serializeLocations(writer, locations);
       } else if (value instanceof CALocation location) {
         this.serializeLocation(writer, location);
+      } else if (value instanceof CAItemRepositType reposit) {
+        this.serializeItemReposit(writer, reposit);
       } else {
         throw new IllegalStateException("Unrecognized message: " + value);
       }

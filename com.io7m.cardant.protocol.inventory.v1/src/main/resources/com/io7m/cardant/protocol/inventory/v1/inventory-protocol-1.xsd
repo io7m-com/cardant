@@ -136,6 +136,18 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="CommandItemReposit">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to reposit items.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:group ref="iv1:ItemReposit"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="CommandItemList">
     <xsd:annotation>
       <xsd:documentation>
@@ -306,6 +318,7 @@
       <xsd:element ref="ip1:CommandItemMetadataPut"/>
       <xsd:element ref="ip1:CommandItemMetadataRemove"/>
       <xsd:element ref="ip1:CommandItemRemove"/>
+      <xsd:element ref="ip1:CommandItemReposit"/>
       <xsd:element ref="ip1:CommandItemUpdate"/>
       <xsd:element ref="ip1:CommandLocationList"/>
       <xsd:element ref="ip1:CommandLocationPut"/>

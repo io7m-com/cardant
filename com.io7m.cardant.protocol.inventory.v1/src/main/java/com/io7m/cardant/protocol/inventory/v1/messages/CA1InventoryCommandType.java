@@ -30,6 +30,7 @@ public sealed interface CA1InventoryCommandType
   CA1CommandItemMetadataPut,
   CA1CommandItemMetadataRemove,
   CA1CommandItemRemove,
+  CA1CommandItemReposit,
   CA1CommandItemUpdate,
   CA1CommandLocationList,
   CA1CommandLocationPut,

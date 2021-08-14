@@ -36,6 +36,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemReposit;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
@@ -301,8 +302,22 @@ public final class CA1CommandServlet
     if (command instanceof CA1CommandLocationList locationList) {
       return this.executeCommandLocationList(locationList);
     }
+    if (command instanceof CA1CommandItemReposit itemReposit) {
+      return this.executeCommandItemReposit(itemReposit);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CA1InventoryResponseType executeCommandItemReposit(
+    final CA1CommandItemReposit itemReposit)
+  {
+    try {
+      this.queries.itemReposit(itemReposit.reposit());
+      return new CA1ResponseOK(Optional.empty());
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
+    }
   }
 
   private CA1InventoryResponseType executeCommandLocationList(

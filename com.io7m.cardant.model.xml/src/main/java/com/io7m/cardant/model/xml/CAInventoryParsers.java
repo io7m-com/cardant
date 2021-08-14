@@ -23,12 +23,18 @@ import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadatas;
+import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositMove;
+import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.xml.internal.CAInventoryParser;
 import com.io7m.cardant.model.xml.internal.CAItemAttachmentParser;
 import com.io7m.cardant.model.xml.internal.CAItemMetadatasParser;
+import com.io7m.cardant.model.xml.internal.CAItemRepositAddParser;
+import com.io7m.cardant.model.xml.internal.CAItemRepositMoveParser;
+import com.io7m.cardant.model.xml.internal.CAItemRepositRemoveParser;
 import com.io7m.cardant.model.xml.internal.CAItemsParser;
 import com.io7m.cardant.model.xml.internal.CALocationParser;
 import com.io7m.cardant.model.xml.internal.CALocationsParser;
@@ -151,6 +157,36 @@ public final class CAInventoryParsers
   public static BTElementHandlerConstructorType<?, CALocation> locationParser()
   {
     return CALocationParser::new;
+  }
+
+  /**
+   * @return An item reposit parser
+   */
+
+  public static BTElementHandlerConstructorType<?, CAItemRepositAdd>
+  itemRepositAddParser()
+  {
+    return CAItemRepositAddParser::new;
+  }
+
+  /**
+   * @return An item reposit parser
+   */
+
+  public static BTElementHandlerConstructorType<?, CAItemRepositRemove>
+  itemRepositRemoveParser()
+  {
+    return CAItemRepositRemoveParser::new;
+  }
+
+  /**
+   * @return An item reposit parser
+   */
+
+  public static BTElementHandlerConstructorType<?, CAItemRepositMove>
+  itemRepositMoveParser()
+  {
+    return CAItemRepositMoveParser::new;
   }
 
   @Override

@@ -24,8 +24,10 @@ import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemMetadatas;
+import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -44,6 +46,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemReposit;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
@@ -1152,6 +1155,81 @@ public final class CAServerV1Test
 
       assertEquals(200, response.statusCode());
       assertEquals(Optional.of(locations), message.data());
+    }
+  }
+
+  /**
+   * Item repositing works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemReposit()
+    throws Exception
+  {
+    this.createUser("someone", "1234");
+
+    {
+      final var response =
+        this.send(
+          URI_LOGIN,
+          new CA1CommandLoginUsernamePassword("someone", "1234"));
+      assertEquals(200, response.statusCode());
+    }
+
+    final var location =
+      new CALocation(
+        CALocationID.random(),
+        "location",
+        "location description"
+      );
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandLocationPut(location));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    final var itemId = CAItemID.random();
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemCreate(itemId, "Item"));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND,
+                  new CA1CommandItemReposit(
+                    new CAItemRepositAdd(itemId, location.id(), 1000L)));
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+      assertEquals(Optional.empty(), message.data());
+    }
+
+    {
+      final var response =
+        this.send(URI_COMMAND, new CA1CommandItemList());
+      final var message =
+        (CA1ResponseOK) this.parse(response);
+
+      assertEquals(200, response.statusCode());
+
+      final var items = (CAItems) message.data().orElseThrow();
+      final var item = items.items().iterator().next();
+      assertEquals(1000L, item.count());
     }
   }
 
