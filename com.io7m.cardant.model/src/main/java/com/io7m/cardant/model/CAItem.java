@@ -18,8 +18,10 @@ package com.io7m.cardant.model;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.stream.Stream;
 
 /**
  * An item in the inventory.
@@ -77,5 +79,41 @@ public record CAItem(
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
     );
+  }
+
+  public Optional<String> description()
+  {
+    return Optional.ofNullable(this.metadata.get("Description"))
+      .map(CAItemMetadata::value);
+  }
+
+  public String descriptionOrEmpty()
+  {
+    return this.description()
+      .orElse("");
+  }
+
+  public Stream<CAItemAttachment> attachmentsWithRelation(
+    final String relation)
+  {
+    Objects.requireNonNull(relation, "relation");
+    return this.attachments.values()
+      .stream()
+      .filter(attachment -> Objects.equals(attachment.relation(), relation));
+  }
+
+  public Optional<CAItemAttachment> firstAttachmentWithRelation(
+    final String relation)
+  {
+    Objects.requireNonNull(relation, "relation");
+    return this.attachmentsWithRelation(relation)
+      .findFirst();
+  }
+
+  public boolean hasAttachmentWithRelation(
+    final String relation)
+  {
+    Objects.requireNonNull(relation, "relation");
+    return this.firstAttachmentWithRelation(relation).isPresent();
   }
 }

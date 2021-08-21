@@ -125,10 +125,19 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public void itemDelete(final CAItemID item)
+  public void itemDelete(
+    final CAItemID item)
     throws CADatabaseException
   {
     this.items.itemDelete(item);
+  }
+
+  @Override
+  public void itemDeleteMarkOnly(
+    final CAItemID item)
+    throws CADatabaseException
+  {
+    this.items.itemDeleteMarkOnly(item);
   }
 
   @Override
@@ -150,14 +159,16 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public SortedSet<CATag> itemTagList(final CAItemID item)
+  public SortedSet<CATag> itemTagList(
+    final CAItemID item)
     throws CADatabaseException
   {
     return this.items.itemTagList(item);
   }
 
   @Override
-  public void itemMetadataPut(final CAItemMetadata metadata)
+  public void itemMetadataPut(
+    final CAItemMetadata metadata)
     throws CADatabaseException
   {
     this.items.itemMetadataPut(metadata);

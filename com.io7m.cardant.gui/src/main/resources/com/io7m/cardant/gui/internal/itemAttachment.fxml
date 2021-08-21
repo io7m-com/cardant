@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?><?import javafx.scene.control.Label?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.AnchorPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.RowConstraints?><?import javafx.scene.text.Font?>
+<AnchorPane fx:id="container"
+            maxHeight="-Infinity"
+            minHeight="-Infinity"
+            prefHeight="240.0"
+            prefWidth="640.0"
+            xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.io7m.cardant.gui.internal.CAAttachmentCellController">
+  <children>
+    <HBox minHeight="-Infinity"
+          minWidth="-Infinity"
+          prefHeight="160.0"
+          prefWidth="600.0"
+          AnchorPane.bottomAnchor="16.0"
+          AnchorPane.leftAnchor="16.0"
+          AnchorPane.rightAnchor="16.0"
+          AnchorPane.topAnchor="16.0">
+      <children>
+        <GridPane alignment="CENTER"
+                  HBox.hgrow="ALWAYS">
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES"
+                               maxWidth="-Infinity"
+                               minWidth="-Infinity"
+                               prefWidth="128.0"/>
+            <ColumnConstraints hgrow="SOMETIMES"
+                               maxWidth="-Infinity"
+                               minWidth="-Infinity"
+                               prefWidth="128.0"/>
+            <ColumnConstraints hgrow="SOMETIMES"
+                               minWidth="10.0"
+                               prefWidth="100.0"/>
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints maxHeight="-Infinity"
+                            minHeight="-Infinity"
+                            prefHeight="32.0"
+                            vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="-Infinity"
+                            minHeight="-Infinity"
+                            prefHeight="32.0"
+                            vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="-Infinity"
+                            minHeight="-Infinity"
+                            prefHeight="32.0"
+                            vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="-Infinity"
+                            minHeight="-Infinity"
+                            prefHeight="32.0"
+                            vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="-Infinity"
+                            minHeight="-Infinity"
+                            prefHeight="32.0"
+                            vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="-Infinity"
+                            minHeight="-Infinity"
+                            prefHeight="32.0"
+                            vgrow="SOMETIMES"/>
+          </rowConstraints>
+          <HBox.margin>
+            <Insets left="16.0"/>
+          </HBox.margin>
+          <children>
+            <Label prefHeight="32.0"
+                   text="%item.attachment.id"/>
+            <Label prefHeight="32.0"
+                   text="%item.attachment.description"
+                   GridPane.rowIndex="1"/>
+            <Label prefHeight="32.0"
+                   text="%item.attachment.mediaType"
+                   GridPane.rowIndex="2"/>
+            <Label prefHeight="32.0"
+                   text="%item.attachment.relation"
+                   GridPane.rowIndex="3"/>
+            <Label layoutX="10.0"
+                   layoutY="106.0"
+                   prefHeight="32.0"
+                   text="%item.attachment.size"
+                   GridPane.rowIndex="4"/>
+            <Label prefHeight="32.0"
+                   text="%item.attachment.hash"
+                   GridPane.rowIndex="5"/>
+            <TextField fx:id="idField"
+                       editable="false"
+                       GridPane.columnIndex="1"
+                       GridPane.columnSpan="2147483647">
+              <font>
+                <Font name="Monospaced Regular"
+                      size="13.0"/>
+              </font>
+            </TextField>
+            <TextField fx:id="descriptionField"
+                       GridPane.columnIndex="1"
+                       GridPane.columnSpan="2147483647"
+                       GridPane.rowIndex="1">
+              <font>
+                <Font name="Monospaced Regular"
+                      size="13.0"/>
+              </font>
+            </TextField>
+            <TextField fx:id="mediaTypeField"
+                       GridPane.columnIndex="1"
+                       GridPane.columnSpan="2147483647"
+                       GridPane.rowIndex="2">
+              <font>
+                <Font name="Monospaced Regular"
+                      size="13.0"/>
+              </font>
+            </TextField>
+            <TextField fx:id="relationField"
+                       GridPane.columnIndex="1"
+                       GridPane.columnSpan="2147483647"
+                       GridPane.rowIndex="3">
+              <font>
+                <Font name="Monospaced Regular"
+                      size="13.0"/>
+              </font>
+            </TextField>
+            <TextField fx:id="sizeField"
+                       editable="false"
+                       GridPane.columnIndex="1"
+                       GridPane.columnSpan="2147483647"
+                       GridPane.rowIndex="4">
+              <font>
+                <Font name="Monospaced Regular"
+                      size="13.0"/>
+              </font>
+            </TextField>
+            <TextField fx:id="hashAlgorithmField"
+                       editable="false"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="5">
+              <font>
+                <Font name="Monospaced Regular"
+                      size="13.0"/>
+              </font>
+            </TextField>
+            <TextField fx:id="hashValueField"
+                       editable="false"
+                       GridPane.columnIndex="2"
+                       GridPane.rowIndex="5">
+              <font>
+                <Font name="Monospaced Regular"
+                      size="13.0"/>
+              </font>
+            </TextField>
+          </children>
+        </GridPane>
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>

@@ -17,7 +17,13 @@
   Object: {0}
   Type:   {1}
 ]]></entry>
+
   <entry key="errorDuplicate"><![CDATA[Object already exists.
+  Object: {0}
+  Type:   {1}
+]]></entry>
+
+  <entry key="errorDuplicateDeleted"><![CDATA[A previously deleted object exists with this ID.
   Object: {0}
   Type:   {1}
 ]]></entry>

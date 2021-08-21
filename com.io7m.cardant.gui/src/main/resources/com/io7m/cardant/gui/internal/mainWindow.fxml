@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerMain">
+  <children>
+    <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="%menuFile">
+          <items>
+            <MenuItem fx:id="fileConnect" mnemonicParsing="false" text="%menuFileConnect">
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@connect16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#onFileQuit" text="%menuQuit">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" smooth="false">
+                           <image>
+                              <Image url="@door16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+            </MenuItem>
+          </items>
+        </Menu>
+
+        <Menu mnemonicParsing="false" text="%menuEdit">
+          <items>
+            <MenuItem fx:id="editUndo" disable="true" mnemonicParsing="false" text="%menuEditUndo">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <MenuItem fx:id="editRedo" disable="true" mnemonicParsing="false" text="%menuEditRedo">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem disable="true" mnemonicParsing="false" text="%menuEditCut">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <MenuItem disable="true" mnemonicParsing="false" text="%menuEditCopy">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <MenuItem disable="true" mnemonicParsing="false" text="%menuEditPaste">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+          </items>
+        </Menu>
+
+        <Menu mnemonicParsing="false" text="%menuHelp">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <TabPane fx:id="mainTabs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="24.0" tabMaxWidth="128.0" tabMinHeight="24.0" tabMinWidth="128.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+      <tabs>
+        <Tab text="%items">
+          <fx:include source="itemsTab.fxml" />
+        </Tab>
+        <Tab text="%locations">
+          <fx:include source="locationsTab.fxml" />
+        </Tab>
+        <Tab text="%transfers">
+          <fx:include source="transfersTab.fxml" />
+        </Tab>
+      </tabs>
+    </TabPane>
+      <Separator prefWidth="200.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <HBox layoutX="8.0" layoutY="368.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <StackPane>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="8.0" top="5.0" />
+               </HBox.margin>
+               <children>
+                  <ImageView fx:id="statusIcon" fitHeight="22.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true" />
+                  <ProgressIndicator fx:id="statusProgress" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="22.0" prefWidth="22.0" />
+               </children>
+            </StackPane>
+            <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="8.0" />
+            <Label fx:id="statusText" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
+            <Region maxHeight="-Infinity" minHeight="-Infinity" minWidth="16.0" prefHeight="32.0" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+  </children>
+</AnchorPane>

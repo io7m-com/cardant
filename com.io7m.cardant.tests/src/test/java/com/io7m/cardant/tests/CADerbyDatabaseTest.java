@@ -327,6 +327,24 @@ public final class CADerbyDatabaseTest
   }
 
   @Test
+  public void testItemCreateDeleted()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var id = CAItemID.random();
+
+      queries.itemCreate(id);
+      queries.itemDeleteMarkOnly(id);
+
+      final var ex = assertThrows(CADatabaseException.class, () -> {
+        queries.itemCreate(id);
+      });
+      assertEquals(ERROR_DUPLICATE, ex.errorCode());
+      assertTrue(ex.getMessage().contains("previously deleted"));
+    });
+  }
+
+  @Test
   public void testItemSetNameNonexistent0()
     throws Exception
   {

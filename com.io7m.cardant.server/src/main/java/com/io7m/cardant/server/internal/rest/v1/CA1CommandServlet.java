@@ -567,7 +567,7 @@ public final class CA1CommandServlet
   {
     try {
       final var itemId = itemRemove.id();
-      this.queries.itemDelete(itemId);
+      this.queries.itemDeleteMarkOnly(itemId);
       return new CA1ResponseOK(Optional.empty());
     } catch (final CADatabaseException e) {
       return new CA1ResponseError(500, e.getMessage(), List.of());

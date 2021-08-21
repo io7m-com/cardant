@@ -88,6 +88,17 @@ public interface CAModelDatabaseQueriesItemsType
     throws CADatabaseException;
 
   /**
+   * Mark the given item as deleted.
+   *
+   * @param item The item
+   *
+   * @throws CADatabaseException On database errors
+   */
+
+  void itemDeleteMarkOnly(CAItemID item)
+    throws CADatabaseException;
+
+  /**
    * Add the given tag to the given item.
    *
    * @param item The item

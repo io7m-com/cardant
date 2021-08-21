@@ -45,9 +45,10 @@ create table cardant.tags (
 
     <Statement><![CDATA[
 create table cardant.items (
-  item_id     char(16) for bit data not null primary key,
-  item_name   varchar(128)          not null,
-  item_count  bigint                not null,
+  item_id       char(16) for bit data not null primary key,
+  item_name     varchar(128)          not null,
+  item_count    bigint                not null,
+  item_deleted  boolean              not null,
 
   constraint check_natural_count check (item_count >= 0)
 )

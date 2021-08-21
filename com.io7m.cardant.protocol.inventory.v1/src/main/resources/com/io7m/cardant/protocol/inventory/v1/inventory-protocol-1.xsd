@@ -316,6 +316,22 @@
     </xsd:choice>
   </xsd:group>
 
+  <xsd:element name="Updated">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:IDs"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Removed">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="iv1:IDs"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="EventUpdated">
     <xsd:annotation>
       <xsd:documentation>
@@ -325,20 +341,8 @@
 
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Updated">
-          <xsd:complexType>
-            <xsd:sequence>
-              <xsd:element ref="iv1:IDs"/>
-            </xsd:sequence>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="Removed">
-          <xsd:complexType>
-            <xsd:sequence>
-              <xsd:element ref="iv1:IDs"/>
-            </xsd:sequence>
-          </xsd:complexType>
-        </xsd:element>
+        <xsd:element ref="ip1:Updated"/>
+        <xsd:element ref="ip1:Removed"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
