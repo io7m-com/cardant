@@ -1033,6 +1033,26 @@ public final class CADatabaseModelQueriesItems
   }
 
   @Override
+  public Set<CAItemID> itemListDeleted()
+    throws CADatabaseException
+  {
+    return this.withSQLConnection(connection -> {
+      try (var statement =
+             connection.prepareStatement(ITEM_LIST)) {
+        statement.setBoolean(1, true);
+
+        try (var result = statement.executeQuery()) {
+          final var items = new HashSet<CAItemID>(32);
+          while (result.next()) {
+            items.add(CADatabaseBytes.itemIdFromBytes(result.getBytes("item_id")));
+          }
+          return items;
+        }
+      }
+    });
+  }
+
+  @Override
   public void itemDelete(
     final CAItemID item)
     throws CADatabaseException

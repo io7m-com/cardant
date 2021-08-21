@@ -77,6 +77,15 @@ public interface CAModelDatabaseQueriesItemsType
     throws CADatabaseException;
 
   /**
+   * @return The deleted items
+   *
+   * @throws CADatabaseException On database errors
+   */
+
+  Set<CAItemID> itemListDeleted()
+    throws CADatabaseException;
+
+  /**
    * Delete the given item.
    *
    * @param item The item

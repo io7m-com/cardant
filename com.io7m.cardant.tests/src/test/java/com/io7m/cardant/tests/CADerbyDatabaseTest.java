@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -341,6 +342,23 @@ public final class CADerbyDatabaseTest
       });
       assertEquals(ERROR_DUPLICATE, ex.errorCode());
       assertTrue(ex.getMessage().contains("previously deleted"));
+    });
+  }
+
+  @Test
+  public void testItemCreateListDeleted()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var id = CAItemID.random();
+
+      queries.itemCreate(id);
+      assertEquals(Set.of(id), queries.itemList());
+      assertEquals(Set.of(), queries.itemListDeleted());
+
+      queries.itemDeleteMarkOnly(id);
+      assertEquals(Set.of(), queries.itemList());
+      assertEquals(Set.of(id), queries.itemListDeleted());
     });
   }
 

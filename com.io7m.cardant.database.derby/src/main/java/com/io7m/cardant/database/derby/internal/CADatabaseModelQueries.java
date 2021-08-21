@@ -125,6 +125,13 @@ public final class CADatabaseModelQueries
   }
 
   @Override
+  public Set<CAItemID> itemListDeleted()
+    throws CADatabaseException
+  {
+    return this.items.itemListDeleted();
+  }
+
+  @Override
   public void itemDelete(
     final CAItemID item)
     throws CADatabaseException
