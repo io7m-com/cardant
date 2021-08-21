@@ -20,18 +20,13 @@ import com.io7m.cardant.client.api.CAClientCommandResultType;
 
 import java.util.concurrent.CompletableFuture;
 
-public sealed interface CAClientCommandType<T>
-  permits
-  CAClientCommandHostileType,
-  CAClientCommandItemAttachmentDelete,
-  CAClientCommandItemCreate,
-  CAClientCommandItemGet,
-  CAClientCommandItemMetadataDelete,
-  CAClientCommandItemMetadataUpdate,
-  CAClientCommandItemsDelete,
-  CAClientCommandItemsList
+public record CAClientCommandGarbage(
+  CompletableFuture<CAClientCommandResultType<Void>> future)
+  implements CAClientCommandHostileType<Void>
 {
-  Class<T> returnType();
-
-  CompletableFuture<CAClientCommandResultType<T>> future();
+  @Override
+  public Class<Void> returnType()
+  {
+    return Void.class;
+  }
 }

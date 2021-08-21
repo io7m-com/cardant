@@ -17,12 +17,13 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientEventCommandFailed;
 import com.io7m.cardant.client.api.CAClientEventDataChanged;
 import com.io7m.cardant.client.api.CAClientEventDataReceived;
 import com.io7m.cardant.client.api.CAClientEventStatusChanged;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientFactoryType;
-import com.io7m.cardant.client.api.CAClientType;
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.services.api.CAServiceType;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public final class CAMainClientController implements CAServiceType
   private final CAMainEventBusType eventBus;
   private final CAMainStrings strings;
   private final CAClientFactoryType clients;
-  private volatile CAClientType client;
+  private volatile CAClientHostileType client;
 
   public CAMainClientController(
     final CAMainStrings inStrings,
@@ -55,12 +56,12 @@ public final class CAMainClientController implements CAServiceType
       Objects.requireNonNull(inEventBus, "eventBus");
   }
 
-  public CAClientType connect(
+  public CAClientHostileType connect(
     final CAClientConfiguration configuration)
   {
     Objects.requireNonNull(configuration, "configuration");
 
-    this.client = this.clients.open(configuration);
+    this.client = this.clients.openHostile(configuration);
     this.client.events()
       .subscribe(
         new ClientEventSubscriber(
@@ -98,11 +99,11 @@ public final class CAMainClientController implements CAServiceType
   {
     private final CAMainEventBusType eventBus;
     private final CAMainStrings strings;
-    private final CAClientType client;
+    private final CAClientHostileType client;
     private Flow.Subscription subscription;
 
     ClientEventSubscriber(
-      final CAClientType inClient,
+      final CAClientHostileType inClient,
       final CAMainEventBusType inEventBus,
       final CAMainStrings inStrings)
     {
@@ -138,7 +139,24 @@ public final class CAMainClientController implements CAServiceType
         this.onClientEventDataChanged(data);
       }
 
+      if (item instanceof CAClientEventCommandFailed<?> data) {
+        this.onClientEventCommandFailed(data);
+      }
+
       this.subscription.request(1L);
+    }
+
+    private void onClientEventCommandFailed(
+      final CAClientEventCommandFailed<?> data)
+    {
+      final var message =
+        this.strings.format(
+          "status.commandFailed",
+          data.command(),
+          data.result().message()
+        );
+
+      this.eventBus.submit(new CAMainEventCommandFailed(message));
     }
 
     private void onClientEventStatusChanged(

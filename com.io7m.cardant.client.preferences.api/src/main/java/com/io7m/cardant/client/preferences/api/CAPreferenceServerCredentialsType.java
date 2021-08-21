@@ -16,8 +16,8 @@
 
 package com.io7m.cardant.client.preferences.api;
 
-public sealed interface CAPreferenceServerCredentialsType permits
-  CAPreferenceServerUsernamePassword
+public sealed interface CAPreferenceServerCredentialsType
+  permits CAPreferenceServerUsernamePassword
 {
 
 }

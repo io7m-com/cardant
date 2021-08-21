@@ -88,14 +88,17 @@
     </MenuBar>
     <TabPane fx:id="mainTabs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="24.0" tabMaxWidth="128.0" tabMinHeight="24.0" tabMinWidth="128.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
       <tabs>
-        <Tab text="%items">
+        <Tab fx:id="itemsTab" text="%items">
           <fx:include source="itemsTab.fxml" />
         </Tab>
-        <Tab text="%locations">
+        <Tab fx:id="locationsTab" text="%locations">
           <fx:include source="locationsTab.fxml" />
         </Tab>
-        <Tab text="%transfers">
+        <Tab fx:id="transfersTab" text="%transfers">
           <fx:include source="transfersTab.fxml" />
+        </Tab>
+        <Tab fx:id="debuggingTab" text="%debugging">
+          <fx:include source="debuggingTab.fxml" />
         </Tab>
       </tabs>
     </TabPane>

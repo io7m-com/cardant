@@ -14,24 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.client.vanilla.internal;
+package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientCommandResultType;
+import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_ERROR;
 
-import java.util.concurrent.CompletableFuture;
-
-public sealed interface CAClientCommandType<T>
-  permits
-  CAClientCommandHostileType,
-  CAClientCommandItemAttachmentDelete,
-  CAClientCommandItemCreate,
-  CAClientCommandItemGet,
-  CAClientCommandItemMetadataDelete,
-  CAClientCommandItemMetadataUpdate,
-  CAClientCommandItemsDelete,
-  CAClientCommandItemsList
+public record CAMainEventCommandFailed(
+  String message)
+  implements CAMainEventType
 {
-  Class<T> returnType();
-
-  CompletableFuture<CAClientCommandResultType<T>> future();
+  @Override
+  public CAMainEventClassification classification()
+  {
+    return STATUS_ERROR;
+  }
 }

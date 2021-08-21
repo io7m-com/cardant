@@ -18,6 +18,7 @@ package com.io7m.cardant.client.vanilla;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientFactoryType;
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.vanilla.internal.CAClient;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParserFactoryType;
@@ -56,6 +57,22 @@ public final class CAClients implements CAClientFactoryType
   public CAClientType open(
     final CAClientConfiguration configuration)
   {
+    return this.openInternal(configuration, false);
+  }
+
+  @Override
+  public CAClientHostileType openHostile(
+    final CAClientConfiguration configuration)
+  {
+    return this.openInternal(configuration, true);
+  }
+
+  private CAClientHostileType openInternal(
+    final CAClientConfiguration configuration,
+    final boolean hostile)
+  {
+    Objects.requireNonNull(configuration, "configuration");
+
     final var pollExecutor =
       Executors.newSingleThreadExecutor(runnable -> {
         final var thread = new Thread(runnable);
@@ -93,7 +110,8 @@ public final class CAClients implements CAClientFactoryType
         commandExecutor,
         configuration,
         this.strings,
-        this.versioningParsers
+        this.versioningParsers,
+        hostile
       );
 
     pollExecutor.execute(client::executeEventPolling);

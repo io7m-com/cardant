@@ -46,9 +46,15 @@ public final class CAMainServices
     final var services = new CAServiceDirectory();
 
     final var mainStrings = new CAMainStrings(Locale.getDefault());
-    services.register(CAMainStrings.class, mainStrings);
-    services.register(CAPreferencesServiceType.class, openPreferences());
-    services.register(CAIconsType.class, new CAIcons());
+    services.register(
+      CAMainStrings.class,
+      mainStrings);
+    services.register(
+      CAPreferencesServiceType.class,
+      openPreferences());
+    services.register(
+      CAIconsType.class,
+      new CAIcons());
 
     final var eventBus = new CAMainEventBus();
     services.register(CAMainEventBusType.class, eventBus);

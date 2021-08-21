@@ -14,24 +14,18 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.client.vanilla.internal;
+package com.io7m.cardant.client.api;
 
-import com.io7m.cardant.client.api.CAClientCommandResultType;
+import java.util.Objects;
 
-import java.util.concurrent.CompletableFuture;
-
-public sealed interface CAClientCommandType<T>
-  permits
-  CAClientCommandHostileType,
-  CAClientCommandItemAttachmentDelete,
-  CAClientCommandItemCreate,
-  CAClientCommandItemGet,
-  CAClientCommandItemMetadataDelete,
-  CAClientCommandItemMetadataUpdate,
-  CAClientCommandItemsDelete,
-  CAClientCommandItemsList
+public record CAClientEventCommandFailed<T>(
+  String command,
+  CAClientCommandError<T> result)
+  implements CAClientEventType
 {
-  Class<T> returnType();
-
-  CompletableFuture<CAClientCommandResultType<T>> future();
+  public CAClientEventCommandFailed
+  {
+    Objects.requireNonNull(command, "command");
+    Objects.requireNonNull(result, "result");
+  }
 }

@@ -23,8 +23,8 @@ module com.io7m.cardant.gui.main
   requires static org.osgi.annotation.versioning;
   requires static org.osgi.annotation.bundle;
 
-  requires com.io7m.claypot.core;
   requires com.io7m.cardant.gui;
+  requires com.io7m.claypot.core;
   requires javafx.graphics;
   requires jcommander;
   requires org.slf4j;

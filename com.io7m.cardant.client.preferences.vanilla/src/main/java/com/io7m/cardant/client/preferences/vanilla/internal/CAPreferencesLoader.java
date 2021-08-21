@@ -16,10 +16,11 @@
 
 package com.io7m.cardant.client.preferences.vanilla.internal;
 
-import com.io7m.cardant.client.preferences.api.CAPreferenceServerCredentialsType;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
+import com.io7m.cardant.client.preferences.api.CAPreferenceServerCredentialsType;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
 import com.io7m.cardant.client.preferences.api.CAPreferences;
+import com.io7m.cardant.client.preferences.api.CAPreferencesDebuggingEnabled;
 import com.io7m.jproperties.JPropertyIncorrectType;
 import com.io7m.jproperties.JPropertyNonexistent;
 import org.slf4j.Logger;
@@ -31,7 +32,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
+import static com.io7m.cardant.client.preferences.api.CAPreferencesDebuggingEnabled.DEBUGGING_DISABLED;
+import static com.io7m.cardant.client.preferences.api.CAPreferencesDebuggingEnabled.DEBUGGING_ENABLED;
 import static com.io7m.jproperties.JProperties.getBoolean;
+import static com.io7m.jproperties.JProperties.getBooleanWithDefault;
 import static com.io7m.jproperties.JProperties.getInteger;
 import static com.io7m.jproperties.JProperties.getString;
 
@@ -60,8 +64,21 @@ public final class CAPreferencesLoader
   public CAPreferences load()
   {
     return new CAPreferences(
+      this.loadDebuggingEnabled(),
       this.loadServerBookmarks()
     );
+  }
+
+  private CAPreferencesDebuggingEnabled loadDebuggingEnabled()
+  {
+    try {
+      if (getBooleanWithDefault(this.properties, "debugging", false)) {
+        return DEBUGGING_ENABLED;
+      }
+      return DEBUGGING_DISABLED;
+    } catch (final JPropertyIncorrectType e) {
+      return DEBUGGING_DISABLED;
+    }
   }
 
   private List<CAPreferenceServerBookmark> loadServerBookmarks()
@@ -99,7 +116,9 @@ public final class CAPreferencesLoader
       getString(this.properties, String.format("server.bookmarks.%s.name", i)),
       getString(this.properties, String.format("server.bookmarks.%s.host", i)),
       getInteger(this.properties, String.format("server.bookmarks.%s.port", i)),
-      getBoolean(this.properties, String.format("server.bookmarks.%s.https", i)),
+      getBoolean(
+        this.properties,
+        String.format("server.bookmarks.%s.https", i)),
       this.loadServerBookmarkCredentials(i)
     );
   }
@@ -115,8 +134,12 @@ public final class CAPreferencesLoader
 
     return switch (value) {
       case "usernamePassword" -> new CAPreferenceServerUsernamePassword(
-        getString(this.properties, String.format("server.bookmarks.%s.credentials.username", i)),
-        getString(this.properties, String.format("server.bookmarks.%s.credentials.password", i))
+        getString(
+          this.properties,
+          String.format("server.bookmarks.%s.credentials.username", i)),
+        getString(
+          this.properties,
+          String.format("server.bookmarks.%s.credentials.password", i))
       );
       default -> throw new IllegalStateException("Unexpected value: " + value);
     };

@@ -17,6 +17,7 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientType;
+import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -27,6 +28,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -54,6 +56,7 @@ public final class CAViewControllerMain implements Initializable
   private final CAMainEventBusType events;
   private final CAIconsType icons;
   private final CAMainClientController clientController;
+  private final CAPreferencesServiceType preferences;
 
   @FXML
   private TabPane mainTabs;
@@ -70,6 +73,18 @@ public final class CAViewControllerMain implements Initializable
   @FXML
   private ProgressIndicator statusProgress;
 
+  @FXML
+  private Tab itemsTab;
+
+  @FXML
+  private Tab locationsTab;
+
+  @FXML
+  private Tab transfersTab;
+
+  @FXML
+  private Tab debuggingTab;
+
   private CAClientType client;
 
   public CAViewControllerMain(
@@ -78,6 +93,8 @@ public final class CAViewControllerMain implements Initializable
   {
     this.services =
       Objects.requireNonNull(mainServices, "mainServices");
+    this.preferences =
+      mainServices.requireService(CAPreferencesServiceType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.events =
@@ -152,6 +169,16 @@ public final class CAViewControllerMain implements Initializable
     final ResourceBundle resourceBundle)
   {
     this.mainTabs.setVisible(false);
+
+    switch (this.preferences.preferences().debuggingEnabled()) {
+      case DEBUGGING_ENABLED -> {
+
+      }
+      case DEBUGGING_DISABLED -> {
+        this.mainTabs.getTabs().remove(this.debuggingTab);
+      }
+    }
+
     this.setMenuToConnect();
     this.events.subscribe(new CAPerpetualSubscriber<>(this::onMainEvent));
     this.events.submit(new CAMainEventBoot());

@@ -14,24 +14,11 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.client.vanilla.internal;
-
-import com.io7m.cardant.client.api.CAClientCommandResultType;
+package com.io7m.cardant.client.api;
 
 import java.util.concurrent.CompletableFuture;
 
-public sealed interface CAClientCommandType<T>
-  permits
-  CAClientCommandHostileType,
-  CAClientCommandItemAttachmentDelete,
-  CAClientCommandItemCreate,
-  CAClientCommandItemGet,
-  CAClientCommandItemMetadataDelete,
-  CAClientCommandItemMetadataUpdate,
-  CAClientCommandItemsDelete,
-  CAClientCommandItemsList
+public interface CAClientHostileType extends CAClientType
 {
-  Class<T> returnType();
-
-  CompletableFuture<CAClientCommandResultType<T>> future();
+  CompletableFuture<CAClientCommandResultType<Void>> garbageCommand();
 }

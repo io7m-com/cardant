@@ -52,6 +52,9 @@ public final class CAViewControllers
     if (Objects.equals(clazz, CAViewControllerTransfersTab.class)) {
       return new CAViewControllerTransfersTab(mainServices, stage);
     }
+    if (Objects.equals(clazz, CAViewControllerDebuggingTab.class)) {
+      return new CAViewControllerDebuggingTab(mainServices, stage);
+    }
     if (Objects.equals(clazz, CAViewControllerConnect.class)) {
       return new CAViewControllerConnect(mainServices, stage);
     }

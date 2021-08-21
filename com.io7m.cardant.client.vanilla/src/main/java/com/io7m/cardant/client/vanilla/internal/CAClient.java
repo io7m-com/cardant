@@ -20,6 +20,7 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.cardant.client.api.CAClientCommandResultType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventType;
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAItem;
@@ -48,7 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISCONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS_FAILED;
 
-public final class CAClient implements CAClientType
+public final class CAClient implements CAClientHostileType
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CAClient.class);
@@ -57,6 +58,7 @@ public final class CAClient implements CAClientType
   private final CAClientConfiguration configuration;
   private final CAClientStrings strings;
   private final CAVersioningMessageParserFactoryType parsers;
+  private final boolean hostile;
   private final ExecutorService commandExecutor;
   private final ExecutorService httpExecutor;
   private final ExecutorService pollExecutor;
@@ -71,7 +73,8 @@ public final class CAClient implements CAClientType
     final ExecutorService inCommandExecutor,
     final CAClientConfiguration inConfiguration,
     final CAClientStrings inStrings,
-    final CAVersioningMessageParserFactoryType inParsers)
+    final CAVersioningMessageParserFactoryType inParsers,
+    final boolean inHostile)
   {
     this.pollExecutor =
       Objects.requireNonNull(inPollExecutor, "mainExecutor");
@@ -85,6 +88,8 @@ public final class CAClient implements CAClientType
       Objects.requireNonNull(inStrings, "strings");
     this.parsers =
       Objects.requireNonNull(inParsers, "parsers");
+    this.hostile =
+      inHostile;
 
     this.events =
       new SubmissionPublisher<>();
@@ -143,6 +148,13 @@ public final class CAClient implements CAClientType
       } else {
         pause();
       }
+    }
+  }
+
+  private void checkHostile()
+  {
+    if (!this.hostile) {
+      throw new IllegalStateException("Not a hostile client!");
     }
   }
 
@@ -236,8 +248,7 @@ public final class CAClient implements CAClientType
   public CompletableFuture<CAClientCommandResultType<Void>> itemsDelete(
     final List<CAItemID> items)
   {
-    final var future =
-      new CompletableFuture<CAClientCommandResultType<Void>>();
+    final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
     this.requests.add(new CAClientCommandItemsDelete(future, items));
     return future;
   }
@@ -247,8 +258,7 @@ public final class CAClient implements CAClientType
     final CAItemID itemID,
     final Collection<CAItemMetadata> metadata)
   {
-    final var future =
-      new CompletableFuture<CAClientCommandResultType<Void>>();
+    final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
     this.requests.add(new CAClientCommandItemMetadataDelete(future, itemID, metadata));
     return future;
   }
@@ -257,8 +267,7 @@ public final class CAClient implements CAClientType
   public CompletableFuture<CAClientCommandResultType<Void>> itemMetadataUpdate(
     final CAItemMetadata itemMetadata)
   {
-    final var future =
-      new CompletableFuture<CAClientCommandResultType<Void>>();
+    final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
     this.requests.add(new CAClientCommandItemMetadataUpdate(future, itemMetadata));
     return future;
   }
@@ -267,9 +276,17 @@ public final class CAClient implements CAClientType
   public CompletableFuture<CAClientCommandResultType<Void>> itemAttachmentDelete(
     final CAItemAttachmentID itemAttachment)
   {
-    final var future =
-      new CompletableFuture<CAClientCommandResultType<Void>>();
+    final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
     this.requests.add(new CAClientCommandItemAttachmentDelete(future, itemAttachment));
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<Void>> garbageCommand()
+  {
+    this.checkHostile();
+    final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
+    this.requests.add(new CAClientCommandGarbage(future));
     return future;
   }
 }

@@ -17,7 +17,8 @@
 package com.io7m.cardant.client.api;
 
 public sealed interface CAClientEventType
-  permits CAClientEventDataChanged,
+  permits CAClientEventCommandFailed,
+  CAClientEventDataChanged,
   CAClientEventDataReceived,
   CAClientEventStatusChanged
 {

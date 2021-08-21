@@ -21,4 +21,6 @@ import com.io7m.cardant.services.api.CAServiceType;
 public interface CAClientFactoryType extends CAServiceType
 {
   CAClientType open(CAClientConfiguration configuration);
+
+  CAClientHostileType openHostile(CAClientConfiguration configuration);
 }

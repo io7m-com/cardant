@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.Objects;
 
 public record CAPreferences(
+  CAPreferencesDebuggingEnabled debuggingEnabled,
   List<CAPreferenceServerBookmark> serverBookmarks)
 {
   public CAPreferences
   {
+    Objects.requireNonNull(debuggingEnabled, "debuggingEnabled");
     Objects.requireNonNull(serverBookmarks, "serverBookmarks");
   }
 }

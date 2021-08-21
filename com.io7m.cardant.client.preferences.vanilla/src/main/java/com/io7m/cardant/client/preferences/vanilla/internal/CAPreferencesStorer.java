@@ -46,8 +46,20 @@ public class CAPreferencesStorer
     throws IOException
   {
     this.properties = new Properties();
+    this.storeDebugging();
     this.storeServerBookmarks();
     this.properties.storeToXML(this.stream, "", UTF_8);
+  }
+
+  private void storeDebugging()
+  {
+    this.properties.put(
+      "debugging",
+      switch (this.preferences.debuggingEnabled()) {
+        case DEBUGGING_DISABLED -> "false";
+        case DEBUGGING_ENABLED -> "true";
+      }
+    );
   }
 
   private void storeServerBookmarks()

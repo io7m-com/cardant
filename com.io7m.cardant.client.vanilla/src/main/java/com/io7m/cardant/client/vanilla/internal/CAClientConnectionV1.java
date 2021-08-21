@@ -21,9 +21,11 @@ import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.client.api.CAClientCommandError;
 import com.io7m.cardant.client.api.CAClientCommandOK;
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientEventCommandFailed;
 import com.io7m.cardant.client.api.CAClientEventDataChanged;
 import com.io7m.cardant.client.api.CAClientEventDataReceived;
 import com.io7m.cardant.client.api.CAClientEventType;
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -60,6 +62,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -89,6 +92,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   private final URI commandURI;
   private final URI attachmentURI;
   private final URI eventsURI;
+  private final Random random;
 
   public CAClientConnectionV1(
     final SubmissionPublisher<CAClientEventType> inEvents,
@@ -138,6 +142,8 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
 
     this.connected =
       new AtomicBoolean(false);
+    this.random =
+      new Random(0L);
   }
 
   private static <T> CA1InventoryMessageType transformCommand(
@@ -271,7 +277,6 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       try (var inputStream = response.body()) {
         this.parseResponseStream(this.commandURI, command, inputStream);
       }
-
     } catch (final Exception e) {
       LOG.debug("exception raised: ", e);
       command.future().completeExceptionally(e);
@@ -282,6 +287,10 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     final CAClientCommandType<T> command)
     throws SerializeException, IOException
   {
+    if (command instanceof CAClientCommandHostileType<T> hostile) {
+      return this.serializeHostile(hostile);
+    }
+
     try (var bytes = new ByteArrayOutputStream()) {
       this.serializers.serialize(
         this.commandURI,
@@ -290,6 +299,18 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       );
       return bytes.toByteArray();
     }
+  }
+
+  private <T> byte[] serializeHostile(
+    final CAClientCommandHostileType<T> command)
+  {
+    if (command instanceof CAClientCommandGarbage garbage) {
+      final var bytes = new byte[256];
+      this.random.nextBytes(bytes);
+      return bytes;
+    }
+
+    throw new IllegalStateException("Unrecognized command: " + command);
   }
 
   private void fetchEvents()
@@ -402,7 +423,12 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     }
 
     if (response instanceof CA1ResponseError error) {
-      commandFuture.complete(this.responseError(error));
+      final CAClientCommandError<T> result = this.responseError(error);
+      this.events.submit(new CAClientEventCommandFailed<>(
+        command.getClass().getSimpleName(),
+        result
+      ));
+      commandFuture.complete(result);
       return;
     }
 

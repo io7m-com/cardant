@@ -168,7 +168,10 @@ public final class CAViewControllerConnect implements Initializable
           new ArrayList<>(oldPreferences.serverBookmarks());
 
         newBookmarks.removeIf(mark -> Objects.equals(mark.name(), name));
-        return new CAPreferences(List.copyOf(newBookmarks));
+        return new CAPreferences(
+          oldPreferences.debuggingEnabled(),
+          List.copyOf(newBookmarks)
+        );
       });
     } catch (final IOException e) {
       LOG.error("unable to save bookmarks: ", e);
@@ -200,7 +203,10 @@ public final class CAViewControllerConnect implements Initializable
 
         newBookmarks.removeIf(mark -> Objects.equals(mark.name(), name));
         newBookmarks.add(newBookmark);
-        return new CAPreferences(List.copyOf(newBookmarks));
+        return new CAPreferences(
+          oldPreferences.debuggingEnabled(),
+          List.copyOf(newBookmarks)
+        );
       });
     } catch (final IOException e) {
       LOG.error("unable to save bookmarks: ", e);
