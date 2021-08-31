@@ -14,33 +14,14 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.protocol.inventory.v1.messages;
 
-import com.io7m.cardant.model.CAItemMetadata;
-import javafx.scene.control.TableCell;
+/**
+ * The "item locations list" command.
+ */
 
-public final class CAItemMetadataNameCell extends TableCell<CAItemMetadata, CAItemMetadata>
+public record CA1CommandItemLocationList()
+  implements CA1InventoryCommandType
 {
-  public CAItemMetadataNameCell()
-  {
 
-  }
-
-  @Override
-  protected void updateItem(
-    final CAItemMetadata item,
-    final boolean empty)
-  {
-    super.updateItem(item, empty);
-
-    if (empty || item == null) {
-      this.setGraphic(null);
-      this.setText(null);
-      this.setTooltip(null);
-      return;
-    }
-
-    this.setGraphic(null);
-    this.setText(item.name());
-  }
 }

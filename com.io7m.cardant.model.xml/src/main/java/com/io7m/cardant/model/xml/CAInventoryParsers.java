@@ -36,6 +36,8 @@ import com.io7m.cardant.model.xml.internal.CAInventoryParser;
 import com.io7m.cardant.model.xml.internal.CAItemAttachmentIDParser;
 import com.io7m.cardant.model.xml.internal.CAItemAttachmentParser;
 import com.io7m.cardant.model.xml.internal.CAItemIDParser;
+import com.io7m.cardant.model.xml.internal.CAItemLocationParser;
+import com.io7m.cardant.model.xml.internal.CAItemLocationsParser;
 import com.io7m.cardant.model.xml.internal.CAItemMetadatasParser;
 import com.io7m.cardant.model.xml.internal.CAItemParser;
 import com.io7m.cardant.model.xml.internal.CAItemRepositAddParser;
@@ -130,6 +132,14 @@ public final class CAInventoryParsers
       Map.entry(
         element1("Location"),
         CALocationParser::new
+      ),
+      Map.entry(
+        element1("ItemLocation"),
+        CAItemLocationParser::new
+      ),
+      Map.entry(
+        element1("ItemLocations"),
+        CAItemLocationsParser::new
       )
     );
   }

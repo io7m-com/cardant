@@ -18,7 +18,7 @@ package com.io7m.cardant.client.vanilla.internal;
 
 public sealed interface CAClientCommandHostileType<T>
   extends CAClientCommandType<T>
-  permits CAClientCommandGarbage
+  permits CAClientCommandGarbage, CAClientCommandInvalid
 {
 
 }

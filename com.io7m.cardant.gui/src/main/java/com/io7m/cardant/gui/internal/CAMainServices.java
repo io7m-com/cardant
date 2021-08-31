@@ -63,8 +63,8 @@ public final class CAMainServices
     services.register(CAClientFactoryType.class, clients);
 
     services.register(
-      CAMainClientController.class,
-      new CAMainClientController(mainStrings, clients, eventBus)
+      CAMainController.class,
+      new CAMainController(mainStrings, clients, eventBus)
     );
 
     return services;

@@ -19,10 +19,10 @@
       <children>
         <HBox prefHeight="32.0">
           <children>
-            <TextField maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" promptText="%locations.search" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="locationSearchField" maxHeight="-Infinity" minHeight="-Infinity" onAction="#onLocationSearchFieldChanged" onKeyReleased="#onLocationSearchFieldChanged" prefHeight="32.0" promptText="%locations.search" HBox.hgrow="ALWAYS" />
           </children>
         </HBox>
-        <ListView VBox.vgrow="ALWAYS" />
+        <ListView fx:id="locationListView" VBox.vgrow="ALWAYS" />
       </children>
     </VBox>
     <SplitPane dividerPositions="0.25" orientation="VERTICAL">

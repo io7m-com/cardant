@@ -14,33 +14,19 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.client.vanilla.internal;
 
-import com.io7m.cardant.model.CAItem;
-import javafx.scene.control.TableCell;
+import com.io7m.cardant.client.api.CAClientCommandResultType;
 
-public final class CAItemTableCountCell extends TableCell<CAItem, CAItem>
+import java.util.concurrent.CompletableFuture;
+
+public record CAClientCommandInvalid(
+  CompletableFuture<CAClientCommandResultType<Void>> future)
+  implements CAClientCommandHostileType<Void>
 {
-  public CAItemTableCountCell()
-  {
-
-  }
-
   @Override
-  protected void updateItem(
-    final CAItem item,
-    final boolean empty)
+  public Class<Void> returnType()
   {
-    super.updateItem(item, empty);
-
-    if (empty || item == null) {
-      this.setGraphic(null);
-      this.setText(null);
-      this.setTooltip(null);
-      return;
-    }
-
-    this.setGraphic(null);
-    this.setText(Long.toUnsignedString(item.count()));
+    return Void.class;
   }
 }

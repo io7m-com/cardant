@@ -17,11 +17,14 @@
 package com.io7m.cardant.client.api;
 
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocations;
 
 import java.io.Closeable;
 import java.util.Collection;
@@ -37,15 +40,28 @@ public interface CAClientType extends Closeable
 
   CompletableFuture<CAClientCommandResultType<CAItems>> itemsList();
 
-  CompletableFuture<CAClientCommandResultType<CAItem>> itemGet(CAItemID id);
+  CompletableFuture<CAClientCommandResultType<CAItem>> itemGet(
+    CAItemID id);
 
-  CompletableFuture<CAClientCommandResultType<CAItem>> itemCreate(CAItem caItem);
+  CompletableFuture<CAClientCommandResultType<CAItem>> itemCreate(
+    CAItem caItem);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemsDelete(List<CAItemID> items);
+  CompletableFuture<CAClientCommandResultType<Void>> itemsDelete(
+    List<CAItemID> items);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemMetadataDelete(CAItemID itemID, Collection<CAItemMetadata> metadata);
+  CompletableFuture<CAClientCommandResultType<Void>> itemMetadataDelete(
+    Collection<CAItemMetadata> metadata);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemMetadataUpdate(CAItemMetadata itemMetadata);
+  CompletableFuture<CAClientCommandResultType<Void>> itemMetadataUpdate(
+    CAItemMetadata itemMetadata);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemAttachmentDelete(CAItemAttachmentID itemAttachment);
+  CompletableFuture<CAClientCommandResultType<Void>> itemAttachmentDelete(
+    CAItemAttachmentID itemAttachment);
+
+  CompletableFuture<CAClientCommandResultType<CALocations>> locationsList();
+
+  CompletableFuture<CAClientCommandResultType<CALocation>> locationGet(
+    CALocationID id);
+
+  CompletableFuture<CAClientCommandResultType<CAItemLocations>> itemLocationsList();
 }

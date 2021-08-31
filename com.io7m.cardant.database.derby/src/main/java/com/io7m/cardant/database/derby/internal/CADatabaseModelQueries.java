@@ -21,6 +21,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CALocation;
@@ -92,6 +93,13 @@ public final class CADatabaseModelQueries
     throws CADatabaseException
   {
     this.items.itemReposit(reposit);
+  }
+
+  @Override
+  public CAItemLocations itemLocations()
+    throws CADatabaseException
+  {
+    return this.items.itemLocations();
   }
 
   @Override

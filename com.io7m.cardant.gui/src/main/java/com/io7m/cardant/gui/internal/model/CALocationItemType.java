@@ -14,36 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.gui.internal.model;
 
-import com.io7m.cardant.model.CAItemAttachment;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.util.Callback;
+import com.io7m.cardant.model.CALocation;
 
-import java.util.Objects;
-
-/**
- * A factory of item attachment cells.
- */
-
-public final class CAAttachmentCellFactory
-  implements Callback<
-  ListView<CAItemAttachment>,
-  ListCell<CAItemAttachment>>
+public sealed interface CALocationItemType
+  permits CALocationItemAll,
+  CALocationItemDefined
 {
-  private final CAMainStrings strings;
+  boolean matches(String search);
 
-  public CAAttachmentCellFactory(
-    final CAMainStrings inStrings)
-  {
-    this.strings = Objects.requireNonNull(inStrings, "inStrings");
-  }
-
-  @Override
-  public ListCell<CAItemAttachment> call(
-    final ListView<CAItemAttachment> param)
-  {
-    return new CAAttachmentCell(this.strings);
-  }
+  void updateFrom(CALocation location);
 }

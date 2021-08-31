@@ -252,6 +252,14 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="CommandItemLocationList">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list item locations.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
   <xsd:element name="ResponseOK">
     <xsd:annotation>
       <xsd:documentation>
@@ -387,6 +395,7 @@
       <xsd:element ref="ip1:CommandItemCreate"/>
       <xsd:element ref="ip1:CommandItemGet"/>
       <xsd:element ref="ip1:CommandItemList"/>
+      <xsd:element ref="ip1:CommandItemLocationList"/>
       <xsd:element ref="ip1:CommandItemMetadataPut"/>
       <xsd:element ref="ip1:CommandItemMetadataRemove"/>
       <xsd:element ref="ip1:CommandItemRemove"/>

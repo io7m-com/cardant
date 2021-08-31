@@ -14,38 +14,35 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import java.util.Objects;
 
-public final class CAItemAttachmentList
-  extends CAGenericFilterableList<CAItemAttachment, CAItemAttachmentID>
+/**
+ * An assertion that there are {@code count} {@code item} at {@code location}.
+ *
+ * @param item     The item
+ * @param location The location
+ * @param count    The number of items
+ */
+
+public record CAItemLocation(
+  CAItemID item,
+  CALocationID location,
+  long count)
+  implements CAInventoryElementType
 {
   /**
-   * Construct an item attachment list.
+   * An assertion that there are {@code count} {@code item} at {@code location}.
+   *
+   * @param item     The item
+   * @param location The location
+   * @param count    The number of items
    */
 
-  public CAItemAttachmentList()
+  public CAItemLocation
   {
-
-  }
-
-  @Override
-  protected CAItemAttachmentID identifierFor(
-    final CAItemAttachment item)
-  {
-    return item.id();
-  }
-
-  @Override
-  protected boolean isItemVisibleAccordingToSearch(
-    final CAItemAttachment item,
-    final String searchQuery)
-  {
-    return this.searchCompare(item.id().id(), searchQuery)
-      || this.searchCompare(item.mediaType(), searchQuery)
-      || this.searchCompare(item.relation(), searchQuery)
-      || this.searchCompare(item.description(), searchQuery);
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(location, "location");
   }
 }

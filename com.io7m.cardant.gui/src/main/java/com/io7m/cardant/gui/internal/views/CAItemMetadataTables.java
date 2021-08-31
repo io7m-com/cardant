@@ -14,16 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.gui.internal.CAMainStrings;
+import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
+import com.io7m.cardant.gui.internal.model.CATableMap;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-import java.util.Comparator;
 import java.util.function.Consumer;
 
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
@@ -37,9 +38,8 @@ public final class CAItemMetadataTables
 
   public static void configure(
     final CAMainStrings strings,
-    final CAItemMetadataList itemList,
-    final TableView<CAItemMetadata> tableView,
-    final Consumer<CAItemMetadata> onWantEditMetadataValue)
+    final TableView<CAItemMetadataMutable> tableView,
+    final Consumer<CAItemMetadataMutable> onWantEditMetadataValue)
   {
     tableView.setPlaceholder(
       new Label(strings.format("items.metadata.noValues")));
@@ -47,30 +47,38 @@ public final class CAItemMetadataTables
     final var tableColumns =
       tableView.getColumns();
     final var tableNameColumn =
-      (TableColumn<CAItemMetadata, CAItemMetadata>) tableColumns.get(0);
+      (TableColumn<CAItemMetadataMutable, String>) tableColumns.get(0);
     final var tableValueColumn =
-      (TableColumn<CAItemMetadata, CAItemMetadata>) tableColumns.get(1);
+      (TableColumn<CAItemMetadataMutable, String>) tableColumns.get(1);
 
     tableNameColumn.setSortable(true);
     tableNameColumn.setReorderable(false);
-    tableNameColumn.setComparator(Comparator.comparing(CAItemMetadata::name));
-    tableNameColumn.setCellFactory(column -> new CAItemMetadataNameCell());
+    tableNameColumn.setComparator(String::compareToIgnoreCase);
+    tableNameColumn.setCellFactory(
+      column -> new CAItemMetadataMutableNameCell());
+    tableNameColumn.setCellValueFactory(
+      param -> new ReadOnlyObjectWrapper<>(param.getValue().name()));
 
     tableValueColumn.setSortable(true);
     tableValueColumn.setReorderable(false);
-    tableValueColumn.setComparator(Comparator.comparing(CAItemMetadata::value));
+    tableValueColumn.setComparator(String::compareToIgnoreCase);
     tableValueColumn.setCellFactory(
-      column -> new CAItemMetadataValueCell(strings, onWantEditMetadataValue));
-
-    tableNameColumn.setCellValueFactory(
-      param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+      column -> new CAItemMetadataMutableValueCell(
+        strings,
+        onWantEditMetadataValue));
     tableValueColumn.setCellValueFactory(
-      param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-
-    tableView.setItems(itemList.items());
-    itemList.comparator().bind(tableView.comparatorProperty());
+      param -> param.getValue().value());
 
     tableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
     tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+  }
+
+  public static void bind(
+    final CATableMap<String, CAItemMetadataMutable> tableData,
+    final TableView<CAItemMetadataMutable> tableView)
+  {
+    final var readable = tableData.readable();
+    tableView.setItems(tableData.readable());
+    readable.comparatorProperty().bind(tableView.comparatorProperty());
   }
 }

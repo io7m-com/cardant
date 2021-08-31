@@ -14,31 +14,34 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.model.CAItemAttachment;
+import com.io7m.cardant.gui.internal.model.CALocationItemType;
+import com.io7m.cardant.gui.internal.CAMainStrings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Objects;
 
-public final class CAAttachmentCell extends ListCell<CAItemAttachment>
+public final class CALocationItemCell extends ListCell<CALocationItemType>
 {
-  private final AnchorPane root;
-  private final CAAttachmentCellController controller;
+  private final HBox root;
+  private final CALocationItemCellController controller;
+  private final CAMainStrings strings;
 
-  public CAAttachmentCell(
+  public CALocationItemCell(
     final CAMainStrings strings)
   {
-    Objects.requireNonNull(strings, "strings");
+    this.strings = Objects.requireNonNull(strings, "strings");
 
     try {
       final FXMLLoader loader =
         new FXMLLoader(
-          CAAttachmentCell.class.getResource("itemAttachment.fxml"));
+          CALocationItemCell.class.getResource(
+            "/com/io7m/cardant/gui/internal/locationItemCell.fxml"));
       loader.setResources(strings.resources());
 
       this.root = loader.load();
@@ -50,14 +53,14 @@ public final class CAAttachmentCell extends ListCell<CAItemAttachment>
 
   @Override
   protected void updateItem(
-    final CAItemAttachment item,
+    final CALocationItemType item,
     final boolean empty)
   {
     super.updateItem(item, empty);
     if (empty || item == null) {
       this.setGraphic(null);
     } else {
-      this.controller.setItemAttachment(item);
+      this.controller.setLocationItem(this.strings, item);
       this.setGraphic(this.root);
     }
   }

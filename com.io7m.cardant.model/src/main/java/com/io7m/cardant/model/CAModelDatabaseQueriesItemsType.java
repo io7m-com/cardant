@@ -251,4 +251,13 @@ public interface CAModelDatabaseQueriesItemsType
 
   void itemReposit(CAItemRepositType reposit)
     throws CADatabaseException;
+
+  /**
+   * @return The locations of all items
+   *
+   * @throws CADatabaseException On database errors
+   */
+
+  CAItemLocations itemLocations()
+    throws CADatabaseException;
 }

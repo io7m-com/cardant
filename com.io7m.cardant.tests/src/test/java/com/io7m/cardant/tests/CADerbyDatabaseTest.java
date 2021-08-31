@@ -28,6 +28,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
@@ -1041,6 +1042,18 @@ public final class CADerbyDatabaseTest
       );
 
       {
+        final var itemLocations =
+          queries.itemLocations().itemLocations();
+        assertEquals(1, itemLocations.size());
+        final var byId = itemLocations.get(location.id());
+        assertEquals(1, byId.size());
+        final var itemLocation = byId.values().iterator().next();
+        assertEquals(100L, itemLocation.count());
+        assertEquals(item0.id(), itemLocation.item());
+        assertEquals(location.id(), itemLocation.location());
+      }
+
+      {
         final var itemUpdated =
           queries.itemGet(item0.id()).orElseThrow();
         assertEquals(100L, itemUpdated.count());
@@ -1052,6 +1065,18 @@ public final class CADerbyDatabaseTest
           location.id(),
           100L)
       );
+
+      {
+        final var itemLocations =
+          queries.itemLocations().itemLocations();
+        assertEquals(1, itemLocations.size());
+        final var byId = itemLocations.get(location.id());
+        assertEquals(1, byId.size());
+        final var itemLocation = byId.values().iterator().next();
+        assertEquals(200L, itemLocation.count());
+        assertEquals(item0.id(), itemLocation.item());
+        assertEquals(location.id(), itemLocation.location());
+      }
 
       {
         final var itemUpdated =
@@ -1067,6 +1092,18 @@ public final class CADerbyDatabaseTest
       );
 
       {
+        final var itemLocations =
+          queries.itemLocations().itemLocations();
+        assertEquals(1, itemLocations.size());
+        final var byId = itemLocations.get(location.id());
+        assertEquals(1, byId.size());
+        final var itemLocation = byId.values().iterator().next();
+        assertEquals(100L, itemLocation.count());
+        assertEquals(item0.id(), itemLocation.item());
+        assertEquals(location.id(), itemLocation.location());
+      }
+
+      {
         final var itemUpdated =
           queries.itemGet(item0.id()).orElseThrow();
         assertEquals(100L, itemUpdated.count());
@@ -1078,6 +1115,12 @@ public final class CADerbyDatabaseTest
           location.id(),
           100L)
       );
+
+      {
+        final var itemLocations =
+          queries.itemLocations().itemLocations();
+        assertEquals(0, itemLocations.size());
+      }
 
       {
         final var itemUpdated =
@@ -1229,12 +1272,30 @@ public final class CADerbyDatabaseTest
       queries.locationPut(location0);
       queries.locationPut(location1);
 
+      {
+        final var itemLocations =
+          queries.itemLocations().itemLocations();
+        assertEquals(0, itemLocations.size());
+      }
+
       queries.itemReposit(
         new CAItemRepositAdd(
           item0.id(),
           location0.id(),
           100L)
       );
+
+      {
+        final var itemLocations =
+          queries.itemLocations().itemLocations();
+        assertEquals(1, itemLocations.size());
+        final var byId = itemLocations.get(location0.id());
+        assertEquals(1, byId.size());
+        final var itemLocation = byId.values().iterator().next();
+        assertEquals(100L, itemLocation.count());
+        assertEquals(item0.id(), itemLocation.item());
+        assertEquals(location0.id(), itemLocation.location());
+      }
 
       queries.itemReposit(
         new CAItemRepositMove(
@@ -1244,6 +1305,34 @@ public final class CADerbyDatabaseTest
           50L
         )
       );
+
+      {
+        final var itemLocations =
+          queries.itemLocations().itemLocations();
+        assertEquals(2, itemLocations.size());
+
+        {
+          final var byId = itemLocations.get(location0.id());
+
+          {
+            final var il = byId.get(item0.id());
+            assertEquals(50L, il.count());
+            assertEquals(item0.id(), il.item());
+            assertEquals(location0.id(), il.location());
+          }
+        }
+
+        {
+          final var byId = itemLocations.get(location1.id());
+
+          {
+            final var il = byId.get(item0.id());
+            assertEquals(50L, il.count());
+            assertEquals(item0.id(), il.item());
+            assertEquals(location1.id(), il.location());
+          }
+        }
+      }
 
       {
         final var itemUpdated =

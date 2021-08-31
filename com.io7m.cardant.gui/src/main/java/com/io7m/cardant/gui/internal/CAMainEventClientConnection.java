@@ -18,8 +18,9 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
 
-public record CAMainEventClientConnection(CAClientHostileType client,
-                                          String message)
+public record CAMainEventClientConnection(
+  CAClientHostileType client,
+  String message)
   implements CAMainEventType
 {
   @Override

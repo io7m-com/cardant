@@ -17,10 +17,8 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientType;
-import com.io7m.cardant.model.CAInventoryElementType;
-import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TabPane;
@@ -41,15 +39,13 @@ public final class CAViewControllerItemEditor implements Initializable
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
+  private final CAMainController controller;
 
-  @FXML
-  private TabPane itemEditorContainer;
-  @FXML
-  private AnchorPane itemEditorPlaceholder;
+  @FXML private AnchorPane itemEditorPlaceholder;
+  @FXML private TabPane itemEditorContainer;
 
-  private Optional<CAItem> itemCurrent;
-  private volatile CAClientType clientNow;
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
+  private volatile CAClientType clientNow;
 
   public CAViewControllerItemEditor(
     final CAServiceDirectoryType mainServices,
@@ -59,9 +55,10 @@ public final class CAViewControllerItemEditor implements Initializable
       mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
+    this.controller =
+      mainServices.requireService(CAMainController.class);
 
     this.services = mainServices;
-    this.itemCurrent = Optional.empty();
   }
 
   @Override
@@ -72,41 +69,15 @@ public final class CAViewControllerItemEditor implements Initializable
     this.itemEditorContainer.setVisible(false);
     this.itemEditorPlaceholder.setVisible(true);
 
-    this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
-    this.events.subscribe(this.subscriber);
-  }
-
-  private void onClientDisconnected()
-  {
-    this.clientNow = null;
-  }
-
-  private void onClientConnected(
-    final CAClientType client)
-  {
-    this.clientNow = client;
-  }
-
-  private void onDataReceived(
-    final CAInventoryElementType data)
-  {
-    if (data instanceof CAItem item) {
-      final var itemIdIncoming =
-        Optional.of(item.id());
-      final var itemIdCurrent =
-        this.itemCurrent.map(CAItem::id);
-
-      if (itemIdIncoming.equals(itemIdCurrent)) {
-        this.onItemSelected(Optional.of(item));
-      }
-    }
+    this.controller.itemSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onItemSelected(newValue);
+      });
   }
 
   private void onItemSelected(
-    final Optional<CAItem> itemOpt)
+    final Optional<CAItemMutable> itemOpt)
   {
-    this.itemCurrent = itemOpt;
-
     if (itemOpt.isEmpty()) {
       this.itemEditorContainer.setVisible(false);
       this.itemEditorPlaceholder.setVisible(true);
@@ -115,30 +86,5 @@ public final class CAViewControllerItemEditor implements Initializable
 
     this.itemEditorContainer.setVisible(true);
     this.itemEditorPlaceholder.setVisible(false);
-  }
-
-  private void onMainEvent(
-    final CAMainEventType item)
-  {
-    if (item instanceof CAMainEventClientConnection clientEvent) {
-      final var client = clientEvent.client();
-      if (client.isConnected()) {
-        this.onClientConnected(client);
-      } else {
-        this.onClientDisconnected();
-      }
-    }
-
-    if (item instanceof CAMainEventItemSelected selected) {
-      Platform.runLater(() -> {
-        this.onItemSelected(selected.item());
-      });
-    }
-
-    if (item instanceof CAMainEventClientData clientData) {
-      Platform.runLater(() -> {
-        this.onDataReceived(clientData.data());
-      });
-    }
   }
 }

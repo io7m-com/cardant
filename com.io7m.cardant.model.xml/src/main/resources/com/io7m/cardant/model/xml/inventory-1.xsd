@@ -337,6 +337,29 @@
     </xsd:choice>
   </xsd:group>
 
+  <xsd:element name="ItemLocation">
+    <xsd:complexType>
+      <xsd:attribute name="location"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="item"
+                     type="inv:UuidType"
+                     use="required"/>
+      <xsd:attribute name="count"
+                     type="xsd:unsignedLong"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ItemLocations">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="inv:ItemLocation"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="ItemID">
     <xsd:complexType>
       <xsd:attribute name="value"
@@ -389,7 +412,8 @@
 
   <xsd:element name="IDs">
     <xsd:complexType>
-      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
         <xsd:group ref="inv:ID"/>
       </xsd:sequence>
     </xsd:complexType>
@@ -397,9 +421,12 @@
 
   <xsd:group name="Elements">
     <xsd:choice>
+      <xsd:element ref="inv:IDs"/>
       <xsd:element ref="inv:Item"/>
       <xsd:element ref="inv:ItemAttachment"/>
       <xsd:element ref="inv:ItemAttachments"/>
+      <xsd:element ref="inv:ItemLocation"/>
+      <xsd:element ref="inv:ItemLocations"/>
       <xsd:element ref="inv:ItemMetadata"/>
       <xsd:element ref="inv:ItemMetadatas"/>
       <xsd:element ref="inv:Items"/>
@@ -407,7 +434,6 @@
       <xsd:element ref="inv:Locations"/>
       <xsd:element ref="inv:Tag"/>
       <xsd:element ref="inv:Tags"/>
-      <xsd:element ref="inv:IDs"/>
       <xsd:group ref="inv:ID"/>
       <xsd:group ref="inv:ItemReposit"/>
     </xsd:choice>

@@ -16,12 +16,10 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.model.CAInventoryElementType;
-import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
+import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
-import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -42,28 +40,22 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemMetadataEditor.class);
 
-  private final Stage stage;
-  private final CAServiceDirectoryType mainServices;
-  private final CAMainStrings strings;
   private final CAMainEventBusType events;
-  private boolean editingExisting;
-  private Optional<CAItemMetadata> result;
+  private final CAMainStrings strings;
+  private final CAServiceDirectoryType mainServices;
+  private final Stage stage;
 
-  @FXML
-  private Button cancelButton;
-  @FXML
-  private Button createButton;
-  @FXML
-  private Label nameBad;
-  @FXML
-  private TextField nameField;
-  @FXML
-  private TextField valueField;
-  @FXML
-  private Tooltip nameBadTooltip;
+  @FXML private Button cancelButton;
+  @FXML private Button createButton;
+  @FXML private Label nameBad;
+  @FXML private TextField nameField;
+  @FXML private TextField valueField;
+  @FXML private Tooltip nameBadTooltip;
 
-  private CAItem currentItem;
+  private CAItemMutable currentItem;
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
+  private Optional<CAItemMetadataMutable> result;
+  private boolean editingExisting;
 
   public CAViewControllerItemMetadataEditor(
     final CAServiceDirectoryType inMainServices,
@@ -159,10 +151,11 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
       this.nameBad.setVisible(false);
       this.createButton.setDisable(false);
       this.result = Optional.of(
-        new CAItemMetadata(
-          this.currentItem.id(),
+        new CAItemMetadataMutable(
           tryName,
-          this.valueField.getText())
+          this.currentItem.id(),
+          new SimpleStringProperty(this.valueField.getText())
+        )
       );
     } else {
       this.createButton.setDisable(true);
@@ -170,29 +163,13 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
     }
   }
 
-  public Optional<CAItemMetadata> result()
+  public Optional<CAItemMetadataMutable> result()
   {
     return this.result;
   }
 
-  private void onDataReceived(
-    final CAInventoryElementType data)
-  {
-    if (data instanceof CAItem item) {
-      if (Objects.equals(item.id(), this.currentItem.id())) {
-        this.currentItem = item;
-      }
-    }
-
-    if (data instanceof CAItems items) {
-      for (final var item : items.items()) {
-        this.onDataReceived(item);
-      }
-    }
-  }
-
   public void setEditingMetadata(
-    final CAItemMetadata itemMetadata)
+    final CAItemMetadataMutable itemMetadata)
   {
     this.editingExisting = true;
     this.stage.setTitle(
@@ -200,8 +177,7 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
 
     this.nameField.setText(itemMetadata.name());
     this.nameField.setDisable(true);
-
-    this.valueField.setText(itemMetadata.value());
+    this.valueField.setText(itemMetadata.value().getValue());
 
     this.createButton.setText(
       this.strings.format("items.metadata.modify"));
@@ -211,15 +187,12 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
   private void onMainEvent(
     final CAMainEventType item)
   {
-    if (item instanceof CAMainEventClientData clientData) {
-      Platform.runLater(() -> {
-        this.onDataReceived(clientData.data());
-      });
-    }
+
   }
 
-  public void setItem(final CAItem item)
+  public void setItem(
+    final CAItemMutable item)
   {
-    this.currentItem = item;
+    this.currentItem = Objects.requireNonNull(item, "item");
   }
 }

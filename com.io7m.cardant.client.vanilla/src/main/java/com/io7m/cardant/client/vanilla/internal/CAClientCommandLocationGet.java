@@ -14,24 +14,22 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.client.vanilla.internal;
 
-import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.client.api.CAClientCommandResultType;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
 
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
-public record CAMainEventItemSelected(Optional<CAItem> item)
-  implements CAMainEventType
+public record CAClientCommandLocationGet(
+  CompletableFuture<CAClientCommandResultType<CALocation>> future,
+  CALocationID id)
+  implements CAClientCommandType<CALocation>
 {
   @Override
-  public CAMainEventClassification classification()
+  public Class<CALocation> returnType()
   {
-    return CAMainEventClassification.STATUS_UI;
-  }
-
-  @Override
-  public String message()
-  {
-    return "";
+    return CALocation.class;
   }
 }

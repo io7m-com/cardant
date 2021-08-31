@@ -16,12 +16,12 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.model.CAInventoryElementType;
+import com.io7m.cardant.gui.internal.model.CAMutableModelElementType;
 
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_DATA_RECEIVED;
 
 public record CAMainEventClientData(
-  CAInventoryElementType data)
+  CAMutableModelElementType data)
   implements CAMainEventType
 {
   @Override

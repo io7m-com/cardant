@@ -24,6 +24,8 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocation;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemMetadatas;
 import com.io7m.cardant.model.CAItemRepositAdd;
@@ -297,6 +299,35 @@ public final class CAInventorySerializer implements CAInventorySerializerType
     writer.writeAttribute("count", Long.toUnsignedString(add.count()));
   }
 
+  private void serializeItemLocations(
+    final XMLStreamWriter writer,
+    final CAItemLocations itemLocations)
+    throws XMLStreamException
+  {
+    writer.writeStartElement(NAMESPACE, "ItemLocations");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+
+    for (final var byId : itemLocations.itemLocations().values()) {
+      for (final var itemLocation : byId.values()) {
+        this.serializeItemLocation(writer, itemLocation);
+      }
+    }
+
+    writer.writeEndElement();
+  }
+
+  private void serializeItemLocation(
+    final XMLStreamWriter writer,
+    final CAItemLocation itemLocation)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(NAMESPACE, "ItemLocation");
+    this.writeNamespaceIfRequired(writer, NAMESPACE);
+    writer.writeAttribute("item", itemLocation.item().id().toString());
+    writer.writeAttribute("location", itemLocation.location().id().toString());
+    writer.writeAttribute("count", Long.toUnsignedString(itemLocation.count()));
+  }
+
   private void finish(
     final XMLStreamWriter writer)
     throws XMLStreamException
@@ -348,6 +379,10 @@ public final class CAInventorySerializer implements CAInventorySerializerType
         this.serializeId(writer, id);
       } else if (value instanceof CAIds ids) {
         this.serializeIds(writer, ids);
+      } else if (value instanceof CAItemLocation itemLocation) {
+        this.serializeItemLocation(writer, itemLocation);
+      } else if (value instanceof CAItemLocations itemLocations) {
+        this.serializeItemLocations(writer, itemLocations);
       } else {
         throw new IllegalStateException("Unrecognized message: " + value);
       }

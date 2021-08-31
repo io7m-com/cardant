@@ -21,15 +21,17 @@ import com.io7m.cardant.client.api.CAClientCommandResultType;
 import java.util.concurrent.CompletableFuture;
 
 public sealed interface CAClientCommandType<T>
-  permits
-  CAClientCommandHostileType,
+  permits CAClientCommandHostileType,
   CAClientCommandItemAttachmentDelete,
   CAClientCommandItemCreate,
   CAClientCommandItemGet,
+  CAClientCommandItemLocationsList,
   CAClientCommandItemMetadataDelete,
   CAClientCommandItemMetadataUpdate,
   CAClientCommandItemsDelete,
-  CAClientCommandItemsList
+  CAClientCommandItemsList,
+  CAClientCommandLocationGet,
+  CAClientCommandLocationsList
 {
   Class<T> returnType();
 

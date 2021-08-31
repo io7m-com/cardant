@@ -14,33 +14,29 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.CAItem;
-import javafx.scene.control.TableCell;
+import java.util.Objects;
+import java.util.SortedMap;
 
-public final class CAItemTableDescriptionCell extends TableCell<CAItem, CAItem>
+/**
+ * A set of assertions indicating items in locations.
+ *
+ * @param itemLocations The item locations
+ */
+
+public record CAItemLocations(
+  SortedMap<CALocationID, SortedMap<CAItemID, CAItemLocation>> itemLocations)
+  implements CAInventoryElementType
 {
-  public CAItemTableDescriptionCell()
+  /**
+   * A set of assertions indicating items in locations.
+   *
+   * @param itemLocations The item locations
+   */
+
+  public CAItemLocations
   {
-
-  }
-
-  @Override
-  protected void updateItem(
-    final CAItem item,
-    final boolean empty)
-  {
-    super.updateItem(item, empty);
-
-    if (empty || item == null) {
-      this.setGraphic(null);
-      this.setText(null);
-      this.setTooltip(null);
-      return;
-    }
-
-    this.setGraphic(null);
-    this.setText(item.descriptionOrEmpty());
+    Objects.requireNonNull(itemLocations, "itemLocations");
   }
 }

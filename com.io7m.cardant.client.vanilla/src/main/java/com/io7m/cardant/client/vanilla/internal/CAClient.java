@@ -21,14 +21,16 @@ import com.io7m.cardant.client.api.CAClientCommandResultType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientHostileType;
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParserFactoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +105,15 @@ public final class CAClient implements CAClientHostileType
       new LinkedBlockingDeque<>();
   }
 
+  private static void pause()
+  {
+    try {
+      Thread.sleep(1_000L);
+    } catch (final InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+  }
+
   public void executeEventPolling()
   {
     while (true) {
@@ -155,15 +166,6 @@ public final class CAClient implements CAClientHostileType
   {
     if (!this.hostile) {
       throw new IllegalStateException("Not a hostile client!");
-    }
-  }
-
-  private static void pause()
-  {
-    try {
-      Thread.sleep(1_000L);
-    } catch (final InterruptedException e) {
-      Thread.currentThread().interrupt();
     }
   }
 
@@ -228,6 +230,8 @@ public final class CAClient implements CAClientHostileType
   public CompletableFuture<CAClientCommandResultType<CAItem>> itemGet(
     final CAItemID id)
   {
+    Objects.requireNonNull(id, "id");
+
     final var future =
       new CompletableFuture<CAClientCommandResultType<CAItem>>();
     this.requests.add(new CAClientCommandItemGet(future, id));
@@ -238,6 +242,8 @@ public final class CAClient implements CAClientHostileType
   public CompletableFuture<CAClientCommandResultType<CAItem>> itemCreate(
     final CAItem item)
   {
+    Objects.requireNonNull(item, "item");
+
     final var future =
       new CompletableFuture<CAClientCommandResultType<CAItem>>();
     this.requests.add(new CAClientCommandItemCreate(future, item));
@@ -248,6 +254,8 @@ public final class CAClient implements CAClientHostileType
   public CompletableFuture<CAClientCommandResultType<Void>> itemsDelete(
     final List<CAItemID> items)
   {
+    Objects.requireNonNull(items, "items");
+
     final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
     this.requests.add(new CAClientCommandItemsDelete(future, items));
     return future;
@@ -255,11 +263,12 @@ public final class CAClient implements CAClientHostileType
 
   @Override
   public CompletableFuture<CAClientCommandResultType<Void>> itemMetadataDelete(
-    final CAItemID itemID,
     final Collection<CAItemMetadata> metadata)
   {
+    Objects.requireNonNull(metadata, "metadata");
+
     final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
-    this.requests.add(new CAClientCommandItemMetadataDelete(future, itemID, metadata));
+    this.requests.add(new CAClientCommandItemMetadataDelete(future, metadata));
     return future;
   }
 
@@ -267,8 +276,12 @@ public final class CAClient implements CAClientHostileType
   public CompletableFuture<CAClientCommandResultType<Void>> itemMetadataUpdate(
     final CAItemMetadata itemMetadata)
   {
+    Objects.requireNonNull(itemMetadata, "itemMetadata");
+
     final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
-    this.requests.add(new CAClientCommandItemMetadataUpdate(future, itemMetadata));
+    this.requests.add(new CAClientCommandItemMetadataUpdate(
+      future,
+      itemMetadata));
     return future;
   }
 
@@ -276,8 +289,21 @@ public final class CAClient implements CAClientHostileType
   public CompletableFuture<CAClientCommandResultType<Void>> itemAttachmentDelete(
     final CAItemAttachmentID itemAttachment)
   {
+    Objects.requireNonNull(itemAttachment, "itemAttachment");
+
     final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
-    this.requests.add(new CAClientCommandItemAttachmentDelete(future, itemAttachment));
+    this.requests.add(new CAClientCommandItemAttachmentDelete(
+      future,
+      itemAttachment));
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CALocations>> locationsList()
+  {
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CALocations>>();
+    this.requests.add(new CAClientCommandLocationsList(future));
     return future;
   }
 
@@ -287,6 +313,36 @@ public final class CAClient implements CAClientHostileType
     this.checkHostile();
     final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
     this.requests.add(new CAClientCommandGarbage(future));
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<Void>> invalidCommand()
+  {
+    this.checkHostile();
+    final var future = new CompletableFuture<CAClientCommandResultType<Void>>();
+    this.requests.add(new CAClientCommandInvalid(future));
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CALocation>> locationGet(
+    final CALocationID id)
+  {
+    Objects.requireNonNull(id, "id");
+
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CALocation>>();
+    this.requests.add(new CAClientCommandLocationGet(future, id));
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CAItemLocations>> itemLocationsList()
+  {
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CAItemLocations>>();
+    this.requests.add(new CAClientCommandItemLocationsList(future));
     return future;
   }
 }

@@ -14,9 +14,10 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.gui.internal.CAMainStrings;
+import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
@@ -25,16 +26,16 @@ import javafx.scene.control.Tooltip;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class CAItemMetadataValueCell
-  extends TableCell<CAItemMetadata, CAItemMetadata>
+public final class CAItemMetadataMutableValueCell
+  extends TableCell<CAItemMetadataMutable, String>
 {
   private final CAMainStrings strings;
-  private final Consumer<CAItemMetadata> onWantEdit;
+  private final Consumer<CAItemMetadataMutable> onWantEdit;
   private final Tooltip tooltip;
 
-  public CAItemMetadataValueCell(
+  public CAItemMetadataMutableValueCell(
     final CAMainStrings inStrings,
-    final Consumer<CAItemMetadata> inOnWantEdit)
+    final Consumer<CAItemMetadataMutable> inOnWantEdit)
   {
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
@@ -46,7 +47,7 @@ public final class CAItemMetadataValueCell
 
   @Override
   protected void updateItem(
-    final CAItemMetadata item,
+    final String item,
     final boolean empty)
   {
     super.updateItem(item, empty);
@@ -62,12 +63,12 @@ public final class CAItemMetadataValueCell
       new ContextMenu();
     final var editValue =
       new MenuItem(this.strings.format("items.metadata.editor.modify"));
-    editValue.setOnAction(event -> this.onWantEdit.accept(item));
+    // editValue.setOnAction(event -> this.onWantEdit.accept(item));
 
     contextMenu.getItems().add(editValue);
     this.setContextMenu(contextMenu);
     this.setGraphic(null);
-    this.setText(item.value());
+    this.setText(item);
     this.setTooltip(this.tooltip);
   }
 }

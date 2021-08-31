@@ -14,68 +14,77 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.model.CAItem;
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import com.io7m.cardant.gui.internal.CAMainStrings;
+import com.io7m.cardant.gui.internal.model.CAItemMutable;
+import com.io7m.cardant.gui.internal.model.CATableMap;
+import com.io7m.cardant.model.CAItemID;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-import java.util.Comparator;
-
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
 
-public final class CAItemTables
+public final class CAItemMutableTables
 {
-  private CAItemTables()
+  private CAItemMutableTables()
   {
 
   }
 
   public static void configure(
     final CAMainStrings strings,
-    final CAItemList itemList,
-    final TableView<CAItem> tableView)
+    final TableView<CAItemMutable> tableView)
   {
     tableView.setPlaceholder(new Label(strings.format("items.noItems")));
 
     final var tableColumns =
       tableView.getColumns();
     final var tableNameColumn =
-      (TableColumn<CAItem, CAItem>) tableColumns.get(0);
+      (TableColumn<CAItemMutable, String>) tableColumns.get(0);
     final var tableDescriptionColumn =
-      (TableColumn<CAItem, CAItem>) tableColumns.get(1);
+      (TableColumn<CAItemMutable, String>) tableColumns.get(1);
     final var tableCountColumn =
-      (TableColumn<CAItem, CAItem>) tableColumns.get(2);
+      (TableColumn<CAItemMutable, Long>) tableColumns.get(2);
 
     tableNameColumn.setSortable(true);
     tableNameColumn.setReorderable(false);
-    tableNameColumn.setComparator(Comparator.comparing(CAItem::name));
-    tableNameColumn.setCellFactory(column -> new CAItemTableNameCell());
+    tableNameColumn.setComparator(String::compareToIgnoreCase);
+    tableNameColumn.setCellFactory(
+      column -> new CAItemMutableTableNameCell());
+    tableNameColumn.setCellValueFactory(
+      param -> param.getValue().name());
 
     tableDescriptionColumn.setSortable(true);
     tableDescriptionColumn.setReorderable(false);
-    tableDescriptionColumn.setComparator(Comparator.comparing(CAItem::descriptionOrEmpty));
-    tableDescriptionColumn.setCellFactory(column -> new CAItemTableDescriptionCell());
+    tableDescriptionColumn.setComparator(String::compareToIgnoreCase);
+    tableDescriptionColumn.setCellFactory(
+      column -> new CAItemMutableTableDescriptionCell());
+    tableDescriptionColumn.setCellValueFactory(
+      param -> param.getValue().description()
+    );
 
     tableCountColumn.setSortable(true);
     tableCountColumn.setReorderable(false);
-    tableCountColumn.setComparator(Comparator.comparingLong(CAItem::count));
-    tableCountColumn.setCellFactory(column -> new CAItemTableCountCell());
-
-    tableNameColumn.setCellValueFactory(
-      param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-    tableDescriptionColumn.setCellValueFactory(
-      param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+    tableCountColumn.setComparator(Long::compareUnsigned);
+    tableCountColumn.setCellFactory(
+      column -> new CAItemMutableTableCountCell());
     tableCountColumn.setCellValueFactory(
-      param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-
-    tableView.setItems(itemList.items());
-    itemList.comparator().bind(tableView.comparatorProperty());
+      param -> param.getValue().count().asObject()
+    );
 
     tableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
     tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+  }
+
+  public static void bind(
+    final TableView<CAItemMutable> tableView,
+    final CATableMap<CAItemID, CAItemMutable> items)
+  {
+    final var readable = items.readable();
+    tableView.setItems(readable);
+    readable.comparatorProperty().bind(tableView.comparatorProperty());
   }
 }

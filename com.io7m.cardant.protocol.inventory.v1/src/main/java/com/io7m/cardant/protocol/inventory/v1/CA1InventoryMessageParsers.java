@@ -24,6 +24,7 @@ import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemAttachmentR
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemCreateParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemGetParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemListParser;
+import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemLocationListParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataPutParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemMetadataRemoveParser;
 import com.io7m.cardant.protocol.inventory.v1.internal.CA1CommandItemRemoveParser;
@@ -209,6 +210,10 @@ public final class CA1InventoryMessageParsers
       Map.entry(
         element1("CommandLocationGet"),
         CA1CommandLocationGetParser::new
+      ),
+      Map.entry(
+        element1("CommandItemLocationList"),
+        CA1CommandItemLocationListParser::new
       )
     );
   }

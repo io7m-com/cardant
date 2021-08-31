@@ -16,12 +16,11 @@
 
 package com.io7m.cardant.gui.internal;
 
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
-import com.io7m.cardant.model.CAInventoryElementType;
-import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
+import com.io7m.cardant.gui.internal.views.CAItemMetadataTables;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -39,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -47,8 +47,8 @@ import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
 import static javafx.scene.control.ButtonType.NO;
 import static javafx.scene.control.ButtonType.YES;
 
-public final class CAViewControllerItemEditorMetadataTab implements
-  Initializable
+public final class CAViewControllerItemEditorMetadataTab
+  implements Initializable
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemEditorMetadataTab.class);
@@ -56,20 +56,14 @@ public final class CAViewControllerItemEditorMetadataTab implements
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
-  private final CAItemMetadataList itemMetadataList;
+  private final CAMainController controller;
 
-  @FXML
-  private TableView<CAItemMetadata> metadataTableView;
-  @FXML
-  private Button itemMetadataAdd;
-  @FXML
-  private Button itemMetadataRemove;
-  @FXML
-  private TextField searchField;
+  @FXML private TableView<CAItemMetadataMutable> metadataTableView;
+  @FXML private Button itemMetadataAdd;
+  @FXML private Button itemMetadataRemove;
+  @FXML private TextField searchField;
 
-  private Optional<CAItem> itemCurrent;
   private volatile CAClientType clientNow;
-  private CAPerpetualSubscriber<CAMainEventType> subscriber;
 
   public CAViewControllerItemEditorMetadataTab(
     final CAServiceDirectoryType mainServices,
@@ -79,10 +73,10 @@ public final class CAViewControllerItemEditorMetadataTab implements
       mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
+    this.controller =
+      mainServices.requireService(CAMainController.class);
 
     this.services = mainServices;
-    this.itemMetadataList = new CAItemMetadataList();
-    this.itemCurrent = Optional.empty();
   }
 
   @Override
@@ -92,23 +86,42 @@ public final class CAViewControllerItemEditorMetadataTab implements
   {
     CAItemMetadataTables.configure(
       this.strings,
-      this.itemMetadataList,
       this.metadataTableView,
       this::onWantEditMetadataValue
     );
 
+    this.controller.connectedClient()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onClientConnectionChanged(newValue);
+      });
+
     this.metadataTableView.getSelectionModel()
       .selectedItemProperty()
       .addListener((observable, oldValue, newValue) -> {
-        this.onMetadataSelectionChanged();
+        this.onMetadataSelect();
       });
 
-    this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
-    this.events.subscribe(this.subscriber);
+    this.controller.itemSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.bindMetadataTable();
+      });
+
+    this.controller.itemMetadataSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onMetadataSelected(newValue);
+      });
+  }
+
+  private void bindMetadataTable()
+  {
+    CAItemMetadataTables.bind(
+      this.controller.itemMetadata(),
+      this.metadataTableView
+    );
   }
 
   private void onWantEditMetadataValue(
-    final CAItemMetadata itemMetadata)
+    final CAItemMetadataMutable itemMetadata)
   {
     try {
       final var stage = new Stage();
@@ -128,25 +141,32 @@ public final class CAViewControllerItemEditorMetadataTab implements
       stage.setScene(new Scene(pane));
 
       final CAViewControllerItemMetadataEditor create = loader.getController();
-      create.setItem(this.itemCurrent.get());
+      create.setItem(this.controller.itemSelected().get().get());
       create.setEditingMetadata(itemMetadata);
       stage.showAndWait();
 
       final var itemMetadataOpt = create.result();
-      itemMetadataOpt.ifPresent(
-        metadata -> this.clientNow.itemMetadataUpdate(metadata));
+      itemMetadataOpt.ifPresent(metadata -> {
+        this.clientNow.itemMetadataUpdate(metadata.toImmutable());
+      });
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
     }
   }
 
-  private void onMetadataSelectionChanged()
+  private void onMetadataSelected(
+    final Optional<CAItemMetadataMutable> newValue)
   {
-    final var selected =
-      this.metadataTableView.getSelectionModel()
-        .getSelectedItem();
+    this.itemMetadataRemove.setDisable(newValue.isEmpty());
+  }
 
-    this.itemMetadataRemove.setDisable(selected == null);
+  private void onMetadataSelect()
+  {
+    this.controller.itemMetadataSelect(
+      Optional.ofNullable(
+        this.metadataTableView.getSelectionModel()
+          .getSelectedItem()
+      ));
   }
 
   @FXML
@@ -170,12 +190,14 @@ public final class CAViewControllerItemEditorMetadataTab implements
     stage.setScene(new Scene(pane));
 
     final CAViewControllerItemMetadataEditor create = loader.getController();
-    create.setItem(this.itemCurrent.get());
+    create.setItem(this.controller.itemSelected().get().get());
     stage.showAndWait();
 
     final var itemMetadataOpt = create.result();
     itemMetadataOpt.ifPresent(
-      itemMetadata -> this.clientNow.itemMetadataUpdate(itemMetadata));
+      itemMetadata -> {
+        this.clientNow.itemMetadataUpdate(itemMetadata.toImmutable());
+      });
   }
 
   @FXML
@@ -193,10 +215,13 @@ public final class CAViewControllerItemEditorMetadataTab implements
     if (resultOpt.isPresent()) {
       final var selected = resultOpt.get();
       if (selected.equals(YES)) {
-        this.clientNow.itemMetadataDelete(
-          this.itemCurrent.get().id(),
-          this.metadataTableView.getSelectionModel().getSelectedItems()
-        );
+        final var itemMetadata =
+          this.controller.itemMetadataSelected()
+            .get()
+            .orElseThrow()
+            .toImmutable();
+
+        this.clientNow.itemMetadataDelete(Collections.singleton(itemMetadata));
       }
     }
   }
@@ -204,72 +229,20 @@ public final class CAViewControllerItemEditorMetadataTab implements
   @FXML
   private void onSearchFieldChanged()
   {
-    this.itemMetadataList.setSearch(
-      this.searchField.getText().toUpperCase(Locale.ROOT)
+    this.controller.itemMetadataSetSearch(
+      this.searchField.getText()
+        .trim()
+        .toUpperCase(Locale.ROOT)
     );
   }
 
-  private void onClientDisconnected()
+  private void onClientConnectionChanged(
+    final Optional<CAClientHostileType> newValue)
   {
-    this.clientNow = null;
-  }
-
-  private void onClientConnected(
-    final CAClientType client)
-  {
-    this.clientNow = client;
-  }
-
-  private void onDataReceived(
-    final CAInventoryElementType data)
-  {
-    if (data instanceof CAItem item) {
-      final var itemIdIncoming =
-        Optional.of(item.id());
-      final var itemIdCurrent =
-        this.itemCurrent.map(CAItem::id);
-
-      if (itemIdIncoming.equals(itemIdCurrent)) {
-        this.onItemSelected(Optional.of(item));
-      }
-    }
-  }
-
-  private void onItemSelected(
-    final Optional<CAItem> itemOpt)
-  {
-    this.itemCurrent = itemOpt;
-
-    if (itemOpt.isEmpty()) {
-      return;
-    }
-
-    final var item = itemOpt.get();
-    this.itemMetadataList.setItems(item.metadata().values());
-  }
-
-  private void onMainEvent(
-    final CAMainEventType item)
-  {
-    if (item instanceof CAMainEventClientConnection clientEvent) {
-      final var client = clientEvent.client();
-      if (client.isConnected()) {
-        this.onClientConnected(client);
-      } else {
-        this.onClientDisconnected();
-      }
-    }
-
-    if (item instanceof CAMainEventItemSelected selected) {
-      Platform.runLater(() -> {
-        this.onItemSelected(selected.item());
-      });
-    }
-
-    if (item instanceof CAMainEventClientData clientData) {
-      Platform.runLater(() -> {
-        this.onDataReceived(clientData.data());
-      });
+    if (newValue.isPresent()) {
+      this.clientNow = newValue.get();
+    } else {
+      this.clientNow = null;
     }
   }
 }

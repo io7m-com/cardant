@@ -55,35 +55,18 @@ public final class CAViewControllerMain implements Initializable
   private final CAServiceDirectoryType services;
   private final CAMainEventBusType events;
   private final CAIconsType icons;
-  private final CAMainClientController clientController;
+  private final CAMainController clientController;
   private final CAPreferencesServiceType preferences;
 
-  @FXML
-  private TabPane mainTabs;
-
-  @FXML
-  private MenuItem fileConnect;
-
-  @FXML
-  private Label statusText;
-
-  @FXML
-  private ImageView statusIcon;
-
-  @FXML
-  private ProgressIndicator statusProgress;
-
-  @FXML
-  private Tab itemsTab;
-
-  @FXML
-  private Tab locationsTab;
-
-  @FXML
-  private Tab transfersTab;
-
-  @FXML
-  private Tab debuggingTab;
+  @FXML private TabPane mainTabs;
+  @FXML private MenuItem fileConnect;
+  @FXML private Label statusText;
+  @FXML private ImageView statusIcon;
+  @FXML private ProgressIndicator statusProgress;
+  @FXML private Tab itemsTab;
+  @FXML private Tab locationsTab;
+  @FXML private Tab transfersTab;
+  @FXML private Tab debuggingTab;
 
   private CAClientType client;
 
@@ -102,7 +85,7 @@ public final class CAViewControllerMain implements Initializable
     this.icons =
       mainServices.requireService(CAIconsType.class);
     this.clientController =
-      mainServices.requireService(CAMainClientController.class);
+      mainServices.requireService(CAMainController.class);
   }
 
   private void onRequestFileDisconnect()

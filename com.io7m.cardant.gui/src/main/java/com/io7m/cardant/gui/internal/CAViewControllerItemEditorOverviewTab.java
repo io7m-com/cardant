@@ -16,12 +16,12 @@
 
 package com.io7m.cardant.gui.internal;
 
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
-import com.io7m.cardant.model.CAInventoryElementType;
-import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.gui.internal.model.CAItemMutable;
+import com.io7m.cardant.gui.internal.model.CAMutableModelElementType;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -46,26 +46,18 @@ public final class CAViewControllerItemEditorOverviewTab implements
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
-  private final CAItemMetadataList itemMetadataList;
+  private final CAMainController controller;
 
-  @FXML
-  private VBox itemEditorContainer;
-  @FXML
-  private AnchorPane itemEditorPlaceholder;
-  @FXML
-  private TextField itemNameField;
-  @FXML
-  private TextField itemIDField;
-  @FXML
-  private TextArea itemDescriptionField;
-  @FXML
-  private Button itemImageRemove;
-  @FXML
-  private Button itemImageAdd;
-  @FXML
-  private Button itemDescriptionUpdate;
+  @FXML private VBox itemEditorContainer;
+  @FXML private AnchorPane itemEditorPlaceholder;
+  @FXML private TextField itemNameField;
+  @FXML private TextField itemIDField;
+  @FXML private TextArea itemDescriptionField;
+  @FXML private Button itemImageRemove;
+  @FXML private Button itemImageAdd;
+  @FXML private Button itemDescriptionUpdate;
 
-  private Optional<CAItem> itemCurrent;
+  private Optional<CAItemMutable> itemCurrent;
   private volatile CAClientType clientNow;
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
 
@@ -77,9 +69,10 @@ public final class CAViewControllerItemEditorOverviewTab implements
       mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
+    this.controller =
+      mainServices.requireService(CAMainController.class);
 
     this.services = mainServices;
-    this.itemMetadataList = new CAItemMetadataList();
     this.itemCurrent = Optional.empty();
   }
 
@@ -88,8 +81,28 @@ public final class CAViewControllerItemEditorOverviewTab implements
     final URL url,
     final ResourceBundle resourceBundle)
   {
+    this.controller.itemSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onItemSelected(newValue);
+      });
+
+    this.controller.connectedClient()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onClientConnectionChanged(newValue);
+      });
+
     this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
     this.events.subscribe(this.subscriber);
+  }
+
+  private void onClientConnectionChanged(
+    final Optional<CAClientHostileType> newValue)
+  {
+    if (newValue.isPresent()) {
+      this.clientNow = newValue.get();
+    } else {
+      this.clientNow = null;
+    }
   }
 
   @FXML
@@ -120,29 +133,20 @@ public final class CAViewControllerItemEditorOverviewTab implements
   {
     final var item = this.itemCurrent.get();
     this.itemDescriptionUpdate.setDisable(
-      item.descriptionOrEmpty().equals(this.itemDescriptionField.getText())
+      item.description()
+        .getValue()
+        .equals(this.itemDescriptionField.getText())
     );
   }
 
-  private void onClientDisconnected()
-  {
-    this.clientNow = null;
-  }
-
-  private void onClientConnected(
-    final CAClientType client)
-  {
-    this.clientNow = client;
-  }
-
   private void onDataReceived(
-    final CAInventoryElementType data)
+    final CAMutableModelElementType data)
   {
-    if (data instanceof CAItem item) {
+    if (data instanceof CAItemMutable item) {
       final var itemIdIncoming =
         Optional.of(item.id());
       final var itemIdCurrent =
-        this.itemCurrent.map(CAItem::id);
+        this.itemCurrent.map(CAItemMutable::id);
 
       if (itemIdIncoming.equals(itemIdCurrent)) {
         this.onItemSelected(Optional.of(item));
@@ -151,21 +155,19 @@ public final class CAViewControllerItemEditorOverviewTab implements
   }
 
   private void onItemSelected(
-    final Optional<CAItem> itemOpt)
+    final Optional<CAItemMutable> itemOpt)
   {
     this.itemCurrent = itemOpt;
-
     if (itemOpt.isEmpty()) {
       return;
     }
 
     final var item = itemOpt.get();
     this.itemIDField.setText(item.id().id().toString());
-    this.itemNameField.setText(item.name());
-    this.itemDescriptionField.setText(item.descriptionOrEmpty());
-    this.itemImageRemove.setDisable(
-      !item.hasAttachmentWithRelation("image")
-    );
+    this.itemNameField.textProperty()
+      .bind(item.name());
+    this.itemDescriptionField.textProperty()
+      .bind(item.description());
 
     this.onItemDescriptionEditChanged();
   }
@@ -173,25 +175,8 @@ public final class CAViewControllerItemEditorOverviewTab implements
   private void onMainEvent(
     final CAMainEventType item)
   {
-    if (item instanceof CAMainEventClientConnection clientEvent) {
-      final var client = clientEvent.client();
-      if (client.isConnected()) {
-        this.onClientConnected(client);
-      } else {
-        this.onClientDisconnected();
-      }
-    }
-
-    if (item instanceof CAMainEventItemSelected selected) {
-      Platform.runLater(() -> {
-        this.onItemSelected(selected.item());
-      });
-    }
-
     if (item instanceof CAMainEventClientData clientData) {
-      Platform.runLater(() -> {
-        this.onDataReceived(clientData.data());
-      });
+      this.onDataReceived(clientData.data());
     }
   }
 }

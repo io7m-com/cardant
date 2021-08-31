@@ -19,7 +19,6 @@ package com.io7m.cardant.client.vanilla.internal;
 import com.io7m.cardant.client.api.CAClientCommandResultType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItems;
 
 import java.util.concurrent.CompletableFuture;
 

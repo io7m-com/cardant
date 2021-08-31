@@ -16,20 +16,22 @@
 
 package com.io7m.cardant.gui.internal;
 
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
-import com.io7m.cardant.model.CAIdType;
-import com.io7m.cardant.model.CAInventoryElementType;
+import com.io7m.cardant.gui.internal.model.CAItemMutable;
+import com.io7m.cardant.gui.internal.model.CALocationItemType;
+import com.io7m.cardant.gui.internal.views.CAItemMutableTables;
+import com.io7m.cardant.gui.internal.views.CALocationItemCellFactory;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -44,10 +46,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
@@ -60,14 +60,14 @@ public final class CAViewControllerItemsTab implements Initializable
     LoggerFactory.getLogger(CAViewControllerItemsTab.class);
 
   private final CAMainEventBusType events;
-  private final CAItemList itemList;
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
+  private final CAMainController controller;
 
   @FXML
   private SplitPane splitPane;
   @FXML
-  private TableView<CAItem> itemTableView;
+  private TableView<CAItemMutable> itemTableView;
   @FXML
   private TableColumn<CAItem, String> itemNameColumn;
   @FXML
@@ -88,6 +88,10 @@ public final class CAViewControllerItemsTab implements Initializable
   private Button itemDelete;
   @FXML
   private ImageView itemDeleteImage;
+  @FXML
+  private ListView<CALocationItemType> locationListView;
+  @FXML
+  private TextField locationSearchField;
 
   private volatile CAClientType clientNow;
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
@@ -100,9 +104,10 @@ public final class CAViewControllerItemsTab implements Initializable
       mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
+    this.controller =
+      mainServices.requireService(CAMainController.class);
 
     this.services = mainServices;
-    this.itemList = new CAItemList();
   }
 
   @Override
@@ -110,11 +115,28 @@ public final class CAViewControllerItemsTab implements Initializable
     final URL url,
     final ResourceBundle resourceBundle)
   {
-    CAItemTables.configure(
+    CAItemMutableTables.configure(
       this.strings,
-      this.itemList,
       this.itemTableView
     );
+
+    CAItemMutableTables.bind(
+      this.itemTableView,
+      this.controller.items()
+    );
+
+    this.locationListView.setCellFactory(
+      new CALocationItemCellFactory(this.strings));
+    this.locationListView.setFixedCellSize(32.0);
+    this.locationListView.setItems(
+      this.controller.locationList().readable());
+    this.locationListView.getSelectionModel()
+      .setSelectionMode(SelectionMode.SINGLE);
+    this.locationListView.getSelectionModel()
+      .selectedItemProperty()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onLocationSelectionChanged();
+      });
 
     this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
     this.events.subscribe(this.subscriber);
@@ -122,35 +144,83 @@ public final class CAViewControllerItemsTab implements Initializable
     this.itemTableView.getSelectionModel()
       .selectedIndexProperty()
       .addListener((observable, oldValue, newValue) -> {
-        this.onTableSelectionChanged();
+        this.onItemTableSelectionChanged();
       });
 
-    this.onTableSelectionChanged();
+    this.controller.itemSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onItemSelectionChanged(newValue);
+      });
+
+    this.controller.connectedClient()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onClientConnectionChanged(newValue);
+      });
+
+    this.onItemTableSelectionChanged();
   }
 
-  private void onTableSelectionChanged()
+  private void onMainEvent(
+    final CAMainEventType event)
+  {
+
+  }
+
+  private void onClientConnectionChanged(
+    final Optional<CAClientHostileType> clientOpt)
+  {
+    if (clientOpt.isPresent()) {
+      this.clientNow = clientOpt.get();
+      this.splitPane.setDividerPositions(0.125);
+    } else {
+      this.clientNow = null;
+    }
+  }
+
+  private void onItemSelectionChanged(
+    final Optional<CAItemMutable> itemSelection)
+  {
+    if (itemSelection.isPresent()) {
+      this.itemDelete.setDisable(false);
+      this.itemDeleteImage.setOpacity(1.0);
+    } else {
+      this.itemDelete.setDisable(true);
+      this.itemDeleteImage.setOpacity(0.5);
+    }
+  }
+
+  private void onLocationSelectionChanged()
+  {
+
+  }
+
+  @FXML
+  private void onLocationSearchFieldChanged()
+  {
+    this.controller.locationSetSearch(
+      this.locationSearchField.getText()
+        .trim()
+        .toUpperCase(Locale.ROOT)
+    );
+  }
+
+  private void onItemTableSelectionChanged()
   {
     final var selectionModel =
       this.itemTableView.getSelectionModel();
 
-    final var selectedItem = selectionModel.getSelectedItem();
-    if (selectedItem == null) {
-      this.itemDelete.setDisable(true);
-      this.itemDeleteImage.setOpacity(0.5);
-      this.events.submit(new CAMainEventItemSelected(Optional.empty()));
-      return;
-    }
-
-    this.itemDelete.setDisable(false);
-    this.itemDeleteImage.setOpacity(1.0);
-    this.events.submit(new CAMainEventItemSelected(Optional.of(selectedItem)));
+    this.controller.itemSelect(
+      Optional.ofNullable(selectionModel.getSelectedItem())
+    );
   }
 
   @FXML
   private void onSearchFieldChanged()
   {
-    this.itemList.setSearch(
-      this.searchField.getText().toUpperCase(Locale.ROOT)
+    this.controller.itemSetSearch(
+      this.searchField.getText()
+        .trim()
+        .toUpperCase(Locale.ROOT)
     );
   }
 
@@ -206,97 +276,10 @@ public final class CAViewControllerItemsTab implements Initializable
           this.itemTableView.getSelectionModel()
             .getSelectedItems()
             .stream()
-            .map(CAItem::id)
+            .map(CAItemMutable::id)
             .collect(Collectors.toList())
         );
       }
-    }
-  }
-
-  private void onClientDisconnected()
-  {
-    LOG.debug("onClientDisconnected");
-    this.clientNow = null;
-    this.itemList.items().clear();
-  }
-
-  private void onClientConnected(
-    final CAClientType client)
-  {
-    LOG.debug("onClientConnected");
-    this.clientNow = client;
-
-    Platform.runLater(() -> {
-      this.splitPane.setDividerPositions(0.125);
-    });
-  }
-
-  private void onDataRemoved(
-    final Set<CAIdType> ids)
-  {
-    for (final var id : ids) {
-      if (id instanceof CAItemID itemId) {
-        this.itemList.removeItem(itemId);
-      }
-    }
-  }
-
-  private void onDataReceived(
-    final CAInventoryElementType data)
-  {
-    LOG.debug("received: {}", data.getClass().getSimpleName());
-
-    if (data instanceof CAItems items) {
-      for (final var item : items.items()) {
-        this.onDataReceived(item);
-      }
-      return;
-    }
-
-    /*
-     * It's necessary to explicitly store and restore the selected item
-     * in the table view, because the underlying observable array list
-     * expresses updates in terms of a removal followed by an addition.
-     */
-
-    if (data instanceof CAItem item) {
-      final var selectionModel =
-        this.itemTableView.getSelectionModel();
-      final var selectedItem =
-        selectionModel.getSelectedItem();
-      final var newIndex =
-        this.itemList.updateItem(item);
-
-      if (selectedItem != null) {
-        if (Objects.equals(selectedItem.id(), item.id())) {
-          selectionModel.select(newIndex);
-        }
-      }
-    }
-  }
-
-  private void onMainEvent(
-    final CAMainEventType item)
-  {
-    if (item instanceof CAMainEventClientConnection clientEvent) {
-      final var client = clientEvent.client();
-      if (client.isConnected()) {
-        this.onClientConnected(client);
-      } else {
-        this.onClientDisconnected();
-      }
-    }
-
-    if (item instanceof CAMainEventClientData clientData) {
-      Platform.runLater(() -> {
-        this.onDataReceived(clientData.data());
-      });
-    }
-
-    if (item instanceof CAMainEventClientDataRemoved removed) {
-      Platform.runLater(() -> {
-        this.onDataRemoved(removed.ids());
-      });
     }
   }
 }

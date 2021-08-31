@@ -16,34 +16,20 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemID;
+import javafx.beans.property.ObjectProperty;
 
-public final class CAItemList
-  extends CAGenericFilterableList<CAItem, CAItemID>
+import java.util.Comparator;
+
+public final class CAComparators
 {
-  /**
-   * Construct an item list.
-   */
-
-  public CAItemList()
+  private CAComparators()
   {
 
   }
 
-  @Override
-  protected CAItemID identifierFor(
-    final CAItem item)
+  public static <T> Comparator<ObjectProperty<T>> objectPropertyComparatorOf(
+    final Comparator<T> comparator)
   {
-    return item.id();
-  }
-
-  @Override
-  protected boolean isItemVisibleAccordingToSearch(
-    final CAItem item,
-    final String searchQuery)
-  {
-    return this.searchCompare(item.name(), searchQuery)
-      || this.searchCompare(item.descriptionOrEmpty(), searchQuery);
+    return (o1, o2) -> comparator.compare(o1.getValue(), o2.getValue());
   }
 }

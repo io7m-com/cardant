@@ -14,14 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.model.CAItemAttachment;
+import com.io7m.cardant.gui.internal.CASizeFormatter;
+import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
-public final class CAAttachmentCellController
+public final class CAItemAttachmentMutableCellController
 {
   @FXML
   private AnchorPane container;
@@ -47,7 +48,7 @@ public final class CAAttachmentCellController
   @FXML
   private TextField hashValueField;
 
-  public CAAttachmentCellController()
+  public CAItemAttachmentMutableCellController()
   {
 
   }
@@ -64,12 +65,17 @@ public final class CAAttachmentCellController
   }
 
   public void setItemAttachment(
-    final CAItemAttachment attachment)
+    final CAItemAttachmentMutable attachment)
   {
     this.idField.setText(attachment.id().id().toString());
-    this.descriptionField.setText(attachment.description());
-    this.mediaTypeField.setText(attachment.mediaType());
-    this.relationField.setText(attachment.relation());
+
+    this.descriptionField.textProperty()
+      .bind(attachment.description());
+    this.mediaTypeField.textProperty()
+      .bind(attachment.mediaType());
+    this.relationField.textProperty()
+      .bind(attachment.relation());
+
     this.sizeField.setText(formatSize(attachment.size()));
     this.hashAlgorithmField.setText(attachment.hashAlgorithm());
     this.hashValueField.setText(attachment.hashValue());

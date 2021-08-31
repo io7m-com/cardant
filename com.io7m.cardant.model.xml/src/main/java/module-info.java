@@ -28,12 +28,13 @@ module com.io7m.cardant.model.xml
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires com.io7m.blackthorne.api;
+  requires com.io7m.blackthorne.jxe;
+  requires com.io7m.jaffirm.core;
+  requires com.io7m.jxe.core;
   requires transitive com.io7m.anethum.api;
   requires transitive com.io7m.anethum.common;
   requires transitive com.io7m.cardant.model;
-  requires com.io7m.blackthorne.api;
-  requires com.io7m.jxe.core;
-  requires com.io7m.blackthorne.jxe;
 
   provides CAInventoryParserFactoryType
     with CAInventoryParsers;

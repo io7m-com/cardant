@@ -14,33 +14,9 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.gui.internal.model;
 
-import com.io7m.cardant.model.CAItem;
-import javafx.scene.control.TableCell;
-
-public final class CAItemTableNameCell extends TableCell<CAItem, CAItem>
+public sealed interface CAMutableModelElementType
+  permits CAItemMutable
 {
-  public CAItemTableNameCell()
-  {
-
-  }
-
-  @Override
-  protected void updateItem(
-    final CAItem item,
-    final boolean empty)
-  {
-    super.updateItem(item, empty);
-
-    if (empty || item == null) {
-      this.setGraphic(null);
-      this.setText(null);
-      this.setTooltip(null);
-      return;
-    }
-
-    this.setGraphic(null);
-    this.setText(item.name());
-  }
 }

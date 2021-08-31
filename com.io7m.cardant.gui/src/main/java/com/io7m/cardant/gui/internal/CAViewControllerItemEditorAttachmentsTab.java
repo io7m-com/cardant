@@ -16,12 +16,11 @@
 
 package com.io7m.cardant.gui.internal;
 
+import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
-import com.io7m.cardant.model.CAInventoryElementType;
-import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
+import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
+import com.io7m.cardant.gui.internal.views.CAItemAttachmentMutableCellFactory;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -34,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -50,13 +50,11 @@ public final class CAViewControllerItemEditorAttachmentsTab
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
-  private final CAItemAttachmentList attachmentList;
-  private Optional<CAItem> itemCurrent;
+  private final CAMainController controller;
   private volatile CAClientType clientNow;
-  private CAPerpetualSubscriber<CAMainEventType> subscriber;
 
   @FXML
-  private ListView<CAItemAttachment> attachmentListView;
+  private ListView<CAItemAttachmentMutable> attachmentListView;
 
   @FXML
   private TextField searchField;
@@ -78,10 +76,10 @@ public final class CAViewControllerItemEditorAttachmentsTab
       mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
+    this.controller =
+      mainServices.requireService(CAMainController.class);
 
     this.services = mainServices;
-    this.itemCurrent = Optional.empty();
-    this.attachmentList = new CAItemAttachmentList();
   }
 
   @Override
@@ -89,11 +87,24 @@ public final class CAViewControllerItemEditorAttachmentsTab
     final URL url,
     final ResourceBundle resourceBundle)
   {
+    this.controller.connectedClient()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onClientConnectionChanged(newValue);
+      });
+
+    this.controller.itemAttachmentSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onItemAttachmentSelectionChanged(newValue);
+      });
+
+    this.controller.itemSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.bindAttachmentTable();
+      });
+
     this.attachmentListView.setCellFactory(
-      new CAAttachmentCellFactory(this.strings));
+      new CAItemAttachmentMutableCellFactory(this.strings));
     this.attachmentListView.setFixedCellSize(240.0);
-    this.attachmentListView.setItems(
-      this.attachmentList.items());
     this.attachmentListView.getSelectionModel()
       .setSelectionMode(SelectionMode.SINGLE);
 
@@ -103,30 +114,46 @@ public final class CAViewControllerItemEditorAttachmentsTab
         this.onAttachmentSelectionChanged();
       });
 
-    this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
-    this.events.subscribe(this.subscriber);
+    this.bindAttachmentTable();
+  }
+
+  private void bindAttachmentTable()
+  {
+    this.attachmentListView.setItems(
+      this.controller.itemAttachments()
+        .readable()
+    );
+  }
+
+  private void onItemAttachmentSelectionChanged(
+    final Optional<CAItemAttachmentMutable> newValue)
+  {
+    if (newValue.isPresent()) {
+      this.itemAttachmentRemove.setDisable(false);
+      this.itemAttachmentDownload.setDisable(false);
+    } else {
+      this.itemAttachmentRemove.setDisable(true);
+      this.itemAttachmentDownload.setDisable(true);
+    }
   }
 
   private void onAttachmentSelectionChanged()
   {
-    final var selected =
-      this.attachmentListView.getSelectionModel()
-        .getSelectedItem();
-
-    if (selected == null) {
-      this.itemAttachmentRemove.setDisable(true);
-      this.itemAttachmentDownload.setDisable(true);
-      return;
-    }
-
-    this.itemAttachmentRemove.setDisable(false);
-    this.itemAttachmentDownload.setDisable(false);
+    this.controller.itemAttachmentSelect(
+      Optional.ofNullable(
+        this.attachmentListView.getSelectionModel()
+          .getSelectedItem())
+    );
   }
 
   @FXML
   private void onSearchFieldChanged()
   {
-    this.attachmentList.setSearch(this.searchField.getText().trim());
+    this.controller.itemAttachmentSetSearch(
+      this.searchField.getText()
+        .trim()
+        .toUpperCase(Locale.ROOT)
+    );
   }
 
   @FXML
@@ -165,67 +192,13 @@ public final class CAViewControllerItemEditorAttachmentsTab
     }
   }
 
-  private void onClientDisconnected()
+  private void onClientConnectionChanged(
+    final Optional<CAClientHostileType> newValue)
   {
-    this.clientNow = null;
-  }
-
-  private void onClientConnected(
-    final CAClientType client)
-  {
-    this.clientNow = client;
-  }
-
-  private void onDataReceived(
-    final CAInventoryElementType data)
-  {
-    if (data instanceof CAItem item) {
-      final var itemIdIncoming =
-        Optional.of(item.id());
-      final var itemIdCurrent =
-        this.itemCurrent.map(CAItem::id);
-
-      if (itemIdIncoming.equals(itemIdCurrent)) {
-        this.onItemSelected(Optional.of(item));
-      }
-    }
-  }
-
-  private void onItemSelected(
-    final Optional<CAItem> itemOpt)
-  {
-    this.itemCurrent = itemOpt;
-
-    if (itemOpt.isEmpty()) {
-      return;
-    }
-
-    final var item = itemOpt.get();
-    this.attachmentList.setItems(item.attachments().values());
-  }
-
-  private void onMainEvent(
-    final CAMainEventType item)
-  {
-    if (item instanceof CAMainEventClientConnection clientEvent) {
-      final var client = clientEvent.client();
-      if (client.isConnected()) {
-        this.onClientConnected(client);
-      } else {
-        this.onClientDisconnected();
-      }
-    }
-
-    if (item instanceof CAMainEventItemSelected selected) {
-      Platform.runLater(() -> {
-        this.onItemSelected(selected.item());
-      });
-    }
-
-    if (item instanceof CAMainEventClientData clientData) {
-      Platform.runLater(() -> {
-        this.onDataReceived(clientData.data());
-      });
+    if (newValue.isPresent()) {
+      this.clientNow = newValue.get();
+    } else {
+      this.clientNow = null;
     }
   }
 }

@@ -22,8 +22,7 @@ public sealed interface CAMainEventType
   CAMainEventClientData,
   CAMainEventClientDataRemoved,
   CAMainEventClientStatus,
-  CAMainEventCommandFailed,
-  CAMainEventItemSelected
+  CAMainEventCommandFailed
 {
   CAMainEventClassification classification();
 

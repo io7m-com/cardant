@@ -21,4 +21,6 @@ import java.util.concurrent.CompletableFuture;
 public interface CAClientHostileType extends CAClientType
 {
   CompletableFuture<CAClientCommandResultType<Void>> garbageCommand();
+
+  CompletableFuture<CAClientCommandResultType<Void>> invalidCommand();
 }

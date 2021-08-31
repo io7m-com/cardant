@@ -26,6 +26,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentR
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
@@ -296,6 +297,15 @@ public final class CA1InventoryMessageSerializer
     this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
   }
 
+  private void writeCommandItemLocationList(
+    final XMLStreamWriter writer,
+    final CA1CommandItemLocationList locationList)
+    throws XMLStreamException
+  {
+    writer.writeEmptyElement(PROTO_NAMESPACE, "CommandItemLocationList");
+    this.writeNamespaceIfNecessary(writer, PROTO_NAMESPACE);
+  }
+
   private void writeCommandItemAttachmentPut(
     final XMLStreamWriter writer,
     final CA1CommandItemAttachmentPut itemAttachmentPut)
@@ -487,6 +497,8 @@ public final class CA1InventoryMessageSerializer
       this.writeCommandItemGet(writer, itemGet);
     } else if (command instanceof CA1CommandLocationGet locationGet) {
       this.writeCommandLocationGet(writer, locationGet);
+    } else if (command instanceof CA1CommandItemLocationList locationList) {
+      this.writeCommandItemLocationList(writer, locationList);
     } else {
       throw new IllegalStateException("Unexpected command: " + command);
     }

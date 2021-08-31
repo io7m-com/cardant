@@ -25,7 +25,6 @@ import com.io7m.cardant.client.api.CAClientEventCommandFailed;
 import com.io7m.cardant.client.api.CAClientEventDataChanged;
 import com.io7m.cardant.client.api.CAClientEventDataReceived;
 import com.io7m.cardant.client.api.CAClientEventType;
-import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -36,9 +35,12 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentR
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationGet;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventType;
@@ -60,6 +62,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
@@ -149,7 +152,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   private static <T> CA1InventoryMessageType transformCommand(
     final CAClientCommandType<T> command)
   {
-    if (command instanceof CAClientCommandItemsList itemList) {
+    if (command instanceof CAClientCommandItemsList) {
       return new CA1CommandItemList();
     }
 
@@ -175,6 +178,18 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
 
     if (command instanceof CAClientCommandItemAttachmentDelete delete) {
       return transformCommandItemAttachmentDelete(delete);
+    }
+
+    if (command instanceof CAClientCommandLocationsList) {
+      return new CA1CommandLocationList();
+    }
+
+    if (command instanceof CAClientCommandLocationGet get) {
+      return new CA1CommandLocationGet(get.id());
+    }
+
+    if (command instanceof CAClientCommandItemLocationsList) {
+      return new CA1CommandItemLocationList();
     }
 
     throw new IllegalStateException("Unrecognized command: " + command);
@@ -230,7 +245,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       entries.put(metadata.name(), metadata);
     }
     return new CA1CommandItemMetadataRemove(
-      itemMetadataDelete.itemID(),
+      entries.values().iterator().next().itemId(),
       new CAItemMetadatas(entries)
     );
   }
@@ -304,10 +319,17 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   private <T> byte[] serializeHostile(
     final CAClientCommandHostileType<T> command)
   {
-    if (command instanceof CAClientCommandGarbage garbage) {
+    if (command instanceof CAClientCommandGarbage) {
       final var bytes = new byte[256];
       this.random.nextBytes(bytes);
       return bytes;
+    }
+
+    if (command instanceof CAClientCommandInvalid) {
+      return """
+        <CommandInvalid xmlns="urn:com.io7m.cardant.inventory.protocol:1"
+                        id="70258edd-db3f-4a3a-81e1-26492ca6a824"/>
+                """.getBytes(StandardCharsets.UTF_8);
     }
 
     throw new IllegalStateException("Unrecognized command: " + command);

@@ -17,19 +17,25 @@
 package com.io7m.cardant.client.vanilla.internal;
 
 import com.io7m.cardant.client.api.CAClientCommandResultType;
-import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.jaffirm.core.Preconditions;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public record CAClientCommandItemMetadataDelete(
   CompletableFuture<CAClientCommandResultType<Void>> future,
-  CAItemID itemID,
   Collection<CAItemMetadata> metadata)
   implements CAClientCommandType<Void>
 {
+  public CAClientCommandItemMetadataDelete
+  {
+    Preconditions.checkPreconditionV(
+      !metadata.isEmpty(),
+      "Metadata collection must be non-empty"
+    );
+  }
+
   @Override
   public Class<Void> returnType()
   {

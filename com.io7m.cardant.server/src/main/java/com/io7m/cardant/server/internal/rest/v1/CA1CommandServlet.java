@@ -34,6 +34,7 @@ import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentR
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemLocationList;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
@@ -314,8 +315,21 @@ public final class CA1CommandServlet
     if (command instanceof CA1CommandLocationGet locationGet) {
       return this.executeCommandLocationGet(locationGet);
     }
+    if (command instanceof CA1CommandItemLocationList locationList) {
+      return this.executeCommandItemLocationList(locationList);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CA1InventoryResponseType executeCommandItemLocationList(
+    final CA1CommandItemLocationList locationList)
+  {
+    try {
+      return new CA1ResponseOK(Optional.of(this.queries.itemLocations()));
+    } catch (final CADatabaseException e) {
+      return new CA1ResponseError(500, e.getMessage(), List.of());
+    }
   }
 
   private CA1InventoryResponseType executeCommandLocationGet(

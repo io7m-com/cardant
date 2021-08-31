@@ -22,6 +22,8 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocation;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
@@ -237,6 +239,14 @@ public final class CADatabaseModelQueriesItems
         SET count = ?
         WHERE item_id = ?
           AND item_location = ?
+    """;
+  private static final String ITEM_LOCATIONS_LIST = """
+    SELECT
+      il.item_id,
+      il.item_location,
+      il.count
+    FROM
+      cardant.item_locations il
     """;
 
   private final CADatabaseMessages messages;
@@ -713,6 +723,43 @@ public final class CADatabaseModelQueriesItems
     });
   }
 
+  @Override
+  public CAItemLocations itemLocations()
+    throws CADatabaseException
+  {
+    return this.withSQLConnection(
+      CADatabaseModelQueriesItems::itemLocationsInner);
+  }
+
+  private static CAItemLocations itemLocationsInner(
+    final Connection connection)
+    throws SQLException
+  {
+    final var locations =
+      new TreeMap<CALocationID, SortedMap<CAItemID, CAItemLocation>>();
+
+    try (var statement = connection.prepareStatement(ITEM_LOCATIONS_LIST)) {
+      try (var results = statement.executeQuery()) {
+        while (results.next()) {
+          final var itemLocation = new CAItemLocation(
+            CADatabaseBytes.itemIdFromBytes(
+              results.getBytes("item_id")),
+            CADatabaseBytes.locationIdFromBytes(
+              results.getBytes("item_location")),
+            results.getLong("count")
+          );
+
+          final var byId =
+            locations.computeIfAbsent(
+              itemLocation.location(), x -> new TreeMap<>());
+
+          byId.put(itemLocation.item(), itemLocation);
+        }
+        return new CAItemLocations(locations);
+      }
+    }
+  }
+
   private void itemRepositInner(
     final Connection connection,
     final CAItemRepositType reposit)
@@ -958,7 +1005,6 @@ public final class CADatabaseModelQueriesItems
       return null;
     });
   }
-
 
 
   private void checkItemCountInvariant(

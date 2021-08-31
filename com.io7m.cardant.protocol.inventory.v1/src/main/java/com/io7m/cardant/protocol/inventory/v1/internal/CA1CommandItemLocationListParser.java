@@ -14,35 +14,35 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.gui.internal;
+package com.io7m.cardant.protocol.inventory.v1.internal;
 
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.blackthorne.api.BTElementHandlerType;
+import com.io7m.blackthorne.api.BTElementParsingContextType;
+import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemLocationList;
 
-public final class CAItemMetadataList
-  extends CAGenericFilterableList<CAItemMetadata, String>
+/**
+ * A parser.
+ */
+
+public final class CA1CommandItemLocationListParser
+  implements BTElementHandlerType<Object, CA1CommandItemLocationList>
 {
   /**
-   * Construct an item metadata list.
+   * Create a parser.
+   *
+   * @param context The parsing context
    */
 
-  public CAItemMetadataList()
+  public CA1CommandItemLocationListParser(
+    final BTElementParsingContextType context)
   {
 
   }
 
   @Override
-  protected String identifierFor(
-    final CAItemMetadata item)
+  public CA1CommandItemLocationList onElementFinished(
+    final BTElementParsingContextType context)
   {
-    return item.name();
-  }
-
-  @Override
-  protected boolean isItemVisibleAccordingToSearch(
-    final CAItemMetadata item,
-    final String searchQuery)
-  {
-    return this.searchCompare(item.name(), searchQuery)
-      || this.searchCompare(item.value(), searchQuery);
+    return new CA1CommandItemLocationList();
   }
 }

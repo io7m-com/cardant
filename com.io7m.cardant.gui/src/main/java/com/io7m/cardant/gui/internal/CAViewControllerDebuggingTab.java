@@ -17,9 +17,7 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
-import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
@@ -27,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public final class CAViewControllerDebuggingTab implements Initializable
@@ -35,7 +34,7 @@ public final class CAViewControllerDebuggingTab implements Initializable
     LoggerFactory.getLogger(CAViewControllerDebuggingTab.class);
 
   private final CAMainEventBusType events;
-
+  private final CAMainController controller;
   private volatile CAClientHostileType clientNow;
 
   public CAViewControllerDebuggingTab(
@@ -44,6 +43,8 @@ public final class CAViewControllerDebuggingTab implements Initializable
   {
     this.events =
       mainServices.requireService(CAMainEventBusType.class);
+    this.controller =
+      mainServices.requireService(CAMainController.class);
   }
 
   @Override
@@ -51,7 +52,20 @@ public final class CAViewControllerDebuggingTab implements Initializable
     final URL url,
     final ResourceBundle resourceBundle)
   {
-    this.events.subscribe(new CAPerpetualSubscriber<>(this::onMainEvent));
+    this.controller.connectedClient()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onClientConnectionChanged(newValue);
+      });
+  }
+
+  private void onClientConnectionChanged(
+    final Optional<CAClientHostileType> newValue)
+  {
+    if (newValue.isPresent()) {
+      this.clientNow = newValue.get();
+    } else {
+      this.clientNow = null;
+    }
   }
 
   @FXML
@@ -60,41 +74,10 @@ public final class CAViewControllerDebuggingTab implements Initializable
     this.clientNow.garbageCommand();
   }
 
-  private void onClientDisconnected()
+  @FXML
+  private void onSendInvalidSelected()
   {
-    LOG.debug("onClientDisconnected");
-    this.clientNow = null;
+    this.clientNow.invalidCommand();
   }
 
-  private void onClientConnected(
-    final CAClientHostileType client)
-  {
-    LOG.debug("onClientConnected");
-    this.clientNow = client;
-  }
-
-  private void onDataReceived(
-    final CAInventoryElementType data)
-  {
-
-  }
-
-  private void onMainEvent(
-    final CAMainEventType item)
-  {
-    if (item instanceof CAMainEventClientConnection clientEvent) {
-      final var client = clientEvent.client();
-      if (client.isConnected()) {
-        this.onClientConnected(client);
-      } else {
-        this.onClientDisconnected();
-      }
-    }
-
-    if (item instanceof CAMainEventClientData clientData) {
-      Platform.runLater(() -> {
-        this.onDataReceived(clientData.data());
-      });
-    }
-  }
 }
