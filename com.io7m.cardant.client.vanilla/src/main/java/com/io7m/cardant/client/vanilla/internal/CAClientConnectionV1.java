@@ -20,38 +20,24 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.client.api.CAClientCommandError;
 import com.io7m.cardant.client.api.CAClientCommandOK;
+import com.io7m.cardant.client.api.CAClientCommandResultType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventCommandFailed;
 import com.io7m.cardant.client.api.CAClientEventDataChanged;
 import com.io7m.cardant.client.api.CAClientEventDataReceived;
 import com.io7m.cardant.client.api.CAClientEventType;
-import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
-import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.cardant.model.CAItemMetadatas;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemLocationList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationGet;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventUpdated;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryResponseType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
+import com.io7m.cardant.model.CAInventoryElementType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
+import com.io7m.cardant.protocol.inventory.api.CAEventType;
+import com.io7m.cardant.protocol.inventory.api.CAEventType.CAEventUpdated;
+import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType;
 import com.io7m.cardant.protocol.versioning.messages.CAVersion;
 import com.io7m.jaffirm.core.Preconditions;
+import com.io7m.junreachable.UnreachableCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,19 +49,19 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
-import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_CONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISCONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_RECEIVING_DATA;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_SENDING_REQUEST;
-import static com.io7m.cardant.client.api.CAClientUnit.UNIT;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.*;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
 
 public final class CAClientConnectionV1 implements CAClientConnectionType
 {
@@ -83,8 +69,8 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     LoggerFactory.getLogger(CAClientConnectionV1.class);
 
   private final SubmissionPublisher<CAClientEventType> events;
-  private final CA1InventoryMessageSerializerFactoryType serializers;
-  private final CA1InventoryMessageParserFactoryType parsers;
+  private final CAMessageSerializerFactoryType serializers;
+  private final CAMessageParserFactoryType parsers;
   private final CAClientStrings strings;
   private final HttpClient httpClient;
   private final CAClientConfiguration configuration;
@@ -99,8 +85,8 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
 
   public CAClientConnectionV1(
     final SubmissionPublisher<CAClientEventType> inEvents,
-    final CA1InventoryMessageSerializerFactoryType inSerializers,
-    final CA1InventoryMessageParserFactoryType inParsers,
+    final CAMessageSerializerFactoryType inSerializers,
+    final CAMessageParserFactoryType inParsers,
     final CAClientStrings inStrings,
     final HttpClient inClient,
     final CAClientConfiguration inConfiguration,
@@ -149,106 +135,6 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       new Random(0L);
   }
 
-  private static <T> CA1InventoryMessageType transformCommand(
-    final CAClientCommandType<T> command)
-  {
-    if (command instanceof CAClientCommandItemsList) {
-      return new CA1CommandItemList();
-    }
-
-    if (command instanceof CAClientCommandItemGet itemGet) {
-      return new CA1CommandItemGet(itemGet.id());
-    }
-
-    if (command instanceof CAClientCommandItemMetadataDelete itemMetadataDelete) {
-      return transformCommandItemMetadataDelete(itemMetadataDelete);
-    }
-
-    if (command instanceof CAClientCommandItemMetadataUpdate itemMetadataUpdate) {
-      return transformCommandItemMetadataUpdate(itemMetadataUpdate);
-    }
-
-    if (command instanceof CAClientCommandItemCreate itemCreate) {
-      return transformCommandItemCreate(itemCreate);
-    }
-
-    if (command instanceof CAClientCommandItemsDelete itemsDelete) {
-      return transformCommandItemsDelete(itemsDelete);
-    }
-
-    if (command instanceof CAClientCommandItemAttachmentDelete delete) {
-      return transformCommandItemAttachmentDelete(delete);
-    }
-
-    if (command instanceof CAClientCommandLocationsList) {
-      return new CA1CommandLocationList();
-    }
-
-    if (command instanceof CAClientCommandLocationGet get) {
-      return new CA1CommandLocationGet(get.id());
-    }
-
-    if (command instanceof CAClientCommandItemLocationsList) {
-      return new CA1CommandItemLocationList();
-    }
-
-    throw new IllegalStateException("Unrecognized command: " + command);
-  }
-
-  private static CA1InventoryMessageType transformCommandItemAttachmentDelete(
-    final CAClientCommandItemAttachmentDelete delete)
-  {
-    return new CA1CommandItemAttachmentRemove(delete.itemAttachment());
-  }
-
-  private static CA1InventoryTransaction transformCommandItemsDelete(
-    final CAClientCommandItemsDelete itemsDelete)
-  {
-    return new CA1InventoryTransaction(
-      itemsDelete.items()
-        .stream()
-        .map(CA1CommandItemRemove::new)
-        .collect(Collectors.toList())
-    );
-  }
-
-  private static CA1InventoryTransaction transformCommandItemCreate(
-    final CAClientCommandItemCreate itemCreate)
-  {
-    final var item = itemCreate.item();
-    final var commands = new ArrayList<CA1InventoryCommandType>(2);
-    commands.add(
-      new CA1CommandItemCreate(item.id(), item.name()));
-    commands.add(
-      new CA1CommandItemMetadataPut(
-        item.id(),
-        new CAItemMetadatas(item.metadata())
-      ));
-    return new CA1InventoryTransaction(commands);
-  }
-
-  private static CA1CommandItemMetadataPut transformCommandItemMetadataUpdate(
-    final CAClientCommandItemMetadataUpdate itemMetadataUpdate)
-  {
-    final var entries = new TreeMap<String, CAItemMetadata>();
-    final var itemMetadata = itemMetadataUpdate.itemMetadata();
-    entries.put(itemMetadata.name(), itemMetadata);
-    return new CA1CommandItemMetadataPut(
-      itemMetadata.itemId(), new CAItemMetadatas(entries));
-  }
-
-  private static CA1CommandItemMetadataRemove transformCommandItemMetadataDelete(
-    final CAClientCommandItemMetadataDelete itemMetadataDelete)
-  {
-    final var entries = new TreeMap<String, CAItemMetadata>();
-    for (final var metadata : itemMetadataDelete.metadata()) {
-      entries.put(metadata.name(), metadata);
-    }
-    return new CA1CommandItemMetadataRemove(
-      entries.values().iterator().next().itemId(),
-      new CAItemMetadatas(entries)
-    );
-  }
 
   @Override
   public void poll()
@@ -302,18 +188,25 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     final CAClientCommandType<T> command)
     throws SerializeException, IOException
   {
-    if (command instanceof CAClientCommandHostileType<T> hostile) {
-      return this.serializeHostile(hostile);
+    if (command instanceof CAClientCommandHostileType<T> cmd) {
+      return this.serializeHostile(cmd);
     }
 
-    try (var bytes = new ByteArrayOutputStream()) {
-      this.serializers.serialize(
-        this.commandURI,
-        bytes,
-        transformCommand(command)
-      );
-      return bytes.toByteArray();
+    if (command instanceof CAClientCommandValid cmd) {
+      try (var bytes = new ByteArrayOutputStream()) {
+        this.serializers.serialize(this.commandURI, bytes, cmd.command());
+        return bytes.toByteArray();
+      }
     }
+
+    if (command instanceof CAClientCommandTransactional cmd) {
+      try (var bytes = new ByteArrayOutputStream()) {
+        this.serializers.serialize(this.commandURI, bytes, cmd.transaction());
+        return bytes.toByteArray();
+      }
+    }
+
+    throw new UnreachableCodeException();
   }
 
   private <T> byte[] serializeHostile(
@@ -384,7 +277,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     final var data =
       this.parsers.parse(source, inputStream);
 
-    if (data instanceof CA1InventoryEventType event) {
+    if (data instanceof CAEventType event) {
       this.parseEvent(event);
       return;
     }
@@ -401,7 +294,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     final var data =
       this.parsers.parse(source, inputStream);
 
-    if (data instanceof CA1InventoryResponseType response) {
+    if (data instanceof CAResponseType response) {
       this.parseResponse(command, response);
       return;
     }
@@ -411,40 +304,14 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
 
   private <T> void parseResponse(
     final CAClientCommandType<T> command,
-    final CA1InventoryResponseType response)
+    final CAResponseType response)
   {
-    final var expectedReturn = command.returnType();
-    final var commandFuture = command.future();
+    final var expectedReturn =
+      command.returnType();
+    final var commandFuture =
+      command.future();
 
-    if (response instanceof CA1ResponseOK ok) {
-      final var dataOpt = ok.data();
-      if (dataOpt.isEmpty()) {
-        if (Objects.equals(expectedReturn, CAClientUnit.class)) {
-          commandFuture.complete(new CAClientCommandOK<>((T) UNIT));
-          return;
-        }
-        commandFuture.complete(
-          this.responseTypeError(expectedReturn, "Nothing")
-        );
-        return;
-      }
-
-      final var data = dataOpt.get();
-      if (expectedReturn.isAssignableFrom(data.getClass())) {
-        commandFuture.complete(
-          new CAClientCommandOK<>(expectedReturn.cast(data)));
-
-        this.events.submit(new CAClientEventDataReceived(data));
-        return;
-      }
-
-      commandFuture.complete(
-        this.responseTypeError(expectedReturn, data.getClass().getSimpleName())
-      );
-      return;
-    }
-
-    if (response instanceof CA1ResponseError error) {
+    if (response instanceof CAResponseError error) {
       final CAClientCommandError<T> result = this.responseError(error);
       this.events.submit(new CAClientEventCommandFailed<>(
         command.getClass().getSimpleName(),
@@ -454,12 +321,50 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       return;
     }
 
+    if (response instanceof CAResponseItemGet itemGet) {
+      this.handleResult(
+        expectedReturn,
+        commandFuture,
+        expectedReturn.cast(itemGet.item())
+      );
+      return;
+    }
+
+    if (response instanceof CAResponseItemList itemList) {
+      this.handleResult(
+        expectedReturn,
+        commandFuture,
+        expectedReturn.cast(itemList.items())
+      );
+      return;
+    }
+
     throw new IllegalStateException(
       "Unexpected response: " + response.getClass());
   }
 
+  private <T> void handleResult(
+    final Class<T> expectedReturn,
+    final CompletableFuture<CAClientCommandResultType<T>> commandFuture,
+    final T data)
+  {
+    if (expectedReturn.isAssignableFrom(data.getClass())) {
+      commandFuture.complete(
+        new CAClientCommandOK<>(expectedReturn.cast(data)));
+
+      if (data instanceof CAInventoryElementType inventory) {
+        this.events.submit(new CAClientEventDataReceived(inventory));
+      }
+      return;
+    }
+
+    commandFuture.complete(
+      this.responseTypeError(expectedReturn, data.getClass().getSimpleName())
+    );
+  }
+
   private <T> CAClientCommandError<T> responseError(
-    final CA1ResponseError error)
+    final CAResponseError error)
   {
     return new CAClientCommandError<>(error.message());
   }
@@ -478,9 +383,9 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   }
 
   private void parseEvent(
-    final CA1InventoryEventType event)
+    final CAEventType event)
   {
-    if (event instanceof CA1InventoryEventUpdated updated) {
+    if (event instanceof CAEventUpdated updated) {
       this.events.submit(new CAClientEventDataChanged(
         updated.updated(),
         updated.removed()
@@ -497,7 +402,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       final var data =
         this.serializeMessage(
           this.loginURI,
-          new CA1CommandLoginUsernamePassword(
+          new CACommandLoginUsernamePassword(
             this.configuration.username(),
             this.configuration.password()
           ));
@@ -540,7 +445,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
 
   private byte[] serializeMessage(
     final URI uri,
-    final CA1InventoryMessageType message)
+    final CAMessageType message)
     throws IOException, SerializeException
   {
     try (var bytes = new ByteArrayOutputStream()) {

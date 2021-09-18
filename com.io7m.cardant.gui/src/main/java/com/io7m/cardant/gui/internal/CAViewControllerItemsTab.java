@@ -248,7 +248,9 @@ public final class CAViewControllerItemsTab implements Initializable
 
     final CAViewControllerCreateItem create = loader.getController();
     final var itemOpt = create.result();
-    itemOpt.ifPresent(item -> this.clientNow.itemCreate(item));
+    itemOpt.ifPresent(item -> {
+      this.clientNow.itemCreate(item.id(), item.name());
+    });
   }
 
   @FXML
@@ -277,7 +279,7 @@ public final class CAViewControllerItemsTab implements Initializable
             .getSelectedItems()
             .stream()
             .map(CAItemMutable::id)
-            .collect(Collectors.toList())
+            .collect(Collectors.toSet())
         );
       }
     }

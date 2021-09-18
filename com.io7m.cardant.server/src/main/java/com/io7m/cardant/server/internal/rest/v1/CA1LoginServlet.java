@@ -22,12 +22,12 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CAUsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
+import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.cardant.server.internal.rest.CAServerLoginFailed;
 import com.io7m.cardant.server.internal.rest.CAServerLoginSucceeded;
@@ -43,7 +43,6 @@ import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.SubmissionPublisher;
 
 import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
@@ -57,10 +56,10 @@ public final class CA1LoginServlet extends HttpServlet
   private static final Logger LOG =
     LoggerFactory.getLogger(CA1LoginServlet.class);
 
-  private final CA1InventoryMessageSerializerFactoryType serializers;
+  private final CAMessageSerializerFactoryType serializers;
   private final CADatabaseType database;
   private final SubmissionPublisher<CAServerEventType> events;
-  private final CA1InventoryMessageParserFactoryType parsers;
+  private final CAMessageParserFactoryType parsers;
 
   /**
    * Construct a servlet.
@@ -73,8 +72,8 @@ public final class CA1LoginServlet extends HttpServlet
 
   public CA1LoginServlet(
     final SubmissionPublisher<CAServerEventType> inEvents,
-    final CA1InventoryMessageParserFactoryType inParsers,
-    final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAMessageParserFactoryType inParsers,
+    final CAMessageSerializerFactoryType inSerializers,
     final CADatabaseType inDatabase)
   {
     this.events =
@@ -112,7 +111,7 @@ public final class CA1LoginServlet extends HttpServlet
 
   private void sendMessage(
     final HttpServletResponse response,
-    final CA1InventoryMessageType message)
+    final CAMessageType message)
     throws IOException, SerializeException
   {
     response.setContentType(applicationCardantXML());
@@ -121,7 +120,6 @@ public final class CA1LoginServlet extends HttpServlet
       output.flush();
     }
   }
-
 
   @Override
   protected void service(
@@ -132,7 +130,7 @@ public final class CA1LoginServlet extends HttpServlet
     MDC.put("client", clientOf(request));
 
     try {
-      final CA1InventoryMessageType loginRequest;
+      final CAMessageType loginRequest;
 
       try {
         loginRequest =
@@ -141,18 +139,18 @@ public final class CA1LoginServlet extends HttpServlet
         response.setStatus(401);
         this.sendMessage(
           response,
-          new CA1ResponseError(401, "Login failed", List.of()));
+          new CAResponseError(401, "Login failed", List.of()));
         this.events.submit(new CAServerLoginFailed());
         return;
       }
 
-      if (loginRequest instanceof CA1CommandLoginUsernamePassword creds) {
+      if (loginRequest instanceof CACommandLoginUsernamePassword creds) {
         if (this.checkLogin(creds)) {
           LOG.info("user '{}' logged in", creds.user());
           final var session = request.getSession();
           session.setAttribute("userName", creds.user());
           response.setStatus(200);
-          this.sendMessage(response, new CA1ResponseOK(Optional.empty()));
+          this.sendMessage(response, new CAResponseLoginUsernamePassword());
           this.events.submit(new CAServerLoginSucceeded());
           return;
         }
@@ -162,7 +160,7 @@ public final class CA1LoginServlet extends HttpServlet
       response.setStatus(401);
       this.sendMessage(
         response,
-        new CA1ResponseError(401, "Login failed", List.of()));
+        new CAResponseError(401, "Login failed", List.of()));
       this.events.submit(new CAServerLoginFailed());
     } catch (final IOException e) {
       LOG.error("i/o: ", e);
@@ -182,7 +180,7 @@ public final class CA1LoginServlet extends HttpServlet
   }
 
   private boolean checkLogin(
-    final CA1CommandLoginUsernamePassword creds)
+    final CACommandLoginUsernamePassword creds)
     throws CADatabaseException, GeneralSecurityException, IOException
   {
     try (var connection = this.database.openConnection()) {

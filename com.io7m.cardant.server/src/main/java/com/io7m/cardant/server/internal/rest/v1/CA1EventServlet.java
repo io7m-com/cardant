@@ -19,9 +19,9 @@ package com.io7m.cardant.server.internal.rest.v1;
 import com.io7m.cardant.database.api.CADatabaseEventType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAModelDatabaseEventUpdated;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryEventUpdated;
+import com.io7m.cardant.protocol.inventory.api.CAEventType;
+import com.io7m.cardant.protocol.inventory.api.CAEventType.CAEventUpdated;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.server.internal.CAServerMessages;
 import com.io7m.cardant.server.internal.rest.CAMediaTypes;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
@@ -61,7 +61,7 @@ public final class CA1EventServlet
 
   public CA1EventServlet(
     final SubmissionPublisher<CAServerEventType> inEvents,
-    final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAMessageSerializerFactoryType inSerializers,
     final CAServerMessages inMessages,
     final CADatabaseType inDatabase)
   {
@@ -86,7 +86,7 @@ public final class CA1EventServlet
       this.retrieveTimeoutParameter(request);
 
     final var queue =
-      new ArrayBlockingQueue<CA1InventoryEventType>(1);
+      new ArrayBlockingQueue<CAEventType>(1);
 
     this.database.events().subscribe(
       new Flow.Subscriber<>()
@@ -106,7 +106,7 @@ public final class CA1EventServlet
           final CADatabaseEventType item)
         {
           if (item instanceof CAModelDatabaseEventUpdated updated) {
-            queue.add(new CA1InventoryEventUpdated(
+            queue.add(new CAEventUpdated(
               updated.updated(),
               updated.removed()
             ));

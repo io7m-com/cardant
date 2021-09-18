@@ -18,8 +18,8 @@ package com.io7m.cardant.server.internal.rest.v1;
 
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.server.internal.CAServerMessages;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,12 +38,12 @@ public abstract class CA1AuthenticatedTransactionalServlet
   extends CA1AuthenticatedServlet
 {
   private final CADatabaseType database;
-  private final CA1InventoryMessageParserFactoryType parsers;
+  private final CAMessageParserFactoryType parsers;
 
   protected CA1AuthenticatedTransactionalServlet(
     final SubmissionPublisher<CAServerEventType> inEvents,
-    final CA1InventoryMessageParserFactoryType inParsers,
-    final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAMessageParserFactoryType inParsers,
+    final CAMessageSerializerFactoryType inSerializers,
     final CAServerMessages inMessages,
     final CADatabaseType inDatabase)
   {
@@ -68,7 +68,7 @@ public abstract class CA1AuthenticatedTransactionalServlet
    * @return An inventory message parser factory
    */
 
-  public final CA1InventoryMessageParserFactoryType parsers()
+  public final CAMessageParserFactoryType parsers()
   {
     return this.parsers;
   }

@@ -21,6 +21,8 @@ import com.io7m.cardant.client.api.CAClientFactoryType;
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.vanilla.internal.CAClient;
+import com.io7m.cardant.protocol.inventory.api.CAMessageServices;
+import com.io7m.cardant.protocol.inventory.api.CAMessageServicesType;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParserFactoryType;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParsers;
 
@@ -33,15 +35,20 @@ public final class CAClients implements CAClientFactoryType
 {
   private final CAClientStrings strings;
   private final CAVersioningMessageParserFactoryType versioningParsers;
+  private final CAMessageServicesType messages;
 
   public CAClients(
     final CAClientStrings inStrings,
-    final CAVersioningMessageParserFactoryType inVersioningParsers)
+    final CAVersioningMessageParserFactoryType inVersioningParsers,
+    final
+    CAMessageServicesType inMessages)
   {
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
     this.versioningParsers =
       Objects.requireNonNull(inVersioningParsers, "versioningParsers");
+    this.messages =
+      Objects.requireNonNull(inMessages, "inMessages");
   }
 
   public CAClients()
@@ -49,7 +56,8 @@ public final class CAClients implements CAClientFactoryType
   {
     this(
       new CAClientStrings(Locale.getDefault()),
-      new CAVersioningMessageParsers()
+      new CAVersioningMessageParsers(),
+      new CAMessageServices()
     );
   }
 
@@ -111,6 +119,7 @@ public final class CAClients implements CAClientFactoryType
         configuration,
         this.strings,
         this.versioningParsers,
+        this.messages,
         hostile
       );
 
@@ -122,6 +131,8 @@ public final class CAClients implements CAClientFactoryType
   @Override
   public String toString()
   {
-    return String.format("[CAClients 0x%08x]", Integer.valueOf(this.hashCode()));
+    return String.format(
+      "[CAClients 0x%08x]",
+      Integer.valueOf(this.hashCode()));
   }
 }

@@ -17,8 +17,7 @@
 package com.io7m.cardant.server.internal;
 
 import com.io7m.cardant.database.api.CADatabaseType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
+import com.io7m.cardant.protocol.inventory.api.CAMessageServices;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageSerializers;
 import com.io7m.cardant.protocol.versioning.messages.CAAPI;
 import com.io7m.cardant.protocol.versioning.messages.CAVersion;
@@ -89,10 +88,12 @@ public final class CAJettyServer implements Closeable
     Objects.requireNonNull(serverEvents, "commandEvents");
     Objects.requireNonNull(database, "database");
 
-    final var inventorySerializers =
-      new CA1InventoryMessageSerializers();
-    final var inventoryParsers =
-      new CA1InventoryMessageParsers();
+    final var messageServices =
+      new CAMessageServices();
+    final var inventorySerializersV1 =
+      messageServices.findSerializerService(1);
+    final var inventoryParsersV1 =
+      messageServices.findParserService(1);
     final var messages =
       new CAServerMessages(Locale.getDefault());
     final var versioningSerializers =
@@ -102,7 +103,7 @@ public final class CAJettyServer implements Closeable
       CAVersioningAPIVersioning.of(
         CAAPI.of(
           new CAVersion(
-            "urn:com.io7m.cardant.inventory.protocol:1",
+            "urn:com.io7m.cardant.inventory:1",
             "/v1",
             1L
           )
@@ -145,8 +146,8 @@ public final class CAJettyServer implements Closeable
         CA1LoginServlet.class, () -> {
         return new CA1LoginServlet(
           serverEvents,
-          inventoryParsers,
-          inventorySerializers,
+          inventoryParsersV1,
+          inventorySerializersV1,
           database
         );
       }),
@@ -158,8 +159,8 @@ public final class CAJettyServer implements Closeable
         CA1CommandServlet.class, () -> {
         return new CA1CommandServlet(
           serverEvents,
-          inventoryParsers,
-          inventorySerializers,
+          inventoryParsersV1,
+          inventorySerializersV1,
           configuration.limits(),
           messages,
           database
@@ -173,7 +174,7 @@ public final class CAJettyServer implements Closeable
         CA1EventServlet.class, () -> {
         return new CA1EventServlet(
           serverEvents,
-          inventorySerializers,
+          inventorySerializersV1,
           messages,
           database
         );
@@ -186,8 +187,8 @@ public final class CAJettyServer implements Closeable
         CA1AttachmentServlet.class, () -> {
         return new CA1AttachmentServlet(
           serverEvents,
-          inventoryParsers,
-          inventorySerializers,
+          inventoryParsersV1,
+          inventorySerializersV1,
           messages,
           database
         );

@@ -16,9 +16,10 @@
 
 package com.io7m.cardant.server.internal.rest.v1;
 
+import com.io7m.anethum.common.ParseStatus;
 import com.io7m.anethum.common.SerializeException;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
 import com.io7m.cardant.server.internal.CAServerMessages;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.cardant.server.internal.rest.CAServerLoginFailed;
@@ -34,6 +35,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
 
@@ -45,13 +47,13 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
 {
   private final CAServerMessages messages;
   private final SubmissionPublisher<CAServerEventType> events;
-  private final CA1InventoryMessageSerializerFactoryType serializers;
+  private final CAMessageSerializerFactoryType serializers;
   private URI clientURI;
   private HttpServletResponse response;
 
   protected CA1AuthenticatedServlet(
     final SubmissionPublisher<CAServerEventType> inEvents,
-    final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAMessageSerializerFactoryType inSerializers,
     final CAServerMessages inMessages)
   {
     this.events =
@@ -122,7 +124,7 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
    * @return A serializer of inventory messages
    */
 
-  public final CA1InventoryMessageSerializerFactoryType serializers()
+  public final CAMessageSerializerFactoryType serializers()
   {
     return this.serializers;
   }
@@ -176,7 +178,8 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
 
   protected final void sendError(
     final int status,
-    final String message)
+    final String message,
+    final List<String> details)
   {
     try {
       this.response.setStatus(status);
@@ -184,11 +187,45 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
       this.serializers.serialize(
         this.clientURI(),
         this.response.getOutputStream(),
-        new CA1ResponseError(status, message, List.of())
+        new CAResponseError(status, message, details)
       );
     } catch (final SerializeException | IOException e) {
       this.logger().error("error sending error response: ", e);
     }
+  }
+
+  protected final void sendError(
+    final int status,
+    final String message)
+  {
+    this.sendError(status, message, List.of());
+  }
+
+  protected final void sendErrorParsing(
+    final int status,
+    final String message,
+    final List<ParseStatus> details)
+  {
+    this.sendError(
+      status,
+      message,
+      details.stream()
+        .map(CA1AuthenticatedServlet::parseStatusText)
+        .collect(Collectors.toList())
+    );
+  }
+
+  private static String parseStatusText(
+    final ParseStatus status)
+  {
+    return String.format(
+      "%s: %s: %d:%d: %s",
+      status.severity(),
+      status.errorCode(),
+      Integer.valueOf(status.lexical().line()),
+      Integer.valueOf(status.lexical().column()),
+      status.message()
+    );
   }
 
   protected final CAServerMessages messages()

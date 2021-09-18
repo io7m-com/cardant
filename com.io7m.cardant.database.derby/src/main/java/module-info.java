@@ -40,6 +40,7 @@ module com.io7m.cardant.database.derby
   requires java.sql;
   requires org.apache.derby.commons;
   requires org.apache.derby.tools;
+  requires org.jgrapht.core;
   requires org.slf4j;
 
   provides CADatabaseProviderType with CADatabasesDerby;

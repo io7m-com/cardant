@@ -25,10 +25,8 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.cardant.model.CAItemMetadatas;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
@@ -40,31 +38,14 @@ import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.CAUsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemLocationList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemReposit;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationGet;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLoginUsernamePassword;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
+import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageServices;
+import com.io7m.cardant.protocol.inventory.api.CAMessageServicesType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType;
+import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.server.CAServers;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerConfigurationLimits;
@@ -89,13 +70,48 @@ import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationGet;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsPut;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTransaction;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -116,11 +132,12 @@ public final class CAServerV1Test
   private Path sessionDirectory;
   private CAServerType server;
   private CADatabaseType database;
-  private CA1InventoryMessageParsers parsers;
+  private CAMessageServicesType messages;
   private CookieManager cookies;
   private HttpClient client;
-  private CA1InventoryMessageSerializers serializers;
   private CAServers servers;
+  private CAMessageParserFactoryType parsers;
+  private CAMessageSerializerFactoryType serializers;
 
   @BeforeEach
   public void setup()
@@ -148,11 +165,13 @@ public final class CAServerV1Test
       this.servers.createServer(serverConfiguration);
     this.database =
       this.server.database();
+    this.messages =
+      new CAMessageServices();
 
     this.parsers =
-      new CA1InventoryMessageParsers();
+      this.messages.findParserService(1);
     this.serializers =
-      new CA1InventoryMessageSerializers();
+      this.messages.findSerializerService(1);
 
     this.cookies =
       new CookieManager();
@@ -195,7 +214,7 @@ public final class CAServerV1Test
     assertEquals(401, response.statusCode());
 
     final var message =
-      (CA1ResponseError) this.parsers.parse(URI_LOGIN, response.body());
+      (CAResponseError) this.parsers.parse(URI_LOGIN, response.body());
     assertEquals(401, message.status());
     assertEquals("Login failed", message.message());
   }
@@ -215,12 +234,12 @@ public final class CAServerV1Test
     final var response =
       this.send(
         URI_LOGIN,
-        new CA1CommandLoginUsernamePassword("someone_else", "1234"));
+        new CACommandLoginUsernamePassword("someone_else", "1234"));
 
     assertEquals(401, response.statusCode());
 
     final var message =
-      (CA1ResponseError) this.parsers.parse(URI_LOGIN, response.body());
+      (CAResponseError) this.parsers.parse(URI_LOGIN, response.body());
     assertEquals(401, message.status());
     assertEquals("Login failed", message.message());
   }
@@ -240,12 +259,12 @@ public final class CAServerV1Test
     final var response =
       this.send(
         URI_LOGIN,
-        new CA1CommandLoginUsernamePassword("someone", "12345"));
+        new CACommandLoginUsernamePassword("someone", "12345"));
 
     assertEquals(401, response.statusCode());
 
     final var message =
-      (CA1ResponseError) this.parsers.parse(URI_LOGIN, response.body());
+      (CAResponseError) this.parsers.parse(URI_LOGIN, response.body());
     assertEquals(401, message.status());
     assertEquals("Login failed", message.message());
   }
@@ -265,15 +284,14 @@ public final class CAServerV1Test
     final var response =
       this.send(
         URI_LOGIN,
-        new CA1CommandLoginUsernamePassword("someone", "1234"));
+        new CACommandLoginUsernamePassword("someone", "1234"));
 
     assertEquals(200, response.statusCode());
 
     final var message =
-      (CA1ResponseOK) this.parsers.parse(URI_LOGIN, response.body());
-    assertEquals(Optional.empty(), message.data());
+      (CAResponseLoginUsernamePassword)
+        this.parsers.parse(URI_LOGIN, response.body());
   }
-
 
   /**
    * The server rejects nonsense.
@@ -291,14 +309,14 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     final var response =
-      this.send(URI_COMMAND, new CA1ResponseError(200, "Hello", List.of()));
+      this.send(URI_COMMAND, new CAResponseError(200, "Hello", List.of()));
     final var message =
-      (CA1ResponseError) this.parse(response);
+      (CAResponseError) this.parse(response);
 
     assertEquals(400, response.statusCode());
   }
@@ -319,19 +337,20 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     final var response =
-      this.send(URI_COMMAND, new CA1CommandTagList());
+      this.send(URI_COMMAND, new CACommandTagList());
     final var message =
-      (CA1ResponseOK) this.parse(response);
+      (CAResponseTagList) this.parse(response);
 
     assertEquals(200, response.statusCode());
     assertEquals(
-      Optional.of(new CATags(Collections.emptySortedSet())),
-      message.data());
+      new CATags(Collections.emptySortedSet()),
+      message.tags()
+    );
   }
 
   /**
@@ -350,17 +369,17 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     final var response =
-      this.send(URI_COMMAND, new CA1CommandItemList());
+      this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
     final var message =
-      (CA1ResponseOK) this.parse(response);
+      (CAResponseItemList) this.parse(response);
 
     assertEquals(200, response.statusCode());
-    assertEquals(Optional.of(new CAItems(Set.of())), message.data());
+    assertEquals(new CAItems(Set.of()), message.items());
   }
 
   /**
@@ -379,7 +398,7 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
@@ -391,44 +410,44 @@ public final class CAServerV1Test
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandTagsPut(tags));
+        this.send(URI_COMMAND, new CACommandTagsPut(tags));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseTagsPut) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.empty(), message.data());
+      assertEquals(tags, message.tags());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandTagList());
+        this.send(URI_COMMAND, new CACommandTagList());
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseTagList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(tags), message.data());
+      assertEquals(tags, message.tags());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandTagsDelete(tags));
+        this.send(URI_COMMAND, new CACommandTagsDelete(tags));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseTagsDelete) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.empty(), message.data());
+      assertEquals(tags, message.tags());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandTagList());
+        this.send(URI_COMMAND, new CACommandTagList());
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseTagList) this.parse(response);
 
       assertEquals(200, response.statusCode());
       assertEquals(
-        Optional.of(new CATags(Collections.emptySortedSet())),
-        message.data());
+        new CATags(Collections.emptySortedSet()),
+        message.tags());
     }
   }
 
@@ -448,7 +467,7 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
@@ -456,73 +475,73 @@ public final class CAServerV1Test
 
     {
       this.sendCommandAssumingSuccess(
-        new CA1CommandItemCreate(item0.id(), item0.name()));
+        new CACommandItemCreate(item0.id(), item0.name()));
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of(item0))), message.data());
+      assertEquals(new CAItems(Set.of(item0)), message.items());
     }
+
+    final var item1 =
+      new CAItem(
+        item0.id(),
+        "Item 0",
+        0L,
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemUpdate(
+          new CACommandItemUpdate(
             item0.id(),
             "Item 0"));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemUpdate) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.empty(), message.data());
+      assertEquals(item1, message.item());
     }
 
     {
-      final var item1 =
-        new CAItem(
-          item0.id(),
-          "Item 0",
-          0L,
-          Collections.emptySortedMap(),
-          Collections.emptySortedMap(),
-          Collections.emptySortedSet()
-        );
-
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of(item1))), message.data());
+      assertEquals(new CAItems(Set.of(item1)), message.items());
     }
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemRemove(item0.id()));
+          new CACommandItemRemove(item0.id()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemRemove) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.empty(), message.data());
+      assertEquals(item0.id(), message.id());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of())), message.data());
+      assertEquals(new CAItems(Set.of()), message.items());
     }
   }
 
@@ -542,23 +561,23 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     final var item0 = CAItem.create();
 
     this.sendCommandAssumingSuccess(
-      new CA1CommandItemCreate(item0.id(), item0.name()));
+      new CACommandItemCreate(item0.id(), item0.name()));
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemGet(item0.id()));
+        this.send(URI_COMMAND, new CACommandItemGet(item0.id()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemGet) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(item0), message.data());
+      assertEquals(item0, message.item());
     }
   }
 
@@ -578,15 +597,15 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemGet(CAItemID.random()));
+        this.send(URI_COMMAND, new CACommandItemGet(CAItemID.random()));
       final var message =
-        (CA1ResponseError) this.parse(response);
+        (CAResponseError) this.parse(response);
 
       assertEquals(404, response.statusCode());
     }
@@ -608,7 +627,7 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
@@ -616,18 +635,18 @@ public final class CAServerV1Test
 
     {
       this.sendCommandAssumingSuccess(
-        new CA1CommandItemCreate(item0.id(), item0.name()));
+        new CACommandItemCreate(item0.id(), item0.name()));
     }
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemCreate(
+          new CACommandItemCreate(
             item0.id(),
             item0.name()));
       final var message =
-        (CA1ResponseError) this.parse(response);
+        (CAResponseError) this.parse(response);
 
       assertEquals(400, response.statusCode());
     }
@@ -649,7 +668,7 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
@@ -659,9 +678,9 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemUpdate(item0.id(), item0.name()));
+          new CACommandItemUpdate(item0.id(), item0.name()));
       final var message =
-        (CA1ResponseError) this.parse(response);
+        (CAResponseError) this.parse(response);
 
       assertEquals(400, response.statusCode());
     }
@@ -683,29 +702,24 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     final var item0 = CAItem.create();
 
-    final var metadata = new TreeMap<String, CAItemMetadata>();
-    final var meta0 = new CAItemMetadata(item0.id(), "A", "0");
-    metadata.put(meta0.name(), meta0);
-    final var meta1 = new CAItemMetadata(item0.id(), "B", "1");
-    metadata.put(meta1.name(), meta1);
-    final var meta2 = new CAItemMetadata(item0.id(), "C", "2");
-    metadata.put(meta2.name(), meta2);
+    final var metadata = new HashSet<CAItemMetadata>();
+    metadata.add(new CAItemMetadata("A", "0"));
+    metadata.add(new CAItemMetadata("B", "1"));
+    metadata.add(new CAItemMetadata("C", "2"));
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemMetadataPut(
-            item0.id(),
-            new CAItemMetadatas(metadata)));
+          new CACommandItemMetadataPut(item0.id(), metadata));
       final var message =
-        (CA1ResponseError) this.parse(response);
+        (CAResponseError) this.parse(response);
 
       assertEquals(400, response.statusCode());
     }
@@ -727,29 +741,28 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     final var item0 = CAItem.create();
 
-    final var metadata = new TreeMap<String, CAItemMetadata>();
-    final var meta0 = new CAItemMetadata(item0.id(), "A", "0");
-    metadata.put(meta0.name(), meta0);
-    final var meta1 = new CAItemMetadata(item0.id(), "B", "1");
-    metadata.put(meta1.name(), meta1);
-    final var meta2 = new CAItemMetadata(item0.id(), "C", "2");
-    metadata.put(meta2.name(), meta2);
+    final var metadata = new HashSet<CAItemMetadata>();
+    metadata.add(new CAItemMetadata("A", "0"));
+    metadata.add(new CAItemMetadata("B", "1"));
+    metadata.add(new CAItemMetadata("C", "2"));
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemMetadataRemove(
+          new CACommandItemMetadataRemove(
             item0.id(),
-            new CAItemMetadatas(metadata)));
+            metadata.stream()
+              .map(CAItemMetadata::name)
+              .collect(Collectors.toSet())));
       final var message =
-        (CA1ResponseError) this.parse(response);
+        (CAResponseError) this.parse(response);
 
       assertEquals(400, response.statusCode());
     }
@@ -771,7 +784,7 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
@@ -781,25 +794,21 @@ public final class CAServerV1Test
 
     {
       final var transaction =
-        new CA1InventoryTransaction(
+        new CATransaction(
           List.of(
-            new CA1CommandItemCreate(item0.id(), item0.name()),
-            new CA1CommandItemCreate(item1.id(), item1.name()),
-            new CA1CommandItemCreate(item2.id(), item2.name()),
-            new CA1CommandItemList()
+            new CACommandItemCreate(item0.id(), item0.name()),
+            new CACommandItemCreate(item1.id(), item1.name()),
+            new CACommandItemCreate(item2.id(), item2.name()),
+            new CACommandItemList(new CAListLocationsAll())
           )
         );
 
       final var response =
         this.send(URI_COMMAND, transaction);
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(
-        Optional.of(new CAItems(Set.of(item0, item1, item2))),
-        message.data()
-      );
     }
   }
 
@@ -819,47 +828,47 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of())), message.data());
+      assertEquals(new CAItems(Set.of()), message.items());
     }
 
     final var item0 = CAItem.create();
 
     {
       final var transaction =
-        new CA1InventoryTransaction(
+        new CATransaction(
           List.of(
-            new CA1CommandItemCreate(item0.id(), item0.name()),
-            new CA1CommandItemCreate(item0.id(), item0.name())
+            new CACommandItemCreate(item0.id(), item0.name()),
+            new CACommandItemCreate(item0.id(), item0.name())
           )
         );
 
       final var response =
         this.send(URI_COMMAND, transaction);
       final var message =
-        (CA1ResponseError) this.parse(response);
+        (CAResponseError) this.parse(response);
 
       assertEquals(500, response.statusCode());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of())), message.data());
+      assertEquals(new CAItems(Set.of()), message.items());
     }
   }
 
@@ -879,7 +888,7 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
@@ -887,13 +896,12 @@ public final class CAServerV1Test
 
     {
       this.sendCommandAssumingSuccess(
-        new CA1CommandItemCreate(item0.id(), item0.name()));
+        new CACommandItemCreate(item0.id(), item0.name()));
     }
 
     final var itemAttachment =
       new CAItemAttachment(
         CAItemAttachmentID.random(),
-        item0.id(),
         "An attachment.",
         "text/plain",
         "Datasheet",
@@ -905,7 +913,7 @@ public final class CAServerV1Test
 
     {
       this.sendCommandAssumingSuccess(
-        new CA1CommandItemAttachmentPut(itemAttachment));
+        new CACommandItemAttachmentPut(item0.id(), itemAttachment));
     }
 
     final var attachmentWithout = itemAttachment.withoutData();
@@ -924,33 +932,33 @@ public final class CAServerV1Test
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of(itemWith))), message.data());
+      assertEquals(new CAItems(Set.of(itemWith)), message.items());
     }
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemAttachmentRemove(itemAttachment.id()));
+          new CACommandItemAttachmentRemove(item0.id(), itemAttachment.id()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemAttachmentRemove) this.parse(response);
 
       assertEquals(200, response.statusCode());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of(item0))), message.data());
+      assertEquals(new CAItems(Set.of(item0)), message.items());
     }
   }
 
@@ -970,14 +978,14 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
     final var item0 = CAItem.create();
 
     {
-      this.sendCommandAssumingSuccess(new CA1CommandItemCreate(
+      this.sendCommandAssumingSuccess(new CACommandItemCreate(
         item0.id(),
         item0.name()));
     }
@@ -985,7 +993,6 @@ public final class CAServerV1Test
     final var itemAttachment =
       new CAItemAttachment(
         CAItemAttachmentID.random(),
-        item0.id(),
         "An attachment.",
         "text/plain",
         "Datasheet",
@@ -997,22 +1004,24 @@ public final class CAServerV1Test
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemAttachmentPut(itemAttachment));
+        this.send(
+          URI_COMMAND,
+          new CACommandItemAttachmentPut(item0.id(), itemAttachment));
 
       final var message =
-        (CA1ResponseError) this.parse(response);
+        (CAResponseError) this.parse(response);
 
       assertEquals(400, response.statusCode());
     }
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of(item0))), message.data());
+      assertEquals(new CAItems(Set.of(item0)), message.items());
     }
   }
 
@@ -1032,7 +1041,7 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
+          new CACommandLoginUsernamePassword("someone", "1234"));
       assertEquals(200, response.statusCode());
     }
 
@@ -1040,69 +1049,75 @@ public final class CAServerV1Test
 
     {
       this.sendCommandAssumingSuccess(
-        new CA1CommandItemCreate(item0.id(), item0.name()));
+        new CACommandItemCreate(item0.id(), item0.name()));
     }
 
-    final var metadata = new TreeMap<String, CAItemMetadata>();
-    final var meta0 = new CAItemMetadata(item0.id(), "A", "0");
-    metadata.put(meta0.name(), meta0);
-    final var meta1 = new CAItemMetadata(item0.id(), "B", "1");
-    metadata.put(meta1.name(), meta1);
-    final var meta2 = new CAItemMetadata(item0.id(), "C", "2");
-    metadata.put(meta2.name(), meta2);
+    final var metadata = new HashSet<CAItemMetadata>();
+    metadata.add(new CAItemMetadata("A", "0"));
+    metadata.add(new CAItemMetadata("B", "1"));
+    metadata.add(new CAItemMetadata("C", "2"));
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemMetadataPut(
-            item0.id(),
-            new CAItemMetadatas(metadata)));
+          new CACommandItemMetadataPut(item0.id(), metadata));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemMetadataPut) this.parse(response);
 
       assertEquals(200, response.statusCode());
     }
+
+    final var metaMap =
+      metadata.stream()
+        .map(m -> Map.entry(m.name(), m))
+        .collect(new SortedMapEntryCollector<>());
 
     final var itemWith =
       new CAItem(
         item0.id(),
         item0.name(),
         item0.count(),
-        metadata,
+        metaMap,
         item0.attachments(),
         item0.tags()
       );
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(new CAItems(Set.of(itemWith))), message.data());
+      assertEquals(new CAItems(Set.of(itemWith)), message.items());
     }
 
     final var metadataRemove = new TreeMap<String, CAItemMetadata>();
-    metadataRemove.put(meta1.name(), meta1);
-    metadataRemove.put(meta2.name(), meta2);
+    metadataRemove.put(
+      new CAItemMetadata("B", "1").name(),
+      new CAItemMetadata("B", "1"));
+    metadataRemove.put(
+      new CAItemMetadata("C", "2").name(),
+      new CAItemMetadata("C", "2"));
 
     {
       final var response =
         this.send(
           URI_COMMAND,
-          new CA1CommandItemMetadataRemove(
+          new CACommandItemMetadataRemove(
             item0.id(),
-            new CAItemMetadatas(metadataRemove)));
+            metadataRemove.keySet()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemMetadataRemove) this.parse(response);
 
       assertEquals(200, response.statusCode());
     }
 
     final var metadataRemoved = new TreeMap<String, CAItemMetadata>();
-    metadataRemoved.put(meta0.name(), meta0);
+    metadataRemoved.put(
+      new CAItemMetadata("A", "0").name(),
+      new CAItemMetadata("A", "0"));
 
     final var itemWithRemoved =
       new CAItem(
@@ -1116,296 +1131,30 @@ public final class CAServerV1Test
 
     {
       final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
+        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
       final var message =
-        (CA1ResponseOK) this.parse(response);
+        (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
       assertEquals(
-        Optional.of(new CAItems(Set.of(itemWithRemoved))),
-        message.data());
-    }
-  }
-
-  /**
-   * Adding and retrieving locations works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testLocationsCreateList()
-    throws Exception
-  {
-    this.createUser("someone", "1234");
-
-    {
-      final var response =
-        this.send(
-          URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
-      assertEquals(200, response.statusCode());
-    }
-
-    final var location = new CALocation(
-      CALocationID.random(),
-      "location",
-      "location description"
-    );
-
-    final var locationsMap = new TreeMap<CALocationID, CALocation>();
-    locationsMap.put(location.id(), location);
-    final var locations = new CALocations(locationsMap);
-
-    {
-      this.sendCommandAssumingSuccess(new CA1CommandLocationPut(location));
-    }
-
-    {
-      final var response =
-        this.send(URI_COMMAND, new CA1CommandLocationList());
-      final var message =
-        (CA1ResponseOK) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(locations), message.data());
-    }
-  }
-
-  /**
-   * Item repositing works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemReposit()
-    throws Exception
-  {
-    this.createUser("someone", "1234");
-
-    {
-      final var response =
-        this.send(
-          URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
-      assertEquals(200, response.statusCode());
-    }
-
-    final var location =
-      new CALocation(
-        CALocationID.random(),
-        "location",
-        "location description"
-      );
-
-    {
-      this.sendCommandAssumingSuccess(new CA1CommandLocationPut(location));
-    }
-
-    final var itemId = CAItemID.random();
-
-    {
-      final var msg = new CA1CommandItemCreate(itemId, "Item");
-      this.sendCommandAssumingSuccess(msg);
-    }
-
-    {
-      final var response =
-        this.send(
-          URI_COMMAND,
-          new CA1CommandItemReposit(
-            new CAItemRepositAdd(itemId, location.id(), 1000L)));
-      final var message =
-        (CA1ResponseOK) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-      assertEquals(Optional.empty(), message.data());
-    }
-
-    {
-      final var response =
-        this.send(URI_COMMAND, new CA1CommandItemList());
-      final var message =
-        (CA1ResponseOK) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-
-      final var items = (CAItems) message.data().orElseThrow();
-      final var item = items.items().iterator().next();
-      assertEquals(1000L, item.count());
-    }
-  }
-
-
-  /**
-   * Adding and retrieving locations works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testLocationsCreateGet()
-    throws Exception
-  {
-    this.createUser("someone", "1234");
-
-    {
-      final var response =
-        this.send(
-          URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
-      assertEquals(200, response.statusCode());
-    }
-
-    final var location0 =
-      new CALocation(
-        CALocationID.random(),
-        "location",
-        "location description");
-
-    this.sendCommandAssumingSuccess(new CA1CommandLocationPut(location0));
-
-    {
-      final var response =
-        this.send(URI_COMMAND, new CA1CommandLocationGet(location0.id()));
-      final var message =
-        (CA1ResponseOK) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-      assertEquals(Optional.of(location0), message.data());
-    }
-  }
-
-  /**
-   * Retrieving nonexistent locations fails.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testLocationsGetNonexistent()
-    throws Exception
-  {
-    this.createUser("someone", "1234");
-
-    {
-      final var response =
-        this.send(
-          URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
-      assertEquals(200, response.statusCode());
-    }
-
-    {
-      final var response =
-        this.send(
-          URI_COMMAND,
-          new CA1CommandLocationGet(CALocationID.random()));
-      final var message =
-        (CA1ResponseError) this.parse(response);
-
-      assertEquals(404, response.statusCode());
-    }
-  }
-
-  /**
-   * Retrieving item locations works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemLocationsCreateGet()
-    throws Exception
-  {
-    this.createUser("someone", "1234");
-
-    {
-      final var response =
-        this.send(
-          URI_LOGIN,
-          new CA1CommandLoginUsernamePassword("someone", "1234"));
-      assertEquals(200, response.statusCode());
-    }
-
-    final var location0 =
-      new CALocation(
-        CALocationID.random(),
-        "location",
-        "location description");
-    final var location1 =
-      new CALocation(
-        CALocationID.random(),
-        "location",
-        "location description");
-
-    this.sendCommandAssumingSuccess(
-      new CA1CommandLocationPut(location0));
-    this.sendCommandAssumingSuccess(
-      new CA1CommandLocationPut(location1));
-
-    final var item0 = CAItem.create();
-    final var item1 = CAItem.create();
-
-    this.sendCommandAssumingSuccess(
-      new CA1CommandItemCreate(item0.id(), item0.name()));
-    this.sendCommandAssumingSuccess(
-      new CA1CommandItemCreate(item1.id(), item1.name()));
-
-    this.sendCommandAssumingSuccess(
-      new CA1CommandItemReposit(new CAItemRepositAdd(
-        item0.id(),
-        location0.id(),
-        100L
-      ))
-    );
-
-    this.sendCommandAssumingSuccess(
-      new CA1CommandItemReposit(new CAItemRepositAdd(
-        item1.id(),
-        location0.id(),
-        200L
-      ))
-    );
-
-    this.sendCommandAssumingSuccess(
-      new CA1CommandItemReposit(new CAItemRepositAdd(
-        item1.id(),
-        location1.id(),
-        300L
-      ))
-    );
-
-    {
-      final var response =
-        this.send(URI_COMMAND, new CA1CommandItemLocationList());
-      final var message =
-        (CA1ResponseOK) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-
-      final var itemLocations =
-        ((CAItemLocations) message.data().get()).itemLocations();
-
-      assertEquals(2, itemLocations.size());
+        new CAItems(Set.of(itemWithRemoved)),
+        message.items());
     }
   }
 
   private void sendCommandAssumingSuccess(
-    final CA1InventoryCommandType msg)
+    final CACommandType msg)
     throws Exception
   {
     final var response =
       this.send(URI_COMMAND, msg);
     final var message =
-      (CA1ResponseOK) this.parse(response);
+      (CAResponseType) this.parse(response);
 
     assertEquals(200, response.statusCode());
-    assertEquals(Optional.empty(), message.data());
   }
 
-  private CA1InventoryMessageType parse(
+  private CAMessageType parse(
     final HttpResponse<InputStream> response)
     throws ParseException
   {
@@ -1414,7 +1163,7 @@ public final class CAServerV1Test
 
   private HttpResponse<InputStream> send(
     final URI target,
-    final CA1InventoryMessageType message)
+    final CAMessageType message)
     throws Exception
   {
     return this.client.send(
@@ -1425,7 +1174,7 @@ public final class CAServerV1Test
 
   private HttpRequest request(
     final URI target,
-    final CA1InventoryMessageType message)
+    final CAMessageType message)
   {
     return HttpRequest.newBuilder(target)
       .POST(this.serializedMessage(message))
@@ -1433,7 +1182,7 @@ public final class CAServerV1Test
   }
 
   private HttpRequest.BodyPublisher serializedMessage(
-    final CA1InventoryMessageType message)
+    final CAMessageType message)
   {
     try (var output = new ByteArrayOutputStream()) {
       this.serializers.serialize(INPUT, output, message);

@@ -20,9 +20,8 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParsers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializers;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventorySchemas;
+import com.io7m.cardant.protocol.inventory.api.CAMessageServicesType;
+import com.io7m.cardant.protocol.inventory.v1.CA1Schemas;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParserFactoryType;
 import com.io7m.cardant.protocol.versioning.messages.CAVersion;
 import com.io7m.cardant.protocol.versioning.messages.CAVersioningAPIVersioning;
@@ -53,11 +52,19 @@ public final class CAClientConnections
   public static CAClientConnectionType open(
     final SubmissionPublisher<CAClientEventType> events,
     final CAVersioningMessageParserFactoryType parsers,
+    final CAMessageServicesType messageServices,
     final HttpClient httpClient,
     final CAClientConfiguration configuration,
     final CAClientStrings strings)
     throws IOException, ParseException, InterruptedException
   {
+    Objects.requireNonNull(events, "events");
+    Objects.requireNonNull(parsers, "parsers");
+    Objects.requireNonNull(messageServices, "messageServices");
+    Objects.requireNonNull(httpClient, "httpClient");
+    Objects.requireNonNull(configuration, "configuration");
+    Objects.requireNonNull(strings, "strings");
+
     LOG.debug("retrieving supported protocols");
 
     events.submit(CLIENT_NEGOTIATING_PROTOCOLS);
@@ -71,8 +78,8 @@ public final class CAClientConnections
       LOG.debug("selected protocol {}", version.name());
       return new CAClientConnectionV1(
         events,
-        new CA1InventoryMessageSerializers(),
-        new CA1InventoryMessageParsers(),
+        messageServices.findSerializerService(1),
+        messageServices.findParserService(1),
         strings,
         httpClient,
         configuration,
@@ -126,7 +133,7 @@ public final class CAClientConnections
     final CAVersioningAPIVersioning versions)
   {
     final var clientSupported =
-      Stream.of(CA1InventorySchemas.protocol1Namespace().toString())
+      Stream.of(CA1Schemas.namespace())
         .collect(Collectors.joining("\n    "));
 
     final var serverSupported =
@@ -151,9 +158,7 @@ public final class CAClientConnections
 
     for (final var api : versions.apis()) {
       for (final var version : api.versions()) {
-        if (Objects.equals(
-          version.name(),
-          CA1InventorySchemas.protocol1Namespace().toString())) {
+        if (Objects.equals(version.name(), CA1Schemas.namespace())) {
           return version;
         }
       }

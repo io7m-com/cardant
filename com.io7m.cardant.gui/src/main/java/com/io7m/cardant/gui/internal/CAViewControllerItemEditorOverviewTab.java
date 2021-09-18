@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public final class CAViewControllerItemEditorOverviewTab implements
   Initializable
@@ -121,11 +122,13 @@ public final class CAViewControllerItemEditorOverviewTab implements
   private void onItemDescriptionUpdateSelected()
   {
     final var item = this.itemCurrent.get();
-    this.clientNow.itemMetadataUpdate(new CAItemMetadata(
+    this.clientNow.itemMetadataUpdate(
       item.id(),
-      "Description",
-      this.itemDescriptionField.getText()
-    ));
+      Set.of(
+        new CAItemMetadata(
+          "Description",
+          this.itemDescriptionField.getText())
+      ));
   }
 
   @FXML

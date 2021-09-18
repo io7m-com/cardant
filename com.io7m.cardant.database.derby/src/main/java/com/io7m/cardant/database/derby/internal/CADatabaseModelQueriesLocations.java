@@ -20,6 +20,7 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAModelDatabaseQueriesLocationsType;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,6 +29,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_CYCLIC;
 
 /**
  * Internal database calls for the inventory.
@@ -40,14 +43,16 @@ public final class CADatabaseModelQueriesLocations
   private static final String LOCATION_PUT_INSERT = """
     INSERT INTO cardant.locations (
       location_id,
+      location_parent,
       location_name,
       location_description
-    ) VALUES (?, ?, ?)
+    ) VALUES (?, ?, ?, ?)
     """;
 
   private static final String LOCATION_PUT_UPDATE = """
     UPDATE cardant.locations
       SET location_name = ?,
+          location_parent = ?,
           location_description = ?
       WHERE location_id = ?
     """;
@@ -55,6 +60,7 @@ public final class CADatabaseModelQueriesLocations
   private static final String LOCATION_GET = """
     SELECT
       l.location_id,
+      l.location_parent,
       l.location_name,
       l.location_description
     FROM cardant.locations l
@@ -64,6 +70,7 @@ public final class CADatabaseModelQueriesLocations
   private static final String LOCATION_LIST = """
     SELECT
       l.location_id,
+      l.location_parent,
       l.location_name,
       l.location_description
     FROM cardant.locations l
@@ -97,6 +104,8 @@ public final class CADatabaseModelQueriesLocations
   {
     return new CALocation(
       CADatabaseBytes.locationIdFromBytes(result.getBytes("location_id")),
+      Optional.ofNullable(result.getBytes("location_parent"))
+          .map(CADatabaseBytes::locationIdFromBytes),
       result.getString("location_name"),
       result.getString("location_description")
     );
@@ -109,8 +118,9 @@ public final class CADatabaseModelQueriesLocations
   {
     try (var statement = connection.prepareStatement(LOCATION_PUT_INSERT)) {
       statement.setBytes(1, CADatabaseBytes.locationIdBytes(location.id()));
-      statement.setString(2, location.name());
-      statement.setString(3, location.description());
+      statement.setBytes(2, location.parent().map(CADatabaseBytes::locationIdBytes).orElse(null));
+      statement.setString(3, location.name());
+      statement.setString(4, location.description());
       statement.executeUpdate();
     }
   }
@@ -122,9 +132,26 @@ public final class CADatabaseModelQueriesLocations
   {
     try (var statement = connection.prepareStatement(LOCATION_PUT_UPDATE)) {
       statement.setString(1, location.name());
-      statement.setString(2, location.description());
-      statement.setBytes(3, CADatabaseBytes.locationIdBytes(location.id()));
+      statement.setBytes(2, location.parent().map(CADatabaseBytes::locationIdBytes).orElse(null));
+      statement.setString(3, location.description());
+      statement.setBytes(4, CADatabaseBytes.locationIdBytes(location.id()));
       statement.executeUpdate();
+    }
+  }
+
+  private static TreeMap<CALocationID, CALocation> locationListInner(
+    final Connection connection)
+    throws SQLException
+  {
+    try (var statement = connection.prepareStatement(LOCATION_LIST)) {
+      try (var result = statement.executeQuery()) {
+        final var locations = new TreeMap<CALocationID, CALocation>();
+        while (result.next()) {
+          final var location = locationParse(result);
+          locations.put(location.id(), location);
+        }
+        return locations;
+      }
     }
   }
 
@@ -136,6 +163,8 @@ public final class CADatabaseModelQueriesLocations
     Objects.requireNonNull(location, "location");
 
     this.withSQLConnection(connection -> {
+      checkAcyclic(connection, location);
+
       final var existing = locationGetInner(connection, location.id());
       if (existing.isPresent()) {
         locationPutUpdate(connection, location);
@@ -148,8 +177,85 @@ public final class CADatabaseModelQueriesLocations
     });
   }
 
+  private static void checkAcyclic(
+    final Connection connection,
+    final CALocation newLocation)
+    throws SQLException, CADatabaseException
+  {
+    /*
+     * If the location did not previously exist, then adding a new location
+     * cannot introduce a cycle.
+     */
+
+    final var oldLocationOpt =
+      locationGetInner(connection, newLocation.id());
+
+    if (oldLocationOpt.isEmpty()) {
+      return;
+    }
+
+    /*
+     * If the parent did not change, then the update cannot introduce
+     * a cycle.
+     */
+
+    final var oldLocation = oldLocationOpt.get();
+    final var newParentOpt = newLocation.parent();
+    if (Objects.equals(newParentOpt, oldLocation.parent())) {
+      return;
+    }
+
+    /*
+     * If the new location is simply removing the parent, then the update
+     * cannot introduce a cycle.
+     */
+
+    if (newParentOpt.isEmpty()) {
+      return;
+    }
+
+    /*
+     * Otherwise, check if the changed parent would introduce a cycle
+     * in the location graph...
+     */
+
+    final var oldParentOpt =
+      oldLocation.parent();
+    final var newParent =
+      newParentOpt.get();
+
+    final var graph =
+      new DirectedAcyclicGraph<CALocationID, CALocationEdge>(CALocationEdge.class);
+
+    final var locations =
+      locationListInner(connection);
+
+    try {
+      for (final var location : locations.values()) {
+        final var locationId = location.id();
+        graph.addVertex(locationId);
+
+        final var parentOpt = location.parent();
+        if (parentOpt.isPresent()) {
+          final var parentId = parentOpt.get();
+          final var edge = new CALocationEdge(locationId, parentId);
+          graph.addEdge(locationId, parentId, edge);
+        }
+      }
+
+      oldParentOpt.ifPresent(
+        oldParentId -> graph.removeEdge(newLocation.id(), oldParentId));
+
+      final var newEdge = new CALocationEdge(newLocation.id(), newParent);
+      graph.addEdge(newLocation.id(), newParent, newEdge);
+    } catch (final IllegalArgumentException e) {
+      throw new CADatabaseException(ERROR_CYCLIC, e);
+    }
+  }
+
   @Override
-  public Optional<CALocation> locationGet(final CALocationID id)
+  public Optional<CALocation> locationGet(
+    final CALocationID id)
     throws CADatabaseException
   {
     Objects.requireNonNull(id, "id");
@@ -162,17 +268,11 @@ public final class CADatabaseModelQueriesLocations
   public SortedMap<CALocationID, CALocation> locationList()
     throws CADatabaseException
   {
-    return this.withSQLConnection(connection -> {
-      try (var statement = connection.prepareStatement(LOCATION_LIST)) {
-        try (var result = statement.executeQuery()) {
-          final var locations = new TreeMap<CALocationID, CALocation>();
-          while (result.next()) {
-            final var location = locationParse(result);
-            locations.put(location.id(), location);
-          }
-          return locations;
-        }
-      }
-    });
+    return this.withSQLConnection(
+      CADatabaseModelQueriesLocations::locationListInner);
   }
+
+  private record CALocationEdge(
+    CALocationID from,
+    CALocationID to) { }
 }

@@ -68,12 +68,15 @@ public interface CAModelDatabaseQueriesItemsType
     throws CADatabaseException;
 
   /**
+   * @param locationBehaviour The location behaviour
+   *
    * @return The available items
    *
    * @throws CADatabaseException On database errors
    */
 
-  Set<CAItemID> itemList()
+  Set<CAItemID> itemList(
+    CAListLocationBehaviourType locationBehaviour)
     throws CADatabaseException;
 
   /**
@@ -152,12 +155,14 @@ public interface CAModelDatabaseQueriesItemsType
   /**
    * Create or update the given item metadata.
    *
+   * @param item     The item
    * @param metadata The metadata
    *
    * @throws CADatabaseException On database errors
    */
 
   void itemMetadataPut(
+    CAItemID item,
     CAItemMetadata metadata)
     throws CADatabaseException;
 
@@ -176,24 +181,28 @@ public interface CAModelDatabaseQueriesItemsType
   /**
    * Remove the given metadata from the associated item.
    *
-   * @param metadata The metadata
+   * @param item The item
+   * @param name The metadata name
    *
    * @throws CADatabaseException On database errors
    */
 
   void itemMetadataRemove(
-    CAItemMetadata metadata)
+    CAItemID item,
+    String name)
     throws CADatabaseException;
 
   /**
    * Create or update the given attachment.
    *
+   * @param item       The item
    * @param attachment The attachment
    *
    * @throws CADatabaseException On database errors
    */
 
   void itemAttachmentPut(
+    CAItemID item,
     CAItemAttachment attachment)
     throws CADatabaseException;
 

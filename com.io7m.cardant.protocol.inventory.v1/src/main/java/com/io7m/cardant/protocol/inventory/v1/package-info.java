@@ -15,7 +15,7 @@
  */
 
 /**
- * Inventory system (V1 Authentication Protocol).
+ * Inventory system (Inventory protocol API)
  */
 
 @Export

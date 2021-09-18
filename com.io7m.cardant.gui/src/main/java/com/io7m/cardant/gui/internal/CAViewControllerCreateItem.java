@@ -135,7 +135,6 @@ public final class CAViewControllerCreateItem implements Initializable
 
       final var meta =
         new CAItemMetadata(
-          itemId,
           "Description",
           this.descriptionArea.getText()
         );

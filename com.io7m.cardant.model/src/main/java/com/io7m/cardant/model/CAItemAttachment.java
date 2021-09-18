@@ -23,7 +23,6 @@ import java.util.Optional;
  * An item attachment.
  *
  * @param id            The ID
- * @param itemId        The item ID
  * @param description   The attachment description
  * @param mediaType     The attachment media type
  * @param relation      The attachment relation
@@ -35,7 +34,6 @@ import java.util.Optional;
 
 public record CAItemAttachment(
   CAItemAttachmentID id,
-  CAItemID itemId,
   String description,
   String mediaType,
   String relation,
@@ -49,7 +47,6 @@ public record CAItemAttachment(
    * An item attachment.
    *
    * @param id            The ID
-   * @param itemId        The item ID
    * @param description   The attachment description
    * @param mediaType     The attachment media type
    * @param relation      The attachment relation
@@ -62,7 +59,6 @@ public record CAItemAttachment(
   public CAItemAttachment
   {
     Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(itemId, "itemId");
     Objects.requireNonNull(description, "description");
     Objects.requireNonNull(mediaType, "mediaType");
     Objects.requireNonNull(relation, "relation");
@@ -93,7 +89,6 @@ public record CAItemAttachment(
   {
     return new CAItemAttachment(
       this.id,
-      this.itemId,
       this.description,
       this.mediaType,
       this.relation,

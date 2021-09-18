@@ -19,6 +19,7 @@ package com.io7m.cardant.gui.internal;
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
+import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.views.CAItemMetadataTables;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import javafx.fxml.FXML;
@@ -42,6 +43,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
 import static javafx.scene.control.ButtonType.NO;
@@ -141,13 +143,17 @@ public final class CAViewControllerItemEditorMetadataTab
       stage.setScene(new Scene(pane));
 
       final CAViewControllerItemMetadataEditor create = loader.getController();
-      create.setItem(this.controller.itemSelected().get().get());
+      final var item = this.controller.itemSelected().get().get();
+      create.setItem(item);
       create.setEditingMetadata(itemMetadata);
       stage.showAndWait();
 
       final var itemMetadataOpt = create.result();
       itemMetadataOpt.ifPresent(metadata -> {
-        this.clientNow.itemMetadataUpdate(metadata.toImmutable());
+        this.clientNow.itemMetadataUpdate(
+          item.id(),
+          Set.of(metadata.toImmutable())
+        );
       });
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
@@ -190,13 +196,17 @@ public final class CAViewControllerItemEditorMetadataTab
     stage.setScene(new Scene(pane));
 
     final CAViewControllerItemMetadataEditor create = loader.getController();
-    create.setItem(this.controller.itemSelected().get().get());
+    final var item = this.controller.itemSelected().get().get();
+    create.setItem(item);
     stage.showAndWait();
 
     final var itemMetadataOpt = create.result();
     itemMetadataOpt.ifPresent(
       itemMetadata -> {
-        this.clientNow.itemMetadataUpdate(itemMetadata.toImmutable());
+        this.clientNow.itemMetadataUpdate(
+          item.id(),
+          Set.of(itemMetadata.toImmutable())
+        );
       });
   }
 
@@ -215,13 +225,21 @@ public final class CAViewControllerItemEditorMetadataTab
     if (resultOpt.isPresent()) {
       final var selected = resultOpt.get();
       if (selected.equals(YES)) {
+        final var item =
+          this.controller.itemSelected()
+            .get()
+            .get();
+
         final var itemMetadata =
           this.controller.itemMetadataSelected()
             .get()
             .orElseThrow()
             .toImmutable();
 
-        this.clientNow.itemMetadataDelete(Collections.singleton(itemMetadata));
+        this.clientNow.itemMetadataDelete(
+          item.id(),
+          Set.of(itemMetadata.name())
+        );
       }
     }
   }

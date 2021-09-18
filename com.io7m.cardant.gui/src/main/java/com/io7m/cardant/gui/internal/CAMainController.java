@@ -254,9 +254,6 @@ public final class CAMainController implements CAServiceType
       new CAPerpetualSubscriber<>(this::onClientEvent);
 
     newClient.events().subscribe(this.clientSubscriber);
-    newClient.itemsList();
-    newClient.locationsList();
-    newClient.itemLocationsList();
     return newClient;
   }
 
@@ -413,7 +410,7 @@ public final class CAMainController implements CAServiceType
       if (update instanceof CAItemID id) {
         clientNow.itemGet(id);
       } else if (update instanceof CALocationID id) {
-        clientNow.locationGet(id);
+        // clientNow.locationGet(id);
       } else {
         throw new IllegalStateException("Unexpected ID: " + update);
       }

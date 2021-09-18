@@ -25,7 +25,6 @@ import static com.io7m.cardant.gui.internal.model.CAStringSearch.containsIgnoreC
 
 public record CAItemAttachmentMutable(
   CAItemAttachmentID id,
-  CAItemID itemID,
   SimpleStringProperty description,
   SimpleStringProperty mediaType,
   SimpleStringProperty relation,
@@ -38,7 +37,6 @@ public record CAItemAttachmentMutable(
   {
     return new CAItemAttachmentMutable(
       itemAttachment.id(),
-      itemAttachment.itemId(),
       new SimpleStringProperty(itemAttachment.description()),
       new SimpleStringProperty(itemAttachment.mediaType()),
       new SimpleStringProperty(itemAttachment.relation()),

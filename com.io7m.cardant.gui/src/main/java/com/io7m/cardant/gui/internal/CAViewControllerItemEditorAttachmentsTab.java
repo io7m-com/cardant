@@ -183,7 +183,13 @@ public final class CAViewControllerItemEditorAttachmentsTab
     if (resultOpt.isPresent()) {
       final var selected = resultOpt.get();
       if (selected.equals(YES)) {
+        final var item =
+          this.controller.itemSelected()
+            .get()
+            .get();
+
         this.clientNow.itemAttachmentDelete(
+          item.id(),
           this.attachmentListView.getSelectionModel()
             .getSelectedItem()
             .id()

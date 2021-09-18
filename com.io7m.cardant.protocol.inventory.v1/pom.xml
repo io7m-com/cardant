@@ -15,40 +15,19 @@
 
   <packaging>jar</packaging>
   <name>com.io7m.cardant.protocol.inventory.v1</name>
-  <description>Inventory system (V1 Inventory Protocol)</description>
+  <description>Inventory system (Inventory protocol v1)</description>
   <url>https://www.github.com/io7m/cardant</url>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.model.xml</artifactId>
+      <artifactId>com.io7m.cardant.protocol.inventory.api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.io7m.blackthorne</groupId>
-      <artifactId>com.io7m.blackthorne.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.blackthorne</groupId>
-      <artifactId>com.io7m.blackthorne.jxe</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.anethum</groupId>
-      <artifactId>com.io7m.anethum.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.anethum</groupId>
-      <artifactId>com.io7m.anethum.common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
+      <groupId>org.apache.xmlbeans</groupId>
+      <artifactId>xmlbeans</artifactId>
     </dependency>
 
     <dependency>

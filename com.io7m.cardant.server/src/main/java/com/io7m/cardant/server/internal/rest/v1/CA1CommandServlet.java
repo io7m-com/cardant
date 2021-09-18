@@ -23,41 +23,41 @@ import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItems;
-import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATags;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageParserFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.CA1InventoryMessageSerializerFactoryType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemAttachmentRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemCreate;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemGet;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemLocationList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemRemove;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemReposit;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandItemUpdate;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationGet;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandLocationPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagList;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsDelete;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1CommandTagsPut;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryCommandType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryMessageType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryResponseType;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1InventoryTransaction;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseError;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseErrorDetail;
-import com.io7m.cardant.protocol.inventory.v1.messages.CA1ResponseOK;
+import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationList;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationGet;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
+import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemReposit;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTransaction;
+import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.server.api.CAServerConfigurationLimits;
 import com.io7m.cardant.server.internal.CAServerMessages;
 import com.io7m.cardant.server.internal.rest.CAServerCommandExecuted;
 import com.io7m.cardant.server.internal.rest.CAServerCommandFailed;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
+import com.io7m.junreachable.UnimplementedCodeException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -68,12 +68,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.SubmissionPublisher;
-import java.util.function.Function;
 
+import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsPut;
 import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
 
 /**
@@ -105,8 +118,8 @@ public final class CA1CommandServlet
 
   public CA1CommandServlet(
     final SubmissionPublisher<CAServerEventType> inEvents,
-    final CA1InventoryMessageParserFactoryType inParsers,
-    final CA1InventoryMessageSerializerFactoryType inSerializers,
+    final CAMessageParserFactoryType inParsers,
+    final CAMessageSerializerFactoryType inSerializers,
     final CAServerConfigurationLimits inLimits,
     final CAServerMessages inMessages,
     final CADatabaseType inDatabase)
@@ -114,6 +127,16 @@ public final class CA1CommandServlet
     super(inEvents, inParsers, inSerializers, inMessages, inDatabase);
     this.events = Objects.requireNonNull(inEvents, "inEvents");
     this.limits = Objects.requireNonNull(inLimits, "limits");
+  }
+
+  private static boolean exceedsSizeLimit(
+    final long sizeLimit,
+    final CAByteArray data)
+  {
+    final var sizeReceived =
+      Integer.toUnsignedLong(data.data().length);
+
+    return Long.compareUnsigned(sizeReceived, sizeLimit) > 0;
   }
 
   @Override
@@ -132,14 +155,17 @@ public final class CA1CommandServlet
     this.transaction = dbTransaction;
     this.response = httpResponse;
 
-    final CA1InventoryMessageType message;
+    final CAMessageType message;
     try {
       this.queries =
         dbTransaction.queries(CAModelDatabaseQueriesType.class);
       message =
         this.parsers().parse(this.clientURI(), request.getInputStream());
-    } catch (final CADatabaseException | ParseException | IOException e) {
+    } catch (final CADatabaseException | IOException e) {
       this.sendError(500, e.getMessage());
+      return;
+    } catch (final ParseException e) {
+      this.sendErrorParsing(500, e.getMessage(), e.statusValues());
       return;
     }
 
@@ -147,9 +173,9 @@ public final class CA1CommandServlet
       this.executeMessage(message);
 
     try {
-      if (msgResponse instanceof CA1ResponseOK) {
-        this.transaction.commit();
-        this.response.setStatus(200);
+      if (msgResponse instanceof CAResponseError error) {
+        this.transaction.rollback();
+        this.response.setStatus(error.status());
         this.response.setContentType(applicationCardantXML());
         this.serializers()
           .serialize(
@@ -160,32 +186,31 @@ public final class CA1CommandServlet
         return;
       }
 
-      if (msgResponse instanceof CA1ResponseError error) {
-        this.transaction.rollback();
-        this.response.setStatus(error.status());
-        this.response.setContentType(applicationCardantXML());
-        this.serializers()
-          .serialize(
-            this.clientURI(),
-            this.response.getOutputStream(),
-            msgResponse
-          );
-      }
+      this.transaction.commit();
+      this.response.setStatus(200);
+      this.response.setContentType(applicationCardantXML());
+      this.serializers()
+        .serialize(
+          this.clientURI(),
+          this.response.getOutputStream(),
+          msgResponse
+        );
+
     } catch (final CADatabaseException | SerializeException | IOException e) {
       this.sendError(500, e.getMessage());
     }
   }
 
-  private CA1InventoryResponseType executeMessage(
-    final CA1InventoryMessageType message)
+  private CAResponseType executeMessage(
+    final CAMessageType message)
   {
-    if (message instanceof CA1InventoryTransaction received) {
+    if (message instanceof CATransaction received) {
       return this.executeTransaction(received);
     }
-    if (message instanceof CA1InventoryCommandType received) {
+    if (message instanceof CACommandType received) {
       return this.executeCommandAccounted(received);
     }
-    if (message instanceof CA1InventoryResponseType received) {
+    if (message instanceof CAResponseType received) {
       return this.executeResponse(received);
     }
 
@@ -193,65 +218,58 @@ public final class CA1CommandServlet
       "Unrecognized message: %s".formatted(message));
   }
 
-  private CA1InventoryResponseType executeResponse(
-    final CA1InventoryResponseType received)
+  private CAResponseType executeResponse(
+    final CAResponseType received)
   {
-    return new CA1ResponseError(
+    return this.error(
       400,
       this.messages().format("errorUnexpectedInput"),
       List.of()
     );
   }
 
-  private CA1InventoryResponseType executeTransaction(
-    final CA1InventoryTransaction msgTransaction)
+  private CAResponseType executeTransaction(
+    final CATransaction msgTransaction)
   {
-    CA1InventoryResponseType mostRecent = new CA1ResponseOK(Optional.empty());
+    CAResponseType mostRecent = new CAResponseTransaction();
     boolean failed = false;
 
-    final var details = new ArrayList<CA1ResponseErrorDetail>();
+    final var details = new ArrayList<String>();
     final var commands = msgTransaction.commands();
     final var messages = this.messages();
     for (int index = 0; index < commands.size(); ++index) {
       final var command = commands.get(index);
       mostRecent = this.executeCommandAccounted(command);
-      if (mostRecent instanceof CA1ResponseError error) {
+      if (mostRecent instanceof CAResponseError error) {
         failed = true;
         final var indexedMessage =
-          messages
-            .format(
-              "indexedMessage",
-              Integer.valueOf(index),
-              command.getClass().getSimpleName(),
-              error.message()
-            );
-        details.add(new CA1ResponseErrorDetail(indexedMessage));
+          messages.format(
+            "indexedMessage",
+            Integer.valueOf(index),
+            command.getClass().getSimpleName(),
+            error.message()
+          );
+        details.add(indexedMessage);
       }
     }
 
     if (failed) {
-      return new CA1ResponseError(
-        500,
-        messages.format("errorTransaction"),
-        details
-      );
+      return this.error(500, messages.format("errorTransaction"), details);
     }
     return mostRecent;
   }
 
-  private CA1InventoryResponseType executeCommandAccounted(
-    final CA1InventoryCommandType command)
+  private CAResponseType executeCommandAccounted(
+    final CACommandType command)
   {
     final var result = this.executeCommand(command);
-    if (result instanceof CA1ResponseOK) {
-      this.commandExecuted();
-      return result;
-    }
-    if (result instanceof CA1ResponseError) {
+    if (result instanceof CAResponseError) {
       this.commandFailed();
       return result;
     }
-    throw new IllegalStateException();
+
+    this.commandExecuted();
+    return result;
   }
 
   private void commandFailed()
@@ -264,193 +282,170 @@ public final class CA1CommandServlet
     this.events.submit(new CAServerCommandExecuted());
   }
 
-  private CA1InventoryResponseType executeCommand(
-    final CA1InventoryCommandType command)
+  private CAResponseType executeCommand(
+    final CACommandType command)
   {
-    if (command instanceof CA1CommandTagList) {
+    if (command instanceof CACommandTagList) {
       return this.executeCommandTagList();
     }
-    if (command instanceof CA1CommandTagsPut tags) {
+    if (command instanceof CACommandTagsPut tags) {
       return this.executeCommandTagsPut(tags);
     }
-    if (command instanceof CA1CommandTagsDelete tags) {
+    if (command instanceof CACommandTagsDelete tags) {
       return this.executeCommandTagsDelete(tags);
     }
-    if (command instanceof CA1CommandItemCreate itemCreate) {
+    if (command instanceof CACommandItemCreate itemCreate) {
       return this.executeCommandItemCreate(itemCreate);
     }
-    if (command instanceof CA1CommandItemUpdate itemUpdate) {
+    if (command instanceof CACommandItemUpdate itemUpdate) {
       return this.executeCommandItemUpdate(itemUpdate);
     }
-    if (command instanceof CA1CommandItemRemove itemRemove) {
+    if (command instanceof CACommandItemRemove itemRemove) {
       return this.executeCommandItemRemove(itemRemove);
     }
-    if (command instanceof CA1CommandItemList) {
-      return this.executeCommandItemList();
+    if (command instanceof CACommandItemList itemList) {
+      return this.executeCommandItemList(itemList);
     }
-    if (command instanceof CA1CommandItemAttachmentPut itemAttachmentPut) {
+    if (command instanceof CACommandItemAttachmentPut itemAttachmentPut) {
       return this.executeCommandItemAttachmentPut(itemAttachmentPut);
     }
-    if (command instanceof CA1CommandItemAttachmentRemove itemAttachmentRemove) {
+    if (command instanceof CACommandItemAttachmentRemove itemAttachmentRemove) {
       return this.executeCommandItemAttachmentRemove(itemAttachmentRemove);
     }
-    if (command instanceof CA1CommandItemMetadataPut itemMetadataPut) {
+    if (command instanceof CACommandItemMetadataPut itemMetadataPut) {
       return this.executeCommandItemMetadataPut(itemMetadataPut);
     }
-    if (command instanceof CA1CommandItemMetadataRemove itemMetadataRemove) {
+    if (command instanceof CACommandItemMetadataRemove itemMetadataRemove) {
       return this.executeCommandItemMetadataRemove(itemMetadataRemove);
     }
-    if (command instanceof CA1CommandLocationPut locationPut) {
+    if (command instanceof CACommandLocationPut locationPut) {
       return this.executeCommandLocationPut(locationPut);
     }
-    if (command instanceof CA1CommandLocationList locationList) {
+    if (command instanceof CACommandLocationList locationList) {
       return this.executeCommandLocationList(locationList);
     }
-    if (command instanceof CA1CommandItemReposit itemReposit) {
+    if (command instanceof CACommandItemReposit itemReposit) {
       return this.executeCommandItemReposit(itemReposit);
     }
-    if (command instanceof CA1CommandItemGet itemGet) {
+    if (command instanceof CACommandItemGet itemGet) {
       return this.executeCommandItemGet(itemGet);
     }
-    if (command instanceof CA1CommandLocationGet locationGet) {
+    if (command instanceof CACommandLocationGet locationGet) {
       return this.executeCommandLocationGet(locationGet);
     }
-    if (command instanceof CA1CommandItemLocationList locationList) {
+    if (command instanceof CACommandItemLocationList locationList) {
       return this.executeCommandItemLocationList(locationList);
     }
 
     throw new IllegalStateException();
   }
 
-  private CA1InventoryResponseType executeCommandItemLocationList(
-    final CA1CommandItemLocationList locationList)
+  private CAResponseType executeCommandItemLocationList(
+    final CACommandItemLocationList locationList)
   {
-    try {
-      return new CA1ResponseOK(Optional.of(this.queries.itemLocations()));
-    } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
-    }
+    throw new UnimplementedCodeException();
   }
 
-  private CA1InventoryResponseType executeCommandLocationGet(
-    final CA1CommandLocationGet get)
+  private CAResponseType executeCommandLocationGet(
+    final CACommandLocationGet command)
   {
-    try {
-      final var itemOpt = this.queries.locationGet(get.id());
-      if (itemOpt.isEmpty()) {
-        return new CA1ResponseError(
-          404,
-          this.messages().format("errorNoSuchLocation"),
-          List.of()
-        );
-      }
-      return new CA1ResponseOK(itemOpt.map(Function.identity()));
-    } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
-    }
+    throw new UnimplementedCodeException();
   }
 
-  private CA1InventoryResponseType executeCommandItemGet(
-    final CA1CommandItemGet itemGet)
+  private CAResponseType executeCommandItemGet(
+    final CACommandItemGet itemGet)
   {
     try {
-      final var itemOpt = this.queries.itemGet(itemGet.id());
+      final var itemOpt =
+        this.queries.itemGet(itemGet.id());
+
       if (itemOpt.isEmpty()) {
-        return new CA1ResponseError(
+        return this.error(
           404,
           this.messages().format("errorNoSuchItem"),
-          List.of()
-        );
+          List.of());
       }
-      return new CA1ResponseOK(itemOpt.map(Function.identity()));
+
+      return new CAResponseItemGet(itemOpt.get());
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemReposit(
-    final CA1CommandItemReposit itemReposit)
+  private CAResponseType executeCommandItemReposit(
+    final CACommandItemReposit itemReposit)
   {
     try {
-      this.queries.itemReposit(itemReposit.reposit());
-      return new CA1ResponseOK(Optional.empty());
+      final var reposit = itemReposit.reposit();
+      this.queries.itemReposit(reposit);
+      return new CAResponseItemReposit(reposit.item());
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 
-  private CA1InventoryResponseType executeCommandLocationList(
-    final CA1CommandLocationList locationList)
+  private CAResponseType executeCommandLocationList(
+    final CACommandLocationList locationList)
   {
-    try {
-      return new CA1ResponseOK(Optional.of(
-        new CALocations(this.queries.locationList())));
-    } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
-    }
+    throw new UnimplementedCodeException();
   }
 
-  private CA1InventoryResponseType executeCommandLocationPut(
-    final CA1CommandLocationPut locationPut)
+  private CAResponseType executeCommandLocationPut(
+    final CACommandLocationPut locationPut)
   {
-    try {
-      this.queries.locationPut(locationPut.location());
-      return new CA1ResponseOK(Optional.empty());
-    } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
-    }
+    throw new UnimplementedCodeException();
   }
 
-  private CA1InventoryResponseType executeCommandItemMetadataPut(
-    final CA1CommandItemMetadataPut itemMetadataPut)
+  private CAResponseType executeCommandItemMetadataPut(
+    final CACommandItemMetadataPut itemMetadataPut)
   {
     try {
       final var metadatas =
-        itemMetadataPut.metadatas().metadatas();
+        itemMetadataPut.metadatas();
+      final var itemId =
+        itemMetadataPut.item();
 
-      for (final var metadata : metadatas.values()) {
-        this.queries.itemMetadataPut(metadata);
+      for (final var metadata : metadatas) {
+        this.queries.itemMetadataPut(itemId, metadata);
       }
-      return new CA1ResponseOK(Optional.empty());
+
+      return new CAResponseItemMetadataPut(this.fetchItem(itemId));
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {
-        case ERROR_NONEXISTENT, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
-          400,
-          e.getMessage(),
-          List.of());
-        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+        case ERROR_NONEXISTENT,
+          ERROR_PARAMETERS_INVALID -> this.errorWithoutDetails(400, e);
+        default -> this.errorWithoutDetails(500, e);
       };
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemMetadataRemove(
-    final CA1CommandItemMetadataRemove itemMetadataRemove)
+  private CAResponseType executeCommandItemMetadataRemove(
+    final CACommandItemMetadataRemove itemMetadataRemove)
   {
     try {
-      final var metadatas =
-        itemMetadataRemove.metadatas().metadatas();
-
-      for (final var metadata : metadatas.values()) {
-        this.queries.itemMetadataRemove(metadata);
+      final var metadatas = itemMetadataRemove.metadataNames();
+      for (final var metadata : metadatas) {
+        this.queries.itemMetadataRemove(itemMetadataRemove.item(), metadata);
       }
-      return new CA1ResponseOK(Optional.empty());
+
+      return new CAResponseItemMetadataRemove(
+        this.fetchItem(itemMetadataRemove.item())
+      );
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {
-        case ERROR_NONEXISTENT, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
-          400,
-          e.getMessage(),
-          List.of());
-        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+        case ERROR_NONEXISTENT,
+          ERROR_PARAMETERS_INVALID -> this.errorWithoutDetails(400, e);
+        default -> this.errorWithoutDetails(500, e);
       };
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemAttachmentPut(
-    final CA1CommandItemAttachmentPut itemAttachmentPut)
+  private CAResponseType executeCommandItemAttachmentPut(
+    final CACommandItemAttachmentPut command)
   {
     try {
       final var attachment =
-        itemAttachmentPut.attachment();
+        command.attachment();
       final var sizeLimitOpt =
         this.limits.itemAttachmentMaximumSizeOctets();
 
@@ -473,140 +468,159 @@ public final class CA1CommandServlet
         }
       }
 
-      this.queries.itemAttachmentPut(attachment);
-      return new CA1ResponseOK(Optional.empty());
+      this.queries.itemAttachmentPut(command.item(), attachment);
+      return new CAResponseItemAttachmentPut(
+        this.fetchItem(command.item())
+      );
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {
-        case ERROR_NONEXISTENT, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
-          400,
-          e.getMessage(),
-          List.of());
-        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+        case ERROR_NONEXISTENT,
+          ERROR_PARAMETERS_INVALID -> this.errorWithoutDetails(400, e);
+        default -> this.errorWithoutDetails(500, e);
       };
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemAttachmentRemove(
-    final CA1CommandItemAttachmentRemove itemAttachmentRemove)
+  private CAResponseType executeCommandItemAttachmentRemove(
+    final CACommandItemAttachmentRemove itemAttachmentRemove)
   {
     try {
-      this.queries.itemAttachmentRemove(itemAttachmentRemove.attachment());
-      return new CA1ResponseOK(Optional.empty());
+      final var id = itemAttachmentRemove.attachmentID();
+      this.queries.itemAttachmentRemove(id);
+      return new CAResponseItemAttachmentRemove(
+        this.fetchItem(itemAttachmentRemove.item())
+      );
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 
-  private static boolean exceedsSizeLimit(
-    final long sizeLimit,
-    final CAByteArray data)
+  private CAItem fetchItem(
+    final CAItemID item)
+    throws CADatabaseException
   {
-    final var sizeReceived =
-      Integer.toUnsignedLong(data.data().length);
-
-    return Long.compareUnsigned(sizeReceived, sizeLimit) > 0;
+    try {
+      return this.queries.itemGet(item)
+        .orElseThrow(NoSuchElementException::new);
+    } catch (final NoSuchElementException e) {
+      throw new CADatabaseException(
+        ERROR_NONEXISTENT, "Updated item could not be retrieved");
+    }
   }
 
-  private CA1InventoryResponseType executeCommandTagsDelete(
-    final CA1CommandTagsDelete tags)
+  private CAResponseType executeCommandTagsDelete(
+    final CACommandTagsDelete tags)
   {
     try {
       for (final var tag : tags.tags().tags()) {
         this.queries.tagDelete(tag);
       }
-      return new CA1ResponseOK(Optional.empty());
+      return new CAResponseTagsDelete(tags.tags());
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemList()
+  private CAResponseType executeCommandItemList(
+    final CACommandItemList command)
   {
     try {
       final var ids =
-        this.queries.itemList();
+        this.queries.itemList(command.locationBehaviour());
       final var items =
         new HashSet<CAItem>();
 
       for (final var id : ids) {
-        final var itemOpt =
-          this.queries.itemGet(id);
+        final var itemOpt = this.queries.itemGet(id);
         itemOpt.ifPresent(items::add);
       }
-      return new CA1ResponseOK(Optional.of(new CAItems(items)));
+
+      return new CAResponseItemList(new CAItems(items));
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemCreate(
-    final CA1CommandItemCreate itemCreate)
+  private CAResponseType executeCommandItemCreate(
+    final CACommandItemCreate itemCreate)
   {
     try {
       final var itemId = itemCreate.id();
       this.queries.itemCreate(itemId);
       this.queries.itemNameSet(itemId, itemCreate.name());
-      return new CA1ResponseOK(Optional.empty());
+      return new CAResponseItemCreate(this.fetchItem(itemId));
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {
-        case ERROR_DUPLICATE, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
-          400,
-          e.getMessage(),
-          List.of());
-        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+        case ERROR_DUPLICATE,
+          ERROR_PARAMETERS_INVALID -> this.errorWithoutDetails(400, e);
+        default -> this.errorWithoutDetails(500, e);
       };
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemUpdate(
-    final CA1CommandItemUpdate itemUpdate)
+  private CAResponseError errorWithoutDetails(
+    final int status,
+    final Exception e)
+  {
+    return this.error(status, e.getMessage(), List.of());
+  }
+
+  private CAResponseError error(
+    final int status,
+    final String message,
+    final List<String> details)
+  {
+    return new CAResponseError(status, message, details);
+  }
+
+  private CAResponseType executeCommandItemUpdate(
+    final CACommandItemUpdate itemUpdate)
   {
     try {
       final var itemId = itemUpdate.id();
       this.queries.itemNameSet(itemId, itemUpdate.name());
-      return new CA1ResponseOK(Optional.empty());
+      final var updated = this.fetchItem(itemId);
+      return new CAResponseItemUpdate(updated);
     } catch (final CADatabaseException e) {
       return switch (e.errorCode()) {
-        case ERROR_NONEXISTENT, ERROR_PARAMETERS_INVALID -> new CA1ResponseError(
-          400,
-          e.getMessage(),
-          List.of());
-        default -> new CA1ResponseError(500, e.getMessage(), List.of());
+        case ERROR_NONEXISTENT,
+          ERROR_PARAMETERS_INVALID -> this.errorWithoutDetails(400, e);
+        default -> this.errorWithoutDetails(500, e);
       };
     }
   }
 
-  private CA1InventoryResponseType executeCommandItemRemove(
-    final CA1CommandItemRemove itemRemove)
+  private CAResponseType executeCommandItemRemove(
+    final CACommandItemRemove itemRemove)
   {
     try {
       final var itemId = itemRemove.id();
       this.queries.itemDeleteMarkOnly(itemId);
-      return new CA1ResponseOK(Optional.empty());
+      return new CAResponseItemRemove(itemId);
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 
-  private CA1InventoryResponseType executeCommandTagsPut(
-    final CA1CommandTagsPut tags)
+  private CAResponseType executeCommandTagsPut(
+    final CACommandTagsPut tags)
   {
     try {
       for (final var tag : tags.tags().tags()) {
         this.queries.tagPut(tag);
       }
-      return new CA1ResponseOK(Optional.empty());
+      return new CAResponseTagsPut(tags.tags());
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 
-  private CA1InventoryResponseType executeCommandTagList()
+  private CAResponseType executeCommandTagList()
   {
     try {
-      return new CA1ResponseOK(Optional.of(new CATags(this.queries.tagList())));
+      return new CAResponseTagList(new CATags(this.queries.tagList()));
     } catch (final CADatabaseException e) {
-      return new CA1ResponseError(500, e.getMessage(), List.of());
+      return this.errorWithoutDetails(500, e);
     }
   }
 }

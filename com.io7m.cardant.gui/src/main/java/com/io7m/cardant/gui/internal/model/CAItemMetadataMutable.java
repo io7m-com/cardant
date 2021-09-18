@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal.model;
 
-import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.jaffirm.core.Preconditions;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,13 +24,11 @@ import java.util.Objects;
 
 public record CAItemMetadataMutable(
   String name,
-  CAItemID itemId,
   SimpleStringProperty value)
 {
   public CAItemMetadataMutable
   {
     Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(itemId, "itemId");
     Objects.requireNonNull(value, "value");
   }
 
@@ -40,7 +37,6 @@ public record CAItemMetadataMutable(
   {
     return new CAItemMetadataMutable(
       metadata.name(),
-      metadata.itemId(),
       new SimpleStringProperty(metadata.value())
     );
   }
@@ -48,7 +44,6 @@ public record CAItemMetadataMutable(
   public CAItemMetadata toImmutable()
   {
     return new CAItemMetadata(
-      this.itemId,
       this.name,
       this.value.getValue()
     );
@@ -58,13 +53,7 @@ public record CAItemMetadataMutable(
     final CAItemMetadata value)
   {
     Preconditions.checkPreconditionV(
-      Objects.equals(this.itemId, value.itemId()),
-      "Metadata item %s must match this item %s",
-      value.itemId().id(),
-      this.itemId.id()
-    );
-    Preconditions.checkPreconditionV(
-      Objects.equals(this.itemId, value.itemId()),
+      Objects.equals(this.name, value.name()),
       "Metadata name %s must match this name %s",
       value.name(),
       this.name

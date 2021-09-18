@@ -44,6 +44,13 @@ public enum CADatabaseErrorCode
   ERROR_NONEXISTENT,
 
   /**
+   * An attempt was made to add or modify an object in a manner that
+   * would introduce a graph cycle.
+   */
+
+  ERROR_CYCLIC,
+
+  /**
    * A general database error occurred.
    */
 

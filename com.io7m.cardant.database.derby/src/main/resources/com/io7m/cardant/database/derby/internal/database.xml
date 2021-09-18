@@ -112,8 +112,11 @@ create table cardant.item_metadata (
     <Statement><![CDATA[
 create table cardant.locations (
   location_id           char(16) for bit data not null primary key,
+  location_parent       char(16) for bit data,
   location_name         varchar(128)          not null,
-  location_description  varchar(1024)         not null
+  location_description  varchar(1024)         not null,
+
+  constraint location_parent_exists foreign key (location_parent) references cardant.locations (location_id)
 )
 ]]></Statement>
 

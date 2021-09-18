@@ -29,6 +29,7 @@ import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
+import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAModelDatabaseQueriesItemsType;
 import com.io7m.cardant.model.CATag;
@@ -270,12 +271,13 @@ public final class CADatabaseModelQueriesItems
 
   private static void itemMetadataPutInsert(
     final Connection connection,
+    final CAItemID itemID,
     final CAItemMetadata metadata)
     throws SQLException
   {
     try (var statement =
            connection.prepareStatement(ITEM_METADATA_PUT_INSERT)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(metadata.itemId()));
+      statement.setBytes(1, CADatabaseBytes.itemIdBytes(itemID));
       statement.setString(2, metadata.name());
       statement.setString(3, metadata.value());
       statement.executeUpdate();
@@ -284,13 +286,14 @@ public final class CADatabaseModelQueriesItems
 
   private static void itemMetadataPutUpdate(
     final Connection connection,
+    final CAItemID itemID,
     final CAItemMetadata metadata)
     throws SQLException
   {
     try (var statement =
            connection.prepareStatement(ITEM_METADATA_PUT_UPDATE)) {
       statement.setString(1, metadata.value());
-      statement.setBytes(2, CADatabaseBytes.itemIdBytes(metadata.itemId()));
+      statement.setBytes(2, CADatabaseBytes.itemIdBytes(itemID));
       statement.setString(3, metadata.name());
       statement.executeUpdate();
     }
@@ -298,6 +301,7 @@ public final class CADatabaseModelQueriesItems
 
   private static void itemAttachmentPutInsert(
     final Connection connection,
+    final CAItemID itemID,
     final CAItemAttachment attachment,
     final CAByteArray data)
     throws SQLException, IOException
@@ -311,7 +315,7 @@ public final class CADatabaseModelQueriesItems
     try (var statement =
            connection.prepareStatement(ITEM_ATTACHMENT_PUT_INSERT)) {
       statement.setBytes(1, attachmentIdBytes(attachment.id()));
-      statement.setBytes(2, CADatabaseBytes.itemIdBytes(attachment.itemId()));
+      statement.setBytes(2, CADatabaseBytes.itemIdBytes(itemID));
       statement.setString(3, attachment.description());
       statement.setString(4, attachment.mediaType());
       statement.setString(5, attachment.relation());
@@ -337,6 +341,7 @@ public final class CADatabaseModelQueriesItems
 
   private static void itemAttachmentPutUpdate(
     final Connection connection,
+    final CAItemID itemID,
     final CAItemAttachment attachment,
     final CAByteArray data)
     throws SQLException, IOException
@@ -357,7 +362,7 @@ public final class CADatabaseModelQueriesItems
       statement.setBlob(6, blob);
       statement.setLong(7, Integer.toUnsignedLong(dataLength));
       statement.setBytes(8, attachmentIdBytes(attachment.id()));
-      statement.setBytes(9, CADatabaseBytes.itemIdBytes(attachment.itemId()));
+      statement.setBytes(9, CADatabaseBytes.itemIdBytes(itemID));
       statement.executeUpdate();
     }
   }
@@ -383,7 +388,6 @@ public final class CADatabaseModelQueriesItems
 
     return new CAItemAttachment(
       attachmentIdFromBytes(result.getBytes("attachment_id")),
-      CADatabaseBytes.itemIdFromBytes(result.getBytes("attachment_item_id")),
       result.getString("attachment_description"),
       result.getString("attachment_media_type"),
       result.getString("attachment_relation"),
@@ -400,7 +404,6 @@ public final class CADatabaseModelQueriesItems
   {
     return new CAItemAttachment(
       attachmentIdFromBytes(result.getBytes("attachment_id")),
-      CADatabaseBytes.itemIdFromBytes(result.getBytes("attachment_item_id")),
       result.getString("attachment_description"),
       result.getString("attachment_media_type"),
       result.getString("attachment_relation"),
@@ -459,7 +462,7 @@ public final class CADatabaseModelQueriesItems
           final var value =
             result.getString("metadata_value");
           final var itemMetadata =
-            new CAItemMetadata(itemId, name, value);
+            new CAItemMetadata(name, value);
           metas.put(name, itemMetadata);
         }
         return metas;
@@ -540,17 +543,18 @@ public final class CADatabaseModelQueriesItems
 
   private Object itemMetadataRemoveInner(
     final Connection connection,
-    final CAItemMetadata metadata)
+    final CAItemID itemID,
+    final String metadata)
     throws SQLException
   {
     try (var statement =
            connection.prepareStatement(ITEM_METADATA_REMOVE)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(metadata.itemId()));
-      statement.setString(2, metadata.name());
+      statement.setBytes(1, CADatabaseBytes.itemIdBytes(itemID));
+      statement.setString(2, metadata);
       statement.executeUpdate();
     }
 
-    this.publishUpdate(metadata.itemId());
+    this.publishUpdate(itemID);
     return null;
   }
 
@@ -1059,9 +1063,12 @@ public final class CADatabaseModelQueriesItems
   }
 
   @Override
-  public Set<CAItemID> itemList()
+  public Set<CAItemID> itemList(
+    final CAListLocationBehaviourType locationBehaviour)
     throws CADatabaseException
   {
+    Objects.requireNonNull(locationBehaviour, "locationBehaviour");
+
     return this.withSQLConnection(connection -> {
       try (var statement =
              connection.prepareStatement(ITEM_LIST)) {
@@ -1221,25 +1228,27 @@ public final class CADatabaseModelQueriesItems
 
   @Override
   public void itemMetadataPut(
+    final CAItemID itemID,
     final CAItemMetadata metadata)
     throws CADatabaseException
   {
+    Objects.requireNonNull(itemID, "itemID");
     Objects.requireNonNull(metadata, "metadata");
 
     this.withSQLConnection(connection -> {
-      this.itemCheck(connection, metadata.itemId(), false);
+      this.itemCheck(connection, itemID, false);
 
       final var metas =
-        itemMetadataInner(connection, metadata.itemId());
+        itemMetadataInner(connection, itemID);
 
       final var existing = metas.get(metadata.name());
       if (existing != null) {
-        itemMetadataPutUpdate(connection, metadata);
+        itemMetadataPutUpdate(connection, itemID, metadata);
       } else {
-        itemMetadataPutInsert(connection, metadata);
+        itemMetadataPutInsert(connection, itemID, metadata);
       }
 
-      this.publishUpdate(metadata.itemId());
+      this.publishUpdate(itemID);
       return null;
     });
   }
@@ -1259,22 +1268,26 @@ public final class CADatabaseModelQueriesItems
 
   @Override
   public void itemMetadataRemove(
-    final CAItemMetadata metadata)
+    final CAItemID itemID,
+    final String metadata)
     throws CADatabaseException
   {
+    Objects.requireNonNull(itemID, "itemID");
     Objects.requireNonNull(metadata, "metadata");
 
     this.withSQLConnection(connection -> {
-      this.itemCheck(connection, metadata.itemId(), false);
-      return this.itemMetadataRemoveInner(connection, metadata);
+      this.itemCheck(connection, itemID, false);
+      return this.itemMetadataRemoveInner(connection, itemID, metadata);
     });
   }
 
   @Override
   public void itemAttachmentPut(
+    final CAItemID item,
     final CAItemAttachment attachment)
     throws CADatabaseException
   {
+    Objects.requireNonNull(item, "item");
     Objects.requireNonNull(attachment, "attachment");
 
     final var data =
@@ -1285,18 +1298,18 @@ public final class CADatabaseModelQueriesItems
         );
 
     this.withSQLConnection(connection -> {
-      this.itemCheck(connection, attachment.itemId(), false);
+      this.itemCheck(connection, item, false);
 
       final var existing =
         itemAttachmentGetInner(connection, attachment.id(), false);
 
       if (existing.isPresent()) {
-        itemAttachmentPutUpdate(connection, attachment, data);
+        itemAttachmentPutUpdate(connection, item, attachment, data);
       } else {
-        itemAttachmentPutInsert(connection, attachment, data);
+        itemAttachmentPutInsert(connection, item, attachment, data);
       }
 
-      this.publishUpdate(attachment.itemId());
+      this.publishUpdate(item);
       this.publishUpdate(attachment.id());
       return null;
     });

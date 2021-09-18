@@ -21,13 +21,11 @@ import java.util.Objects;
 /**
  * Item metadata.
  *
- * @param itemId The item ID
  * @param name   The metadata name
  * @param value  The metadata value
  */
 
 public record CAItemMetadata(
-  CAItemID itemId,
   String name,
   String value
 ) implements CAInventoryElementType
@@ -35,14 +33,12 @@ public record CAItemMetadata(
   /**
    * Construct metadata.
    *
-   * @param itemId The item ID
    * @param name   The metadata name
    * @param value  The metadata value
    */
 
   public CAItemMetadata
   {
-    Objects.requireNonNull(itemId, "itemId");
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(value, "value");
 

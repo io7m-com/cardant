@@ -15,6 +15,8 @@
  */
 
 import com.io7m.cardant.database.api.CADatabaseProviderType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.server.CAServerConfigurations;
 import com.io7m.cardant.server.CAServers;
 import com.io7m.cardant.server.api.CAServerConfigurationParserFactoryType;
@@ -28,6 +30,9 @@ import com.io7m.cardant.server.api.CAServerFactoryType;
 module com.io7m.cardant.server
 {
   uses CADatabaseProviderType;
+  uses CAMessageParserFactoryType;
+  uses CAMessageSerializerFactoryType;
+
   requires static org.osgi.annotation.versioning;
   requires static org.osgi.annotation.bundle;
 
@@ -36,12 +41,12 @@ module com.io7m.cardant.server
 
   requires com.io7m.blackthorne.api;
   requires com.io7m.blackthorne.jxe;
-  requires com.io7m.cardant.model.xml;
   requires com.io7m.cardant.model;
-  requires com.io7m.cardant.protocol.inventory.v1;
+  requires com.io7m.cardant.protocol.inventory.api;
   requires com.io7m.cardant.protocol.versioning;
   requires com.io7m.jlexing.core;
   requires com.io7m.jmulticlose.core;
+  requires com.io7m.junreachable.core;
   requires com.io7m.jxe.core;
   requires com.io7m.jxtrand.vanilla;
   requires java.management;

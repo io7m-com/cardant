@@ -28,7 +28,6 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
@@ -62,9 +61,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.Flow;
 
+import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_CYCLIC;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_DUPLICATE;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
+import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -354,11 +355,11 @@ public final class CADerbyDatabaseTest
       final var id = CAItemID.random();
 
       queries.itemCreate(id);
-      assertEquals(Set.of(id), queries.itemList());
+      assertEquals(Set.of(id), queries.itemList(new CAListLocationsAll()));
       assertEquals(Set.of(), queries.itemListDeleted());
 
       queries.itemDeleteMarkOnly(id);
-      assertEquals(Set.of(), queries.itemList());
+      assertEquals(Set.of(), queries.itemList(new CAListLocationsAll()));
       assertEquals(Set.of(id), queries.itemListDeleted());
     });
   }
@@ -408,7 +409,8 @@ public final class CADerbyDatabaseTest
         queries.itemCreate(item);
       }
 
-      final var itemsGet = queries.itemList();
+      final var itemsGet =
+        queries.itemList(new CAListLocationsAll());
       assertEquals(itemsPut, itemsGet);
     });
   }
@@ -593,12 +595,12 @@ public final class CADerbyDatabaseTest
       queries.itemCreate(item0);
 
       final var meta0 =
-        new CAItemMetadata(item0, "Type", "Vegetable");
+        new CAItemMetadata("Type", "Vegetable");
       final var meta1 =
-        new CAItemMetadata(item0, "Colour", "Red");
+        new CAItemMetadata("Colour", "Red");
 
-      queries.itemMetadataPut(meta0);
-      queries.itemMetadataPut(meta1);
+      queries.itemMetadataPut(item0, meta0);
+      queries.itemMetadataPut(item0, meta1);
 
       {
         final var metas = queries.itemMetadata(item0);
@@ -607,7 +609,7 @@ public final class CADerbyDatabaseTest
         assertEquals(meta1, metas.get("Colour"));
       }
 
-      queries.itemMetadataRemove(meta0);
+      queries.itemMetadataRemove(item0, meta0.name());
 
       {
         final var metas = queries.itemMetadata(item0);
@@ -615,11 +617,9 @@ public final class CADerbyDatabaseTest
         assertEquals(meta1, metas.get("Colour"));
       }
 
-      final var meta1p = new CAItemMetadata(
-        meta1.itemId(),
-        meta1.name(),
-        "Blue");
-      queries.itemMetadataPut(meta1p);
+      final var meta1p =
+        new CAItemMetadata(meta1.name(), "Blue");
+      queries.itemMetadataPut(item0, meta1p);
 
       {
         final var metas = queries.itemMetadata(item0);
@@ -642,10 +642,8 @@ public final class CADerbyDatabaseTest
 
       queries.itemCreate(item0);
 
-      final var meta0 =
-        new CAItemMetadata(item0, "Type", "Vegetable");
-
-      queries.itemMetadataPut(meta0);
+      final var meta0 = new CAItemMetadata("Type", "Vegetable");
+      queries.itemMetadataPut(item0, meta0);
       queries.itemDelete(item0);
 
       this.expectedChangeCount = 1;
@@ -670,7 +668,6 @@ public final class CADerbyDatabaseTest
       final var attachment0 =
         new CAItemAttachment(
           attachmentID,
-          item0,
           "Item description",
           "text/plain",
           "nothing",
@@ -680,7 +677,7 @@ public final class CADerbyDatabaseTest
           Optional.of(new CAByteArray("HELLO".getBytes(UTF_8)))
         );
 
-      queries.itemAttachmentPut(attachment0);
+      queries.itemAttachmentPut(item0, attachment0);
 
       {
         final var attachments = queries.itemAttachments(item0, true);
@@ -691,7 +688,6 @@ public final class CADerbyDatabaseTest
       final var attachment0p =
         new CAItemAttachment(
           attachmentID,
-          item0,
           "Item description 2",
           "text/plain",
           "nothing",
@@ -701,7 +697,7 @@ public final class CADerbyDatabaseTest
           Optional.of(new CAByteArray("GOODBYE".getBytes(UTF_8)))
         );
 
-      queries.itemAttachmentPut(attachment0p);
+      queries.itemAttachmentPut(item0, attachment0p);
 
       {
         final var attachments = queries.itemAttachments(item0, true);
@@ -753,7 +749,6 @@ public final class CADerbyDatabaseTest
       final var attachment0 =
         new CAItemAttachment(
           CAItemAttachmentID.random(),
-          item0,
           "Item description",
           "text/plain",
           "nothing",
@@ -763,7 +758,7 @@ public final class CADerbyDatabaseTest
           Optional.of(new CAByteArray("HELLO".getBytes(UTF_8)))
         );
 
-      queries.itemAttachmentPut(attachment0);
+      queries.itemAttachmentPut(item0, attachment0);
       queries.itemDelete(item0);
 
       this.expectedChangeCount = 1;
@@ -796,7 +791,6 @@ public final class CADerbyDatabaseTest
         final var attachment0 =
           new CAItemAttachment(
             attach0,
-            item0,
             "Item description",
             "text/plain",
             "nothing",
@@ -807,7 +801,7 @@ public final class CADerbyDatabaseTest
           );
 
         assertThrows(CADatabaseException.class, () -> {
-          queries.itemAttachmentPut(attachment0);
+          queries.itemAttachmentPut(item0, attachment0);
         });
       }
 
@@ -816,7 +810,6 @@ public final class CADerbyDatabaseTest
         final var attachment0 =
           new CAItemAttachment(
             attach1,
-            item0,
             "Item description 2",
             "text/plain",
             "nothing",
@@ -826,14 +819,13 @@ public final class CADerbyDatabaseTest
             Optional.of(new CAByteArray("HELLO".getBytes(UTF_8)))
           );
 
-        queries.itemAttachmentPut(attachment0);
+        queries.itemAttachmentPut(item0, attachment0);
       }
 
       {
         final var attachment0 =
           new CAItemAttachment(
             attach2,
-            item0,
             "Item description 2",
             "text/plain",
             "nothing",
@@ -844,7 +836,7 @@ public final class CADerbyDatabaseTest
           );
 
         assertThrows(CADatabaseException.class, () -> {
-          queries.itemAttachmentPut(attachment0);
+          queries.itemAttachmentPut(item0, attachment0);
         });
       }
 
@@ -981,6 +973,7 @@ public final class CADerbyDatabaseTest
     this.withDatabase((transaction, queries) -> {
       final var location = new CALocation(
         CALocationID.random(),
+        Optional.empty(),
         "location",
         "description"
       );
@@ -990,6 +983,7 @@ public final class CADerbyDatabaseTest
 
       final var locationAlt = new CALocation(
         location.id(),
+        Optional.empty(),
         "location1",
         "description1"
       );
@@ -1006,6 +1000,57 @@ public final class CADerbyDatabaseTest
       this.expectedChangeCount = 1;
       this.expectedUpdates.add(location.id());
       transaction.commit();
+    });
+  }
+
+  @Test
+  public void testLocationPutCyclic0()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+
+      final var location0 =
+        new CALocation(
+          CALocationID.random(),
+          Optional.empty(),
+          "location",
+          "description"
+        );
+
+      final var location1 =
+        new CALocation(
+          CALocationID.random(),
+          Optional.empty(),
+          "location",
+          "description"
+        );
+
+      queries.locationPut(location0);
+      queries.locationPut(location1);
+
+      final var location1p =
+        new CALocation(
+          location1.id(),
+          Optional.of(location0.id()),
+          location1.name(),
+          location1.description()
+        );
+
+      queries.locationPut(location1p);
+
+      final var location0p =
+        new CALocation(
+          location0.id(),
+          Optional.of(location1.id()),
+          location0.name(),
+          location0.description()
+        );
+
+      final var ex =
+        assertThrows(CADatabaseException.class, () -> {
+          queries.locationPut(location0p);
+        });
+      assertEquals(ERROR_CYCLIC, ex.errorCode());
     });
   }
 
@@ -1029,6 +1074,7 @@ public final class CADerbyDatabaseTest
       final var location =
         new CALocation(
           CALocationID.random(),
+          Optional.empty(),
           "location",
           "location description"
         );
@@ -1155,6 +1201,7 @@ public final class CADerbyDatabaseTest
       final var location =
         new CALocation(
           CALocationID.random(),
+          Optional.empty(),
           "location",
           "location description"
         );
@@ -1188,6 +1235,7 @@ public final class CADerbyDatabaseTest
       final var location =
         new CALocation(
           CALocationID.random(),
+          Optional.empty(),
           "location",
           "location description"
         );
@@ -1259,12 +1307,14 @@ public final class CADerbyDatabaseTest
       final var location0 =
         new CALocation(
           CALocationID.random(),
+          Optional.empty(),
           "location0",
           "location description0"
         );
       final var location1 =
         new CALocation(
           CALocationID.random(),
+          Optional.empty(),
           "location1",
           "location description1"
         );

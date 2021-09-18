@@ -17,17 +17,20 @@
 package com.io7m.cardant.model;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A location.
  *
  * @param id          The location ID
+ * @param parent      The location parent, if any
  * @param name        The location name
  * @param description The location description
  */
 
 public record CALocation(
   CALocationID id,
+  Optional<CALocationID> parent,
   String name,
   String description
 ) implements CAInventoryElementType
@@ -36,6 +39,7 @@ public record CALocation(
    * Construct a location.
    *
    * @param id          The location ID
+   * @param parent      The location parent, if any
    * @param name        The location name
    * @param description The location description
    */
@@ -43,7 +47,15 @@ public record CALocation(
   public CALocation
   {
     Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(parent, "parent");
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(description, "description");
+
+    parent.ifPresent(parentId -> {
+      if (id.equals(parentId)) {
+        throw new IllegalArgumentException(
+          "A location's parent cannot equal itself");
+      }
+    });
   }
 }

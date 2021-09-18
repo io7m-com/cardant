@@ -22,16 +22,8 @@ import java.util.concurrent.CompletableFuture;
 
 public sealed interface CAClientCommandType<T>
   permits CAClientCommandHostileType,
-  CAClientCommandItemAttachmentDelete,
-  CAClientCommandItemCreate,
-  CAClientCommandItemGet,
-  CAClientCommandItemLocationsList,
-  CAClientCommandItemMetadataDelete,
-  CAClientCommandItemMetadataUpdate,
-  CAClientCommandItemsDelete,
-  CAClientCommandItemsList,
-  CAClientCommandLocationGet,
-  CAClientCommandLocationsList
+  CAClientCommandTransactional,
+  CAClientCommandValid
 {
   Class<T> returnType();
 

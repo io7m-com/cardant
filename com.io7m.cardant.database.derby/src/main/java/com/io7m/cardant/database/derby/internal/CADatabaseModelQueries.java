@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
+import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
@@ -126,10 +127,11 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public Set<CAItemID> itemList()
+  public Set<CAItemID> itemList(
+    final CAListLocationBehaviourType locationBehaviour)
     throws CADatabaseException
   {
-    return this.items.itemList();
+    return this.items.itemList(locationBehaviour);
   }
 
   @Override
@@ -183,10 +185,11 @@ public final class CADatabaseModelQueries
 
   @Override
   public void itemMetadataPut(
+    final CAItemID item,
     final CAItemMetadata metadata)
     throws CADatabaseException
   {
-    this.items.itemMetadataPut(metadata);
+    this.items.itemMetadataPut(item, metadata);
   }
 
   @Override
@@ -197,17 +200,21 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public void itemMetadataRemove(final CAItemMetadata metadata)
+  public void itemMetadataRemove(
+    final CAItemID item,
+    final String name)
     throws CADatabaseException
   {
-    this.items.itemMetadataRemove(metadata);
+    this.items.itemMetadataRemove(item, name);
   }
 
   @Override
-  public void itemAttachmentPut(final CAItemAttachment attachment)
+  public void itemAttachmentPut(
+    final CAItemID item,
+    final CAItemAttachment attachment)
     throws CADatabaseException
   {
-    this.items.itemAttachmentPut(attachment);
+    this.items.itemAttachmentPut(item, attachment);
   }
 
   @Override

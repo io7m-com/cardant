@@ -153,7 +153,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
       this.result = Optional.of(
         new CAItemMetadataMutable(
           tryName,
-          this.currentItem.id(),
           new SimpleStringProperty(this.valueField.getText())
         )
       );

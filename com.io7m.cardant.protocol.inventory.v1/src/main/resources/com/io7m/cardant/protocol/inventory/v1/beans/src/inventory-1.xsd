@@ -1,0 +1,1218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:iv1="urn:com.io7m.cardant.inventory:1"
+            targetNamespace="urn:com.io7m.cardant.inventory:1">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      A schema describing the format of inventory data.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:simpleType name="UUIDType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A UUID value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="TagNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A tag name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="127"/>
+      <xsd:pattern value="[\p{Lu}\p{Ll}\d\\-_]{1,127}"/>
+      <xsd:whiteSpace value="collapse"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An item name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="LocationNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A location name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="LocationDescriptionType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A location description value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="1023"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemMetadataNameType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An item metadata name value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemMetadataValueType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An item metadata value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="1023"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MediaType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A media type value (such as "text/plain").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemAttachmentDescriptionType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An attachment description.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="255"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="RelationType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A relation value (such as "image").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="127"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="HashAlgorithmType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A hash algorithm name (such as "SHA-256").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="32"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="HashValueType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A hash value (such as "5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:maxLength value="256"/>
+      <xsd:pattern value="[a-f0-9]{1,256}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="TagType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The type of tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="id"
+                   type="iv1:UUIDType"
+                   use="required"/>
+    <xsd:attribute name="name"
+                   type="iv1:TagNameType"
+                   use="required"/>
+  </xsd:complexType>
+
+  <xsd:element name="Tag"
+               type="iv1:TagType"/>
+
+  <xsd:complexType name="TagsType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A set of tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:Tag"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Tags"
+               type="iv1:TagsType"/>
+
+  <xsd:complexType name="LocationType">
+    <xsd:attribute name="id"
+                   type="iv1:UUIDType"
+                   use="required"/>
+    <xsd:attribute name="parent"
+                   type="iv1:UUIDType"
+                   use="optional"/>
+    <xsd:attribute name="name"
+                   type="iv1:LocationNameType"
+                   use="required"/>
+    <xsd:attribute name="description"
+                   type="iv1:LocationDescriptionType"
+                   use="required"/>
+  </xsd:complexType>
+
+  <xsd:element name="Location"
+               type="iv1:LocationType"/>
+
+  <xsd:complexType name="LocationsType">
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:Location"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ItemMetadataType">
+    <xsd:attribute name="name"
+                   use="required"
+                   type="iv1:ItemMetadataNameType"/>
+    <xsd:attribute name="value"
+                   use="required"
+                   type="iv1:ItemMetadataValueType"/>
+  </xsd:complexType>
+
+  <xsd:element name="ItemMetadata"
+               type="iv1:ItemMetadataType"/>
+
+  <xsd:complexType name="ItemMetadatasType">
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:ItemMetadata"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="ItemMetadatas"
+               type="iv1:ItemMetadatasType"/>
+
+  <xsd:simpleType name="ItemAttachmentDataType">
+    <xsd:restriction base="xsd:base64Binary"/>
+  </xsd:simpleType>
+
+  <xsd:element name="ItemAttachmentData"
+               type="iv1:ItemAttachmentDataType"/>
+
+  <xsd:complexType name="ItemAttachmentType">
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="1">
+      <xsd:element ref="iv1:ItemAttachmentData"/>
+    </xsd:sequence>
+
+    <xsd:attribute name="id"
+                   use="required"
+                   type="iv1:UUIDType"/>
+    <xsd:attribute name="description"
+                   use="required"
+                   type="iv1:ItemAttachmentDescriptionType"/>
+    <xsd:attribute name="mediaType"
+                   use="required"
+                   type="iv1:MediaType"/>
+    <xsd:attribute name="relation"
+                   use="required"
+                   type="iv1:RelationType"/>
+    <xsd:attribute name="size"
+                   use="required"
+                   type="xsd:unsignedLong"/>
+    <xsd:attribute name="hashAlgorithm"
+                   use="required"
+                   type="iv1:HashAlgorithmType"/>
+    <xsd:attribute name="hashValue"
+                   use="required"
+                   type="iv1:HashValueType"/>
+  </xsd:complexType>
+
+  <xsd:element name="ItemAttachment"
+               type="iv1:ItemAttachmentType"/>
+
+  <xsd:complexType name="ItemAttachmentsType">
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:ItemAttachment"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="ItemAttachments"
+               type="iv1:ItemAttachmentsType"/>
+
+  <xsd:complexType name="ItemType">
+    <xsd:sequence>
+      <xsd:element ref="iv1:ItemMetadatas"/>
+      <xsd:element ref="iv1:Tags"/>
+      <xsd:element ref="iv1:ItemAttachments"/>
+    </xsd:sequence>
+
+    <xsd:attribute name="id"
+                   type="iv1:UUIDType"
+                   use="required"/>
+    <xsd:attribute type="iv1:ItemNameType"
+                   use="required"
+                   name="name"/>
+    <xsd:attribute type="xsd:integer"
+                   use="required"
+                   name="count"/>
+  </xsd:complexType>
+
+  <xsd:element name="Item"
+               type="iv1:ItemType"/>
+
+  <xsd:complexType name="ItemsType">
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:Item"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ItemRepositType"
+                   abstract="true"/>
+
+  <xsd:element name="ItemReposit"
+               type="iv1:ItemRepositType"
+               abstract="true"/>
+
+  <xsd:complexType name="ItemRepositAddType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ItemRepositType">
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="location"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="count"
+                       type="xsd:unsignedLong"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ItemRepositAdd"
+               type="iv1:ItemRepositAddType"
+               substitutionGroup="iv1:ItemReposit"/>
+
+  <xsd:complexType name="ItemRepositRemoveType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ItemRepositType">
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="location"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="count"
+                       type="xsd:unsignedLong"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ItemRepositRemove"
+               type="iv1:ItemRepositRemoveType"
+               substitutionGroup="iv1:ItemReposit"/>
+
+  <xsd:complexType name="ItemRepositMoveType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ItemRepositType">
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="fromLocation"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="toLocation"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="count"
+                       type="xsd:unsignedLong"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ItemRepositMove"
+               type="iv1:ItemRepositMoveType"
+               substitutionGroup="iv1:ItemReposit"/>
+
+  <xsd:complexType name="ItemLocationType">
+    <xsd:attribute name="location"
+                   type="iv1:UUIDType"
+                   use="required"/>
+    <xsd:attribute name="item"
+                   type="iv1:UUIDType"
+                   use="required"/>
+    <xsd:attribute name="count"
+                   type="xsd:unsignedLong"
+                   use="required"/>
+  </xsd:complexType>
+
+  <xsd:element name="ItemLocation"
+               type="iv1:ItemLocationType"/>
+
+  <xsd:complexType name="ItemLocationsType">
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:ItemLocation"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="IDType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The base type of IDs.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="value"
+                   use="required"
+                   type="iv1:UUIDType"/>
+  </xsd:complexType>
+
+  <xsd:element name="ID"
+               type="iv1:IDType"
+               abstract="true"/>
+
+  <xsd:complexType name="ItemIDType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:IDType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ItemID"
+               substitutionGroup="iv1:ID"
+               type="iv1:IDType"/>
+
+  <xsd:complexType name="ItemAttachmentIDType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:IDType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ItemAttachmentID"
+               substitutionGroup="iv1:ID"
+               type="iv1:ItemAttachmentIDType"/>
+
+  <xsd:complexType name="UserIDType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:IDType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="UserID"
+               substitutionGroup="iv1:ID"
+               type="iv1:UserIDType"/>
+
+  <xsd:complexType name="TagIDType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:IDType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="TagID"
+               substitutionGroup="iv1:ID"
+               type="iv1:TagIDType"/>
+
+  <xsd:complexType name="LocationIDType">
+    <xsd:complexContent>
+      <xsd:extension base="iv1:IDType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="LocationID"
+               substitutionGroup="iv1:ID"
+               type="iv1:LocationIDType"/>
+
+  <xsd:complexType name="IDsType">
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:ID"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="MessageType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of messages for the v1 inventory protocol.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+  <xsd:element name="Message"
+               type="iv1:MessageType"
+               abstract="true"/>
+
+  <xsd:complexType name="EventType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of events.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Event"
+               type="iv1:EventType"
+               substitutionGroup="iv1:Message"
+               abstract="true"/>
+
+  <xsd:complexType name="ResponseType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of responses.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Response"
+               type="iv1:ResponseType"
+               substitutionGroup="iv1:Message"
+               abstract="true"/>
+
+  <xsd:complexType name="CommandType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of commands.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Command"
+               type="iv1:CommandType"
+               substitutionGroup="iv1:Message"
+               abstract="true"/>
+
+  <xsd:complexType name="CommandLocationGetType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to get a location.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandLocationGet"
+               type="iv1:CommandLocationGetType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandLocationPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to create or update a location.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Location"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandLocationPut"
+               type="iv1:CommandLocationPutType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandLocationListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list locations.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandLocationList"
+               type="iv1:CommandLocationListType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandLoginUsernamePasswordType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to log in with a username and password.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="user"
+                       type="xsd:token"
+                       use="required"/>
+        <xsd:attribute name="password"
+                       type="xsd:string"
+                       use="required"/>
+
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandLoginUsernamePassword"
+               type="iv1:CommandLoginUsernamePasswordType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseLoginUsernamePasswordType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandLoginUsernamePassword command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseLoginUsernamePassword"
+               type="iv1:ResponseLoginUsernamePasswordType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="CommandTagListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandTagList"
+               type="iv1:CommandTagListType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseTagListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandTagList command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Tags"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseTagList"
+               type="iv1:ResponseTagListType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="CommandTagsPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to write tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Tags"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandTagsPut"
+               type="iv1:CommandTagsPutType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseTagsPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandTagsPut command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Tags"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseTagsPut"
+               type="iv1:ResponseTagsPutType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="CommandTagsDeleteType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to delete tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Tags"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandTagsDelete"
+               type="iv1:CommandTagsDeleteType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandItemCreateType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to create an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="name"
+                       type="xsd:string"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemCreate"
+               type="iv1:CommandItemCreateType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseItemCreateType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemCreate command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemCreate"
+               type="iv1:ResponseItemCreateType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="CommandItemUpdateType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to update an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+        <xsd:attribute name="name"
+                       type="xsd:string"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemUpdate"
+               type="iv1:CommandItemUpdateType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseItemUpdateType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemUpdate command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemUpdate"
+               type="iv1:ResponseItemUpdateType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="CommandItemGetType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to get an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemGet"
+               type="iv1:CommandItemGetType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseItemGetType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemGet command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemGet"
+               type="iv1:ResponseItemGetType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="CommandItemRemoveType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to remove an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemRemove"
+               type="iv1:CommandItemRemoveType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseItemRemoveType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemRemove command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemRemove"
+               type="iv1:ResponseItemRemoveType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="CommandItemRepositType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to reposit items.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:ItemReposit"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemReposit"
+               type="iv1:CommandItemRepositType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ListLocationsBehaviourType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The base type of location listing behaviour.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+  <xsd:element name="ListLocationsBehaviour"
+               type="iv1:ListLocationsBehaviourType"
+               abstract="true"/>
+
+  <xsd:complexType name="ListLocationsAllType">
+    <xsd:annotation>
+      <xsd:documentation>
+        List objects in all locations.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ListLocationsBehaviourType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ListLocationsAll"
+               type="iv1:ListLocationsAllType"
+               substitutionGroup="iv1:ListLocationsBehaviour"/>
+
+  <xsd:complexType name="ListLocationExactType">
+    <xsd:annotation>
+      <xsd:documentation>
+        List objects in an exact location.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ListLocationsBehaviourType">
+        <xsd:attribute use="required"
+                       type="iv1:UUIDType"
+                       name="location"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ListLocationExact"
+               type="iv1:ListLocationExactType"
+               substitutionGroup="iv1:ListLocationsBehaviour"/>
+
+
+  <xsd:complexType name="ListLocationWithDescendantsType">
+    <xsd:annotation>
+      <xsd:documentation>
+        List objects in a given location, and all descendants of that location.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ListLocationsBehaviourType">
+        <xsd:attribute use="required"
+                       type="iv1:UUIDType"
+                       name="location"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ListLocationWithDescendants"
+               type="iv1:ListLocationWithDescendantsType"
+               substitutionGroup="iv1:ListLocationsBehaviour"/>
+
+  <xsd:complexType name="CommandItemListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list items.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:ListLocationsBehaviour"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemList"
+               type="iv1:CommandItemListType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandItemAttachmentPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to put an item attachment.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:ItemAttachment"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemAttachmentPut"
+               type="iv1:CommandItemAttachmentPutType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandItemAttachmentRemoveType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to remove an item attachment.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="attachment"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemAttachmentRemove"
+               type="iv1:CommandItemAttachmentRemoveType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandItemMetadataPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to put item metadata.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:ItemMetadatas"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemMetadataPut"
+               type="iv1:CommandItemMetadataPutType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandItemMetadataRemoveType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to remove item metadata.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:ItemMetadatas"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemMetadataRemove"
+               type="iv1:CommandItemMetadataRemoveType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="CommandItemLocationListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list item locations.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemLocationList"
+               type="iv1:CommandItemLocationListType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseErrorType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A command failed.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="iv1:ResponseErrorDetail"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="status"
+                       type="xsd:integer"
+                       use="required"/>
+        <xsd:attribute name="message"
+                       type="xsd:string"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseError"
+               type="iv1:ResponseErrorType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="ResponseErrorDetailType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Extra information about a failed command.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="message"
+                   type="xsd:string"
+                   use="required"/>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseErrorDetail"
+               type="iv1:ResponseErrorDetailType"/>
+
+  <xsd:complexType name="UpdatedType">
+    <xsd:sequence>
+      <xsd:element ref="iv1:ID"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Updated"
+               type="iv1:UpdatedType"/>
+
+  <xsd:complexType name="RemovedType">
+    <xsd:sequence>
+      <xsd:element ref="iv1:ID"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Removed"
+               type="iv1:RemovedType"/>
+
+  <xsd:complexType name="EventUpdatedType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The inventory was updated.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:EventType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Updated"/>
+          <xsd:element ref="iv1:Removed"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="EventUpdated"
+               type="iv1:EventUpdatedType"
+               substitutionGroup="iv1:Event"/>
+
+  <xsd:complexType name="TransactionType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A transaction containing a list of commands to be executed atomically.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType">
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="iv1:Command"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Transaction"
+               substitutionGroup="iv1:Message"
+               type="iv1:TransactionType"/>
+
+</xsd:schema>

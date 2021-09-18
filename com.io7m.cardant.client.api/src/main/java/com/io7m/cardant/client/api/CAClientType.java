@@ -16,12 +16,14 @@
 
 package com.io7m.cardant.client.api;
 
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
@@ -29,6 +31,7 @@ import com.io7m.cardant.model.CALocations;
 import java.io.Closeable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow;
 
@@ -38,30 +41,28 @@ public interface CAClientType extends Closeable
 
   Flow.Publisher<CAClientEventType> events();
 
-  CompletableFuture<CAClientCommandResultType<CAItems>> itemsList();
+  CompletableFuture<CAClientCommandResultType<CAItems>> itemsList(
+    CAListLocationBehaviourType locationBehaviour);
 
   CompletableFuture<CAClientCommandResultType<CAItem>> itemGet(
     CAItemID id);
 
   CompletableFuture<CAClientCommandResultType<CAItem>> itemCreate(
-    CAItem caItem);
+    CAItemID id,
+    String name);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemsDelete(
-    List<CAItemID> items);
+  CompletableFuture<CAClientCommandResultType<CAIds>> itemsDelete(
+    Set<CAItemID> items);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemMetadataDelete(
-    Collection<CAItemMetadata> metadata);
+  CompletableFuture<CAClientCommandResultType<CAItem>> itemMetadataDelete(
+    CAItemID id,
+    Set<String> metadata);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemMetadataUpdate(
-    CAItemMetadata itemMetadata);
+  CompletableFuture<CAClientCommandResultType<CAItem>> itemMetadataUpdate(
+    CAItemID id,
+    Set<CAItemMetadata> itemMetadatas);
 
-  CompletableFuture<CAClientCommandResultType<Void>> itemAttachmentDelete(
+  CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentDelete(
+    CAItemID id,
     CAItemAttachmentID itemAttachment);
-
-  CompletableFuture<CAClientCommandResultType<CALocations>> locationsList();
-
-  CompletableFuture<CAClientCommandResultType<CALocation>> locationGet(
-    CALocationID id);
-
-  CompletableFuture<CAClientCommandResultType<CAItemLocations>> itemLocationsList();
 }

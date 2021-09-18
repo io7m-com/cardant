@@ -25,6 +25,7 @@ import com.io7m.cardant.client.vanilla.CAClients;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.CAUsers;
@@ -41,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -54,6 +54,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_CONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS_FAILED;
+import static com.io7m.cardant.model.CAListLocationBehaviourType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 
@@ -198,7 +199,10 @@ public final class CAClientTest
       this.client.events().subscribe(queueSubscriber);
       assertEquals(CLIENT_NEGOTIATING_PROTOCOLS, queue.take());
       assertEquals(CLIENT_CONNECTED, queue.take());
-      final CAClientCommandOK<CAItems> items = (CAClientCommandOK<CAItems>) this.client.itemsList().get();
+      final CAClientCommandOK<CAItems> items =
+        (CAClientCommandOK<CAItems>)
+          this.client.itemsList(new CAListLocationsAll())
+          .get();
       assertEquals(Set.of(), items.result().items());
     });
   }

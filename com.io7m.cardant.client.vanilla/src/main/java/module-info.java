@@ -14,6 +14,9 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
+import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
+
 /**
  * Inventory system (Client vanilla implementation)
  */
@@ -23,12 +26,18 @@ module com.io7m.cardant.client.vanilla
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  uses CAMessageParserFactoryType;
+  uses CAMessageSerializerFactoryType;
+
+  requires com.io7m.cardant.protocol.inventory.api;
   requires com.io7m.cardant.protocol.inventory.v1;
   requires com.io7m.cardant.protocol.versioning;
   requires com.io7m.jaffirm.core;
+  requires com.io7m.junreachable.core;
   requires com.io7m.jxtrand.vanilla;
   requires java.net.http;
   requires org.slf4j;
+
   requires transitive com.io7m.cardant.client.api;
 
   opens com.io7m.cardant.client.vanilla.internal

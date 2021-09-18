@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xb:config xmlns:xb="http://www.bea.com/2002/09/xbean/config">
+    <xb:namespace uri="urn:com.io7m.cardant.inventory:1">
+        <xb:package>com.io7m.cardant.protocol.inventory.v1.beans</xb:package>
+    </xb:namespace>
+</xb:config>
