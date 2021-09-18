@@ -43,7 +43,8 @@ module com.io7m.cardant.gui
     to com.io7m.jxtrand.vanilla, javafx.fxml;
   opens com.io7m.cardant.gui.internal.model
     to com.io7m.jxtrand.vanilla, javafx.fxml;
+  opens com.io7m.cardant.gui.internal.views
+    to com.io7m.jxtrand.vanilla, javafx.fxml;
 
   exports com.io7m.cardant.gui;
-  opens com.io7m.cardant.gui.internal.views to com.io7m.jxtrand.vanilla, javafx.fxml;
 }
