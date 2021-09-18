@@ -182,6 +182,11 @@ public final class CA1MessageParser implements CAMessageParserType
       final var options = new XmlOptions();
       options.setBaseURI(this.source);
       options.setLoadLineNumbers(true);
+      options.setLoadDTDGrammar(false);
+      options.setLoadStripComments(true);
+      options.setLoadStripProcinsts(true);
+      options.setLoadStripWhitespace(true);
+      options.setEntityExpansionLimit(1);
 
       final var messageDocument =
         MessageDocument.Factory.parse(stream, options);
