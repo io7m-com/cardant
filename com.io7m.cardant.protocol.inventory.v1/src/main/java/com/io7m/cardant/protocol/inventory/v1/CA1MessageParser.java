@@ -178,7 +178,7 @@ public final class CA1MessageParser implements CAMessageParserType
     final byte[] data)
     throws ParseException
   {
-    try (var stream = new ByteArrayInputStream(data)) {
+    try (var streamCopy = new ByteArrayInputStream(data)) {
       final var options = new XmlOptions();
       options.setBaseURI(this.source);
       options.setLoadLineNumbers(true);
@@ -189,9 +189,9 @@ public final class CA1MessageParser implements CAMessageParserType
       options.setEntityExpansionLimit(1);
 
       final var messageDocument =
-        MessageDocument.Factory.parse(stream, options);
+        MessageDocument.Factory.parse(streamCopy, options);
 
-      return this.parseMessage(messageDocument.getMessage());
+      return parseMessage(messageDocument.getMessage());
     } catch (final IOException e) {
       this.logException(e);
       throw new ParseException(e.getMessage(), this.errors);
@@ -206,14 +206,14 @@ public final class CA1MessageParser implements CAMessageParserType
     }
   }
 
-  private CAMessageType parseMessage(
+  private static CAMessageType parseMessage(
     final MessageType message)
   {
     if (message instanceof CommandType command) {
       return parseCommand(command);
     }
     if (message instanceof ResponseType response) {
-      return this.parseResponse(response);
+      return parseResponse(response);
     }
     if (message instanceof EventType event) {
       return parseEvent(event);
