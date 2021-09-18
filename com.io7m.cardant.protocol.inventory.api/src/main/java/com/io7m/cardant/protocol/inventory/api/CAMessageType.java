@@ -16,6 +16,10 @@
 
 package com.io7m.cardant.protocol.inventory.api;
 
+/**
+ * The base type of messages.
+ */
+
 public sealed interface CAMessageType
   permits CACommandType, CAEventType, CAResponseType, CATransaction
 {

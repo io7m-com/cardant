@@ -8,57 +8,73 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ItemAttachments(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ItemAttachmentsDocumentImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsDocument {
-    private static final long serialVersionUID = 1L;
+public class ItemAttachmentsDocumentImpl extends XmlComplexContentImpl implements
+  ItemAttachmentsDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachments"),
+  };
 
-    public ItemAttachmentsDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public ItemAttachmentsDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "ItemAttachments" element
+   */
+  @Override
+  public ItemAttachmentsType getItemAttachments()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ItemAttachmentsType target = null;
+      target = (ItemAttachmentsType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachments"),
-    };
+  /**
+   * Sets the "ItemAttachments" element
+   */
+  @Override
+  public void setItemAttachments(final ItemAttachmentsType itemAttachments)
+  {
+    this.generatedSetterHelperImpl(
+      itemAttachments,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "ItemAttachments" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType getItemAttachments() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "ItemAttachments" element
+   */
+  @Override
+  public ItemAttachmentsType addNewItemAttachments()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ItemAttachmentsType target = null;
+      target = (ItemAttachmentsType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "ItemAttachments" element
-     */
-    @Override
-    public void setItemAttachments(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType itemAttachments) {
-        generatedSetterHelperImpl(itemAttachments, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "ItemAttachments" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType addNewItemAttachments() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

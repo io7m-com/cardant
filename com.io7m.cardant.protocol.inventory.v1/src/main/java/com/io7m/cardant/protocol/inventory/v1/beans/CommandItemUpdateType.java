@@ -7,10 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlString;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,48 +18,51 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemUpdateType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "commanditemupdatetype78e8type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandItemUpdateType extends CommandType
+{
+  DocumentFactory<CommandItemUpdateType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commanditemupdatetype78e8type");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "id" attribute
-     */
-    java.lang.String getId();
+  /**
+   * Gets the "id" attribute
+   */
+  String getId();
 
-    /**
-     * Gets (as xml) the "id" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId();
+  /**
+   * Sets the "id" attribute
+   */
+  void setId(String id);
 
-    /**
-     * Sets the "id" attribute
-     */
-    void setId(java.lang.String id);
+  /**
+   * Gets (as xml) the "id" attribute
+   */
+  UUIDType xgetId();
 
-    /**
-     * Sets (as xml) the "id" attribute
-     */
-    void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id);
+  /**
+   * Sets (as xml) the "id" attribute
+   */
+  void xsetId(UUIDType id);
 
-    /**
-     * Gets the "name" attribute
-     */
-    java.lang.String getName();
+  /**
+   * Gets the "name" attribute
+   */
+  String getName();
 
-    /**
-     * Gets (as xml) the "name" attribute
-     */
-    org.apache.xmlbeans.XmlString xgetName();
+  /**
+   * Sets the "name" attribute
+   */
+  void setName(String name);
 
-    /**
-     * Sets the "name" attribute
-     */
-    void setName(java.lang.String name);
+  /**
+   * Gets (as xml) the "name" attribute
+   */
+  XmlString xgetName();
 
-    /**
-     * Sets (as xml) the "name" attribute
-     */
-    void xsetName(org.apache.xmlbeans.XmlString name);
+  /**
+   * Sets (as xml) the "name" attribute
+   */
+  void xsetName(XmlString name);
 }

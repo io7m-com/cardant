@@ -21,11 +21,22 @@ import com.io7m.cardant.model.CAIdType;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Data changed on the server.
+ *
+ * @param updated The updated items
+ * @param removed The removed items
+ */
+
 public record CAClientEventDataChanged(
   Set<CAIdType> updated,
   Set<CAIdType> removed
 ) implements CAClientEventType
 {
+  /**
+   * Data changed on the server.
+   */
+
   public CAClientEventDataChanged
   {
     Objects.requireNonNull(updated, "updated");

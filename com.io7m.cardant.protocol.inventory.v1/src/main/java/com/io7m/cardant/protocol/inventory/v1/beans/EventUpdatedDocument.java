@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface EventUpdatedDocument extends com.io7m.cardant.protocol.inventory.v1.beans.EventDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "eventupdated65a6doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface EventUpdatedDocument extends EventDocument
+{
+  DocumentFactory<EventUpdatedDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "eventupdated65a6doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "EventUpdated" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType getEventUpdated();
+  /**
+   * Gets the "EventUpdated" element
+   */
+  EventUpdatedType getEventUpdated();
 
-    /**
-     * Sets the "EventUpdated" element
-     */
-    void setEventUpdated(com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType eventUpdated);
+  /**
+   * Sets the "EventUpdated" element
+   */
+  void setEventUpdated(EventUpdatedType eventUpdated);
 
-    /**
-     * Appends and returns a new empty "EventUpdated" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType addNewEventUpdated();
+  /**
+   * Appends and returns a new empty "EventUpdated" element
+   */
+  EventUpdatedType addNewEventUpdated();
 }

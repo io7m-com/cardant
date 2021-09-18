@@ -16,6 +16,12 @@
 
 package com.io7m.cardant.client.vanilla.internal;
 
+/**
+ * The type of hostile commands.
+ *
+ * @param <T> The type of returned values
+ */
+
 public sealed interface CAClientCommandHostileType<T>
   extends CAClientCommandType<T>
   permits CAClientCommandGarbage, CAClientCommandInvalid

@@ -18,11 +18,23 @@ package com.io7m.cardant.client.api;
 
 import java.util.Objects;
 
+/**
+ * A command failed.
+ *
+ * @param command The command name
+ * @param result  The result
+ * @param <T>     The type of result
+ */
+
 public record CAClientEventCommandFailed<T>(
   String command,
   CAClientCommandError<T> result)
   implements CAClientEventType
 {
+  /**
+   * A command failed.
+   */
+
   public CAClientEventCommandFailed
   {
     Objects.requireNonNull(command, "command");

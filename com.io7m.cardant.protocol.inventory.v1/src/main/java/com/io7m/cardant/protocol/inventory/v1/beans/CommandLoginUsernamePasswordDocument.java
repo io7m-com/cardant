@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandLoginUsernamePasswordDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "commandloginusernamepassword3d98doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandLoginUsernamePasswordDocument extends CommandDocument
+{
+  DocumentFactory<CommandLoginUsernamePasswordDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandloginusernamepassword3d98doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandLoginUsernamePassword" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType getCommandLoginUsernamePassword();
+  /**
+   * Gets the "CommandLoginUsernamePassword" element
+   */
+  CommandLoginUsernamePasswordType getCommandLoginUsernamePassword();
 
-    /**
-     * Sets the "CommandLoginUsernamePassword" element
-     */
-    void setCommandLoginUsernamePassword(com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType commandLoginUsernamePassword);
+  /**
+   * Sets the "CommandLoginUsernamePassword" element
+   */
+  void setCommandLoginUsernamePassword(CommandLoginUsernamePasswordType commandLoginUsernamePassword);
 
-    /**
-     * Appends and returns a new empty "CommandLoginUsernamePassword" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType addNewCommandLoginUsernamePassword();
+  /**
+   * Appends and returns a new empty "CommandLoginUsernamePassword" element
+   */
+  CommandLoginUsernamePasswordType addNewCommandLoginUsernamePassword();
 }

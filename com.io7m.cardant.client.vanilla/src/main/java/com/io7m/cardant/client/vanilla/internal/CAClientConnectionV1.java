@@ -59,9 +59,13 @@ import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_CONN
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISCONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_RECEIVING_DATA;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_SENDING_REQUEST;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.*;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
+
+/**
+ * A version 1 client connection.
+ */
 
 public final class CAClientConnectionV1 implements CAClientConnectionType
 {
@@ -82,6 +86,18 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   private final URI attachmentURI;
   private final URI eventsURI;
   private final Random random;
+
+  /**
+   * A version 1 client connection.
+   *
+   * @param inSerializers   The serializer factory
+   * @param inEvents        The event stream
+   * @param inClient        The client
+   * @param inConfiguration The client configuration
+   * @param inParsers       The parser factory
+   * @param inVersion       The version
+   * @param inStrings       The client strings
+   */
 
   public CAClientConnectionV1(
     final SubmissionPublisher<CAClientEventType> inEvents,

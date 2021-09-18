@@ -7,10 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,28 +17,31 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ListLocationWithDescendantsType extends com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "listlocationwithdescendantstypec752type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ListLocationWithDescendantsType extends ListLocationsBehaviourType
+{
+  DocumentFactory<ListLocationWithDescendantsType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "listlocationwithdescendantstypec752type");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "location" attribute
-     */
-    java.lang.String getLocation();
+  /**
+   * Gets the "location" attribute
+   */
+  String getLocation();
 
-    /**
-     * Gets (as xml) the "location" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetLocation();
+  /**
+   * Sets the "location" attribute
+   */
+  void setLocation(String location);
 
-    /**
-     * Sets the "location" attribute
-     */
-    void setLocation(java.lang.String location);
+  /**
+   * Gets (as xml) the "location" attribute
+   */
+  UUIDType xgetLocation();
 
-    /**
-     * Sets (as xml) the "location" attribute
-     */
-    void xsetLocation(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType location);
+  /**
+   * Sets (as xml) the "location" attribute
+   */
+  void xsetLocation(UUIDType location);
 }

@@ -19,6 +19,16 @@ package com.io7m.cardant.client.api;
 import java.net.URI;
 import java.util.Objects;
 
+/**
+ * The client configuration.
+ *
+ * @param host     The server host
+ * @param port     The server port
+ * @param https    {@code true} if https should be used
+ * @param username The server username
+ * @param password The server password
+ */
+
 public record CAClientConfiguration(
   String host,
   int port,
@@ -26,12 +36,20 @@ public record CAClientConfiguration(
   String username,
   String password)
 {
+  /**
+   * The client configuration.
+   */
+
   public CAClientConfiguration
   {
     Objects.requireNonNull(host, "host");
     Objects.requireNonNull(username, "username");
     Objects.requireNonNull(password, "password");
   }
+
+  /**
+   * @return The server base URI
+   */
 
   public URI baseURI()
   {

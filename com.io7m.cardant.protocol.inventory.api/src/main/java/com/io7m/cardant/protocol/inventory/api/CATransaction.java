@@ -19,11 +19,22 @@ package com.io7m.cardant.protocol.inventory.api;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A transaction.
+ *
+ * @param commands The sequence of commands
+ */
+
 public record CATransaction(
   List<CACommandType> commands)
   implements CAMessageType
 {
-  public CATransaction {
+  /**
+   * A transaction.
+   */
+
+  public CATransaction
+  {
     Objects.requireNonNull(commands, "commands");
   }
 }

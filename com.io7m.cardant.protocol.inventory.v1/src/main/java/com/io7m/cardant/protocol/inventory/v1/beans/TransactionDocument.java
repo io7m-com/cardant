@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface TransactionDocument extends com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.TransactionDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "transaction823bdoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface TransactionDocument extends MessageDocument
+{
+  DocumentFactory<TransactionDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "transaction823bdoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "Transaction" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.TransactionType getTransaction();
+  /**
+   * Gets the "Transaction" element
+   */
+  TransactionType getTransaction();
 
-    /**
-     * Sets the "Transaction" element
-     */
-    void setTransaction(com.io7m.cardant.protocol.inventory.v1.beans.TransactionType transaction);
+  /**
+   * Sets the "Transaction" element
+   */
+  void setTransaction(TransactionType transaction);
 
-    /**
-     * Appends and returns a new empty "Transaction" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.TransactionType addNewTransaction();
+  /**
+   * Appends and returns a new empty "Transaction" element
+   */
+  TransactionType addNewTransaction();
 }

@@ -7,10 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,48 +18,51 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemMetadataType extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemmetadatatype5c9btype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemMetadataType extends XmlObject
+{
+  DocumentFactory<ItemMetadataType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemmetadatatype5c9btype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "name" attribute
-     */
-    java.lang.String getName();
+  /**
+   * Gets the "name" attribute
+   */
+  String getName();
 
-    /**
-     * Gets (as xml) the "name" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType xgetName();
+  /**
+   * Sets the "name" attribute
+   */
+  void setName(String name);
 
-    /**
-     * Sets the "name" attribute
-     */
-    void setName(java.lang.String name);
+  /**
+   * Gets (as xml) the "name" attribute
+   */
+  ItemMetadataNameType xgetName();
 
-    /**
-     * Sets (as xml) the "name" attribute
-     */
-    void xsetName(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType name);
+  /**
+   * Sets (as xml) the "name" attribute
+   */
+  void xsetName(ItemMetadataNameType name);
 
-    /**
-     * Gets the "value" attribute
-     */
-    java.lang.String getValue();
+  /**
+   * Gets the "value" attribute
+   */
+  String getValue();
 
-    /**
-     * Gets (as xml) the "value" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType xgetValue();
+  /**
+   * Sets the "value" attribute
+   */
+  void setValue(String value);
 
-    /**
-     * Sets the "value" attribute
-     */
-    void setValue(java.lang.String value);
+  /**
+   * Gets (as xml) the "value" attribute
+   */
+  ItemMetadataValueType xgetValue();
 
-    /**
-     * Sets (as xml) the "value" attribute
-     */
-    void xsetValue(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType value);
+  /**
+   * Sets (as xml) the "value" attribute
+   */
+  void xsetValue(ItemMetadataValueType value);
 }

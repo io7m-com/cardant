@@ -18,6 +18,16 @@ package com.io7m.cardant.client.preferences.api;
 
 import java.util.Objects;
 
+/**
+ * A server bookmark.
+ *
+ * @param name        The bookmark name
+ * @param host        The server host
+ * @param port        The server port
+ * @param isHTTPs     {@code true} if https is to be enabled
+ * @param credentials The credentials
+ */
+
 public record CAPreferenceServerBookmark(
   String name,
   String host,
@@ -25,6 +35,10 @@ public record CAPreferenceServerBookmark(
   boolean isHTTPs,
   CAPreferenceServerCredentialsType credentials)
 {
+  /**
+   * A server bookmark.
+   */
+
   public CAPreferenceServerBookmark
   {
     Objects.requireNonNull(name, "name");

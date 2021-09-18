@@ -8,73 +8,90 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
+import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType;
 import org.apache.xmlbeans.QNameSet;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
+
+import javax.xml.namespace.QName;
 
 /**
  * A document containing one ListLocationsBehaviour(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ListLocationsBehaviourDocumentImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourDocument {
-    private static final long serialVersionUID = 1L;
-
-    public ListLocationsBehaviourDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
-    }
-
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ListLocationsBehaviour"),
-    };
-
-    private static final QNameSet[] PROPERTY_QSET = {
-    QNameSet.forArray( new QName[] { 
-        new QName("urn:com.io7m.cardant.inventory:1", "ListLocationsAll"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ListLocationWithDescendants"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ListLocationsBehaviour"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ListLocationExact"),
+public class ListLocationsBehaviourDocumentImpl extends XmlComplexContentImpl implements
+  ListLocationsBehaviourDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ListLocationsBehaviour"),
+  };
+  private static final QNameSet[] PROPERTY_QSET = {
+    QNameSet.forArray(new QName[]{
+      new QName("urn:com.io7m.cardant.inventory:1", "ListLocationsAll"),
+      new QName(
+        "urn:com.io7m.cardant.inventory:1",
+        "ListLocationWithDescendants"),
+      new QName("urn:com.io7m.cardant.inventory:1", "ListLocationsBehaviour"),
+      new QName("urn:com.io7m.cardant.inventory:1", "ListLocationExact"),
     }),
-    };
+  };
 
-    /**
-     * Gets the "ListLocationsBehaviour" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType getListLocationsBehaviour() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType)get_store().find_element_user(PROPERTY_QSET[0], 0);
-            return (target == null) ? null : target;
-        }
-    }
+  public ListLocationsBehaviourDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
 
-    /**
-     * Sets the "ListLocationsBehaviour" element
-     */
-    @Override
-    public void setListLocationsBehaviour(com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType listLocationsBehaviour) {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType)get_store().find_element_user(PROPERTY_QSET[0], 0);
-            if (target == null) {
-                target = (com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            }
-            target.set(listLocationsBehaviour);
-        }
+  /**
+   * Gets the "ListLocationsBehaviour" element
+   */
+  @Override
+  public ListLocationsBehaviourType getListLocationsBehaviour()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ListLocationsBehaviourType target = null;
+      target = (ListLocationsBehaviourType) this.get_store().find_element_user(
+        PROPERTY_QSET[0],
+        0);
+      return target;
     }
+  }
 
-    /**
-     * Appends and returns a new empty "ListLocationsBehaviour" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType addNewListLocationsBehaviour() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
+  /**
+   * Sets the "ListLocationsBehaviour" element
+   */
+  @Override
+  public void setListLocationsBehaviour(final ListLocationsBehaviourType listLocationsBehaviour)
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ListLocationsBehaviourType target = null;
+      target = (ListLocationsBehaviourType) this.get_store().find_element_user(
+        PROPERTY_QSET[0],
+        0);
+      if (target == null) {
+        target = (ListLocationsBehaviourType) this.get_store().add_element_user(
+          PROPERTY_QNAME[0]);
+      }
+      target.set(listLocationsBehaviour);
     }
+  }
+
+  /**
+   * Appends and returns a new empty "ListLocationsBehaviour" element
+   */
+  @Override
+  public ListLocationsBehaviourType addNewListLocationsBehaviour()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ListLocationsBehaviourType target = null;
+      target = (ListLocationsBehaviourType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
+    }
+  }
 }

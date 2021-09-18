@@ -18,8 +18,16 @@ package com.io7m.cardant.protocol.inventory.api;
 
 import java.util.ServiceLoader;
 
+/**
+ * The default message service implementation.
+ */
+
 public final class CAMessageServices implements CAMessageServicesType
 {
+  /**
+   * The default message service implementation.
+   */
+
   public CAMessageServices()
   {
 

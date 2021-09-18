@@ -16,8 +16,21 @@
 
 package com.io7m.cardant.client.preferences.api;
 
+/**
+ * A specification of whether or not debugging is enabled.
+ */
+
 public enum CAPreferencesDebuggingEnabled
 {
+  /**
+   * Debugging is enabled.
+   */
+
   DEBUGGING_ENABLED,
+
+  /**
+   * Debugging is disabled.
+   */
+
   DEBUGGING_DISABLED
 }

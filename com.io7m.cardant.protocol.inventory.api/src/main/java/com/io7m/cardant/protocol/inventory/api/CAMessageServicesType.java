@@ -16,10 +16,30 @@
 
 package com.io7m.cardant.protocol.inventory.api;
 
+/**
+ * The type of message services.
+ */
+
 public interface CAMessageServicesType
 {
+  /**
+   * Find a parser service with the given version.
+   *
+   * @param version The version
+   *
+   * @return A parser service
+   */
+
   CAMessageParserFactoryType findParserService(
     int version);
+
+  /**
+   * Find a serializer service with the given version.
+   *
+   * @param version The version
+   *
+   * @return A serializer service
+   */
 
   CAMessageSerializerFactoryType findSerializerService(
     int version);

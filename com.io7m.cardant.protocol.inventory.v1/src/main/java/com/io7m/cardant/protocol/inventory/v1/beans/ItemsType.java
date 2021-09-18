@@ -7,10 +7,12 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
+
+import java.util.List;
 
 
 /**
@@ -18,53 +20,58 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemsType extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemsType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemstypec9aftype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemsType extends XmlObject
+{
+  DocumentFactory<ItemsType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemstypec9aftype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets a List of "Item" elements
-     */
-    java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.ItemType> getItemList();
+  /**
+   * Gets a List of "Item" elements
+   */
+  List<ItemType> getItemList();
 
-    /**
-     * Gets array of all "Item" elements
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemType[] getItemArray();
+  /**
+   * Gets array of all "Item" elements
+   */
+  ItemType[] getItemArray();
 
-    /**
-     * Gets ith "Item" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemType getItemArray(int i);
+  /**
+   * Sets array of all "Item" element
+   */
+  void setItemArray(ItemType[] itemArray);
 
-    /**
-     * Returns number of "Item" element
-     */
-    int sizeOfItemArray();
+  /**
+   * Gets ith "Item" element
+   */
+  ItemType getItemArray(int i);
 
-    /**
-     * Sets array of all "Item" element
-     */
-    void setItemArray(com.io7m.cardant.protocol.inventory.v1.beans.ItemType[] itemArray);
+  /**
+   * Returns number of "Item" element
+   */
+  int sizeOfItemArray();
 
-    /**
-     * Sets ith "Item" element
-     */
-    void setItemArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.ItemType item);
+  /**
+   * Sets ith "Item" element
+   */
+  void setItemArray(
+    int i,
+    ItemType item);
 
-    /**
-     * Inserts and returns a new empty value (as xml) as the ith "Item" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemType insertNewItem(int i);
+  /**
+   * Inserts and returns a new empty value (as xml) as the ith "Item" element
+   */
+  ItemType insertNewItem(int i);
 
-    /**
-     * Appends and returns a new empty value (as xml) as the last "Item" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemType addNewItem();
+  /**
+   * Appends and returns a new empty value (as xml) as the last "Item" element
+   */
+  ItemType addNewItem();
 
-    /**
-     * Removes the ith "Item" element
-     */
-    void removeItem(int i);
+  /**
+   * Removes the ith "Item" element
+   */
+  void removeItem(int i);
 }

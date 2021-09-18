@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemRepositAddDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemrepositadd093fdoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemRepositAddDocument extends ItemRepositDocument
+{
+  DocumentFactory<ItemRepositAddDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemrepositadd093fdoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ItemRepositAdd" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType getItemRepositAdd();
+  /**
+   * Gets the "ItemRepositAdd" element
+   */
+  ItemRepositAddType getItemRepositAdd();
 
-    /**
-     * Sets the "ItemRepositAdd" element
-     */
-    void setItemRepositAdd(com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType itemRepositAdd);
+  /**
+   * Sets the "ItemRepositAdd" element
+   */
+  void setItemRepositAdd(ItemRepositAddType itemRepositAdd);
 
-    /**
-     * Appends and returns a new empty "ItemRepositAdd" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType addNewItemRepositAdd();
+  /**
+   * Appends and returns a new empty "ItemRepositAdd" element
+   */
+  ItemRepositAddType addNewItemRepositAdd();
 }

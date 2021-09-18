@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ListLocationWithDescendantsDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "listlocationwithdescendantsf37cdoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ListLocationWithDescendantsDocument extends ListLocationsBehaviourDocument
+{
+  DocumentFactory<ListLocationWithDescendantsDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "listlocationwithdescendantsf37cdoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ListLocationWithDescendants" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType getListLocationWithDescendants();
+  /**
+   * Gets the "ListLocationWithDescendants" element
+   */
+  ListLocationWithDescendantsType getListLocationWithDescendants();
 
-    /**
-     * Sets the "ListLocationWithDescendants" element
-     */
-    void setListLocationWithDescendants(com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType listLocationWithDescendants);
+  /**
+   * Sets the "ListLocationWithDescendants" element
+   */
+  void setListLocationWithDescendants(ListLocationWithDescendantsType listLocationWithDescendants);
 
-    /**
-     * Appends and returns a new empty "ListLocationWithDescendants" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType addNewListLocationWithDescendants();
+  /**
+   * Appends and returns a new empty "ListLocationWithDescendants" element
+   */
+  ListLocationWithDescendantsType addNewListLocationWithDescendants();
 }

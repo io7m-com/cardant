@@ -20,12 +20,26 @@ import com.io7m.cardant.client.api.CAClientCommandResultType;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The type of client commands.
+ *
+ * @param <T> The type of returned values
+ */
+
 public sealed interface CAClientCommandType<T>
   permits CAClientCommandHostileType,
   CAClientCommandTransactional,
   CAClientCommandValid
 {
+  /**
+   * @return The return type of the command
+   */
+
   Class<T> returnType();
+
+  /**
+   * @return The command future
+   */
 
   CompletableFuture<CAClientCommandResultType<T>> future();
 }

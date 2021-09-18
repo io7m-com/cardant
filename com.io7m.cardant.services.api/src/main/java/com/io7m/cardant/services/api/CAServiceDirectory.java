@@ -30,6 +30,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * A service directory.
+ */
+
 public final class CAServiceDirectory implements CAServiceDirectoryType
 {
   private static final Logger LOG =
@@ -39,11 +43,23 @@ public final class CAServiceDirectory implements CAServiceDirectoryType
   @GuardedBy("serviceLock")
   private final Map<Object, List<Object>> services;
 
+  /**
+   * Construct a service directory.
+   */
+
   public CAServiceDirectory()
   {
     this.serviceLock = new Object();
     this.services = new ConcurrentHashMap<>();
   }
+
+  /**
+   * Register the given service.
+   *
+   * @param clazz   The service interface
+   * @param service The service
+   * @param <T>     The type of service
+   */
 
   public <T extends CAServiceType> void register(
     final Class<T> clazz,

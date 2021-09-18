@@ -16,12 +16,45 @@
 
 package com.io7m.cardant.client.api;
 
+/**
+ * The client status changed.
+ */
+
 public enum CAClientEventStatusChanged implements CAClientEventType
 {
+  /**
+   * The client is negotiating protocols with the server.
+   */
+
   CLIENT_NEGOTIATING_PROTOCOLS,
+
+  /**
+   * The client failed to negotiate protocols with the server.
+   */
+
   CLIENT_NEGOTIATING_PROTOCOLS_FAILED,
+
+  /**
+   * The client connected.
+   */
+
   CLIENT_CONNECTED,
+
+  /**
+   * The client disconnected.
+   */
+
   CLIENT_DISCONNECTED,
+
+  /**
+   * The client is sending a request.
+   */
+
   CLIENT_SENDING_REQUEST,
+
+  /**
+   * The client is receiving data.
+   */
+
   CLIENT_RECEIVING_DATA
 }

@@ -18,6 +18,10 @@ package com.io7m.cardant.protocol.inventory.api;
 
 import com.io7m.anethum.api.ParserType;
 
+/**
+ * The type of message parsers.
+ */
+
 public interface CAMessageParserType extends ParserType<CAMessageType>
 {
 

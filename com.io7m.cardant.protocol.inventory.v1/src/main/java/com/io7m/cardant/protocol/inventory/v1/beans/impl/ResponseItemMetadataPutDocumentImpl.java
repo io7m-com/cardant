@@ -8,57 +8,72 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ResponseItemMetadataPut(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ResponseItemMetadataPutDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutDocument {
-    private static final long serialVersionUID = 1L;
+public class ResponseItemMetadataPutDocumentImpl extends ResponseDocumentImpl implements
+  ResponseItemMetadataPutDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemMetadataPut"),
+  };
 
-    public ResponseItemMetadataPutDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public ResponseItemMetadataPutDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "ResponseItemMetadataPut" element
+   */
+  @Override
+  public ResponseItemMetadataPutType getResponseItemMetadataPut()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ResponseItemMetadataPutType target = null;
+      target = (ResponseItemMetadataPutType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemMetadataPut"),
-    };
+  /**
+   * Sets the "ResponseItemMetadataPut" element
+   */
+  @Override
+  public void setResponseItemMetadataPut(final ResponseItemMetadataPutType responseItemMetadataPut)
+  {
+    this.generatedSetterHelperImpl(
+      responseItemMetadataPut,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "ResponseItemMetadataPut" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType getResponseItemMetadataPut() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "ResponseItemMetadataPut" element
+   */
+  @Override
+  public ResponseItemMetadataPutType addNewResponseItemMetadataPut()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ResponseItemMetadataPutType target = null;
+      target = (ResponseItemMetadataPutType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "ResponseItemMetadataPut" element
-     */
-    @Override
-    public void setResponseItemMetadataPut(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType responseItemMetadataPut) {
-        generatedSetterHelperImpl(responseItemMetadataPut, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "ResponseItemMetadataPut" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType addNewResponseItemMetadataPut() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

@@ -7,10 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
-import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,8 +17,11 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ResponseType extends com.io7m.cardant.protocol.inventory.v1.beans.MessageType {
-    AbstractDocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseType> Factory = new AbstractDocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "responsetypeb29ctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ResponseType extends MessageType
+{
+  AbstractDocumentFactory<ResponseType> Factory = new AbstractDocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "responsetypeb29ctype");
+  SchemaType type = Factory.getType();
 
 }

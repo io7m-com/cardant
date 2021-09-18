@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +19,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemAttachmentsDocument extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemattachments75dcdoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemAttachmentsDocument extends XmlObject
+{
+  DocumentFactory<ItemAttachmentsDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemattachments75dcdoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ItemAttachments" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType getItemAttachments();
+  /**
+   * Gets the "ItemAttachments" element
+   */
+  ItemAttachmentsType getItemAttachments();
 
-    /**
-     * Sets the "ItemAttachments" element
-     */
-    void setItemAttachments(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType itemAttachments);
+  /**
+   * Sets the "ItemAttachments" element
+   */
+  void setItemAttachments(ItemAttachmentsType itemAttachments);
 
-    /**
-     * Appends and returns a new empty "ItemAttachments" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType addNewItemAttachments();
+  /**
+   * Appends and returns a new empty "ItemAttachments" element
+   */
+  ItemAttachmentsType addNewItemAttachments();
 }

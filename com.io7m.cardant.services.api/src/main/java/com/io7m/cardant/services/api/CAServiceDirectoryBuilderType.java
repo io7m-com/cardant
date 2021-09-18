@@ -16,12 +16,30 @@
 
 package com.io7m.cardant.services.api;
 
+/**
+ * A mutable builder for service directories.
+ */
+
 public interface CAServiceDirectoryBuilderType
 {
+  /**
+   * Register the given service.
+   *
+   * @param clazz   The service interface
+   * @param service The service
+   * @param <T>     The type of service
+   *
+   * @return this
+   */
+
   <T extends CAServiceType> CAServiceDirectoryBuilderType register(
     Class<T> clazz,
     T service
   );
+
+  /**
+   * @return A service directory
+   */
 
   CAServiceDirectoryType build();
 }

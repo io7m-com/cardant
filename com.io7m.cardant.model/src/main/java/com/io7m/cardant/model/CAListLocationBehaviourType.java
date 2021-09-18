@@ -18,27 +18,57 @@ package com.io7m.cardant.model;
 
 import java.util.Objects;
 
+/**
+ * The behaviour requested for listing items in locations.
+ */
+
 public sealed interface CAListLocationBehaviourType
 {
+  /**
+   * Only list items within the exact given location.
+   *
+   * @param location The location
+   */
+
   record CAListLocationExact(
     CALocationID location)
     implements CAListLocationBehaviourType
   {
+    /**
+     * Only list items within the exact given location.
+     */
+
     public CAListLocationExact
     {
       Objects.requireNonNull(location, "location");
     }
   }
 
+  /**
+   * List items within the given location and all descendants of the given
+   * location.
+   *
+   * @param location The location
+   */
+
   record CAListLocationWithDescendants(
     CALocationID location)
     implements CAListLocationBehaviourType
   {
+    /**
+     * List items within the given location and all descendants of the given
+     * location.
+     */
+
     public CAListLocationWithDescendants
     {
       Objects.requireNonNull(location, "location");
     }
   }
+
+  /**
+   * List items within all locations.
+   */
 
   record CAListLocationsAll()
     implements CAListLocationBehaviourType

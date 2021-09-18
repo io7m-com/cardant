@@ -39,6 +39,10 @@ import java.util.stream.Stream;
 
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS;
 
+/**
+ * A provider of client connections.
+ */
+
 public final class CAClientConnections
 {
   private static final Logger LOG =
@@ -48,6 +52,23 @@ public final class CAClientConnections
   {
 
   }
+
+  /**
+   * Open a new connection.
+   *
+   * @param events          The event stream
+   * @param parsers         The parser factory
+   * @param messageServices The message services
+   * @param httpClient      The HTTP client
+   * @param configuration   The configuration
+   * @param strings         The client strings
+   *
+   * @return A connection
+   *
+   * @throws IOException          On I/O errors
+   * @throws ParseException       On parse errors
+   * @throws InterruptedException If the operation is interrupted
+   */
 
   public static CAClientConnectionType open(
     final SubmissionPublisher<CAClientEventType> events,

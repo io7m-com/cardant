@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +19,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemMetadataDocument extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemmetadata2b25doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemMetadataDocument extends XmlObject
+{
+  DocumentFactory<ItemMetadataDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemmetadata2b25doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ItemMetadata" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType getItemMetadata();
+  /**
+   * Gets the "ItemMetadata" element
+   */
+  ItemMetadataType getItemMetadata();
 
-    /**
-     * Sets the "ItemMetadata" element
-     */
-    void setItemMetadata(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType itemMetadata);
+  /**
+   * Sets the "ItemMetadata" element
+   */
+  void setItemMetadata(ItemMetadataType itemMetadata);
 
-    /**
-     * Appends and returns a new empty "ItemMetadata" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType addNewItemMetadata();
+  /**
+   * Appends and returns a new empty "ItemMetadata" element
+   */
+  ItemMetadataType addNewItemMetadata();
 }

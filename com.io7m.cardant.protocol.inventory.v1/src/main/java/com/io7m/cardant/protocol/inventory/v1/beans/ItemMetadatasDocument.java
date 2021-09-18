@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +19,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemMetadatasDocument extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemmetadatasf7e8doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemMetadatasDocument extends XmlObject
+{
+  DocumentFactory<ItemMetadatasDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemmetadatasf7e8doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ItemMetadatas" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType getItemMetadatas();
+  /**
+   * Gets the "ItemMetadatas" element
+   */
+  ItemMetadatasType getItemMetadatas();
 
-    /**
-     * Sets the "ItemMetadatas" element
-     */
-    void setItemMetadatas(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType itemMetadatas);
+  /**
+   * Sets the "ItemMetadatas" element
+   */
+  void setItemMetadatas(ItemMetadatasType itemMetadatas);
 
-    /**
-     * Appends and returns a new empty "ItemMetadatas" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType addNewItemMetadatas();
+  /**
+   * Appends and returns a new empty "ItemMetadatas" element
+   */
+  ItemMetadatasType addNewItemMetadatas();
 }

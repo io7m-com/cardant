@@ -18,11 +18,22 @@ package com.io7m.cardant.client.preferences.api;
 
 import java.util.Objects;
 
+/**
+ * A username/password credential set.
+ *
+ * @param username The user name
+ * @param password The password
+ */
+
 public record CAPreferenceServerUsernamePassword(
   String username,
   String password)
   implements CAPreferenceServerCredentialsType
 {
+  /**
+   * A username/password credential set.
+   */
+
   public CAPreferenceServerUsernamePassword
   {
     Objects.requireNonNull(username, "username");

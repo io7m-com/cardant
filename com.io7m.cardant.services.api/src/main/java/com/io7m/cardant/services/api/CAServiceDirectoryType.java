@@ -20,14 +20,49 @@ import java.io.Closeable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The type of service directories.
+ */
+
 public interface CAServiceDirectoryType extends Closeable
 {
+  /**
+   * Get an optional reference to the given service.
+   *
+   * @param clazz The service interface
+   * @param <T>   The service type
+   *
+   * @return A service reference, if a service exists
+   */
+
   <T extends CAServiceType> Optional<T> optionalService(
     Class<T> clazz);
+
+  /**
+   * Get a required reference to the given service.
+   *
+   * @param clazz The service interface
+   * @param <T>   The service type
+   *
+   * @return A service reference
+   *
+   * @throws CAServiceException If no service exists
+   */
 
   <T extends CAServiceType> T requireService(
     Class<T> clazz)
     throws CAServiceException;
+
+  /**
+   * Get references to the given services.
+   *
+   * @param clazz The service interface
+   * @param <T>   The service type
+   *
+   * @return A service list, if services exist
+   *
+   * @throws CAServiceException If no required
+   */
 
   <T extends CAServiceType> List<? extends T> optionalServices(
     Class<T> clazz)

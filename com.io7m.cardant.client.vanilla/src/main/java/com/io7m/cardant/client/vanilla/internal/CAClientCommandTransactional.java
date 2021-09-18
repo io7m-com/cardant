@@ -21,6 +21,15 @@ import com.io7m.cardant.protocol.inventory.api.CATransaction;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A transactional command.
+ *
+ * @param <T>         The type of returned values
+ * @param future      The command future
+ * @param transaction The transaction
+ * @param returnType  The return type
+ */
+
 public record CAClientCommandTransactional<T>(
   CompletableFuture<CAClientCommandResultType<T>> future,
   CATransaction transaction,

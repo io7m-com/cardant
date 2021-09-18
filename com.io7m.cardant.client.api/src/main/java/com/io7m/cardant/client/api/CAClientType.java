@@ -20,47 +20,113 @@ import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
-import com.io7m.cardant.model.CALocation;
-import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CALocations;
 
 import java.io.Closeable;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow;
 
+/**
+ * The type of client instances.
+ */
+
 public interface CAClientType extends Closeable
 {
+  /**
+   * @return {@code true} if the client is connected
+   */
+
   boolean isConnected();
 
+  /**
+   * @return A stream of events
+   */
+
   Flow.Publisher<CAClientEventType> events();
+
+  /**
+   * List items on the server.
+   *
+   * @param locationBehaviour The location behaviour
+   *
+   * @return An item list
+   */
 
   CompletableFuture<CAClientCommandResultType<CAItems>> itemsList(
     CAListLocationBehaviourType locationBehaviour);
 
+  /**
+   * Get an item on the server.
+   *
+   * @param id The item id
+   *
+   * @return An item
+   */
+
   CompletableFuture<CAClientCommandResultType<CAItem>> itemGet(
     CAItemID id);
+
+  /**
+   * Create an item on the server.
+   *
+   * @param id   The item id
+   * @param name The item name
+   *
+   * @return An item
+   */
 
   CompletableFuture<CAClientCommandResultType<CAItem>> itemCreate(
     CAItemID id,
     String name);
 
+  /**
+   * Delete items on the server.
+   *
+   * @param items The items
+   *
+   * @return The deleted items
+   */
+
   CompletableFuture<CAClientCommandResultType<CAIds>> itemsDelete(
     Set<CAItemID> items);
+
+  /**
+   * Delete metadata from an item on the server.
+   *
+   * @param id       The item id
+   * @param metadata The metadata names
+   *
+   * @return An item
+   */
 
   CompletableFuture<CAClientCommandResultType<CAItem>> itemMetadataDelete(
     CAItemID id,
     Set<String> metadata);
 
+  /**
+   * Update metadata in an item on the server.
+   *
+   * @param id            The item id
+   * @param itemMetadatas The metadata values
+   *
+   * @return An item
+   */
+
   CompletableFuture<CAClientCommandResultType<CAItem>> itemMetadataUpdate(
     CAItemID id,
     Set<CAItemMetadata> itemMetadatas);
+
+  /**
+   * Delete an attachment from an item on the server.
+   *
+   * @param id             The item id
+   * @param itemAttachment The attachment
+   *
+   * @return An item
+   */
 
   CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentDelete(
     CAItemID id,

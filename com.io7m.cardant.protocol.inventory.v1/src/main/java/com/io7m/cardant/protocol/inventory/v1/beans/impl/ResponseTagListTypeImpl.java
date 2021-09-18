@@ -7,57 +7,72 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType;
+import com.io7m.cardant.protocol.inventory.v1.beans.TagsType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML ResponseTagListType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ResponseTagListTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType {
-    private static final long serialVersionUID = 1L;
+public class ResponseTagListTypeImpl extends ResponseTypeImpl implements
+  ResponseTagListType
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "Tags"),
+  };
 
-    public ResponseTagListTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public ResponseTagListTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "Tags" element
+   */
+  @Override
+  public TagsType getTags()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      TagsType target = null;
+      target = (TagsType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "Tags"),
-    };
+  /**
+   * Sets the "Tags" element
+   */
+  @Override
+  public void setTags(final TagsType tags)
+  {
+    this.generatedSetterHelperImpl(
+      tags,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "Tags" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.TagsType getTags() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.TagsType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.TagsType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "Tags" element
+   */
+  @Override
+  public TagsType addNewTags()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      TagsType target = null;
+      target = (TagsType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "Tags" element
-     */
-    @Override
-    public void setTags(com.io7m.cardant.protocol.inventory.v1.beans.TagsType tags) {
-        generatedSetterHelperImpl(tags, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "Tags" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.TagsType addNewTags() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.TagsType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.TagsType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

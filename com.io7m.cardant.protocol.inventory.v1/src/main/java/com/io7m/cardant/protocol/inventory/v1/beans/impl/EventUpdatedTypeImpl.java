@@ -7,92 +7,118 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType;
+import com.io7m.cardant.protocol.inventory.v1.beans.RemovedType;
+import com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML EventUpdatedType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class EventUpdatedTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.EventTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType {
-    private static final long serialVersionUID = 1L;
+public class EventUpdatedTypeImpl extends EventTypeImpl implements
+  EventUpdatedType
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "Updated"),
+    new QName("urn:com.io7m.cardant.inventory:1", "Removed"),
+  };
 
-    public EventUpdatedTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public EventUpdatedTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "Updated" element
+   */
+  @Override
+  public UpdatedType getUpdated()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      UpdatedType target = null;
+      target = (UpdatedType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "Updated"),
-        new QName("urn:com.io7m.cardant.inventory:1", "Removed"),
-    };
+  /**
+   * Sets the "Updated" element
+   */
+  @Override
+  public void setUpdated(final UpdatedType updated)
+  {
+    this.generatedSetterHelperImpl(
+      updated,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "Updated" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType getUpdated() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "Updated" element
+   */
+  @Override
+  public UpdatedType addNewUpdated()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      UpdatedType target = null;
+      target = (UpdatedType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
+  }
 
-    /**
-     * Sets the "Updated" element
-     */
-    @Override
-    public void setUpdated(com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType updated) {
-        generatedSetterHelperImpl(updated, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  /**
+   * Gets the "Removed" element
+   */
+  @Override
+  public RemovedType getRemoved()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      RemovedType target = null;
+      target = (RemovedType) this.get_store().find_element_user(
+        PROPERTY_QNAME[1],
+        0);
+      return target;
     }
+  }
 
-    /**
-     * Appends and returns a new empty "Updated" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType addNewUpdated() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  /**
+   * Sets the "Removed" element
+   */
+  @Override
+  public void setRemoved(final RemovedType removed)
+  {
+    this.generatedSetterHelperImpl(
+      removed,
+      PROPERTY_QNAME[1],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-    /**
-     * Gets the "Removed" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.RemovedType getRemoved() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.RemovedType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.RemovedType)get_store().find_element_user(PROPERTY_QNAME[1], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "Removed" element
+   */
+  @Override
+  public RemovedType addNewRemoved()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      RemovedType target = null;
+      target = (RemovedType) this.get_store().add_element_user(
+        PROPERTY_QNAME[1]);
+      return target;
     }
-
-    /**
-     * Sets the "Removed" element
-     */
-    @Override
-    public void setRemoved(com.io7m.cardant.protocol.inventory.v1.beans.RemovedType removed) {
-        generatedSetterHelperImpl(removed, PROPERTY_QNAME[1], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "Removed" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.RemovedType addNewRemoved() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.RemovedType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.RemovedType)get_store().add_element_user(PROPERTY_QNAME[1]);
-            return target;
-        }
-    }
+  }
 }

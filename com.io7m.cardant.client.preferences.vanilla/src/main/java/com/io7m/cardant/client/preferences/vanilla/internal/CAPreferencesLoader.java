@@ -39,6 +39,10 @@ import static com.io7m.jproperties.JProperties.getBooleanWithDefault;
 import static com.io7m.jproperties.JProperties.getInteger;
 import static com.io7m.jproperties.JProperties.getString;
 
+/**
+ * A preferences loader.
+ */
+
 public final class CAPreferencesLoader
 {
   private static final Logger LOG =
@@ -47,6 +51,14 @@ public final class CAPreferencesLoader
   private final Logger log;
   private final Path file;
   private final Properties properties;
+
+  /**
+   * A preferences loader.
+   *
+   * @param inLog        A logger
+   * @param inFile       A file
+   * @param inProperties Properties
+   */
 
   public CAPreferencesLoader(
     final Logger inLog,
@@ -60,6 +72,10 @@ public final class CAPreferencesLoader
     this.properties =
       Objects.requireNonNull(inProperties, "properties");
   }
+
+  /**
+   * @return A loaded set of preferences
+   */
 
   public CAPreferences load()
   {

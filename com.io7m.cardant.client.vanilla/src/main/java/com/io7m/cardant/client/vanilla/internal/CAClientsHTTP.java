@@ -20,12 +20,24 @@ import java.net.CookieManager;
 import java.net.http.HttpClient;
 import java.util.concurrent.Executor;
 
+/**
+ * A provider of HTTP clients.
+ */
+
 public final class CAClientsHTTP
 {
   private CAClientsHTTP()
   {
 
   }
+
+  /**
+   * Create an HTTP client.
+   *
+   * @param executor A client executor
+   *
+   * @return An HTTP client
+   */
 
   public static HttpClient create(
     final Executor executor)

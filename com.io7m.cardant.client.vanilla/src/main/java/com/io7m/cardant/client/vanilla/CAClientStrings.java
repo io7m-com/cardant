@@ -21,8 +21,20 @@ import com.io7m.jxtrand.vanilla.JXTAbstractStrings;
 import java.io.IOException;
 import java.util.Locale;
 
+/**
+ * Client strings.
+ */
+
 public final class CAClientStrings extends JXTAbstractStrings
 {
+  /**
+   * Client strings.
+   *
+   * @param locale The string locale
+   *
+   * @throws IOException On I/O errors
+   */
+
   public CAClientStrings(
     final Locale locale)
     throws IOException

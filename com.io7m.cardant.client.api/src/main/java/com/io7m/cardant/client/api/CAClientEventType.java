@@ -16,6 +16,10 @@
 
 package com.io7m.cardant.client.api;
 
+/**
+ * The base type of events.
+ */
+
 public sealed interface CAClientEventType
   permits CAClientEventCommandFailed,
   CAClientEventDataChanged,

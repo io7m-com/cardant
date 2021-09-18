@@ -26,11 +26,22 @@ import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class CAPreferencesStorer
+/**
+ * A storer of preferences.
+ */
+
+public final class CAPreferencesStorer
 {
   private final OutputStream stream;
   private final CAPreferences preferences;
   private Properties properties;
+
+  /**
+   * A storer of preferences.
+   *
+   * @param inStream      The output stream
+   * @param inPreferences The preferences
+   */
 
   public CAPreferencesStorer(
     final OutputStream inStream,
@@ -41,6 +52,12 @@ public class CAPreferencesStorer
     this.preferences =
       Objects.requireNonNull(inPreferences, "preferences");
   }
+
+  /**
+   * Store preferences.
+   *
+   * @throws IOException On I/O errors
+   */
 
   public void store()
     throws IOException

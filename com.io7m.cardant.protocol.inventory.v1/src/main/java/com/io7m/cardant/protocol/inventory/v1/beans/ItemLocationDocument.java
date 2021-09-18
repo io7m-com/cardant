@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +19,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemLocationDocument extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemlocation2f5fdoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemLocationDocument extends XmlObject
+{
+  DocumentFactory<ItemLocationDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemlocation2f5fdoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ItemLocation" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType getItemLocation();
+  /**
+   * Gets the "ItemLocation" element
+   */
+  ItemLocationType getItemLocation();
 
-    /**
-     * Sets the "ItemLocation" element
-     */
-    void setItemLocation(com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType itemLocation);
+  /**
+   * Sets the "ItemLocation" element
+   */
+  void setItemLocation(ItemLocationType itemLocation);
 
-    /**
-     * Appends and returns a new empty "ItemLocation" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType addNewItemLocation();
+  /**
+   * Appends and returns a new empty "ItemLocation" element
+   */
+  ItemLocationType addNewItemLocation();
 }

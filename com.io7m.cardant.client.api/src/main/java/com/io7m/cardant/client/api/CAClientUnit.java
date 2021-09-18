@@ -16,7 +16,15 @@
 
 package com.io7m.cardant.client.api;
 
+/**
+ * The unit type.
+ */
+
 public enum CAClientUnit
 {
+  /**
+   * The unit value
+   */
+
   UNIT
 }

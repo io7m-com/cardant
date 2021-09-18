@@ -16,6 +16,10 @@
 
 package com.io7m.cardant.client.preferences.api;
 
+/**
+ * The base type of server credentials.
+ */
+
 public sealed interface CAPreferenceServerCredentialsType
   permits CAPreferenceServerUsernamePassword
 {

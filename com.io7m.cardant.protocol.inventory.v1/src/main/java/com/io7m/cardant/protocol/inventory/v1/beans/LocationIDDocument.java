@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface LocationIDDocument extends com.io7m.cardant.protocol.inventory.v1.beans.IDDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.LocationIDDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "locationidc677doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface LocationIDDocument extends IDDocument
+{
+  DocumentFactory<LocationIDDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "locationidc677doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "LocationID" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType getLocationID();
+  /**
+   * Gets the "LocationID" element
+   */
+  LocationIDType getLocationID();
 
-    /**
-     * Sets the "LocationID" element
-     */
-    void setLocationID(com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType locationID);
+  /**
+   * Sets the "LocationID" element
+   */
+  void setLocationID(LocationIDType locationID);
 
-    /**
-     * Appends and returns a new empty "LocationID" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType addNewLocationID();
+  /**
+   * Appends and returns a new empty "LocationID" element
+   */
+  LocationIDType addNewLocationID();
 }

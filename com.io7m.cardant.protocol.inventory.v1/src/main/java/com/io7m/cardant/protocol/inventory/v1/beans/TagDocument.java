@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +19,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface TagDocument extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.TagDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "tag45ffdoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface TagDocument extends XmlObject
+{
+  DocumentFactory<TagDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "tag45ffdoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "Tag" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.TagType getTag();
+  /**
+   * Gets the "Tag" element
+   */
+  TagType getTag();
 
-    /**
-     * Sets the "Tag" element
-     */
-    void setTag(com.io7m.cardant.protocol.inventory.v1.beans.TagType tag);
+  /**
+   * Sets the "Tag" element
+   */
+  void setTag(TagType tag);
 
-    /**
-     * Appends and returns a new empty "Tag" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.TagType addNewTag();
+  /**
+   * Appends and returns a new empty "Tag" element
+   */
+  TagType addNewTag();
 }

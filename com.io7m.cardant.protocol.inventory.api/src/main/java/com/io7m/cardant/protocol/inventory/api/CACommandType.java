@@ -24,18 +24,32 @@ import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CATags;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+/**
+ * The base type of commands.
+ */
 
 public sealed interface CACommandType
   extends CAMessageType
 {
+  /**
+   * Attempt to log in using the given username and password.
+   *
+   * @param user     The user
+   * @param password The password
+   */
+
   record CACommandLoginUsernamePassword(
     String user,
     String password)
     implements CACommandType
   {
+    /**
+     * Attempt to log in using the given username and password.
+     */
+
     public CACommandLoginUsernamePassword
     {
       Objects.requireNonNull(user, "user");
@@ -43,11 +57,22 @@ public sealed interface CACommandType
     }
   }
 
+  /**
+   * Create a new item.
+   *
+   * @param id   The item ID
+   * @param name The item name
+   */
+
   record CACommandItemCreate(
     CAItemID id,
     String name)
     implements CACommandType
   {
+    /**
+     * Create a new item.
+     */
+
     public CACommandItemCreate
     {
       Objects.requireNonNull(id, "id");
@@ -55,11 +80,22 @@ public sealed interface CACommandType
     }
   }
 
+  /**
+   * Update an existing item.
+   *
+   * @param id   The item ID
+   * @param name The item name
+   */
+
   record CACommandItemUpdate(
     CAItemID id,
     String name)
     implements CACommandType
   {
+    /**
+     * Update an existing item.
+     */
+
     public CACommandItemUpdate
     {
       Objects.requireNonNull(id, "id");
@@ -67,11 +103,22 @@ public sealed interface CACommandType
     }
   }
 
+  /**
+   * Remove an attachment from an item.
+   *
+   * @param item         The item ID
+   * @param attachmentID The attachment ID
+   */
+
   record CACommandItemAttachmentRemove(
     CAItemID item,
     CAItemAttachmentID attachmentID)
     implements CACommandType
   {
+    /**
+     * Remove an attachment from an item.
+     */
+
     public CACommandItemAttachmentRemove
     {
       Objects.requireNonNull(item, "item");
@@ -79,11 +126,22 @@ public sealed interface CACommandType
     }
   }
 
+  /**
+   * Add an attachment to an item.
+   *
+   * @param item       The item ID
+   * @param attachment The attachment
+   */
+
   record CACommandItemAttachmentPut(
     CAItemID item,
     CAItemAttachment attachment)
     implements CACommandType
   {
+    /**
+     * Add an attachment to an item.
+     */
+
     public CACommandItemAttachmentPut
     {
       Objects.requireNonNull(item, "item");
@@ -91,11 +149,22 @@ public sealed interface CACommandType
     }
   }
 
+  /**
+   * Remove metadata values from an item.
+   *
+   * @param item          The item ID
+   * @param metadataNames The metadata names
+   */
+
   record CACommandItemMetadataRemove(
     CAItemID item,
     Set<String> metadataNames)
     implements CACommandType
   {
+    /**
+     * Remove metadata values from an item.
+     */
+
     public CACommandItemMetadataRemove
     {
       Objects.requireNonNull(item, "item");
@@ -103,11 +172,22 @@ public sealed interface CACommandType
     }
   }
 
+  /**
+   * Add or update metadata values in an item.
+   *
+   * @param item      The item ID
+   * @param metadatas The metadata values
+   */
+
   record CACommandItemMetadataPut(
     CAItemID item,
     Set<CAItemMetadata> metadatas)
     implements CACommandType
   {
+    /**
+     * Add or update metadata values in an item.
+     */
+
     public CACommandItemMetadataPut
     {
       Objects.requireNonNull(item, "item");
@@ -115,11 +195,19 @@ public sealed interface CACommandType
     }
   }
 
+  /**
+   * Create or update a location.
+   */
+
   record CACommandLocationPut()
     implements CACommandType
   {
 
   }
+
+  /**
+   * List locations.
+   */
 
   record CACommandLocationList()
     implements CACommandType
@@ -127,21 +215,39 @@ public sealed interface CACommandType
 
   }
 
+  /**
+   * Retrieve a location.
+   */
+
   record CACommandLocationGet()
     implements CACommandType
   {
 
   }
 
+  /**
+   * Reposit an item.
+   *
+   * @param reposit The item reposition
+   */
+
   record CACommandItemReposit(
     CAItemRepositType reposit)
     implements CACommandType
   {
+    /**
+     * Reposit an item.
+     */
+
     public CACommandItemReposit
     {
       Objects.requireNonNull(reposit, "reposit");
     }
   }
+
+  /**
+   * XXX: To remove!
+   */
 
   record CACommandItemLocationList()
     implements CACommandType
@@ -149,35 +255,69 @@ public sealed interface CACommandType
 
   }
 
+  /**
+   * Retrieve an item.
+   *
+   * @param id The item ID
+   */
+
   record CACommandItemGet(
     CAItemID id)
     implements CACommandType
   {
+    /**
+     * Retrieve an item.
+     */
+
     public CACommandItemGet
     {
       Objects.requireNonNull(id, "id");
     }
   }
 
+  /**
+   * Delete an item.
+   *
+   * @param id The item ID
+   */
+
   record CACommandItemRemove(
     CAItemID id)
     implements CACommandType
   {
+    /**
+     * Delete an item.
+     */
+
     public CACommandItemRemove
     {
       Objects.requireNonNull(id, "id");
     }
   }
 
+  /**
+   * List items.
+   *
+   * @param locationBehaviour The location behaviour
+   */
+
   record CACommandItemList(
     CAListLocationBehaviourType locationBehaviour)
     implements CACommandType
   {
+    /**
+     * List items.
+     */
+
     public CACommandItemList
     {
       Objects.requireNonNull(locationBehaviour, "locationBehaviour");
     }
   }
+
+  /**
+   * List tags.
+   */
 
   record CACommandTagList()
     implements CACommandType
@@ -185,20 +325,40 @@ public sealed interface CACommandType
 
   }
 
+  /**
+   * Create or update tags.
+   *
+   * @param tags The tags
+   */
+
   record CACommandTagsPut(
     CATags tags)
     implements CACommandType
   {
+    /**
+     * Create or update tags.
+     */
+
     public CACommandTagsPut
     {
       Objects.requireNonNull(tags, "tags");
     }
   }
 
+  /**
+   * Delete tags.
+   *
+   * @param tags The tags
+   */
+
   record CACommandTagsDelete(
     CATags tags)
     implements CACommandType
   {
+    /**
+     * Delete tags.
+     */
+
     public CACommandTagsDelete
     {
       Objects.requireNonNull(tags, "tags");

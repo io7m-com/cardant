@@ -8,57 +8,72 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ItemAttachmentID(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ItemAttachmentIDDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.IDDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDDocument {
-    private static final long serialVersionUID = 1L;
+public class ItemAttachmentIDDocumentImpl extends IDDocumentImpl implements
+  ItemAttachmentIDDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachmentID"),
+  };
 
-    public ItemAttachmentIDDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public ItemAttachmentIDDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "ItemAttachmentID" element
+   */
+  @Override
+  public ItemAttachmentIDType getItemAttachmentID()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ItemAttachmentIDType target = null;
+      target = (ItemAttachmentIDType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachmentID"),
-    };
+  /**
+   * Sets the "ItemAttachmentID" element
+   */
+  @Override
+  public void setItemAttachmentID(final ItemAttachmentIDType itemAttachmentID)
+  {
+    this.generatedSetterHelperImpl(
+      itemAttachmentID,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "ItemAttachmentID" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType getItemAttachmentID() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "ItemAttachmentID" element
+   */
+  @Override
+  public ItemAttachmentIDType addNewItemAttachmentID()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ItemAttachmentIDType target = null;
+      target = (ItemAttachmentIDType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "ItemAttachmentID" element
-     */
-    @Override
-    public void setItemAttachmentID(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType itemAttachmentID) {
-        generatedSetterHelperImpl(itemAttachmentID, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "ItemAttachmentID" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType addNewItemAttachmentID() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

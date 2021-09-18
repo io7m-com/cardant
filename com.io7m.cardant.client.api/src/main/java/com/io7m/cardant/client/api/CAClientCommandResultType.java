@@ -16,6 +16,12 @@
 
 package com.io7m.cardant.client.api;
 
+/**
+ * The base type of command results.
+ *
+ * @param <T> The type of returned values
+ */
+
 public sealed interface CAClientCommandResultType<T>
   permits
   CAClientCommandError,

@@ -18,8 +18,16 @@ package com.io7m.cardant.protocol.inventory.api;
 
 import com.io7m.anethum.api.ParserFactoryType;
 
+/**
+ * A factory of message parsers.
+ */
+
 public interface CAMessageParserFactoryType
   extends ParserFactoryType<Void, CAMessageType, CAMessageParserType>
 {
+  /**
+   * @return The parser version
+   */
+
   int version();
 }

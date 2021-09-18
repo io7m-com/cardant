@@ -31,17 +31,28 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
+/**
+ * The default client factory.
+ */
+
 public final class CAClients implements CAClientFactoryType
 {
   private final CAClientStrings strings;
   private final CAVersioningMessageParserFactoryType versioningParsers;
   private final CAMessageServicesType messages;
 
+  /**
+   * Construct a client factory.
+   *
+   * @param inStrings           The strings
+   * @param inVersioningParsers The versioning parsers
+   * @param inMessages          The message services
+   */
+
   public CAClients(
     final CAClientStrings inStrings,
     final CAVersioningMessageParserFactoryType inVersioningParsers,
-    final
-    CAMessageServicesType inMessages)
+    final CAMessageServicesType inMessages)
   {
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
@@ -50,6 +61,12 @@ public final class CAClients implements CAClientFactoryType
     this.messages =
       Objects.requireNonNull(inMessages, "inMessages");
   }
+
+  /**
+   * Construct a client factory.
+   *
+   * @throws IOException On I/O errors
+   */
 
   public CAClients()
     throws IOException

@@ -7,10 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,38 +17,41 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface EventUpdatedType extends com.io7m.cardant.protocol.inventory.v1.beans.EventType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "eventupdatedtype6e9ctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface EventUpdatedType extends EventType
+{
+  DocumentFactory<EventUpdatedType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "eventupdatedtype6e9ctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "Updated" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType getUpdated();
+  /**
+   * Gets the "Updated" element
+   */
+  UpdatedType getUpdated();
 
-    /**
-     * Sets the "Updated" element
-     */
-    void setUpdated(com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType updated);
+  /**
+   * Sets the "Updated" element
+   */
+  void setUpdated(UpdatedType updated);
 
-    /**
-     * Appends and returns a new empty "Updated" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType addNewUpdated();
+  /**
+   * Appends and returns a new empty "Updated" element
+   */
+  UpdatedType addNewUpdated();
 
-    /**
-     * Gets the "Removed" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.RemovedType getRemoved();
+  /**
+   * Gets the "Removed" element
+   */
+  RemovedType getRemoved();
 
-    /**
-     * Sets the "Removed" element
-     */
-    void setRemoved(com.io7m.cardant.protocol.inventory.v1.beans.RemovedType removed);
+  /**
+   * Sets the "Removed" element
+   */
+  void setRemoved(RemovedType removed);
 
-    /**
-     * Appends and returns a new empty "Removed" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.RemovedType addNewRemoved();
+  /**
+   * Appends and returns a new empty "Removed" element
+   */
+  RemovedType addNewRemoved();
 }

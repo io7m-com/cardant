@@ -16,6 +16,13 @@
 
 package com.io7m.cardant.client.api;
 
+/**
+ * A command succeeded.
+ *
+ * @param result The result
+ * @param <T>    The type of returned value
+ */
+
 public record CAClientCommandOK<T>(T result)
   implements CAClientCommandResultType<T>
 {

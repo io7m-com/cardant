@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandLocationPutDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "commandlocationput6418doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandLocationPutDocument extends CommandDocument
+{
+  DocumentFactory<CommandLocationPutDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandlocationput6418doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandLocationPut" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutType getCommandLocationPut();
+  /**
+   * Gets the "CommandLocationPut" element
+   */
+  CommandLocationPutType getCommandLocationPut();
 
-    /**
-     * Sets the "CommandLocationPut" element
-     */
-    void setCommandLocationPut(com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutType commandLocationPut);
+  /**
+   * Sets the "CommandLocationPut" element
+   */
+  void setCommandLocationPut(CommandLocationPutType commandLocationPut);
 
-    /**
-     * Appends and returns a new empty "CommandLocationPut" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutType addNewCommandLocationPut();
+  /**
+   * Appends and returns a new empty "CommandLocationPut" element
+   */
+  CommandLocationPutType addNewCommandLocationPut();
 }

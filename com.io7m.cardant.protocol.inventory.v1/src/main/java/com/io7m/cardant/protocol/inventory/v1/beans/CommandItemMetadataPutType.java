@@ -7,10 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,43 +17,46 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemMetadataPutType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "commanditemmetadataputtype6dbbtype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandItemMetadataPutType extends CommandType
+{
+  DocumentFactory<CommandItemMetadataPutType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commanditemmetadataputtype6dbbtype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ItemMetadatas" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType getItemMetadatas();
+  /**
+   * Gets the "ItemMetadatas" element
+   */
+  ItemMetadatasType getItemMetadatas();
 
-    /**
-     * Sets the "ItemMetadatas" element
-     */
-    void setItemMetadatas(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType itemMetadatas);
+  /**
+   * Sets the "ItemMetadatas" element
+   */
+  void setItemMetadatas(ItemMetadatasType itemMetadatas);
 
-    /**
-     * Appends and returns a new empty "ItemMetadatas" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType addNewItemMetadatas();
+  /**
+   * Appends and returns a new empty "ItemMetadatas" element
+   */
+  ItemMetadatasType addNewItemMetadatas();
 
-    /**
-     * Gets the "item" attribute
-     */
-    java.lang.String getItem();
+  /**
+   * Gets the "item" attribute
+   */
+  String getItem();
 
-    /**
-     * Gets (as xml) the "item" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetItem();
+  /**
+   * Sets the "item" attribute
+   */
+  void setItem(String item);
 
-    /**
-     * Sets the "item" attribute
-     */
-    void setItem(java.lang.String item);
+  /**
+   * Gets (as xml) the "item" attribute
+   */
+  UUIDType xgetItem();
 
-    /**
-     * Sets (as xml) the "item" attribute
-     */
-    void xsetItem(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType item);
+  /**
+   * Sets (as xml) the "item" attribute
+   */
+  void xsetItem(UUIDType item);
 }

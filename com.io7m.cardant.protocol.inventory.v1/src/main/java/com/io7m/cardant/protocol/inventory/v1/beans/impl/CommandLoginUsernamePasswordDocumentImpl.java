@@ -8,57 +8,74 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one CommandLoginUsernamePassword(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class CommandLoginUsernamePasswordDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordDocument {
-    private static final long serialVersionUID = 1L;
+public class CommandLoginUsernamePasswordDocumentImpl extends CommandDocumentImpl implements
+  CommandLoginUsernamePasswordDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName(
+      "urn:com.io7m.cardant.inventory:1",
+      "CommandLoginUsernamePassword"),
+  };
 
-    public CommandLoginUsernamePasswordDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public CommandLoginUsernamePasswordDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "CommandLoginUsernamePassword" element
+   */
+  @Override
+  public CommandLoginUsernamePasswordType getCommandLoginUsernamePassword()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      CommandLoginUsernamePasswordType target = null;
+      target = (CommandLoginUsernamePasswordType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "CommandLoginUsernamePassword"),
-    };
+  /**
+   * Sets the "CommandLoginUsernamePassword" element
+   */
+  @Override
+  public void setCommandLoginUsernamePassword(final CommandLoginUsernamePasswordType commandLoginUsernamePassword)
+  {
+    this.generatedSetterHelperImpl(
+      commandLoginUsernamePassword,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "CommandLoginUsernamePassword" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType getCommandLoginUsernamePassword() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "CommandLoginUsernamePassword" element
+   */
+  @Override
+  public CommandLoginUsernamePasswordType addNewCommandLoginUsernamePassword()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      CommandLoginUsernamePasswordType target = null;
+      target = (CommandLoginUsernamePasswordType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "CommandLoginUsernamePassword" element
-     */
-    @Override
-    public void setCommandLoginUsernamePassword(com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType commandLoginUsernamePassword) {
-        generatedSetterHelperImpl(commandLoginUsernamePassword, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "CommandLoginUsernamePassword" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType addNewCommandLoginUsernamePassword() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

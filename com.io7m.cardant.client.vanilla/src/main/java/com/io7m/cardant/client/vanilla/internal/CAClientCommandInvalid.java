@@ -20,6 +20,12 @@ import com.io7m.cardant.client.api.CAClientCommandResultType;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The "send invalid data" command.
+ *
+ * @param future The command future
+ */
+
 public record CAClientCommandInvalid(
   CompletableFuture<CAClientCommandResultType<Void>> future)
   implements CAClientCommandHostileType<Void>

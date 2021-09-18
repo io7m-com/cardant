@@ -34,6 +34,10 @@ import java.util.UUID;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+/**
+ * The default preferences service.
+ */
+
 public final class CAPreferencesService implements CAPreferencesServiceType
 {
   private static final Logger LOG =
@@ -51,6 +55,16 @@ public final class CAPreferencesService implements CAPreferencesServiceType
     this.preferences =
       Objects.requireNonNull(inPreferences, "preferences");
   }
+
+  /**
+   * Open preferences or return the default preferences values.
+   *
+   * @param file The preferences file
+   *
+   * @return A preferences service
+   *
+   * @throws IOException On I/O errors
+   */
 
   public static CAPreferencesServiceType openOrDefault(
     final Path file)
@@ -101,6 +115,8 @@ public final class CAPreferencesService implements CAPreferencesServiceType
   @Override
   public String toString()
   {
-    return String.format("[CAPreferencesService 0x%08x]", Integer.valueOf(this.hashCode()));
+    return String.format(
+      "[CAPreferencesService 0x%08x]",
+      Integer.valueOf(this.hashCode()));
   }
 }

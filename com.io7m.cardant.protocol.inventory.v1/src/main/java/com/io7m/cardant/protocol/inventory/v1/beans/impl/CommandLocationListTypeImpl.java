@@ -7,18 +7,21 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType;
+import org.apache.xmlbeans.SchemaType;
 
 /**
  * An XML CommandLocationListType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class CommandLocationListTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType {
-    private static final long serialVersionUID = 1L;
+public class CommandLocationListTypeImpl extends CommandTypeImpl implements
+  CommandLocationListType
+{
+  private static final long serialVersionUID = 1L;
 
-    public CommandLocationListTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
-    }
+  public CommandLocationListTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
 }

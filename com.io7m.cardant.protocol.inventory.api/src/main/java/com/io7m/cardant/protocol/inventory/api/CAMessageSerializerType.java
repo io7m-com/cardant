@@ -18,6 +18,10 @@ package com.io7m.cardant.protocol.inventory.api;
 
 import com.io7m.anethum.api.SerializerType;
 
+/**
+ * The type of message serializers.
+ */
+
 public interface CAMessageSerializerType
   extends SerializerType<CAMessageType>
 {

@@ -16,9 +16,17 @@
 
 package com.io7m.cardant.client.vanilla.internal;
 
+/**
+ * A connection that is never connected.
+ */
+
 public final class CAClientConnectionUnconnected
   implements CAClientConnectionType
 {
+  /**
+   * A connection that is never connected.
+   */
+
   public CAClientConnectionUnconnected()
   {
 

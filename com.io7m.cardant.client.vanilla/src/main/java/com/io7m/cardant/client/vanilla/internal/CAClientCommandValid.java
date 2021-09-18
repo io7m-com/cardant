@@ -21,6 +21,15 @@ import com.io7m.cardant.protocol.inventory.api.CACommandType;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A valid command.
+ *
+ * @param <T>        The type of returned values
+ * @param command    The command
+ * @param future     The command future
+ * @param returnType The return type
+ */
+
 public record CAClientCommandValid<T>(
   CompletableFuture<CAClientCommandResultType<T>> future,
   CACommandType command,

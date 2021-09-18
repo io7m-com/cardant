@@ -18,12 +18,33 @@ package com.io7m.cardant.client.vanilla.internal;
 
 import java.io.IOException;
 
+/**
+ * The type of client connections.
+ */
+
 public interface CAClientConnectionType
 {
+  /**
+   * @return {@code true} if the connection is connected
+   */
+
   boolean isConnected();
+
+  /**
+   * Poll the connection for messages.
+   *
+   * @throws IOException On I/O errors
+   */
 
   void poll()
     throws IOException;
+
+  /**
+   * Send a command.
+   *
+   * @param command The command
+   * @param <T>     The type of results
+   */
 
   <T> void sendCommand(CAClientCommandType<T> command);
 }

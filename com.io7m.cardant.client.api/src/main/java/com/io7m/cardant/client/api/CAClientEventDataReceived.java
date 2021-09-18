@@ -20,10 +20,20 @@ import com.io7m.cardant.model.CAInventoryElementType;
 
 import java.util.Objects;
 
+/**
+ * Data was received.
+ *
+ * @param element The inventory element
+ */
+
 public record CAClientEventDataReceived(
   CAInventoryElementType element
 ) implements CAClientEventType
 {
+  /**
+   * Data was received.
+   */
+
   public CAClientEventDataReceived
   {
     Objects.requireNonNull(element, "element");

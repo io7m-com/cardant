@@ -18,8 +18,16 @@ package com.io7m.cardant.protocol.inventory.api;
 
 import com.io7m.anethum.api.SerializerFactoryType;
 
+/**
+ * A factory of message serializers.
+ */
+
 public interface CAMessageSerializerFactoryType
   extends SerializerFactoryType<Void, CAMessageType, CAMessageSerializerType>
 {
+  /**
+   * @return The serializer version
+   */
+
   int version();
 }

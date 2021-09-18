@@ -7,18 +7,21 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
+import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType;
+import org.apache.xmlbeans.SchemaType;
 
 /**
  * An XML ListLocationsAllType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ListLocationsAllTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ListLocationsBehaviourTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType {
-    private static final long serialVersionUID = 1L;
+public class ListLocationsAllTypeImpl extends ListLocationsBehaviourTypeImpl implements
+  ListLocationsAllType
+{
+  private static final long serialVersionUID = 1L;
 
-    public ListLocationsAllTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
-    }
+  public ListLocationsAllTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
 }

@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface UserIDDocument extends com.io7m.cardant.protocol.inventory.v1.beans.IDDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.UserIDDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "useridce21doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface UserIDDocument extends IDDocument
+{
+  DocumentFactory<UserIDDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "useridce21doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "UserID" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UserIDType getUserID();
+  /**
+   * Gets the "UserID" element
+   */
+  UserIDType getUserID();
 
-    /**
-     * Sets the "UserID" element
-     */
-    void setUserID(com.io7m.cardant.protocol.inventory.v1.beans.UserIDType userID);
+  /**
+   * Sets the "UserID" element
+   */
+  void setUserID(UserIDType userID);
 
-    /**
-     * Appends and returns a new empty "UserID" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UserIDType addNewUserID();
+  /**
+   * Appends and returns a new empty "UserID" element
+   */
+  UserIDType addNewUserID();
 }

@@ -22,13 +22,37 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * The preferences service.
+ */
+
 public interface CAPreferencesServiceType extends CAServiceType
 {
+  /**
+   * @return The current preferences
+   */
+
   CAPreferences preferences();
+
+  /**
+   * Save preferences to persistent storage.
+   *
+   * @param newPreferences The new preferences
+   *
+   * @throws IOException On I/O errors
+   */
 
   void save(
     CAPreferences newPreferences)
     throws IOException;
+
+  /**
+   * Update the current preferences.
+   *
+   * @param updater The updater function
+   *
+   * @throws IOException On I/O errors
+   */
 
   default void update(
     final Function<CAPreferences, CAPreferences> updater)

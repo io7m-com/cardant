@@ -18,8 +18,18 @@ package com.io7m.cardant.services.api;
 
 import java.util.Objects;
 
+/**
+ * A service exception.
+ */
+
 public final class CAServiceException extends RuntimeException
 {
+  /**
+   * Construct an exception.
+   *
+   * @param inMessage The message
+   */
+
   public CAServiceException(
     final String inMessage)
   {

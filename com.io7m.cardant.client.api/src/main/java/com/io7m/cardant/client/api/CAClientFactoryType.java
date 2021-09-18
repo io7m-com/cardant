@@ -18,9 +18,29 @@ package com.io7m.cardant.client.api;
 
 import com.io7m.cardant.services.api.CAServiceType;
 
+/**
+ * The type of client factories.
+ */
+
 public interface CAClientFactoryType extends CAServiceType
 {
+  /**
+   * Open a new client with the given configuration.
+   *
+   * @param configuration The configuration
+   *
+   * @return A client
+   */
+
   CAClientType open(CAClientConfiguration configuration);
+
+  /**
+   * Open a new hostile client with the given configuration.
+   *
+   * @param configuration The configuration
+   *
+   * @return A client
+   */
 
   CAClientHostileType openHostile(CAClientConfiguration configuration);
 }

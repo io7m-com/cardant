@@ -59,6 +59,10 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
 
+/**
+ * The default client implementation.
+ */
+
 public final class CAClient implements CAClientHostileType
 {
   private static final Logger LOG =
@@ -77,6 +81,19 @@ public final class CAClient implements CAClientHostileType
   private final LinkedBlockingDeque<CAClientCommandType<?>> requests;
   private final SubmissionPublisher<CAClientEventType> events;
   private volatile CAClientConnectionType connection;
+
+  /**
+   * The default client implementation.
+   *
+   * @param inConfiguration   The configuration
+   * @param inCommandExecutor The executor used for handling commands
+   * @param inHostile         {@code true} if the client is hostile
+   * @param inHTTPExecutor    The executor used for HTTP I/O operations
+   * @param inMessages        The message service
+   * @param inParsers         The parser factory
+   * @param inPollExecutor    The executor used to poll for events
+   * @param inStrings         The client strings
+   */
 
   public CAClient(
     final ExecutorService inPollExecutor,
@@ -126,6 +143,10 @@ public final class CAClient implements CAClientHostileType
     }
   }
 
+  /**
+   * Poll for events until the client is closed.
+   */
+
   public void executeEventPolling()
   {
     while (true) {
@@ -150,6 +171,10 @@ public final class CAClient implements CAClientHostileType
       }
     }
   }
+
+  /**
+   * Execute commands until the client is closed.
+   */
 
   public void executeCommandProcessing()
   {

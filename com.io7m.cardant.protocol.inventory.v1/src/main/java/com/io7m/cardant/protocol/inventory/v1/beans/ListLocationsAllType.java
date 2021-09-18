@@ -7,10 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,8 +17,11 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ListLocationsAllType extends com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "listlocationsalltypebebctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ListLocationsAllType extends ListLocationsBehaviourType
+{
+  DocumentFactory<ListLocationsAllType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "listlocationsalltypebebctype");
+  SchemaType type = Factory.getType();
 
 }

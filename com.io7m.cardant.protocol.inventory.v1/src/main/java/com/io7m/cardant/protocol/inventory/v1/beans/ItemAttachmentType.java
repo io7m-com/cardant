@@ -7,10 +7,13 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlUnsignedLong;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
+
+import java.math.BigInteger;
 
 
 /**
@@ -18,178 +21,181 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemAttachmentType extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemattachmenttypee627type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemAttachmentType extends XmlObject
+{
+  DocumentFactory<ItemAttachmentType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemattachmenttypee627type");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ItemAttachmentData" element
-     */
-    byte[] getItemAttachmentData();
+  /**
+   * Gets the "ItemAttachmentData" element
+   */
+  byte[] getItemAttachmentData();
 
-    /**
-     * Gets (as xml) the "ItemAttachmentData" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDataType xgetItemAttachmentData();
+  /**
+   * Sets the "ItemAttachmentData" element
+   */
+  void setItemAttachmentData(byte[] itemAttachmentData);
 
-    /**
-     * True if has "ItemAttachmentData" element
-     */
-    boolean isSetItemAttachmentData();
+  /**
+   * Gets (as xml) the "ItemAttachmentData" element
+   */
+  ItemAttachmentDataType xgetItemAttachmentData();
 
-    /**
-     * Sets the "ItemAttachmentData" element
-     */
-    void setItemAttachmentData(byte[] itemAttachmentData);
+  /**
+   * True if has "ItemAttachmentData" element
+   */
+  boolean isSetItemAttachmentData();
 
-    /**
-     * Sets (as xml) the "ItemAttachmentData" element
-     */
-    void xsetItemAttachmentData(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDataType itemAttachmentData);
+  /**
+   * Sets (as xml) the "ItemAttachmentData" element
+   */
+  void xsetItemAttachmentData(ItemAttachmentDataType itemAttachmentData);
 
-    /**
-     * Unsets the "ItemAttachmentData" element
-     */
-    void unsetItemAttachmentData();
+  /**
+   * Unsets the "ItemAttachmentData" element
+   */
+  void unsetItemAttachmentData();
 
-    /**
-     * Gets the "id" attribute
-     */
-    java.lang.String getId();
+  /**
+   * Gets the "id" attribute
+   */
+  String getId();
 
-    /**
-     * Gets (as xml) the "id" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId();
+  /**
+   * Sets the "id" attribute
+   */
+  void setId(String id);
 
-    /**
-     * Sets the "id" attribute
-     */
-    void setId(java.lang.String id);
+  /**
+   * Gets (as xml) the "id" attribute
+   */
+  UUIDType xgetId();
 
-    /**
-     * Sets (as xml) the "id" attribute
-     */
-    void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id);
+  /**
+   * Sets (as xml) the "id" attribute
+   */
+  void xsetId(UUIDType id);
 
-    /**
-     * Gets the "description" attribute
-     */
-    java.lang.String getDescription();
+  /**
+   * Gets the "description" attribute
+   */
+  String getDescription();
 
-    /**
-     * Gets (as xml) the "description" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDescriptionType xgetDescription();
+  /**
+   * Sets the "description" attribute
+   */
+  void setDescription(String description);
 
-    /**
-     * Sets the "description" attribute
-     */
-    void setDescription(java.lang.String description);
+  /**
+   * Gets (as xml) the "description" attribute
+   */
+  ItemAttachmentDescriptionType xgetDescription();
 
-    /**
-     * Sets (as xml) the "description" attribute
-     */
-    void xsetDescription(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDescriptionType description);
+  /**
+   * Sets (as xml) the "description" attribute
+   */
+  void xsetDescription(ItemAttachmentDescriptionType description);
 
-    /**
-     * Gets the "mediaType" attribute
-     */
-    java.lang.String getMediaType();
+  /**
+   * Gets the "mediaType" attribute
+   */
+  String getMediaType();
 
-    /**
-     * Gets (as xml) the "mediaType" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.MediaType xgetMediaType();
+  /**
+   * Sets the "mediaType" attribute
+   */
+  void setMediaType(String mediaType);
 
-    /**
-     * Sets the "mediaType" attribute
-     */
-    void setMediaType(java.lang.String mediaType);
+  /**
+   * Gets (as xml) the "mediaType" attribute
+   */
+  MediaType xgetMediaType();
 
-    /**
-     * Sets (as xml) the "mediaType" attribute
-     */
-    void xsetMediaType(com.io7m.cardant.protocol.inventory.v1.beans.MediaType mediaType);
+  /**
+   * Sets (as xml) the "mediaType" attribute
+   */
+  void xsetMediaType(MediaType mediaType);
 
-    /**
-     * Gets the "relation" attribute
-     */
-    java.lang.String getRelation();
+  /**
+   * Gets the "relation" attribute
+   */
+  String getRelation();
 
-    /**
-     * Gets (as xml) the "relation" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.RelationType xgetRelation();
+  /**
+   * Sets the "relation" attribute
+   */
+  void setRelation(String relation);
 
-    /**
-     * Sets the "relation" attribute
-     */
-    void setRelation(java.lang.String relation);
+  /**
+   * Gets (as xml) the "relation" attribute
+   */
+  RelationType xgetRelation();
 
-    /**
-     * Sets (as xml) the "relation" attribute
-     */
-    void xsetRelation(com.io7m.cardant.protocol.inventory.v1.beans.RelationType relation);
+  /**
+   * Sets (as xml) the "relation" attribute
+   */
+  void xsetRelation(RelationType relation);
 
-    /**
-     * Gets the "size" attribute
-     */
-    java.math.BigInteger getSize();
+  /**
+   * Gets the "size" attribute
+   */
+  BigInteger getSize();
 
-    /**
-     * Gets (as xml) the "size" attribute
-     */
-    org.apache.xmlbeans.XmlUnsignedLong xgetSize();
+  /**
+   * Sets the "size" attribute
+   */
+  void setSize(BigInteger size);
 
-    /**
-     * Sets the "size" attribute
-     */
-    void setSize(java.math.BigInteger size);
+  /**
+   * Gets (as xml) the "size" attribute
+   */
+  XmlUnsignedLong xgetSize();
 
-    /**
-     * Sets (as xml) the "size" attribute
-     */
-    void xsetSize(org.apache.xmlbeans.XmlUnsignedLong size);
+  /**
+   * Sets (as xml) the "size" attribute
+   */
+  void xsetSize(XmlUnsignedLong size);
 
-    /**
-     * Gets the "hashAlgorithm" attribute
-     */
-    java.lang.String getHashAlgorithm();
+  /**
+   * Gets the "hashAlgorithm" attribute
+   */
+  String getHashAlgorithm();
 
-    /**
-     * Gets (as xml) the "hashAlgorithm" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.HashAlgorithmType xgetHashAlgorithm();
+  /**
+   * Sets the "hashAlgorithm" attribute
+   */
+  void setHashAlgorithm(String hashAlgorithm);
 
-    /**
-     * Sets the "hashAlgorithm" attribute
-     */
-    void setHashAlgorithm(java.lang.String hashAlgorithm);
+  /**
+   * Gets (as xml) the "hashAlgorithm" attribute
+   */
+  HashAlgorithmType xgetHashAlgorithm();
 
-    /**
-     * Sets (as xml) the "hashAlgorithm" attribute
-     */
-    void xsetHashAlgorithm(com.io7m.cardant.protocol.inventory.v1.beans.HashAlgorithmType hashAlgorithm);
+  /**
+   * Sets (as xml) the "hashAlgorithm" attribute
+   */
+  void xsetHashAlgorithm(HashAlgorithmType hashAlgorithm);
 
-    /**
-     * Gets the "hashValue" attribute
-     */
-    java.lang.String getHashValue();
+  /**
+   * Gets the "hashValue" attribute
+   */
+  String getHashValue();
 
-    /**
-     * Gets (as xml) the "hashValue" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.HashValueType xgetHashValue();
+  /**
+   * Sets the "hashValue" attribute
+   */
+  void setHashValue(String hashValue);
 
-    /**
-     * Sets the "hashValue" attribute
-     */
-    void setHashValue(java.lang.String hashValue);
+  /**
+   * Gets (as xml) the "hashValue" attribute
+   */
+  HashValueType xgetHashValue();
 
-    /**
-     * Sets (as xml) the "hashValue" attribute
-     */
-    void xsetHashValue(com.io7m.cardant.protocol.inventory.v1.beans.HashValueType hashValue);
+  /**
+   * Sets (as xml) the "hashValue" attribute
+   */
+  void xsetHashValue(HashValueType hashValue);
 }

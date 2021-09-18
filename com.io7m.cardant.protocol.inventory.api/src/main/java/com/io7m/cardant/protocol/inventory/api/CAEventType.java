@@ -20,8 +20,19 @@ import com.io7m.cardant.model.CAIdType;
 
 import java.util.Set;
 
+/**
+ * The base type of events.
+ */
+
 public sealed interface CAEventType extends CAMessageType
 {
+  /**
+   * Data on the server was updated.
+   *
+   * @param updated The list of objects that were updated
+   * @param removed The list of objects that were removed
+   */
+
   record CAEventUpdated(
     Set<CAIdType> updated,
     Set<CAIdType> removed)

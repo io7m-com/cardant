@@ -7,81 +7,97 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.IDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.UUIDType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.SimpleValue;
+import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML IDType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class IDTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.IDType {
-    private static final long serialVersionUID = 1L;
+public class IDTypeImpl extends XmlComplexContentImpl implements
+  IDType
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("", "value"),
+  };
 
-    public IDTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public IDTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "value" attribute
+   */
+  @Override
+  public String getValue()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      SimpleValue target = null;
+      target = (SimpleValue) this.get_store().find_attribute_user(
+        PROPERTY_QNAME[0]);
+      return (target == null) ? null : target.getStringValue();
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("", "value"),
-    };
-
-
-    /**
-     * Gets the "value" attribute
-     */
-    @Override
-    public java.lang.String getValue() {
-        synchronized (monitor()) {
-            check_orphaned();
-            org.apache.xmlbeans.SimpleValue target = null;
-            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
-            return (target == null) ? null : target.getStringValue();
-        }
+  /**
+   * Sets the "value" attribute
+   */
+  @Override
+  public void setValue(final String value)
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      SimpleValue target = null;
+      target = (SimpleValue) this.get_store().find_attribute_user(
+        PROPERTY_QNAME[0]);
+      if (target == null) {
+        target = (SimpleValue) this.get_store().add_attribute_user(
+          PROPERTY_QNAME[0]);
+      }
+      target.setStringValue(value);
     }
+  }
 
-    /**
-     * Gets (as xml) the "value" attribute
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetValue() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().find_attribute_user(PROPERTY_QNAME[0]);
-            return target;
-        }
+  /**
+   * Gets (as xml) the "value" attribute
+   */
+  @Override
+  public UUIDType xgetValue()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      UUIDType target = null;
+      target = (UUIDType) this.get_store().find_attribute_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
+  }
 
-    /**
-     * Sets the "value" attribute
-     */
-    @Override
-    public void setValue(java.lang.String value) {
-        synchronized (monitor()) {
-            check_orphaned();
-            org.apache.xmlbeans.SimpleValue target = null;
-            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
-            if (target == null) {
-                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[0]);
-            }
-            target.setStringValue(value);
-        }
+  /**
+   * Sets (as xml) the "value" attribute
+   */
+  @Override
+  public void xsetValue(final UUIDType value)
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      UUIDType target = null;
+      target = (UUIDType) this.get_store().find_attribute_user(
+        PROPERTY_QNAME[0]);
+      if (target == null) {
+        target = (UUIDType) this.get_store().add_attribute_user(
+          PROPERTY_QNAME[0]);
+      }
+      target.set(value);
     }
-
-    /**
-     * Sets (as xml) the "value" attribute
-     */
-    @Override
-    public void xsetValue(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType value) {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().find_attribute_user(PROPERTY_QNAME[0]);
-            if (target == null) {
-                target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().add_attribute_user(PROPERTY_QNAME[0]);
-            }
-            target.set(value);
-        }
-    }
+  }
 }

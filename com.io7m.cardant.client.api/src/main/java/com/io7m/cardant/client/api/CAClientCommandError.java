@@ -16,6 +16,13 @@
 
 package com.io7m.cardant.client.api;
 
+/**
+ * A command failed.
+ *
+ * @param message The error message
+ * @param <T>     The returned value
+ */
+
 public record CAClientCommandError<T>(String message)
   implements CAClientCommandResultType<T>
 {

@@ -7,22 +7,29 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
+import com.io7m.cardant.protocol.inventory.v1.beans.HashValueType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.JavaStringHolderEx;
 
 /**
  * An XML HashValueType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.HashValueType.
  */
-public class HashValueTypeImpl extends org.apache.xmlbeans.impl.values.JavaStringHolderEx implements com.io7m.cardant.protocol.inventory.v1.beans.HashValueType {
-    private static final long serialVersionUID = 1L;
+public class HashValueTypeImpl extends JavaStringHolderEx implements
+  HashValueType
+{
+  private static final long serialVersionUID = 1L;
 
-    public HashValueTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType, false);
-    }
+  public HashValueTypeImpl(final SchemaType sType)
+  {
+    super(sType, false);
+  }
 
-    protected HashValueTypeImpl(org.apache.xmlbeans.SchemaType sType, boolean b) {
-        super(sType, b);
-    }
+  protected HashValueTypeImpl(
+    final SchemaType sType,
+    final boolean b)
+  {
+    super(sType, b);
+  }
 }

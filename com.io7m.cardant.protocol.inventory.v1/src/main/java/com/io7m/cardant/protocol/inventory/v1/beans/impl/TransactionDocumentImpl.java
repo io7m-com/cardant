@@ -8,57 +8,72 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.TransactionDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.TransactionType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one Transaction(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class TransactionDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.MessageDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.TransactionDocument {
-    private static final long serialVersionUID = 1L;
+public class TransactionDocumentImpl extends MessageDocumentImpl implements
+  TransactionDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "Transaction"),
+  };
 
-    public TransactionDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public TransactionDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "Transaction" element
+   */
+  @Override
+  public TransactionType getTransaction()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      TransactionType target = null;
+      target = (TransactionType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "Transaction"),
-    };
+  /**
+   * Sets the "Transaction" element
+   */
+  @Override
+  public void setTransaction(final TransactionType transaction)
+  {
+    this.generatedSetterHelperImpl(
+      transaction,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "Transaction" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.TransactionType getTransaction() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.TransactionType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.TransactionType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "Transaction" element
+   */
+  @Override
+  public TransactionType addNewTransaction()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      TransactionType target = null;
+      target = (TransactionType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "Transaction" element
-     */
-    @Override
-    public void setTransaction(com.io7m.cardant.protocol.inventory.v1.beans.TransactionType transaction) {
-        generatedSetterHelperImpl(transaction, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "Transaction" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.TransactionType addNewTransaction() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.TransactionType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.TransactionType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

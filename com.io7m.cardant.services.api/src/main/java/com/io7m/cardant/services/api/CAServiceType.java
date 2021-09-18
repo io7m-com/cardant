@@ -16,6 +16,10 @@
 
 package com.io7m.cardant.services.api;
 
+/**
+ * The base type of services.
+ */
+
 public interface CAServiceType
 {
 

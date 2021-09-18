@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandLocationGetDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "commandlocationget6cb1doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandLocationGetDocument extends CommandDocument
+{
+  DocumentFactory<CommandLocationGetDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandlocationget6cb1doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandLocationGet" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetType getCommandLocationGet();
+  /**
+   * Gets the "CommandLocationGet" element
+   */
+  CommandLocationGetType getCommandLocationGet();
 
-    /**
-     * Sets the "CommandLocationGet" element
-     */
-    void setCommandLocationGet(com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetType commandLocationGet);
+  /**
+   * Sets the "CommandLocationGet" element
+   */
+  void setCommandLocationGet(CommandLocationGetType commandLocationGet);
 
-    /**
-     * Appends and returns a new empty "CommandLocationGet" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetType addNewCommandLocationGet();
+  /**
+   * Appends and returns a new empty "CommandLocationGet" element
+   */
+  CommandLocationGetType addNewCommandLocationGet();
 }

@@ -8,57 +8,72 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ResponseItemUpdate(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ResponseItemUpdateDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateDocument {
-    private static final long serialVersionUID = 1L;
+public class ResponseItemUpdateDocumentImpl extends ResponseDocumentImpl implements
+  ResponseItemUpdateDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemUpdate"),
+  };
 
-    public ResponseItemUpdateDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public ResponseItemUpdateDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "ResponseItemUpdate" element
+   */
+  @Override
+  public ResponseItemUpdateType getResponseItemUpdate()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ResponseItemUpdateType target = null;
+      target = (ResponseItemUpdateType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemUpdate"),
-    };
+  /**
+   * Sets the "ResponseItemUpdate" element
+   */
+  @Override
+  public void setResponseItemUpdate(final ResponseItemUpdateType responseItemUpdate)
+  {
+    this.generatedSetterHelperImpl(
+      responseItemUpdate,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "ResponseItemUpdate" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType getResponseItemUpdate() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "ResponseItemUpdate" element
+   */
+  @Override
+  public ResponseItemUpdateType addNewResponseItemUpdate()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ResponseItemUpdateType target = null;
+      target = (ResponseItemUpdateType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "ResponseItemUpdate" element
-     */
-    @Override
-    public void setResponseItemUpdate(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType responseItemUpdate) {
-        generatedSetterHelperImpl(responseItemUpdate, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "ResponseItemUpdate" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType addNewResponseItemUpdate() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

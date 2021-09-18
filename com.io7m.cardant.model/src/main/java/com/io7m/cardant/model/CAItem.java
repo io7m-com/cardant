@@ -81,17 +81,31 @@ public record CAItem(
     );
   }
 
+  /**
+   * @return The value of the description metadata, if present
+   */
+
   public Optional<String> description()
   {
     return Optional.ofNullable(this.metadata.get("Description"))
       .map(CAItemMetadata::value);
   }
 
+  /**
+   * @return The value of the description metadata, or an empty string
+   */
+
   public String descriptionOrEmpty()
   {
     return this.description()
       .orElse("");
   }
+
+  /**
+   * @param relation The relation
+   *
+   * @return The attachments with the given relation
+   */
 
   public Stream<CAItemAttachment> attachmentsWithRelation(
     final String relation)
@@ -102,6 +116,12 @@ public record CAItem(
       .filter(attachment -> Objects.equals(attachment.relation(), relation));
   }
 
+  /**
+   * @param relation The relation
+   *
+   * @return The first attachment with the given relation
+   */
+
   public Optional<CAItemAttachment> firstAttachmentWithRelation(
     final String relation)
   {
@@ -109,6 +129,12 @@ public record CAItem(
     return this.attachmentsWithRelation(relation)
       .findFirst();
   }
+
+  /**
+   * @param relation The relation
+   *
+   * @return {@code true} if any attachment exists with the given relation
+   */
 
   public boolean hasAttachmentWithRelation(
     final String relation)

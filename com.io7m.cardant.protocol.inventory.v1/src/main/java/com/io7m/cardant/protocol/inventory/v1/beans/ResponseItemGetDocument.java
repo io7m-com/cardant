@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ResponseItemGetDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "responseitemget8557doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ResponseItemGetDocument extends ResponseDocument
+{
+  DocumentFactory<ResponseItemGetDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "responseitemget8557doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ResponseItemGet" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType getResponseItemGet();
+  /**
+   * Gets the "ResponseItemGet" element
+   */
+  ResponseItemGetType getResponseItemGet();
 
-    /**
-     * Sets the "ResponseItemGet" element
-     */
-    void setResponseItemGet(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType responseItemGet);
+  /**
+   * Sets the "ResponseItemGet" element
+   */
+  void setResponseItemGet(ResponseItemGetType responseItemGet);
 
-    /**
-     * Appends and returns a new empty "ResponseItemGet" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType addNewResponseItemGet();
+  /**
+   * Appends and returns a new empty "ResponseItemGet" element
+   */
+  ResponseItemGetType addNewResponseItemGet();
 }

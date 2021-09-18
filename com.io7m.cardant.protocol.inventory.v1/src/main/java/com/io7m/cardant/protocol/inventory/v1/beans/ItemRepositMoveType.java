@@ -7,10 +7,12 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlUnsignedLong;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
+
+import java.math.BigInteger;
 
 
 /**
@@ -18,88 +20,91 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemRepositMoveType extends com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositMoveType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemrepositmovetype2f65type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemRepositMoveType extends ItemRepositType
+{
+  DocumentFactory<ItemRepositMoveType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemrepositmovetype2f65type");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "item" attribute
-     */
-    java.lang.String getItem();
+  /**
+   * Gets the "item" attribute
+   */
+  String getItem();
 
-    /**
-     * Gets (as xml) the "item" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetItem();
+  /**
+   * Sets the "item" attribute
+   */
+  void setItem(String item);
 
-    /**
-     * Sets the "item" attribute
-     */
-    void setItem(java.lang.String item);
+  /**
+   * Gets (as xml) the "item" attribute
+   */
+  UUIDType xgetItem();
 
-    /**
-     * Sets (as xml) the "item" attribute
-     */
-    void xsetItem(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType item);
+  /**
+   * Sets (as xml) the "item" attribute
+   */
+  void xsetItem(UUIDType item);
 
-    /**
-     * Gets the "fromLocation" attribute
-     */
-    java.lang.String getFromLocation();
+  /**
+   * Gets the "fromLocation" attribute
+   */
+  String getFromLocation();
 
-    /**
-     * Gets (as xml) the "fromLocation" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetFromLocation();
+  /**
+   * Sets the "fromLocation" attribute
+   */
+  void setFromLocation(String fromLocation);
 
-    /**
-     * Sets the "fromLocation" attribute
-     */
-    void setFromLocation(java.lang.String fromLocation);
+  /**
+   * Gets (as xml) the "fromLocation" attribute
+   */
+  UUIDType xgetFromLocation();
 
-    /**
-     * Sets (as xml) the "fromLocation" attribute
-     */
-    void xsetFromLocation(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType fromLocation);
+  /**
+   * Sets (as xml) the "fromLocation" attribute
+   */
+  void xsetFromLocation(UUIDType fromLocation);
 
-    /**
-     * Gets the "toLocation" attribute
-     */
-    java.lang.String getToLocation();
+  /**
+   * Gets the "toLocation" attribute
+   */
+  String getToLocation();
 
-    /**
-     * Gets (as xml) the "toLocation" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetToLocation();
+  /**
+   * Sets the "toLocation" attribute
+   */
+  void setToLocation(String toLocation);
 
-    /**
-     * Sets the "toLocation" attribute
-     */
-    void setToLocation(java.lang.String toLocation);
+  /**
+   * Gets (as xml) the "toLocation" attribute
+   */
+  UUIDType xgetToLocation();
 
-    /**
-     * Sets (as xml) the "toLocation" attribute
-     */
-    void xsetToLocation(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType toLocation);
+  /**
+   * Sets (as xml) the "toLocation" attribute
+   */
+  void xsetToLocation(UUIDType toLocation);
 
-    /**
-     * Gets the "count" attribute
-     */
-    java.math.BigInteger getCount();
+  /**
+   * Gets the "count" attribute
+   */
+  BigInteger getCount();
 
-    /**
-     * Gets (as xml) the "count" attribute
-     */
-    org.apache.xmlbeans.XmlUnsignedLong xgetCount();
+  /**
+   * Sets the "count" attribute
+   */
+  void setCount(BigInteger count);
 
-    /**
-     * Sets the "count" attribute
-     */
-    void setCount(java.math.BigInteger count);
+  /**
+   * Gets (as xml) the "count" attribute
+   */
+  XmlUnsignedLong xgetCount();
 
-    /**
-     * Sets (as xml) the "count" attribute
-     */
-    void xsetCount(org.apache.xmlbeans.XmlUnsignedLong count);
+  /**
+   * Sets (as xml) the "count" attribute
+   */
+  void xsetCount(XmlUnsignedLong count);
 }

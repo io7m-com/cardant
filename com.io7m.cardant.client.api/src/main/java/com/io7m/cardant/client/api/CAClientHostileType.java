@@ -18,9 +18,25 @@ package com.io7m.cardant.client.api;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A hostile client.
+ */
+
 public interface CAClientHostileType extends CAClientType
 {
+  /**
+   * Send garbage to the server.
+   *
+   * @return The command result
+   */
+
   CompletableFuture<CAClientCommandResultType<Void>> garbageCommand();
+
+  /**
+   * Send an invalid command to the server.
+   *
+   * @return The command result
+   */
 
   CompletableFuture<CAClientCommandResultType<Void>> invalidCommand();
 }
