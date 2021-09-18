@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface ResponseItemListType extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemListType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s2F5B3CB3EEF95D40ACF30F098DD12ED2.TypeSystemHolder.typeSystem, "responseitemlisttypefccbtype");
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemListType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "responseitemlisttypefccbtype");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 

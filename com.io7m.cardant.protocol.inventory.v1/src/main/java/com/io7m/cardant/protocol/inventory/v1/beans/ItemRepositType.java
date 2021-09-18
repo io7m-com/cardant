@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface ItemRepositType extends org.apache.xmlbeans.XmlObject {
-    AbstractDocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType> Factory = new AbstractDocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s2F5B3CB3EEF95D40ACF30F098DD12ED2.TypeSystemHolder.typeSystem, "itemreposittyped4b6type");
+    AbstractDocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType> Factory = new AbstractDocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "itemreposittyped4b6type");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 }

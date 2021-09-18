@@ -28,6 +28,8 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageServices;
@@ -489,6 +491,30 @@ public final class CAMessageServicesV1Test
   {
     final var message =
       new CAResponseTagList(new CATags(ITEM_0.tags()));
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testEventUpdated()
+    throws Exception
+  {
+    final var message =
+      new CAEventType.CAEventUpdated(
+        Set.of(
+          CAItemID.random(),
+          CAItemAttachmentID.random(),
+          CALocationID.random(),
+          CATagID.random(),
+          CAUserID.random()
+        ),
+        Set.of(
+          CAItemID.random(),
+          CAItemAttachmentID.random(),
+          CALocationID.random(),
+          CATagID.random(),
+          CAUserID.random()
+        )
+      );
     assertEquals(message, this.roundTrip(message));
   }
 

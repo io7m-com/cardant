@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface CommandTagsPutType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s2F5B3CB3EEF95D40ACF30F098DD12ED2.TypeSystemHolder.typeSystem, "commandtagsputtypea972type");
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "commandtagsputtypea972type");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 

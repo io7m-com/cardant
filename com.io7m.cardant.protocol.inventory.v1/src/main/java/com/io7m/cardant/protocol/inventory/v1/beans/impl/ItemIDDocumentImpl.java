@@ -32,11 +32,11 @@ public class ItemIDDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.b
      * Gets the "ItemID" element
      */
     @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.IDType getItemID() {
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType getItemID() {
         synchronized (monitor()) {
             check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
             return (target == null) ? null : target;
         }
     }
@@ -45,7 +45,7 @@ public class ItemIDDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.b
      * Sets the "ItemID" element
      */
     @Override
-    public void setItemID(com.io7m.cardant.protocol.inventory.v1.beans.IDType itemID) {
+    public void setItemID(com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType itemID) {
         generatedSetterHelperImpl(itemID, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
     }
 
@@ -53,11 +53,11 @@ public class ItemIDDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.b
      * Appends and returns a new empty "ItemID" element
      */
     @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.IDType addNewItemID() {
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType addNewItemID() {
         synchronized (monitor()) {
             check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType)get_store().add_element_user(PROPERTY_QNAME[0]);
             return target;
         }
     }

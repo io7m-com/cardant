@@ -17,12 +17,17 @@
 package com.io7m.cardant.protocol.inventory.v1;
 
 import com.io7m.anethum.common.SerializeException;
+import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATagID;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerType;
@@ -44,15 +49,19 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePassword
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandType;
+import com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.IDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType;
+import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentPutDocument;
@@ -68,14 +77,15 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLoginUsernamePasswor
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsPutDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.TagIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TransactionDocument;
-import com.io7m.junreachable.UnimplementedCodeException;
+import com.io7m.cardant.protocol.inventory.v1.beans.UserIDType;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.w3c.dom.Element;
+import org.apache.xmlbeans.XmlTokenSource;
 
 import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
@@ -108,6 +118,7 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLog
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
+import static com.io7m.cardant.protocol.inventory.api.CAEventType.CAEventUpdated;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
@@ -192,7 +203,7 @@ public final class CA1MessageSerializer
       return this.transformCommand(command);
     }
     if (value instanceof CAEventType event) {
-      return transformEvent(event);
+      return this.transformEvent(event);
     }
     if (value instanceof CATransaction transaction) {
       return this.transformTransaction(transaction);
@@ -217,6 +228,15 @@ public final class CA1MessageSerializer
       commandList.add(serialized);
     }
 
+    fixCorrectElementNames(commandList);
+    fixCorrectPrefixesAndUnusedAttributes(document);
+    return document;
+  }
+
+  private static <T extends XmlObject>
+  void fixCorrectElementNames(
+    final Iterable<T> commandList)
+  {
     /*
      * Use explicit element names rather than the abstract element name
      * and an xsi:type attribute.
@@ -238,7 +258,11 @@ public final class CA1MessageSerializer
         cursor.dispose();
       }
     }
+  }
 
+  private static void fixCorrectPrefixesAndUnusedAttributes(
+    final XmlTokenSource document)
+  {
     /*
      * Use consistent prefixes everywhere, and remove all xsi:type
      * attributes.
@@ -271,14 +295,85 @@ public final class CA1MessageSerializer
       cursor.dispose();
       cursorStart.dispose();
     }
+  }
 
+  private XmlObject transformEvent(
+    final CAEventType event)
+  {
+    if (event instanceof CAEventUpdated e) {
+      return this.transformEventUpdated(e);
+    }
+
+    throw new UnreachableCodeException();
+  }
+
+  private XmlObject transformEventUpdated(
+    final CAEventUpdated e)
+  {
+    final var document =
+      EventUpdatedDocument.Factory.newInstance(this.options);
+    final var event =
+      document.addNewEventUpdated();
+
+    final var updateIds =
+      event.addNewUpdated().getIDList();
+
+    for (final var id : e.updated()) {
+      updateIds.add(this.transformId(id));
+    }
+
+    final var removeIds =
+      event.addNewRemoved().getIDList();
+
+    for (final var id : e.removed()) {
+      removeIds.add(this.transformId(id));
+    }
+
+    fixCorrectElementNames(updateIds);
+    fixCorrectElementNames(removeIds);
+    fixCorrectPrefixesAndUnusedAttributes(document);
     return document;
   }
 
-  private static XmlObject transformEvent(
-    final CAEventType event)
+  private IDType transformId(
+    final CAIdType id)
   {
-    throw new UnimplementedCodeException();
+    if (id instanceof CAItemID inId) {
+      final var result =
+        ItemIDType.Factory.newInstance(this.options);
+      result.setValue(inId.id().toString());
+      return result;
+    }
+
+    if (id instanceof CAItemAttachmentID inId) {
+      final var result =
+        ItemAttachmentIDType.Factory.newInstance(this.options);
+      result.setValue(inId.id().toString());
+      return result;
+    }
+
+    if (id instanceof CALocationID inId) {
+      final var result =
+        LocationIDType.Factory.newInstance(this.options);
+      result.setValue(inId.id().toString());
+      return result;
+    }
+
+    if (id instanceof CATagID inId) {
+      final var result =
+        TagIDType.Factory.newInstance(this.options);
+      result.setValue(inId.id().toString());
+      return result;
+    }
+
+    if (id instanceof CAUserID inId) {
+      final var result =
+        UserIDType.Factory.newInstance(this.options);
+      result.setValue(inId.id().toString());
+      return result;
+    }
+
+    throw new UnreachableCodeException();
   }
 
   private CommandDocument transformCommand(

@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType.
  */
 public interface LocationNameType extends org.apache.xmlbeans.XmlNormalizedString {
-    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s2F5B3CB3EEF95D40ACF30F098DD12ED2.TypeSystemHolder.typeSystem, "locationnametypededdtype");
+    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "locationnametypededdtype");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 }

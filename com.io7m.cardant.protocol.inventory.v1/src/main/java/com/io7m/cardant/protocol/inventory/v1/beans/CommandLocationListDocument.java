@@ -20,7 +20,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface CommandLocationListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s2F5B3CB3EEF95D40ACF30F098DD12ED2.TypeSystemHolder.typeSystem, "commandlocationlistef3bdoctype");
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "commandlocationlistef3bdoctype");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 

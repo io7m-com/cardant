@@ -19,6 +19,7 @@ package com.io7m.cardant.protocol.inventory.v1;
 import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.ParseStatus;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
@@ -33,8 +34,10 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
+import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageParserType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
@@ -56,8 +59,12 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandType;
 import com.io7m.cardant.protocol.inventory.v1.beans.EventType;
+import com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType;
+import com.io7m.cardant.protocol.inventory.v1.beans.IDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemType;
@@ -65,6 +72,7 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType;
+import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.MessageType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
@@ -83,9 +91,11 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseType;
+import com.io7m.cardant.protocol.inventory.v1.beans.TagIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TransactionType;
+import com.io7m.cardant.protocol.inventory.v1.beans.UserIDType;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.apache.xmlbeans.XmlError;
@@ -102,6 +112,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -479,10 +491,56 @@ public final class CA1MessageParser implements CAMessageParserType
     return new CAResponseLoginUsernamePassword();
   }
 
-  private static CAMessageType parseEvent(
+  private static CAEventType parseEvent(
     final EventType event)
   {
+    if (event instanceof EventUpdatedType u) {
+      return parseEventUpdated(u);
+    }
+
     throw new IllegalStateException("Unexpected message: " + event);
+  }
+
+  private static CAEventType parseEventUpdated(
+    final EventUpdatedType u)
+  {
+    final var updatedIds =
+      u.getUpdated().getIDList();
+    final var removedIds =
+      u.getRemoved().getIDList();
+
+    return new CAEventType.CAEventUpdated(
+      transformIds(updatedIds),
+      transformIds(removedIds)
+    );
+  }
+
+  private static Set<CAIdType> transformIds(
+    final List<IDType> ids)
+  {
+    final var result = new HashSet<CAIdType>(ids.size());
+    for (final var id : ids) {
+      result.add(transformId(id));
+    }
+    return result;
+  }
+
+  private static CAIdType transformId(
+    final IDType id)
+  {
+    if (id instanceof ItemIDType) {
+      return CAItemID.of(id.getValue());
+    } else if (id instanceof ItemAttachmentIDType) {
+      return CAItemAttachmentID.of(id.getValue());
+    } else if (id instanceof UserIDType) {
+      return CAUserID.of(id.getValue());
+    } else if (id instanceof LocationIDType) {
+      return CALocationID.of(id.getValue());
+    } else if (id instanceof TagIDType) {
+      return CATagID.of(id.getValue());
+    } else {
+      throw new UnreachableCodeException();
+    }
   }
 
   private static CACommandType parseCommand(
@@ -660,7 +718,7 @@ public final class CA1MessageParser implements CAMessageParserType
       return new CAListLocationExact(
         CALocationID.of(exact.getLocation()));
     }
-    if (behaviour instanceof ListLocationsAllType all) {
+    if (behaviour instanceof ListLocationsAllType) {
       return new CAListLocationsAll();
     }
     if (behaviour instanceof ListLocationWithDescendantsType with) {

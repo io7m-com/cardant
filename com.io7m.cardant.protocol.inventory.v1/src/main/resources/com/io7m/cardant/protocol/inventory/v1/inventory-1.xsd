@@ -423,7 +423,7 @@
 
   <xsd:element name="ItemID"
                substitutionGroup="iv1:ID"
-               type="iv1:IDType"/>
+               type="iv1:ItemIDType"/>
 
   <xsd:complexType name="ItemAttachmentIDType">
     <xsd:complexContent>
@@ -1287,7 +1287,8 @@
                type="iv1:ResponseErrorDetailType"/>
 
   <xsd:complexType name="UpdatedType">
-    <xsd:sequence>
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
       <xsd:element ref="iv1:ID"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -1296,7 +1297,8 @@
                type="iv1:UpdatedType"/>
 
   <xsd:complexType name="RemovedType">
-    <xsd:sequence>
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
       <xsd:element ref="iv1:ID"/>
     </xsd:sequence>
   </xsd:complexType>

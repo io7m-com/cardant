@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.TagNameType.
  */
 public interface TagNameType extends org.apache.xmlbeans.XmlString {
-    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.TagNameType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s2F5B3CB3EEF95D40ACF30F098DD12ED2.TypeSystemHolder.typeSystem, "tagnametypeb10atype");
+    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.TagNameType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder.typeSystem, "tagnametypeb10atype");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 }
