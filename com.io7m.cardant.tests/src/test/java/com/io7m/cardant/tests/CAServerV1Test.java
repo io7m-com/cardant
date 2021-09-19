@@ -25,13 +25,8 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItems;
-import com.io7m.cardant.model.CALocation;
-import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
@@ -86,15 +81,10 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationGet;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
@@ -111,7 +101,6 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseL
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsPut;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTransaction;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -349,7 +338,7 @@ public final class CAServerV1Test
     assertEquals(200, response.statusCode());
     assertEquals(
       new CATags(Collections.emptySortedSet()),
-      message.tags()
+      message.data()
     );
   }
 
@@ -379,7 +368,7 @@ public final class CAServerV1Test
       (CAResponseItemList) this.parse(response);
 
     assertEquals(200, response.statusCode());
-    assertEquals(new CAItems(Set.of()), message.items());
+    assertEquals(new CAItems(Set.of()), message.data());
   }
 
   /**
@@ -415,7 +404,7 @@ public final class CAServerV1Test
         (CAResponseTagsPut) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(tags, message.tags());
+      assertEquals(tags, message.data());
     }
 
     {
@@ -425,7 +414,7 @@ public final class CAServerV1Test
         (CAResponseTagList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(tags, message.tags());
+      assertEquals(tags, message.data());
     }
 
     {
@@ -435,7 +424,7 @@ public final class CAServerV1Test
         (CAResponseTagsDelete) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(tags, message.tags());
+      assertEquals(tags, message.data());
     }
 
     {
@@ -447,7 +436,7 @@ public final class CAServerV1Test
       assertEquals(200, response.statusCode());
       assertEquals(
         new CATags(Collections.emptySortedSet()),
-        message.tags());
+        message.data());
     }
   }
 
@@ -485,7 +474,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(item0)), message.items());
+      assertEquals(new CAItems(Set.of(item0)), message.data());
     }
 
     final var item1 =
@@ -509,7 +498,7 @@ public final class CAServerV1Test
         (CAResponseItemUpdate) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(item1, message.item());
+      assertEquals(item1, message.data());
     }
 
     {
@@ -519,7 +508,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(item1)), message.items());
+      assertEquals(new CAItems(Set.of(item1)), message.data());
     }
 
     {
@@ -531,7 +520,7 @@ public final class CAServerV1Test
         (CAResponseItemRemove) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(item0.id(), message.id());
+      assertEquals(item0.id(), message.data());
     }
 
     {
@@ -541,7 +530,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of()), message.items());
+      assertEquals(new CAItems(Set.of()), message.data());
     }
   }
 
@@ -577,7 +566,7 @@ public final class CAServerV1Test
         (CAResponseItemGet) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(item0, message.item());
+      assertEquals(item0, message.data());
     }
   }
 
@@ -839,7 +828,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of()), message.items());
+      assertEquals(new CAItems(Set.of()), message.data());
     }
 
     final var item0 = CAItem.create();
@@ -868,7 +857,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of()), message.items());
+      assertEquals(new CAItems(Set.of()), message.data());
     }
   }
 
@@ -937,7 +926,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(itemWith)), message.items());
+      assertEquals(new CAItems(Set.of(itemWith)), message.data());
     }
 
     {
@@ -958,7 +947,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(item0)), message.items());
+      assertEquals(new CAItems(Set.of(item0)), message.data());
     }
   }
 
@@ -1021,7 +1010,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(item0)), message.items());
+      assertEquals(new CAItems(Set.of(item0)), message.data());
     }
   }
 
@@ -1090,7 +1079,7 @@ public final class CAServerV1Test
         (CAResponseItemList) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(itemWith)), message.items());
+      assertEquals(new CAItems(Set.of(itemWith)), message.data());
     }
 
     final var metadataRemove = new TreeMap<String, CAItemMetadata>();
@@ -1138,7 +1127,7 @@ public final class CAServerV1Test
       assertEquals(200, response.statusCode());
       assertEquals(
         new CAItems(Set.of(itemWithRemoved)),
-        message.items());
+        message.data());
     }
   }
 

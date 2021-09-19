@@ -33,6 +33,7 @@ module com.io7m.cardant.client.vanilla
   requires com.io7m.cardant.protocol.inventory.v1;
   requires com.io7m.cardant.protocol.versioning;
   requires com.io7m.jaffirm.core;
+  requires com.io7m.jcip.annotations;
   requires com.io7m.junreachable.core;
   requires com.io7m.jxtrand.vanilla;
   requires java.net.http;

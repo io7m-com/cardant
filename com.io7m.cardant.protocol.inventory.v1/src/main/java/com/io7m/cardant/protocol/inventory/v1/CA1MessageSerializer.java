@@ -657,7 +657,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseTagsDelete();
 
-    response.setTags(this.transformTags(r.tags().tags()));
+    response.setTags(this.transformTags(r.data().tags()));
     return document;
   }
 
@@ -669,7 +669,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseTagList();
 
-    response.setTags(this.transformTags(r.tags().tags()));
+    response.setTags(this.transformTags(r.data().tags()));
     return document;
   }
 
@@ -681,7 +681,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseTagsPut();
 
-    response.setTags(this.transformTags(r.tags().tags()));
+    response.setTags(this.transformTags(r.data().tags()));
     return document;
   }
 
@@ -693,7 +693,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemRemove();
 
-    response.setId(r.id().id().toString());
+    response.setId(r.data().id().toString());
     return document;
   }
 
@@ -705,7 +705,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemCreate();
 
-    response.setItem(this.transformItem(r.item()));
+    response.setItem(this.transformItem(r.data()));
     return document;
   }
 
@@ -717,7 +717,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemUpdate();
 
-    response.setItem(this.transformItem(r.item()));
+    response.setItem(this.transformItem(r.data()));
     return document;
   }
 
@@ -729,7 +729,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemGet();
 
-    response.setItem(this.transformItem(r.item()));
+    response.setItem(this.transformItem(r.data()));
     return document;
   }
 
@@ -741,7 +741,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemAttachmentRemove();
 
-    response.setItem(this.transformItem(r.item()));
+    response.setItem(this.transformItem(r.data()));
     return document;
   }
 
@@ -753,7 +753,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemAttachmentPut();
 
-    response.setItem(this.transformItem(r.item()));
+    response.setItem(this.transformItem(r.data()));
     return document;
   }
 
@@ -765,7 +765,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemMetadataRemove();
 
-    response.setItem(this.transformItem(r.item()));
+    response.setItem(this.transformItem(r.data()));
     return document;
   }
 
@@ -777,7 +777,7 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseItemMetadataPut();
 
-    response.setItem(this.transformItem(r.item()));
+    response.setItem(this.transformItem(r.data()));
     return document;
   }
 
@@ -820,7 +820,7 @@ public final class CA1MessageSerializer
       document.addNewResponseItemList();
 
     final var output = response.getItemList();
-    final var items = r.items().items();
+    final var items = r.data().items();
     for (final var item : items) {
       output.add(this.transformItem(item));
     }

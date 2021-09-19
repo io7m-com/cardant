@@ -35,6 +35,8 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
@@ -149,10 +151,11 @@ public final class CAMainController implements CAServiceType
     Objects.requireNonNull(search, "search");
 
     if (search.isEmpty()) {
-      this.itemAttachmentPredicate = (ignored) -> true;
+      this.itemAttachmentPredicate =
+        (ignored) -> true;
     } else {
-      this.itemAttachmentPredicate = (itemAttachment) -> itemAttachment.matches(
-        search);
+      this.itemAttachmentPredicate =
+        (itemAttachment) -> itemAttachment.matches(search);
     }
 
     this.itemAttachmentList.setPredicate(this.itemAttachmentPredicate);
@@ -254,6 +257,7 @@ public final class CAMainController implements CAServiceType
       new CAPerpetualSubscriber<>(this::onClientEvent);
 
     newClient.events().subscribe(this.clientSubscriber);
+    newClient.itemsList(new CAListLocationsAll());
     return newClient;
   }
 

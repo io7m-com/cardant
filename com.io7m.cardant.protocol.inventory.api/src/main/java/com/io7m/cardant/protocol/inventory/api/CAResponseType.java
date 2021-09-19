@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.protocol.inventory.api;
 
+import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItems;
@@ -31,6 +32,19 @@ import java.util.Objects;
 
 public sealed interface CAResponseType extends CAMessageType
 {
+  /**
+   * The type of responses that return data.
+   */
+
+  sealed interface CAResponseWithElementType extends CAResponseType {
+
+    /**
+     * @return The returned data
+     */
+
+    CAInventoryElementType data();
+  }
+
   /**
    * A command failed.
    *
@@ -67,14 +81,14 @@ public sealed interface CAResponseType extends CAMessageType
   }
 
   /**
-   * @param item The returned item
+   * @param data The returned item
    *
    * @see CACommandType.CACommandItemCreate
    */
 
   record CAResponseItemCreate(
-    CAItem item)
-    implements CAResponseType
+    CAItem data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemCreate
@@ -82,19 +96,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemCreate
     {
-      Objects.requireNonNull(item, "item");
+      Objects.requireNonNull(data, "item");
     }
   }
 
   /**
-   * @param item The returned item
+   * @param data The returned item
    *
    * @see CACommandType.CACommandItemAttachmentRemove
    */
 
   record CAResponseItemAttachmentRemove(
-    CAItem item)
-    implements CAResponseType
+    CAItem data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemAttachmentRemove
@@ -102,19 +116,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemAttachmentRemove
     {
-      Objects.requireNonNull(item, "item");
+      Objects.requireNonNull(data, "item");
     }
   }
 
   /**
-   * @param item The returned item
+   * @param data The returned item
    *
    * @see CACommandType.CACommandItemAttachmentPut
    */
 
   record CAResponseItemAttachmentPut(
-    CAItem item)
-    implements CAResponseType
+    CAItem data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemAttachmentPut
@@ -122,19 +136,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemAttachmentPut
     {
-      Objects.requireNonNull(item, "item");
+      Objects.requireNonNull(data, "item");
     }
   }
 
   /**
-   * @param item The returned item
+   * @param data The returned item
    *
    * @see CACommandType.CACommandItemMetadataPut
    */
 
   record CAResponseItemMetadataPut(
-    CAItem item)
-    implements CAResponseType
+    CAItem data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemMetadataPut
@@ -142,19 +156,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemMetadataPut
     {
-      Objects.requireNonNull(item, "item");
+      Objects.requireNonNull(data, "item");
     }
   }
 
   /**
-   * @param item The returned item
+   * @param data The returned item
    *
    * @see CACommandType.CACommandItemMetadataRemove
    */
 
   record CAResponseItemMetadataRemove(
-    CAItem item)
-    implements CAResponseType
+    CAItem data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemMetadataRemove
@@ -162,19 +176,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemMetadataRemove
     {
-      Objects.requireNonNull(item, "item");
+      Objects.requireNonNull(data, "item");
     }
   }
 
   /**
-   * @param items The returned items
+   * @param data The returned items
    *
    * @see CACommandType.CACommandItemList
    */
 
   record CAResponseItemList(
-    CAItems items)
-    implements CAResponseType
+    CAItems data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemList
@@ -182,19 +196,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemList
     {
-      Objects.requireNonNull(items, "items");
+      Objects.requireNonNull(data, "items");
     }
   }
 
   /**
-   * @param item The returned item
+   * @param data The returned item
    *
    * @see CACommandType.CACommandItemUpdate
    */
 
   record CAResponseItemUpdate(
-    CAItem item)
-    implements CAResponseType
+    CAItem data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemUpdate
@@ -202,19 +216,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemUpdate
     {
-      Objects.requireNonNull(item, "item");
+      Objects.requireNonNull(data, "item");
     }
   }
 
   /**
-   * @param item The returned item
+   * @param data The returned item
    *
    * @see CACommandType.CACommandItemGet
    */
 
   record CAResponseItemGet(
-    CAItem item)
-    implements CAResponseType
+    CAItem data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemGet
@@ -222,19 +236,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemGet
     {
-      Objects.requireNonNull(item, "item");
+      Objects.requireNonNull(data, "item");
     }
   }
 
   /**
-   * @param id The returned item ID
+   * @param data The returned item ID
    *
    * @see CACommandType.CACommandItemRemove
    */
 
   record CAResponseItemRemove(
-    CAItemID id)
-    implements CAResponseType
+    CAItemID data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemRemove
@@ -242,19 +256,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemRemove
     {
-      Objects.requireNonNull(id, "id");
+      Objects.requireNonNull(data, "id");
     }
   }
 
   /**
-   * @param id The returned item ID
+   * @param data The returned item ID
    *
    * @see CACommandType.CACommandItemReposit
    */
 
   record CAResponseItemReposit(
-    CAItemID id)
-    implements CAResponseType
+    CAItemID data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandItemReposit
@@ -262,19 +276,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseItemReposit
     {
-      Objects.requireNonNull(id, "id");
+      Objects.requireNonNull(data, "id");
     }
   }
 
   /**
-   * @param location The returned location
+   * @param data The returned location
    *
    * @see CACommandType.CACommandLocationGet
    */
 
   record CAResponseLocationGet(
-    CALocation location)
-    implements CAResponseType
+    CALocation data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandLocationGet
@@ -282,19 +296,19 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseLocationGet
     {
-      Objects.requireNonNull(location, "location");
+      Objects.requireNonNull(data, "location");
     }
   }
 
   /**
-   * @param tags The returned tags
+   * @param data The returned tags
    *
    * @see CACommandType.CACommandTagList
    */
 
   record CAResponseTagList(
-    CATags tags)
-    implements CAResponseType
+    CATags data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandTagList
@@ -302,35 +316,35 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseTagList
     {
-      Objects.requireNonNull(tags, "tags");
+      Objects.requireNonNull(data, "tags");
     }
   }
 
   /**
-   * @param tags The returned tags
+   * @param data The returned tags
    *
    * @see CACommandType.CACommandTagsPut
    */
 
   record CAResponseTagsPut(
-    CATags tags)
-    implements CAResponseType
+    CATags data)
+    implements CAResponseWithElementType
   {
     public CAResponseTagsPut
     {
-      Objects.requireNonNull(tags, "tags");
+      Objects.requireNonNull(data, "tags");
     }
   }
 
   /**
-   * @param tags The returned tags
+   * @param data The returned tags
    *
    * @see CACommandType.CACommandTagsDelete
    */
 
   record CAResponseTagsDelete(
-    CATags tags)
-    implements CAResponseType
+    CATags data)
+    implements CAResponseWithElementType
   {
     /**
      * @see CACommandType.CACommandTagsDelete
@@ -338,7 +352,7 @@ public sealed interface CAResponseType extends CAMessageType
 
     public CAResponseTagsDelete
     {
-      Objects.requireNonNull(tags, "tags");
+      Objects.requireNonNull(data, "tags");
     }
   }
 

@@ -38,6 +38,7 @@ import com.io7m.cardant.protocol.inventory.api.CAResponseType;
 import com.io7m.cardant.protocol.versioning.messages.CAVersion;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
+import net.jcip.annotations.GuardedBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +61,7 @@ import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISC
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_RECEIVING_DATA;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_SENDING_REQUEST;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseWithElementType;
 
 /**
  * A version 1 client connection.
@@ -74,7 +74,10 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
 
   private final SubmissionPublisher<CAClientEventType> events;
   private final CAMessageSerializerFactoryType serializers;
+
+  @GuardedBy("parsersLock")
   private final CAMessageParserFactoryType parsers;
+  private final Object parsersLock;
   private final CAClientStrings strings;
   private final HttpClient httpClient;
   private final CAClientConfiguration configuration;
@@ -122,6 +125,8 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       Objects.requireNonNull(inConfiguration, "configuration");
     this.version =
       Objects.requireNonNull(inVersion, "version");
+
+    this.parsersLock = new Object();
 
     this.baseURI =
       URI.create(inConfiguration.baseURI() + "/" + this.version.baseURI())
@@ -290,8 +295,8 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     final InputStream inputStream)
     throws ParseException
   {
-    final var data =
-      this.parsers.parse(source, inputStream);
+    final CAMessageType data =
+      this.parseStream(source, inputStream);
 
     if (data instanceof CAEventType event) {
       this.parseEvent(event);
@@ -301,14 +306,24 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     throw new IllegalStateException();
   }
 
+  private CAMessageType parseStream(
+    final URI source,
+    final InputStream inputStream)
+    throws ParseException
+  {
+    synchronized (this.parsersLock) {
+      return this.parsers.parse(source, inputStream);
+    }
+  }
+
   private <T> void parseResponseStream(
     final URI source,
     final CAClientCommandType<T> command,
     final InputStream inputStream)
     throws ParseException
   {
-    final var data =
-      this.parsers.parse(source, inputStream);
+    final CAMessageType data =
+      this.parseStream(source, inputStream);
 
     if (data instanceof CAResponseType response) {
       this.parseResponse(command, response);
@@ -328,7 +343,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       command.future();
 
     if (response instanceof CAResponseError error) {
-      final CAClientCommandError<T> result = this.responseError(error);
+      final CAClientCommandError<T> result = CAClientConnectionV1.responseError(error);
       this.events.submit(new CAClientEventCommandFailed<>(
         command.getClass().getSimpleName(),
         result
@@ -337,20 +352,11 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       return;
     }
 
-    if (response instanceof CAResponseItemGet itemGet) {
+    if (response instanceof CAResponseWithElementType withData) {
       this.handleResult(
         expectedReturn,
         commandFuture,
-        expectedReturn.cast(itemGet.item())
-      );
-      return;
-    }
-
-    if (response instanceof CAResponseItemList itemList) {
-      this.handleResult(
-        expectedReturn,
-        commandFuture,
-        expectedReturn.cast(itemList.items())
+        expectedReturn.cast(withData.data())
       );
       return;
     }
@@ -379,7 +385,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     );
   }
 
-  private <T> CAClientCommandError<T> responseError(
+  private static <T> CAClientCommandError<T> responseError(
     final CAResponseError error)
   {
     return new CAClientCommandError<>(error.message());
