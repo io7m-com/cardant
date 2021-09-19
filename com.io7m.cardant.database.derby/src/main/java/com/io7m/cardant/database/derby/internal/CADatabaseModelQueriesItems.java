@@ -33,6 +33,8 @@ import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAModelDatabaseQueriesItemsType;
 import com.io7m.cardant.model.CATag;
+import com.io7m.junreachable.UnimplementedCodeException;
+import com.io7m.junreachable.UnreachableCodeException;
 import org.apache.derby.shared.common.error.DerbySQLIntegrityConstraintViolationException;
 
 import java.io.ByteArrayOutputStream;
@@ -57,6 +59,9 @@ import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_GENERAL;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
 import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.locationIdBytes;
+import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
+import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
+import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 
 /**
  * Internal database calls for the inventory.
@@ -88,6 +93,14 @@ public final class CADatabaseModelQueriesItems
   private static final String ITEM_LIST = """
     SELECT item_id, item_name FROM cardant.items
       WHERE item_deleted = ?
+    """;
+  private static final String ITEM_LIST_EXACT = """
+    SELECT i.item_id
+      FROM cardant.items AS i
+        JOIN cardant.item_locations AS il
+          ON il.item_id = i.item_id
+          WHERE il.item_location = ?
+            AND i.item_deleted = ?
     """;
   private static final String ITEM_DELETE = """
     DELETE FROM cardant.items
@@ -1063,26 +1076,96 @@ public final class CADatabaseModelQueriesItems
   }
 
   @Override
-  public Set<CAItemID> itemList(
+  public Set<CAItem> itemList(
     final CAListLocationBehaviourType locationBehaviour)
     throws CADatabaseException
   {
     Objects.requireNonNull(locationBehaviour, "locationBehaviour");
 
     return this.withSQLConnection(connection -> {
-      try (var statement =
-             connection.prepareStatement(ITEM_LIST)) {
-        statement.setBoolean(1, false);
-
-        try (var result = statement.executeQuery()) {
-          final var items = new HashSet<CAItemID>(32);
-          while (result.next()) {
-            items.add(CADatabaseBytes.itemIdFromBytes(result.getBytes("item_id")));
-          }
-          return items;
-        }
+      if (locationBehaviour instanceof CAListLocationsAll) {
+        return itemListInnerAll(connection);
       }
+      if (locationBehaviour instanceof CAListLocationExact exact) {
+        return itemListInnerExact(connection, exact.location());
+      }
+      if (locationBehaviour instanceof CAListLocationWithDescendants with) {
+        return this.itemListInnerWithDescendants(connection, with.location());
+      }
+      throw new UnreachableCodeException();
     });
+  }
+
+  private Set<CAItem> itemListInnerWithDescendants(
+    final Connection connection,
+    final CALocationID location)
+  {
+    throw new UnimplementedCodeException();
+  }
+
+  private static Set<CAItem> itemListInnerExact(
+    final Connection connection,
+    final CALocationID location)
+    throws SQLException, IOException
+  {
+    final var ids = itemListInnerExactIDsAll(connection, location);
+    final var items = new HashSet<CAItem>(ids.size());
+    for (final var id : ids) {
+      itemGetInner(connection, id, false).ifPresent(items::add);
+    }
+    return items;
+  }
+
+  private static HashSet<CAItemID> itemListInnerExactIDsAll(
+    final Connection connection,
+    final CALocationID location)
+    throws SQLException
+  {
+    final var ids = new HashSet<CAItemID>(32);
+    try (var statement = connection.prepareStatement(ITEM_LIST_EXACT)) {
+      statement.setBytes(1, locationIdBytes(location));
+      statement.setBoolean(2, false);
+      try (var result = statement.executeQuery()) {
+        while (result.next()) {
+          final var id =
+            CADatabaseBytes.itemIdFromBytes(
+              result.getBytes("item_id"));
+          ids.add(id);
+        }
+        return ids;
+      }
+    }
+  }
+
+  private static Set<CAItem> itemListInnerAll(
+    final Connection connection)
+    throws SQLException, IOException
+  {
+    final var ids = itemListInnerIDsAll(connection);
+    final var items = new HashSet<CAItem>(ids.size());
+    for (final var id : ids) {
+      itemGetInner(connection, id, false).ifPresent(items::add);
+    }
+    return items;
+  }
+
+  private static HashSet<CAItemID> itemListInnerIDsAll(
+    final Connection connection)
+    throws SQLException
+  {
+    final var ids = new HashSet<CAItemID>(32);
+    try (var statement = connection.prepareStatement(ITEM_LIST)) {
+      statement.setBoolean(1, false);
+      try (var result = statement.executeQuery()) {
+        while (result.next()) {
+          final var id =
+            CADatabaseBytes.itemIdFromBytes(
+              result.getBytes("item_id"));
+          ids.add(id);
+        }
+        return ids;
+      }
+    }
   }
 
   @Override

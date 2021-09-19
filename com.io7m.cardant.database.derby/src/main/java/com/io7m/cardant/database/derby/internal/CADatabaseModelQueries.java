@@ -127,7 +127,7 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public Set<CAItemID> itemList(
+  public Set<CAItem> itemList(
     final CAListLocationBehaviourType locationBehaviour)
     throws CADatabaseException
   {
@@ -193,7 +193,8 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public SortedMap<String, CAItemMetadata> itemMetadata(final CAItemID item)
+  public SortedMap<String, CAItemMetadata> itemMetadata(
+    final CAItemID item)
     throws CADatabaseException
   {
     return this.items.itemMetadata(item);

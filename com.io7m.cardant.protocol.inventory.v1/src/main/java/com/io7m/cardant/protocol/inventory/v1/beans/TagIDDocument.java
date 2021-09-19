@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface TagIDDocument extends IDDocument
-{
-  DocumentFactory<TagIDDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "tagid1884doctype");
-  SchemaType type = Factory.getType();
+public interface TagIDDocument extends com.io7m.cardant.protocol.inventory.v1.beans.IDDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.TagIDDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "tagid1884doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "TagID" element
-   */
-  TagIDType getTagID();
+    /**
+     * Gets the "TagID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagIDType getTagID();
 
-  /**
-   * Sets the "TagID" element
-   */
-  void setTagID(TagIDType tagID);
+    /**
+     * Sets the "TagID" element
+     */
+    void setTagID(com.io7m.cardant.protocol.inventory.v1.beans.TagIDType tagID);
 
-  /**
-   * Appends and returns a new empty "TagID" element
-   */
-  TagIDType addNewTagID();
+    /**
+     * Appends and returns a new empty "TagID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagIDType addNewTagID();
 }

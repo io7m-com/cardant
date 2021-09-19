@@ -7,11 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlString;
-import org.apache.xmlbeans.XmlToken;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,51 +18,48 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandLoginUsernamePasswordType extends CommandType
-{
-  DocumentFactory<CommandLoginUsernamePasswordType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commandloginusernamepasswordtypedd8etype");
-  SchemaType type = Factory.getType();
+public interface CommandLoginUsernamePasswordType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commandloginusernamepasswordtypedd8etype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "user" attribute
-   */
-  String getUser();
+    /**
+     * Gets the "user" attribute
+     */
+    java.lang.String getUser();
 
-  /**
-   * Sets the "user" attribute
-   */
-  void setUser(String user);
+    /**
+     * Gets (as xml) the "user" attribute
+     */
+    org.apache.xmlbeans.XmlToken xgetUser();
 
-  /**
-   * Gets (as xml) the "user" attribute
-   */
-  XmlToken xgetUser();
+    /**
+     * Sets the "user" attribute
+     */
+    void setUser(java.lang.String user);
 
-  /**
-   * Sets (as xml) the "user" attribute
-   */
-  void xsetUser(XmlToken user);
+    /**
+     * Sets (as xml) the "user" attribute
+     */
+    void xsetUser(org.apache.xmlbeans.XmlToken user);
 
-  /**
-   * Gets the "password" attribute
-   */
-  String getPassword();
+    /**
+     * Gets the "password" attribute
+     */
+    java.lang.String getPassword();
 
-  /**
-   * Sets the "password" attribute
-   */
-  void setPassword(String password);
+    /**
+     * Gets (as xml) the "password" attribute
+     */
+    org.apache.xmlbeans.XmlString xgetPassword();
 
-  /**
-   * Gets (as xml) the "password" attribute
-   */
-  XmlString xgetPassword();
+    /**
+     * Sets the "password" attribute
+     */
+    void setPassword(java.lang.String password);
 
-  /**
-   * Sets (as xml) the "password" attribute
-   */
-  void xsetPassword(XmlString password);
+    /**
+     * Sets (as xml) the "password" attribute
+     */
+    void xsetPassword(org.apache.xmlbeans.XmlString password);
 }

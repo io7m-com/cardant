@@ -1,14 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.io7m.cardant.gui.internal.CAViewControllerLocationsTab"
-            stylesheets="@cardant.css"
-            maxHeight="-Infinity"
-            maxWidth="-Infinity"
-            minHeight="-Infinity"
-            minWidth="-Infinity"
-            prefHeight="400.0"
-            prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/11.0.1"/>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+
+<AnchorPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerLocationsTab">
+   <children>
+      <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <Region HBox.hgrow="ALWAYS" />
+         <Button fx:id="itemCreate" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCreateLocationSelected" prefHeight="32.0" prefWidth="32.0">
+            <tooltip>
+               <Tooltip text="%locations.create" />
+            </tooltip>
+            <graphic>
+               <ImageView fx:id="itemCreateImage" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" smooth="false">
+                  <image>
+                     <Image url="@location-add.png" />
+                  </image>
+               </ImageView>
+            </graphic>
+         </Button>
+      </HBox>
+      <TreeView fx:id="locationTreeView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0" />
+   </children>
+</AnchorPane>

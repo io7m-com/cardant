@@ -61,6 +61,9 @@ public final class CAViewControllers
     if (Objects.equals(clazz, CAViewControllerCreateItem.class)) {
       return new CAViewControllerCreateItem(mainServices, stage);
     }
+    if (Objects.equals(clazz, CAViewControllerCreateLocation.class)) {
+      return new CAViewControllerCreateLocation(mainServices, stage);
+    }
     if (Objects.equals(clazz, CAViewControllerItemEditor.class)) {
       return new CAViewControllerItemEditor(mainServices, stage);
     }

@@ -30,7 +30,9 @@ import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
+import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
@@ -53,6 +55,8 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType;
@@ -73,6 +77,7 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsT
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType;
 import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.LocationType;
 import com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.MessageType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
@@ -86,6 +91,8 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLoginUsernamePasswordType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType;
@@ -127,7 +134,6 @@ import java.util.stream.Collectors;
 
 import static com.io7m.anethum.common.ParseSeverity.PARSE_ERROR;
 import static com.io7m.anethum.common.ParseSeverity.PARSE_WARNING;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.*;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
@@ -135,7 +141,14 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
@@ -144,6 +157,8 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsPut;
@@ -293,14 +308,47 @@ public final class CA1MessageParser implements CAMessageParserType
     if (response instanceof ResponseErrorType error) {
       return parseResponseError(error);
     }
+    if (response instanceof ResponseLocationPutType locationPut) {
+      return parseResponseLocationPut(locationPut);
+    }
+    if (response instanceof ResponseLocationListType locationList) {
+      return parseResponseLocationList(locationList);
+    }
 
     throw new IllegalStateException("Unexpected message: " + response);
+  }
+
+  private static CAResponseType parseResponseLocationPut(
+    final ResponseLocationPutType locationPut)
+  {
+    return new CAResponseLocationPut(
+      parseLocation(locationPut.getLocation())
+    );
+  }
+
+  private static CAResponseType parseResponseLocationList(
+    final ResponseLocationListType locationList)
+  {
+    return new CAResponseLocationList(
+      parseLocations(locationList.getLocationList())
+    );
+  }
+
+  private static CALocation parseLocation(
+    final LocationType location)
+  {
+    return new CALocation(
+      CALocationID.of(location.getId()),
+      Optional.ofNullable(location.getParent()).map(CALocationID::of),
+      location.getName(),
+      location.getDescription()
+    );
   }
 
   private static CAResponseType parseResponseError(
     final ResponseErrorType error)
   {
-    return new CAResponseType.CAResponseError(
+    return new CAResponseError(
       error.getStatus().intValue(),
       error.getMessage(),
       error.getResponseErrorDetailList()
@@ -430,6 +478,19 @@ public final class CA1MessageParser implements CAMessageParserType
       .stream()
       .map(CA1MessageParser::parseTag)
       .collect(Collectors.toCollection(TreeSet::new));
+  }
+
+  private static CALocations parseLocations(
+    final List<LocationType> locationList)
+  {
+    return new CALocations(
+      new TreeMap<>(
+        locationList
+          .stream()
+          .map(CA1MessageParser::parseLocation)
+          .collect(Collectors.toMap(CALocation::id, Function.identity()))
+      )
+    );
   }
 
   private static CATag parseTag(
@@ -585,8 +646,28 @@ public final class CA1MessageParser implements CAMessageParserType
     if (command instanceof CommandTagsDeleteType tagsDelete) {
       return parseCommandTagsDelete(tagsDelete);
     }
+    if (command instanceof CommandLocationPutType locationPut) {
+      return parseCommandLocationPut(locationPut);
+    }
+    if (command instanceof CommandLocationListType locationList) {
+      return parseCommandLocationList(locationList);
+    }
 
     throw new IllegalStateException("Unexpected message: " + command);
+  }
+
+  private static CACommandType parseCommandLocationList(
+    final CommandLocationListType locationList)
+  {
+    return new CACommandLocationList();
+  }
+
+  private static CACommandType parseCommandLocationPut(
+    final CommandLocationPutType locationPut)
+  {
+    return new CACommandLocationPut(
+      parseLocation(locationPut.getLocation())
+    );
   }
 
   private static CACommandType parseCommandTagsDelete(

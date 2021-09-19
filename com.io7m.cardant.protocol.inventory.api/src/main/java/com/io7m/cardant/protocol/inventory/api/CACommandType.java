@@ -22,9 +22,12 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATags;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -197,12 +200,22 @@ public sealed interface CACommandType
 
   /**
    * Create or update a location.
+   *
+   * @param location          The location
    */
 
-  record CACommandLocationPut()
+  record CACommandLocationPut(
+    CALocation location)
     implements CACommandType
   {
+    /**
+     * Create or update a location.
+     */
 
+    public CACommandLocationPut
+    {
+      Objects.requireNonNull(location, "location");
+    }
   }
 
   /**
@@ -219,7 +232,8 @@ public sealed interface CACommandType
    * Retrieve a location.
    */
 
-  record CACommandLocationGet()
+  record CACommandLocationGet(
+    CALocationID id)
     implements CACommandType
   {
 

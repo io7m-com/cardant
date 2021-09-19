@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one CommandItemCreate(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class CommandItemCreateDocumentImpl extends CommandDocumentImpl implements
-  CommandItemCreateDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "CommandItemCreate"),
-  };
+public class CommandItemCreateDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateDocument {
+    private static final long serialVersionUID = 1L;
 
-  public CommandItemCreateDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "CommandItemCreate" element
-   */
-  @Override
-  public CommandItemCreateType getCommandItemCreate()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandItemCreateType target = null;
-      target = (CommandItemCreateType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public CommandItemCreateDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "CommandItemCreate" element
-   */
-  @Override
-  public void setCommandItemCreate(final CommandItemCreateType commandItemCreate)
-  {
-    this.generatedSetterHelperImpl(
-      commandItemCreate,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "CommandItemCreate"),
+    };
 
-  /**
-   * Appends and returns a new empty "CommandItemCreate" element
-   */
-  @Override
-  public CommandItemCreateType addNewCommandItemCreate()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandItemCreateType target = null;
-      target = (CommandItemCreateType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "CommandItemCreate" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType getCommandItemCreate() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "CommandItemCreate" element
+     */
+    @Override
+    public void setCommandItemCreate(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType commandItemCreate) {
+        generatedSetterHelperImpl(commandItemCreate, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "CommandItemCreate" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType addNewCommandItemCreate() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

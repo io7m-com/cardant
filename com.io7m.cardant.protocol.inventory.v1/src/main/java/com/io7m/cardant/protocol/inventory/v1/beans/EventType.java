@@ -7,9 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
 import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -17,11 +18,8 @@ import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
  *
  * This is a complex type.
  */
-public interface EventType extends MessageType
-{
-  AbstractDocumentFactory<EventType> Factory = new AbstractDocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "eventtypedf15type");
-  SchemaType type = Factory.getType();
+public interface EventType extends com.io7m.cardant.protocol.inventory.v1.beans.MessageType {
+    AbstractDocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.EventType> Factory = new AbstractDocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "eventtypedf15type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 }

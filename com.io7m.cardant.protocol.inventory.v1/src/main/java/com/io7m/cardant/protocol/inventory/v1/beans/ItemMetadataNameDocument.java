@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,31 +19,28 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ItemMetadataNameDocument extends XmlObject
-{
-  DocumentFactory<ItemMetadataNameDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemmetadataname035adoctype");
-  SchemaType type = Factory.getType();
+public interface ItemMetadataNameDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "itemmetadataname035adoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemMetadataName" element
-   */
-  String getItemMetadataName();
+    /**
+     * Gets the "ItemMetadataName" element
+     */
+    java.lang.String getItemMetadataName();
 
-  /**
-   * Sets the "ItemMetadataName" element
-   */
-  void setItemMetadataName(String itemMetadataName);
+    /**
+     * Gets (as xml) the "ItemMetadataName" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType xgetItemMetadataName();
 
-  /**
-   * Gets (as xml) the "ItemMetadataName" element
-   */
-  ItemMetadataNameType xgetItemMetadataName();
+    /**
+     * Sets the "ItemMetadataName" element
+     */
+    void setItemMetadataName(java.lang.String itemMetadataName);
 
-  /**
-   * Sets (as xml) the "ItemMetadataName" element
-   */
-  void xsetItemMetadataName(ItemMetadataNameType itemMetadataName);
+    /**
+     * Sets (as xml) the "ItemMetadataName" element
+     */
+    void xsetItemMetadataName(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType itemMetadataName);
 }

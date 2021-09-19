@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one CommandItemLocationList(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class CommandItemLocationListDocumentImpl extends CommandDocumentImpl implements
-  CommandItemLocationListDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "CommandItemLocationList"),
-  };
+public class CommandItemLocationListDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListDocument {
+    private static final long serialVersionUID = 1L;
 
-  public CommandItemLocationListDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "CommandItemLocationList" element
-   */
-  @Override
-  public CommandItemLocationListType getCommandItemLocationList()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandItemLocationListType target = null;
-      target = (CommandItemLocationListType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public CommandItemLocationListDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "CommandItemLocationList" element
-   */
-  @Override
-  public void setCommandItemLocationList(final CommandItemLocationListType commandItemLocationList)
-  {
-    this.generatedSetterHelperImpl(
-      commandItemLocationList,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "CommandItemLocationList"),
+    };
 
-  /**
-   * Appends and returns a new empty "CommandItemLocationList" element
-   */
-  @Override
-  public CommandItemLocationListType addNewCommandItemLocationList()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandItemLocationListType target = null;
-      target = (CommandItemLocationListType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "CommandItemLocationList" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType getCommandItemLocationList() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "CommandItemLocationList" element
+     */
+    @Override
+    public void setCommandItemLocationList(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType commandItemLocationList) {
+        generatedSetterHelperImpl(commandItemLocationList, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "CommandItemLocationList" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType addNewCommandItemLocationList() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationListType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

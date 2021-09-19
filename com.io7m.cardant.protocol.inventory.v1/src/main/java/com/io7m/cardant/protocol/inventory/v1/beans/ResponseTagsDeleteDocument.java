@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseTagsDeleteDocument extends ResponseDocument
-{
-  DocumentFactory<ResponseTagsDeleteDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responsetagsdeletec762doctype");
-  SchemaType type = Factory.getType();
+public interface ResponseTagsDeleteDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "responsetagsdeletec762doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ResponseTagsDelete" element
-   */
-  ResponseTagsDeleteType getResponseTagsDelete();
+    /**
+     * Gets the "ResponseTagsDelete" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType getResponseTagsDelete();
 
-  /**
-   * Sets the "ResponseTagsDelete" element
-   */
-  void setResponseTagsDelete(ResponseTagsDeleteType responseTagsDelete);
+    /**
+     * Sets the "ResponseTagsDelete" element
+     */
+    void setResponseTagsDelete(com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType responseTagsDelete);
 
-  /**
-   * Appends and returns a new empty "ResponseTagsDelete" element
-   */
-  ResponseTagsDeleteType addNewResponseTagsDelete();
+    /**
+     * Appends and returns a new empty "ResponseTagsDelete" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType addNewResponseTagsDelete();
 }

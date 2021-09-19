@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
@@ -45,6 +46,8 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutDocume
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteDocument;
@@ -62,6 +65,7 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType;
 import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.LocationType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentPutDocument;
@@ -73,6 +77,8 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutDocum
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLoginUsernamePasswordDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteDocument;
@@ -114,6 +120,8 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
@@ -128,6 +136,8 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
@@ -418,8 +428,51 @@ public final class CA1MessageSerializer
     if (command instanceof CACommandItemUpdate c) {
       return this.transformCommandItemUpdate(c);
     }
+    if (command instanceof CACommandLocationPut c) {
+      return this.transformCommandLocationPut(c);
+    }
+    if (command instanceof CACommandLocationList c) {
+      return this.transformCommandLocationList(c);
+    }
 
     throw new UnreachableCodeException();
+  }
+
+  private CommandDocument transformCommandLocationList(
+    final CACommandLocationList c)
+  {
+    final var document =
+      CommandLocationListDocument.Factory.newInstance(this.options);
+    final var command =
+      document.addNewCommandLocationList();
+
+    return document;
+  }
+
+  private CommandDocument transformCommandLocationPut(
+    final CACommandLocationPut c)
+  {
+    final var document =
+      CommandLocationPutDocument.Factory.newInstance(this.options);
+    final var command =
+      document.addNewCommandLocationPut();
+
+    command.setLocation(this.transformLocation(c.location()));
+    return document;
+  }
+
+  private LocationType transformLocation(
+    final CALocation location)
+  {
+    final var result =
+      LocationType.Factory.newInstance(this.options);
+    result.setId(location.id().id().toString());
+    result.setDescription(location.description());
+    result.setName(location.name());
+    location.parent().ifPresent(locationID -> {
+      result.setParent(locationID.id().toString());
+    });
+    return result;
   }
 
   private CommandDocument transformCommandTagsPut(
@@ -645,8 +698,33 @@ public final class CA1MessageSerializer
     if (response instanceof CAResponseTagsDelete r) {
       return this.transformResponseTagsDelete(r);
     }
+    if (response instanceof CAResponseLocationPut r) {
+      return this.transformResponseLocationPut(r);
+    }
+    if (response instanceof CAResponseLocationList r) {
+      return this.transformResponseLocationList(r);
+    }
 
     throw new UnreachableCodeException();
+  }
+
+  private XmlObject transformResponseLocationList(
+    final CAResponseLocationList r)
+  {
+    final var document =
+      ResponseLocationListDocument.Factory.newInstance(this.options);
+    final var response =
+      document.addNewResponseLocationList();
+
+    final var locations = response.getLocationList();
+    r.data()
+      .locations()
+      .values()
+      .stream()
+      .map(this::transformLocation)
+      .forEach(locations::add);
+
+    return document;
   }
 
   private XmlObject transformResponseTagsDelete(
@@ -825,6 +903,18 @@ public final class CA1MessageSerializer
       output.add(this.transformItem(item));
     }
 
+    return document;
+  }
+
+  private XmlObject transformResponseLocationPut(
+    final CAResponseLocationPut r)
+  {
+    final var document =
+      ResponseLocationPutDocument.Factory.newInstance(this.options);
+    final var response =
+      document.addNewResponseLocationPut();
+
+    response.setLocation(this.transformLocation(r.data()));
     return document;
   }
 

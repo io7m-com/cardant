@@ -7,159 +7,129 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationsType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.JavaListXmlObject;
-import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
-import java.util.List;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML ItemLocationsType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ItemLocationsTypeImpl extends XmlComplexContentImpl implements
-  ItemLocationsType
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "ItemLocation"),
-  };
+public class ItemLocationsTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationsType {
+    private static final long serialVersionUID = 1L;
 
-  public ItemLocationsTypeImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets a List of "ItemLocation" elements
-   */
-  @Override
-  public List<ItemLocationType> getItemLocationList()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      return new JavaListXmlObject<>(
-        this::getItemLocationArray,
-        this::setItemLocationArray,
-        this::insertNewItemLocation,
-        this::removeItemLocation,
-        this::sizeOfItemLocationArray
-      );
+    public ItemLocationsTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Gets array of all "ItemLocation" elements
-   */
-  @Override
-  public ItemLocationType[] getItemLocationArray()
-  {
-    return this.getXmlObjectArray(
-      PROPERTY_QNAME[0],
-      new ItemLocationType[0]);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "ItemLocation"),
+    };
 
-  /**
-   * Sets array of all "ItemLocation" element  WARNING: This method is not atomicaly synchronized.
-   */
-  @Override
-  public void setItemLocationArray(final ItemLocationType[] itemLocationArray)
-  {
-    this.check_orphaned();
-    this.arraySetterHelper(itemLocationArray, PROPERTY_QNAME[0]);
-  }
 
-  /**
-   * Gets ith "ItemLocation" element
-   */
-  @Override
-  public ItemLocationType getItemLocationArray(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemLocationType target = null;
-      target = (ItemLocationType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        i);
-      if (target == null) {
-        throw new IndexOutOfBoundsException();
-      }
-      return target;
+    /**
+     * Gets a List of "ItemLocation" elements
+     */
+    @Override
+    public java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType> getItemLocationList() {
+        synchronized (monitor()) {
+            check_orphaned();
+            return new org.apache.xmlbeans.impl.values.JavaListXmlObject<>(
+                this::getItemLocationArray,
+                this::setItemLocationArray,
+                this::insertNewItemLocation,
+                this::removeItemLocation,
+                this::sizeOfItemLocationArray
+            );
+        }
     }
-  }
 
-  /**
-   * Returns number of "ItemLocation" element
-   */
-  @Override
-  public int sizeOfItemLocationArray()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      return this.get_store().count_elements(PROPERTY_QNAME[0]);
+    /**
+     * Gets array of all "ItemLocation" elements
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType[] getItemLocationArray() {
+        return getXmlObjectArray(PROPERTY_QNAME[0], new com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType[0]);
     }
-  }
 
-  /**
-   * Sets ith "ItemLocation" element
-   */
-  @Override
-  public void setItemLocationArray(
-    final int i,
-    final ItemLocationType itemLocation)
-  {
-    this.generatedSetterHelperImpl(
-      itemLocation,
-      PROPERTY_QNAME[0],
-      i,
-      XmlObjectBase.KIND_SETTERHELPER_ARRAYITEM);
-  }
-
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "ItemLocation" element
-   */
-  @Override
-  public ItemLocationType insertNewItemLocation(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemLocationType target = null;
-      target = (ItemLocationType) this.get_store().insert_element_user(
-        PROPERTY_QNAME[0],
-        i);
-      return target;
+    /**
+     * Gets ith "ItemLocation" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType getItemLocationArray(int i) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType)get_store().find_element_user(PROPERTY_QNAME[0], i);
+            if (target == null) {
+                throw new IndexOutOfBoundsException();
+            }
+            return target;
+        }
     }
-  }
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "ItemLocation" element
-   */
-  @Override
-  public ItemLocationType addNewItemLocation()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemLocationType target = null;
-      target = (ItemLocationType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+    /**
+     * Returns number of "ItemLocation" element
+     */
+    @Override
+    public int sizeOfItemLocationArray() {
+        synchronized (monitor()) {
+            check_orphaned();
+            return get_store().count_elements(PROPERTY_QNAME[0]);
+        }
     }
-  }
 
-  /**
-   * Removes the ith "ItemLocation" element
-   */
-  @Override
-  public void removeItemLocation(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      this.get_store().remove_element(PROPERTY_QNAME[0], i);
+    /**
+     * Sets array of all "ItemLocation" element  WARNING: This method is not atomicaly synchronized.
+     */
+    @Override
+    public void setItemLocationArray(com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType[] itemLocationArray) {
+        check_orphaned();
+        arraySetterHelper(itemLocationArray, PROPERTY_QNAME[0]);
     }
-  }
+
+    /**
+     * Sets ith "ItemLocation" element
+     */
+    @Override
+    public void setItemLocationArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType itemLocation) {
+        generatedSetterHelperImpl(itemLocation, PROPERTY_QNAME[0], i, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_ARRAYITEM);
+    }
+
+    /**
+     * Inserts and returns a new empty value (as xml) as the ith "ItemLocation" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType insertNewItemLocation(int i) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType)get_store().insert_element_user(PROPERTY_QNAME[0], i);
+            return target;
+        }
+    }
+
+    /**
+     * Appends and returns a new empty value (as xml) as the last "ItemLocation" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType addNewItemLocation() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
+
+    /**
+     * Removes the ith "ItemLocation" element
+     */
+    @Override
+    public void removeItemLocation(int i) {
+        synchronized (monitor()) {
+            check_orphaned();
+            get_store().remove_element(PROPERTY_QNAME[0], i);
+        }
+    }
 }

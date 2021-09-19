@@ -24,7 +24,9 @@ import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
@@ -66,6 +68,8 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
@@ -78,6 +82,8 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsPut;
@@ -338,6 +344,47 @@ public final class CAMessageServicesV1Test
   }
 
   @Test
+  public void testCommandLocationPut0()
+    throws Exception
+  {
+    final var message =
+      new CACommandLocationPut(
+        new CALocation(
+          CALocationID.random(),
+          Optional.of(CALocationID.random()),
+          "Name",
+          "Description"
+        )
+      );
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandLocationPut1()
+    throws Exception
+  {
+    final var message =
+      new CACommandLocationPut(
+        new CALocation(
+          CALocationID.random(),
+          Optional.empty(),
+          "Name",
+          "Description"
+        )
+      );
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandLocationList()
+    throws Exception
+  {
+    final var message =
+      new CACommandLocationList();
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
   public void testTransaction()
     throws Exception
   {
@@ -370,7 +417,11 @@ public final class CAMessageServicesV1Test
           new CACommandTagsDelete(
             new CATags(ITEM_0.tags())),
           new CACommandTagsPut(
-            new CATags(ITEM_0.tags()))
+            new CATags(ITEM_0.tags())),
+          new CACommandLocationList(),
+          new CACommandLocationPut(
+            new CALocation(CALocationID.random(), Optional.empty(), "N", "D")
+          )
         )
       );
     assertEquals(message, this.roundTrip(message));
@@ -493,6 +544,62 @@ public final class CAMessageServicesV1Test
       new CAResponseTagList(new CATags(ITEM_0.tags()));
     assertEquals(message, this.roundTrip(message));
   }
+
+  @Test
+  public void testResponseLocationPut()
+    throws Exception
+  {
+    final var message =
+      new CAResponseLocationPut(new CALocation(
+        CALocationID.random(),
+        Optional.of(CALocationID.random()),
+        "Name",
+        "Description"
+      ));
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testResponseLocationList()
+    throws Exception
+  {
+    final var location0 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.of(CALocationID.random()),
+        "Name",
+        "Description"
+      );
+    final var location1 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.of(CALocationID.random()),
+        "Name",
+        "Description"
+      );
+    final var location2 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.of(CALocationID.random()),
+        "Name",
+        "Description"
+      );
+
+    final var message =
+      new CAResponseLocationList(
+        new CALocations(
+          new TreeMap<>(
+            Map.ofEntries(
+              Map.entry(location0.id(), location0),
+              Map.entry(location1.id(), location1),
+              Map.entry(location2.id(), location2)
+            )
+          )
+        )
+      );
+    assertEquals(message, this.roundTrip(message));
+  }
+
 
   @Test
   public void testEventUpdated()

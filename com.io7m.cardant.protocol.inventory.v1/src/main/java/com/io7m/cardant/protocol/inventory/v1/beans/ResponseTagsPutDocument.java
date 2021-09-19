@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseTagsPutDocument extends ResponseDocument
-{
-  DocumentFactory<ResponseTagsPutDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responsetagsputaac4doctype");
-  SchemaType type = Factory.getType();
+public interface ResponseTagsPutDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsPutDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "responsetagsputaac4doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ResponseTagsPut" element
-   */
-  ResponseTagsPutType getResponseTagsPut();
+    /**
+     * Gets the "ResponseTagsPut" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsPutType getResponseTagsPut();
 
-  /**
-   * Sets the "ResponseTagsPut" element
-   */
-  void setResponseTagsPut(ResponseTagsPutType responseTagsPut);
+    /**
+     * Sets the "ResponseTagsPut" element
+     */
+    void setResponseTagsPut(com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsPutType responseTagsPut);
 
-  /**
-   * Appends and returns a new empty "ResponseTagsPut" element
-   */
-  ResponseTagsPutType addNewResponseTagsPut();
+    /**
+     * Appends and returns a new empty "ResponseTagsPut" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsPutType addNewResponseTagsPut();
 }

@@ -7,13 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlUnsignedLong;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-
-import java.math.BigInteger;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -21,71 +18,68 @@ import java.math.BigInteger;
  *
  * This is a complex type.
  */
-public interface ItemLocationType extends XmlObject
-{
-  DocumentFactory<ItemLocationType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemlocationtypeb3d5type");
-  SchemaType type = Factory.getType();
+public interface ItemLocationType extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "itemlocationtypeb3d5type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "location" attribute
-   */
-  String getLocation();
+    /**
+     * Gets the "location" attribute
+     */
+    java.lang.String getLocation();
 
-  /**
-   * Sets the "location" attribute
-   */
-  void setLocation(String location);
+    /**
+     * Gets (as xml) the "location" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetLocation();
 
-  /**
-   * Gets (as xml) the "location" attribute
-   */
-  UUIDType xgetLocation();
+    /**
+     * Sets the "location" attribute
+     */
+    void setLocation(java.lang.String location);
 
-  /**
-   * Sets (as xml) the "location" attribute
-   */
-  void xsetLocation(UUIDType location);
+    /**
+     * Sets (as xml) the "location" attribute
+     */
+    void xsetLocation(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType location);
 
-  /**
-   * Gets the "item" attribute
-   */
-  String getItem();
+    /**
+     * Gets the "item" attribute
+     */
+    java.lang.String getItem();
 
-  /**
-   * Sets the "item" attribute
-   */
-  void setItem(String item);
+    /**
+     * Gets (as xml) the "item" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetItem();
 
-  /**
-   * Gets (as xml) the "item" attribute
-   */
-  UUIDType xgetItem();
+    /**
+     * Sets the "item" attribute
+     */
+    void setItem(java.lang.String item);
 
-  /**
-   * Sets (as xml) the "item" attribute
-   */
-  void xsetItem(UUIDType item);
+    /**
+     * Sets (as xml) the "item" attribute
+     */
+    void xsetItem(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType item);
 
-  /**
-   * Gets the "count" attribute
-   */
-  BigInteger getCount();
+    /**
+     * Gets the "count" attribute
+     */
+    java.math.BigInteger getCount();
 
-  /**
-   * Sets the "count" attribute
-   */
-  void setCount(BigInteger count);
+    /**
+     * Gets (as xml) the "count" attribute
+     */
+    org.apache.xmlbeans.XmlUnsignedLong xgetCount();
 
-  /**
-   * Gets (as xml) the "count" attribute
-   */
-  XmlUnsignedLong xgetCount();
+    /**
+     * Sets the "count" attribute
+     */
+    void setCount(java.math.BigInteger count);
 
-  /**
-   * Sets (as xml) the "count" attribute
-   */
-  void xsetCount(XmlUnsignedLong count);
+    /**
+     * Sets (as xml) the "count" attribute
+     */
+    void xsetCount(org.apache.xmlbeans.XmlUnsignedLong count);
 }

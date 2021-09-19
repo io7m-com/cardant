@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ItemIDDocument extends IDDocument
-{
-  DocumentFactory<ItemIDDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemidb9d9doctype");
-  SchemaType type = Factory.getType();
+public interface ItemIDDocument extends com.io7m.cardant.protocol.inventory.v1.beans.IDDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemIDDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "itemidb9d9doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemID" element
-   */
-  ItemIDType getItemID();
+    /**
+     * Gets the "ItemID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType getItemID();
 
-  /**
-   * Sets the "ItemID" element
-   */
-  void setItemID(ItemIDType itemID);
+    /**
+     * Sets the "ItemID" element
+     */
+    void setItemID(com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType itemID);
 
-  /**
-   * Appends and returns a new empty "ItemID" element
-   */
-  ItemIDType addNewItemID();
+    /**
+     * Appends and returns a new empty "ItemID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType addNewItemID();
 }

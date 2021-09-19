@@ -7,9 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlNormalizedString;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import org.apache.xmlbeans.impl.schema.DocumentFactory;
 import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
@@ -18,11 +18,8 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.HashAlgorithmType.
  */
-public interface HashAlgorithmType extends XmlNormalizedString
-{
-  SimpleTypeFactory<HashAlgorithmType> Factory = new SimpleTypeFactory<>(
-    TypeSystemHolder.typeSystem,
-    "hashalgorithmtype9a0etype");
-  SchemaType type = Factory.getType();
+public interface HashAlgorithmType extends org.apache.xmlbeans.XmlNormalizedString {
+    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.HashAlgorithmType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "hashalgorithmtype9a0etype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 }

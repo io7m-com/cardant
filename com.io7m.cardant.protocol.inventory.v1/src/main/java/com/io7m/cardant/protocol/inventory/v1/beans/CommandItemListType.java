@@ -7,9 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -17,86 +18,83 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemListType extends CommandType
-{
-  DocumentFactory<CommandItemListType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemlisttype30f3type");
-  SchemaType type = Factory.getType();
+public interface CommandItemListType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commanditemlisttype30f3type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ListLocationsAll" element
-   */
-  ListLocationsAllType getListLocationsAll();
+    /**
+     * Gets the "ListLocationsAll" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType getListLocationsAll();
 
-  /**
-   * Sets the "ListLocationsAll" element
-   */
-  void setListLocationsAll(ListLocationsAllType listLocationsAll);
+    /**
+     * True if has "ListLocationsAll" element
+     */
+    boolean isSetListLocationsAll();
 
-  /**
-   * True if has "ListLocationsAll" element
-   */
-  boolean isSetListLocationsAll();
+    /**
+     * Sets the "ListLocationsAll" element
+     */
+    void setListLocationsAll(com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType listLocationsAll);
 
-  /**
-   * Appends and returns a new empty "ListLocationsAll" element
-   */
-  ListLocationsAllType addNewListLocationsAll();
+    /**
+     * Appends and returns a new empty "ListLocationsAll" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType addNewListLocationsAll();
 
-  /**
-   * Unsets the "ListLocationsAll" element
-   */
-  void unsetListLocationsAll();
+    /**
+     * Unsets the "ListLocationsAll" element
+     */
+    void unsetListLocationsAll();
 
-  /**
-   * Gets the "ListLocationExact" element
-   */
-  ListLocationExactType getListLocationExact();
+    /**
+     * Gets the "ListLocationExact" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType getListLocationExact();
 
-  /**
-   * Sets the "ListLocationExact" element
-   */
-  void setListLocationExact(ListLocationExactType listLocationExact);
+    /**
+     * True if has "ListLocationExact" element
+     */
+    boolean isSetListLocationExact();
 
-  /**
-   * True if has "ListLocationExact" element
-   */
-  boolean isSetListLocationExact();
+    /**
+     * Sets the "ListLocationExact" element
+     */
+    void setListLocationExact(com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType listLocationExact);
 
-  /**
-   * Appends and returns a new empty "ListLocationExact" element
-   */
-  ListLocationExactType addNewListLocationExact();
+    /**
+     * Appends and returns a new empty "ListLocationExact" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType addNewListLocationExact();
 
-  /**
-   * Unsets the "ListLocationExact" element
-   */
-  void unsetListLocationExact();
+    /**
+     * Unsets the "ListLocationExact" element
+     */
+    void unsetListLocationExact();
 
-  /**
-   * Gets the "ListLocationWithDescendants" element
-   */
-  ListLocationWithDescendantsType getListLocationWithDescendants();
+    /**
+     * Gets the "ListLocationWithDescendants" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType getListLocationWithDescendants();
 
-  /**
-   * Sets the "ListLocationWithDescendants" element
-   */
-  void setListLocationWithDescendants(ListLocationWithDescendantsType listLocationWithDescendants);
+    /**
+     * True if has "ListLocationWithDescendants" element
+     */
+    boolean isSetListLocationWithDescendants();
 
-  /**
-   * True if has "ListLocationWithDescendants" element
-   */
-  boolean isSetListLocationWithDescendants();
+    /**
+     * Sets the "ListLocationWithDescendants" element
+     */
+    void setListLocationWithDescendants(com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType listLocationWithDescendants);
 
-  /**
-   * Appends and returns a new empty "ListLocationWithDescendants" element
-   */
-  ListLocationWithDescendantsType addNewListLocationWithDescendants();
+    /**
+     * Appends and returns a new empty "ListLocationWithDescendants" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType addNewListLocationWithDescendants();
 
-  /**
-   * Unsets the "ListLocationWithDescendants" element
-   */
-  void unsetListLocationWithDescendants();
+    /**
+     * Unsets the "ListLocationWithDescendants" element
+     */
+    void unsetListLocationWithDescendants();
 }

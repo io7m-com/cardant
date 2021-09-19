@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ResponseItemGet(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ResponseItemGetDocumentImpl extends ResponseDocumentImpl implements
-  ResponseItemGetDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemGet"),
-  };
+public class ResponseItemGetDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetDocument {
+    private static final long serialVersionUID = 1L;
 
-  public ResponseItemGetDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "ResponseItemGet" element
-   */
-  @Override
-  public ResponseItemGetType getResponseItemGet()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ResponseItemGetType target = null;
-      target = (ResponseItemGetType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public ResponseItemGetDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "ResponseItemGet" element
-   */
-  @Override
-  public void setResponseItemGet(final ResponseItemGetType responseItemGet)
-  {
-    this.generatedSetterHelperImpl(
-      responseItemGet,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemGet"),
+    };
 
-  /**
-   * Appends and returns a new empty "ResponseItemGet" element
-   */
-  @Override
-  public ResponseItemGetType addNewResponseItemGet()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ResponseItemGetType target = null;
-      target = (ResponseItemGetType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "ResponseItemGet" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType getResponseItemGet() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "ResponseItemGet" element
+     */
+    @Override
+    public void setResponseItemGet(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType responseItemGet) {
+        generatedSetterHelperImpl(responseItemGet, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "ResponseItemGet" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType addNewResponseItemGet() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

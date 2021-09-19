@@ -32,6 +32,8 @@ import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAModelDatabaseEventUpdated;
@@ -60,6 +62,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.Flow;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_CYCLIC;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_DUPLICATE;
@@ -355,7 +358,12 @@ public final class CADerbyDatabaseTest
       final var id = CAItemID.random();
 
       queries.itemCreate(id);
-      assertEquals(Set.of(id), queries.itemList(new CAListLocationsAll()));
+      assertEquals(
+        Set.of(id),
+        queries.itemList(new CAListLocationsAll())
+          .stream()
+          .map(CAItem::id)
+          .collect(Collectors.toSet()));
       assertEquals(Set.of(), queries.itemListDeleted());
 
       queries.itemDeleteMarkOnly(id);
@@ -394,7 +402,7 @@ public final class CADerbyDatabaseTest
   }
 
   @Test
-  public void testItemList()
+  public void testItemListAll()
     throws Exception
   {
     this.withDatabase((transaction, queries) -> {
@@ -411,7 +419,59 @@ public final class CADerbyDatabaseTest
 
       final var itemsGet =
         queries.itemList(new CAListLocationsAll());
-      assertEquals(itemsPut, itemsGet);
+      assertEquals(
+        itemsPut,
+        itemsGet.stream()
+          .map(CAItem::id)
+          .collect(Collectors.toSet())
+      );
+    });
+  }
+
+  @Test
+  public void testItemListLocationExact()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var location0 =
+        new CALocation(
+          CALocationID.random(),
+          Optional.empty(),
+          "Location 0",
+          "D"
+        );
+
+      queries.locationPut(location0);
+
+      final var itemsPut = new ArrayList<CAItemID>();
+      itemsPut.add(CAItemID.random());
+      itemsPut.add(CAItemID.random());
+      itemsPut.add(CAItemID.random());
+      itemsPut.add(CAItemID.random());
+      itemsPut.add(CAItemID.random());
+
+      for (final var item : itemsPut) {
+        queries.itemCreate(item);
+      }
+
+      queries.itemReposit(
+        new CAItemRepositAdd(itemsPut.get(0), location0.id(), 100L));
+      queries.itemReposit(
+        new CAItemRepositAdd(itemsPut.get(2), location0.id(), 100L));
+
+      final var itemsGet =
+        queries.itemList(new CAListLocationExact(location0.id()));
+
+      final var itemsExpected = new HashSet<>();
+      itemsExpected.add(itemsPut.get(0));
+      itemsExpected.add(itemsPut.get(2));
+
+      assertEquals(
+        itemsExpected,
+        itemsGet.stream()
+          .map(CAItem::id)
+          .collect(Collectors.toSet())
+      );
     });
   }
 

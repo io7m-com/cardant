@@ -29,6 +29,9 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
@@ -42,6 +45,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -53,6 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISCONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS_FAILED;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.*;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
@@ -393,6 +398,37 @@ public final class CAClient implements CAClientHostileType
 
     this.requests.add(
       new CAClientCommandValid<>(future, command, CAItem.class)
+    );
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CALocation>> locationPut(
+    final CALocation location)
+  {
+    Objects.requireNonNull(location, "location");
+
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CALocation>>();
+    final var command =
+      new CACommandLocationPut(location);
+
+    this.requests.add(
+      new CAClientCommandValid<>(future, command, CALocation.class)
+    );
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CALocations>> locationList()
+  {
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CALocations>>();
+    final var command =
+      new CACommandLocationList();
+
+    this.requests.add(
+      new CAClientCommandValid<>(future, command, CALocations.class)
     );
     return future;
   }

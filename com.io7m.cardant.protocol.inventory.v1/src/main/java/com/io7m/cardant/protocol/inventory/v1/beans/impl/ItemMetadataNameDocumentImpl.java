@@ -8,101 +8,81 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.SimpleValue;
-import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ItemMetadataName(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ItemMetadataNameDocumentImpl extends XmlComplexContentImpl implements
-  ItemMetadataNameDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "ItemMetadataName"),
-  };
+public class ItemMetadataNameDocumentImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameDocument {
+    private static final long serialVersionUID = 1L;
 
-  public ItemMetadataNameDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "ItemMetadataName" element
-   */
-  @Override
-  public String getItemMetadataName()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return (target == null) ? null : target.getStringValue();
+    public ItemMetadataNameDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "ItemMetadataName" element
-   */
-  @Override
-  public void setItemMetadataName(final String itemMetadataName)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_element_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.setStringValue(itemMetadataName);
-    }
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "ItemMetadataName"),
+    };
 
-  /**
-   * Gets (as xml) the "ItemMetadataName" element
-   */
-  @Override
-  public ItemMetadataNameType xgetItemMetadataName()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemMetadataNameType target = null;
-      target = (ItemMetadataNameType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
-    }
-  }
 
-  /**
-   * Sets (as xml) the "ItemMetadataName" element
-   */
-  @Override
-  public void xsetItemMetadataName(final ItemMetadataNameType itemMetadataName)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemMetadataNameType target = null;
-      target = (ItemMetadataNameType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      if (target == null) {
-        target = (ItemMetadataNameType) this.get_store().add_element_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.set(itemMetadataName);
+    /**
+     * Gets the "ItemMetadataName" element
+     */
+    @Override
+    public java.lang.String getItemMetadataName() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
+
+    /**
+     * Gets (as xml) the "ItemMetadataName" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType xgetItemMetadataName() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return target;
+        }
+    }
+
+    /**
+     * Sets the "ItemMetadataName" element
+     */
+    @Override
+    public void setItemMetadataName(java.lang.String itemMetadataName) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_element_user(PROPERTY_QNAME[0]);
+            }
+            target.setStringValue(itemMetadataName);
+        }
+    }
+
+    /**
+     * Sets (as xml) the "ItemMetadataName" element
+     */
+    @Override
+    public void xsetItemMetadataName(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType itemMetadataName) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            }
+            target.set(itemMetadataName);
+        }
+    }
 }

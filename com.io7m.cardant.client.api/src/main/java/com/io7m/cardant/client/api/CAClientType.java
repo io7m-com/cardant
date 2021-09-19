@@ -23,6 +23,8 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocations;
 
 import java.io.Closeable;
 import java.util.Set;
@@ -131,4 +133,23 @@ public interface CAClientType extends Closeable
   CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentDelete(
     CAItemID id,
     CAItemAttachmentID itemAttachment);
+
+  /**
+   * Create or update a location on the server.
+   *
+   * @param location The location
+   *
+   * @return A location
+   */
+
+  CompletableFuture<CAClientCommandResultType<CALocation>> locationPut(
+    CALocation location);
+
+  /**
+   * List locations on the server.
+   *
+   * @return The locations
+   */
+
+  CompletableFuture<CAClientCommandResultType<CALocations>> locationList();
 }

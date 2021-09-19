@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemMetadataRemoveDocument extends CommandDocument
-{
-  DocumentFactory<CommandItemMetadataRemoveDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemmetadataremove6288doctype");
-  SchemaType type = Factory.getType();
+public interface CommandItemMetadataRemoveDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commanditemmetadataremove6288doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandItemMetadataRemove" element
-   */
-  CommandItemMetadataRemoveType getCommandItemMetadataRemove();
+    /**
+     * Gets the "CommandItemMetadataRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveType getCommandItemMetadataRemove();
 
-  /**
-   * Sets the "CommandItemMetadataRemove" element
-   */
-  void setCommandItemMetadataRemove(CommandItemMetadataRemoveType commandItemMetadataRemove);
+    /**
+     * Sets the "CommandItemMetadataRemove" element
+     */
+    void setCommandItemMetadataRemove(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveType commandItemMetadataRemove);
 
-  /**
-   * Appends and returns a new empty "CommandItemMetadataRemove" element
-   */
-  CommandItemMetadataRemoveType addNewCommandItemMetadataRemove();
+    /**
+     * Appends and returns a new empty "CommandItemMetadataRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveType addNewCommandItemMetadataRemove();
 }

@@ -7,13 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlInteger;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-
-import java.math.BigInteger;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -21,116 +18,113 @@ import java.math.BigInteger;
  *
  * This is a complex type.
  */
-public interface ItemType extends XmlObject
-{
-  DocumentFactory<ItemType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemtype2a8atype");
-  SchemaType type = Factory.getType();
+public interface ItemType extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "itemtype2a8atype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemMetadatas" element
-   */
-  ItemMetadatasType getItemMetadatas();
+    /**
+     * Gets the "ItemMetadatas" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType getItemMetadatas();
 
-  /**
-   * Sets the "ItemMetadatas" element
-   */
-  void setItemMetadatas(ItemMetadatasType itemMetadatas);
+    /**
+     * Sets the "ItemMetadatas" element
+     */
+    void setItemMetadatas(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType itemMetadatas);
 
-  /**
-   * Appends and returns a new empty "ItemMetadatas" element
-   */
-  ItemMetadatasType addNewItemMetadatas();
+    /**
+     * Appends and returns a new empty "ItemMetadatas" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType addNewItemMetadatas();
 
-  /**
-   * Gets the "Tags" element
-   */
-  TagsType getTags();
+    /**
+     * Gets the "Tags" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagsType getTags();
 
-  /**
-   * Sets the "Tags" element
-   */
-  void setTags(TagsType tags);
+    /**
+     * Sets the "Tags" element
+     */
+    void setTags(com.io7m.cardant.protocol.inventory.v1.beans.TagsType tags);
 
-  /**
-   * Appends and returns a new empty "Tags" element
-   */
-  TagsType addNewTags();
+    /**
+     * Appends and returns a new empty "Tags" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagsType addNewTags();
 
-  /**
-   * Gets the "ItemAttachments" element
-   */
-  ItemAttachmentsType getItemAttachments();
+    /**
+     * Gets the "ItemAttachments" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType getItemAttachments();
 
-  /**
-   * Sets the "ItemAttachments" element
-   */
-  void setItemAttachments(ItemAttachmentsType itemAttachments);
+    /**
+     * Sets the "ItemAttachments" element
+     */
+    void setItemAttachments(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType itemAttachments);
 
-  /**
-   * Appends and returns a new empty "ItemAttachments" element
-   */
-  ItemAttachmentsType addNewItemAttachments();
+    /**
+     * Appends and returns a new empty "ItemAttachments" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType addNewItemAttachments();
 
-  /**
-   * Gets the "id" attribute
-   */
-  String getId();
+    /**
+     * Gets the "id" attribute
+     */
+    java.lang.String getId();
 
-  /**
-   * Sets the "id" attribute
-   */
-  void setId(String id);
+    /**
+     * Gets (as xml) the "id" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId();
 
-  /**
-   * Gets (as xml) the "id" attribute
-   */
-  UUIDType xgetId();
+    /**
+     * Sets the "id" attribute
+     */
+    void setId(java.lang.String id);
 
-  /**
-   * Sets (as xml) the "id" attribute
-   */
-  void xsetId(UUIDType id);
+    /**
+     * Sets (as xml) the "id" attribute
+     */
+    void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id);
 
-  /**
-   * Gets the "name" attribute
-   */
-  String getName();
+    /**
+     * Gets the "name" attribute
+     */
+    java.lang.String getName();
 
-  /**
-   * Sets the "name" attribute
-   */
-  void setName(String name);
+    /**
+     * Gets (as xml) the "name" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemNameType xgetName();
 
-  /**
-   * Gets (as xml) the "name" attribute
-   */
-  ItemNameType xgetName();
+    /**
+     * Sets the "name" attribute
+     */
+    void setName(java.lang.String name);
 
-  /**
-   * Sets (as xml) the "name" attribute
-   */
-  void xsetName(ItemNameType name);
+    /**
+     * Sets (as xml) the "name" attribute
+     */
+    void xsetName(com.io7m.cardant.protocol.inventory.v1.beans.ItemNameType name);
 
-  /**
-   * Gets the "count" attribute
-   */
-  BigInteger getCount();
+    /**
+     * Gets the "count" attribute
+     */
+    java.math.BigInteger getCount();
 
-  /**
-   * Sets the "count" attribute
-   */
-  void setCount(BigInteger count);
+    /**
+     * Gets (as xml) the "count" attribute
+     */
+    org.apache.xmlbeans.XmlInteger xgetCount();
 
-  /**
-   * Gets (as xml) the "count" attribute
-   */
-  XmlInteger xgetCount();
+    /**
+     * Sets the "count" attribute
+     */
+    void setCount(java.math.BigInteger count);
 
-  /**
-   * Sets (as xml) the "count" attribute
-   */
-  void xsetCount(XmlInteger count);
+    /**
+     * Sets (as xml) the "count" attribute
+     */
+    void xsetCount(org.apache.xmlbeans.XmlInteger count);
 }

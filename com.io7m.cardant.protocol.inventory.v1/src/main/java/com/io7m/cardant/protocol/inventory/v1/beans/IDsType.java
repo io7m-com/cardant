@@ -7,12 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-
-import java.util.List;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -20,58 +18,53 @@ import java.util.List;
  *
  * This is a complex type.
  */
-public interface IDsType extends XmlObject
-{
-  DocumentFactory<IDsType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "idstypeebd7type");
-  SchemaType type = Factory.getType();
+public interface IDsType extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.IDsType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "idstypeebd7type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets a List of "ID" elements
-   */
-  List<IDType> getIDList();
+    /**
+     * Gets a List of "ID" elements
+     */
+    java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.IDType> getIDList();
 
-  /**
-   * Gets array of all "ID" elements
-   */
-  IDType[] getIDArray();
+    /**
+     * Gets array of all "ID" elements
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.IDType[] getIDArray();
 
-  /**
-   * Sets array of all "ID" element
-   */
-  void setIDArray(IDType[] idArray);
+    /**
+     * Gets ith "ID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.IDType getIDArray(int i);
 
-  /**
-   * Gets ith "ID" element
-   */
-  IDType getIDArray(int i);
+    /**
+     * Returns number of "ID" element
+     */
+    int sizeOfIDArray();
 
-  /**
-   * Returns number of "ID" element
-   */
-  int sizeOfIDArray();
+    /**
+     * Sets array of all "ID" element
+     */
+    void setIDArray(com.io7m.cardant.protocol.inventory.v1.beans.IDType[] idArray);
 
-  /**
-   * Sets ith "ID" element
-   */
-  void setIDArray(
-    int i,
-    IDType id);
+    /**
+     * Sets ith "ID" element
+     */
+    void setIDArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.IDType id);
 
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "ID" element
-   */
-  IDType insertNewID(int i);
+    /**
+     * Inserts and returns a new empty value (as xml) as the ith "ID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.IDType insertNewID(int i);
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "ID" element
-   */
-  IDType addNewID();
+    /**
+     * Appends and returns a new empty value (as xml) as the last "ID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.IDType addNewID();
 
-  /**
-   * Removes the ith "ID" element
-   */
-  void removeID(int i);
+    /**
+     * Removes the ith "ID" element
+     */
+    void removeID(int i);
 }

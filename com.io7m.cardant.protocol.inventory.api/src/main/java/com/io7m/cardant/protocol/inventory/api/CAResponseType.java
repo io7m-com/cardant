@@ -21,6 +21,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CATags;
 
 import java.util.List;
@@ -36,7 +37,8 @@ public sealed interface CAResponseType extends CAMessageType
    * The type of responses that return data.
    */
 
-  sealed interface CAResponseWithElementType extends CAResponseType {
+  sealed interface CAResponseWithElementType extends CAResponseType
+  {
 
     /**
      * @return The returned data
@@ -281,26 +283,6 @@ public sealed interface CAResponseType extends CAMessageType
   }
 
   /**
-   * @param data The returned location
-   *
-   * @see CACommandType.CACommandLocationGet
-   */
-
-  record CAResponseLocationGet(
-    CALocation data)
-    implements CAResponseWithElementType
-  {
-    /**
-     * @see CACommandType.CACommandLocationGet
-     */
-
-    public CAResponseLocationGet
-    {
-      Objects.requireNonNull(data, "location");
-    }
-  }
-
-  /**
    * @param data The returned tags
    *
    * @see CACommandType.CACommandTagList
@@ -353,6 +335,66 @@ public sealed interface CAResponseType extends CAMessageType
     public CAResponseTagsDelete
     {
       Objects.requireNonNull(data, "tags");
+    }
+  }
+
+  /**
+   * @param data The returned location
+   *
+   * @see CACommandType.CACommandLocationGet
+   */
+
+  record CAResponseLocationGet(
+    CALocation data)
+    implements CAResponseWithElementType
+  {
+    /**
+     * @see CACommandType.CACommandLocationGet
+     */
+
+    public CAResponseLocationGet
+    {
+      Objects.requireNonNull(data, "location");
+    }
+  }
+
+  /**
+   * @param data The returned location
+   *
+   * @see CACommandType.CACommandLocationPut
+   */
+
+  record CAResponseLocationPut(
+    CALocation data)
+    implements CAResponseWithElementType
+  {
+    /**
+     * @see CACommandType.CACommandLocationPut
+     */
+
+    public CAResponseLocationPut
+    {
+      Objects.requireNonNull(data, "location");
+    }
+  }
+
+  /**
+   * @param data The returned locations
+   *
+   * @see CACommandType.CACommandLocationList
+   */
+
+  record CAResponseLocationList(
+    CALocations data)
+    implements CAResponseWithElementType
+  {
+    /**
+     * @see CACommandType.CACommandLocationList
+     */
+
+    public CAResponseLocationList
+    {
+      Objects.requireNonNull(data, "locations");
     }
   }
 

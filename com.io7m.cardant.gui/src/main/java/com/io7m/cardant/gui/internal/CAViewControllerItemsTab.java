@@ -191,7 +191,12 @@ public final class CAViewControllerItemsTab implements Initializable
 
   private void onLocationSelectionChanged()
   {
+    final var selectionModel =
+      this.locationListView.getSelectionModel();
 
+    this.controller.locationSelect(
+      Optional.ofNullable(selectionModel.getSelectedItem())
+    );
   }
 
   @FXML

@@ -7,9 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -17,26 +18,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseItemAttachmentRemoveType extends ResponseType
-{
-  DocumentFactory<ResponseItemAttachmentRemoveType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responseitemattachmentremovetypeb702type");
-  SchemaType type = Factory.getType();
+public interface ResponseItemAttachmentRemoveType extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemoveType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "responseitemattachmentremovetypeb702type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "Item" element
-   */
-  ItemType getItem();
+    /**
+     * Gets the "Item" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemType getItem();
 
-  /**
-   * Sets the "Item" element
-   */
-  void setItem(ItemType item);
+    /**
+     * Sets the "Item" element
+     */
+    void setItem(com.io7m.cardant.protocol.inventory.v1.beans.ItemType item);
 
-  /**
-   * Appends and returns a new empty "Item" element
-   */
-  ItemType addNewItem();
+    /**
+     * Appends and returns a new empty "Item" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemType addNewItem();
 }

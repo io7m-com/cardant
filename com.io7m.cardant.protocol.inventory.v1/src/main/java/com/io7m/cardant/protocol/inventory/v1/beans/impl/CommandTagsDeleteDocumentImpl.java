@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one CommandTagsDelete(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class CommandTagsDeleteDocumentImpl extends CommandDocumentImpl implements
-  CommandTagsDeleteDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "CommandTagsDelete"),
-  };
+public class CommandTagsDeleteDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteDocument {
+    private static final long serialVersionUID = 1L;
 
-  public CommandTagsDeleteDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "CommandTagsDelete" element
-   */
-  @Override
-  public CommandTagsDeleteType getCommandTagsDelete()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandTagsDeleteType target = null;
-      target = (CommandTagsDeleteType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public CommandTagsDeleteDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "CommandTagsDelete" element
-   */
-  @Override
-  public void setCommandTagsDelete(final CommandTagsDeleteType commandTagsDelete)
-  {
-    this.generatedSetterHelperImpl(
-      commandTagsDelete,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "CommandTagsDelete"),
+    };
 
-  /**
-   * Appends and returns a new empty "CommandTagsDelete" element
-   */
-  @Override
-  public CommandTagsDeleteType addNewCommandTagsDelete()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandTagsDeleteType target = null;
-      target = (CommandTagsDeleteType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "CommandTagsDelete" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType getCommandTagsDelete() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "CommandTagsDelete" element
+     */
+    @Override
+    public void setCommandTagsDelete(com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType commandTagsDelete) {
+        generatedSetterHelperImpl(commandTagsDelete, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "CommandTagsDelete" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType addNewCommandTagsDelete() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

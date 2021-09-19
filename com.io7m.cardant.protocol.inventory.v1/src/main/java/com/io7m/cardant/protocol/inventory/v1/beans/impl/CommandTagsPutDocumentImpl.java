@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one CommandTagsPut(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class CommandTagsPutDocumentImpl extends CommandDocumentImpl implements
-  CommandTagsPutDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "CommandTagsPut"),
-  };
+public class CommandTagsPutDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutDocument {
+    private static final long serialVersionUID = 1L;
 
-  public CommandTagsPutDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "CommandTagsPut" element
-   */
-  @Override
-  public CommandTagsPutType getCommandTagsPut()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandTagsPutType target = null;
-      target = (CommandTagsPutType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public CommandTagsPutDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "CommandTagsPut" element
-   */
-  @Override
-  public void setCommandTagsPut(final CommandTagsPutType commandTagsPut)
-  {
-    this.generatedSetterHelperImpl(
-      commandTagsPut,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "CommandTagsPut"),
+    };
 
-  /**
-   * Appends and returns a new empty "CommandTagsPut" element
-   */
-  @Override
-  public CommandTagsPutType addNewCommandTagsPut()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandTagsPutType target = null;
-      target = (CommandTagsPutType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "CommandTagsPut" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType getCommandTagsPut() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "CommandTagsPut" element
+     */
+    @Override
+    public void setCommandTagsPut(com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType commandTagsPut) {
+        generatedSetterHelperImpl(commandTagsPut, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "CommandTagsPut" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType addNewCommandTagsPut() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

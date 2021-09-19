@@ -7,10 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,101 +18,98 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface LocationType extends XmlObject
-{
-  DocumentFactory<LocationType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "locationtypeffa8type");
-  SchemaType type = Factory.getType();
+public interface LocationType extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.LocationType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "locationtypeffa8type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "id" attribute
-   */
-  String getId();
+    /**
+     * Gets the "id" attribute
+     */
+    java.lang.String getId();
 
-  /**
-   * Sets the "id" attribute
-   */
-  void setId(String id);
+    /**
+     * Gets (as xml) the "id" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId();
 
-  /**
-   * Gets (as xml) the "id" attribute
-   */
-  UUIDType xgetId();
+    /**
+     * Sets the "id" attribute
+     */
+    void setId(java.lang.String id);
 
-  /**
-   * Sets (as xml) the "id" attribute
-   */
-  void xsetId(UUIDType id);
+    /**
+     * Sets (as xml) the "id" attribute
+     */
+    void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id);
 
-  /**
-   * Gets the "parent" attribute
-   */
-  String getParent();
+    /**
+     * Gets the "parent" attribute
+     */
+    java.lang.String getParent();
 
-  /**
-   * Sets the "parent" attribute
-   */
-  void setParent(String parent);
+    /**
+     * Gets (as xml) the "parent" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetParent();
 
-  /**
-   * Gets (as xml) the "parent" attribute
-   */
-  UUIDType xgetParent();
+    /**
+     * True if has "parent" attribute
+     */
+    boolean isSetParent();
 
-  /**
-   * True if has "parent" attribute
-   */
-  boolean isSetParent();
+    /**
+     * Sets the "parent" attribute
+     */
+    void setParent(java.lang.String parent);
 
-  /**
-   * Sets (as xml) the "parent" attribute
-   */
-  void xsetParent(UUIDType parent);
+    /**
+     * Sets (as xml) the "parent" attribute
+     */
+    void xsetParent(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType parent);
 
-  /**
-   * Unsets the "parent" attribute
-   */
-  void unsetParent();
+    /**
+     * Unsets the "parent" attribute
+     */
+    void unsetParent();
 
-  /**
-   * Gets the "name" attribute
-   */
-  String getName();
+    /**
+     * Gets the "name" attribute
+     */
+    java.lang.String getName();
 
-  /**
-   * Sets the "name" attribute
-   */
-  void setName(String name);
+    /**
+     * Gets (as xml) the "name" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType xgetName();
 
-  /**
-   * Gets (as xml) the "name" attribute
-   */
-  LocationNameType xgetName();
+    /**
+     * Sets the "name" attribute
+     */
+    void setName(java.lang.String name);
 
-  /**
-   * Sets (as xml) the "name" attribute
-   */
-  void xsetName(LocationNameType name);
+    /**
+     * Sets (as xml) the "name" attribute
+     */
+    void xsetName(com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType name);
 
-  /**
-   * Gets the "description" attribute
-   */
-  String getDescription();
+    /**
+     * Gets the "description" attribute
+     */
+    java.lang.String getDescription();
 
-  /**
-   * Sets the "description" attribute
-   */
-  void setDescription(String description);
+    /**
+     * Gets (as xml) the "description" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType xgetDescription();
 
-  /**
-   * Gets (as xml) the "description" attribute
-   */
-  LocationDescriptionType xgetDescription();
+    /**
+     * Sets the "description" attribute
+     */
+    void setDescription(java.lang.String description);
 
-  /**
-   * Sets (as xml) the "description" attribute
-   */
-  void xsetDescription(LocationDescriptionType description);
+    /**
+     * Sets (as xml) the "description" attribute
+     */
+    void xsetDescription(com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType description);
 }

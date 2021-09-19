@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface LocationDocument extends XmlObject
-{
-  DocumentFactory<LocationDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "locationd4b2doctype");
-  SchemaType type = Factory.getType();
+public interface LocationDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.LocationDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "locationd4b2doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "Location" element
-   */
-  LocationType getLocation();
+    /**
+     * Gets the "Location" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationType getLocation();
 
-  /**
-   * Sets the "Location" element
-   */
-  void setLocation(LocationType location);
+    /**
+     * Sets the "Location" element
+     */
+    void setLocation(com.io7m.cardant.protocol.inventory.v1.beans.LocationType location);
 
-  /**
-   * Appends and returns a new empty "Location" element
-   */
-  LocationType addNewLocation();
+    /**
+     * Appends and returns a new empty "Location" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationType addNewLocation();
 }

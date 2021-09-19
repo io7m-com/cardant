@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemRemoveDocument extends CommandDocument
-{
-  DocumentFactory<CommandItemRemoveDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemremove97b7doctype");
-  SchemaType type = Factory.getType();
+public interface CommandItemRemoveDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commanditemremove97b7doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandItemRemove" element
-   */
-  CommandItemRemoveType getCommandItemRemove();
+    /**
+     * Gets the "CommandItemRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveType getCommandItemRemove();
 
-  /**
-   * Sets the "CommandItemRemove" element
-   */
-  void setCommandItemRemove(CommandItemRemoveType commandItemRemove);
+    /**
+     * Sets the "CommandItemRemove" element
+     */
+    void setCommandItemRemove(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveType commandItemRemove);
 
-  /**
-   * Appends and returns a new empty "CommandItemRemove" element
-   */
-  CommandItemRemoveType addNewCommandItemRemove();
+    /**
+     * Appends and returns a new empty "CommandItemRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveType addNewCommandItemRemove();
 }

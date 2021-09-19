@@ -25,6 +25,7 @@ import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItems;
+import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
@@ -84,6 +85,8 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsPut;
@@ -321,9 +324,6 @@ public final class CA1CommandServlet
     if (command instanceof CACommandLocationPut locationPut) {
       return this.executeCommandLocationPut(locationPut);
     }
-    if (command instanceof CACommandLocationList locationList) {
-      return this.executeCommandLocationList(locationList);
-    }
     if (command instanceof CACommandItemReposit itemReposit) {
       return this.executeCommandItemReposit(itemReposit);
     }
@@ -333,17 +333,24 @@ public final class CA1CommandServlet
     if (command instanceof CACommandLocationGet locationGet) {
       return this.executeCommandLocationGet(locationGet);
     }
-    if (command instanceof CACommandItemLocationList locationList) {
-      return this.executeCommandItemLocationList(locationList);
+    if (command instanceof CACommandLocationList locationList) {
+      return this.executeCommandLocationList(locationList);
     }
 
     throw new IllegalStateException();
   }
 
-  private CAResponseType executeCommandItemLocationList(
-    final CACommandItemLocationList locationList)
+  private CAResponseType executeCommandLocationList(
+    final CACommandLocationList locationList)
   {
-    throw new UnimplementedCodeException();
+    try {
+      final var locations =
+        this.queries.locationList();
+
+      return new CAResponseLocationList(new CALocations(locations));
+    } catch (final CADatabaseException e) {
+      return this.errorWithoutDetails(500, e);
+    }
   }
 
   private CAResponseType executeCommandLocationGet(
@@ -384,16 +391,19 @@ public final class CA1CommandServlet
     }
   }
 
-  private CAResponseType executeCommandLocationList(
-    final CACommandLocationList locationList)
-  {
-    throw new UnimplementedCodeException();
-  }
-
   private CAResponseType executeCommandLocationPut(
     final CACommandLocationPut locationPut)
   {
-    throw new UnimplementedCodeException();
+    try {
+      this.queries.locationPut(locationPut.location());
+      return new CAResponseLocationPut(locationPut.location());
+    } catch (final CADatabaseException e) {
+      return switch (e.errorCode()) {
+        case ERROR_NONEXISTENT,
+          ERROR_PARAMETERS_INVALID -> this.errorWithoutDetails(400, e);
+        default -> this.errorWithoutDetails(500, e);
+      };
+    }
   }
 
   private CAResponseType executeCommandItemMetadataPut(
@@ -525,17 +535,8 @@ public final class CA1CommandServlet
     final CACommandItemList command)
   {
     try {
-      final var ids =
-        this.queries.itemList(command.locationBehaviour());
-      final var items =
-        new HashSet<CAItem>();
-
-      for (final var id : ids) {
-        final var itemOpt = this.queries.itemGet(id);
-        itemOpt.ifPresent(items::add);
-      }
-
-      return new CAResponseItemList(new CAItems(items));
+      return new CAResponseItemList(
+        new CAItems(this.queries.itemList(command.locationBehaviour())));
     } catch (final CADatabaseException e) {
       return this.errorWithoutDetails(500, e);
     }

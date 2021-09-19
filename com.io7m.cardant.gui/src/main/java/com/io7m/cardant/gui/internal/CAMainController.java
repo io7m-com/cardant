@@ -35,7 +35,6 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItems;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -53,6 +52,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
+
 public final class CAMainController implements CAServiceType
 {
   private static final Logger LOG =
@@ -67,6 +68,7 @@ public final class CAMainController implements CAServiceType
   private final SimpleObjectProperty<Optional<CAItemAttachmentMutable>> itemAttachmentSelected;
   private final SimpleObjectProperty<Optional<CAItemMetadataMutable>> itemMetadataSelected;
   private final SimpleObjectProperty<Optional<CAItemMutable>> itemSelected;
+  private final SimpleObjectProperty<Optional<CALocationItemType>> locationSelected;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
   private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
@@ -96,14 +98,16 @@ public final class CAMainController implements CAServiceType
 
     this.locationPutAllPlaceholderItem();
 
+    this.locationSelected =
+      new SimpleObjectProperty<>(Optional.empty());
     this.itemSelected =
-      new SimpleObjectProperty<>();
+      new SimpleObjectProperty<>(Optional.empty());
     this.itemAttachmentSelected =
-      new SimpleObjectProperty<>();
+      new SimpleObjectProperty<>(Optional.empty());
     this.itemMetadataSelected =
-      new SimpleObjectProperty<>();
+      new SimpleObjectProperty<>(Optional.empty());
     this.client =
-      new SimpleObjectProperty<>();
+      new SimpleObjectProperty<>(Optional.empty());
 
     this.itemMetadataPredicate = (ignored) -> true;
     this.itemAttachmentPredicate = (ignored) -> true;
@@ -200,6 +204,44 @@ public final class CAMainController implements CAServiceType
     return this.itemSelected;
   }
 
+  public void locationSelect(
+    final Optional<CALocationItemType> locationSelection)
+  {
+    Objects.requireNonNull(locationSelection, "locationSelection");
+
+    this.locationSelected.set(locationSelection);
+
+    if (locationSelection.isPresent()) {
+      final var locationItem = locationSelection.get();
+      if (locationItem instanceof CALocationItemAll all) {
+        this.listItemsForAllLocations();
+      } else if (locationItem instanceof CALocationItemDefined defined) {
+        this.listItemsForDefinedLocation(defined);
+      }
+    } else {
+      this.listItemsForAllLocations();
+    }
+
+    this.itemList.writable().clear();
+  }
+
+  private void listItemsForDefinedLocation(
+    final CALocationItemDefined defined)
+  {
+    final var clientNow =
+      this.client.get().orElseThrow(IllegalStateException::new);
+
+    clientNow.itemsList(new CAListLocationExact(defined.id()));
+  }
+
+  private void listItemsForAllLocations()
+  {
+    final var clientNow =
+      this.client.get().orElseThrow(IllegalStateException::new);
+
+    clientNow.itemsList(new CAListLocationsAll());
+  }
+
   public void itemSelect(
     final Optional<CAItemMutable> itemSelection)
   {
@@ -258,6 +300,7 @@ public final class CAMainController implements CAServiceType
 
     newClient.events().subscribe(this.clientSubscriber);
     newClient.itemsList(new CAListLocationsAll());
+    newClient.locationList();
     return newClient;
   }
 

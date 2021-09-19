@@ -7,11 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.sFD186D0BF9A55EE36362F4FDE124660F.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlString;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,31 +18,28 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseErrorDetailType extends XmlObject
-{
-  DocumentFactory<ResponseErrorDetailType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responseerrordetailtypeaf37type");
-  SchemaType type = Factory.getType();
+public interface ResponseErrorDetailType extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "responseerrordetailtypeaf37type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "message" attribute
-   */
-  String getMessage();
+    /**
+     * Gets the "message" attribute
+     */
+    java.lang.String getMessage();
 
-  /**
-   * Sets the "message" attribute
-   */
-  void setMessage(String message);
+    /**
+     * Gets (as xml) the "message" attribute
+     */
+    org.apache.xmlbeans.XmlString xgetMessage();
 
-  /**
-   * Gets (as xml) the "message" attribute
-   */
-  XmlString xgetMessage();
+    /**
+     * Sets the "message" attribute
+     */
+    void setMessage(java.lang.String message);
 
-  /**
-   * Sets (as xml) the "message" attribute
-   */
-  void xsetMessage(XmlString message);
+    /**
+     * Sets (as xml) the "message" attribute
+     */
+    void xsetMessage(org.apache.xmlbeans.XmlString message);
 }

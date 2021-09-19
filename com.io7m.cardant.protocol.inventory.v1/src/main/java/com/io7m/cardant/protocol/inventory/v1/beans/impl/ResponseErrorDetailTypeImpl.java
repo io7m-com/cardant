@@ -7,97 +7,81 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.SimpleValue;
-import org.apache.xmlbeans.XmlString;
-import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML ResponseErrorDetailType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ResponseErrorDetailTypeImpl extends XmlComplexContentImpl implements
-  ResponseErrorDetailType
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("", "message"),
-  };
+public class ResponseErrorDetailTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType {
+    private static final long serialVersionUID = 1L;
 
-  public ResponseErrorDetailTypeImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "message" attribute
-   */
-  @Override
-  public String getMessage()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      return (target == null) ? null : target.getStringValue();
+    public ResponseErrorDetailTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "message" attribute
-   */
-  @Override
-  public void setMessage(final String message)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.setStringValue(message);
-    }
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("", "message"),
+    };
 
-  /**
-   * Gets (as xml) the "message" attribute
-   */
-  @Override
-  public XmlString xgetMessage()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      XmlString target = null;
-      target = (XmlString) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      return target;
-    }
-  }
 
-  /**
-   * Sets (as xml) the "message" attribute
-   */
-  @Override
-  public void xsetMessage(final XmlString message)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      XmlString target = null;
-      target = (XmlString) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      if (target == null) {
-        target = (XmlString) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.set(message);
+    /**
+     * Gets the "message" attribute
+     */
+    @Override
+    public java.lang.String getMessage() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
+
+    /**
+     * Gets (as xml) the "message" attribute
+     */
+    @Override
+    public org.apache.xmlbeans.XmlString xgetMessage() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
+
+    /**
+     * Sets the "message" attribute
+     */
+    @Override
+    public void setMessage(java.lang.String message) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[0]);
+            }
+            target.setStringValue(message);
+        }
+    }
+
+    /**
+     * Sets (as xml) the "message" attribute
+     */
+    @Override
+    public void xsetMessage(org.apache.xmlbeans.XmlString message) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.XmlString)get_store().add_attribute_user(PROPERTY_QNAME[0]);
+            }
+            target.set(message);
+        }
+    }
 }

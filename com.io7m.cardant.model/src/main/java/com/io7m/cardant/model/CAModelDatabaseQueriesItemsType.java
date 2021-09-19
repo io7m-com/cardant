@@ -75,7 +75,7 @@ public interface CAModelDatabaseQueriesItemsType
    * @throws CADatabaseException On database errors
    */
 
-  Set<CAItemID> itemList(
+  Set<CAItem> itemList(
     CAListLocationBehaviourType locationBehaviour)
     throws CADatabaseException;
 
