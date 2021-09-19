@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandDocument extends com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commandebeedoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandDocument extends MessageDocument
+{
+  DocumentFactory<CommandDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandebeedoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "Command" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandType getCommand();
+  /**
+   * Gets the "Command" element
+   */
+  CommandType getCommand();
 
-    /**
-     * Sets the "Command" element
-     */
-    void setCommand(com.io7m.cardant.protocol.inventory.v1.beans.CommandType command);
+  /**
+   * Sets the "Command" element
+   */
+  void setCommand(CommandType command);
 
-    /**
-     * Appends and returns a new empty "Command" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandType addNewCommand();
+  /**
+   * Appends and returns a new empty "Command" element
+   */
+  CommandType addNewCommand();
 }

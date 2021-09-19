@@ -7,10 +7,12 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
+
+import java.util.List;
 
 
 /**
@@ -18,53 +20,58 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ItemAttachmentsType extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "itemattachmentstype81b2type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemAttachmentsType extends XmlObject
+{
+  DocumentFactory<ItemAttachmentsType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemattachmentstype81b2type");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets a List of "ItemAttachment" elements
-     */
-    java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType> getItemAttachmentList();
+  /**
+   * Gets a List of "ItemAttachment" elements
+   */
+  List<ItemAttachmentType> getItemAttachmentList();
 
-    /**
-     * Gets array of all "ItemAttachment" elements
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType[] getItemAttachmentArray();
+  /**
+   * Gets array of all "ItemAttachment" elements
+   */
+  ItemAttachmentType[] getItemAttachmentArray();
 
-    /**
-     * Gets ith "ItemAttachment" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType getItemAttachmentArray(int i);
+  /**
+   * Sets array of all "ItemAttachment" element
+   */
+  void setItemAttachmentArray(ItemAttachmentType[] itemAttachmentArray);
 
-    /**
-     * Returns number of "ItemAttachment" element
-     */
-    int sizeOfItemAttachmentArray();
+  /**
+   * Gets ith "ItemAttachment" element
+   */
+  ItemAttachmentType getItemAttachmentArray(int i);
 
-    /**
-     * Sets array of all "ItemAttachment" element
-     */
-    void setItemAttachmentArray(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType[] itemAttachmentArray);
+  /**
+   * Returns number of "ItemAttachment" element
+   */
+  int sizeOfItemAttachmentArray();
 
-    /**
-     * Sets ith "ItemAttachment" element
-     */
-    void setItemAttachmentArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType itemAttachment);
+  /**
+   * Sets ith "ItemAttachment" element
+   */
+  void setItemAttachmentArray(
+    int i,
+    ItemAttachmentType itemAttachment);
 
-    /**
-     * Inserts and returns a new empty value (as xml) as the ith "ItemAttachment" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType insertNewItemAttachment(int i);
+  /**
+   * Inserts and returns a new empty value (as xml) as the ith "ItemAttachment" element
+   */
+  ItemAttachmentType insertNewItemAttachment(int i);
 
-    /**
-     * Appends and returns a new empty value (as xml) as the last "ItemAttachment" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType addNewItemAttachment();
+  /**
+   * Appends and returns a new empty value (as xml) as the last "ItemAttachment" element
+   */
+  ItemAttachmentType addNewItemAttachment();
 
-    /**
-     * Removes the ith "ItemAttachment" element
-     */
-    void removeItemAttachment(int i);
+  /**
+   * Removes the ith "ItemAttachment" element
+   */
+  void removeItemAttachment(int i);
 }

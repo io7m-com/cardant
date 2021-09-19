@@ -7,18 +7,21 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
+import com.io7m.cardant.protocol.inventory.v1.beans.EventType;
+import org.apache.xmlbeans.SchemaType;
 
 /**
  * An XML EventType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class EventTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.MessageTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.EventType {
-    private static final long serialVersionUID = 1L;
+public class EventTypeImpl extends MessageTypeImpl implements
+  EventType
+{
+  private static final long serialVersionUID = 1L;
 
-    public EventTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
-    }
+  public EventTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
 }

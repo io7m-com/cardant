@@ -7,9 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
-import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlString;
 import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
@@ -18,8 +18,11 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.UUIDType.
  */
-public interface UUIDType extends org.apache.xmlbeans.XmlString {
-    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.UUIDType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "uuidtypee302type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface UUIDType extends XmlString
+{
+  SimpleTypeFactory<UUIDType> Factory = new SimpleTypeFactory<>(
+    TypeSystemHolder.typeSystem,
+    "uuidtypee302type");
+  SchemaType type = Factory.getType();
 
 }

@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemAttachmentPutDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commanditemattachmentput4ef9doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandItemAttachmentPutDocument extends CommandDocument
+{
+  DocumentFactory<CommandItemAttachmentPutDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commanditemattachmentput4ef9doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandItemAttachmentPut" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutType getCommandItemAttachmentPut();
+  /**
+   * Gets the "CommandItemAttachmentPut" element
+   */
+  CommandItemAttachmentPutType getCommandItemAttachmentPut();
 
-    /**
-     * Sets the "CommandItemAttachmentPut" element
-     */
-    void setCommandItemAttachmentPut(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutType commandItemAttachmentPut);
+  /**
+   * Sets the "CommandItemAttachmentPut" element
+   */
+  void setCommandItemAttachmentPut(CommandItemAttachmentPutType commandItemAttachmentPut);
 
-    /**
-     * Appends and returns a new empty "CommandItemAttachmentPut" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutType addNewCommandItemAttachmentPut();
+  /**
+   * Appends and returns a new empty "CommandItemAttachmentPut" element
+   */
+  CommandItemAttachmentPutType addNewCommandItemAttachmentPut();
 }

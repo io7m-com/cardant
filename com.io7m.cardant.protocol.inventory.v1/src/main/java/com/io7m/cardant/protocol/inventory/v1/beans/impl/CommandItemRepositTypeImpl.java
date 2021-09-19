@@ -7,73 +7,87 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType;
 import org.apache.xmlbeans.QNameSet;
+import org.apache.xmlbeans.SchemaType;
+
+import javax.xml.namespace.QName;
 
 /**
  * An XML CommandItemRepositType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class CommandItemRepositTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositType {
-    private static final long serialVersionUID = 1L;
-
-    public CommandItemRepositTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
-    }
-
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemReposit"),
-    };
-
-    private static final QNameSet[] PROPERTY_QSET = {
-    QNameSet.forArray( new QName[] { 
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemReposit"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemRepositMove"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemRepositRemove"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemRepositAdd"),
+public class CommandItemRepositTypeImpl extends CommandTypeImpl implements
+  CommandItemRepositType
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ItemReposit"),
+  };
+  private static final QNameSet[] PROPERTY_QSET = {
+    QNameSet.forArray(new QName[]{
+      new QName("urn:com.io7m.cardant.inventory:1", "ItemReposit"),
+      new QName("urn:com.io7m.cardant.inventory:1", "ItemRepositMove"),
+      new QName("urn:com.io7m.cardant.inventory:1", "ItemRepositRemove"),
+      new QName("urn:com.io7m.cardant.inventory:1", "ItemRepositAdd"),
     }),
-    };
+  };
 
-    /**
-     * Gets the "ItemReposit" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType getItemReposit() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType)get_store().find_element_user(PROPERTY_QSET[0], 0);
-            return (target == null) ? null : target;
-        }
-    }
+  public CommandItemRepositTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
 
-    /**
-     * Sets the "ItemReposit" element
-     */
-    @Override
-    public void setItemReposit(com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType itemReposit) {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType)get_store().find_element_user(PROPERTY_QSET[0], 0);
-            if (target == null) {
-                target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            }
-            target.set(itemReposit);
-        }
+  /**
+   * Gets the "ItemReposit" element
+   */
+  @Override
+  public ItemRepositType getItemReposit()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ItemRepositType target = null;
+      target = (ItemRepositType) this.get_store().find_element_user(
+        PROPERTY_QSET[0],
+        0);
+      return target;
     }
+  }
 
-    /**
-     * Appends and returns a new empty "ItemReposit" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType addNewItemReposit() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
+  /**
+   * Sets the "ItemReposit" element
+   */
+  @Override
+  public void setItemReposit(final ItemRepositType itemReposit)
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ItemRepositType target = null;
+      target = (ItemRepositType) this.get_store().find_element_user(
+        PROPERTY_QSET[0],
+        0);
+      if (target == null) {
+        target = (ItemRepositType) this.get_store().add_element_user(
+          PROPERTY_QNAME[0]);
+      }
+      target.set(itemReposit);
     }
+  }
+
+  /**
+   * Appends and returns a new empty "ItemReposit" element
+   */
+  @Override
+  public ItemRepositType addNewItemReposit()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ItemRepositType target = null;
+      target = (ItemRepositType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
+    }
+  }
 }

@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ResponseTagsDeleteDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "responsetagsdeletec762doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ResponseTagsDeleteDocument extends ResponseDocument
+{
+  DocumentFactory<ResponseTagsDeleteDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "responsetagsdeletec762doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ResponseTagsDelete" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType getResponseTagsDelete();
+  /**
+   * Gets the "ResponseTagsDelete" element
+   */
+  ResponseTagsDeleteType getResponseTagsDelete();
 
-    /**
-     * Sets the "ResponseTagsDelete" element
-     */
-    void setResponseTagsDelete(com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType responseTagsDelete);
+  /**
+   * Sets the "ResponseTagsDelete" element
+   */
+  void setResponseTagsDelete(ResponseTagsDeleteType responseTagsDelete);
 
-    /**
-     * Appends and returns a new empty "ResponseTagsDelete" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType addNewResponseTagsDelete();
+  /**
+   * Appends and returns a new empty "ResponseTagsDelete" element
+   */
+  ResponseTagsDeleteType addNewResponseTagsDelete();
 }

@@ -204,6 +204,9 @@
     </xsd:sequence>
   </xsd:complexType>
 
+  <xsd:element name="ItemMetadataName"
+               type="iv1:ItemMetadataNameType"/>
+
   <xsd:complexType name="ItemMetadataType">
     <xsd:attribute name="name"
                    use="required"
@@ -420,7 +423,7 @@
 
   <xsd:element name="ItemID"
                substitutionGroup="iv1:ID"
-               type="iv1:IDType"/>
+               type="iv1:ItemIDType"/>
 
   <xsd:complexType name="ItemAttachmentIDType">
     <xsd:complexContent>
@@ -576,6 +579,26 @@
                type="iv1:CommandLocationPutType"
                substitutionGroup="iv1:Command"/>
 
+  <xsd:complexType name="ResponseLocationPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandLocationPut command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Location"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseLocationPut"
+               type="iv1:ResponseLocationPutType"
+               substitutionGroup="iv1:Response"/>
+
   <xsd:complexType name="CommandLocationListType">
     <xsd:annotation>
       <xsd:documentation>
@@ -591,6 +614,27 @@
   <xsd:element name="CommandLocationList"
                type="iv1:CommandLocationListType"
                substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseLocationListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandLocationList command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="iv1:Location"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseLocationList"
+               type="iv1:ResponseLocationListType"
+               substitutionGroup="iv1:Response"/>
 
   <xsd:complexType name="CommandLoginUsernamePasswordType">
     <xsd:annotation>
@@ -746,6 +790,26 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+
+  <xsd:complexType name="ResponseTagsDeleteType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandTagsDelete command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Tags"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseTagsDelete"
+               type="iv1:ResponseTagsDeleteType"
+               substitutionGroup="iv1:Response"/>
 
   <xsd:element name="CommandItemCreate"
                type="iv1:CommandItemCreateType"
@@ -963,7 +1027,6 @@
                type="iv1:ListLocationExactType"
                substitutionGroup="iv1:ListLocationsBehaviour"/>
 
-
   <xsd:complexType name="ListLocationWithDescendantsType">
     <xsd:annotation>
       <xsd:documentation>
@@ -994,7 +1057,11 @@
     <xsd:complexContent>
       <xsd:extension base="iv1:CommandType">
         <xsd:sequence>
-          <xsd:element ref="iv1:ListLocationsBehaviour"/>
+          <xsd:choice>
+            <xsd:element ref="iv1:ListLocationsAll"/>
+            <xsd:element ref="iv1:ListLocationExact"/>
+            <xsd:element ref="iv1:ListLocationWithDescendants"/>
+          </xsd:choice>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1003,6 +1070,27 @@
   <xsd:element name="CommandItemList"
                type="iv1:CommandItemListType"
                substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseItemListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemList command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemList"
+               type="iv1:ResponseItemListType"
+               substitutionGroup="iv1:Response"/>
 
   <xsd:complexType name="CommandItemAttachmentPutType">
     <xsd:annotation>
@@ -1028,6 +1116,26 @@
                type="iv1:CommandItemAttachmentPutType"
                substitutionGroup="iv1:Command"/>
 
+  <xsd:complexType name="ResponseItemAttachmentPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemAttachmentPut command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemAttachmentPut"
+               type="iv1:ResponseItemAttachmentPutType"
+               substitutionGroup="iv1:Response"/>
+
   <xsd:complexType name="CommandItemAttachmentRemoveType">
     <xsd:annotation>
       <xsd:documentation>
@@ -1037,6 +1145,9 @@
 
     <xsd:complexContent>
       <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
         <xsd:attribute name="attachment"
                        type="iv1:UUIDType"
                        use="required"/>
@@ -1047,6 +1158,26 @@
   <xsd:element name="CommandItemAttachmentRemove"
                type="iv1:CommandItemAttachmentRemoveType"
                substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseItemAttachmentRemoveType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemAttachmentRemove command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemAttachmentRemove"
+               type="iv1:ResponseItemAttachmentRemoveType"
+               substitutionGroup="iv1:Response"/>
 
   <xsd:complexType name="CommandItemMetadataPutType">
     <xsd:annotation>
@@ -1072,6 +1203,26 @@
                type="iv1:CommandItemMetadataPutType"
                substitutionGroup="iv1:Command"/>
 
+  <xsd:complexType name="ResponseItemMetadataPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemMetadataPut command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemMetadataPut"
+               type="iv1:ResponseItemMetadataPutType"
+               substitutionGroup="iv1:Response"/>
+
   <xsd:complexType name="CommandItemMetadataRemoveType">
     <xsd:annotation>
       <xsd:documentation>
@@ -1081,8 +1232,9 @@
 
     <xsd:complexContent>
       <xsd:extension base="iv1:CommandType">
-        <xsd:sequence>
-          <xsd:element ref="iv1:ItemMetadatas"/>
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="iv1:ItemMetadataName"/>
         </xsd:sequence>
 
         <xsd:attribute name="item"
@@ -1095,6 +1247,26 @@
   <xsd:element name="CommandItemMetadataRemove"
                type="iv1:CommandItemMetadataRemoveType"
                substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseItemMetadataRemoveType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemMetadataRemove command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Item"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemMetadataRemove"
+               type="iv1:ResponseItemMetadataRemoveType"
+               substitutionGroup="iv1:Response"/>
 
   <xsd:complexType name="CommandItemLocationListType">
     <xsd:annotation>
@@ -1156,7 +1328,8 @@
                type="iv1:ResponseErrorDetailType"/>
 
   <xsd:complexType name="UpdatedType">
-    <xsd:sequence>
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
       <xsd:element ref="iv1:ID"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -1165,7 +1338,8 @@
                type="iv1:UpdatedType"/>
 
   <xsd:complexType name="RemovedType">
-    <xsd:sequence>
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
       <xsd:element ref="iv1:ID"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -1214,5 +1388,34 @@
   <xsd:element name="Transaction"
                substitutionGroup="iv1:Message"
                type="iv1:TransactionType"/>
+
+  <xsd:group name="CommandGroup">
+    <xsd:annotation>
+      <xsd:documentation>
+        A group containing all of the available commands.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:choice>
+      <xsd:element ref="iv1:CommandItemAttachmentPut"/>
+      <xsd:element ref="iv1:CommandItemAttachmentRemove"/>
+      <xsd:element ref="iv1:CommandItemCreate"/>
+      <xsd:element ref="iv1:CommandItemGet"/>
+      <xsd:element ref="iv1:CommandItemList"/>
+      <xsd:element ref="iv1:CommandItemLocationList"/>
+      <xsd:element ref="iv1:CommandItemMetadataPut"/>
+      <xsd:element ref="iv1:CommandItemMetadataRemove"/>
+      <xsd:element ref="iv1:CommandItemRemove"/>
+      <xsd:element ref="iv1:CommandItemReposit"/>
+      <xsd:element ref="iv1:CommandItemUpdate"/>
+      <xsd:element ref="iv1:CommandLocationGet"/>
+      <xsd:element ref="iv1:CommandLocationList"/>
+      <xsd:element ref="iv1:CommandLocationPut"/>
+      <xsd:element ref="iv1:CommandLoginUsernamePassword"/>
+      <xsd:element ref="iv1:CommandTagList"/>
+      <xsd:element ref="iv1:CommandTagsDelete"/>
+      <xsd:element ref="iv1:CommandTagsPut"/>
+    </xsd:choice>
+  </xsd:group>
 
 </xsd:schema>

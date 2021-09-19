@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface ResponseTagListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "responsetaglist73e2doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ResponseTagListDocument extends ResponseDocument
+{
+  DocumentFactory<ResponseTagListDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "responsetaglist73e2doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "ResponseTagList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType getResponseTagList();
+  /**
+   * Gets the "ResponseTagList" element
+   */
+  ResponseTagListType getResponseTagList();
 
-    /**
-     * Sets the "ResponseTagList" element
-     */
-    void setResponseTagList(com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType responseTagList);
+  /**
+   * Sets the "ResponseTagList" element
+   */
+  void setResponseTagList(ResponseTagListType responseTagList);
 
-    /**
-     * Appends and returns a new empty "ResponseTagList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType addNewResponseTagList();
+  /**
+   * Appends and returns a new empty "ResponseTagList" element
+   */
+  ResponseTagListType addNewResponseTagList();
 }

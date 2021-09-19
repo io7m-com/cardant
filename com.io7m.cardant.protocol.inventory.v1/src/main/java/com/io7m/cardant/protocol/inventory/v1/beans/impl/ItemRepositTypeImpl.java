@@ -7,18 +7,22 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
 
 /**
  * An XML ItemRepositType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ItemRepositTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType {
-    private static final long serialVersionUID = 1L;
+public class ItemRepositTypeImpl extends XmlComplexContentImpl implements
+  ItemRepositType
+{
+  private static final long serialVersionUID = 1L;
 
-    public ItemRepositTypeImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
-    }
+  public ItemRepositTypeImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
 }

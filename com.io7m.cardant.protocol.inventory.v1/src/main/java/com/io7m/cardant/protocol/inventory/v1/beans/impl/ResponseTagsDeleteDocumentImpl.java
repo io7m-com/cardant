@@ -8,57 +8,72 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlObjectBase;
+
 import javax.xml.namespace.QName;
-import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ResponseTagsDelete(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ResponseTagsDeleteDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteDocument {
-    private static final long serialVersionUID = 1L;
+public class ResponseTagsDeleteDocumentImpl extends ResponseDocumentImpl implements
+  ResponseTagsDeleteDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ResponseTagsDelete"),
+  };
 
-    public ResponseTagsDeleteDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
+  public ResponseTagsDeleteDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
+
+  /**
+   * Gets the "ResponseTagsDelete" element
+   */
+  @Override
+  public ResponseTagsDeleteType getResponseTagsDelete()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ResponseTagsDeleteType target = null;
+      target = (ResponseTagsDeleteType) this.get_store().find_element_user(
+        PROPERTY_QNAME[0],
+        0);
+      return target;
     }
+  }
 
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ResponseTagsDelete"),
-    };
+  /**
+   * Sets the "ResponseTagsDelete" element
+   */
+  @Override
+  public void setResponseTagsDelete(final ResponseTagsDeleteType responseTagsDelete)
+  {
+    this.generatedSetterHelperImpl(
+      responseTagsDelete,
+      PROPERTY_QNAME[0],
+      0,
+      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+  }
 
-
-    /**
-     * Gets the "ResponseTagsDelete" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType getResponseTagsDelete() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
-            return (target == null) ? null : target;
-        }
+  /**
+   * Appends and returns a new empty "ResponseTagsDelete" element
+   */
+  @Override
+  public ResponseTagsDeleteType addNewResponseTagsDelete()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      ResponseTagsDeleteType target = null;
+      target = (ResponseTagsDeleteType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
     }
-
-    /**
-     * Sets the "ResponseTagsDelete" element
-     */
-    @Override
-    public void setResponseTagsDelete(com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType responseTagsDelete) {
-        generatedSetterHelperImpl(responseTagsDelete, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-    }
-
-    /**
-     * Appends and returns a new empty "ResponseTagsDelete" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType addNewResponseTagsDelete() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagsDeleteType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
-    }
+  }
 }

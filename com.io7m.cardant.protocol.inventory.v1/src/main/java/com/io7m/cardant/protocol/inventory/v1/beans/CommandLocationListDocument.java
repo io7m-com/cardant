@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandLocationListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commandlocationlistef3bdoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandLocationListDocument extends CommandDocument
+{
+  DocumentFactory<CommandLocationListDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandlocationlistef3bdoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandLocationList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType getCommandLocationList();
+  /**
+   * Gets the "CommandLocationList" element
+   */
+  CommandLocationListType getCommandLocationList();
 
-    /**
-     * Sets the "CommandLocationList" element
-     */
-    void setCommandLocationList(com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType commandLocationList);
+  /**
+   * Sets the "CommandLocationList" element
+   */
+  void setCommandLocationList(CommandLocationListType commandLocationList);
 
-    /**
-     * Appends and returns a new empty "CommandLocationList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType addNewCommandLocationList();
+  /**
+   * Appends and returns a new empty "CommandLocationList" element
+   */
+  CommandLocationListType addNewCommandLocationList();
 }

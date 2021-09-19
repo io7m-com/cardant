@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commanditemlisted9ddoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandItemListDocument extends CommandDocument
+{
+  DocumentFactory<CommandItemListDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commanditemlisted9ddoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandItemList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListType getCommandItemList();
+  /**
+   * Gets the "CommandItemList" element
+   */
+  CommandItemListType getCommandItemList();
 
-    /**
-     * Sets the "CommandItemList" element
-     */
-    void setCommandItemList(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListType commandItemList);
+  /**
+   * Sets the "CommandItemList" element
+   */
+  void setCommandItemList(CommandItemListType commandItemList);
 
-    /**
-     * Appends and returns a new empty "CommandItemList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListType addNewCommandItemList();
+  /**
+   * Appends and returns a new empty "CommandItemList" element
+   */
+  CommandItemListType addNewCommandItemList();
 }

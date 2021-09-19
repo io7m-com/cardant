@@ -7,10 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,23 +17,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandTagsDeleteType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commandtagsdeletetype1080type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandTagsDeleteType extends CommandType
+{
+  DocumentFactory<CommandTagsDeleteType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandtagsdeletetype1080type");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "Tags" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.TagsType getTags();
+  /**
+   * Gets the "Tags" element
+   */
+  TagsType getTags();
 
-    /**
-     * Sets the "Tags" element
-     */
-    void setTags(com.io7m.cardant.protocol.inventory.v1.beans.TagsType tags);
+  /**
+   * Sets the "Tags" element
+   */
+  void setTags(TagsType tags);
 
-    /**
-     * Appends and returns a new empty "Tags" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.TagsType addNewTags();
+  /**
+   * Appends and returns a new empty "Tags" element
+   */
+  TagsType addNewTags();
 }

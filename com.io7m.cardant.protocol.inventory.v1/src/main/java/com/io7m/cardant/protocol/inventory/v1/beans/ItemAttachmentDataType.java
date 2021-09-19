@@ -7,9 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
-import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlBase64Binary;
 import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
@@ -18,8 +18,11 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDataType.
  */
-public interface ItemAttachmentDataType extends org.apache.xmlbeans.XmlBase64Binary {
-    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDataType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "itemattachmentdatatype101dtype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface ItemAttachmentDataType extends XmlBase64Binary
+{
+  SimpleTypeFactory<ItemAttachmentDataType> Factory = new SimpleTypeFactory<>(
+    TypeSystemHolder.typeSystem,
+    "itemattachmentdatatype101dtype");
+  SchemaType type = Factory.getType();
 
 }

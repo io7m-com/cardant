@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandTagListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commandtaglist089adoctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandTagListDocument extends CommandDocument
+{
+  DocumentFactory<CommandTagListDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandtaglist089adoctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandTagList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListType getCommandTagList();
+  /**
+   * Gets the "CommandTagList" element
+   */
+  CommandTagListType getCommandTagList();
 
-    /**
-     * Sets the "CommandTagList" element
-     */
-    void setCommandTagList(com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListType commandTagList);
+  /**
+   * Sets the "CommandTagList" element
+   */
+  void setCommandTagList(CommandTagListType commandTagList);
 
-    /**
-     * Appends and returns a new empty "CommandTagList" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListType addNewCommandTagList();
+  /**
+   * Appends and returns a new empty "CommandTagList" element
+   */
+  CommandTagListType addNewCommandTagList();
 }

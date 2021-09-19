@@ -8,75 +8,90 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import javax.xml.namespace.QName;
+import com.io7m.cardant.protocol.inventory.v1.beans.IDDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.IDType;
 import org.apache.xmlbeans.QNameSet;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
+
+import javax.xml.namespace.QName;
 
 /**
  * A document containing one ID(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class IDDocumentImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.IDDocument {
-    private static final long serialVersionUID = 1L;
-
-    public IDDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
-        super(sType);
-    }
-
-    private static final QName[] PROPERTY_QNAME = {
-        new QName("urn:com.io7m.cardant.inventory:1", "ID"),
-    };
-
-    private static final QNameSet[] PROPERTY_QSET = {
-    QNameSet.forArray( new QName[] { 
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemID"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachmentID"),
-        new QName("urn:com.io7m.cardant.inventory:1", "TagID"),
-        new QName("urn:com.io7m.cardant.inventory:1", "LocationID"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ID"),
-        new QName("urn:com.io7m.cardant.inventory:1", "UserID"),
+public class IDDocumentImpl extends XmlComplexContentImpl implements
+  IDDocument
+{
+  private static final long serialVersionUID = 1L;
+  private static final QName[] PROPERTY_QNAME = {
+    new QName("urn:com.io7m.cardant.inventory:1", "ID"),
+  };
+  private static final QNameSet[] PROPERTY_QSET = {
+    QNameSet.forArray(new QName[]{
+      new QName("urn:com.io7m.cardant.inventory:1", "ItemID"),
+      new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachmentID"),
+      new QName("urn:com.io7m.cardant.inventory:1", "TagID"),
+      new QName("urn:com.io7m.cardant.inventory:1", "LocationID"),
+      new QName("urn:com.io7m.cardant.inventory:1", "ID"),
+      new QName("urn:com.io7m.cardant.inventory:1", "UserID"),
     }),
-    };
+  };
 
-    /**
-     * Gets the "ID" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.IDType getID() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().find_element_user(PROPERTY_QSET[0], 0);
-            return (target == null) ? null : target;
-        }
-    }
+  public IDDocumentImpl(final SchemaType sType)
+  {
+    super(sType);
+  }
 
-    /**
-     * Sets the "ID" element
-     */
-    @Override
-    public void setID(com.io7m.cardant.protocol.inventory.v1.beans.IDType id) {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().find_element_user(PROPERTY_QSET[0], 0);
-            if (target == null) {
-                target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            }
-            target.set(id);
-        }
+  /**
+   * Gets the "ID" element
+   */
+  @Override
+  public IDType getID()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      IDType target = null;
+      target = (IDType) this.get_store().find_element_user(
+        PROPERTY_QSET[0],
+        0);
+      return target;
     }
+  }
 
-    /**
-     * Appends and returns a new empty "ID" element
-     */
-    @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.IDType addNewID() {
-        synchronized (monitor()) {
-            check_orphaned();
-            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
-            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().add_element_user(PROPERTY_QNAME[0]);
-            return target;
-        }
+  /**
+   * Sets the "ID" element
+   */
+  @Override
+  public void setID(final IDType id)
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      IDType target = null;
+      target = (IDType) this.get_store().find_element_user(
+        PROPERTY_QSET[0],
+        0);
+      if (target == null) {
+        target = (IDType) this.get_store().add_element_user(
+          PROPERTY_QNAME[0]);
+      }
+      target.set(id);
     }
+  }
+
+  /**
+   * Appends and returns a new empty "ID" element
+   */
+  @Override
+  public IDType addNewID()
+  {
+    synchronized (this.monitor()) {
+      this.check_orphaned();
+      IDType target = null;
+      target = (IDType) this.get_store().add_element_user(
+        PROPERTY_QNAME[0]);
+      return target;
+    }
+  }
 }

@@ -7,10 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,28 +17,31 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandLocationGetType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commandlocationgettypeac27type");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandLocationGetType extends CommandType
+{
+  DocumentFactory<CommandLocationGetType> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commandlocationgettypeac27type");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "id" attribute
-     */
-    java.lang.String getId();
+  /**
+   * Gets the "id" attribute
+   */
+  String getId();
 
-    /**
-     * Gets (as xml) the "id" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId();
+  /**
+   * Sets the "id" attribute
+   */
+  void setId(String id);
 
-    /**
-     * Sets the "id" attribute
-     */
-    void setId(java.lang.String id);
+  /**
+   * Gets (as xml) the "id" attribute
+   */
+  UUIDType xgetId();
 
-    /**
-     * Sets (as xml) the "id" attribute
-     */
-    void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id);
+  /**
+   * Sets (as xml) the "id" attribute
+   */
+  void xsetId(UUIDType id);
 }

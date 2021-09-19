@@ -8,10 +8,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import org.apache.xmlbeans.impl.schema.ElementFactory;
-import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
+import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,23 +18,26 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemMetadataPutDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.s76DE06BD1DB329CBFB2257F5CD3D6E75.TypeSystemHolder.typeSystem, "commanditemmetadataputa045doctype");
-    org.apache.xmlbeans.SchemaType type = Factory.getType();
+public interface CommandItemMetadataPutDocument extends CommandDocument
+{
+  DocumentFactory<CommandItemMetadataPutDocument> Factory = new DocumentFactory<>(
+    TypeSystemHolder.typeSystem,
+    "commanditemmetadataputa045doctype");
+  SchemaType type = Factory.getType();
 
 
-    /**
-     * Gets the "CommandItemMetadataPut" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutType getCommandItemMetadataPut();
+  /**
+   * Gets the "CommandItemMetadataPut" element
+   */
+  CommandItemMetadataPutType getCommandItemMetadataPut();
 
-    /**
-     * Sets the "CommandItemMetadataPut" element
-     */
-    void setCommandItemMetadataPut(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutType commandItemMetadataPut);
+  /**
+   * Sets the "CommandItemMetadataPut" element
+   */
+  void setCommandItemMetadataPut(CommandItemMetadataPutType commandItemMetadataPut);
 
-    /**
-     * Appends and returns a new empty "CommandItemMetadataPut" element
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutType addNewCommandItemMetadataPut();
+  /**
+   * Appends and returns a new empty "CommandItemMetadataPut" element
+   */
+  CommandItemMetadataPutType addNewCommandItemMetadataPut();
 }
