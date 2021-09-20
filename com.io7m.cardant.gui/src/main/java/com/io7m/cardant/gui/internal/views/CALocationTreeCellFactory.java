@@ -16,15 +16,15 @@
 
 package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.gui.internal.model.CALocationTreeItem;
+import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
 
 public final class CALocationTreeCellFactory
   implements Callback<
-  TreeView<CALocationTreeItem>,
-  TreeCell<CALocationTreeItem>>
+  TreeView<CALocationItemDefined>,
+  TreeCell<CALocationItemDefined>>
 {
   public CALocationTreeCellFactory()
   {
@@ -32,8 +32,8 @@ public final class CALocationTreeCellFactory
   }
 
   @Override
-  public TreeCell<CALocationTreeItem> call(
-    final TreeView<CALocationTreeItem> param)
+  public TreeCell<CALocationItemDefined> call(
+    final TreeView<CALocationItemDefined> param)
   {
     return new CALocationTreeCell();
   }

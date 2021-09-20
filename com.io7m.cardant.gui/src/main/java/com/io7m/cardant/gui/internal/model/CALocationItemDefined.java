@@ -26,7 +26,7 @@ public record CALocationItemDefined(
   SimpleStringProperty description)
   implements CALocationItemType
 {
-  public static CALocationItemType of(
+  public static CALocationItemDefined of(
     final CALocation location)
   {
     return new CALocationItemDefined(

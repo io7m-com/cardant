@@ -30,6 +30,7 @@ import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CALocationItemAll;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
+import com.io7m.cardant.gui.internal.model.CALocationTree;
 import com.io7m.cardant.gui.internal.model.CATableMap;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
@@ -44,6 +45,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
+import javafx.scene.control.TreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,8 @@ public final class CAMainController implements CAServiceType
   private final SimpleObjectProperty<Optional<CAItemMetadataMutable>> itemMetadataSelected;
   private final SimpleObjectProperty<Optional<CAItemMutable>> itemSelected;
   private final SimpleObjectProperty<Optional<CALocationItemType>> locationSelected;
+  private final CALocationTree locationTree;
+  private final SimpleObjectProperty<Optional<TreeItem<CALocationItemDefined>>> locationTreeSelected;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
   private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
@@ -87,6 +91,8 @@ public final class CAMainController implements CAServiceType
     this.eventBus =
       Objects.requireNonNull(inEventBus, "eventBus");
 
+    this.locationTree =
+      new CALocationTree();
     this.itemList =
       new CATableMap<>(FXCollections.observableHashMap());
     this.itemAttachmentList =
@@ -99,6 +105,8 @@ public final class CAMainController implements CAServiceType
     this.locationPutAllPlaceholderItem();
 
     this.locationSelected =
+      new SimpleObjectProperty<>(Optional.empty());
+    this.locationTreeSelected =
       new SimpleObjectProperty<>(Optional.empty());
     this.itemSelected =
       new SimpleObjectProperty<>(Optional.empty());
@@ -423,6 +431,8 @@ public final class CAMainController implements CAServiceType
   private void onClientEventDataReceivedLocation(
     final CALocation location)
   {
+    this.locationTree.put(location);
+
     final var locationMap = this.locationList.writable();
     final var existing = locationMap.get(location.id());
     if (existing == null) {
@@ -466,14 +476,28 @@ public final class CAMainController implements CAServiceType
     final var removed = data.removed();
     for (final var removedId : removed) {
       if (removedId instanceof CAItemID id) {
-        this.itemList.writable()
-          .remove(id);
+        this.onItemRemoved(id);
+      } else if (removedId instanceof CALocationID id) {
+        this.onLocationRemoved(id);
       } else if (removedId instanceof CAItemAttachmentID id) {
         // Nothing to do
       } else {
         throw new IllegalStateException("Unexpected ID: " + removedId);
       }
     }
+  }
+
+  private void onLocationRemoved(
+    final CALocationID id)
+  {
+    this.locationTree.remove(id);
+  }
+
+  private void onItemRemoved(
+    final CAItemID id)
+  {
+    this.itemList.writable()
+      .remove(id);
   }
 
   public void disconnect()
@@ -499,5 +523,21 @@ public final class CAMainController implements CAServiceType
       "[CAMainController 0x%08x]",
       Integer.valueOf(this.hashCode())
     );
+  }
+
+  public CALocationTree locationTree()
+  {
+    return this.locationTree;
+  }
+
+  public void locationTreeSelect(
+    final Optional<TreeItem<CALocationItemDefined>> selectedItem)
+  {
+    this.locationTreeSelected.set(selectedItem);
+  }
+
+  public ObservableObjectValue<Optional<TreeItem<CALocationItemDefined>>> locationTreeSelected()
+  {
+    return this.locationTreeSelected;
   }
 }

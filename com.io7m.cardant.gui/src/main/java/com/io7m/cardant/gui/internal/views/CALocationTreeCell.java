@@ -16,14 +16,37 @@
 
 package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.gui.internal.model.CALocationTreeItem;
+import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import javafx.scene.control.TreeCell;
+import javafx.scene.image.ImageView;
 
 public final class CALocationTreeCell
-  extends TreeCell<CALocationTreeItem>
+  extends TreeCell<CALocationItemDefined>
 {
+  private final ImageView image;
+
   public CALocationTreeCell()
   {
+    this.image =
+      new ImageView(
+        CALocationTreeCell.class.getResource(
+            "/com/io7m/cardant/gui/internal/location16.png")
+          .toString()
+      );
+  }
 
+  @Override
+  protected void updateItem(
+    final CALocationItemDefined item,
+    final boolean empty)
+  {
+    super.updateItem(item, empty);
+    if (empty || item == null) {
+      this.setGraphic(null);
+      this.setText(null);
+    } else {
+      this.setGraphic(this.image);
+      this.setText(item.name().getValue());
+    }
   }
 }

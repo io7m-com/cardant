@@ -38,10 +38,10 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.UUID;
 
-public final class CAViewControllerCreateLocation implements Initializable
+public final class CAViewControllerLocationCreate implements Initializable
 {
   private static final Logger LOG =
-    LoggerFactory.getLogger(CAViewControllerCreateLocation.class);
+    LoggerFactory.getLogger(CAViewControllerLocationCreate.class);
 
   private final Stage stage;
   private final CAServiceDirectoryType mainServices;
@@ -64,7 +64,7 @@ public final class CAViewControllerCreateLocation implements Initializable
   private Button createButton;
   private Optional<CALocation> result;
 
-  public CAViewControllerCreateLocation(
+  public CAViewControllerLocationCreate(
     final CAServiceDirectoryType inMainServices,
     final Stage inStage)
   {

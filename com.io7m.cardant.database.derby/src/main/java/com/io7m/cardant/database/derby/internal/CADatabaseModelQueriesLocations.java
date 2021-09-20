@@ -234,7 +234,10 @@ public final class CADatabaseModelQueriesLocations
       for (final var location : locations.values()) {
         final var locationId = location.id();
         graph.addVertex(locationId);
+      }
 
+      for (final var location : locations.values()) {
+        final var locationId = location.id();
         final var parentOpt = location.parent();
         if (parentOpt.isPresent()) {
           final var parentId = parentOpt.get();

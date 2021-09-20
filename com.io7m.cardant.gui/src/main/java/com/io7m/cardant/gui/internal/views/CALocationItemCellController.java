@@ -16,10 +16,10 @@
 
 package com.io7m.cardant.gui.internal.views;
 
+import com.io7m.cardant.gui.internal.CAMainStrings;
 import com.io7m.cardant.gui.internal.model.CALocationItemAll;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
-import com.io7m.cardant.gui.internal.CAMainStrings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;

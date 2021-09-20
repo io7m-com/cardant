@@ -16,8 +16,8 @@
 
 package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.CAMainStrings;
+import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
