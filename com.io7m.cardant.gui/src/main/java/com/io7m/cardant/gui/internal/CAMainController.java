@@ -264,7 +264,6 @@ public final class CAMainController implements CAServiceType
       new CAPerpetualSubscriber<>(this::onClientEvent);
 
     newClient.events().subscribe(this.clientSubscriber);
-    newClient.itemsList(new CAListLocationsAll());
     newClient.locationList();
     return newClient;
   }
