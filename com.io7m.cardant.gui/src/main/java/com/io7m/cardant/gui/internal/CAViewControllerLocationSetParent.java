@@ -105,8 +105,7 @@ public final class CAViewControllerLocationSetParent implements Initializable
     this.target =
       this.controller.locationTreeSelected()
         .get()
-        .orElseThrow(IllegalStateException::new)
-        .getValue();
+        .orElseThrow(IllegalStateException::new);
 
     this.controller.connectedClient()
       .addListener((observable, oldValue, newValue) -> {

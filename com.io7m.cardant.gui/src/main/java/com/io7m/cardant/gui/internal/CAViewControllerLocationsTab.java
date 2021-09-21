@@ -27,6 +27,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -39,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -63,6 +64,14 @@ public final class CAViewControllerLocationsTab implements Initializable
   private Button locationCreate;
   @FXML
   private TextField locationSearch;
+  @FXML
+  private SplitPane splitPane;
+  @FXML
+  private TextField locationIdField;
+  @FXML
+  private TextField locationNameField;
+  @FXML
+  private TextArea locationDescriptionField;
 
   public CAViewControllerLocationsTab(
     final CAServiceDirectoryType mainServices,
@@ -118,10 +127,47 @@ public final class CAViewControllerLocationsTab implements Initializable
         this.onLocationSelectionChanged();
       });
 
+    this.controller.locationTreeSelected()
+      .addListener((observable, oldValue, newValue) -> {
+        this.onLocationSelected(newValue);
+      });
+
     this.controller.connectedClient()
       .addListener((observable, oldValue, newValue) -> {
         this.onClientConnectionChanged(newValue);
       });
+  }
+
+  private void onLocationSelected(
+    final Optional<CALocationItemType> newSelectionOpt)
+  {
+    if (newSelectionOpt.isPresent()) {
+      final var newSelection = newSelectionOpt.get();
+      if (newSelection instanceof CALocationItemDefined defined) {
+        this.locationIdField.textProperty()
+          .set(defined.id().id().toString());
+        this.locationNameField.textProperty()
+          .bind(defined.name());
+        this.locationDescriptionField.textProperty()
+          .bind(defined.description());
+      } else {
+        this.onLocationUnselected();
+      }
+    } else {
+      this.onLocationUnselected();
+    }
+  }
+
+  private void onLocationUnselected()
+  {
+    this.locationIdField.textProperty().unbind();
+    this.locationIdField.setText("");
+
+    this.locationDescriptionField.textProperty().unbind();
+    this.locationDescriptionField.setText("");
+
+    this.locationNameField.textProperty().unbind();
+    this.locationNameField.setText("");
   }
 
   private void onLocationSelectionChanged()
@@ -143,30 +189,17 @@ public final class CAViewControllerLocationsTab implements Initializable
 
   }
 
-  @FXML
-  private void onLocationSearchFieldChanged()
-  {
-    this.controller.locationTree()
-      .setFilter(this.getFilter());
-  }
-
-  private Optional<String> getFilter()
-  {
-    final var filterText =
-      this.locationSearch.getText()
-        .trim()
-        .toUpperCase(Locale.ROOT);
-
-    if (filterText.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(filterText);
-  }
-
   private void onClientConnectionChanged(
     final Optional<CAClientHostileType> clientOpt)
   {
     this.clientNow = clientOpt.orElse(null);
+    this.splitPane.setDividerPositions(0.75);
+  }
+
+  @FXML
+  private void onLocationDescriptionUpdateSelected()
+  {
+
   }
 
   @FXML

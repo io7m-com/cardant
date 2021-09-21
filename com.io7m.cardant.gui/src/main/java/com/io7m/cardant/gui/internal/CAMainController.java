@@ -46,7 +46,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
-import javafx.scene.control.TreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +70,8 @@ public final class CAMainController implements CAServiceType
   private final SimpleObjectProperty<Optional<CAItemAttachmentMutable>> itemAttachmentSelected;
   private final SimpleObjectProperty<Optional<CAItemMetadataMutable>> itemMetadataSelected;
   private final SimpleObjectProperty<Optional<CAItemMutable>> itemSelected;
-  private final SimpleObjectProperty<Optional<CALocationItemType>> locationSelected;
   private final CALocationTree locationTree;
-  private final SimpleObjectProperty<Optional<TreeItem<CALocationItemType>>> locationTreeSelected;
+  private final SimpleObjectProperty<Optional<CALocationItemType>> locationTreeSelected;
   private final SimpleStringProperty locationSearchProperty;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
   private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
@@ -104,8 +102,6 @@ public final class CAMainController implements CAServiceType
 
     this.locationSearchProperty =
       new SimpleStringProperty();
-    this.locationSelected =
-      new SimpleObjectProperty<>(Optional.empty());
     this.locationTreeSelected =
       new SimpleObjectProperty<>(Optional.empty());
     this.itemSelected =
@@ -487,7 +483,7 @@ public final class CAMainController implements CAServiceType
     return this.locationTree;
   }
 
-  public ObservableObjectValue<Optional<TreeItem<CALocationItemType>>> locationTreeSelected()
+  public ObservableObjectValue<Optional<CALocationItemType>> locationTreeSelected()
   {
     return this.locationTreeSelected;
   }
@@ -497,7 +493,7 @@ public final class CAMainController implements CAServiceType
   {
     Objects.requireNonNull(locationSelection, "locationSelection");
 
-    this.locationSelected.set(locationSelection);
+    this.locationTreeSelected.set(locationSelection);
 
     if (locationSelection.isPresent()) {
       final var locationItem = locationSelection.get();

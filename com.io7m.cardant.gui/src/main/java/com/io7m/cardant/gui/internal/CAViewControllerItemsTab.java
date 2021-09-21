@@ -174,7 +174,7 @@ public final class CAViewControllerItemsTab implements Initializable
   {
     if (clientOpt.isPresent()) {
       this.clientNow = clientOpt.get();
-      this.splitPane.setDividerPositions(0.125);
+      this.splitPane.setDividerPositions(0.25);
     } else {
       this.clientNow = null;
     }
