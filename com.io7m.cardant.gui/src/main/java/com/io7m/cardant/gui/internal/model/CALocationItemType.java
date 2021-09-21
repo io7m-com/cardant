@@ -17,11 +17,13 @@
 package com.io7m.cardant.gui.internal.model;
 
 import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
 
 public sealed interface CALocationItemType
-  permits CALocationItemAll,
-  CALocationItemDefined
+  permits CALocationItemAll, CALocationItemDefined, CALocationItemRoot
 {
+  CALocationID id();
+
   boolean matches(String search);
 
   void updateFrom(CALocation location);

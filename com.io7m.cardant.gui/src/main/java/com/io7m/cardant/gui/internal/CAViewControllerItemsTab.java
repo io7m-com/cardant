@@ -21,7 +21,7 @@ import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.views.CAItemMutableTables;
-import com.io7m.cardant.gui.internal.views.CALocationItemCellFactory;
+import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import javafx.fxml.FXML;
@@ -30,12 +30,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -89,7 +89,7 @@ public final class CAViewControllerItemsTab implements Initializable
   @FXML
   private ImageView itemDeleteImage;
   @FXML
-  private ListView<CALocationItemType> locationListView;
+  private TreeView<CALocationItemType> locationTreeView;
   @FXML
   private TextField locationSearchField;
 
@@ -125,14 +125,17 @@ public final class CAViewControllerItemsTab implements Initializable
       this.controller.items()
     );
 
-    this.locationListView.setCellFactory(
-      new CALocationItemCellFactory(this.strings));
-    this.locationListView.setFixedCellSize(32.0);
-    this.locationListView.setItems(
-      this.controller.locationList().readable());
-    this.locationListView.getSelectionModel()
-      .setSelectionMode(SelectionMode.SINGLE);
-    this.locationListView.getSelectionModel()
+    this.locationSearchField.textProperty()
+      .bindBidirectional(this.controller.locationSearchProperty());
+
+    this.locationTreeView.setRoot(
+      this.controller.locationTree()
+        .root()
+    );
+    this.locationTreeView.setShowRoot(false);
+    this.locationTreeView.setCellFactory(
+      new CALocationTreeCellFactory(this.strings));
+    this.locationTreeView.getSelectionModel()
       .selectedItemProperty()
       .addListener((observable, oldValue, newValue) -> {
         this.onLocationSelectionChanged();
@@ -192,20 +195,11 @@ public final class CAViewControllerItemsTab implements Initializable
   private void onLocationSelectionChanged()
   {
     final var selectionModel =
-      this.locationListView.getSelectionModel();
+      this.locationTreeView.getSelectionModel();
 
-    this.controller.locationSelect(
+    this.controller.locationTreeSelect(
       Optional.ofNullable(selectionModel.getSelectedItem())
-    );
-  }
-
-  @FXML
-  private void onLocationSearchFieldChanged()
-  {
-    this.controller.locationSetSearch(
-      this.locationSearchField.getText()
-        .trim()
-        .toUpperCase(Locale.ROOT)
+        .map(TreeItem::getValue)
     );
   }
 

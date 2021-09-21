@@ -43,6 +43,7 @@ import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.services.api.CAServiceType;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TreeItem;
@@ -50,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -64,7 +66,6 @@ public final class CAMainController implements CAServiceType
   private final CAClientFactoryType clients;
   private final CAMainEventBusType eventBus;
   private final CAMainStrings strings;
-  private final CATableMap<CALocationID, CALocationItemType> locationList;
   private final CATableMap<CAItemID, CAItemMutable> itemList;
   private final SimpleObjectProperty<Optional<CAClientHostileType>> client;
   private final SimpleObjectProperty<Optional<CAItemAttachmentMutable>> itemAttachmentSelected;
@@ -72,7 +73,8 @@ public final class CAMainController implements CAServiceType
   private final SimpleObjectProperty<Optional<CAItemMutable>> itemSelected;
   private final SimpleObjectProperty<Optional<CALocationItemType>> locationSelected;
   private final CALocationTree locationTree;
-  private final SimpleObjectProperty<Optional<TreeItem<CALocationItemDefined>>> locationTreeSelected;
+  private final SimpleObjectProperty<Optional<TreeItem<CALocationItemType>>> locationTreeSelected;
+  private final SimpleStringProperty locationSearchProperty;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
   private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
@@ -99,11 +101,9 @@ public final class CAMainController implements CAServiceType
       new CATableMap<>(FXCollections.observableHashMap());
     this.itemMetadataList =
       new CATableMap<>(FXCollections.observableHashMap());
-    this.locationList =
-      new CATableMap<>(FXCollections.observableHashMap());
 
-    this.locationPutAllPlaceholderItem();
-
+    this.locationSearchProperty =
+      new SimpleStringProperty();
     this.locationSelected =
       new SimpleObjectProperty<>(Optional.empty());
     this.locationTreeSelected =
@@ -119,12 +119,24 @@ public final class CAMainController implements CAServiceType
 
     this.itemMetadataPredicate = (ignored) -> true;
     this.itemAttachmentPredicate = (ignored) -> true;
+
+    this.locationSearchProperty.addListener((observable, oldValue, newValue) -> {
+      this.locationSearchChanged(newValue);
+    });
   }
 
-  private void locationPutAllPlaceholderItem()
+  private void locationSearchChanged(
+    final String newValue)
   {
-    final var all = CALocationItemAll.get();
-    this.locationList.writable().put(all.id(), all);
+    final var text =
+      newValue.trim()
+        .toUpperCase(Locale.ROOT);
+
+    if (text.isEmpty()) {
+      this.locationTree().setFilter(Optional.empty());
+    } else {
+      this.locationTree().setFilter(Optional.of(text));
+    }
   }
 
   public CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachments()
@@ -156,7 +168,6 @@ public final class CAMainController implements CAServiceType
     this.itemMetadataList.setPredicate(this.itemMetadataPredicate);
   }
 
-
   public void itemAttachmentSetSearch(
     final String search)
   {
@@ -185,21 +196,9 @@ public final class CAMainController implements CAServiceType
     }
   }
 
-  public void locationSetSearch(
-    final String search)
+  public SimpleStringProperty locationSearchProperty()
   {
-    Objects.requireNonNull(search, "search");
-
-    if (search.isEmpty()) {
-      this.locationList.setPredicate(location -> true);
-    } else {
-      this.locationList.setPredicate(location -> location.matches(search));
-    }
-  }
-
-  public CATableMap<CALocationID, CALocationItemType> locationList()
-  {
-    return this.locationList;
+    return this.locationSearchProperty;
   }
 
   public ObservableObjectValue<Optional<CAItemMetadataMutable>> itemMetadataSelected()
@@ -210,44 +209,6 @@ public final class CAMainController implements CAServiceType
   public ObservableObjectValue<Optional<CAItemMutable>> itemSelected()
   {
     return this.itemSelected;
-  }
-
-  public void locationSelect(
-    final Optional<CALocationItemType> locationSelection)
-  {
-    Objects.requireNonNull(locationSelection, "locationSelection");
-
-    this.locationSelected.set(locationSelection);
-
-    if (locationSelection.isPresent()) {
-      final var locationItem = locationSelection.get();
-      if (locationItem instanceof CALocationItemAll all) {
-        this.listItemsForAllLocations();
-      } else if (locationItem instanceof CALocationItemDefined defined) {
-        this.listItemsForDefinedLocation(defined);
-      }
-    } else {
-      this.listItemsForAllLocations();
-    }
-
-    this.itemList.writable().clear();
-  }
-
-  private void listItemsForDefinedLocation(
-    final CALocationItemDefined defined)
-  {
-    final var clientNow =
-      this.client.get().orElseThrow(IllegalStateException::new);
-
-    clientNow.itemsList(new CAListLocationExact(defined.id()));
-  }
-
-  private void listItemsForAllLocations()
-  {
-    final var clientNow =
-      this.client.get().orElseThrow(IllegalStateException::new);
-
-    clientNow.itemsList(new CAListLocationsAll());
   }
 
   public void itemSelect(
@@ -414,9 +375,7 @@ public final class CAMainController implements CAServiceType
     }
 
     if (element instanceof CALocations locations) {
-      for (final var location : locations.locations().values()) {
-        this.onClientEventDataReceivedLocation(location);
-      }
+      this.onClientEventDataReceivedLocations(locations);
       return;
     }
 
@@ -428,18 +387,16 @@ public final class CAMainController implements CAServiceType
     throw new IllegalStateException("Unexpected data: " + element);
   }
 
+  private void onClientEventDataReceivedLocations(
+    final CALocations locations)
+  {
+    this.locationTree.putAll(locations.locations().values());
+  }
+
   private void onClientEventDataReceivedLocation(
     final CALocation location)
   {
     this.locationTree.put(location);
-
-    final var locationMap = this.locationList.writable();
-    final var existing = locationMap.get(location.id());
-    if (existing == null) {
-      locationMap.put(location.id(), CALocationItemDefined.of(location));
-    } else {
-      existing.updateFrom(location);
-    }
   }
 
   private void onClientEventDataReceivedItem(
@@ -530,14 +487,46 @@ public final class CAMainController implements CAServiceType
     return this.locationTree;
   }
 
-  public void locationTreeSelect(
-    final Optional<TreeItem<CALocationItemDefined>> selectedItem)
-  {
-    this.locationTreeSelected.set(selectedItem);
-  }
-
-  public ObservableObjectValue<Optional<TreeItem<CALocationItemDefined>>> locationTreeSelected()
+  public ObservableObjectValue<Optional<TreeItem<CALocationItemType>>> locationTreeSelected()
   {
     return this.locationTreeSelected;
+  }
+
+  public void locationTreeSelect(
+    final Optional<CALocationItemType> locationSelection)
+  {
+    Objects.requireNonNull(locationSelection, "locationSelection");
+
+    this.locationSelected.set(locationSelection);
+
+    if (locationSelection.isPresent()) {
+      final var locationItem = locationSelection.get();
+      if (locationItem instanceof CALocationItemAll all) {
+        this.listItemsForAllLocations();
+      } else if (locationItem instanceof CALocationItemDefined defined) {
+        this.listItemsForDefinedLocation(defined);
+      }
+    } else {
+      this.listItemsForAllLocations();
+    }
+
+    this.itemList.writable().clear();
+  }
+
+  private void listItemsForDefinedLocation(
+    final CALocationItemDefined defined)
+  {
+    final var clientNow =
+      this.client.get().orElseThrow(IllegalStateException::new);
+
+    clientNow.itemsList(new CAListLocationExact(defined.id()));
+  }
+
+  private void listItemsForAllLocations()
+  {
+    final var clientNow =
+      this.client.get().orElseThrow(IllegalStateException::new);
+
+    clientNow.itemsList(new CAListLocationsAll());
   }
 }

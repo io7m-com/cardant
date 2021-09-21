@@ -58,11 +58,18 @@ public final class CAViewControllerLocationCreate implements Initializable
   private TextField nameField;
 
   @FXML
+  private TextField parentNameField;
+
+  @FXML
+  private TextField parentIdField;
+
+  @FXML
   private TextArea descriptionArea;
 
   @FXML
   private Button createButton;
   private Optional<CALocation> result;
+  private Optional<CALocation> parent;
 
   public CAViewControllerLocationCreate(
     final CAServiceDirectoryType inMainServices,
@@ -78,6 +85,16 @@ public final class CAViewControllerLocationCreate implements Initializable
       this.mainServices.requireService(CAMainStrings.class);
     this.result =
       Optional.empty();
+    this.parent =
+      Optional.empty();
+  }
+
+  public void setParent(
+    final CALocation parent)
+  {
+    this.parent = Optional.of(Objects.requireNonNull(parent, "parent"));
+    this.parentIdField.setText(parent.id().id().toString());
+    this.parentNameField.setText(parent.name());
   }
 
   @FXML
@@ -144,7 +161,7 @@ public final class CAViewControllerLocationCreate implements Initializable
       return Optional.of(
         new CALocation(
           locationId,
-          Optional.empty(),
+          this.parent.map(CALocation::id),
           this.nameField.getCharacters().toString(),
           this.descriptionArea.getText()
         )

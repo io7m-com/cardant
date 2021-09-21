@@ -20,8 +20,11 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.util.Optional;
+
 public record CALocationItemDefined(
   CALocationID id,
+  Optional<CALocationID> parent,
   SimpleStringProperty name,
   SimpleStringProperty description)
   implements CALocationItemType
@@ -31,6 +34,7 @@ public record CALocationItemDefined(
   {
     return new CALocationItemDefined(
       location.id(),
+      location.parent(),
       new SimpleStringProperty(location.name()),
       new SimpleStringProperty(location.description())
     );
@@ -50,5 +54,15 @@ public record CALocationItemDefined(
   {
     this.name.set(location.name());
     this.description.set(location.description());
+  }
+
+  public CALocation toLocation()
+  {
+    return new CALocation(
+      this.id,
+      this.parent,
+      this.name.getValueSafe(),
+      this.description.getValueSafe()
+    );
   }
 }

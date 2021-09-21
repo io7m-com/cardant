@@ -21,12 +21,12 @@ import com.io7m.cardant.model.CALocationID;
 
 import java.util.UUID;
 
-public record CALocationItemAll(CALocationID id)
+public record CALocationItemRoot(CALocationID id)
   implements CALocationItemType
 {
-  public static CALocationItemAll get()
+  public static CALocationItemRoot get()
   {
-    return new CALocationItemAll(
+    return new CALocationItemRoot(
       CALocationID.of(UUID.fromString("00000000-0000-0000-0000-000000000000"))
     );
   }

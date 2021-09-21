@@ -16,25 +16,51 @@
 
 package com.io7m.cardant.gui.internal.views;
 
-import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
+import com.io7m.cardant.gui.internal.CAMainStrings;
+import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
 import javafx.util.Callback;
+
+import java.util.Objects;
 
 public final class CALocationTreeCellFactory
   implements Callback<
-  TreeView<CALocationItemDefined>,
-  TreeCell<CALocationItemDefined>>
+  TreeView<CALocationItemType>,
+  TreeCell<CALocationItemType>>
 {
-  public CALocationTreeCellFactory()
-  {
+  private final Image imageLocation;
+  private final Image imageAll;
+  private final CAMainStrings strings;
 
+  public CALocationTreeCellFactory(
+    final CAMainStrings inStrings)
+  {
+    this.strings =
+      Objects.requireNonNull(inStrings, "strings");
+    this.imageLocation =
+      new Image(
+        CALocationTreeCell.class.getResource(
+            "/com/io7m/cardant/gui/internal/location16.png")
+          .toString()
+      );
+    this.imageAll =
+      new Image(
+        CALocationTreeCell.class.getResource(
+            "/com/io7m/cardant/gui/internal/locationAll16.png")
+          .toString()
+      );
   }
 
   @Override
-  public TreeCell<CALocationItemDefined> call(
-    final TreeView<CALocationItemDefined> param)
+  public TreeCell<CALocationItemType> call(
+    final TreeView<CALocationItemType> param)
   {
-    return new CALocationTreeCell();
+    return new CALocationTreeCell(
+      this.strings,
+      this.imageLocation,
+      this.imageAll
+    );
   }
 }

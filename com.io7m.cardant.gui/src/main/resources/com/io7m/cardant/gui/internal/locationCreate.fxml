@@ -1,79 +1,221 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.text.Font?>
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerLocationCreate">
+<?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.control.TextArea?><?import javafx.scene.control.TextField?><?import javafx.scene.control.Tooltip?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.AnchorPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.RowConstraints?><?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="400.0"
+            prefWidth="600.0"
+            stylesheets="@cardant.css"
+            xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.io7m.cardant.gui.internal.CAViewControllerLocationCreate">
   <children>
-    <GridPane layoutX="200.0" layoutY="155.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="16.0">
+    <GridPane layoutX="200.0"
+              layoutY="155.0"
+              AnchorPane.bottomAnchor="16.0"
+              AnchorPane.leftAnchor="16.0"
+              AnchorPane.rightAnchor="16.0"
+              AnchorPane.topAnchor="16.0">
       <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="32.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
+        <ColumnConstraints hgrow="SOMETIMES"
+                           maxWidth="-Infinity"
+                           minWidth="-Infinity"
+                           prefWidth="128.0"/>
+        <ColumnConstraints hgrow="SOMETIMES"
+                           maxWidth="-Infinity"
+                           minWidth="-Infinity"
+                           prefWidth="32.0"/>
+        <ColumnConstraints hgrow="SOMETIMES"
+                           minWidth="10.0"
+                           prefWidth="100.0"/>
+        <ColumnConstraints hgrow="SOMETIMES"
+                           maxWidth="-Infinity"
+                           minWidth="-Infinity"
+                           prefWidth="128.0"/>
       </columnConstraints>
       <rowConstraints>
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="-Infinity"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="-Infinity"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="-Infinity"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="10.0"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="10.0"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="-Infinity"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="-Infinity"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="-Infinity"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0"
+                        prefHeight="64.0"
+                        vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity"
+                        minHeight="-Infinity"
+                        prefHeight="32.0"
+                        vgrow="SOMETIMES"/>
       </rowConstraints>
       <children>
-        <Button cancelButton="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelSelected" prefHeight="32.0" prefWidth="128.0" text="%cancel" GridPane.rowIndex="7" />
-        <Button fx:id="createButton" defaultButton="true" layoutX="10.0" layoutY="346.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCreateSelected" prefHeight="32.0" prefWidth="128.0" text="%locationCreate.create" GridPane.columnIndex="3" GridPane.rowIndex="7" />
-        <Label text="%locations.id" />
-        <TextField fx:id="idField" maxHeight="-Infinity" minHeight="-Infinity" onAction="#onFieldChanged" onKeyReleased="#onFieldChanged" prefHeight="26.0" GridPane.columnIndex="2">
+        <Button cancelButton="true"
+                maxHeight="-Infinity"
+                maxWidth="-Infinity"
+                minHeight="-Infinity"
+                minWidth="-Infinity"
+                mnemonicParsing="false"
+                onAction="#onCancelSelected"
+                prefHeight="32.0"
+                prefWidth="128.0"
+                text="%cancel"
+                GridPane.rowIndex="9"/>
+        <Button fx:id="createButton"
+                defaultButton="true"
+                layoutX="10.0"
+                layoutY="346.0"
+                maxHeight="-Infinity"
+                maxWidth="-Infinity"
+                minHeight="-Infinity"
+                minWidth="-Infinity"
+                mnemonicParsing="false"
+                onAction="#onCreateSelected"
+                prefHeight="32.0"
+                prefWidth="128.0"
+                text="%locationCreate.create"
+                GridPane.columnIndex="3"
+                GridPane.rowIndex="9"/>
+        <Label text="%locations.id"/>
+        <TextField fx:id="idField"
+                   maxHeight="-Infinity"
+                   minHeight="-Infinity"
+                   onAction="#onFieldChanged"
+                   onKeyReleased="#onFieldChanged"
+                   prefHeight="26.0"
+                   GridPane.columnIndex="2">
           <tooltip>
-            <Tooltip text="%locations.tooltip.id" />
+            <Tooltip text="%locations.tooltip.id"/>
           </tooltip>
           <font>
-            <Font name="Monospaced Regular" size="11.0" />
+            <Font name="Monospaced Regular"
+                  size="11.0"/>
           </font>
         </TextField>
-        <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onGenerateIDSelected" prefHeight="26.0" prefWidth="128.0" text="%locationCreate.generate" GridPane.columnIndex="3">
+        <Button maxHeight="-Infinity"
+                maxWidth="-Infinity"
+                minHeight="-Infinity"
+                minWidth="-Infinity"
+                mnemonicParsing="false"
+                onAction="#onGenerateIDSelected"
+                prefHeight="26.0"
+                prefWidth="128.0"
+                text="%locationCreate.generate"
+                GridPane.columnIndex="3">
           <tooltip>
-            <Tooltip text="%locations.tooltip.generate" />
+            <Tooltip text="%locations.tooltip.generate"/>
           </tooltip>
         </Button>
-        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" smooth="false" translateX="12.0" GridPane.columnIndex="3">
+        <ImageView fitHeight="16.0"
+                   fitWidth="16.0"
+                   pickOnBounds="true"
+                   smooth="false"
+                   translateX="12.0"
+                   GridPane.columnIndex="3">
           <image>
-            <Image url="@generate.png" />
+            <Image url="@generate.png"/>
           </image>
         </ImageView>
-        <Label text="%name" GridPane.rowIndex="1" />
-        <TextField fx:id="nameField" maxHeight="-Infinity" minHeight="-Infinity" onAction="#onFieldChanged" onKeyReleased="#onFieldChanged" prefHeight="26.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+        <Label text="%name"
+               GridPane.rowIndex="1"/>
+        <TextField fx:id="nameField"
+                   maxHeight="-Infinity"
+                   minHeight="-Infinity"
+                   onAction="#onFieldChanged"
+                   onKeyReleased="#onFieldChanged"
+                   prefHeight="26.0"
+                   GridPane.columnIndex="2"
+                   GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="1">
           <tooltip>
-            <Tooltip text="%locations.tooltip.name" />
+            <Tooltip text="%locations.tooltip.name"/>
           </tooltip>
         </TextField>
-        <Label text="%description" GridPane.rowIndex="3" />
-        <TextArea fx:id="descriptionArea" onKeyReleased="#onFieldChanged" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" GridPane.rowSpan="3">
+        <Label text="%description"
+               GridPane.rowIndex="5"/>
+        <TextArea fx:id="descriptionArea"
+                  onKeyReleased="#onFieldChanged"
+                  GridPane.columnIndex="2"
+                  GridPane.columnSpan="2147483647"
+                  GridPane.rowIndex="5"
+                  GridPane.rowSpan="3">
           <tooltip>
-            <Tooltip text="%locations.tooltip.description" />
+            <Tooltip text="%locations.tooltip.description"/>
           </tooltip>
         </TextArea>
-        <Label fx:id="idBad" text="×" textFill="RED" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+        <Label fx:id="idBad"
+               text="×"
+               textFill="RED"
+               GridPane.columnIndex="1"
+               GridPane.halignment="CENTER"
+               GridPane.valignment="CENTER">
           <font>
-            <Font name="System Bold" size="18.0" />
+            <Font name="System Bold"
+                  size="18.0"/>
           </font>
           <tooltip>
-            <Tooltip text="%connect.tooltip.fieldNotValid" />
+            <Tooltip text="%connect.tooltip.fieldNotValid"/>
           </tooltip>
         </Label>
+        <Label text="%locationCreate.parent"
+               GridPane.rowIndex="2"/>
+        <TextField fx:id="parentNameField"
+                   editable="false"
+                   layoutX="170.0"
+                   layoutY="45.0"
+                   maxHeight="-Infinity"
+                   minHeight="-Infinity"
+                   onAction="#onFieldChanged"
+                   onKeyReleased="#onFieldChanged"
+                   prefHeight="26.0"
+                   GridPane.columnIndex="2"
+                   GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="2">
+          <tooltip>
+            <Tooltip text="%locations.tooltip.name"/>
+          </tooltip>
+        </TextField>
+        <TextField fx:id="parentIdField"
+                   editable="false"
+                   maxHeight="-Infinity"
+                   minHeight="-Infinity"
+                   onAction="#onFieldChanged"
+                   onKeyReleased="#onFieldChanged"
+                   prefHeight="26.0"
+                   GridPane.columnIndex="2"
+                   GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="3">
+          <tooltip>
+            <Tooltip text="%locations.tooltip.name"/>
+          </tooltip>
+          <font>
+            <Font name="Monospaced Regular"
+                  size="11.0"/>
+          </font>
+        </TextField>
       </children>
     </GridPane>
   </children>

@@ -18,14 +18,13 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
+import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.model.CALocation;
-import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -47,14 +46,14 @@ public final class CAViewControllerLocationSetParent implements Initializable
   private final CAMainController controller;
 
   @FXML
-  private TreeView<CALocationItemDefined> locationTreeView;
+  private TreeView<CALocationItemType> locationTreeView;
   @FXML
   private Button cancelButton;
   @FXML
   private Button selectButton;
   @FXML
-  private TreeView<CALocationItemDefined> locationTree;
-  private CALocationItemDefined target;
+  private TreeView<CALocationItemType> locationTree;
+  private CALocationItemType target;
   private CAClientHostileType clientNow;
 
   public CAViewControllerLocationSetParent(
@@ -85,15 +84,17 @@ public final class CAViewControllerLocationSetParent implements Initializable
         .getSelectedItem()
         .getValue();
 
-    this.clientNow.locationPut(
-      new CALocation(
-        this.target.id(),
-        Optional.of(selected.id()),
-        this.target.name().getValueSafe(),
-        this.target.description().getValueSafe()
-      )
-    );
-    this.stage.close();
+    if (this.target instanceof CALocationItemDefined definedTarget) {
+      this.clientNow.locationPut(
+        new CALocation(
+          definedTarget.id(),
+          Optional.of(selected.id()),
+          definedTarget.name().getValueSafe(),
+          definedTarget.description().getValueSafe()
+        )
+      );
+      this.stage.close();
+    }
   }
 
   @Override
@@ -121,7 +122,7 @@ public final class CAViewControllerLocationSetParent implements Initializable
       this.controller.locationTree().root());
     this.locationTreeView.setShowRoot(false);
     this.locationTreeView.setCellFactory(
-      new CALocationTreeCellFactory());
+      new CALocationTreeCellFactory(this.strings));
     this.locationTreeView.getSelectionModel()
       .selectedItemProperty()
       .addListener((observable, oldValue, newValue) -> {
@@ -154,7 +155,9 @@ public final class CAViewControllerLocationSetParent implements Initializable
           .getValue()
           .id();
 
-      this.selectButton.setDisable(Objects.equals(selectedId, this.target.id()));
+      this.selectButton.setDisable(Objects.equals(
+        selectedId,
+        this.target.id()));
     } else {
       this.selectButton.setDisable(true);
     }
