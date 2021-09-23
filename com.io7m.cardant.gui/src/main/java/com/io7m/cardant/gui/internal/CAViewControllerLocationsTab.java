@@ -20,6 +20,7 @@ import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.gui.internal.model.CALocationItemAll;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
+import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import javafx.fxml.FXML;
@@ -53,6 +54,7 @@ public final class CAViewControllerLocationsTab implements Initializable
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
+  private final CALocationTreeFiltered locationTreeFiltered;
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
   private CAClientHostileType clientNow;
 
@@ -85,6 +87,9 @@ public final class CAViewControllerLocationsTab implements Initializable
       mainServices.requireService(CAMainController.class);
 
     this.services = mainServices;
+
+    this.locationTreeFiltered =
+      new CALocationTreeFiltered(this.controller.locationTree());
   }
 
   private static boolean allowsReparenting(
@@ -112,12 +117,11 @@ public final class CAViewControllerLocationsTab implements Initializable
     this.events.subscribe(this.subscriber);
 
     this.locationSearch.textProperty()
-      .bindBidirectional(this.controller.locationSearchProperty());
+      .addListener((observable, oldValue, newValue) -> {
+        this.locationTreeFiltered.setFilterChecked(newValue);
+      });
 
-    this.locationTreeView.setRoot(
-      this.controller.locationTree()
-        .root()
-    );
+    this.locationTreeView.setRoot(this.locationTreeFiltered.root());
     this.locationTreeView.setShowRoot(false);
     this.locationTreeView.setCellFactory(
       new CALocationTreeCellFactory(this.strings));

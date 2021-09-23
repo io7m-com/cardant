@@ -82,6 +82,9 @@ public final class CAViewControllers
     if (Objects.equals(clazz, CAViewControllerItemMetadataEditor.class)) {
       return new CAViewControllerItemMetadataEditor(mainServices, stage);
     }
+    if (Objects.equals(clazz, CAViewControllerItemReposit.class)) {
+      return new CAViewControllerItemReposit(mainServices, stage);
+    }
 
     throw new IllegalStateException(
       String.format("Unrecognized class: %s", clazz)

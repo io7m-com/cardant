@@ -18,27 +18,30 @@ package com.io7m.cardant.gui.internal.model;
 
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.TreeItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class CALocationTree
 {
-  private static final Logger LOG =
-    LoggerFactory.getLogger(CALocationTree.class);
-
   private final HashMap<CALocationID, CALocationItemDefined> locations;
   private final TreeItem<CALocationItemType> root;
   private final HashSet<CALocationID> expanded;
-  private Optional<String> filter;
+  private final IntegerProperty edits;
+  private final Map<CALocationID, CALocationItemDefined> locationsRead;
+  private final Set<CALocationID> expandedRead;
 
   public CALocationTree()
   {
@@ -48,16 +51,36 @@ public final class CALocationTree
       new TreeItem<>(CALocationItemRoot.get());
     this.expanded =
       new HashSet<>();
-    this.filter =
-      Optional.empty();
 
     this.root.setExpanded(true);
+
+    this.edits =
+      new SimpleIntegerProperty();
+    this.locationsRead =
+      Collections.unmodifiableMap(this.locations);
+    this.expandedRead =
+      Collections.unmodifiableSet(this.expanded);
   }
 
   private static TreeItem<CALocationItemType> soften(
     final TreeItem<CALocationItemDefined> item)
   {
     return (TreeItem<CALocationItemType>) (Object) item;
+  }
+
+  public Set<CALocationID> expanded()
+  {
+    return this.expandedRead;
+  }
+
+  public Map<CALocationID, CALocationItemDefined> locations()
+  {
+    return this.locationsRead;
+  }
+
+  public ObservableIntegerValue editsProperty()
+  {
+    return this.edits;
   }
 
   public void put(
@@ -97,31 +120,14 @@ public final class CALocationTree
     return this.root;
   }
 
-  public void setFilter(
-    final Optional<String> newFilter)
-  {
-    this.filter = Objects.requireNonNull(newFilter, "newFilter");
-    this.rebuild();
-  }
-
   private void rebuild()
   {
-    if (this.filter.isPresent()) {
-      this.rebuildFiltered(this.filter.get());
-    } else {
-      this.rebuildUnfiltered();
-    }
-  }
+    try {
+      final var treeItems =
+        new HashMap<CALocationID, TreeItem<CALocationItemDefined>>(
+          this.locations.size());
 
-  private void rebuildFiltered(
-    final String filterText)
-  {
-    final var treeItems =
-      new HashMap<CALocationID, TreeItem<CALocationItemDefined>>(
-        this.locations.size());
-
-    for (final var location : this.locations.values()) {
-      if (location.matches(filterText)) {
+      for (final var location : this.locations.values()) {
         final var item = new TreeItem<>(location);
         treeItems.put(location.id(), item);
         item.setExpanded(this.expanded.contains(location.id()));
@@ -130,24 +136,43 @@ public final class CALocationTree
             this.expandedChanged(location.id(), newValue);
           }));
       }
+
+      final var roots = new HashSet<CALocationID>();
+      for (final var location : treeItems.values()) {
+        final var parentOpt =
+          location.getValue()
+            .parent()
+            .flatMap(i -> Optional.ofNullable(treeItems.get(i)));
+
+        parentOpt.ifPresentOrElse(
+          parent -> {
+            parent.getChildren().add(location);
+          },
+          () -> {
+            roots.add(location.getValue().id());
+          });
+      }
+
+      final var newEverywhere =
+        new TreeItem<CALocationItemType>(CALocationItemAll.get());
+      newEverywhere.setExpanded(true);
+
+      final var everywhereChildren =
+        newEverywhere.getChildren();
+      everywhereChildren.addAll(
+        roots.stream()
+          .map(treeItems::get)
+          .map(CALocationTree::soften)
+          .collect(Collectors.toList())
+      );
+
+      final var rootChildren =
+        this.root.getChildren();
+      rootChildren.clear();
+      rootChildren.add(newEverywhere);
+    } finally {
+      this.edits.set(this.edits.get() + 1);
     }
-
-    final var newEverywhere =
-      new TreeItem<CALocationItemType>(CALocationItemAll.get());
-    newEverywhere.setExpanded(true);
-
-    final var everywhereChildren =
-      newEverywhere.getChildren();
-    everywhereChildren.addAll(
-      treeItems.values()
-        .stream()
-        .map(CALocationTree::soften)
-        .collect(Collectors.toList())
-    );
-
-    final var rootChildren = this.root.getChildren();
-    rootChildren.clear();
-    rootChildren.add(newEverywhere);
   }
 
   private void expandedChanged(
@@ -159,55 +184,5 @@ public final class CALocationTree
     } else {
       this.expanded.remove(id);
     }
-  }
-
-  private void rebuildUnfiltered()
-  {
-    final var treeItems =
-      new HashMap<CALocationID, TreeItem<CALocationItemDefined>>(
-        this.locations.size());
-
-    for (final var location : this.locations.values()) {
-      final var item = new TreeItem<>(location);
-      treeItems.put(location.id(), item);
-      item.setExpanded(this.expanded.contains(location.id()));
-      item.expandedProperty()
-        .addListener(new WeakChangeListener<>((observable, oldValue, newValue) -> {
-          this.expandedChanged(location.id(), newValue);
-        }));
-    }
-
-    final var roots = new HashSet<CALocationID>();
-    for (final var location : treeItems.values()) {
-      final var parentOpt =
-        location.getValue()
-          .parent()
-          .flatMap(i -> Optional.ofNullable(treeItems.get(i)));
-
-      parentOpt.ifPresentOrElse(
-        parent -> {
-          parent.getChildren().add(location);
-        },
-        () -> {
-          roots.add(location.getValue().id());
-        });
-    }
-
-    final var newEverywhere =
-      new TreeItem<CALocationItemType>(CALocationItemAll.get());
-    newEverywhere.setExpanded(true);
-
-    final var everywhereChildren =
-      newEverywhere.getChildren();
-    everywhereChildren.addAll(
-      roots.stream()
-        .map(treeItems::get)
-        .map(CALocationTree::soften)
-        .collect(Collectors.toList())
-    );
-
-    final var rootChildren = this.root.getChildren();
-    rootChildren.clear();
-    rootChildren.add(newEverywhere);
   }
 }

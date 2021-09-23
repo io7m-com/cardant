@@ -58,6 +58,7 @@ import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_DUPLICATE;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_GENERAL;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
+import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.itemIdBytes;
 import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.locationIdBytes;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
@@ -261,6 +262,16 @@ public final class CADatabaseModelQueriesItems
       il.count
     FROM
       cardant.item_locations il
+    """;
+  private static final String ITEM_LOCATION_COUNT_GET = """
+    SELECT
+      il.item_id,
+      il.item_location,
+      il.count
+    FROM
+      cardant.item_locations il
+    WHERE il.item_id = ?
+      AND il.item_location = ?
     """;
 
   private final CADatabaseMessages messages;
@@ -1108,12 +1119,37 @@ public final class CADatabaseModelQueriesItems
     final CALocationID location)
     throws SQLException, IOException
   {
-    final var ids = itemListInnerExactIDsAll(connection, location);
+    final var ids =
+      itemListInnerExactIDsAll(connection, location);
+
     final var items = new HashSet<CAItem>(ids.size());
     for (final var id : ids) {
-      itemGetInner(connection, id, false).ifPresent(items::add);
+      final var count =
+        itemLocationCountGetInner(connection, id, location);
+      itemGetInner(connection, id, false)
+        .map(item -> item.withCount(count))
+        .ifPresent(items::add);
     }
     return items;
+  }
+
+  private static long itemLocationCountGetInner(
+    final Connection connection,
+    final CAItemID id,
+    final CALocationID location)
+    throws SQLException
+  {
+    try (var statement =
+           connection.prepareStatement(ITEM_LOCATION_COUNT_GET)) {
+      statement.setBytes(1, itemIdBytes(id));
+      statement.setBytes(2, locationIdBytes(location));
+      try (var result = statement.executeQuery()) {
+        while (result.next()) {
+          return result.getLong("item_count");
+        }
+        return 0L;
+      }
+    }
   }
 
   private static HashSet<CAItemID> itemListInnerExactIDsAll(

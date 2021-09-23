@@ -53,6 +53,7 @@ public final class CAViewControllerItemEditorOverviewTab implements
   @FXML private AnchorPane itemEditorPlaceholder;
   @FXML private TextField itemNameField;
   @FXML private TextField itemIDField;
+  @FXML private TextField itemCountField;
   @FXML private TextArea itemDescriptionField;
   @FXML private Button itemImageRemove;
   @FXML private Button itemImageAdd;
@@ -166,9 +167,12 @@ public final class CAViewControllerItemEditorOverviewTab implements
     }
 
     final var item = itemOpt.get();
-    this.itemIDField.setText(item.id().id().toString());
+    this.itemIDField.setText(
+      item.id().id().toString());
     this.itemNameField.textProperty()
       .bind(item.name());
+    this.itemCountField.textProperty()
+      .bind(item.count().asString());
     this.itemDescriptionField.textProperty()
       .bind(item.description());
 

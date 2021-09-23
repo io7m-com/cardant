@@ -20,6 +20,7 @@ import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
+import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
 import com.io7m.cardant.gui.internal.views.CAItemMutableTables;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.model.CAItem;
@@ -63,6 +64,7 @@ public final class CAViewControllerItemsTab implements Initializable
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
   private final CAMainController controller;
+  private final CALocationTreeFiltered locationFilteredView;
 
   @FXML
   private SplitPane splitPane;
@@ -87,6 +89,8 @@ public final class CAViewControllerItemsTab implements Initializable
   @FXML
   private Button itemDelete;
   @FXML
+  private Button itemReposit;
+  @FXML
   private ImageView itemDeleteImage;
   @FXML
   private TreeView<CALocationItemType> locationTreeView;
@@ -108,6 +112,9 @@ public final class CAViewControllerItemsTab implements Initializable
       mainServices.requireService(CAMainController.class);
 
     this.services = mainServices;
+
+    this.locationFilteredView =
+      new CALocationTreeFiltered(this.controller.locationTree());
   }
 
   @Override
@@ -126,12 +133,11 @@ public final class CAViewControllerItemsTab implements Initializable
     );
 
     this.locationSearchField.textProperty()
-      .bindBidirectional(this.controller.locationSearchProperty());
+      .addListener((observable, oldValue, newValue) -> {
+        this.locationFilteredView.setFilterChecked(newValue);
+      });
 
-    this.locationTreeView.setRoot(
-      this.controller.locationTree()
-        .root()
-    );
+    this.locationTreeView.setRoot(this.locationFilteredView.root());
     this.locationTreeView.setShowRoot(false);
     this.locationTreeView.setCellFactory(
       new CALocationTreeCellFactory(this.strings));
@@ -185,10 +191,10 @@ public final class CAViewControllerItemsTab implements Initializable
   {
     if (itemSelection.isPresent()) {
       this.itemDelete.setDisable(false);
-      this.itemDeleteImage.setOpacity(1.0);
+      this.itemReposit.setDisable(false);
     } else {
       this.itemDelete.setDisable(true);
-      this.itemDeleteImage.setOpacity(0.5);
+      this.itemReposit.setDisable(true);
     }
   }
 
@@ -221,6 +227,39 @@ public final class CAViewControllerItemsTab implements Initializable
         .trim()
         .toUpperCase(Locale.ROOT)
     );
+  }
+
+  @FXML
+  private void onRepositItemsSelected()
+    throws IOException
+  {
+    final var stage = new Stage();
+
+    final var connectXML =
+      CAViewControllerMain.class.getResource("itemReposit.fxml");
+
+    final var resources = this.strings.resources();
+    final var loader = new FXMLLoader(connectXML, resources);
+
+    loader.setControllerFactory(
+      clazz -> CAViewControllers.createController(clazz, stage, this.services)
+    );
+
+    final AnchorPane pane =
+      loader.load();
+    final CAViewControllerItemReposit controller =
+      loader.getController();
+
+    controller.setItem(
+      this.controller.itemSelected()
+        .get()
+        .get()
+    );
+
+    stage.initModality(Modality.APPLICATION_MODAL);
+    stage.setScene(new Scene(pane));
+    stage.setTitle(this.strings.format("items.reposit"));
+    stage.showAndWait();
   }
 
   @FXML

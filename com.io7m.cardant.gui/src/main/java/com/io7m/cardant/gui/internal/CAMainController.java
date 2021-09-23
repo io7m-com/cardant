@@ -72,7 +72,6 @@ public final class CAMainController implements CAServiceType
   private final SimpleObjectProperty<Optional<CAItemMutable>> itemSelected;
   private final CALocationTree locationTree;
   private final SimpleObjectProperty<Optional<CALocationItemType>> locationTreeSelected;
-  private final SimpleStringProperty locationSearchProperty;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
   private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
@@ -100,8 +99,6 @@ public final class CAMainController implements CAServiceType
     this.itemMetadataList =
       new CATableMap<>(FXCollections.observableHashMap());
 
-    this.locationSearchProperty =
-      new SimpleStringProperty();
     this.locationTreeSelected =
       new SimpleObjectProperty<>(Optional.empty());
     this.itemSelected =
@@ -115,24 +112,6 @@ public final class CAMainController implements CAServiceType
 
     this.itemMetadataPredicate = (ignored) -> true;
     this.itemAttachmentPredicate = (ignored) -> true;
-
-    this.locationSearchProperty.addListener((observable, oldValue, newValue) -> {
-      this.locationSearchChanged(newValue);
-    });
-  }
-
-  private void locationSearchChanged(
-    final String newValue)
-  {
-    final var text =
-      newValue.trim()
-        .toUpperCase(Locale.ROOT);
-
-    if (text.isEmpty()) {
-      this.locationTree().setFilter(Optional.empty());
-    } else {
-      this.locationTree().setFilter(Optional.of(text));
-    }
   }
 
   public CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachments()
@@ -190,11 +169,6 @@ public final class CAMainController implements CAServiceType
     } else {
       this.itemList.setPredicate(item -> item.matches(search));
     }
-  }
-
-  public SimpleStringProperty locationSearchProperty()
-  {
-    return this.locationSearchProperty;
   }
 
   public ObservableObjectValue<Optional<CAItemMetadataMutable>> itemMetadataSelected()

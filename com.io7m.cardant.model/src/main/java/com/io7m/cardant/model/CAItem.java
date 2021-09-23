@@ -142,4 +142,25 @@ public record CAItem(
     Objects.requireNonNull(relation, "relation");
     return this.firstAttachmentWithRelation(relation).isPresent();
   }
+
+  /**
+   * Set the count for this item.
+   *
+   * @param count The item count
+   *
+   * @return This item with the given count
+   */
+
+  public CAItem withCount(
+    final long count)
+  {
+    return new CAItem(
+      this.id,
+      this.name,
+      count,
+      this.metadata,
+      this.attachments,
+      this.tags
+    );
+  }
 }
