@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface IDDocument extends XmlObject
-{
-  DocumentFactory<IDDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "id996cdoctype");
-  SchemaType type = Factory.getType();
+public interface IDDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.IDDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "id996cdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ID" element
-   */
-  IDType getID();
+    /**
+     * Gets the "ID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.IDType getID();
 
-  /**
-   * Sets the "ID" element
-   */
-  void setID(IDType id);
+    /**
+     * Sets the "ID" element
+     */
+    void setID(com.io7m.cardant.protocol.inventory.v1.beans.IDType id);
 
-  /**
-   * Appends and returns a new empty "ID" element
-   */
-  IDType addNewID();
+    /**
+     * Appends and returns a new empty "ID" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.IDType addNewID();
 }

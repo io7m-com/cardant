@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface MessageDocument extends XmlObject
-{
-  DocumentFactory<MessageDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "messaged2b2doctype");
-  SchemaType type = Factory.getType();
+public interface MessageDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "messaged2b2doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "Message" element
-   */
-  MessageType getMessage();
+    /**
+     * Gets the "Message" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.MessageType getMessage();
 
-  /**
-   * Sets the "Message" element
-   */
-  void setMessage(MessageType message);
+    /**
+     * Sets the "Message" element
+     */
+    void setMessage(com.io7m.cardant.protocol.inventory.v1.beans.MessageType message);
 
-  /**
-   * Appends and returns a new empty "Message" element
-   */
-  MessageType addNewMessage();
+    /**
+     * Appends and returns a new empty "Message" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.MessageType addNewMessage();
 }

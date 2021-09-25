@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one ResponseItemMetadataRemove(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class ResponseItemMetadataRemoveDocumentImpl extends ResponseDocumentImpl implements
-  ResponseItemMetadataRemoveDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemMetadataRemove"),
-  };
+public class ResponseItemMetadataRemoveDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveDocument {
+    private static final long serialVersionUID = 1L;
 
-  public ResponseItemMetadataRemoveDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "ResponseItemMetadataRemove" element
-   */
-  @Override
-  public ResponseItemMetadataRemoveType getResponseItemMetadataRemove()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ResponseItemMetadataRemoveType target = null;
-      target = (ResponseItemMetadataRemoveType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public ResponseItemMetadataRemoveDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "ResponseItemMetadataRemove" element
-   */
-  @Override
-  public void setResponseItemMetadataRemove(final ResponseItemMetadataRemoveType responseItemMetadataRemove)
-  {
-    this.generatedSetterHelperImpl(
-      responseItemMetadataRemove,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemMetadataRemove"),
+    };
 
-  /**
-   * Appends and returns a new empty "ResponseItemMetadataRemove" element
-   */
-  @Override
-  public ResponseItemMetadataRemoveType addNewResponseItemMetadataRemove()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ResponseItemMetadataRemoveType target = null;
-      target = (ResponseItemMetadataRemoveType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "ResponseItemMetadataRemove" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType getResponseItemMetadataRemove() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "ResponseItemMetadataRemove" element
+     */
+    @Override
+    public void setResponseItemMetadataRemove(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType responseItemMetadataRemove) {
+        generatedSetterHelperImpl(responseItemMetadataRemove, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "ResponseItemMetadataRemove" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType addNewResponseItemMetadataRemove() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

@@ -25,6 +25,7 @@ import org.jgrapht.graph.DirectedAcyclicGraph;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
@@ -76,10 +77,13 @@ public final class CADatabaseModelQueriesLocations
     FROM cardant.locations l
     """;
 
+  private final CADatabaseMessages messages;
+
   CADatabaseModelQueriesLocations(
     final CADatabaseDerbyTransaction inTransaction)
   {
     super(inTransaction);
+    this.messages = inTransaction.messages();
   }
 
   private static Optional<CALocation> locationGetInner(
@@ -105,7 +109,7 @@ public final class CADatabaseModelQueriesLocations
     return new CALocation(
       CADatabaseBytes.locationIdFromBytes(result.getBytes("location_id")),
       Optional.ofNullable(result.getBytes("location_parent"))
-          .map(CADatabaseBytes::locationIdFromBytes),
+        .map(CADatabaseBytes::locationIdFromBytes),
       result.getString("location_name"),
       result.getString("location_description")
     );
@@ -118,7 +122,10 @@ public final class CADatabaseModelQueriesLocations
   {
     try (var statement = connection.prepareStatement(LOCATION_PUT_INSERT)) {
       statement.setBytes(1, CADatabaseBytes.locationIdBytes(location.id()));
-      statement.setBytes(2, location.parent().map(CADatabaseBytes::locationIdBytes).orElse(null));
+      statement.setBytes(
+        2,
+        location.parent().map(CADatabaseBytes::locationIdBytes).orElse(
+          null));
       statement.setString(3, location.name());
       statement.setString(4, location.description());
       statement.executeUpdate();
@@ -132,7 +139,10 @@ public final class CADatabaseModelQueriesLocations
   {
     try (var statement = connection.prepareStatement(LOCATION_PUT_UPDATE)) {
       statement.setString(1, location.name());
-      statement.setBytes(2, location.parent().map(CADatabaseBytes::locationIdBytes).orElse(null));
+      statement.setBytes(
+        2,
+        location.parent().map(CADatabaseBytes::locationIdBytes).orElse(
+          null));
       statement.setString(3, location.description());
       statement.setBytes(4, CADatabaseBytes.locationIdBytes(location.id()));
       statement.executeUpdate();
@@ -163,7 +173,7 @@ public final class CADatabaseModelQueriesLocations
     Objects.requireNonNull(location, "location");
 
     this.withSQLConnection(connection -> {
-      checkAcyclic(connection, location);
+      this.checkAcyclic(connection, location);
 
       final var existing = locationGetInner(connection, location.id());
       if (existing.isPresent()) {
@@ -177,7 +187,7 @@ public final class CADatabaseModelQueriesLocations
     });
   }
 
-  private static void checkAcyclic(
+  private void checkAcyclic(
     final Connection connection,
     final CALocation newLocation)
     throws SQLException, CADatabaseException
@@ -252,7 +262,18 @@ public final class CADatabaseModelQueriesLocations
       final var newEdge = new CALocationEdge(newLocation.id(), newParent);
       graph.addEdge(newLocation.id(), newParent, newEdge);
     } catch (final IllegalArgumentException e) {
-      throw new CADatabaseException(ERROR_CYCLIC, e);
+      final var attributes = new HashMap<String, String>();
+      attributes.put(
+        this.messages.format("object"),
+        newLocation.displayId());
+      attributes.put(
+        this.messages.format("type"),
+        this.messages.format("location"));
+      attributes.put(
+        this.messages.format("location"),
+        newLocation.name());
+
+      throw new CADatabaseException(ERROR_CYCLIC, attributes, e);
     }
   }
 
@@ -277,5 +298,7 @@ public final class CADatabaseModelQueriesLocations
 
   private record CALocationEdge(
     CALocationID from,
-    CALocationID to) { }
+    CALocationID to)
+  {
+  }
 }

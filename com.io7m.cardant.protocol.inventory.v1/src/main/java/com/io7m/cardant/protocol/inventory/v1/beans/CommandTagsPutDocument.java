@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandTagsPutDocument extends CommandDocument
-{
-  DocumentFactory<CommandTagsPutDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commandtagsput3f7cdoctype");
-  SchemaType type = Factory.getType();
+public interface CommandTagsPutDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commandtagsput3f7cdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandTagsPut" element
-   */
-  CommandTagsPutType getCommandTagsPut();
+    /**
+     * Gets the "CommandTagsPut" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType getCommandTagsPut();
 
-  /**
-   * Sets the "CommandTagsPut" element
-   */
-  void setCommandTagsPut(CommandTagsPutType commandTagsPut);
+    /**
+     * Sets the "CommandTagsPut" element
+     */
+    void setCommandTagsPut(com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType commandTagsPut);
 
-  /**
-   * Appends and returns a new empty "CommandTagsPut" element
-   */
-  CommandTagsPutType addNewCommandTagsPut();
+    /**
+     * Appends and returns a new empty "CommandTagsPut" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType addNewCommandTagsPut();
 }

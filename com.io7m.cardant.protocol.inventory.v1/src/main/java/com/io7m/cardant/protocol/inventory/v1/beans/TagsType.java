@@ -7,12 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-
-import java.util.List;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -20,58 +18,53 @@ import java.util.List;
  *
  * This is a complex type.
  */
-public interface TagsType extends XmlObject
-{
-  DocumentFactory<TagsType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "tagstypebd44type");
-  SchemaType type = Factory.getType();
+public interface TagsType extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.TagsType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "tagstypebd44type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets a List of "Tag" elements
-   */
-  List<TagType> getTagList();
+    /**
+     * Gets a List of "Tag" elements
+     */
+    java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.TagType> getTagList();
 
-  /**
-   * Gets array of all "Tag" elements
-   */
-  TagType[] getTagArray();
+    /**
+     * Gets array of all "Tag" elements
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagType[] getTagArray();
 
-  /**
-   * Sets array of all "Tag" element
-   */
-  void setTagArray(TagType[] tagArray);
+    /**
+     * Gets ith "Tag" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagType getTagArray(int i);
 
-  /**
-   * Gets ith "Tag" element
-   */
-  TagType getTagArray(int i);
+    /**
+     * Returns number of "Tag" element
+     */
+    int sizeOfTagArray();
 
-  /**
-   * Returns number of "Tag" element
-   */
-  int sizeOfTagArray();
+    /**
+     * Sets array of all "Tag" element
+     */
+    void setTagArray(com.io7m.cardant.protocol.inventory.v1.beans.TagType[] tagArray);
 
-  /**
-   * Sets ith "Tag" element
-   */
-  void setTagArray(
-    int i,
-    TagType tag);
+    /**
+     * Sets ith "Tag" element
+     */
+    void setTagArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.TagType tag);
 
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "Tag" element
-   */
-  TagType insertNewTag(int i);
+    /**
+     * Inserts and returns a new empty value (as xml) as the ith "Tag" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagType insertNewTag(int i);
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "Tag" element
-   */
-  TagType addNewTag();
+    /**
+     * Appends and returns a new empty value (as xml) as the last "Tag" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.TagType addNewTag();
 
-  /**
-   * Removes the ith "Tag" element
-   */
-  void removeTag(int i);
+    /**
+     * Removes the ith "Tag" element
+     */
+    void removeTag(int i);
 }

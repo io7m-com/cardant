@@ -56,5 +56,11 @@ public enum CAClientEventStatusChanged implements CAClientEventType
    * The client is receiving data.
    */
 
-  CLIENT_RECEIVING_DATA
+  CLIENT_RECEIVING_DATA,
+
+  /**
+   * The client is idle.
+   */
+
+  CLIENT_IDLE
 }

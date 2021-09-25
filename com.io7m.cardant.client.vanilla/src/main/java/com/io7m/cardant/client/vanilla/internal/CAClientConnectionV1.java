@@ -50,6 +50,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -58,6 +60,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_CONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISCONNECTED;
+import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_IDLE;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_RECEIVING_DATA;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_SENDING_REQUEST;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
@@ -343,7 +346,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       command.future();
 
     if (response instanceof CAResponseError error) {
-      final CAClientCommandError<T> result = CAClientConnectionV1.responseError(error);
+      final CAClientCommandError<T> result = responseError(error);
       this.events.submit(new CAClientEventCommandFailed<>(
         command.getClass().getSimpleName(),
         result
@@ -377,6 +380,8 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       if (data instanceof CAInventoryElementType inventory) {
         this.events.submit(new CAClientEventDataReceived(inventory));
       }
+
+      this.events.submit(CLIENT_IDLE);
       return;
     }
 
@@ -388,19 +393,31 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   private static <T> CAClientCommandError<T> responseError(
     final CAResponseError error)
   {
-    return new CAClientCommandError<>(error.message());
+    return new CAClientCommandError<>(
+      error.summary(),
+      error.statusCode(),
+      error.attributes(),
+      error.details()
+    );
   }
 
   private <T> CAClientCommandError<T> responseTypeError(
     final Class<?> expectedReturn,
     final String receivedReturn)
   {
+    final var attributes = new HashMap<String, String>();
+    attributes.put(
+      this.strings.format("expected"),
+      expectedReturn.getSimpleName());
+    attributes.put(
+      this.strings.format("received"),
+      receivedReturn);
+
     return new CAClientCommandError<>(
-      this.strings.format(
-        "errorResponseType",
-        expectedReturn.getSimpleName(),
-        receivedReturn
-      )
+      this.strings.format("errorResponseTypeShort"),
+      0,
+      attributes,
+      List.of()
     );
   }
 

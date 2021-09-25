@@ -7,72 +7,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.LocationType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML ResponseLocationPutType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ResponseLocationPutTypeImpl extends ResponseTypeImpl implements
-  ResponseLocationPutType
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "Location"),
-  };
+public class ResponseLocationPutTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutType {
+    private static final long serialVersionUID = 1L;
 
-  public ResponseLocationPutTypeImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "Location" element
-   */
-  @Override
-  public LocationType getLocation()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationType target = null;
-      target = (LocationType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public ResponseLocationPutTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "Location" element
-   */
-  @Override
-  public void setLocation(final LocationType location)
-  {
-    this.generatedSetterHelperImpl(
-      location,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "Location"),
+    };
 
-  /**
-   * Appends and returns a new empty "Location" element
-   */
-  @Override
-  public LocationType addNewLocation()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationType target = null;
-      target = (LocationType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "Location" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.LocationType getLocation() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "Location" element
+     */
+    @Override
+    public void setLocation(com.io7m.cardant.protocol.inventory.v1.beans.LocationType location) {
+        generatedSetterHelperImpl(location, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "Location" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.LocationType addNewLocation() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

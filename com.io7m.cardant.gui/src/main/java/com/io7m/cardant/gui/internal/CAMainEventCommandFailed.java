@@ -16,10 +16,13 @@
 
 package com.io7m.cardant.gui.internal;
 
+import com.io7m.cardant.client.api.CAClientEventCommandFailed;
+
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_ERROR;
 
 public record CAMainEventCommandFailed(
-  String message)
+  String message,
+  CAClientEventCommandFailed<?> command)
   implements CAMainEventType
 {
   @Override

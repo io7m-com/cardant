@@ -28,6 +28,7 @@ import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
+import com.io7m.cardant.server.internal.CAServerMessages;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.cardant.server.internal.rest.CAServerLoginFailed;
 import com.io7m.cardant.server.internal.rest.CAServerLoginSucceeded;
@@ -42,8 +43,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.server.internal.rest.CAMediaTypes.applicationCardantXML;
 
@@ -60,6 +63,7 @@ public final class CA1LoginServlet extends HttpServlet
   private final CADatabaseType database;
   private final SubmissionPublisher<CAServerEventType> events;
   private final CAMessageParserFactoryType parsers;
+  private final CAServerMessages messages;
 
   /**
    * Construct a servlet.
@@ -68,13 +72,15 @@ public final class CA1LoginServlet extends HttpServlet
    * @param inParsers     A provider of inventory message parsers
    * @param inSerializers A provider of inventory message serializers
    * @param inDatabase    A database
+   * @param inMessages    A provider of server messages
    */
 
   public CA1LoginServlet(
     final SubmissionPublisher<CAServerEventType> inEvents,
     final CAMessageParserFactoryType inParsers,
     final CAMessageSerializerFactoryType inSerializers,
-    final CADatabaseType inDatabase)
+    final CADatabaseType inDatabase,
+    final CAServerMessages inMessages)
   {
     this.events =
       Objects.requireNonNull(inEvents, "inEvents");
@@ -84,6 +90,8 @@ public final class CA1LoginServlet extends HttpServlet
       Objects.requireNonNull(inSerializers, "serializers");
     this.database =
       Objects.requireNonNull(inDatabase, "database");
+    this.messages =
+      Objects.requireNonNull(inMessages, "messages");
   }
 
   private static URI uriOf(
@@ -135,11 +143,38 @@ public final class CA1LoginServlet extends HttpServlet
       try {
         loginRequest =
           this.parsers.parse(uriOf(request), request.getInputStream());
-      } catch (final IOException | ParseException e) {
+      } catch (final IOException e) {
         response.setStatus(401);
-        this.sendMessage(
-          response,
-          new CAResponseError(401, "Login failed", List.of()));
+
+        final var errorMessage =
+          new CAResponseError(
+            this.messages.format("errorLoginFailed"),
+            401,
+            Map.of(),
+            List.of(this.formatSimpleException(e))
+          );
+
+        this.sendMessage(response, errorMessage);
+        this.events.submit(new CAServerLoginFailed());
+        return;
+      } catch (final ParseException e) {
+        response.setStatus(401);
+
+        final var errorDetails =
+          e.statusValues()
+            .stream()
+            .map(this.messages::formatParseStatus)
+            .collect(Collectors.toList());
+
+        final var errorMessage =
+          new CAResponseError(
+            this.messages.format("errorLoginFailed"),
+            401,
+            Map.of(),
+            errorDetails
+          );
+
+        this.sendMessage(response, errorMessage);
         this.events.submit(new CAServerLoginFailed());
         return;
       }
@@ -160,7 +195,12 @@ public final class CA1LoginServlet extends HttpServlet
       response.setStatus(401);
       this.sendMessage(
         response,
-        new CAResponseError(401, "Login failed", List.of()));
+        new CAResponseError(
+          this.messages.format("errorLoginFailed"),
+          401,
+          Map.of(),
+          List.of())
+      );
       this.events.submit(new CAServerLoginFailed());
     } catch (final IOException e) {
       LOG.error("i/o: ", e);
@@ -177,6 +217,16 @@ public final class CA1LoginServlet extends HttpServlet
     } finally {
       MDC.remove("client");
     }
+  }
+
+  private String formatSimpleException(
+    final Exception e)
+  {
+    return this.messages.format(
+      "errorExceptionSimple",
+      e.getClass().getSimpleName(),
+      e.getMessage()
+    );
   }
 
   private boolean checkLogin(

@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseItemGetDocument extends ResponseDocument
-{
-  DocumentFactory<ResponseItemGetDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responseitemget8557doctype");
-  SchemaType type = Factory.getType();
+public interface ResponseItemGetDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "responseitemget8557doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ResponseItemGet" element
-   */
-  ResponseItemGetType getResponseItemGet();
+    /**
+     * Gets the "ResponseItemGet" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType getResponseItemGet();
 
-  /**
-   * Sets the "ResponseItemGet" element
-   */
-  void setResponseItemGet(ResponseItemGetType responseItemGet);
+    /**
+     * Sets the "ResponseItemGet" element
+     */
+    void setResponseItemGet(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType responseItemGet);
 
-  /**
-   * Appends and returns a new empty "ResponseItemGet" element
-   */
-  ResponseItemGetType addNewResponseItemGet();
+    /**
+     * Appends and returns a new empty "ResponseItemGet" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType addNewResponseItemGet();
 }

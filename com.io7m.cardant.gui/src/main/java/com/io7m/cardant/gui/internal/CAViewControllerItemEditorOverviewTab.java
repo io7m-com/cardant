@@ -172,7 +172,7 @@ public final class CAViewControllerItemEditorOverviewTab implements
     this.itemNameField.textProperty()
       .bind(item.name());
     this.itemCountField.textProperty()
-      .bind(item.count().asString());
+      .bind(item.countTotal().asString());
     this.itemDescriptionField.textProperty()
       .bind(item.description());
 

@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemUpdateDocument extends CommandDocument
-{
-  DocumentFactory<CommandItemUpdateDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemupdate3412doctype");
-  SchemaType type = Factory.getType();
+public interface CommandItemUpdateDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commanditemupdate3412doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandItemUpdate" element
-   */
-  CommandItemUpdateType getCommandItemUpdate();
+    /**
+     * Gets the "CommandItemUpdate" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateType getCommandItemUpdate();
 
-  /**
-   * Sets the "CommandItemUpdate" element
-   */
-  void setCommandItemUpdate(CommandItemUpdateType commandItemUpdate);
+    /**
+     * Sets the "CommandItemUpdate" element
+     */
+    void setCommandItemUpdate(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateType commandItemUpdate);
 
-  /**
-   * Appends and returns a new empty "CommandItemUpdate" element
-   */
-  CommandItemUpdateType addNewCommandItemUpdate();
+    /**
+     * Appends and returns a new empty "CommandItemUpdate" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateType addNewCommandItemUpdate();
 }

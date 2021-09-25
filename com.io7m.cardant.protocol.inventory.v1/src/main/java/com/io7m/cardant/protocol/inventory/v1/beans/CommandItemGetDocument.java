@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemGetDocument extends CommandDocument
-{
-  DocumentFactory<CommandItemGetDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemget1a0fdoctype");
-  SchemaType type = Factory.getType();
+public interface CommandItemGetDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commanditemget1a0fdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandItemGet" element
-   */
-  CommandItemGetType getCommandItemGet();
+    /**
+     * Gets the "CommandItemGet" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetType getCommandItemGet();
 
-  /**
-   * Sets the "CommandItemGet" element
-   */
-  void setCommandItemGet(CommandItemGetType commandItemGet);
+    /**
+     * Sets the "CommandItemGet" element
+     */
+    void setCommandItemGet(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetType commandItemGet);
 
-  /**
-   * Appends and returns a new empty "CommandItemGet" element
-   */
-  CommandItemGetType addNewCommandItemGet();
+    /**
+     * Appends and returns a new empty "CommandItemGet" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetType addNewCommandItemGet();
 }

@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseItemAttachmentRemoveDocument extends ResponseDocument
-{
-  DocumentFactory<ResponseItemAttachmentRemoveDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responseitemattachmentremovef10cdoctype");
-  SchemaType type = Factory.getType();
+public interface ResponseItemAttachmentRemoveDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemoveDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "responseitemattachmentremovef10cdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ResponseItemAttachmentRemove" element
-   */
-  ResponseItemAttachmentRemoveType getResponseItemAttachmentRemove();
+    /**
+     * Gets the "ResponseItemAttachmentRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemoveType getResponseItemAttachmentRemove();
 
-  /**
-   * Sets the "ResponseItemAttachmentRemove" element
-   */
-  void setResponseItemAttachmentRemove(ResponseItemAttachmentRemoveType responseItemAttachmentRemove);
+    /**
+     * Sets the "ResponseItemAttachmentRemove" element
+     */
+    void setResponseItemAttachmentRemove(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemoveType responseItemAttachmentRemove);
 
-  /**
-   * Appends and returns a new empty "ResponseItemAttachmentRemove" element
-   */
-  ResponseItemAttachmentRemoveType addNewResponseItemAttachmentRemove();
+    /**
+     * Appends and returns a new empty "ResponseItemAttachmentRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemoveType addNewResponseItemAttachmentRemove();
 }

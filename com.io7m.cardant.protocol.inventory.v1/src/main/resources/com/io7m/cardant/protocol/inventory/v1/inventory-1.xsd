@@ -291,9 +291,12 @@
     <xsd:attribute type="iv1:ItemNameType"
                    use="required"
                    name="name"/>
-    <xsd:attribute type="xsd:integer"
+    <xsd:attribute type="xsd:unsignedLong"
                    use="required"
-                   name="count"/>
+                   name="countTotal"/>
+    <xsd:attribute type="xsd:unsignedLong"
+                   use="required"
+                   name="countHere"/>
   </xsd:complexType>
 
   <xsd:element name="Item"
@@ -397,6 +400,9 @@
       <xsd:element ref="iv1:ItemLocation"/>
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:element name="ItemLocations"
+               type="iv1:ItemLocationsType"/>
 
   <xsd:complexType name="IDType"
                    abstract="true">
@@ -858,6 +864,26 @@
                type="iv1:CommandItemUpdateType"
                substitutionGroup="iv1:Command"/>
 
+  <xsd:complexType name="CommandItemLocationsListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to list the locations that contain an item.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="item"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandItemLocationsList"
+               type="iv1:CommandItemLocationsListType"
+               substitutionGroup="iv1:Command"/>
+
   <xsd:complexType name="ResponseItemUpdateType">
     <xsd:annotation>
       <xsd:documentation>
@@ -978,6 +1004,26 @@
                type="iv1:CommandItemRepositType"
                substitutionGroup="iv1:Command"/>
 
+  <xsd:complexType name="ResponseItemRepositType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemReposit command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemReposit"
+               type="iv1:ResponseItemRepositType"
+               substitutionGroup="iv1:Response"/>
+
   <xsd:complexType name="ListLocationsBehaviourType"
                    abstract="true">
     <xsd:annotation>
@@ -1090,6 +1136,27 @@
 
   <xsd:element name="ResponseItemList"
                type="iv1:ResponseItemListType"
+               substitutionGroup="iv1:Response"/>
+
+  <xsd:complexType name="ResponseItemLocationsListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandItemLocationsList command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="iv1:ItemLocation"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseItemLocationsList"
+               type="iv1:ResponseItemLocationsListType"
                substitutionGroup="iv1:Response"/>
 
   <xsd:complexType name="CommandItemAttachmentPutType">
@@ -1268,49 +1335,39 @@
                type="iv1:ResponseItemMetadataRemoveType"
                substitutionGroup="iv1:Response"/>
 
-  <xsd:complexType name="CommandItemLocationListType">
+  <xsd:complexType name="ResponseErrorAttributeType">
     <xsd:annotation>
       <xsd:documentation>
-        A request to list item locations.
+        An error attribute.
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:complexContent>
-      <xsd:extension base="iv1:CommandType"/>
-    </xsd:complexContent>
+    <xsd:attribute name="name"
+                   type="xsd:string"
+                   use="required"/>
+    <xsd:attribute name="value"
+                   type="xsd:string"
+                   use="required"/>
   </xsd:complexType>
 
-  <xsd:element name="CommandItemLocationList"
-               type="iv1:CommandItemLocationListType"
-               substitutionGroup="iv1:Command"/>
+  <xsd:element name="ResponseErrorAttribute"
+               type="iv1:ResponseErrorAttributeType"/>
 
-  <xsd:complexType name="ResponseErrorType">
+  <xsd:complexType name="ResponseErrorAttributesType">
     <xsd:annotation>
       <xsd:documentation>
-        A command failed.
+        A set of error attributes.
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:complexContent>
-      <xsd:extension base="iv1:ResponseType">
-        <xsd:sequence minOccurs="0"
-                      maxOccurs="unbounded">
-          <xsd:element ref="iv1:ResponseErrorDetail"/>
-        </xsd:sequence>
-
-        <xsd:attribute name="status"
-                       type="xsd:integer"
-                       use="required"/>
-        <xsd:attribute name="message"
-                       type="xsd:string"
-                       use="required"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:ResponseErrorAttribute"/>
+    </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:element name="ResponseError"
-               type="iv1:ResponseErrorType"
-               substitutionGroup="iv1:Response"/>
+  <xsd:element name="ResponseErrorAttributes"
+               type="iv1:ResponseErrorAttributesType"/>
 
   <xsd:complexType name="ResponseErrorDetailType">
     <xsd:annotation>
@@ -1327,12 +1384,81 @@
   <xsd:element name="ResponseErrorDetail"
                type="iv1:ResponseErrorDetailType"/>
 
+  <xsd:complexType name="ResponseErrorDetailsType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A set of error details.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence minOccurs="0"
+                  maxOccurs="unbounded">
+      <xsd:element ref="iv1:ResponseErrorDetail"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseErrorDetails"
+               type="iv1:ResponseErrorDetailsType"/>
+
+  <xsd:complexType name="ResponseErrorType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A command failed.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:ResponseErrorAttributes"/>
+          <xsd:element ref="iv1:ResponseErrorDetails"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="status"
+                       type="xsd:integer"
+                       use="required"/>
+        <xsd:attribute name="summary"
+                       type="xsd:string"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseError"
+               type="iv1:ResponseErrorType"
+               substitutionGroup="iv1:Response"/>
+
   <xsd:complexType name="UpdatedType">
     <xsd:sequence minOccurs="0"
                   maxOccurs="unbounded">
       <xsd:element ref="iv1:ID"/>
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:complexType name="TransactionResponseType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A transaction completed.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType">
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="iv1:Response"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="failed"
+                       type="xsd:boolean"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="TransactionResponse"
+               substitutionGroup="iv1:Message"
+               type="iv1:TransactionResponseType"/>
 
   <xsd:element name="Updated"
                type="iv1:UpdatedType"/>
@@ -1402,7 +1528,7 @@
       <xsd:element ref="iv1:CommandItemCreate"/>
       <xsd:element ref="iv1:CommandItemGet"/>
       <xsd:element ref="iv1:CommandItemList"/>
-      <xsd:element ref="iv1:CommandItemLocationList"/>
+      <xsd:element ref="iv1:CommandItemLocationsList"/>
       <xsd:element ref="iv1:CommandItemMetadataPut"/>
       <xsd:element ref="iv1:CommandItemMetadataRemove"/>
       <xsd:element ref="iv1:CommandItemRemove"/>

@@ -58,4 +58,9 @@ public record CALocation(
       }
     });
   }
+
+  public String displayId()
+  {
+    return this.id.displayId();
+  }
 }

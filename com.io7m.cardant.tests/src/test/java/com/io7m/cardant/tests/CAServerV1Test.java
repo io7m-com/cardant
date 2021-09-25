@@ -41,6 +41,7 @@ import com.io7m.cardant.protocol.inventory.api.CAMessageServicesType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
+import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
 import com.io7m.cardant.server.CAServers;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerConfigurationLimits;
@@ -53,14 +54,17 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.CookieManager;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -73,6 +77,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
@@ -204,8 +209,8 @@ public final class CAServerV1Test
 
     final var message =
       (CAResponseError) this.parsers.parse(URI_LOGIN, response.body());
-    assertEquals(401, message.status());
-    assertEquals("Login failed", message.message());
+    assertEquals(401, message.statusCode());
+    assertEquals("Login failed.", message.summary());
   }
 
   /**
@@ -229,8 +234,8 @@ public final class CAServerV1Test
 
     final var message =
       (CAResponseError) this.parsers.parse(URI_LOGIN, response.body());
-    assertEquals(401, message.status());
-    assertEquals("Login failed", message.message());
+    assertEquals(401, message.statusCode());
+    assertEquals("Login failed.", message.summary());
   }
 
   /**
@@ -254,8 +259,8 @@ public final class CAServerV1Test
 
     final var message =
       (CAResponseError) this.parsers.parse(URI_LOGIN, response.body());
-    assertEquals(401, message.status());
-    assertEquals("Login failed", message.message());
+    assertEquals(401, message.statusCode());
+    assertEquals("Login failed.", message.summary());
   }
 
   /**
@@ -303,7 +308,9 @@ public final class CAServerV1Test
     }
 
     final var response =
-      this.send(URI_COMMAND, new CAResponseError(200, "Hello", List.of()));
+      this.send(
+        URI_COMMAND,
+        new CAResponseError("Hello", 200, Map.of(), List.of()));
     final var message =
       (CAResponseError) this.parse(response);
 
@@ -481,6 +488,7 @@ public final class CAServerV1Test
       new CAItem(
         item0.id(),
         "Item 0",
+        0L,
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
@@ -795,7 +803,7 @@ public final class CAServerV1Test
       final var response =
         this.send(URI_COMMAND, transaction);
       final var message =
-        (CAResponseItemList) this.parse(response);
+        (CATransactionResponse) this.parse(response);
 
       assertEquals(200, response.statusCode());
     }
@@ -845,7 +853,7 @@ public final class CAServerV1Test
       final var response =
         this.send(URI_COMMAND, transaction);
       final var message =
-        (CAResponseError) this.parse(response);
+        (CATransactionResponse) this.parse(response);
 
       assertEquals(500, response.statusCode());
     }
@@ -913,7 +921,8 @@ public final class CAServerV1Test
       new CAItem(
         item0.id(),
         item0.name(),
-        item0.count(),
+        item0.countTotal(),
+        item0.countHere(),
         Collections.emptySortedMap(),
         attachments,
         Collections.emptySortedSet()
@@ -1066,7 +1075,8 @@ public final class CAServerV1Test
       new CAItem(
         item0.id(),
         item0.name(),
-        item0.count(),
+        item0.countTotal(),
+        item0.countHere(),
         metaMap,
         item0.attachments(),
         item0.tags()
@@ -1112,7 +1122,8 @@ public final class CAServerV1Test
       new CAItem(
         item0.id(),
         item0.name(),
-        item0.count(),
+        item0.countTotal(),
+        item0.countHere(),
         metadataRemoved,
         item0.attachments(),
         item0.tags()
@@ -1147,7 +1158,24 @@ public final class CAServerV1Test
     final HttpResponse<InputStream> response)
     throws ParseException
   {
-    return this.parsers.parse(INPUT, response.body());
+    try {
+      final var data = new ByteArrayOutputStream();
+      try (var bodyStream = response.body()) {
+        bodyStream.transferTo(data);
+      }
+
+      final var tmpData =
+        this.directory.resolve(UUID.randomUUID() + ".txt");
+
+      LOG.debug("serializing server response to {}", tmpData);
+      Files.write(tmpData, data.toByteArray());
+
+      try (var inputStream = new ByteArrayInputStream(data.toByteArray())) {
+        return this.parsers.parse(INPUT, inputStream);
+      }
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   private HttpResponse<InputStream> send(

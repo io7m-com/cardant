@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseTagListDocument extends ResponseDocument
-{
-  DocumentFactory<ResponseTagListDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responsetaglist73e2doctype");
-  SchemaType type = Factory.getType();
+public interface ResponseTagListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "responsetaglist73e2doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ResponseTagList" element
-   */
-  ResponseTagListType getResponseTagList();
+    /**
+     * Gets the "ResponseTagList" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType getResponseTagList();
 
-  /**
-   * Sets the "ResponseTagList" element
-   */
-  void setResponseTagList(ResponseTagListType responseTagList);
+    /**
+     * Sets the "ResponseTagList" element
+     */
+    void setResponseTagList(com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType responseTagList);
 
-  /**
-   * Appends and returns a new empty "ResponseTagList" element
-   */
-  ResponseTagListType addNewResponseTagList();
+    /**
+     * Appends and returns a new empty "ResponseTagList" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseTagListType addNewResponseTagList();
 }

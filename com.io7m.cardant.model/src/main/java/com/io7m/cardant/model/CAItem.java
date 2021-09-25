@@ -28,7 +28,8 @@ import java.util.stream.Stream;
  *
  * @param id          The item ID
  * @param name        The item name
- * @param count       The item count
+ * @param countTotal  The item count across all storage locations in the inventory
+ * @param countHere   The item count in the context of a storage location
  * @param metadata    The item metadata
  * @param attachments The item attachments
  * @param tags        The item tags
@@ -37,7 +38,8 @@ import java.util.stream.Stream;
 public record CAItem(
   CAItemID id,
   String name,
-  long count,
+  long countTotal,
+  long countHere,
   SortedMap<String, CAItemMetadata> metadata,
   SortedMap<CAItemAttachmentID, CAItemAttachment> attachments,
   SortedSet<CATag> tags
@@ -48,7 +50,8 @@ public record CAItem(
    *
    * @param id          The item ID
    * @param name        The item name
-   * @param count       The item count
+   * @param countTotal  The item count
+   * @param countHere   The item count in the context of a storage location
    * @param metadata    The item metadata
    * @param attachments The item attachments
    * @param tags        The item tags
@@ -74,6 +77,7 @@ public record CAItem(
     return new CAItem(
       CAItemID.random(),
       "",
+      0L,
       0L,
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
@@ -144,20 +148,21 @@ public record CAItem(
   }
 
   /**
-   * Set the count for this item.
+   * Set the count in the current storage location context for this item.
    *
-   * @param count The item count
+   * @param newCountHere The item count
    *
    * @return This item with the given count
    */
 
-  public CAItem withCount(
-    final long count)
+  public CAItem withCountHere(
+    final long newCountHere)
   {
     return new CAItem(
       this.id,
       this.name,
-      count,
+      this.countTotal,
+      newCountHere,
       this.metadata,
       this.attachments,
       this.tags

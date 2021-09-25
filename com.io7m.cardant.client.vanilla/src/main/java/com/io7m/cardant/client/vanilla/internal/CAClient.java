@@ -21,12 +21,15 @@ import com.io7m.cardant.client.api.CAClientCommandResultType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
@@ -429,6 +432,40 @@ public final class CAClient implements CAClientHostileType
 
     this.requests.add(
       new CAClientCommandValid<>(future, command, CALocations.class)
+    );
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CAItemID>> itemReposit(
+    final CAItemRepositType reposit)
+  {
+    Objects.requireNonNull(reposit, "reposit");
+
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CAItemID>>();
+    final var command =
+      new CACommandItemReposit(reposit);
+
+    this.requests.add(
+      new CAClientCommandValid<>(future, command, CAItemID.class)
+    );
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CAItemLocations>> itemLocationsList(
+    final CAItemID item)
+  {
+    Objects.requireNonNull(item, "item");
+
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CAItemLocations>>();
+    final var command =
+      new CACommandItemLocationsList(item);
+
+    this.requests.add(
+      new CAClientCommandValid<>(future, command, CAItemLocations.class)
     );
     return future;
   }

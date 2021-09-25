@@ -22,7 +22,12 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocation;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositMove;
+import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -31,13 +36,17 @@ import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageServices;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
+import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -51,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -60,6 +70,7 @@ import java.util.stream.Stream;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.*;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
@@ -74,6 +85,7 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLog
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.*;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
@@ -111,6 +123,7 @@ public final class CAMessageServicesV1Test
       CAItemID.random(),
       "Item " + index,
       200L,
+      300L,
       new TreeMap<>(
         Map.ofEntries(
           Map.entry("M0", new CAItemMetadata("M0", "V0")),
@@ -385,12 +398,62 @@ public final class CAMessageServicesV1Test
   }
 
   @Test
+  public void testCommandItemRepositAdd()
+    throws Exception
+  {
+    final var message =
+      new CACommandItemReposit(new CAItemRepositAdd(
+        CAItemID.random(),
+        CALocationID.random(),
+        0xffff_ffff_ffff_ffffL
+      ));
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandItemRepositRemove()
+    throws Exception
+  {
+    final var message =
+      new CACommandItemReposit(new CAItemRepositRemove(
+        CAItemID.random(),
+        CALocationID.random(),
+        0xffff_ffff_ffff_ffffL
+      ));
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandItemRepositMove()
+    throws Exception
+  {
+    final var message =
+      new CACommandItemReposit(new CAItemRepositMove(
+        CAItemID.random(),
+        CALocationID.random(),
+        CALocationID.random(),
+        0xffff_ffff_ffff_ffffL
+      ));
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandItemLocationsList()
+    throws Exception
+  {
+    final var message =
+      new CACommandItemLocationsList(CAItemID.random());
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
   public void testTransaction()
     throws Exception
   {
     final var message =
       new CATransaction(
         List.of(
+          new CACommandItemLocationsList(CAItemID.random()),
           new CACommandLoginUsernamePassword(
             "user", "pass"),
           new CACommandItemList(
@@ -421,7 +484,53 @@ public final class CAMessageServicesV1Test
           new CACommandLocationList(),
           new CACommandLocationPut(
             new CALocation(CALocationID.random(), Optional.empty(), "N", "D")
-          )
+          ),
+          new CACommandItemReposit(new CAItemRepositAdd(
+            CAItemID.random(),
+            CALocationID.random(),
+            0xffff_ffff_ffff_ffffL
+          )),
+          new CACommandItemReposit(new CAItemRepositRemove(
+            CAItemID.random(),
+            CALocationID.random(),
+            0xffff_ffff_ffff_ffffL
+          )),
+          new CACommandItemReposit(new CAItemRepositMove(
+            CAItemID.random(),
+            CALocationID.random(),
+            CALocationID.random(),
+            0xffff_ffff_ffff_ffffL
+          ))
+        ));
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testTransactionResponse0()
+    throws Exception
+  {
+    final var message =
+      new CATransactionResponse(
+        true,
+        List.of(
+          new CAResponseItemRemove(CAItemID.random()),
+          new CAResponseError("Failed", 400, Map.of(), List.of())
+        )
+      );
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testTransactionResponse1()
+    throws Exception
+  {
+    final var message =
+      new CATransactionResponse(
+        false,
+        List.of(
+          new CAResponseItemRemove(CAItemID.random()),
+          new CAResponseItemRemove(CAItemID.random()),
+          new CAResponseItemRemove(CAItemID.random())
         )
       );
     assertEquals(message, this.roundTrip(message));
@@ -600,6 +709,51 @@ public final class CAMessageServicesV1Test
     assertEquals(message, this.roundTrip(message));
   }
 
+  @Test
+  public void testResponseItemLocationsList()
+    throws Exception
+  {
+    final var locations =
+      new TreeMap<CALocationID, SortedMap<CAItemID, CAItemLocation>>();
+
+    final var location0 =
+      new CAItemLocation(
+        CAItemID.random(),
+        CALocationID.random(),
+        1000L
+      );
+
+    final var location1 =
+      new CAItemLocation(
+        CAItemID.random(),
+        CALocationID.random(),
+        2000L
+      );
+
+    final var location2 =
+      new CAItemLocation(
+        CAItemID.random(),
+        CALocationID.random(),
+        3000L
+      );
+
+    final var locationMap0 = new TreeMap<CAItemID, CAItemLocation>();
+    locationMap0.put(location0.item(), location0);
+    final var locationMap1 = new TreeMap<CAItemID, CAItemLocation>();
+    locationMap1.put(location1.item(), location1);
+    final var locationMap2 = new TreeMap<CAItemID, CAItemLocation>();
+    locationMap2.put(location2.item(), location2);
+
+    locations.put(location0.location(), locationMap0);
+    locations.put(location1.location(), locationMap1);
+    locations.put(location2.location(), locationMap2);
+
+    final var message =
+      new CAResponseItemLocationsList(
+        new CAItemLocations(locations)
+      );
+    assertEquals(message, this.roundTrip(message));
+  }
 
   @Test
   public void testEventUpdated()

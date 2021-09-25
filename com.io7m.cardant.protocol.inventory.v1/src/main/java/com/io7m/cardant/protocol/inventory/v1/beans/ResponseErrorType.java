@@ -7,14 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlInteger;
-import org.apache.xmlbeans.XmlString;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-
-import java.math.BigInteger;
-import java.util.List;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -22,98 +18,78 @@ import java.util.List;
  *
  * This is a complex type.
  */
-public interface ResponseErrorType extends ResponseType
-{
-  DocumentFactory<ResponseErrorType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responseerrortype6288type");
-  SchemaType type = Factory.getType();
+public interface ResponseErrorType extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "responseerrortype6288type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets a List of "ResponseErrorDetail" elements
-   */
-  List<ResponseErrorDetailType> getResponseErrorDetailList();
+    /**
+     * Gets the "ResponseErrorAttributes" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType getResponseErrorAttributes();
 
-  /**
-   * Gets array of all "ResponseErrorDetail" elements
-   */
-  ResponseErrorDetailType[] getResponseErrorDetailArray();
+    /**
+     * Sets the "ResponseErrorAttributes" element
+     */
+    void setResponseErrorAttributes(com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType responseErrorAttributes);
 
-  /**
-   * Sets array of all "ResponseErrorDetail" element
-   */
-  void setResponseErrorDetailArray(ResponseErrorDetailType[] responseErrorDetailArray);
+    /**
+     * Appends and returns a new empty "ResponseErrorAttributes" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType addNewResponseErrorAttributes();
 
-  /**
-   * Gets ith "ResponseErrorDetail" element
-   */
-  ResponseErrorDetailType getResponseErrorDetailArray(int i);
+    /**
+     * Gets the "ResponseErrorDetails" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType getResponseErrorDetails();
 
-  /**
-   * Returns number of "ResponseErrorDetail" element
-   */
-  int sizeOfResponseErrorDetailArray();
+    /**
+     * Sets the "ResponseErrorDetails" element
+     */
+    void setResponseErrorDetails(com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType responseErrorDetails);
 
-  /**
-   * Sets ith "ResponseErrorDetail" element
-   */
-  void setResponseErrorDetailArray(
-    int i,
-    ResponseErrorDetailType responseErrorDetail);
+    /**
+     * Appends and returns a new empty "ResponseErrorDetails" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType addNewResponseErrorDetails();
 
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "ResponseErrorDetail" element
-   */
-  ResponseErrorDetailType insertNewResponseErrorDetail(int i);
+    /**
+     * Gets the "status" attribute
+     */
+    java.math.BigInteger getStatus();
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "ResponseErrorDetail" element
-   */
-  ResponseErrorDetailType addNewResponseErrorDetail();
+    /**
+     * Gets (as xml) the "status" attribute
+     */
+    org.apache.xmlbeans.XmlInteger xgetStatus();
 
-  /**
-   * Removes the ith "ResponseErrorDetail" element
-   */
-  void removeResponseErrorDetail(int i);
+    /**
+     * Sets the "status" attribute
+     */
+    void setStatus(java.math.BigInteger status);
 
-  /**
-   * Gets the "status" attribute
-   */
-  BigInteger getStatus();
+    /**
+     * Sets (as xml) the "status" attribute
+     */
+    void xsetStatus(org.apache.xmlbeans.XmlInteger status);
 
-  /**
-   * Sets the "status" attribute
-   */
-  void setStatus(BigInteger status);
+    /**
+     * Gets the "summary" attribute
+     */
+    java.lang.String getSummary();
 
-  /**
-   * Gets (as xml) the "status" attribute
-   */
-  XmlInteger xgetStatus();
+    /**
+     * Gets (as xml) the "summary" attribute
+     */
+    org.apache.xmlbeans.XmlString xgetSummary();
 
-  /**
-   * Sets (as xml) the "status" attribute
-   */
-  void xsetStatus(XmlInteger status);
+    /**
+     * Sets the "summary" attribute
+     */
+    void setSummary(java.lang.String summary);
 
-  /**
-   * Gets the "message" attribute
-   */
-  String getMessage();
-
-  /**
-   * Sets the "message" attribute
-   */
-  void setMessage(String message);
-
-  /**
-   * Gets (as xml) the "message" attribute
-   */
-  XmlString xgetMessage();
-
-  /**
-   * Sets (as xml) the "message" attribute
-   */
-  void xsetMessage(XmlString message);
+    /**
+     * Sets (as xml) the "summary" attribute
+     */
+    void xsetSummary(org.apache.xmlbeans.XmlString summary);
 }

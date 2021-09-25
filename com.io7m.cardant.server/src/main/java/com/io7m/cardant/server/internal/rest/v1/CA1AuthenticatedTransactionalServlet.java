@@ -100,6 +100,7 @@ public abstract class CA1AuthenticatedTransactionalServlet
           session);
       }
     } catch (final Exception e) {
+      this.logger().trace("exception: ", e);
       throw new IOException(e);
     }
   }

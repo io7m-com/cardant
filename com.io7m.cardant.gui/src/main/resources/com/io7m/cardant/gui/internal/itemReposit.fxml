@@ -19,68 +19,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/11.0.1"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerItemReposit">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerItemReposit">
   <children>
-    <ChoiceBox fx:id="itemRepositType" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="16.0" />
-      <GridPane layoutX="10.0" layoutY="10.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="64.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="32.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
-         </rowConstraints>
+      <VBox AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="16.0">
          <children>
-            <Label text="%item.reposit.itemName" GridPane.rowIndex="1" />
-            <TextField fx:id="itemIdField" editable="false" GridPane.columnIndex="2" GridPane.columnSpan="2147483647">
-               <font>
-                  <Font name="Monospaced Regular" size="11.0" />
-               </font></TextField>
-            <Label text="%item.reposit.itemId" />
-            <TextField fx:id="itemNameField" editable="false" layoutX="170.0" layoutY="13.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
-            <Label text="%count" GridPane.rowIndex="2" />
-            <Spinner fx:id="itemRepositCount" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
-            <Label fx:id="itemRepositCountBad" text="×" textFill="RED" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-               <tooltip>
-                  <Tooltip text="%connect.tooltip.fieldNotValid" />
-               </tooltip>
-            </Label>
-         </children>
-      </GridPane>
-    <AnchorPane layoutX="16.0" layoutY="64.0" AnchorPane.bottomAnchor="64.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="160.0">
-      <children>
-        <GridPane fx:id="itemRepositAdd" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-          <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="32.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
-          </columnConstraints>
-          <rowConstraints>
-                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-          </rowConstraints>
-          <children>
-            <Label text="%location" GridPane.rowIndex="1" />
-            <TreeView fx:id="itemRepositAddLocation" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" GridPane.rowSpan="2147483647">
-              <GridPane.margin>
-                <Insets top="4.0" />
-              </GridPane.margin>
-            </TreeView>
-                  <TextField fx:id="itemRepositAddLocationSearch" onAction="#onItemRepositAddLocationSearchChanged" onKeyReleased="#onItemRepositAddLocationSearchChanged" promptText="%locations.search" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" />
-          </children>
-        </GridPane>
-            <GridPane fx:id="itemRepositRemove" layoutX="10.0" layoutY="10.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+          <ChoiceBox fx:id="itemRepositType" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="32.0" VBox.vgrow="ALWAYS" />
+            <Region maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" />
+            <GridPane>
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="32.0" />
@@ -88,88 +33,161 @@
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
                </columnConstraints>
                <rowConstraints>
+                  <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label text="%item.reposit.itemName" GridPane.rowIndex="1" />
+                  <TextField fx:id="itemIdField" editable="false" prefHeight="24.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647">
+                     <font>
+                        <Font name="Monospaced Regular" size="11.0" />
+                     </font>
+                  </TextField>
+                  <Label text="%item.reposit.itemId" />
+                  <TextField fx:id="itemNameField" editable="false" layoutX="170.0" layoutY="13.0" prefHeight="24.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
+                  <Label text="%count" GridPane.rowIndex="2" />
+                  <Spinner fx:id="itemRepositCount" editable="true" maxWidth="1.7976931348623157E308" prefHeight="24.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
+                  <Label fx:id="itemRepositCountBad" text="×" textFill="RED" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <tooltip>
+                        <Tooltip text="%connect.tooltip.fieldNotValid" />
+                     </tooltip>
+                  </Label>
+               </children>
+            </GridPane>
+          <AnchorPane VBox.vgrow="ALWAYS">
+            <children>
+              <GridPane fx:id="itemRepositAdd" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="32.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
+                </columnConstraints>
+                <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
+                </rowConstraints>
+                <children>
                   <Label text="%location" GridPane.rowIndex="1" />
-                  <TreeView fx:id="itemRepositRemoveLocation" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" GridPane.rowSpan="2147483647">
-                     <GridPane.margin>
-                        <Insets top="4.0" />
-                     </GridPane.margin>
+                  <TreeView fx:id="itemRepositAddLocation" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" GridPane.rowSpan="2147483647">
+                    <GridPane.margin>
+                      <Insets top="4.0" />
+                    </GridPane.margin>
                   </TreeView>
-                  <TextField fx:id="itemRepositRemoveLocationSearch" onAction="#onItemRepositRemoveLocationSearchChanged" onKeyReleased="#onItemRepositRemoveLocationSearchChanged" promptText="%locations.search" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" />
-               </children>
-            </GridPane>
-            <AnchorPane fx:id="itemRepositMove" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TextField fx:id="itemRepositAddLocationSearch" onAction="#onItemRepositAddLocationSearchChanged" onKeyReleased="#onItemRepositAddLocationSearchChanged" promptText="%locations.search" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" />
+                </children>
+              </GridPane>
+                  <GridPane fx:id="itemRepositRemove" layoutX="10.0" layoutY="10.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="32.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="128.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
                      <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                           <children>
-                              <VBox HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label text="%item.reposit.moveFrom">
-                                       <VBox.margin>
-                                          <Insets bottom="8.0" />
-                                       </VBox.margin>
-                                    </Label>
-                                    <TextField fx:id="itemRepositMoveLocationFromSearch" onAction="#onItemRepositMoveLocationFromSearchChanged" onKeyReleased="#onItemRepositMoveLocationFromSearchChanged" promptText="%locations.search" />
-                                    <TreeView fx:id="itemRepositMoveLocationFrom" VBox.vgrow="ALWAYS" />
-                                 </children>
-                                 <padding>
-                                    <Insets top="8.0" />
-                                 </padding>
-                              </VBox>
-                              <VBox>
-                                 <children>
-                                    <Region VBox.vgrow="ALWAYS" />
-                                    <HBox>
-                                       <children>
-                                          <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
-                                          <ImageView fitHeight="32.0" fitWidth="32.0" opacity="0.5" pickOnBounds="true" smooth="false">
-                                             <image>
-                                                <Image url="@arrowRight.png" />
-                                             </image>
-                                          </ImageView>
-                                       </children>
-                                    </HBox>
-                                    <Region layoutX="10.0" layoutY="10.0" VBox.vgrow="ALWAYS" />
-                                 </children>
-                              </VBox>
-                              <VBox HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label text="%item.reposit.moveTo">
-                                       <VBox.margin>
-                                          <Insets bottom="8.0" />
-                                       </VBox.margin>
-                                    </Label>
-                                    <TextField fx:id="itemRepositMoveLocationToSearch" onAction="#onItemRepositMoveLocationToSearchChanged" onKeyReleased="#onItemRepositMoveLocationToSearchChanged" promptText="%locations.search" />
-                                    <TreeView fx:id="itemRepositMoveLocationTo" VBox.vgrow="ALWAYS" />
-                                 </children>
-                                 <HBox.margin>
-                                    <Insets left="8.0" />
-                                 </HBox.margin>
-                                 <padding>
-                                    <Insets top="8.0" />
-                                 </padding>
-                              </VBox>
-                           </children>
-                        </HBox>
+                        <Label text="%location" GridPane.rowIndex="1" />
+                        <TreeView fx:id="itemRepositRemoveLocation" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" GridPane.rowSpan="2147483647">
+                           <GridPane.margin>
+                              <Insets top="4.0" />
+                           </GridPane.margin>
+                        </TreeView>
+                        <TextField fx:id="itemRepositRemoveLocationSearch" onAction="#onItemRepositRemoveLocationSearchChanged" onKeyReleased="#onItemRepositRemoveLocationSearchChanged" promptText="%locations.search" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" />
                      </children>
-                  </VBox>
+                  </GridPane>
+                  <AnchorPane fx:id="itemRepositMove" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <VBox HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label text="%item.reposit.moveFrom">
+                                             <VBox.margin>
+                                                <Insets bottom="8.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <TextField fx:id="itemRepositMoveLocationFromSearch" onAction="#onItemRepositMoveLocationFromSearchChanged" onKeyReleased="#onItemRepositMoveLocationFromSearchChanged" promptText="%locations.search" />
+                                          <TreeView fx:id="itemRepositMoveLocationFrom" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                       <padding>
+                                          <Insets top="8.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox>
+                                       <children>
+                                          <Region VBox.vgrow="ALWAYS" />
+                                          <HBox>
+                                             <children>
+                                                <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
+                                                <ImageView fitHeight="32.0" fitWidth="32.0" opacity="0.5" pickOnBounds="true" smooth="false">
+                                                   <image>
+                                                      <Image url="@arrowRight.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </children>
+                                          </HBox>
+                                          <Region layoutX="10.0" layoutY="10.0" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label text="%item.reposit.moveTo">
+                                             <VBox.margin>
+                                                <Insets bottom="8.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <TextField fx:id="itemRepositMoveLocationToSearch" onAction="#onItemRepositMoveLocationToSearchChanged" onKeyReleased="#onItemRepositMoveLocationToSearchChanged" promptText="%locations.search" />
+                                          <TreeView fx:id="itemRepositMoveLocationTo" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets left="8.0" />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets top="8.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </children>
+          </AnchorPane>
+            <Region layoutX="10.0" layoutY="530.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" />
+            <HBox>
+               <children>
+                  <ImageView fx:id="infoIcon" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@data-information.png" />
+                     </image>
+                  </ImageView>
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="16.0" />
+                  <Label fx:id="infoText" maxWidth="1.7976931348623157E308" text="%placeholder" wrapText="true" HBox.hgrow="ALWAYS" />
                </children>
-            </AnchorPane>
-      </children>
-    </AnchorPane>
-    <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0">
-      <children>
-        <Button cancelButton="true" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#onCancelSelected" prefHeight="32.0" prefWidth="128.0" text="%cancel" />
-        <Region HBox.hgrow="ALWAYS" />
-        <Button defaultButton="true" disable="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#onStoreSelected" prefHeight="32.0" prefWidth="128.0" text="%store" />
-      </children>
-    </HBox>
+            </HBox>
+            <Region layoutX="10.0" layoutY="42.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" />
+          <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0">
+            <children>
+              <Button cancelButton="true" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#onCancelSelected" prefHeight="32.0" prefWidth="128.0" text="%cancel" />
+              <Region HBox.hgrow="ALWAYS" />
+              <Button fx:id="store" defaultButton="true" disable="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#onStoreSelected" prefHeight="32.0" prefWidth="128.0" text="%store" />
+            </children>
+          </HBox>
+         </children>
+      </VBox>
   </children>
 </AnchorPane>

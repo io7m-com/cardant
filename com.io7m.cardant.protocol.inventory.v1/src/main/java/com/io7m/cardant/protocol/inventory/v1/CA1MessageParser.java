@@ -24,7 +24,12 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocation;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositMove;
+import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
@@ -43,17 +48,21 @@ import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageParserType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
+import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationsListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutType;
@@ -71,6 +80,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositMoveType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType;
@@ -80,6 +92,7 @@ import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.LocationType;
 import com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.MessageType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributeType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentPutType;
@@ -87,9 +100,11 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemove
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemCreateType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemListType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemLocationsListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRemoveType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRepositType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutType;
@@ -101,6 +116,7 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagsType;
+import com.io7m.cardant.protocol.inventory.v1.beans.TransactionResponseType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TransactionType;
 import com.io7m.cardant.protocol.inventory.v1.beans.UserIDType;
 import com.io7m.jlexing.core.LexicalPosition;
@@ -141,6 +157,7 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
@@ -248,8 +265,23 @@ public final class CA1MessageParser implements CAMessageParserType
     if (message instanceof TransactionType transaction) {
       return parseTransaction(transaction);
     }
+    if (message instanceof TransactionResponseType transactionResponse) {
+      return parseTransactionResponse(transactionResponse);
+    }
 
     throw new IllegalStateException("Unexpected value: " + message);
+  }
+
+  private static CAMessageType parseTransactionResponse(
+    final TransactionResponseType transactionResponse)
+  {
+    return new CATransactionResponse(
+      transactionResponse.getFailed(),
+      transactionResponse.getResponseList()
+        .stream()
+        .map(CA1MessageParser::parseResponse)
+        .collect(Collectors.toList())
+    );
   }
 
   private static CAMessageType parseTransaction(
@@ -314,8 +346,52 @@ public final class CA1MessageParser implements CAMessageParserType
     if (response instanceof ResponseLocationListType locationList) {
       return parseResponseLocationList(locationList);
     }
+    if (response instanceof ResponseItemLocationsListType itemLocations) {
+      return parseResponseItemLocationsList(itemLocations);
+    }
+    if (response instanceof ResponseItemRepositType itemReposit) {
+      return parseResponseItemReposit(itemReposit);
+    }
 
     throw new IllegalStateException("Unexpected message: " + response);
+  }
+
+  private static CAResponseType parseResponseItemReposit(
+    final ResponseItemRepositType itemReposit)
+  {
+    return new CAResponseType.CAResponseItemReposit(
+      CAItemID.of(itemReposit.getId())
+    );
+  }
+
+  private static CAResponseType parseResponseItemLocationsList(
+    final ResponseItemLocationsListType itemLocations)
+  {
+    final var byLocation =
+      new TreeMap<CALocationID, SortedMap<CAItemID, CAItemLocation>>();
+
+    for (final var location : itemLocations.getItemLocationList()) {
+      final var locationId =
+        CALocationID.of(location.getLocation());
+      var byId =
+        byLocation.get(locationId);
+
+      if (byId == null) {
+        byId = new TreeMap<>();
+      }
+
+      final var itemLocation =
+        new CAItemLocation(
+          CAItemID.of(location.getItem()),
+          locationId,
+          Long.parseUnsignedLong(location.getCount().toString())
+        );
+
+      byId.put(itemLocation.item(), itemLocation);
+      byLocation.put(locationId, byId);
+    }
+
+    return new CAResponseItemLocationsList(new CAItemLocations(byLocation));
   }
 
   private static CAResponseType parseResponseLocationPut(
@@ -348,14 +424,25 @@ public final class CA1MessageParser implements CAMessageParserType
   private static CAResponseType parseResponseError(
     final ResponseErrorType error)
   {
-    return new CAResponseError(
-      error.getStatus().intValue(),
-      error.getMessage(),
-      error.getResponseErrorDetailList()
+    final var statusCode =
+      error.getStatus().intValue();
+    final var summary =
+      error.getSummary();
+    final var details =
+      error.getResponseErrorDetails()
+        .getResponseErrorDetailList()
         .stream()
         .map(ResponseErrorDetailType::getMessage)
-        .collect(Collectors.toList())
-    );
+        .collect(Collectors.toList());
+    final var attributes =
+      error.getResponseErrorAttributes()
+        .getResponseErrorAttributeList()
+        .stream()
+        .collect(Collectors.toMap(
+          ResponseErrorAttributeType::getName,
+          ResponseErrorAttributeType::getValue));
+
+    return new CAResponseError(summary, statusCode, attributes, details);
   }
 
   private static CAResponseType parseResponseTagList(
@@ -464,7 +551,8 @@ public final class CA1MessageParser implements CAMessageParserType
     return new CAItem(
       CAItemID.of(item.getId()),
       item.getName(),
-      item.getCount().longValue(),
+      Long.parseUnsignedLong(item.getCountTotal().toString()),
+      Long.parseUnsignedLong(item.getCountHere().toString()),
       parseItemMetadatas(item.getItemMetadatas()),
       parseAttachments(item.getItemAttachments()),
       parseTags(item.getTags())
@@ -652,8 +740,74 @@ public final class CA1MessageParser implements CAMessageParserType
     if (command instanceof CommandLocationListType locationList) {
       return parseCommandLocationList(locationList);
     }
+    if (command instanceof CommandItemRepositType itemReposit) {
+      return parseCommandItemReposit(itemReposit);
+    }
+    if (command instanceof CommandItemLocationsListType itemLocations) {
+      return parseCommandItemLocationsList(itemLocations);
+    }
 
     throw new IllegalStateException("Unexpected message: " + command);
+  }
+
+  private static CACommandType parseCommandItemLocationsList(
+    final CommandItemLocationsListType itemLocations)
+  {
+    return new CACommandType.CACommandItemLocationsList(
+      CAItemID.of(itemLocations.getItem())
+    );
+  }
+
+  private static CACommandType parseCommandItemReposit(
+    final CommandItemRepositType itemReposit)
+  {
+    final var item = itemReposit.getItemReposit();
+    if (item instanceof ItemRepositAddType add) {
+      return parseCommandItemRepositAdd(add);
+    } else if (item instanceof ItemRepositMoveType move) {
+      return parseCommandItemRepositMove(move);
+    } else if (item instanceof ItemRepositRemoveType remove) {
+      return parseCommandItemRepositRemove(remove);
+    } else {
+      throw new UnreachableCodeException();
+    }
+  }
+
+  private static CACommandType parseCommandItemRepositRemove(
+    final ItemRepositRemoveType remove)
+  {
+    return new CACommandItemReposit(
+      new CAItemRepositRemove(
+        CAItemID.of(remove.getItem()),
+        CALocationID.of(remove.getLocation()),
+        Long.parseUnsignedLong(remove.getCount().toString())
+      )
+    );
+  }
+
+  private static CACommandType parseCommandItemRepositMove(
+    final ItemRepositMoveType move)
+  {
+    return new CACommandItemReposit(
+      new CAItemRepositMove(
+        CAItemID.of(move.getItem()),
+        CALocationID.of(move.getFromLocation()),
+        CALocationID.of(move.getToLocation()),
+        Long.parseUnsignedLong(move.getCount().toString())
+      )
+    );
+  }
+
+  private static CACommandType parseCommandItemRepositAdd(
+    final ItemRepositAddType add)
+  {
+    return new CACommandItemReposit(
+      new CAItemRepositAdd(
+        CAItemID.of(add.getItem()),
+        CALocationID.of(add.getLocation()),
+        Long.parseUnsignedLong(add.getCount().toString())
+      )
+    );
   }
 
   private static CACommandType parseCommandLocationList(

@@ -86,7 +86,8 @@
               <columns>
                 <TableColumn fx:id="itemNameColumn" prefWidth="110.0" text="%name" />
                 <TableColumn fx:id="itemDescriptionColumn" prefWidth="520.0" text="%description" />
-                <TableColumn fx:id="itemCountColumn" prefWidth="113.0" text="%count" />
+                <TableColumn fx:id="itemCountTotalColumn" prefWidth="113.0" text="%items.count.total" />
+                        <TableColumn fx:id="itemCountHereColumn" prefWidth="113.0" text="%items.count.here" />
               </columns>
             </TableView>
           </children>

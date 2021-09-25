@@ -7,10 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
 import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,31 +18,28 @@ import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
  *
  * This is a complex type.
  */
-public interface IDType extends XmlObject
-{
-  AbstractDocumentFactory<IDType> Factory = new AbstractDocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "idtype2362type");
-  SchemaType type = Factory.getType();
+public interface IDType extends org.apache.xmlbeans.XmlObject {
+    AbstractDocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.IDType> Factory = new AbstractDocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "idtype2362type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "value" attribute
-   */
-  String getValue();
+    /**
+     * Gets the "value" attribute
+     */
+    java.lang.String getValue();
 
-  /**
-   * Sets the "value" attribute
-   */
-  void setValue(String value);
+    /**
+     * Gets (as xml) the "value" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetValue();
 
-  /**
-   * Gets (as xml) the "value" attribute
-   */
-  UUIDType xgetValue();
+    /**
+     * Sets the "value" attribute
+     */
+    void setValue(java.lang.String value);
 
-  /**
-   * Sets (as xml) the "value" attribute
-   */
-  void xsetValue(UUIDType value);
+    /**
+     * Sets (as xml) the "value" attribute
+     */
+    void xsetValue(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType value);
 }

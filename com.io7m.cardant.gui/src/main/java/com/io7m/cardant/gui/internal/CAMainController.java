@@ -24,6 +24,7 @@ import com.io7m.cardant.client.api.CAClientEventStatusChanged;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientFactoryType;
 import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.gui.internal.model.CAItemAndLocation;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
@@ -35,6 +36,7 @@ import com.io7m.cardant.gui.internal.model.CATableMap;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import com.io7m.cardant.model.CALocation;
@@ -43,18 +45,20 @@ import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.services.api.CAServiceType;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Locale;
+import java.math.BigInteger;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.function.Predicate;
 
+import static com.io7m.cardant.client.api.CAClientUnit.UNIT;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 
 public final class CAMainController implements CAServiceType
@@ -72,6 +76,8 @@ public final class CAMainController implements CAServiceType
   private final SimpleObjectProperty<Optional<CAItemMutable>> itemSelected;
   private final CALocationTree locationTree;
   private final SimpleObjectProperty<Optional<CALocationItemType>> locationTreeSelected;
+  private final ObservableMap<CAItemAndLocation, Long> itemLocations;
+  private final ObservableMap<CAItemAndLocation, Long> itemLocationsRead;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
   private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
@@ -99,6 +105,11 @@ public final class CAMainController implements CAServiceType
     this.itemMetadataList =
       new CATableMap<>(FXCollections.observableHashMap());
 
+    this.itemLocations =
+      FXCollections.observableHashMap();
+    this.itemLocationsRead =
+      FXCollections.unmodifiableObservableMap(this.itemLocations);
+
     this.locationTreeSelected =
       new SimpleObjectProperty<>(Optional.empty());
     this.itemSelected =
@@ -112,6 +123,11 @@ public final class CAMainController implements CAServiceType
 
     this.itemMetadataPredicate = (ignored) -> true;
     this.itemAttachmentPredicate = (ignored) -> true;
+  }
+
+  public ObservableMap<CAItemAndLocation, Long> itemLocations()
+  {
+    return this.itemLocationsRead;
   }
 
   public CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachments()
@@ -202,6 +218,13 @@ public final class CAMainController implements CAServiceType
     this.itemMetadataList.setPredicate(this.itemMetadataPredicate);
     this.itemAttachmentList.setPredicate(this.itemAttachmentPredicate);
     this.itemSelected.set(itemSelection);
+
+    itemSelection.map(item -> {
+      return this.client.get().map(currentClient -> {
+        currentClient.itemLocationsList(item.id());
+        return UNIT;
+      });
+    });
   }
 
   public void itemAttachmentSelect(
@@ -264,13 +287,9 @@ public final class CAMainController implements CAServiceType
     final CAClientEventCommandFailed<?> data)
   {
     final var message =
-      this.strings.format(
-        "status.commandFailed",
-        data.command(),
-        data.result().message()
-      );
+      this.strings.format("status.commandFailed", data.command());
 
-    this.eventBus.submit(new CAMainEventCommandFailed(message));
+    this.eventBus.submit(new CAMainEventCommandFailed(message, data));
   }
 
   private void onClientEventStatusChanged(
@@ -298,6 +317,9 @@ public final class CAMainController implements CAServiceType
           case CLIENT_RECEIVING_DATA -> {
             yield this.strings.format("status.receivingData");
           }
+          case CLIENT_IDLE -> {
+            yield "";
+          }
         }
       ));
 
@@ -305,8 +327,10 @@ public final class CAMainController implements CAServiceType
       case CLIENT_NEGOTIATING_PROTOCOLS,
         CLIENT_NEGOTIATING_PROTOCOLS_FAILED,
         CLIENT_SENDING_REQUEST,
-        CLIENT_RECEIVING_DATA -> {
+        CLIENT_RECEIVING_DATA,
+        CLIENT_IDLE -> {
       }
+
       case CLIENT_CONNECTED, CLIENT_DISCONNECTED -> {
         final var clientOpt = this.client.get();
         if (clientOpt.isEmpty()) {
@@ -353,7 +377,34 @@ public final class CAMainController implements CAServiceType
       return;
     }
 
+    if (element instanceof CAItemLocations itemLocations) {
+      this.onClientEventDataReceivedItemLocations(itemLocations);
+      return;
+    }
+
+    if (element instanceof CAItemID) {
+      return;
+    }
+
     throw new IllegalStateException("Unexpected data: " + element);
+  }
+
+  private void onClientEventDataReceivedItemLocations(
+    final CAItemLocations itemLocations)
+  {
+    final var byLocation =
+      itemLocations.itemLocations();
+    for (final var locationEntry : byLocation.entrySet()) {
+      final var byItem =
+        locationEntry.getValue();
+
+      for (final var itemEntry : byItem.entrySet()) {
+        this.itemLocations.put(
+          new CAItemAndLocation(itemEntry.getKey(), locationEntry.getKey()),
+          Long.valueOf(itemEntry.getValue().count())
+        );
+      }
+    }
   }
 
   private void onClientEventDataReceivedLocations(
@@ -422,8 +473,7 @@ public final class CAMainController implements CAServiceType
   private void onItemRemoved(
     final CAItemID id)
   {
-    this.itemList.writable()
-      .remove(id);
+    this.itemList.writable().remove(id);
   }
 
   public void disconnect()
@@ -497,5 +547,31 @@ public final class CAMainController implements CAServiceType
       this.client.get().orElseThrow(IllegalStateException::new);
 
     clientNow.itemsList(new CAListLocationsAll());
+  }
+
+  public OptionalLong itemLocationCouldRemoveItems(
+    final CAItemID id,
+    final CALocationID location,
+    final long toRemove)
+  {
+    final var bigExisting =
+      new BigInteger(Long.toUnsignedString(this.itemLocationCount(id, location)));
+    final var bigToRemove =
+      new BigInteger(Long.toUnsignedString(toRemove));
+    final var resulting =
+      bigExisting.subtract(bigToRemove);
+
+    if (resulting.compareTo(BigInteger.ZERO) >= 0) {
+      return OptionalLong.of(resulting.longValue());
+    }
+    return OptionalLong.empty();
+  }
+
+  public long itemLocationCount(
+    final CAItemID id,
+    final CALocationID location)
+  {
+    return this.itemLocations.getOrDefault(
+      new CAItemAndLocation(id, location), Long.valueOf(0L)).longValue();
   }
 }

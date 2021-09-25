@@ -7,11 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-
-import java.util.List;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,58 +18,53 @@ import java.util.List;
  *
  * This is a complex type.
  */
-public interface TransactionType extends MessageType
-{
-  DocumentFactory<TransactionType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "transactiontypebe91type");
-  SchemaType type = Factory.getType();
+public interface TransactionType extends com.io7m.cardant.protocol.inventory.v1.beans.MessageType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.TransactionType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "transactiontypebe91type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets a List of "Command" elements
-   */
-  List<CommandType> getCommandList();
+    /**
+     * Gets a List of "Command" elements
+     */
+    java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.CommandType> getCommandList();
 
-  /**
-   * Gets array of all "Command" elements
-   */
-  CommandType[] getCommandArray();
+    /**
+     * Gets array of all "Command" elements
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandType[] getCommandArray();
 
-  /**
-   * Sets array of all "Command" element
-   */
-  void setCommandArray(CommandType[] commandArray);
+    /**
+     * Gets ith "Command" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandType getCommandArray(int i);
 
-  /**
-   * Gets ith "Command" element
-   */
-  CommandType getCommandArray(int i);
+    /**
+     * Returns number of "Command" element
+     */
+    int sizeOfCommandArray();
 
-  /**
-   * Returns number of "Command" element
-   */
-  int sizeOfCommandArray();
+    /**
+     * Sets array of all "Command" element
+     */
+    void setCommandArray(com.io7m.cardant.protocol.inventory.v1.beans.CommandType[] commandArray);
 
-  /**
-   * Sets ith "Command" element
-   */
-  void setCommandArray(
-    int i,
-    CommandType command);
+    /**
+     * Sets ith "Command" element
+     */
+    void setCommandArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.CommandType command);
 
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "Command" element
-   */
-  CommandType insertNewCommand(int i);
+    /**
+     * Inserts and returns a new empty value (as xml) as the ith "Command" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandType insertNewCommand(int i);
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "Command" element
-   */
-  CommandType addNewCommand();
+    /**
+     * Appends and returns a new empty value (as xml) as the last "Command" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandType addNewCommand();
 
-  /**
-   * Removes the ith "Command" element
-   */
-  void removeCommand(int i);
+    /**
+     * Removes the ith "Command" element
+     */
+    void removeCommand(int i);
 }

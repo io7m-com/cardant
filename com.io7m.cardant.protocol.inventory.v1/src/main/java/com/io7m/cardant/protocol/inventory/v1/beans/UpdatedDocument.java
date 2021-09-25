@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface UpdatedDocument extends XmlObject
-{
-  DocumentFactory<UpdatedDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "updatedd87edoctype");
-  SchemaType type = Factory.getType();
+public interface UpdatedDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.UpdatedDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "updatedd87edoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "Updated" element
-   */
-  UpdatedType getUpdated();
+    /**
+     * Gets the "Updated" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType getUpdated();
 
-  /**
-   * Sets the "Updated" element
-   */
-  void setUpdated(UpdatedType updated);
+    /**
+     * Sets the "Updated" element
+     */
+    void setUpdated(com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType updated);
 
-  /**
-   * Appends and returns a new empty "Updated" element
-   */
-  UpdatedType addNewUpdated();
+    /**
+     * Appends and returns a new empty "Updated" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UpdatedType addNewUpdated();
 }

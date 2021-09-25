@@ -32,7 +32,6 @@ import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -246,7 +245,7 @@ public final class CADerbyDatabaseTest
           CADatabaseException.class,
           () -> queries.tagPut(tag1)
         );
-      assertTrue(ex.getMessage().contains(tag0.name()));
+      assertTrue(ex.attributes().containsValue(tag0.name()));
     });
   }
 
@@ -299,6 +298,7 @@ public final class CADerbyDatabaseTest
           id,
           "",
           0L,
+          0L,
           new TreeMap<>(),
           new TreeMap<>(),
           Collections.emptySortedSet());
@@ -314,6 +314,7 @@ public final class CADerbyDatabaseTest
         new CAItem(
           id,
           "ITEM0",
+          0L,
           0L,
           new TreeMap<>(),
           new TreeMap<>(),
@@ -616,7 +617,7 @@ public final class CADerbyDatabaseTest
           CADatabaseException.class,
           () -> queries.itemTagAdd(item0, tag0)
         );
-      assertTrue(ex.getMessage().contains(tag0.id().id().toString()));
+      assertTrue(ex.attributes().containsValue(tag0.displayId()));
       assertEquals(ERROR_NONEXISTENT, ex.errorCode());
     });
   }
@@ -640,7 +641,7 @@ public final class CADerbyDatabaseTest
           CADatabaseException.class,
           () -> queries.itemTagAdd(item0, tag0)
         );
-      assertTrue(ex.getMessage().contains(item0.id().toString()));
+      assertTrue(ex.attributes().containsValue(item0.displayId()));
       assertEquals(ERROR_NONEXISTENT, ex.errorCode());
     });
   }
@@ -1124,6 +1125,7 @@ public final class CADerbyDatabaseTest
           CAItemID.random(),
           "",
           0L,
+          0L,
           new TreeMap<>(),
           new TreeMap<>(),
           Collections.emptySortedSet()
@@ -1149,7 +1151,8 @@ public final class CADerbyDatabaseTest
 
       {
         final var itemLocations =
-          queries.itemLocations().itemLocations();
+          queries.itemLocations(item0.id())
+            .itemLocations();
         assertEquals(1, itemLocations.size());
         final var byId = itemLocations.get(location.id());
         assertEquals(1, byId.size());
@@ -1162,7 +1165,7 @@ public final class CADerbyDatabaseTest
       {
         final var itemUpdated =
           queries.itemGet(item0.id()).orElseThrow();
-        assertEquals(100L, itemUpdated.count());
+        assertEquals(100L, itemUpdated.countTotal());
       }
 
       queries.itemReposit(
@@ -1174,7 +1177,8 @@ public final class CADerbyDatabaseTest
 
       {
         final var itemLocations =
-          queries.itemLocations().itemLocations();
+          queries.itemLocations(item0.id())
+            .itemLocations();
         assertEquals(1, itemLocations.size());
         final var byId = itemLocations.get(location.id());
         assertEquals(1, byId.size());
@@ -1187,7 +1191,7 @@ public final class CADerbyDatabaseTest
       {
         final var itemUpdated =
           queries.itemGet(item0.id()).orElseThrow();
-        assertEquals(200L, itemUpdated.count());
+        assertEquals(200L, itemUpdated.countTotal());
       }
 
       queries.itemReposit(
@@ -1199,7 +1203,8 @@ public final class CADerbyDatabaseTest
 
       {
         final var itemLocations =
-          queries.itemLocations().itemLocations();
+          queries.itemLocations(item0.id())
+            .itemLocations();
         assertEquals(1, itemLocations.size());
         final var byId = itemLocations.get(location.id());
         assertEquals(1, byId.size());
@@ -1212,7 +1217,7 @@ public final class CADerbyDatabaseTest
       {
         final var itemUpdated =
           queries.itemGet(item0.id()).orElseThrow();
-        assertEquals(100L, itemUpdated.count());
+        assertEquals(100L, itemUpdated.countTotal());
       }
 
       queries.itemReposit(
@@ -1224,14 +1229,15 @@ public final class CADerbyDatabaseTest
 
       {
         final var itemLocations =
-          queries.itemLocations().itemLocations();
+          queries.itemLocations(item0.id())
+            .itemLocations();
         assertEquals(0, itemLocations.size());
       }
 
       {
         final var itemUpdated =
           queries.itemGet(item0.id()).orElseThrow();
-        assertEquals(0L, itemUpdated.count());
+        assertEquals(0L, itemUpdated.countTotal());
       }
 
       this.expectedChangeCount = 1;
@@ -1250,6 +1256,7 @@ public final class CADerbyDatabaseTest
         new CAItem(
           CAItemID.random(),
           "",
+          0L,
           0L,
           new TreeMap<>(),
           new TreeMap<>(),
@@ -1326,6 +1333,7 @@ public final class CADerbyDatabaseTest
           CAItemID.random(),
           "",
           0L,
+          0L,
           new TreeMap<>(),
           new TreeMap<>(),
           Collections.emptySortedSet()
@@ -1357,6 +1365,7 @@ public final class CADerbyDatabaseTest
           CAItemID.random(),
           "",
           0L,
+          0L,
           new TreeMap<>(),
           new TreeMap<>(),
           Collections.emptySortedSet()
@@ -1384,7 +1393,8 @@ public final class CADerbyDatabaseTest
 
       {
         final var itemLocations =
-          queries.itemLocations().itemLocations();
+          queries.itemLocations(item0.id())
+            .itemLocations();
         assertEquals(0, itemLocations.size());
       }
 
@@ -1397,7 +1407,8 @@ public final class CADerbyDatabaseTest
 
       {
         final var itemLocations =
-          queries.itemLocations().itemLocations();
+          queries.itemLocations(item0.id())
+            .itemLocations();
         assertEquals(1, itemLocations.size());
         final var byId = itemLocations.get(location0.id());
         assertEquals(1, byId.size());
@@ -1418,7 +1429,8 @@ public final class CADerbyDatabaseTest
 
       {
         final var itemLocations =
-          queries.itemLocations().itemLocations();
+          queries.itemLocations(item0.id())
+            .itemLocations();
         assertEquals(2, itemLocations.size());
 
         {
@@ -1447,7 +1459,7 @@ public final class CADerbyDatabaseTest
       {
         final var itemUpdated =
           queries.itemGet(item0.id()).orElseThrow();
-        assertEquals(100L, itemUpdated.count());
+        assertEquals(100L, itemUpdated.countTotal());
       }
 
       this.expectedChangeCount = 1;

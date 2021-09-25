@@ -21,6 +21,7 @@ import com.io7m.cardant.model.CAIdType;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_GENERAL;
@@ -70,7 +71,7 @@ public abstract class CADatabaseModelQueriesAbstract
 
       return with.call(connection);
     } catch (final SQLException | IOException e) {
-      throw new CADatabaseException(ERROR_GENERAL, e.getMessage(), e);
+      throw new CADatabaseException(ERROR_GENERAL, Map.of(), e.getMessage(), e);
     }
   }
 }

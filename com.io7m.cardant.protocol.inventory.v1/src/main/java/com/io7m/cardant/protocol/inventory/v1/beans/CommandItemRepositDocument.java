@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemRepositDocument extends CommandDocument
-{
-  DocumentFactory<CommandItemRepositDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemreposit0d79doctype");
-  SchemaType type = Factory.getType();
+public interface CommandItemRepositDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commanditemreposit0d79doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandItemReposit" element
-   */
-  CommandItemRepositType getCommandItemReposit();
+    /**
+     * Gets the "CommandItemReposit" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositType getCommandItemReposit();
 
-  /**
-   * Sets the "CommandItemReposit" element
-   */
-  void setCommandItemReposit(CommandItemRepositType commandItemReposit);
+    /**
+     * Sets the "CommandItemReposit" element
+     */
+    void setCommandItemReposit(com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositType commandItemReposit);
 
-  /**
-   * Appends and returns a new empty "CommandItemReposit" element
-   */
-  CommandItemRepositType addNewCommandItemReposit();
+    /**
+     * Appends and returns a new empty "CommandItemReposit" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositType addNewCommandItemReposit();
 }

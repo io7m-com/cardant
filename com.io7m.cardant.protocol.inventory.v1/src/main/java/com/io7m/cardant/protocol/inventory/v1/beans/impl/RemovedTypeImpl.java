@@ -7,176 +7,147 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.IDType;
-import com.io7m.cardant.protocol.inventory.v1.beans.RemovedType;
-import org.apache.xmlbeans.QNameSet;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.JavaListXmlObject;
-import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
-
 import javax.xml.namespace.QName;
-import java.util.List;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML RemovedType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class RemovedTypeImpl extends XmlComplexContentImpl implements
-  RemovedType
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "ID"),
-  };
-  private static final QNameSet[] PROPERTY_QSET = {
-    QNameSet.forArray(new QName[]{
-      new QName("urn:com.io7m.cardant.inventory:1", "ItemID"),
-      new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachmentID"),
-      new QName("urn:com.io7m.cardant.inventory:1", "TagID"),
-      new QName("urn:com.io7m.cardant.inventory:1", "LocationID"),
-      new QName("urn:com.io7m.cardant.inventory:1", "ID"),
-      new QName("urn:com.io7m.cardant.inventory:1", "UserID"),
+public class RemovedTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.RemovedType {
+    private static final long serialVersionUID = 1L;
+
+    public RemovedTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
+    }
+
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "ID"),
+    };
+
+    private static final QNameSet[] PROPERTY_QSET = {
+    QNameSet.forArray( new QName[] { 
+        new QName("urn:com.io7m.cardant.inventory:1", "ItemID"),
+        new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachmentID"),
+        new QName("urn:com.io7m.cardant.inventory:1", "TagID"),
+        new QName("urn:com.io7m.cardant.inventory:1", "LocationID"),
+        new QName("urn:com.io7m.cardant.inventory:1", "ID"),
+        new QName("urn:com.io7m.cardant.inventory:1", "UserID"),
     }),
-  };
+    };
 
-  public RemovedTypeImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets a List of "ID" elements
-   */
-  @Override
-  public List<IDType> getIDList()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      return new JavaListXmlObject<>(
-        this::getIDArray,
-        this::setIDArray,
-        this::insertNewID,
-        this::removeID,
-        this::sizeOfIDArray
-      );
+    /**
+     * Gets a List of "ID" elements
+     */
+    @Override
+    public java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.IDType> getIDList() {
+        synchronized (monitor()) {
+            check_orphaned();
+            return new org.apache.xmlbeans.impl.values.JavaListXmlObject<>(
+                this::getIDArray,
+                this::setIDArray,
+                this::insertNewID,
+                this::removeID,
+                this::sizeOfIDArray
+            );
+        }
     }
-  }
 
-  /**
-   * Gets array of all "ID" elements
-   */
-  @Override
-  public IDType[] getIDArray()
-  {
-    return this.getXmlObjectArray(
-      PROPERTY_QSET[0],
-      new IDType[0]);
-  }
-
-  /**
-   * Sets array of all "ID" element  WARNING: This method is not atomicaly synchronized.
-   */
-  @Override
-  public void setIDArray(final IDType[] idArray)
-  {
-    this.check_orphaned();
-    this.arraySetterHelper(idArray, PROPERTY_QNAME[0], PROPERTY_QSET[0]);
-  }
-
-  /**
-   * Gets ith "ID" element
-   */
-  @Override
-  public IDType getIDArray(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      IDType target = null;
-      target = (IDType) this.get_store().find_element_user(
-        PROPERTY_QSET[0],
-        i);
-      if (target == null) {
-        throw new IndexOutOfBoundsException();
-      }
-      return target;
+    /**
+     * Gets array of all "ID" elements
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.IDType[] getIDArray() {
+        return getXmlObjectArray(PROPERTY_QSET[0], new com.io7m.cardant.protocol.inventory.v1.beans.IDType[0]);
     }
-  }
 
-  /**
-   * Returns number of "ID" element
-   */
-  @Override
-  public int sizeOfIDArray()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      return this.get_store().count_elements(PROPERTY_QSET[0]);
+    /**
+     * Gets ith "ID" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.IDType getIDArray(int i) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().find_element_user(PROPERTY_QSET[0], i);
+            if (target == null) {
+                throw new IndexOutOfBoundsException();
+            }
+            return target;
+        }
     }
-  }
 
-  /**
-   * Sets ith "ID" element
-   */
-  @Override
-  public void setIDArray(
-    final int i,
-    final IDType id)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      IDType target = null;
-      target = (IDType) this.get_store().find_element_user(
-        PROPERTY_QSET[0],
-        i);
-      if (target == null) {
-        throw new IndexOutOfBoundsException();
-      }
-      target.set(id);
+    /**
+     * Returns number of "ID" element
+     */
+    @Override
+    public int sizeOfIDArray() {
+        synchronized (monitor()) {
+            check_orphaned();
+            return get_store().count_elements(PROPERTY_QSET[0]);
+        }
     }
-  }
 
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "ID" element
-   */
-  @Override
-  public IDType insertNewID(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      IDType target = null;
-      target = (IDType) this.get_store().insert_element_user(
-        PROPERTY_QSET[0],
-        PROPERTY_QNAME[0],
-        i);
-      return target;
+    /**
+     * Sets array of all "ID" element  WARNING: This method is not atomicaly synchronized.
+     */
+    @Override
+    public void setIDArray(com.io7m.cardant.protocol.inventory.v1.beans.IDType[] idArray) {
+        check_orphaned();
+        arraySetterHelper(idArray, PROPERTY_QNAME[0], PROPERTY_QSET[0]);
     }
-  }
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "ID" element
-   */
-  @Override
-  public IDType addNewID()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      IDType target = null;
-      target = (IDType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+    /**
+     * Sets ith "ID" element
+     */
+    @Override
+    public void setIDArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.IDType id) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().find_element_user(PROPERTY_QSET[0], i);
+            if (target == null) {
+                throw new IndexOutOfBoundsException();
+            }
+            target.set(id);
+        }
     }
-  }
 
-  /**
-   * Removes the ith "ID" element
-   */
-  @Override
-  public void removeID(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      this.get_store().remove_element(PROPERTY_QSET[0], i);
+    /**
+     * Inserts and returns a new empty value (as xml) as the ith "ID" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.IDType insertNewID(int i) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().insert_element_user(PROPERTY_QSET[0], PROPERTY_QNAME[0], i);
+            return target;
+        }
     }
-  }
+
+    /**
+     * Appends and returns a new empty value (as xml) as the last "ID" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.IDType addNewID() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.IDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.IDType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
+
+    /**
+     * Removes the ith "ID" element
+     */
+    @Override
+    public void removeID(int i) {
+        synchronized (monitor()) {
+            check_orphaned();
+            get_store().remove_element(PROPERTY_QSET[0], i);
+        }
+    }
 }

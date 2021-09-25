@@ -20,7 +20,9 @@ import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
@@ -152,4 +154,26 @@ public interface CAClientType extends Closeable
    */
 
   CompletableFuture<CAClientCommandResultType<CALocations>> locationList();
+
+  /**
+   * Reposit an item on the server.
+   *
+   * @param reposit The item reposit
+   *
+   * @return The item ID
+   */
+
+  CompletableFuture<CAClientCommandResultType<CAItemID>> itemReposit(
+    CAItemRepositType reposit);
+
+  /**
+   * Determine the locations within which an item exists.
+   *
+   * @param item The item
+   *
+   * @return The list of locations for the item
+   */
+
+  CompletableFuture<CAClientCommandResultType<CAItemLocations>> itemLocationsList(
+    CAItemID item);
 }

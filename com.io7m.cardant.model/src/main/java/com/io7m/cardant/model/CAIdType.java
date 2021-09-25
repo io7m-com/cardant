@@ -36,4 +36,13 @@ public sealed interface CAIdType
    */
 
   UUID id();
+
+  /**
+   * @return This ID as a machine-readable value
+   */
+
+  default String displayId()
+  {
+    return this.id().toString();
+  }
 }

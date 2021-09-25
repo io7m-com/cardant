@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandLocationGetDocument extends CommandDocument
-{
-  DocumentFactory<CommandLocationGetDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commandlocationget6cb1doctype");
-  SchemaType type = Factory.getType();
+public interface CommandLocationGetDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commandlocationget6cb1doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandLocationGet" element
-   */
-  CommandLocationGetType getCommandLocationGet();
+    /**
+     * Gets the "CommandLocationGet" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetType getCommandLocationGet();
 
-  /**
-   * Sets the "CommandLocationGet" element
-   */
-  void setCommandLocationGet(CommandLocationGetType commandLocationGet);
+    /**
+     * Sets the "CommandLocationGet" element
+     */
+    void setCommandLocationGet(com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetType commandLocationGet);
 
-  /**
-   * Appends and returns a new empty "CommandLocationGet" element
-   */
-  CommandLocationGetType addNewCommandLocationGet();
+    /**
+     * Appends and returns a new empty "CommandLocationGet" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationGetType addNewCommandLocationGet();
 }

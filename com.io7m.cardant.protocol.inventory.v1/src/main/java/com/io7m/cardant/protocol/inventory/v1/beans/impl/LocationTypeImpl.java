@@ -7,330 +7,280 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType;
-import com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType;
-import com.io7m.cardant.protocol.inventory.v1.beans.LocationType;
-import com.io7m.cardant.protocol.inventory.v1.beans.UUIDType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.SimpleValue;
-import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML LocationType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class LocationTypeImpl extends XmlComplexContentImpl implements
-  LocationType
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("", "id"),
-    new QName("", "parent"),
-    new QName("", "name"),
-    new QName("", "description"),
-  };
+public class LocationTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.LocationType {
+    private static final long serialVersionUID = 1L;
 
-  public LocationTypeImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "id" attribute
-   */
-  @Override
-  public String getId()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      return (target == null) ? null : target.getStringValue();
+    public LocationTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "id" attribute
-   */
-  @Override
-  public void setId(final String id)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.setStringValue(id);
-    }
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("", "id"),
+        new QName("", "parent"),
+        new QName("", "name"),
+        new QName("", "description"),
+    };
 
-  /**
-   * Gets (as xml) the "id" attribute
-   */
-  @Override
-  public UUIDType xgetId()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      UUIDType target = null;
-      target = (UUIDType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      return target;
-    }
-  }
 
-  /**
-   * Sets (as xml) the "id" attribute
-   */
-  @Override
-  public void xsetId(final UUIDType id)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      UUIDType target = null;
-      target = (UUIDType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      if (target == null) {
-        target = (UUIDType) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.set(id);
+    /**
+     * Gets the "id" attribute
+     */
+    @Override
+    public java.lang.String getId() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
 
-  /**
-   * Gets the "parent" attribute
-   */
-  @Override
-  public String getParent()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      return (target == null) ? null : target.getStringValue();
+    /**
+     * Gets (as xml) the "id" attribute
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Sets the "parent" attribute
-   */
-  @Override
-  public void setParent(final String parent)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[1]);
-      }
-      target.setStringValue(parent);
+    /**
+     * Sets the "id" attribute
+     */
+    @Override
+    public void setId(java.lang.String id) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[0]);
+            }
+            target.setStringValue(id);
+        }
     }
-  }
 
-  /**
-   * Gets (as xml) the "parent" attribute
-   */
-  @Override
-  public UUIDType xgetParent()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      UUIDType target = null;
-      target = (UUIDType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      return target;
+    /**
+     * Sets (as xml) the "id" attribute
+     */
+    @Override
+    public void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().add_attribute_user(PROPERTY_QNAME[0]);
+            }
+            target.set(id);
+        }
     }
-  }
 
-  /**
-   * True if has "parent" attribute
-   */
-  @Override
-  public boolean isSetParent()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      return this.get_store().find_attribute_user(PROPERTY_QNAME[1]) != null;
+    /**
+     * Gets the "parent" attribute
+     */
+    @Override
+    public java.lang.String getParent() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
 
-  /**
-   * Sets (as xml) the "parent" attribute
-   */
-  @Override
-  public void xsetParent(final UUIDType parent)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      UUIDType target = null;
-      target = (UUIDType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      if (target == null) {
-        target = (UUIDType) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[1]);
-      }
-      target.set(parent);
+    /**
+     * Gets (as xml) the "parent" attribute
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetParent() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Unsets the "parent" attribute
-   */
-  @Override
-  public void unsetParent()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      this.get_store().remove_attribute(PROPERTY_QNAME[1]);
+    /**
+     * True if has "parent" attribute
+     */
+    @Override
+    public boolean isSetParent() {
+        synchronized (monitor()) {
+            check_orphaned();
+            return get_store().find_attribute_user(PROPERTY_QNAME[1]) != null;
+        }
     }
-  }
 
-  /**
-   * Gets the "name" attribute
-   */
-  @Override
-  public String getName()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      return (target == null) ? null : target.getStringValue();
+    /**
+     * Sets the "parent" attribute
+     */
+    @Override
+    public void setParent(java.lang.String parent) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[1]);
+            }
+            target.setStringValue(parent);
+        }
     }
-  }
 
-  /**
-   * Sets the "name" attribute
-   */
-  @Override
-  public void setName(final String name)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[2]);
-      }
-      target.setStringValue(name);
+    /**
+     * Sets (as xml) the "parent" attribute
+     */
+    @Override
+    public void xsetParent(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType parent) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().add_attribute_user(PROPERTY_QNAME[1]);
+            }
+            target.set(parent);
+        }
     }
-  }
 
-  /**
-   * Gets (as xml) the "name" attribute
-   */
-  @Override
-  public LocationNameType xgetName()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationNameType target = null;
-      target = (LocationNameType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      return target;
+    /**
+     * Unsets the "parent" attribute
+     */
+    @Override
+    public void unsetParent() {
+        synchronized (monitor()) {
+            check_orphaned();
+            get_store().remove_attribute(PROPERTY_QNAME[1]);
+        }
     }
-  }
 
-  /**
-   * Sets (as xml) the "name" attribute
-   */
-  @Override
-  public void xsetName(final LocationNameType name)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationNameType target = null;
-      target = (LocationNameType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      if (target == null) {
-        target = (LocationNameType) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[2]);
-      }
-      target.set(name);
+    /**
+     * Gets the "name" attribute
+     */
+    @Override
+    public java.lang.String getName() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
 
-  /**
-   * Gets the "description" attribute
-   */
-  @Override
-  public String getDescription()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[3]);
-      return (target == null) ? null : target.getStringValue();
+    /**
+     * Gets (as xml) the "name" attribute
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType xgetName() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Sets the "description" attribute
-   */
-  @Override
-  public void setDescription(final String description)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[3]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[3]);
-      }
-      target.setStringValue(description);
+    /**
+     * Sets the "name" attribute
+     */
+    @Override
+    public void setName(java.lang.String name) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[2]);
+            }
+            target.setStringValue(name);
+        }
     }
-  }
 
-  /**
-   * Gets (as xml) the "description" attribute
-   */
-  @Override
-  public LocationDescriptionType xgetDescription()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationDescriptionType target = null;
-      target = (LocationDescriptionType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[3]);
-      return target;
+    /**
+     * Sets (as xml) the "name" attribute
+     */
+    @Override
+    public void xsetName(com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType name) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationNameType)get_store().add_attribute_user(PROPERTY_QNAME[2]);
+            }
+            target.set(name);
+        }
     }
-  }
 
-  /**
-   * Sets (as xml) the "description" attribute
-   */
-  @Override
-  public void xsetDescription(final LocationDescriptionType description)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationDescriptionType target = null;
-      target = (LocationDescriptionType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[3]);
-      if (target == null) {
-        target = (LocationDescriptionType) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[3]);
-      }
-      target.set(description);
+    /**
+     * Gets the "description" attribute
+     */
+    @Override
+    public java.lang.String getDescription() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
+
+    /**
+     * Gets (as xml) the "description" attribute
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType xgetDescription() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            return target;
+        }
+    }
+
+    /**
+     * Sets the "description" attribute
+     */
+    @Override
+    public void setDescription(java.lang.String description) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[3]);
+            }
+            target.setStringValue(description);
+        }
+    }
+
+    /**
+     * Sets (as xml) the "description" attribute
+     */
+    @Override
+    public void xsetDescription(com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType description) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationDescriptionType)get_store().add_attribute_user(PROPERTY_QNAME[3]);
+            }
+            target.set(description);
+        }
+    }
 }

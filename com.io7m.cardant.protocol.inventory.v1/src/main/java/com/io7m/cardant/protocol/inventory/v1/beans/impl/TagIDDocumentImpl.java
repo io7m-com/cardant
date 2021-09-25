@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.TagIDDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.TagIDType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one TagID(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class TagIDDocumentImpl extends IDDocumentImpl implements
-  TagIDDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "TagID"),
-  };
+public class TagIDDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.IDDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.TagIDDocument {
+    private static final long serialVersionUID = 1L;
 
-  public TagIDDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "TagID" element
-   */
-  @Override
-  public TagIDType getTagID()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      TagIDType target = null;
-      target = (TagIDType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public TagIDDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "TagID" element
-   */
-  @Override
-  public void setTagID(final TagIDType tagID)
-  {
-    this.generatedSetterHelperImpl(
-      tagID,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "TagID"),
+    };
 
-  /**
-   * Appends and returns a new empty "TagID" element
-   */
-  @Override
-  public TagIDType addNewTagID()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      TagIDType target = null;
-      target = (TagIDType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "TagID" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.TagIDType getTagID() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.TagIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.TagIDType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "TagID" element
+     */
+    @Override
+    public void setTagID(com.io7m.cardant.protocol.inventory.v1.beans.TagIDType tagID) {
+        generatedSetterHelperImpl(tagID, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "TagID" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.TagIDType addNewTagID() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.TagIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.TagIDType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

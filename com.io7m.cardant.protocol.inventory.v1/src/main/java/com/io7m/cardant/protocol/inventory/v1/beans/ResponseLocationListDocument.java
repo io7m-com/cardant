@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseLocationListDocument extends ResponseDocument
-{
-  DocumentFactory<ResponseLocationListDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responselocationlist50f3doctype");
-  SchemaType type = Factory.getType();
+public interface ResponseLocationListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "responselocationlist50f3doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ResponseLocationList" element
-   */
-  ResponseLocationListType getResponseLocationList();
+    /**
+     * Gets the "ResponseLocationList" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListType getResponseLocationList();
 
-  /**
-   * Sets the "ResponseLocationList" element
-   */
-  void setResponseLocationList(ResponseLocationListType responseLocationList);
+    /**
+     * Sets the "ResponseLocationList" element
+     */
+    void setResponseLocationList(com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListType responseLocationList);
 
-  /**
-   * Appends and returns a new empty "ResponseLocationList" element
-   */
-  ResponseLocationListType addNewResponseLocationList();
+    /**
+     * Appends and returns a new empty "ResponseLocationList" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListType addNewResponseLocationList();
 }

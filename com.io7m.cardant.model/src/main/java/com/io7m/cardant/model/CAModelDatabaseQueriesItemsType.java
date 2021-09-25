@@ -262,11 +262,13 @@ public interface CAModelDatabaseQueriesItemsType
     throws CADatabaseException;
 
   /**
-   * @return The locations of all items
+   * @param item The item
+   *
+   * @return The locations of the given item
    *
    * @throws CADatabaseException On database errors
    */
 
-  CAItemLocations itemLocations()
+  CAItemLocations itemLocations(CAItemID item)
     throws CADatabaseException;
 }

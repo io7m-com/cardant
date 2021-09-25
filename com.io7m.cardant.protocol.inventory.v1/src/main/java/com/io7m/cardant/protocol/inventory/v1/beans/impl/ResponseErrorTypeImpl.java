@@ -7,300 +7,210 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.SimpleValue;
-import org.apache.xmlbeans.XmlInteger;
-import org.apache.xmlbeans.XmlString;
-import org.apache.xmlbeans.impl.values.JavaListXmlObject;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
-import java.math.BigInteger;
-import java.util.List;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML ResponseErrorType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ResponseErrorTypeImpl extends ResponseTypeImpl implements
-  ResponseErrorType
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "ResponseErrorDetail"),
-    new QName("", "status"),
-    new QName("", "message"),
-  };
+public class ResponseErrorTypeImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.ResponseTypeImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorType {
+    private static final long serialVersionUID = 1L;
 
-  public ResponseErrorTypeImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets a List of "ResponseErrorDetail" elements
-   */
-  @Override
-  public List<ResponseErrorDetailType> getResponseErrorDetailList()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      return new JavaListXmlObject<>(
-        this::getResponseErrorDetailArray,
-        this::setResponseErrorDetailArray,
-        this::insertNewResponseErrorDetail,
-        this::removeResponseErrorDetail,
-        this::sizeOfResponseErrorDetailArray
-      );
+    public ResponseErrorTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Gets array of all "ResponseErrorDetail" elements
-   */
-  @Override
-  public ResponseErrorDetailType[] getResponseErrorDetailArray()
-  {
-    return this.getXmlObjectArray(
-      PROPERTY_QNAME[0],
-      new ResponseErrorDetailType[0]);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "ResponseErrorAttributes"),
+        new QName("urn:com.io7m.cardant.inventory:1", "ResponseErrorDetails"),
+        new QName("", "status"),
+        new QName("", "summary"),
+    };
 
-  /**
-   * Sets array of all "ResponseErrorDetail" element  WARNING: This method is not atomicaly synchronized.
-   */
-  @Override
-  public void setResponseErrorDetailArray(final ResponseErrorDetailType[] responseErrorDetailArray)
-  {
-    this.check_orphaned();
-    this.arraySetterHelper(responseErrorDetailArray, PROPERTY_QNAME[0]);
-  }
 
-  /**
-   * Gets ith "ResponseErrorDetail" element
-   */
-  @Override
-  public ResponseErrorDetailType getResponseErrorDetailArray(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ResponseErrorDetailType target = null;
-      target = (ResponseErrorDetailType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        i);
-      if (target == null) {
-        throw new IndexOutOfBoundsException();
-      }
-      return target;
+    /**
+     * Gets the "ResponseErrorAttributes" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType getResponseErrorAttributes() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
 
-  /**
-   * Returns number of "ResponseErrorDetail" element
-   */
-  @Override
-  public int sizeOfResponseErrorDetailArray()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      return this.get_store().count_elements(PROPERTY_QNAME[0]);
+    /**
+     * Sets the "ResponseErrorAttributes" element
+     */
+    @Override
+    public void setResponseErrorAttributes(com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType responseErrorAttributes) {
+        generatedSetterHelperImpl(responseErrorAttributes, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
     }
-  }
 
-  /**
-   * Sets ith "ResponseErrorDetail" element
-   */
-  @Override
-  public void setResponseErrorDetailArray(
-    final int i,
-    final ResponseErrorDetailType responseErrorDetail)
-  {
-    this.generatedSetterHelperImpl(
-      responseErrorDetail,
-      PROPERTY_QNAME[0],
-      i,
-      XmlObjectBase.KIND_SETTERHELPER_ARRAYITEM);
-  }
-
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "ResponseErrorDetail" element
-   */
-  @Override
-  public ResponseErrorDetailType insertNewResponseErrorDetail(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ResponseErrorDetailType target = null;
-      target = (ResponseErrorDetailType) this.get_store().insert_element_user(
-        PROPERTY_QNAME[0],
-        i);
-      return target;
+    /**
+     * Appends and returns a new empty "ResponseErrorAttributes" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType addNewResponseErrorAttributes() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributesType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "ResponseErrorDetail" element
-   */
-  @Override
-  public ResponseErrorDetailType addNewResponseErrorDetail()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ResponseErrorDetailType target = null;
-      target = (ResponseErrorDetailType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+    /**
+     * Gets the "ResponseErrorDetails" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType getResponseErrorDetails() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType)get_store().find_element_user(PROPERTY_QNAME[1], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
 
-  /**
-   * Removes the ith "ResponseErrorDetail" element
-   */
-  @Override
-  public void removeResponseErrorDetail(final int i)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      this.get_store().remove_element(PROPERTY_QNAME[0], i);
+    /**
+     * Sets the "ResponseErrorDetails" element
+     */
+    @Override
+    public void setResponseErrorDetails(com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType responseErrorDetails) {
+        generatedSetterHelperImpl(responseErrorDetails, PROPERTY_QNAME[1], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
     }
-  }
 
-  /**
-   * Gets the "status" attribute
-   */
-  @Override
-  public BigInteger getStatus()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      return (target == null) ? null : target.getBigIntegerValue();
+    /**
+     * Appends and returns a new empty "ResponseErrorDetails" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType addNewResponseErrorDetails() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailsType)get_store().add_element_user(PROPERTY_QNAME[1]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Sets the "status" attribute
-   */
-  @Override
-  public void setStatus(final BigInteger status)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[1]);
-      }
-      target.setBigIntegerValue(status);
+    /**
+     * Gets the "status" attribute
+     */
+    @Override
+    public java.math.BigInteger getStatus() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            return (target == null) ? null : target.getBigIntegerValue();
+        }
     }
-  }
 
-  /**
-   * Gets (as xml) the "status" attribute
-   */
-  @Override
-  public XmlInteger xgetStatus()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      XmlInteger target = null;
-      target = (XmlInteger) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      return target;
+    /**
+     * Gets (as xml) the "status" attribute
+     */
+    @Override
+    public org.apache.xmlbeans.XmlInteger xgetStatus() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.XmlInteger target = null;
+            target = (org.apache.xmlbeans.XmlInteger)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Sets (as xml) the "status" attribute
-   */
-  @Override
-  public void xsetStatus(final XmlInteger status)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      XmlInteger target = null;
-      target = (XmlInteger) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      if (target == null) {
-        target = (XmlInteger) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[1]);
-      }
-      target.set(status);
+    /**
+     * Sets the "status" attribute
+     */
+    @Override
+    public void setStatus(java.math.BigInteger status) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[2]);
+            }
+            target.setBigIntegerValue(status);
+        }
     }
-  }
 
-  /**
-   * Gets the "message" attribute
-   */
-  @Override
-  public String getMessage()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      return (target == null) ? null : target.getStringValue();
+    /**
+     * Sets (as xml) the "status" attribute
+     */
+    @Override
+    public void xsetStatus(org.apache.xmlbeans.XmlInteger status) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.XmlInteger target = null;
+            target = (org.apache.xmlbeans.XmlInteger)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.XmlInteger)get_store().add_attribute_user(PROPERTY_QNAME[2]);
+            }
+            target.set(status);
+        }
     }
-  }
 
-  /**
-   * Sets the "message" attribute
-   */
-  @Override
-  public void setMessage(final String message)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[2]);
-      }
-      target.setStringValue(message);
+    /**
+     * Gets the "summary" attribute
+     */
+    @Override
+    public java.lang.String getSummary() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
 
-  /**
-   * Gets (as xml) the "message" attribute
-   */
-  @Override
-  public XmlString xgetMessage()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      XmlString target = null;
-      target = (XmlString) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      return target;
+    /**
+     * Gets (as xml) the "summary" attribute
+     */
+    @Override
+    public org.apache.xmlbeans.XmlString xgetSummary() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Sets (as xml) the "message" attribute
-   */
-  @Override
-  public void xsetMessage(final XmlString message)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      XmlString target = null;
-      target = (XmlString) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[2]);
-      if (target == null) {
-        target = (XmlString) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[2]);
-      }
-      target.set(message);
+    /**
+     * Sets the "summary" attribute
+     */
+    @Override
+    public void setSummary(java.lang.String summary) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[3]);
+            }
+            target.setStringValue(summary);
+        }
     }
-  }
+
+    /**
+     * Sets (as xml) the "summary" attribute
+     */
+    @Override
+    public void xsetSummary(org.apache.xmlbeans.XmlString summary) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.XmlString target = null;
+            target = (org.apache.xmlbeans.XmlString)get_store().find_attribute_user(PROPERTY_QNAME[3]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.XmlString)get_store().add_attribute_user(PROPERTY_QNAME[3]);
+            }
+            target.set(summary);
+        }
+    }
 }

@@ -7,11 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
-
-import java.util.List;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,58 +18,53 @@ import java.util.List;
  *
  * This is a complex type.
  */
-public interface ResponseLocationListType extends ResponseType
-{
-  DocumentFactory<ResponseLocationListType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responselocationlisttypedb69type");
-  SchemaType type = Factory.getType();
+public interface ResponseLocationListType extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "responselocationlisttypedb69type");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets a List of "Location" elements
-   */
-  List<LocationType> getLocationList();
+    /**
+     * Gets a List of "Location" elements
+     */
+    java.util.List<com.io7m.cardant.protocol.inventory.v1.beans.LocationType> getLocationList();
 
-  /**
-   * Gets array of all "Location" elements
-   */
-  LocationType[] getLocationArray();
+    /**
+     * Gets array of all "Location" elements
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationType[] getLocationArray();
 
-  /**
-   * Sets array of all "Location" element
-   */
-  void setLocationArray(LocationType[] locationArray);
+    /**
+     * Gets ith "Location" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationType getLocationArray(int i);
 
-  /**
-   * Gets ith "Location" element
-   */
-  LocationType getLocationArray(int i);
+    /**
+     * Returns number of "Location" element
+     */
+    int sizeOfLocationArray();
 
-  /**
-   * Returns number of "Location" element
-   */
-  int sizeOfLocationArray();
+    /**
+     * Sets array of all "Location" element
+     */
+    void setLocationArray(com.io7m.cardant.protocol.inventory.v1.beans.LocationType[] locationArray);
 
-  /**
-   * Sets ith "Location" element
-   */
-  void setLocationArray(
-    int i,
-    LocationType location);
+    /**
+     * Sets ith "Location" element
+     */
+    void setLocationArray(int i, com.io7m.cardant.protocol.inventory.v1.beans.LocationType location);
 
-  /**
-   * Inserts and returns a new empty value (as xml) as the ith "Location" element
-   */
-  LocationType insertNewLocation(int i);
+    /**
+     * Inserts and returns a new empty value (as xml) as the ith "Location" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationType insertNewLocation(int i);
 
-  /**
-   * Appends and returns a new empty value (as xml) as the last "Location" element
-   */
-  LocationType addNewLocation();
+    /**
+     * Appends and returns a new empty value (as xml) as the last "Location" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.LocationType addNewLocation();
 
-  /**
-   * Removes the ith "Location" element
-   */
-  void removeLocation(int i);
+    /**
+     * Removes the ith "Location" element
+     */
+    void removeLocation(int i);
 }

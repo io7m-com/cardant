@@ -33,7 +33,8 @@ import java.util.Objects;
 public record CAItemMutable(
   CAItemID id,
   StringProperty name,
-  LongProperty count,
+  LongProperty countTotal,
+  LongProperty countHere,
   StringExpression description,
   ObservableMap<String, CAItemMetadataMutable> metadata,
   ObservableMap<CAItemAttachmentID, CAItemAttachmentMutable> attachments)
@@ -43,7 +44,8 @@ public record CAItemMutable(
   {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(count, "count");
+    Objects.requireNonNull(countTotal, "countTotal");
+    Objects.requireNonNull(countHere, "countHere");
     Objects.requireNonNull(metadata, "metadata");
     Objects.requireNonNull(attachments, "attachments");
   }
@@ -85,7 +87,8 @@ public record CAItemMutable(
     return new CAItemMutable(
       item.id(),
       new SimpleStringProperty(item.name()),
-      new SimpleLongProperty(item.count()),
+      new SimpleLongProperty(item.countTotal()),
+      new SimpleLongProperty(item.countHere()),
       descriptionStringBinding,
       metadataMap,
       attachmentMap
@@ -95,7 +98,8 @@ public record CAItemMutable(
   public CAItemMutable updateFrom(
     final CAItem item)
   {
-    this.count.set(item.count());
+    this.countTotal.set(item.countTotal());
+    this.countHere.set(item.countHere());
     this.name.set(item.name());
 
     CAMerges.merge(

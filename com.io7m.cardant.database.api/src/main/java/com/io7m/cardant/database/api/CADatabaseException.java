@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.database.api;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -25,50 +26,60 @@ import java.util.Objects;
 public class CADatabaseException extends Exception
 {
   private final CADatabaseErrorCode errorCode;
+  private final Map<String, String> attributes;
 
   /**
    * Construct an exception.
    *
-   * @param cause       The cause
-   * @param inErrorCode The error code
+   * @param cause        The cause
+   * @param inAttributes The attributes
+   * @param inErrorCode  The error code
    */
 
   public CADatabaseException(
     final CADatabaseErrorCode inErrorCode,
+    final Map<String, String> inAttributes,
     final Throwable cause)
   {
     super(Objects.requireNonNull(cause, "cause"));
     this.errorCode =
       Objects.requireNonNull(inErrorCode, "errorCode");
+    this.attributes =
+      Objects.requireNonNull(inAttributes, "attributes");
   }
 
   /**
    * Construct an exception.
    *
-   * @param message     The error message
-   * @param inErrorCode The error code
+   * @param message      The error message
+   * @param inAttributes The attributes
+   * @param inErrorCode  The error code
    */
 
   public CADatabaseException(
     final CADatabaseErrorCode inErrorCode,
+    final Map<String, String> inAttributes,
     final String message)
   {
     super(Objects.requireNonNull(message, "message"));
     this.errorCode =
       Objects.requireNonNull(inErrorCode, "errorCode");
-
+    this.attributes =
+      Objects.requireNonNull(inAttributes, "attributes");
   }
 
   /**
    * Construct an exception.
    *
-   * @param message     The error message
-   * @param cause       The cause
-   * @param inErrorCode The error code
+   * @param message      The error message
+   * @param cause        The cause
+   * @param inAttributes The attributes
+   * @param inErrorCode  The error code
    */
 
   public CADatabaseException(
     final CADatabaseErrorCode inErrorCode,
+    final Map<String, String> inAttributes,
     final String message,
     final Throwable cause)
   {
@@ -77,6 +88,17 @@ public class CADatabaseException extends Exception
       Objects.requireNonNull(cause, "cause"));
     this.errorCode =
       Objects.requireNonNull(inErrorCode, "errorCode");
+    this.attributes =
+      Objects.requireNonNull(inAttributes, "attributes");
+  }
+
+  /**
+   * @return The error attributes
+   */
+
+  public Map<String, String> attributes()
+  {
+    return this.attributes;
   }
 
   /**

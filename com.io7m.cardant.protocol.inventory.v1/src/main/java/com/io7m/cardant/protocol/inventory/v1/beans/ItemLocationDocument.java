@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ItemLocationDocument extends XmlObject
-{
-  DocumentFactory<ItemLocationDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemlocation2f5fdoctype");
-  SchemaType type = Factory.getType();
+public interface ItemLocationDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "itemlocation2f5fdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemLocation" element
-   */
-  ItemLocationType getItemLocation();
+    /**
+     * Gets the "ItemLocation" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType getItemLocation();
 
-  /**
-   * Sets the "ItemLocation" element
-   */
-  void setItemLocation(ItemLocationType itemLocation);
+    /**
+     * Sets the "ItemLocation" element
+     */
+    void setItemLocation(com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType itemLocation);
 
-  /**
-   * Appends and returns a new empty "ItemLocation" element
-   */
-  ItemLocationType addNewItemLocation();
+    /**
+     * Appends and returns a new empty "ItemLocation" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType addNewItemLocation();
 }

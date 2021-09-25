@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one CommandLocationList(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class CommandLocationListDocumentImpl extends CommandDocumentImpl implements
-  CommandLocationListDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "CommandLocationList"),
-  };
+public class CommandLocationListDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.CommandDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument {
+    private static final long serialVersionUID = 1L;
 
-  public CommandLocationListDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "CommandLocationList" element
-   */
-  @Override
-  public CommandLocationListType getCommandLocationList()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandLocationListType target = null;
-      target = (CommandLocationListType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public CommandLocationListDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "CommandLocationList" element
-   */
-  @Override
-  public void setCommandLocationList(final CommandLocationListType commandLocationList)
-  {
-    this.generatedSetterHelperImpl(
-      commandLocationList,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "CommandLocationList"),
+    };
 
-  /**
-   * Appends and returns a new empty "CommandLocationList" element
-   */
-  @Override
-  public CommandLocationListType addNewCommandLocationList()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      CommandLocationListType target = null;
-      target = (CommandLocationListType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "CommandLocationList" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType getCommandLocationList() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "CommandLocationList" element
+     */
+    @Override
+    public void setCommandLocationList(com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType commandLocationList) {
+        generatedSetterHelperImpl(commandLocationList, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "CommandLocationList" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType addNewCommandLocationList() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

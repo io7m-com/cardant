@@ -24,7 +24,7 @@ import com.io7m.cardant.model.CATagID;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -231,20 +231,39 @@ public final class CADatabaseModelQueriesTags extends
   private CADatabaseException duplicateTag(
     final CATag tag)
   {
+    final var attributes = new HashMap<String, String>();
+    attributes.put(
+      this.messages.format("object"),
+      tag.displayId());
+    attributes.put(
+      this.messages.format("type"),
+      this.messages.format("tag"));
+    attributes.put(
+      this.messages.format("tag"),
+      tag.name());
+
     return new CADatabaseException(
       ERROR_DUPLICATE,
-      this.messages.format("errorDuplicate", tag.name(), "Tag"),
-      new NoSuchElementException()
+      attributes,
+      this.messages.format("errorDuplicate")
     );
   }
 
   private CADatabaseException noSuchTag(
     final CATagID id)
   {
+    final var attributes = new HashMap<String, String>();
+    attributes.put(
+      this.messages.format("object"),
+      id.displayId());
+    attributes.put(
+      this.messages.format("type"),
+      this.messages.format("tag"));
+
     return new CADatabaseException(
       ERROR_NONEXISTENT,
-      this.messages.format("errorNonexistent", id.id(), "Tag"),
-      new NoSuchElementException()
+      attributes,
+      this.messages.format("errorNonexistent")
     );
   }
 }

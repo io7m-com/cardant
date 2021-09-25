@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface RemovedDocument extends XmlObject
-{
-  DocumentFactory<RemovedDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "removede979doctype");
-  SchemaType type = Factory.getType();
+public interface RemovedDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.RemovedDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "removede979doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "Removed" element
-   */
-  RemovedType getRemoved();
+    /**
+     * Gets the "Removed" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.RemovedType getRemoved();
 
-  /**
-   * Sets the "Removed" element
-   */
-  void setRemoved(RemovedType removed);
+    /**
+     * Sets the "Removed" element
+     */
+    void setRemoved(com.io7m.cardant.protocol.inventory.v1.beans.RemovedType removed);
 
-  /**
-   * Appends and returns a new empty "Removed" element
-   */
-  RemovedType addNewRemoved();
+    /**
+     * Appends and returns a new empty "Removed" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.RemovedType addNewRemoved();
 }

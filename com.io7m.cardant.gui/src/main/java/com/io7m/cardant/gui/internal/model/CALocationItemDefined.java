@@ -56,6 +56,12 @@ public record CALocationItemDefined(
     this.description.set(location.description());
   }
 
+  @Override
+  public String nameText()
+  {
+    return this.name.getValueSafe();
+  }
+
   public CALocation toLocation()
   {
     return new CALocation(

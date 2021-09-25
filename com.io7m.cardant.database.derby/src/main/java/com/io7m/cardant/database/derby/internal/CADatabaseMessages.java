@@ -22,6 +22,7 @@ import com.io7m.jxtrand.vanilla.JXTAbstractStrings;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_GENERAL;
 
@@ -64,6 +65,7 @@ public final class CADatabaseMessages extends JXTAbstractStrings
   {
     return new CADatabaseException(
       ERROR_GENERAL,
+      Map.of(),
       this.format(resourceId, e.getLocalizedMessage()),
       e
     );

@@ -33,6 +33,7 @@ import org.slf4j.MDC;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
@@ -170,6 +171,7 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
       this.sendError(401, this.messages.format("errorUnauthorized"));
       this.events.submit(new CAServerLoginFailed());
     } catch (final Exception e) {
+      this.logger().trace("exception: ", e);
       throw new IOException(e);
     } finally {
       MDC.remove("client");
@@ -178,7 +180,8 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
 
   protected final void sendError(
     final int status,
-    final String message,
+    final String summary,
+    final Map<String, String> attributes,
     final List<String> details)
   {
     try {
@@ -187,7 +190,7 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
       this.serializers.serialize(
         this.clientURI(),
         this.response.getOutputStream(),
-        new CAResponseError(status, message, details)
+        new CAResponseError(summary, status, attributes, details)
       );
     } catch (final SerializeException | IOException e) {
       this.logger().error("error sending error response: ", e);
@@ -196,9 +199,21 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
 
   protected final void sendError(
     final int status,
-    final String message)
+    final String summary)
   {
-    this.sendError(status, message, List.of());
+    this.sendError(status, summary, Map.of(), List.of());
+  }
+
+  protected final void sendErrorIOException(
+    final int status,
+    final IOException exception)
+  {
+    this.sendError(
+      status,
+      this.messages.format("errorIO", exception.getClass().getSimpleName()),
+      Map.of(),
+      List.of(exception.getMessage())
+    );
   }
 
   protected final void sendErrorParsing(
@@ -206,25 +221,16 @@ public abstract class CA1AuthenticatedServlet extends HttpServlet
     final String message,
     final List<ParseStatus> details)
   {
+    final var errorDetails =
+      details.stream()
+        .map(this.messages::formatParseStatus)
+        .collect(Collectors.toList());
+
     this.sendError(
       status,
       message,
-      details.stream()
-        .map(CA1AuthenticatedServlet::parseStatusText)
-        .collect(Collectors.toList())
-    );
-  }
-
-  private static String parseStatusText(
-    final ParseStatus status)
-  {
-    return String.format(
-      "%s: %s: %d:%d: %s",
-      status.severity(),
-      status.errorCode(),
-      Integer.valueOf(status.lexical().line()),
-      Integer.valueOf(status.lexical().column()),
-      status.message()
+      Map.of(),
+      errorDetails
     );
   }
 

@@ -147,6 +147,7 @@ public final class CAViewControllerCreateItem implements Initializable
           itemId,
           this.nameField.getCharacters().toString(),
           0L,
+          0L,
           metadata,
           Collections.emptySortedMap(),
           Collections.emptySortedSet()

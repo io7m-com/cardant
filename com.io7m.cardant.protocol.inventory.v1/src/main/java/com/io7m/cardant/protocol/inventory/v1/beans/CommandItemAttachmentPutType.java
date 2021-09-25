@@ -7,9 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -17,46 +18,43 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemAttachmentPutType extends CommandType
-{
-  DocumentFactory<CommandItemAttachmentPutType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemattachmentputtypede6ftype");
-  SchemaType type = Factory.getType();
+public interface CommandItemAttachmentPutType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commanditemattachmentputtypede6ftype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemAttachment" element
-   */
-  ItemAttachmentType getItemAttachment();
+    /**
+     * Gets the "ItemAttachment" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType getItemAttachment();
 
-  /**
-   * Sets the "ItemAttachment" element
-   */
-  void setItemAttachment(ItemAttachmentType itemAttachment);
+    /**
+     * Sets the "ItemAttachment" element
+     */
+    void setItemAttachment(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType itemAttachment);
 
-  /**
-   * Appends and returns a new empty "ItemAttachment" element
-   */
-  ItemAttachmentType addNewItemAttachment();
+    /**
+     * Appends and returns a new empty "ItemAttachment" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType addNewItemAttachment();
 
-  /**
-   * Gets the "item" attribute
-   */
-  String getItem();
+    /**
+     * Gets the "item" attribute
+     */
+    java.lang.String getItem();
 
-  /**
-   * Sets the "item" attribute
-   */
-  void setItem(String item);
+    /**
+     * Gets (as xml) the "item" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetItem();
 
-  /**
-   * Gets (as xml) the "item" attribute
-   */
-  UUIDType xgetItem();
+    /**
+     * Sets the "item" attribute
+     */
+    void setItem(java.lang.String item);
 
-  /**
-   * Sets (as xml) the "item" attribute
-   */
-  void xsetItem(UUIDType item);
+    /**
+     * Sets (as xml) the "item" attribute
+     */
+    void xsetItem(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType item);
 }

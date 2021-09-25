@@ -97,10 +97,11 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public CAItemLocations itemLocations()
+  public CAItemLocations itemLocations(
+    final CAItemID id)
     throws CADatabaseException
   {
-    return this.items.itemLocations();
+    return this.items.itemLocations(id);
   }
 
   @Override

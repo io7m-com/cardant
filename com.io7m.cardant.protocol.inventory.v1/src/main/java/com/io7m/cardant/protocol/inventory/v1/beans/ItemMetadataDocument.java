@@ -8,10 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -19,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ItemMetadataDocument extends XmlObject
-{
-  DocumentFactory<ItemMetadataDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemmetadata2b25doctype");
-  SchemaType type = Factory.getType();
+public interface ItemMetadataDocument extends org.apache.xmlbeans.XmlObject {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "itemmetadata2b25doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemMetadata" element
-   */
-  ItemMetadataType getItemMetadata();
+    /**
+     * Gets the "ItemMetadata" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType getItemMetadata();
 
-  /**
-   * Sets the "ItemMetadata" element
-   */
-  void setItemMetadata(ItemMetadataType itemMetadata);
+    /**
+     * Sets the "ItemMetadata" element
+     */
+    void setItemMetadata(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType itemMetadata);
 
-  /**
-   * Appends and returns a new empty "ItemMetadata" element
-   */
-  ItemMetadataType addNewItemMetadata();
+    /**
+     * Appends and returns a new empty "ItemMetadata" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType addNewItemMetadata();
 }

@@ -32,12 +32,14 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -229,9 +231,21 @@ public final class CAViewControllerMain implements Initializable
       switch (item.classification()) {
         case STATUS_IN_PROGRESS -> {
           this.statusProgress.setVisible(true);
+          this.statusIcon.setOnMouseReleased(event -> {
+
+          });
         }
-        case STATUS_INFO, STATUS_ERROR, STATUS_OK, STATUS_BOOT, STATUS_DATA_RECEIVED, STATUS_UI -> {
+        case STATUS_INFO, STATUS_OK, STATUS_BOOT, STATUS_DATA_RECEIVED, STATUS_UI -> {
           this.statusProgress.setVisible(false);
+          this.statusIcon.setOnMouseReleased(event -> {
+
+          });
+        }
+        case STATUS_ERROR -> {
+          this.statusProgress.setVisible(false);
+          this.statusIcon.setOnMouseReleased(event -> {
+            this.onClickedErrorIcon(item);
+          });
         }
       }
 
@@ -253,6 +267,38 @@ public final class CAViewControllerMain implements Initializable
 
         }
       }
+    }
+  }
+
+  private void onClickedErrorIcon(
+    final CAMainEventType item)
+  {
+    try {
+      final var stage = new Stage();
+
+      final var connectXML =
+        CAViewControllerMain.class.getResource("error.fxml");
+
+      final var resources = this.strings.resources();
+      final var loader = new FXMLLoader(connectXML, resources);
+
+      loader.setControllerFactory(
+        clazz -> CAViewControllers.createController(clazz, stage, this.services)
+      );
+
+      final Pane pane =
+        loader.load();
+      final CAViewControllerError controller =
+        loader.getController();
+
+      controller.setEvent(item);
+
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setScene(new Scene(pane));
+      stage.setTitle(this.strings.format("error.title"));
+      stage.showAndWait();
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 }

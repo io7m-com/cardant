@@ -16,7 +16,13 @@
 
 package com.io7m.cardant.gui.internal.model;
 
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.WeakChangeListener;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
+import javafx.collections.WeakMapChangeListener;
 import javafx.scene.control.TreeItem;
 
 import java.util.HashMap;
@@ -28,28 +34,74 @@ import java.util.stream.Collectors;
 public final class CALocationTreeFiltered
 {
   private final CALocationTree tree;
+  private final Optional<ItemFiltering> itemFiltering;
   private final TreeItem<CALocationItemType> root;
   private Optional<String> filter;
 
-  public CALocationTreeFiltered(
-    final CALocationTree inTree)
+  public static CALocationTreeFiltered filter(
+    final CALocationTree tree)
+  {
+    final var filtered =
+      new CALocationTreeFiltered(tree, Optional.empty());
+
+    filtered.tree.editsProperty()
+      .addListener((observable, oldValue, newValue) -> {
+        filtered.rebuild();
+      });
+
+    return filtered;
+  }
+
+  public static CALocationTreeFiltered filterWithItemCounts(
+    final ObservableMap<CAItemAndLocation, Long> itemLocations,
+    final CAItemID itemID,
+    final CALocationTree tree)
+  {
+    final var filtered =
+      new CALocationTreeFiltered(
+        tree, Optional.of(new ItemFiltering(itemLocations, itemID)));
+
+    filtered.tree.editsProperty()
+      .addListener((observable, oldValue, newValue) -> {
+        filtered.rebuild();
+      });
+
+    filtered.itemFiltering.ifPresent(parameters -> {
+      parameters.itemLocations.addListener((MapChangeListener<? super CAItemAndLocation, ? super Long>) change -> {
+        filtered.rebuild();
+      });
+    });
+
+    return filtered;
+  }
+
+  private record ItemFiltering(
+    ObservableMap<CAItemAndLocation, Long> itemLocations,
+    CAItemID itemID)
+  {
+    public Long count(
+      final CALocationID locationID)
+    {
+      return this.itemLocations.getOrDefault(
+        new CAItemAndLocation(this.itemID, locationID),
+        Long.valueOf(0L)
+      );
+    }
+  }
+
+  private CALocationTreeFiltered(
+    final CALocationTree inTree,
+    final Optional<ItemFiltering> inItemFiltering)
   {
     this.tree =
       Objects.requireNonNull(inTree, "tree");
+    this.itemFiltering =
+      Objects.requireNonNull(inItemFiltering, "inItemFiltering");
     this.root =
       new TreeItem<>(CALocationItemAll.get());
+
     this.filter = Optional.empty();
     this.root.setExpanded(true);
-
-    this.tree.editsProperty()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onTreeChanged();
-      });
-    this.rebuild();
-  }
-
-  private void onTreeChanged()
-  {
     this.rebuild();
   }
 
@@ -87,21 +139,35 @@ public final class CALocationTreeFiltered
     }
   }
 
-  private static TreeItem<CALocationItemType> deepCopyTree(
+  private TreeItem<CALocationItemType> deepCopyTree(
     final TreeItem<CALocationItemType> item)
   {
     final var copy = new TreeItem<>(item.getValue());
     copy.setExpanded(item.isExpanded());
 
+    final var copyValue = copy.getValue();
+    if (copyValue instanceof CALocationItemDefined defined) {
+      this.itemFiltering.ifPresent(itemFilter -> {
+        copy.setValue(
+          new CALocationItemDefined(
+            defined.id(),
+            defined.parent(),
+            produceDecoratedProperty(defined, itemFilter),
+            defined.description()
+          )
+        );
+      });
+    }
+
     for (final var child : item.getChildren()) {
-      copy.getChildren().add(deepCopyTree(child));
+      copy.getChildren().add(this.deepCopyTree(child));
     }
     return copy;
   }
 
   private void rebuildUnfiltered()
   {
-    final var newRoot = deepCopyTree(this.tree.root());
+    final var newRoot = this.deepCopyTree(this.tree.root());
     final var rootChildren = this.root.getChildren();
     rootChildren.clear();
     rootChildren.addAll(newRoot.getChildren());
@@ -122,6 +188,18 @@ public final class CALocationTreeFiltered
         final var item = new TreeItem<>(location);
         treeItems.put(location.id(), item);
         item.setExpanded(expanded.contains(location.id()));
+
+        this.itemFiltering.ifPresent(itemFilter -> {
+          final var original = item.getValue();
+          item.setValue(
+            new CALocationItemDefined(
+              original.id(),
+              original.parent(),
+              produceDecoratedProperty(location, itemFilter),
+              original.description()
+            )
+          );
+        });
       }
     }
 
@@ -141,6 +219,21 @@ public final class CALocationTreeFiltered
     final var rootChildren = this.root.getChildren();
     rootChildren.clear();
     rootChildren.add(newEverywhere);
+  }
+
+  private static SimpleStringProperty produceDecoratedProperty(
+    final CALocationItemDefined location,
+    final ItemFiltering itemFilter)
+  {
+    final var count = itemFilter.count(location.id());
+    return new SimpleStringProperty(
+      new StringBuilder(64)
+        .append(location.name().getValueSafe())
+        .append(" (")
+        .append(Long.toUnsignedString(count.longValue()))
+        .append(")")
+        .toString()
+    );
   }
 
   private static TreeItem<CALocationItemType> soften(

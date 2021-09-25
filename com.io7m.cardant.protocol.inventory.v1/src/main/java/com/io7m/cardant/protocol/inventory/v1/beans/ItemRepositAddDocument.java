@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ItemRepositAddDocument extends ItemRepositDocument
-{
-  DocumentFactory<ItemRepositAddDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemrepositadd093fdoctype");
-  SchemaType type = Factory.getType();
+public interface ItemRepositAddDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "itemrepositadd093fdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemRepositAdd" element
-   */
-  ItemRepositAddType getItemRepositAdd();
+    /**
+     * Gets the "ItemRepositAdd" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType getItemRepositAdd();
 
-  /**
-   * Sets the "ItemRepositAdd" element
-   */
-  void setItemRepositAdd(ItemRepositAddType itemRepositAdd);
+    /**
+     * Sets the "ItemRepositAdd" element
+     */
+    void setItemRepositAdd(com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType itemRepositAdd);
 
-  /**
-   * Appends and returns a new empty "ItemRepositAdd" element
-   */
-  ItemRepositAddType addNewItemRepositAdd();
+    /**
+     * Appends and returns a new empty "ItemRepositAdd" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType addNewItemRepositAdd();
 }

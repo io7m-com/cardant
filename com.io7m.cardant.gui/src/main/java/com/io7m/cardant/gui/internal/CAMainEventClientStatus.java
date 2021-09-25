@@ -21,6 +21,7 @@ import com.io7m.cardant.client.api.CAClientEventStatusChanged;
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_ERROR;
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_INFO;
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_IN_PROGRESS;
+import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_UI;
 
 public record CAMainEventClientStatus(
   CAClientEventStatusChanged status,
@@ -32,7 +33,9 @@ public record CAMainEventClientStatus(
   public CAMainEventClassification classification()
   {
     return switch (this.status) {
-      case CLIENT_NEGOTIATING_PROTOCOLS, CLIENT_SENDING_REQUEST, CLIENT_RECEIVING_DATA -> {
+      case CLIENT_NEGOTIATING_PROTOCOLS,
+        CLIENT_SENDING_REQUEST,
+        CLIENT_RECEIVING_DATA -> {
         yield STATUS_IN_PROGRESS;
       }
       case CLIENT_NEGOTIATING_PROTOCOLS_FAILED -> {
@@ -40,6 +43,9 @@ public record CAMainEventClientStatus(
       }
       case CLIENT_CONNECTED, CLIENT_DISCONNECTED -> {
         yield STATUS_INFO;
+      }
+      case CLIENT_IDLE -> {
+        yield STATUS_UI;
       }
     };
   }

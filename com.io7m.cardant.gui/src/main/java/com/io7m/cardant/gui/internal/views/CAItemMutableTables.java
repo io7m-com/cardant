@@ -46,8 +46,10 @@ public final class CAItemMutableTables
       (TableColumn<CAItemMutable, String>) tableColumns.get(0);
     final var tableDescriptionColumn =
       (TableColumn<CAItemMutable, String>) tableColumns.get(1);
-    final var tableCountColumn =
+    final var tableCountTotalColumn =
       (TableColumn<CAItemMutable, Long>) tableColumns.get(2);
+    final var tableCountHereColumn =
+      (TableColumn<CAItemMutable, Long>) tableColumns.get(3);
 
     tableNameColumn.setSortable(true);
     tableNameColumn.setReorderable(false);
@@ -66,13 +68,22 @@ public final class CAItemMutableTables
       param -> param.getValue().description()
     );
 
-    tableCountColumn.setSortable(true);
-    tableCountColumn.setReorderable(false);
-    tableCountColumn.setComparator(Long::compareUnsigned);
-    tableCountColumn.setCellFactory(
-      column -> new CAItemMutableTableCountCell());
-    tableCountColumn.setCellValueFactory(
-      param -> param.getValue().count().asObject()
+    tableCountTotalColumn.setSortable(true);
+    tableCountTotalColumn.setReorderable(false);
+    tableCountTotalColumn.setComparator(Long::compareUnsigned);
+    tableCountTotalColumn.setCellFactory(
+      column -> new CAItemMutableTableCountTotalCell());
+    tableCountTotalColumn.setCellValueFactory(
+      param -> param.getValue().countTotal().asObject()
+    );
+
+    tableCountHereColumn.setSortable(true);
+    tableCountHereColumn.setReorderable(false);
+    tableCountHereColumn.setComparator(Long::compareUnsigned);
+    tableCountHereColumn.setCellFactory(
+      column -> new CAItemMutableTableCountHereCell());
+    tableCountHereColumn.setCellValueFactory(
+      param -> param.getValue().countHere().asObject()
     );
 
     tableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);

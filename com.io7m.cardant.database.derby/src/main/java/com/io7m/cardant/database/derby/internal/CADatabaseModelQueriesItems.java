@@ -42,9 +42,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -262,6 +262,8 @@ public final class CADatabaseModelQueriesItems
       il.count
     FROM
       cardant.item_locations il
+    WHERE
+      il.item_id = ?
     """;
   private static final String ITEM_LOCATION_COUNT_GET = """
     SELECT
@@ -301,7 +303,7 @@ public final class CADatabaseModelQueriesItems
   {
     try (var statement =
            connection.prepareStatement(ITEM_METADATA_PUT_INSERT)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(itemID));
+      statement.setBytes(1, itemIdBytes(itemID));
       statement.setString(2, metadata.name());
       statement.setString(3, metadata.value());
       statement.executeUpdate();
@@ -317,7 +319,7 @@ public final class CADatabaseModelQueriesItems
     try (var statement =
            connection.prepareStatement(ITEM_METADATA_PUT_UPDATE)) {
       statement.setString(1, metadata.value());
-      statement.setBytes(2, CADatabaseBytes.itemIdBytes(itemID));
+      statement.setBytes(2, itemIdBytes(itemID));
       statement.setString(3, metadata.name());
       statement.executeUpdate();
     }
@@ -339,7 +341,7 @@ public final class CADatabaseModelQueriesItems
     try (var statement =
            connection.prepareStatement(ITEM_ATTACHMENT_PUT_INSERT)) {
       statement.setBytes(1, attachmentIdBytes(attachment.id()));
-      statement.setBytes(2, CADatabaseBytes.itemIdBytes(itemID));
+      statement.setBytes(2, itemIdBytes(itemID));
       statement.setString(3, attachment.description());
       statement.setString(4, attachment.mediaType());
       statement.setString(5, attachment.relation());
@@ -386,7 +388,7 @@ public final class CADatabaseModelQueriesItems
       statement.setBlob(6, blob);
       statement.setLong(7, Integer.toUnsignedLong(dataLength));
       statement.setBytes(8, attachmentIdBytes(attachment.id()));
-      statement.setBytes(9, CADatabaseBytes.itemIdBytes(itemID));
+      statement.setBytes(9, itemIdBytes(itemID));
       statement.executeUpdate();
     }
   }
@@ -438,45 +440,13 @@ public final class CADatabaseModelQueriesItems
     );
   }
 
-  private Object itemTagRemoveInner(
-    final Connection connection,
-    final CAItemID item,
-    final CATag tag)
-    throws SQLException
-  {
-    try (var statement = connection.prepareStatement(ITEM_TAG_REMOVE)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(item.id()));
-      statement.setBytes(2, CADatabaseBytes.tagIdBytes(tag.id()));
-      statement.executeUpdate();
-    }
-
-    this.publishUpdate(item);
-    return null;
-  }
-
-  private Object itemTagAddInner(
-    final Connection connection,
-    final CAItemID item,
-    final CATag tag)
-    throws SQLException
-  {
-    try (var statement = connection.prepareStatement(ITEM_TAG_ADD)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(item.id()));
-      statement.setBytes(2, CADatabaseBytes.tagIdBytes(tag.id()));
-      statement.executeUpdate();
-    }
-
-    this.publishUpdate(item);
-    return null;
-  }
-
   private static TreeMap<String, CAItemMetadata> itemMetadataInner(
     final Connection connection,
     final CAItemID itemId)
     throws SQLException
   {
     try (var statement = connection.prepareStatement(ITEM_METADATA_GET)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(itemId));
+      statement.setBytes(1, itemIdBytes(itemId));
 
       try (var result = statement.executeQuery()) {
         final var metas = new TreeMap<String, CAItemMetadata>();
@@ -506,7 +476,7 @@ public final class CADatabaseModelQueriesItems
     if (withData) {
       try (var statement =
              connection.prepareStatement(ITEM_ATTACHMENTS_GET)) {
-        statement.setBytes(1, CADatabaseBytes.itemIdBytes(item));
+        statement.setBytes(1, itemIdBytes(item));
 
         try (var results = statement.executeQuery()) {
           while (results.next()) {
@@ -521,7 +491,7 @@ public final class CADatabaseModelQueriesItems
 
     try (var statement =
            connection.prepareStatement(ITEM_ATTACHMENTS_GET)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(item));
+      statement.setBytes(1, itemIdBytes(item));
 
       try (var results = statement.executeQuery()) {
         while (results.next()) {
@@ -565,23 +535,6 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private Object itemMetadataRemoveInner(
-    final Connection connection,
-    final CAItemID itemID,
-    final String metadata)
-    throws SQLException
-  {
-    try (var statement =
-           connection.prepareStatement(ITEM_METADATA_REMOVE)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(itemID));
-      statement.setString(2, metadata);
-      statement.executeUpdate();
-    }
-
-    this.publishUpdate(itemID);
-    return null;
-  }
-
   private static SortedSet<CATag> itemTagListInner(
     final Connection connection,
     final CAItemID item)
@@ -614,159 +567,29 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private void itemAttachmentRemoveInner(
-    final Connection connection,
-    final CAItemAttachmentID id)
-    throws SQLException
-  {
-    final var itemId = itemForAttachment(connection, id);
-    try (var statement = connection.prepareStatement(ITEM_ATTACHMENT_REMOVE)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(id.id()));
-      statement.executeUpdate();
-    }
-    this.publishRemove(id);
-    this.publishUpdate(itemId);
-  }
-
   private static void itemRepositInnerRemoveDelete(
     final Connection connection,
     final CAItemRepositRemove remove)
     throws SQLException
   {
     try (var statement = connection.prepareStatement(ITEM_REPOSIT_REMOVE_DELETE)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(remove.item()));
+      statement.setBytes(1, itemIdBytes(remove.item()));
       statement.setBytes(2, locationIdBytes(remove.location()));
       statement.executeUpdate();
     }
   }
 
-  private void itemRepositInnerRemoveUpdate(
-    final Connection connection,
-    final CAItemRepositRemove remove,
-    final long currentCount)
-    throws SQLException, CADatabaseException
-  {
-    final var newCount = currentCount - remove.count();
-
-    try (var statement = connection.prepareStatement(ITEM_REPOSIT_ADD_UPDATE)) {
-      statement.setLong(1, newCount);
-      statement.setBytes(2, CADatabaseBytes.itemIdBytes(remove.item()));
-      statement.setBytes(3, locationIdBytes(remove.location()));
-      statement.executeUpdate();
-    } catch (final DerbySQLIntegrityConstraintViolationException e) {
-      if (Objects.equals(e.getConstraintName(), "CHECK_ITEM_LOCATION_COUNT")) {
-        throw new CADatabaseException(
-          ERROR_PARAMETERS_INVALID,
-          this.messages.format(
-            "errorItemCountTooManyRemoved",
-            remove.item().id(),
-            Long.valueOf(currentCount),
-            Long.valueOf(remove.count())
-          )
-        );
-      }
-      throw e;
-    }
-  }
-
-  private CADatabaseException duplicateItem(
-    final CAItemID id)
-  {
-    return new CADatabaseException(
-      ERROR_DUPLICATE,
-      this.messages.format("errorDuplicate", id.id(), "Item"),
-      new NoSuchElementException()
-    );
-  }
-
-  private CADatabaseException duplicateItemDeleted(
-    final CAItemID id)
-  {
-    return new CADatabaseException(
-      ERROR_DUPLICATE,
-      this.messages.format("errorDuplicateDeleted", id.id(), "Item"),
-      new NoSuchElementException()
-    );
-  }
-
-  private CADatabaseException noSuchItem(
-    final UUID item)
-  {
-    return new CADatabaseException(
-      ERROR_NONEXISTENT,
-      this.messages.format("errorNonexistent", item, "Item"),
-      new NoSuchElementException()
-    );
-  }
-
-  @Override
-  public Map<CAItemAttachmentID, CAItemAttachment> itemAttachments(
-    final CAItemID item,
-    final boolean withData)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(item, "item");
-
-    return this.withSQLConnection(connection -> {
-      this.itemCheck(connection, item, false);
-      return itemAttachmentsInner(connection, item, withData);
-    });
-  }
-
-  @Override
-  public Optional<CAItemAttachment> itemAttachmentGet(
-    final CAItemAttachmentID id,
-    final boolean withData)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    return this.withSQLConnection(
-      connection -> itemAttachmentGetInner(connection, id, withData));
-  }
-
-  @Override
-  public void itemAttachmentRemove(
-    final CAItemAttachmentID id)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    this.withSQLConnection(connection -> {
-      this.itemAttachmentRemoveInner(connection, id);
-      return null;
-    });
-  }
-
-  @Override
-  public void itemReposit(
-    final CAItemRepositType reposit)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(reposit, "reposit");
-
-    this.withSQLConnection(connection -> {
-      this.itemRepositInner(connection, reposit);
-      return null;
-    });
-  }
-
-  @Override
-  public CAItemLocations itemLocations()
-    throws CADatabaseException
-  {
-    return this.withSQLConnection(
-      CADatabaseModelQueriesItems::itemLocationsInner);
-  }
-
   private static CAItemLocations itemLocationsInner(
-    final Connection connection)
+    final Connection connection,
+    final CAItemID id)
     throws SQLException
   {
     final var locations =
       new TreeMap<CALocationID, SortedMap<CAItemID, CAItemLocation>>();
 
     try (var statement = connection.prepareStatement(ITEM_LOCATIONS_LIST)) {
+      statement.setBytes(1, itemIdBytes(id));
+
       try (var results = statement.executeQuery()) {
         while (results.next()) {
           final var itemLocation = new CAItemLocation(
@@ -788,176 +611,6 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private void itemRepositInner(
-    final Connection connection,
-    final CAItemRepositType reposit)
-    throws CADatabaseException, SQLException
-  {
-    final var item =
-      this.itemGet(reposit.item())
-        .orElseThrow(() -> this.noSuchItem(reposit.item().id()));
-
-    if (reposit instanceof CAItemRepositAdd add) {
-      this.itemRepositInnerAdd(connection, item, add);
-      this.publishUpdate(item.id());
-      return;
-    } else if (reposit instanceof CAItemRepositRemove remove) {
-      this.itemRepositInnerRemove(connection, item, remove);
-      this.publishUpdate(item.id());
-      return;
-    } else if (reposit instanceof CAItemRepositMove move) {
-      this.itemRepositInnerMove(connection, move);
-      this.publishUpdate(item.id());
-      return;
-    } else {
-      throw new IllegalStateException("Unexpected reposit: " + reposit);
-    }
-  }
-
-  private void itemRepositInnerMove(
-    final Connection connection,
-    final CAItemRepositMove move)
-    throws CADatabaseException, SQLException
-  {
-    this.itemRepositInnerRemove(
-      connection,
-      this.itemGet(move.item()).orElseThrow(),
-      new CAItemRepositRemove(move.item(), move.fromLocation(), move.count())
-    );
-
-    this.itemRepositInnerAdd(
-      connection,
-      this.itemGet(move.item()).orElseThrow(),
-      new CAItemRepositAdd(move.item(), move.toLocation(), move.count())
-    );
-  }
-
-  private void itemRepositInnerRemove(
-    final Connection connection,
-    final CAItem item,
-    final CAItemRepositRemove remove)
-    throws CADatabaseException, SQLException
-  {
-    this.locations.locationGet(remove.location())
-      .orElseThrow(() -> this.noSuchLocation(remove.location()));
-
-    try (var statement = connection.prepareStatement(ITEM_REPOSIT_CHECK)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(remove.item()));
-      statement.setBytes(2, locationIdBytes(remove.location()));
-
-      try (var results = statement.executeQuery()) {
-        if (results.next()) {
-          final var currentCount = results.getLong("count");
-          if (currentCount == remove.count()) {
-            itemRepositInnerRemoveDelete(connection, remove);
-          } else {
-            this.itemRepositInnerRemoveUpdate(connection, remove, currentCount);
-          }
-        }
-      }
-    }
-
-    this.itemCountSetInner(
-      connection,
-      remove.item(),
-      item.count() - remove.count()
-    );
-  }
-
-  private void itemRepositInnerAdd(
-    final Connection connection,
-    final CAItem item,
-    final CAItemRepositAdd add)
-    throws SQLException, CADatabaseException
-  {
-    this.locations.locationGet(add.location())
-      .orElseThrow(() -> this.noSuchLocation(add.location()));
-
-    try (var statement = connection.prepareStatement(ITEM_REPOSIT_CHECK)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(add.item()));
-      statement.setBytes(2, locationIdBytes(add.location()));
-
-      try (var results = statement.executeQuery()) {
-        if (results.next()) {
-          final var currentCount = results.getLong("count");
-          this.itemRepositInnerAddUpdate(connection, item, add, currentCount);
-        } else {
-          this.itemRepositInnerAddInsert(connection, item, add);
-        }
-      }
-    }
-  }
-
-  private void itemRepositInnerAddInsert(
-    final Connection connection,
-    final CAItem item,
-    final CAItemRepositAdd add)
-    throws SQLException, CADatabaseException
-  {
-    try (var statement = connection.prepareStatement(ITEM_REPOSIT_ADD_INSERT)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(add.item()));
-      statement.setBytes(2, locationIdBytes(add.location()));
-      statement.setLong(3, add.count());
-      statement.executeUpdate();
-    }
-
-    final var newCount = item.count() + add.count();
-    this.itemCountSetInner(connection, add.item(), newCount);
-  }
-
-  private void itemCountSetInner(
-    final Connection connection,
-    final CAItemID item,
-    final long count)
-    throws SQLException, CADatabaseException
-  {
-    try (var statement = connection.prepareStatement(ITEM_COUNT_SET)) {
-      statement.setLong(1, count);
-      statement.setBytes(2, CADatabaseBytes.itemIdBytes(item));
-      statement.executeUpdate();
-    } catch (final DerbySQLIntegrityConstraintViolationException e) {
-      if (Objects.equals(e.getConstraintName(), "CHECK_NATURAL_COUNT")) {
-        throw new CADatabaseException(
-          ERROR_PARAMETERS_INVALID,
-          e.getMessage());
-      }
-      throw e;
-    }
-
-    this.checkItemCountInvariant(connection, item, count);
-    this.publishUpdate(item);
-  }
-
-  private void itemRepositInnerAddUpdate(
-    final Connection connection,
-    final CAItem item,
-    final CAItemRepositAdd add,
-    final long locationCount)
-    throws SQLException, CADatabaseException
-  {
-    final var newCount = locationCount + add.count();
-
-    try (var statement = connection.prepareStatement(ITEM_REPOSIT_ADD_UPDATE)) {
-      statement.setLong(1, newCount);
-      statement.setBytes(2, CADatabaseBytes.itemIdBytes(add.item()));
-      statement.setBytes(3, locationIdBytes(add.location()));
-      statement.executeUpdate();
-    }
-
-    this.itemCountSetInner(connection, item.id(), newCount);
-  }
-
-  @Override
-  public Optional<CAItem> itemGet(
-    final CAItemID id)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    return this.withSQLConnection(
-      connection -> itemGetInner(connection, id, false));
-  }
-
   private static Optional<CAItem> itemGetInner(
     final Connection connection,
     final CAItemID id,
@@ -966,7 +619,7 @@ public final class CADatabaseModelQueriesItems
   {
     try (var statement =
            connection.prepareStatement(ITEM_GET)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(id));
+      statement.setBytes(1, itemIdBytes(id));
       statement.setBoolean(2, deleted);
 
       try (var result = statement.executeQuery()) {
@@ -989,6 +642,7 @@ public final class CADatabaseModelQueriesItems
             itemId,
             itemName,
             itemCount,
+            0L,
             itemMetadatas,
             itemAttachments,
             itemTags
@@ -997,121 +651,6 @@ public final class CADatabaseModelQueriesItems
         return Optional.empty();
       }
     }
-  }
-
-  @Override
-  public void itemCreate(
-    final CAItemID id)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    this.withSQLConnection(connection -> {
-
-      {
-        final var existing = itemGetInner(connection, id, true);
-        if (existing.isPresent()) {
-          throw this.duplicateItemDeleted(id);
-        }
-      }
-
-      {
-        final var existing = itemGetInner(connection, id, false);
-        if (existing.isPresent()) {
-          throw this.duplicateItem(id);
-        }
-      }
-
-      try (var statement = connection.prepareStatement(ITEM_CREATE)) {
-        statement.setBytes(1, CADatabaseBytes.itemIdBytes(id));
-        statement.setString(2, "");
-        statement.setLong(3, 0L);
-        statement.executeUpdate();
-      }
-
-      this.publishUpdate(id);
-      return null;
-    });
-  }
-
-
-  private void checkItemCountInvariant(
-    final Connection connection,
-    final CAItemID id,
-    final long expectedItemCount)
-    throws SQLException, CADatabaseException
-  {
-    final long itemSum;
-    try (var statement = connection.prepareStatement(ITEM_COUNT_SUM_GET)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(id));
-      try (var results = statement.executeQuery()) {
-        if (results.next()) {
-          itemSum = results.getLong("item_count");
-        } else {
-          itemSum = 0L;
-        }
-      }
-    }
-
-    if (itemSum != expectedItemCount) {
-      throw new CADatabaseException(
-        ERROR_PARAMETERS_INVALID,
-        this.messages.format(
-          "errorItemCountStoreInvariant",
-          id.id(),
-          Long.valueOf(expectedItemCount),
-          Long.valueOf(itemSum))
-      );
-    }
-  }
-
-  @Override
-  public void itemNameSet(
-    final CAItemID id,
-    final String name)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(name, "name");
-
-    this.withSQLConnection(connection -> {
-      this.itemCheck(connection, id, false);
-
-      try (var statement = connection.prepareStatement(ITEM_NAME_SET)) {
-        statement.setString(1, name);
-        statement.setBytes(2, CADatabaseBytes.itemIdBytes(id));
-        statement.executeUpdate();
-      }
-      return null;
-    });
-  }
-
-  @Override
-  public Set<CAItem> itemList(
-    final CAListLocationBehaviourType locationBehaviour)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(locationBehaviour, "locationBehaviour");
-
-    return this.withSQLConnection(connection -> {
-      if (locationBehaviour instanceof CAListLocationsAll) {
-        return itemListInnerAll(connection);
-      }
-      if (locationBehaviour instanceof CAListLocationExact exact) {
-        return itemListInnerExact(connection, exact.location());
-      }
-      if (locationBehaviour instanceof CAListLocationWithDescendants with) {
-        return this.itemListInnerWithDescendants(connection, with.location());
-      }
-      throw new UnreachableCodeException();
-    });
-  }
-
-  private Set<CAItem> itemListInnerWithDescendants(
-    final Connection connection,
-    final CALocationID location)
-  {
-    throw new UnimplementedCodeException();
   }
 
   private static Set<CAItem> itemListInnerExact(
@@ -1127,7 +666,7 @@ public final class CADatabaseModelQueriesItems
       final var count =
         itemLocationCountGetInner(connection, id, location);
       itemGetInner(connection, id, false)
-        .map(item -> item.withCount(count))
+        .map(item -> item.withCountHere(count))
         .ifPresent(items::add);
     }
     return items;
@@ -1145,7 +684,7 @@ public final class CADatabaseModelQueriesItems
       statement.setBytes(2, locationIdBytes(location));
       try (var result = statement.executeQuery()) {
         while (result.next()) {
-          return result.getLong("item_count");
+          return result.getLong("count");
         }
         return 0L;
       }
@@ -1204,6 +743,521 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
+  private Object itemTagRemoveInner(
+    final Connection connection,
+    final CAItemID item,
+    final CATag tag)
+    throws SQLException
+  {
+    try (var statement = connection.prepareStatement(ITEM_TAG_REMOVE)) {
+      statement.setBytes(1, CADatabaseBytes.uuidBytes(item.id()));
+      statement.setBytes(2, CADatabaseBytes.tagIdBytes(tag.id()));
+      statement.executeUpdate();
+    }
+
+    this.publishUpdate(item);
+    return null;
+  }
+
+  private Object itemTagAddInner(
+    final Connection connection,
+    final CAItemID item,
+    final CATag tag)
+    throws SQLException
+  {
+    try (var statement = connection.prepareStatement(ITEM_TAG_ADD)) {
+      statement.setBytes(1, CADatabaseBytes.uuidBytes(item.id()));
+      statement.setBytes(2, CADatabaseBytes.tagIdBytes(tag.id()));
+      statement.executeUpdate();
+    }
+
+    this.publishUpdate(item);
+    return null;
+  }
+
+  private Object itemMetadataRemoveInner(
+    final Connection connection,
+    final CAItemID itemID,
+    final String metadata)
+    throws SQLException
+  {
+    try (var statement =
+           connection.prepareStatement(ITEM_METADATA_REMOVE)) {
+      statement.setBytes(1, itemIdBytes(itemID));
+      statement.setString(2, metadata);
+      statement.executeUpdate();
+    }
+
+    this.publishUpdate(itemID);
+    return null;
+  }
+
+  private void itemAttachmentRemoveInner(
+    final Connection connection,
+    final CAItemAttachmentID id)
+    throws SQLException
+  {
+    final var itemId = itemForAttachment(connection, id);
+    try (var statement = connection.prepareStatement(ITEM_ATTACHMENT_REMOVE)) {
+      statement.setBytes(1, CADatabaseBytes.uuidBytes(id.id()));
+      statement.executeUpdate();
+    }
+    this.publishRemove(id);
+    this.publishUpdate(itemId);
+  }
+
+  private void itemRepositInnerRemoveUpdate(
+    final Connection connection,
+    final CAItemRepositRemove remove,
+    final long currentCount)
+    throws SQLException, CADatabaseException
+  {
+    final var newCount = currentCount - remove.count();
+
+    try (var statement = connection.prepareStatement(ITEM_REPOSIT_ADD_UPDATE)) {
+      statement.setLong(1, newCount);
+      statement.setBytes(2, itemIdBytes(remove.item()));
+      statement.setBytes(3, locationIdBytes(remove.location()));
+      statement.executeUpdate();
+    } catch (final DerbySQLIntegrityConstraintViolationException e) {
+      if (Objects.equals(e.getConstraintName(), "CHECK_ITEM_LOCATION_COUNT")) {
+        final var attributes = new HashMap<String, String>();
+        attributes.put(
+          this.messages.format("item"),
+          remove.item().id().toString());
+        attributes.put(
+          this.messages.format("startingCount"),
+          Long.toUnsignedString(currentCount));
+        attributes.put(
+          this.messages.format("attemptedRemoval"),
+          Long.toUnsignedString(remove.count()));
+        attributes.put(
+          this.messages.format("problem"),
+          this.messages.format("errorItemCountTooManyRemoved"));
+
+        throw new CADatabaseException(
+          ERROR_PARAMETERS_INVALID,
+          attributes,
+          this.messages.format("errorItemCountTooManyRemoved")
+        );
+      }
+      throw e;
+    }
+  }
+
+  private CADatabaseException duplicateItem(
+    final CAItemID id)
+  {
+    final var attributes = new HashMap<String, String>();
+    attributes.put(
+      this.messages.format("object"),
+      id.displayId());
+    attributes.put(
+      this.messages.format("type"),
+      this.messages.format("item"));
+
+    return new CADatabaseException(
+      ERROR_DUPLICATE,
+      attributes,
+      this.messages.format("errorDuplicate", id.id(), "Item")
+    );
+  }
+
+  private CADatabaseException duplicateItemDeleted(
+    final CAItemID id)
+  {
+    final var attributes = new HashMap<String, String>();
+    attributes.put(
+      this.messages.format("object"),
+      id.displayId());
+    attributes.put(
+      this.messages.format("type"),
+      this.messages.format("item"));
+
+    return new CADatabaseException(
+      ERROR_DUPLICATE,
+      attributes,
+      this.messages.format("errorDuplicateDeleted")
+    );
+  }
+
+  private CADatabaseException noSuchItem(
+    final UUID item)
+  {
+    final var attributes = new HashMap<String, String>();
+    attributes.put(
+      this.messages.format("object"),
+      item.toString());
+    attributes.put(
+      this.messages.format("type"),
+      this.messages.format("item"));
+
+    return new CADatabaseException(
+      ERROR_NONEXISTENT,
+      attributes,
+      this.messages.format("errorNonexistent")
+    );
+  }
+
+  @Override
+  public Map<CAItemAttachmentID, CAItemAttachment> itemAttachments(
+    final CAItemID item,
+    final boolean withData)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(item, "item");
+
+    return this.withSQLConnection(connection -> {
+      this.itemCheck(connection, item, false);
+      return itemAttachmentsInner(connection, item, withData);
+    });
+  }
+
+  @Override
+  public Optional<CAItemAttachment> itemAttachmentGet(
+    final CAItemAttachmentID id,
+    final boolean withData)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(id, "id");
+
+    return this.withSQLConnection(
+      connection -> itemAttachmentGetInner(connection, id, withData));
+  }
+
+  @Override
+  public void itemAttachmentRemove(
+    final CAItemAttachmentID id)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(id, "id");
+
+    this.withSQLConnection(connection -> {
+      this.itemAttachmentRemoveInner(connection, id);
+      return null;
+    });
+  }
+
+  @Override
+  public void itemReposit(
+    final CAItemRepositType reposit)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(reposit, "reposit");
+
+    this.withSQLConnection(connection -> {
+      this.itemRepositInner(connection, reposit);
+      return null;
+    });
+  }
+
+  @Override
+  public CAItemLocations itemLocations(
+    final CAItemID id)
+    throws CADatabaseException
+  {
+    return this.withSQLConnection(
+      connection -> itemLocationsInner(connection, id));
+  }
+
+  private void itemRepositInner(
+    final Connection connection,
+    final CAItemRepositType reposit)
+    throws CADatabaseException, SQLException
+  {
+    final var item =
+      this.itemGet(reposit.item())
+        .orElseThrow(() -> this.noSuchItem(reposit.item().id()));
+
+    if (reposit instanceof CAItemRepositAdd add) {
+      this.itemRepositInnerAdd(connection, item, add);
+      this.publishUpdate(item.id());
+      return;
+    } else if (reposit instanceof CAItemRepositRemove remove) {
+      this.itemRepositInnerRemove(connection, item, remove);
+      this.publishUpdate(item.id());
+      return;
+    } else if (reposit instanceof CAItemRepositMove move) {
+      this.itemRepositInnerMove(connection, move);
+      this.publishUpdate(item.id());
+      return;
+    } else {
+      throw new IllegalStateException("Unexpected reposit: " + reposit);
+    }
+  }
+
+  private void itemRepositInnerMove(
+    final Connection connection,
+    final CAItemRepositMove move)
+    throws CADatabaseException, SQLException
+  {
+    this.itemRepositInnerRemove(
+      connection,
+      this.itemGet(move.item()).orElseThrow(),
+      new CAItemRepositRemove(move.item(), move.fromLocation(), move.count())
+    );
+
+    this.itemRepositInnerAdd(
+      connection,
+      this.itemGet(move.item()).orElseThrow(),
+      new CAItemRepositAdd(move.item(), move.toLocation(), move.count())
+    );
+  }
+
+  private void itemRepositInnerRemove(
+    final Connection connection,
+    final CAItem item,
+    final CAItemRepositRemove remove)
+    throws CADatabaseException, SQLException
+  {
+    this.locations.locationGet(remove.location())
+      .orElseThrow(() -> this.noSuchLocation(remove.location()));
+
+    try (var statement = connection.prepareStatement(ITEM_REPOSIT_CHECK)) {
+      statement.setBytes(1, itemIdBytes(remove.item()));
+      statement.setBytes(2, locationIdBytes(remove.location()));
+
+      try (var results = statement.executeQuery()) {
+        if (results.next()) {
+          final var currentCount = results.getLong("count");
+          if (currentCount == remove.count()) {
+            itemRepositInnerRemoveDelete(connection, remove);
+          } else {
+            this.itemRepositInnerRemoveUpdate(connection, remove, currentCount);
+          }
+        }
+      }
+    }
+
+    this.itemCountSetInner(
+      connection,
+      remove.item(),
+      item.countTotal() - remove.count()
+    );
+  }
+
+  private void itemRepositInnerAdd(
+    final Connection connection,
+    final CAItem item,
+    final CAItemRepositAdd add)
+    throws SQLException, CADatabaseException
+  {
+    this.locations.locationGet(add.location())
+      .orElseThrow(() -> this.noSuchLocation(add.location()));
+
+    try (var statement = connection.prepareStatement(ITEM_REPOSIT_CHECK)) {
+      statement.setBytes(1, itemIdBytes(add.item()));
+      statement.setBytes(2, locationIdBytes(add.location()));
+
+      try (var results = statement.executeQuery()) {
+        if (results.next()) {
+          final var currentCount = results.getLong("count");
+          this.itemRepositInnerAddUpdate(connection, item, add, currentCount);
+        } else {
+          this.itemRepositInnerAddInsert(connection, item, add);
+        }
+      }
+    }
+  }
+
+  private void itemRepositInnerAddInsert(
+    final Connection connection,
+    final CAItem item,
+    final CAItemRepositAdd add)
+    throws SQLException, CADatabaseException
+  {
+    try (var statement = connection.prepareStatement(ITEM_REPOSIT_ADD_INSERT)) {
+      statement.setBytes(1, itemIdBytes(add.item()));
+      statement.setBytes(2, locationIdBytes(add.location()));
+      statement.setLong(3, add.count());
+      statement.executeUpdate();
+    }
+
+    final var newCount = item.countTotal() + add.count();
+    this.itemCountSetInner(connection, add.item(), newCount);
+  }
+
+  private void itemCountSetInner(
+    final Connection connection,
+    final CAItemID item,
+    final long count)
+    throws SQLException, CADatabaseException
+  {
+    try (var statement = connection.prepareStatement(ITEM_COUNT_SET)) {
+      statement.setLong(1, count);
+      statement.setBytes(2, itemIdBytes(item));
+      statement.executeUpdate();
+    } catch (final DerbySQLIntegrityConstraintViolationException e) {
+      if (Objects.equals(e.getConstraintName(), "CHECK_NATURAL_COUNT")) {
+        final var attributes = new HashMap<String, String>();
+        attributes.put(
+          this.messages.format("item"),
+          item.displayId());
+
+        throw new CADatabaseException(
+          ERROR_PARAMETERS_INVALID,
+          attributes,
+          e.getMessage());
+      }
+      throw e;
+    }
+
+    this.checkItemCountInvariant(connection, item, count);
+    this.publishUpdate(item);
+  }
+
+  private void itemRepositInnerAddUpdate(
+    final Connection connection,
+    final CAItem item,
+    final CAItemRepositAdd add,
+    final long locationCount)
+    throws SQLException, CADatabaseException
+  {
+    final var newCount = locationCount + add.count();
+
+    try (var statement = connection.prepareStatement(ITEM_REPOSIT_ADD_UPDATE)) {
+      statement.setLong(1, newCount);
+      statement.setBytes(2, itemIdBytes(add.item()));
+      statement.setBytes(3, locationIdBytes(add.location()));
+      statement.executeUpdate();
+    }
+
+    this.itemCountSetInner(connection, item.id(), newCount);
+  }
+
+  @Override
+  public Optional<CAItem> itemGet(
+    final CAItemID id)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(id, "id");
+
+    return this.withSQLConnection(
+      connection -> itemGetInner(connection, id, false));
+  }
+
+  @Override
+  public void itemCreate(
+    final CAItemID id)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(id, "id");
+
+    this.withSQLConnection(connection -> {
+
+      {
+        final var existing = itemGetInner(connection, id, true);
+        if (existing.isPresent()) {
+          throw this.duplicateItemDeleted(id);
+        }
+      }
+
+      {
+        final var existing = itemGetInner(connection, id, false);
+        if (existing.isPresent()) {
+          throw this.duplicateItem(id);
+        }
+      }
+
+      try (var statement = connection.prepareStatement(ITEM_CREATE)) {
+        statement.setBytes(1, itemIdBytes(id));
+        statement.setString(2, "");
+        statement.setLong(3, 0L);
+        statement.executeUpdate();
+      }
+
+      this.publishUpdate(id);
+      return null;
+    });
+  }
+
+  private void checkItemCountInvariant(
+    final Connection connection,
+    final CAItemID id,
+    final long expectedItemCount)
+    throws SQLException, CADatabaseException
+  {
+    final long itemSum;
+    try (var statement = connection.prepareStatement(ITEM_COUNT_SUM_GET)) {
+      statement.setBytes(1, itemIdBytes(id));
+      try (var results = statement.executeQuery()) {
+        if (results.next()) {
+          itemSum = results.getLong("item_count");
+        } else {
+          itemSum = 0L;
+        }
+      }
+    }
+
+    if (itemSum != expectedItemCount) {
+      final var attributes = new HashMap<String, String>();
+      attributes.put(
+        this.messages.format("item"),
+        id.displayId());
+      attributes.put(
+        this.messages.format("expectedCount"),
+        Long.toUnsignedString(expectedItemCount));
+      attributes.put(
+        this.messages.format("receivedCount"),
+        Long.toUnsignedString(itemSum));
+
+      throw new CADatabaseException(
+        ERROR_PARAMETERS_INVALID,
+        attributes,
+        this.messages.format("errorItemCountStoreInvariant")
+      );
+    }
+  }
+
+  @Override
+  public void itemNameSet(
+    final CAItemID id,
+    final String name)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(name, "name");
+
+    this.withSQLConnection(connection -> {
+      this.itemCheck(connection, id, false);
+
+      try (var statement = connection.prepareStatement(ITEM_NAME_SET)) {
+        statement.setString(1, name);
+        statement.setBytes(2, itemIdBytes(id));
+        statement.executeUpdate();
+      }
+      return null;
+    });
+  }
+
+  @Override
+  public Set<CAItem> itemList(
+    final CAListLocationBehaviourType locationBehaviour)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(locationBehaviour, "locationBehaviour");
+
+    return this.withSQLConnection(connection -> {
+      if (locationBehaviour instanceof CAListLocationsAll) {
+        return itemListInnerAll(connection);
+      }
+      if (locationBehaviour instanceof CAListLocationExact exact) {
+        return itemListInnerExact(connection, exact.location());
+      }
+      if (locationBehaviour instanceof CAListLocationWithDescendants with) {
+        return this.itemListInnerWithDescendants(connection, with.location());
+      }
+      throw new UnreachableCodeException();
+    });
+  }
+
+  private Set<CAItem> itemListInnerWithDescendants(
+    final Connection connection,
+    final CALocationID location)
+  {
+    throw new UnimplementedCodeException();
+  }
+
   @Override
   public Set<CAItemID> itemListDeleted()
     throws CADatabaseException
@@ -1240,7 +1294,7 @@ public final class CADatabaseModelQueriesItems
         currentItemDeleted.or(() -> currentItemNotDeleted)
           .orElseThrow(() -> this.noSuchItem(item.id()));
 
-      final var itemIdBytes = CADatabaseBytes.itemIdBytes(item);
+      final var itemIdBytes = itemIdBytes(item);
       try (var statement =
              connection.prepareStatement(ITEM_ATTACHMENTS_REMOVE_ALL_BY_ITEM)) {
         statement.setBytes(1, itemIdBytes);
@@ -1282,7 +1336,7 @@ public final class CADatabaseModelQueriesItems
         .orElseThrow(() -> this.noSuchItem(item.id()));
 
     this.withSQLConnection(connection -> {
-      final var itemIdBytes = CADatabaseBytes.itemIdBytes(item);
+      final var itemIdBytes = itemIdBytes(item);
 
       try (var statement =
              connection.prepareStatement(ITEM_DELETE_MARK_ONLY)) {
@@ -1411,10 +1465,21 @@ public final class CADatabaseModelQueriesItems
 
     final var data =
       attachment.data()
-        .orElseThrow(() -> new CADatabaseException(
-          ERROR_GENERAL,
-          this.messages.format("errorAttachmentMissingData"))
-        );
+        .orElseThrow(() -> {
+          final var attributes = new HashMap<String, String>();
+          attributes.put(
+            this.messages.format("item"),
+            item.displayId());
+          attributes.put(
+            this.messages.format("attachment"),
+            attachment.id().id().toString());
+
+          return new CADatabaseException(
+            ERROR_GENERAL,
+            attributes,
+            this.messages.format("errorAttachmentMissingData")
+          );
+        });
 
     this.withSQLConnection(connection -> {
       this.itemCheck(connection, item, false);
@@ -1441,7 +1506,7 @@ public final class CADatabaseModelQueriesItems
     throws CADatabaseException, SQLException
   {
     try (var statement = connection.prepareStatement(ITEM_GET)) {
-      statement.setBytes(1, CADatabaseBytes.itemIdBytes(id));
+      statement.setBytes(1, itemIdBytes(id));
       statement.setBoolean(2, deleted);
 
       try (var result = statement.executeQuery()) {
@@ -1455,10 +1520,18 @@ public final class CADatabaseModelQueriesItems
   private CADatabaseException noSuchLocation(
     final CALocationID location)
   {
+    final var attributes = new HashMap<String, String>();
+    attributes.put(
+      this.messages.format("object"),
+      location.id().toString());
+    attributes.put(
+      this.messages.format("type"),
+      this.messages.format("location"));
+
     return new CADatabaseException(
       ERROR_NONEXISTENT,
-      this.messages.format("errorNonexistent", location.id(), "Location"),
-      new NoSuchElementException()
+      attributes,
+      this.messages.format("errorNonexistent")
     );
   }
 }

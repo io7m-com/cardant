@@ -27,7 +27,6 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATags;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -201,7 +200,7 @@ public sealed interface CACommandType
   /**
    * Create or update a location.
    *
-   * @param location          The location
+   * @param location The location
    */
 
   record CACommandLocationPut(
@@ -260,13 +259,27 @@ public sealed interface CACommandType
   }
 
   /**
-   * XXX: To remove!
+   * List all of the locations an item is in, and how many times the item
+   * is in them.
+   *
+   * @param item The item
    */
 
-  record CACommandItemLocationList()
+  record CACommandItemLocationsList(
+    CAItemID item)
     implements CACommandType
   {
+    /**
+     * List all of the locations an item is in, and how many times the item
+     * is in them.
+     *
+     * @param item The item
+     */
 
+    public CACommandItemLocationsList
+    {
+      Objects.requireNonNull(item, "item");
+    }
   }
 
   /**

@@ -3,14 +3,23 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 
 <properties>
+  <entry key="attachment">Attachment</entry>
+  <entry key="errorAttachmentMissingData">Attachment data must be provided.</entry>
+  <entry key="errorAttachmentTooLarge">The given attachment is too large.</entry>
+  <entry key="errorLoginFailed">Login failed.</entry>
   <entry key="errorMissingId">Missing a required id parameter.</entry>
   <entry key="errorNoSuchAttachment">No such attachment.</entry>
   <entry key="errorNoSuchItem">No such item.</entry>
   <entry key="errorNoSuchLocation">No such location.</entry>
+  <entry key="errorParseError">Error: {0}: {1}:{2}: {3}</entry>
+  <entry key="errorParseInfo">Info: {0}: {1}:{2}: {3}</entry>
+  <entry key="errorParseWarning">Warning: {0}: {1}:{2}: {3}</entry>
   <entry key="errorTransaction">At least one command within the transaction failed.</entry>
   <entry key="errorUnauthorized">Unauthorized</entry>
   <entry key="errorUnexpectedInput">Expected a command or a transaction.</entry>
-  <entry key="errorAttachmentTooLarge">The given attachment is too large.</entry>
-  <entry key="errorAttachmentMissingData">Attachment data must be provided.</entry>
-  <entry key="indexedMessage">Command [{0}] {1}: {2}</entry>
+  <entry key="errorIO">IO error: {0}</entry>
+  <entry key="item">Item</entry>
+  <entry key="location">Location</entry>
+  <entry key="sizeLimit">Size Limit</entry>
+  <entry key="sizeReceived">Size Received</entry>
 </properties>

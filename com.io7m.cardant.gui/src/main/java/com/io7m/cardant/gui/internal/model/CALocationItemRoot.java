@@ -44,4 +44,10 @@ public record CALocationItemRoot(CALocationID id)
   {
 
   }
+
+  @Override
+  public String nameText()
+  {
+    return "";
+  }
 }

@@ -7,9 +7,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -17,31 +18,28 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandItemRemoveType extends CommandType
-{
-  DocumentFactory<CommandItemRemoveType> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commanditemremovetype820dtype");
-  SchemaType type = Factory.getType();
+public interface CommandItemRemoveType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commanditemremovetype820dtype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "id" attribute
-   */
-  String getId();
+    /**
+     * Gets the "id" attribute
+     */
+    java.lang.String getId();
 
-  /**
-   * Sets the "id" attribute
-   */
-  void setId(String id);
+    /**
+     * Gets (as xml) the "id" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId();
 
-  /**
-   * Gets (as xml) the "id" attribute
-   */
-  UUIDType xgetId();
+    /**
+     * Sets the "id" attribute
+     */
+    void setId(java.lang.String id);
 
-  /**
-   * Sets (as xml) the "id" attribute
-   */
-  void xsetId(UUIDType id);
+    /**
+     * Sets (as xml) the "id" attribute
+     */
+    void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id);
 }

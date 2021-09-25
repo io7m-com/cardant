@@ -27,4 +27,6 @@ public sealed interface CALocationItemType
   boolean matches(String search);
 
   void updateFrom(CALocation location);
+
+  String nameText();
 }

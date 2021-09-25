@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ListLocationExactDocument extends ListLocationsBehaviourDocument
-{
-  DocumentFactory<ListLocationExactDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "listlocationexact0fcddoctype");
-  SchemaType type = Factory.getType();
+public interface ListLocationExactDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "listlocationexact0fcddoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ListLocationExact" element
-   */
-  ListLocationExactType getListLocationExact();
+    /**
+     * Gets the "ListLocationExact" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType getListLocationExact();
 
-  /**
-   * Sets the "ListLocationExact" element
-   */
-  void setListLocationExact(ListLocationExactType listLocationExact);
+    /**
+     * Sets the "ListLocationExact" element
+     */
+    void setListLocationExact(com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType listLocationExact);
 
-  /**
-   * Appends and returns a new empty "ListLocationExact" element
-   */
-  ListLocationExactType addNewListLocationExact();
+    /**
+     * Appends and returns a new empty "ListLocationExact" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType addNewListLocationExact();
 }

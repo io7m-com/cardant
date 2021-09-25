@@ -8,72 +8,57 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.XmlObjectBase;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * A document containing one LocationID(@urn:com.io7m.cardant.inventory:1) element.
  *
  * This is a complex type.
  */
-public class LocationIDDocumentImpl extends IDDocumentImpl implements
-  LocationIDDocument
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("urn:com.io7m.cardant.inventory:1", "LocationID"),
-  };
+public class LocationIDDocumentImpl extends com.io7m.cardant.protocol.inventory.v1.beans.impl.IDDocumentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.LocationIDDocument {
+    private static final long serialVersionUID = 1L;
 
-  public LocationIDDocumentImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "LocationID" element
-   */
-  @Override
-  public LocationIDType getLocationID()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationIDType target = null;
-      target = (LocationIDType) this.get_store().find_element_user(
-        PROPERTY_QNAME[0],
-        0);
-      return target;
+    public LocationIDDocumentImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "LocationID" element
-   */
-  @Override
-  public void setLocationID(final LocationIDType locationID)
-  {
-    this.generatedSetterHelperImpl(
-      locationID,
-      PROPERTY_QNAME[0],
-      0,
-      XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("urn:com.io7m.cardant.inventory:1", "LocationID"),
+    };
 
-  /**
-   * Appends and returns a new empty "LocationID" element
-   */
-  @Override
-  public LocationIDType addNewLocationID()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      LocationIDType target = null;
-      target = (LocationIDType) this.get_store().add_element_user(
-        PROPERTY_QNAME[0]);
-      return target;
+
+    /**
+     * Gets the "LocationID" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType getLocationID() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType)get_store().find_element_user(PROPERTY_QNAME[0], 0);
+            return (target == null) ? null : target;
+        }
     }
-  }
+
+    /**
+     * Sets the "LocationID" element
+     */
+    @Override
+    public void setLocationID(com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType locationID) {
+        generatedSetterHelperImpl(locationID, PROPERTY_QNAME[0], 0, org.apache.xmlbeans.impl.values.XmlObjectBase.KIND_SETTERHELPER_SINGLETON);
+    }
+
+    /**
+     * Appends and returns a new empty "LocationID" element
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType addNewLocationID() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType)get_store().add_element_user(PROPERTY_QNAME[0]);
+            return target;
+        }
+    }
 }

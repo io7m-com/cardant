@@ -16,15 +16,28 @@
 
 package com.io7m.cardant.client.api;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * A command failed.
  *
- * @param message The error message
+ * @param summary The error message summary
  * @param <T>     The returned value
  */
 
-public record CAClientCommandError<T>(String message)
+public record CAClientCommandError<T>(
+  String summary,
+  int statusCode,
+  Map<String, String> attributes,
+  List<String> details)
   implements CAClientCommandResultType<T>
 {
-
+  public CAClientCommandError
+  {
+    Objects.requireNonNull(summary, "summary");
+    Objects.requireNonNull(attributes, "attributes");
+    Objects.requireNonNull(details, "details");
+  }
 }

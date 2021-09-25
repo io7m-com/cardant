@@ -22,7 +22,12 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositMove;
+import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -30,21 +35,25 @@ import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
+import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationsListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutDocument;
@@ -58,14 +67,21 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemLocationType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadatasType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositAddType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositMoveType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositRemoveType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationExactType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationWithDescendantsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsAllType;
 import com.io7m.cardant.protocol.inventory.v1.beans.LocationIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.LocationType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributeType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentPutDocument;
@@ -73,9 +89,11 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemove
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemCreateDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemListDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemLocationsListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRemoveDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRepositDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutDocument;
@@ -87,6 +105,7 @@ import com.io7m.cardant.protocol.inventory.v1.beans.TagIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TagsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.TransactionDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.TransactionResponseDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.UserIDType;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.apache.xmlbeans.XmlObject;
@@ -119,6 +138,7 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
@@ -133,9 +153,11 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemLocationsList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
@@ -218,8 +240,34 @@ public final class CA1MessageSerializer
     if (value instanceof CATransaction transaction) {
       return this.transformTransaction(transaction);
     }
+    if (value instanceof CATransactionResponse transactionResponse) {
+      return this.transformTransactionResponse(transactionResponse);
+    }
 
     throw new UnreachableCodeException();
+  }
+
+  private XmlObject transformTransactionResponse(
+    final CATransactionResponse transactionResponse)
+  {
+    final var document =
+      TransactionResponseDocument.Factory.newInstance(this.options);
+
+    final var transactionItem =
+      document.addNewTransactionResponse();
+    final var responseList =
+      transactionItem.getResponseList();
+
+    transactionItem.setFailed(transactionResponse.failed());
+    for (final var response : transactionResponse.responses()) {
+      final var serialized =
+        this.transformResponse(response);
+      responseList.add(serialized.getResponse());
+    }
+
+    fixCorrectElementNames(responseList);
+    fixCorrectPrefixesAndUnusedAttributes(document);
+    return document;
   }
 
   private XmlObject transformTransaction(
@@ -245,28 +293,35 @@ public final class CA1MessageSerializer
 
   private static <T extends XmlObject>
   void fixCorrectElementNames(
-    final Iterable<T> commandList)
+    final Iterable<T> elements)
   {
     /*
      * Use explicit element names rather than the abstract element name
      * and an xsi:type attribute.
      */
 
-    for (final var command : commandList) {
-      final var type = command.schemaType();
-      final var name = type.getName();
-      final var nameElement = new QName(
-        name.getNamespaceURI(),
-        name.getLocalPart().replaceAll("Type$", ""),
-        "i"
-      );
+    for (final var element : elements) {
+      fixCorrectElementName(element);
+    }
+  }
 
-      final var cursor = command.newCursor();
-      try {
-        cursor.setName(nameElement);
-      } finally {
-        cursor.dispose();
-      }
+  private static <T extends XmlObject>
+  void fixCorrectElementName(
+    final T element)
+  {
+    final var type = element.schemaType();
+    final var name = type.getName();
+    final var nameElement = new QName(
+      name.getNamespaceURI(),
+      name.getLocalPart().replaceAll("Type$", ""),
+      "i"
+    );
+
+    final var cursor = element.newCursor();
+    try {
+      cursor.setName(nameElement);
+    } finally {
+      cursor.dispose();
     }
   }
 
@@ -433,6 +488,73 @@ public final class CA1MessageSerializer
     }
     if (command instanceof CACommandLocationList c) {
       return this.transformCommandLocationList(c);
+    }
+    if (command instanceof CACommandItemReposit c) {
+      return this.transformCommandItemReposit(c);
+    }
+    if (command instanceof CACommandItemLocationsList c) {
+      return this.transformCommandItemLocationsList(c);
+    }
+
+    throw new UnreachableCodeException();
+  }
+
+  private CommandDocument transformCommandItemLocationsList(
+    final CACommandItemLocationsList c)
+  {
+    final var document =
+      CommandItemLocationsListDocument.Factory.newInstance(this.options);
+    final var command =
+      document.addNewCommandItemLocationsList();
+
+    command.setItem(c.item().displayId());
+    return document;
+  }
+
+  private CommandDocument transformCommandItemReposit(
+    final CACommandItemReposit c)
+  {
+    final var document =
+      CommandItemRepositDocument.Factory.newInstance(this.options);
+    final var command =
+      document.addNewCommandItemReposit();
+
+    command.setItemReposit(this.transformItemReposit(c.reposit()));
+
+    fixCorrectElementName(command.getItemReposit());
+    fixCorrectPrefixesAndUnusedAttributes(document);
+    return document;
+  }
+
+  private ItemRepositType transformItemReposit(
+    final CAItemRepositType reposit)
+  {
+    if (reposit instanceof CAItemRepositAdd add) {
+      final var result =
+        ItemRepositAddType.Factory.newInstance(this.options);
+      result.setItem(add.item().id().toString());
+      result.setLocation(add.location().id().toString());
+      result.setCount(new BigInteger(Long.toUnsignedString(add.count())));
+      return result;
+    }
+
+    if (reposit instanceof CAItemRepositRemove remove) {
+      final var result =
+        ItemRepositRemoveType.Factory.newInstance(this.options);
+      result.setItem(remove.item().id().toString());
+      result.setLocation(remove.location().id().toString());
+      result.setCount(new BigInteger(Long.toUnsignedString(reposit.count())));
+      return result;
+    }
+
+    if (reposit instanceof CAItemRepositMove move) {
+      final var result =
+        ItemRepositMoveType.Factory.newInstance(this.options);
+      result.setItem(move.item().id().toString());
+      result.setFromLocation(move.fromLocation().id().toString());
+      result.setToLocation(move.toLocation().id().toString());
+      result.setCount(new BigInteger(Long.toUnsignedString(reposit.count())));
+      return result;
     }
 
     throw new UnreachableCodeException();
@@ -653,7 +775,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponse(
+  private ResponseDocument transformResponse(
     final CAResponseType response)
   {
     if (response instanceof CAResponseLoginUsernamePassword r) {
@@ -704,11 +826,61 @@ public final class CA1MessageSerializer
     if (response instanceof CAResponseLocationList r) {
       return this.transformResponseLocationList(r);
     }
+    if (response instanceof CAResponseItemLocationsList r) {
+      return this.transformResponseItemLocationsList(r);
+    }
+    if (response instanceof CAResponseItemReposit r) {
+      return this.transformResponseItemReposit(r);
+    }
 
     throw new UnreachableCodeException();
   }
 
-  private XmlObject transformResponseLocationList(
+  private ResponseDocument transformResponseItemReposit(
+    final CAResponseItemReposit r)
+  {
+    final var document =
+      ResponseItemRepositDocument.Factory.newInstance(this.options);
+    final var response =
+      document.addNewResponseItemReposit();
+
+    response.setId(r.data().displayId());
+    return document;
+  }
+
+  private ResponseDocument transformResponseItemLocationsList(
+    final CAResponseItemLocationsList r)
+  {
+    final var document =
+      ResponseItemLocationsListDocument.Factory.newInstance(this.options);
+    final var response =
+      document.addNewResponseItemLocationsList();
+    final var itemLocations =
+      response.getItemLocationList();
+
+    for (final var locationEntry : r.data().itemLocations().entrySet()) {
+      final var byItem = locationEntry.getValue();
+      for (final var itemEntry : byItem.entrySet()) {
+        itemLocations.add(this.transformItemLocation(itemEntry.getValue()));
+      }
+    }
+
+    return document;
+  }
+
+  private ItemLocationType transformItemLocation(
+    final CAItemLocation value)
+  {
+    final var itemLocation =
+      ItemLocationType.Factory.newInstance(this.options);
+
+    itemLocation.setItem(value.item().displayId());
+    itemLocation.setLocation(value.location().displayId());
+    itemLocation.setCount(new BigInteger(Long.toUnsignedString(value.count())));
+    return itemLocation;
+  }
+
+  private ResponseDocument transformResponseLocationList(
     final CAResponseLocationList r)
   {
     final var document =
@@ -727,7 +899,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseTagsDelete(
+  private ResponseDocument transformResponseTagsDelete(
     final CAResponseTagsDelete r)
   {
     final var document =
@@ -739,7 +911,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseTagList(
+  private ResponseDocument transformResponseTagList(
     final CAResponseTagList r)
   {
     final var document =
@@ -751,7 +923,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseTagsPut(
+  private ResponseDocument transformResponseTagsPut(
     final CAResponseTagsPut r)
   {
     final var document =
@@ -763,7 +935,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseItemRemove(
+  private ResponseDocument transformResponseItemRemove(
     final CAResponseItemRemove r)
   {
     final var document =
@@ -775,7 +947,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseItemCreate(
+  private ResponseDocument transformResponseItemCreate(
     final CAResponseItemCreate r)
   {
     final var document =
@@ -787,7 +959,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseItemUpdate(
+  private ResponseDocument transformResponseItemUpdate(
     final CAResponseItemUpdate r)
   {
     final var document =
@@ -799,7 +971,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseItemGet(
+  private ResponseDocument transformResponseItemGet(
     final CAResponseItemGet r)
   {
     final var document =
@@ -811,7 +983,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformItemAttachmentRemove(
+  private ResponseDocument transformItemAttachmentRemove(
     final CAResponseItemAttachmentRemove r)
   {
     final var document =
@@ -823,7 +995,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformItemAttachmentPut(
+  private ResponseDocument transformItemAttachmentPut(
     final CAResponseItemAttachmentPut r)
   {
     final var document =
@@ -835,7 +1007,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformItemMetadataRemove(
+  private ResponseDocument transformItemMetadataRemove(
     final CAResponseItemMetadataRemove r)
   {
     final var document =
@@ -847,7 +1019,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformItemMetadataPut(
+  private ResponseDocument transformItemMetadataPut(
     final CAResponseItemMetadataPut r)
   {
     final var document =
@@ -859,7 +1031,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseError(
+  private ResponseDocument transformResponseError(
     final CAResponseError r)
   {
     final var document =
@@ -867,17 +1039,41 @@ public final class CA1MessageSerializer
     final var response =
       document.addNewResponseError();
 
-    response.setStatus(BigInteger.valueOf((long) r.status()));
-    response.setMessage(r.message());
+    response.setStatus(BigInteger.valueOf((long) r.statusCode()));
+    response.setSummary(r.summary());
 
-    final var output =
-      response.getResponseErrorDetailList();
+    final var errorAttributes =
+      response.addNewResponseErrorAttributes();
+    final var errorAttributeList =
+      errorAttributes.getResponseErrorAttributeList();
+
+    for (final var entry : r.attributes().entrySet()) {
+      errorAttributeList.add(
+        this.transformErrorAttribute(entry.getKey(), entry.getValue()));
+    }
+
+    final var errorDetails =
+      response.addNewResponseErrorDetails();
+    final var errorDetailList =
+      errorDetails.getResponseErrorDetailList();
 
     for (final var detail : r.details()) {
-      output.add(this.transformErrorDetail(detail));
+      errorDetailList.add(this.transformErrorDetail(detail));
     }
 
     return document;
+  }
+
+  private ResponseErrorAttributeType transformErrorAttribute(
+    final String key,
+    final String value)
+  {
+    final var attribute =
+      ResponseErrorAttributeType.Factory.newInstance(this.options);
+
+    attribute.setName(key);
+    attribute.setValue(value);
+    return attribute;
   }
 
   private ResponseErrorDetailType transformErrorDetail(
@@ -889,7 +1085,7 @@ public final class CA1MessageSerializer
     return response;
   }
 
-  private XmlObject transformResponseItemList(
+  private ResponseDocument transformResponseItemList(
     final CAResponseItemList r)
   {
     final var document =
@@ -906,7 +1102,7 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private XmlObject transformResponseLocationPut(
+  private ResponseDocument transformResponseLocationPut(
     final CAResponseLocationPut r)
   {
     final var document =
@@ -924,10 +1120,16 @@ public final class CA1MessageSerializer
     final var result = ItemType.Factory.newInstance(this.options);
     result.setId(item.id().id().toString());
     result.setName(item.name());
-    result.setCount(BigInteger.valueOf(item.count()));
-    result.setItemAttachments(this.transformItemAttachments(item.attachments()));
-    result.setItemMetadatas(this.transformItemMetadatas(item.metadata()));
-    result.setTags(this.transformTags(item.tags()));
+    result.setCountTotal(
+      new BigInteger(Long.toUnsignedString(item.countTotal())));
+    result.setCountHere(
+      new BigInteger(Long.toUnsignedString(item.countHere())));
+    result.setItemAttachments(
+      this.transformItemAttachments(item.attachments()));
+    result.setItemMetadatas(
+      this.transformItemMetadatas(item.metadata()));
+    result.setTags(
+      this.transformTags(item.tags()));
     return result;
   }
 
@@ -950,7 +1152,7 @@ public final class CA1MessageSerializer
   {
     final var result = TagType.Factory.newInstance(this.options);
     result.setName(tag.name());
-    result.setId(tag.id().id().toString());
+    result.setId(tag.displayId());
     return result;
   }
 
@@ -1022,7 +1224,7 @@ public final class CA1MessageSerializer
     return result;
   }
 
-  private XmlObject transformResponseLoginUsernamePassword()
+  private ResponseDocument transformResponseLoginUsernamePassword()
   {
     final var document =
       ResponseLoginUsernamePasswordDocument.Factory.newInstance(this.options);

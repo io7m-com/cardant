@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ItemRepositRemoveDocument extends ItemRepositDocument
-{
-  DocumentFactory<ItemRepositRemoveDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "itemrepositremovebabcdoctype");
-  SchemaType type = Factory.getType();
+public interface ItemRepositRemoveDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositRemoveDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "itemrepositremovebabcdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ItemRepositRemove" element
-   */
-  ItemRepositRemoveType getItemRepositRemove();
+    /**
+     * Gets the "ItemRepositRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositRemoveType getItemRepositRemove();
 
-  /**
-   * Sets the "ItemRepositRemove" element
-   */
-  void setItemRepositRemove(ItemRepositRemoveType itemRepositRemove);
+    /**
+     * Sets the "ItemRepositRemove" element
+     */
+    void setItemRepositRemove(com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositRemoveType itemRepositRemove);
 
-  /**
-   * Appends and returns a new empty "ItemRepositRemove" element
-   */
-  ItemRepositRemoveType addNewItemRepositRemove();
+    /**
+     * Appends and returns a new empty "ItemRepositRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ItemRepositRemoveType addNewItemRepositRemove();
 }

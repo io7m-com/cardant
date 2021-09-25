@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -114,7 +115,7 @@ public final class CAViewControllerItemsTab implements Initializable
     this.services = mainServices;
 
     this.locationFilteredView =
-      new CALocationTreeFiltered(this.controller.locationTree());
+      CALocationTreeFiltered.filter(this.controller.locationTree());
   }
 
   @Override
@@ -242,7 +243,16 @@ public final class CAViewControllerItemsTab implements Initializable
     final var loader = new FXMLLoader(connectXML, resources);
 
     loader.setControllerFactory(
-      clazz -> CAViewControllers.createController(clazz, stage, this.services)
+      clazz -> {
+        if (Objects.equals(clazz, CAViewControllerItemReposit.class)) {
+          return new CAViewControllerItemReposit(
+            this.services,
+            this.controller.itemSelected().get().get(),
+            stage
+          );
+        }
+        return CAViewControllers.createController(clazz, stage, this.services);
+      }
     );
 
     final AnchorPane pane =
@@ -250,16 +260,16 @@ public final class CAViewControllerItemsTab implements Initializable
     final CAViewControllerItemReposit controller =
       loader.getController();
 
-    controller.setItem(
-      this.controller.itemSelected()
-        .get()
-        .get()
-    );
-
     stage.initModality(Modality.APPLICATION_MODAL);
     stage.setScene(new Scene(pane));
     stage.setTitle(this.strings.format("items.reposit"));
     stage.showAndWait();
+
+    controller.result()
+      .ifPresent(reposit -> {
+        this.clientNow.itemReposit(reposit);
+        this.clientNow.itemLocationsList(reposit.item());
+      });
   }
 
   @FXML

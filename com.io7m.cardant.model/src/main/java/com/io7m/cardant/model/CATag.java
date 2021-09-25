@@ -69,4 +69,9 @@ public record CATag(
       .thenComparing(CATag::name)
       .compare(this, other);
   }
+
+  public String displayId()
+  {
+    return this.id.displayId();
+  }
 }

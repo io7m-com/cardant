@@ -148,8 +148,8 @@ public final class CAJettyServer implements Closeable
           serverEvents,
           inventoryParsersV1,
           inventorySerializersV1,
-          database
-        );
+          database,
+          messages);
       }),
       "/v1/login"
     );

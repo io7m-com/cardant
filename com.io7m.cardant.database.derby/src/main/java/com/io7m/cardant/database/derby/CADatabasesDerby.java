@@ -37,6 +37,7 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Optional;
@@ -235,6 +236,7 @@ public final class CADatabasesDerby implements CADatabaseProviderType
     } catch (final Exception e) {
       throw new CADatabaseException(
         ERROR_GENERAL,
+        Map.of(),
         this.messages.format("errorOpenDatabase", e.getLocalizedMessage()),
         e
       );
@@ -268,6 +270,7 @@ public final class CADatabasesDerby implements CADatabaseProviderType
       if (state == null) {
         throw new CADatabaseException(
           ERROR_GENERAL,
+          Map.of(),
           e.getLocalizedMessage(),
           e);
       }
@@ -279,6 +282,7 @@ public final class CADatabasesDerby implements CADatabaseProviderType
         default: {
           throw new CADatabaseException(
             ERROR_GENERAL,
+            Map.of(),
             e.getLocalizedMessage(),
             e);
         }

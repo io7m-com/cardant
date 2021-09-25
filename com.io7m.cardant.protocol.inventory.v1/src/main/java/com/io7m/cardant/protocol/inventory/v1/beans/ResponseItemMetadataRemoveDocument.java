@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface ResponseItemMetadataRemoveDocument extends ResponseDocument
-{
-  DocumentFactory<ResponseItemMetadataRemoveDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "responseitemmetadataremove9a40doctype");
-  SchemaType type = Factory.getType();
+public interface ResponseItemMetadataRemoveDocument extends com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "responseitemmetadataremove9a40doctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "ResponseItemMetadataRemove" element
-   */
-  ResponseItemMetadataRemoveType getResponseItemMetadataRemove();
+    /**
+     * Gets the "ResponseItemMetadataRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType getResponseItemMetadataRemove();
 
-  /**
-   * Sets the "ResponseItemMetadataRemove" element
-   */
-  void setResponseItemMetadataRemove(ResponseItemMetadataRemoveType responseItemMetadataRemove);
+    /**
+     * Sets the "ResponseItemMetadataRemove" element
+     */
+    void setResponseItemMetadataRemove(com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType responseItemMetadataRemove);
 
-  /**
-   * Appends and returns a new empty "ResponseItemMetadataRemove" element
-   */
-  ResponseItemMetadataRemoveType addNewResponseItemMetadataRemove();
+    /**
+     * Appends and returns a new empty "ResponseItemMetadataRemove" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType addNewResponseItemMetadataRemove();
 }

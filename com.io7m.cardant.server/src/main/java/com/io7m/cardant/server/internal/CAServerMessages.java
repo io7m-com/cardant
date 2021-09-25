@@ -16,10 +16,12 @@
 
 package com.io7m.cardant.server.internal;
 
+import com.io7m.anethum.common.ParseStatus;
 import com.io7m.jxtrand.vanilla.JXTAbstractStrings;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Server strings.
@@ -37,5 +39,41 @@ public final class CAServerMessages extends JXTAbstractStrings
       "/com/io7m/cardant/server/internal",
       "Messages"
     );
+  }
+
+  public String formatParseStatus(
+    final ParseStatus status)
+  {
+    Objects.requireNonNull(status, "status");
+
+    return switch (status.severity()) {
+      case PARSE_ERROR -> {
+        yield this.format(
+          "errorParseError",
+          status.errorCode(),
+          Integer.valueOf(status.lexical().line()),
+          Integer.valueOf(status.lexical().column()),
+          status.message()
+        );
+      }
+      case PARSE_WARNING -> {
+        yield this.format(
+          "errorParseWarning",
+          status.errorCode(),
+          Integer.valueOf(status.lexical().line()),
+          Integer.valueOf(status.lexical().column()),
+          status.message()
+        );
+      }
+      case PARSE_INFO -> {
+        yield this.format(
+          "errorParseInfo",
+          status.errorCode(),
+          Integer.valueOf(status.lexical().line()),
+          Integer.valueOf(status.lexical().column()),
+          status.message()
+        );
+      }
+    };
   }
 }

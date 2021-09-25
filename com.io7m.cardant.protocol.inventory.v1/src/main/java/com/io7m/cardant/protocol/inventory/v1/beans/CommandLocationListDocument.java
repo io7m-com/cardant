@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface CommandLocationListDocument extends CommandDocument
-{
-  DocumentFactory<CommandLocationListDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "commandlocationlistef3bdoctype");
-  SchemaType type = Factory.getType();
+public interface CommandLocationListDocument extends com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "commandlocationlistef3bdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "CommandLocationList" element
-   */
-  CommandLocationListType getCommandLocationList();
+    /**
+     * Gets the "CommandLocationList" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType getCommandLocationList();
 
-  /**
-   * Sets the "CommandLocationList" element
-   */
-  void setCommandLocationList(CommandLocationListType commandLocationList);
+    /**
+     * Sets the "CommandLocationList" element
+     */
+    void setCommandLocationList(com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType commandLocationList);
 
-  /**
-   * Appends and returns a new empty "CommandLocationList" element
-   */
-  CommandLocationListType addNewCommandLocationList();
+    /**
+     * Appends and returns a new empty "CommandLocationList" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType addNewCommandLocationList();
 }

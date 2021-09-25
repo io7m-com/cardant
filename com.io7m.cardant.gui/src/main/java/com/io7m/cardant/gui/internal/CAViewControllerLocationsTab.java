@@ -89,7 +89,7 @@ public final class CAViewControllerLocationsTab implements Initializable
     this.services = mainServices;
 
     this.locationTreeFiltered =
-      new CALocationTreeFiltered(this.controller.locationTree());
+      CALocationTreeFiltered.filter(this.controller.locationTree());
   }
 
   private static boolean allowsReparenting(

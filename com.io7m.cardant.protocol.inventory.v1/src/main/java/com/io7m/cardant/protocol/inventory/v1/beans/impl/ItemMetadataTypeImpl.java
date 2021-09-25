@@ -7,167 +7,140 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.SimpleValue;
-import org.apache.xmlbeans.impl.values.XmlComplexContentImpl;
-
 import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML ItemMetadataType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is a complex type.
  */
-public class ItemMetadataTypeImpl extends XmlComplexContentImpl implements
-  ItemMetadataType
-{
-  private static final long serialVersionUID = 1L;
-  private static final QName[] PROPERTY_QNAME = {
-    new QName("", "name"),
-    new QName("", "value"),
-  };
+public class ItemMetadataTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexContentImpl implements com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataType {
+    private static final long serialVersionUID = 1L;
 
-  public ItemMetadataTypeImpl(final SchemaType sType)
-  {
-    super(sType);
-  }
-
-  /**
-   * Gets the "name" attribute
-   */
-  @Override
-  public String getName()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      return (target == null) ? null : target.getStringValue();
+    public ItemMetadataTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType);
     }
-  }
 
-  /**
-   * Sets the "name" attribute
-   */
-  @Override
-  public void setName(final String name)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.setStringValue(name);
-    }
-  }
+    private static final QName[] PROPERTY_QNAME = {
+        new QName("", "name"),
+        new QName("", "value"),
+    };
 
-  /**
-   * Gets (as xml) the "name" attribute
-   */
-  @Override
-  public ItemMetadataNameType xgetName()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemMetadataNameType target = null;
-      target = (ItemMetadataNameType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      return target;
-    }
-  }
 
-  /**
-   * Sets (as xml) the "name" attribute
-   */
-  @Override
-  public void xsetName(final ItemMetadataNameType name)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemMetadataNameType target = null;
-      target = (ItemMetadataNameType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[0]);
-      if (target == null) {
-        target = (ItemMetadataNameType) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[0]);
-      }
-      target.set(name);
+    /**
+     * Gets the "name" attribute
+     */
+    @Override
+    public java.lang.String getName() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
 
-  /**
-   * Gets the "value" attribute
-   */
-  @Override
-  public String getValue()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      return (target == null) ? null : target.getStringValue();
+    /**
+     * Gets (as xml) the "name" attribute
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType xgetName() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            return target;
+        }
     }
-  }
 
-  /**
-   * Sets the "value" attribute
-   */
-  @Override
-  public void setValue(final String value)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      SimpleValue target = null;
-      target = (SimpleValue) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      if (target == null) {
-        target = (SimpleValue) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[1]);
-      }
-      target.setStringValue(value);
+    /**
+     * Sets the "name" attribute
+     */
+    @Override
+    public void setName(java.lang.String name) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[0]);
+            }
+            target.setStringValue(name);
+        }
     }
-  }
 
-  /**
-   * Gets (as xml) the "value" attribute
-   */
-  @Override
-  public ItemMetadataValueType xgetValue()
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemMetadataValueType target = null;
-      target = (ItemMetadataValueType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      return target;
+    /**
+     * Sets (as xml) the "name" attribute
+     */
+    @Override
+    public void xsetName(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType name) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType)get_store().find_attribute_user(PROPERTY_QNAME[0]);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataNameType)get_store().add_attribute_user(PROPERTY_QNAME[0]);
+            }
+            target.set(name);
+        }
     }
-  }
 
-  /**
-   * Sets (as xml) the "value" attribute
-   */
-  @Override
-  public void xsetValue(final ItemMetadataValueType value)
-  {
-    synchronized (this.monitor()) {
-      this.check_orphaned();
-      ItemMetadataValueType target = null;
-      target = (ItemMetadataValueType) this.get_store().find_attribute_user(
-        PROPERTY_QNAME[1]);
-      if (target == null) {
-        target = (ItemMetadataValueType) this.get_store().add_attribute_user(
-          PROPERTY_QNAME[1]);
-      }
-      target.set(value);
+    /**
+     * Gets the "value" attribute
+     */
+    @Override
+    public java.lang.String getValue() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            return (target == null) ? null : target.getStringValue();
+        }
     }
-  }
+
+    /**
+     * Gets (as xml) the "value" attribute
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType xgetValue() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            return target;
+        }
+    }
+
+    /**
+     * Sets the "value" attribute
+     */
+    @Override
+    public void setValue(java.lang.String value) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[1]);
+            }
+            target.setStringValue(value);
+        }
+    }
+
+    /**
+     * Sets (as xml) the "value" attribute
+     */
+    @Override
+    public void xsetValue(com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType value) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType)get_store().find_attribute_user(PROPERTY_QNAME[1]);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.ItemMetadataValueType)get_store().add_attribute_user(PROPERTY_QNAME[1]);
+            }
+            target.set(value);
+        }
+    }
 }

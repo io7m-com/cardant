@@ -8,9 +8,10 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
 import org.apache.xmlbeans.impl.schema.DocumentFactory;
+import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
 /**
@@ -18,26 +19,23 @@ import org.apache.xmlbeans.impl.schema.DocumentFactory;
  *
  * This is a complex type.
  */
-public interface EventDocument extends MessageDocument
-{
-  DocumentFactory<EventDocument> Factory = new DocumentFactory<>(
-    TypeSystemHolder.typeSystem,
-    "event50bfdoctype");
-  SchemaType type = Factory.getType();
+public interface EventDocument extends com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument {
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.EventDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "event50bfdoctype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
-  /**
-   * Gets the "Event" element
-   */
-  EventType getEvent();
+    /**
+     * Gets the "Event" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.EventType getEvent();
 
-  /**
-   * Sets the "Event" element
-   */
-  void setEvent(EventType event);
+    /**
+     * Sets the "Event" element
+     */
+    void setEvent(com.io7m.cardant.protocol.inventory.v1.beans.EventType event);
 
-  /**
-   * Appends and returns a new empty "Event" element
-   */
-  EventType addNewEvent();
+    /**
+     * Appends and returns a new empty "Event" element
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.EventType addNewEvent();
 }

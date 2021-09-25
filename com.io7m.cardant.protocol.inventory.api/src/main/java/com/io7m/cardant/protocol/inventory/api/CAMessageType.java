@@ -21,7 +21,11 @@ package com.io7m.cardant.protocol.inventory.api;
  */
 
 public sealed interface CAMessageType
-  permits CACommandType, CAEventType, CAResponseType, CATransaction
+  permits CACommandType,
+  CAEventType,
+  CAResponseType,
+  CATransaction,
+  CATransactionResponse
 {
 
 }

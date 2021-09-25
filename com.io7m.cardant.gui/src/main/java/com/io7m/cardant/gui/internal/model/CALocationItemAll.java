@@ -44,4 +44,10 @@ public record CALocationItemAll(CALocationID id)
   {
 
   }
+
+  @Override
+  public String nameText()
+  {
+    return "All";
+  }
 }

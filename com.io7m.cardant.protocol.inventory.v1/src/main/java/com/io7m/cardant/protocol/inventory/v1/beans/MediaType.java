@@ -7,9 +7,9 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.system.s224658FCFC90A14D91039032BDB551D0.TypeSystemHolder;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.XmlNormalizedString;
+import org.apache.xmlbeans.impl.schema.ElementFactory;
+import org.apache.xmlbeans.impl.schema.AbstractDocumentFactory;
+import org.apache.xmlbeans.impl.schema.DocumentFactory;
 import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
 
 
@@ -18,11 +18,8 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  *
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.MediaType.
  */
-public interface MediaType extends XmlNormalizedString
-{
-  SimpleTypeFactory<MediaType> Factory = new SimpleTypeFactory<>(
-    TypeSystemHolder.typeSystem,
-    "mediatype480btype");
-  SchemaType type = Factory.getType();
+public interface MediaType extends org.apache.xmlbeans.XmlNormalizedString {
+    SimpleTypeFactory<com.io7m.cardant.protocol.inventory.v1.beans.MediaType> Factory = new SimpleTypeFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "mediatype480btype");
+    org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 }

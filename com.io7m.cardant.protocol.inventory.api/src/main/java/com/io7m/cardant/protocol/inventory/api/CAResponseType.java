@@ -19,12 +19,14 @@ package com.io7m.cardant.protocol.inventory.api;
 import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CATags;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -50,24 +52,32 @@ public sealed interface CAResponseType extends CAMessageType
   /**
    * A command failed.
    *
-   * @param status  The status code
-   * @param details The error details
-   * @param message The error message
+   * @param summary    The error summary
+   * @param statusCode The status code
+   * @param details    The error details
+   * @param attributes The error attributes
    */
 
   record CAResponseError(
-    int status,
-    String message,
+    String summary,
+    int statusCode,
+    Map<String, String> attributes,
     List<String> details)
     implements CAResponseType
   {
     /**
      * A command failed.
+     *
+     * @param summary    The error summary
+     * @param statusCode The status code
+     * @param details    The error details
+     * @param attributes The error attributes
      */
 
     public CAResponseError
     {
-      Objects.requireNonNull(message, "message");
+      Objects.requireNonNull(summary, "summary");
+      Objects.requireNonNull(attributes, "attributes");
       Objects.requireNonNull(details, "details");
     }
   }
@@ -219,6 +229,26 @@ public sealed interface CAResponseType extends CAMessageType
     public CAResponseItemUpdate
     {
       Objects.requireNonNull(data, "item");
+    }
+  }
+
+  /**
+   * @param data The returned locations
+   *
+   * @see CACommandType.CACommandItemLocationsList
+   */
+
+  record CAResponseItemLocationsList(
+    CAItemLocations data)
+    implements CAResponseWithElementType
+  {
+    /**
+     * @see CACommandType.CACommandItemLocationsList
+     */
+
+    public CAResponseItemLocationsList
+    {
+      Objects.requireNonNull(data, "data");
     }
   }
 
@@ -396,15 +426,5 @@ public sealed interface CAResponseType extends CAMessageType
     {
       Objects.requireNonNull(data, "locations");
     }
-  }
-
-  /**
-   * @see CATransaction
-   */
-
-  record CAResponseTransaction()
-    implements CAResponseType
-  {
-
   }
 }

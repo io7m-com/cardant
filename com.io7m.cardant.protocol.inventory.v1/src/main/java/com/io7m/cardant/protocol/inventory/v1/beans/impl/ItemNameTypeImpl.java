@@ -7,29 +7,22 @@
  */
 package com.io7m.cardant.protocol.inventory.v1.beans.impl;
 
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemNameType;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.impl.values.JavaStringHolderEx;
+import javax.xml.namespace.QName;
+import org.apache.xmlbeans.QNameSet;
 
 /**
  * An XML ItemNameType(@urn:com.io7m.cardant.inventory:1).
  *
  * This is an atomic type that is a restriction of com.io7m.cardant.protocol.inventory.v1.beans.ItemNameType.
  */
-public class ItemNameTypeImpl extends JavaStringHolderEx implements
-  ItemNameType
-{
-  private static final long serialVersionUID = 1L;
+public class ItemNameTypeImpl extends org.apache.xmlbeans.impl.values.JavaStringHolderEx implements com.io7m.cardant.protocol.inventory.v1.beans.ItemNameType {
+    private static final long serialVersionUID = 1L;
 
-  public ItemNameTypeImpl(final SchemaType sType)
-  {
-    super(sType, false);
-  }
+    public ItemNameTypeImpl(org.apache.xmlbeans.SchemaType sType) {
+        super(sType, false);
+    }
 
-  protected ItemNameTypeImpl(
-    final SchemaType sType,
-    final boolean b)
-  {
-    super(sType, b);
-  }
+    protected ItemNameTypeImpl(org.apache.xmlbeans.SchemaType sType, boolean b) {
+        super(sType, b);
+    }
 }
