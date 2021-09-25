@@ -44,29 +44,18 @@ public final class CAViewControllerError implements Initializable
   private final Stage stage;
   private final CAServiceDirectoryType mainServices;
   private final CAMainStrings strings;
-
-  private record ErrorAttribute(String name, String value)
-  {
-  }
-
   @FXML
   private TableColumn<ErrorAttribute, String> errorNameColumn;
-
   @FXML
   private TableColumn<ErrorAttribute, String> errorValueColumn;
-
   @FXML
   private TableView<ErrorAttribute> errorTableView;
-
   @FXML
   private Label errorMessage;
-
   @FXML
   private TextArea errorDetails;
-
   @FXML
   private Pane errorContainerPane;
-
   @FXML
   private Button dismiss;
 
@@ -140,5 +129,9 @@ public final class CAViewControllerError implements Initializable
     } else {
       this.errorDetails.setText(item.message());
     }
+  }
+
+  private record ErrorAttribute(String name, String value)
+  {
   }
 }

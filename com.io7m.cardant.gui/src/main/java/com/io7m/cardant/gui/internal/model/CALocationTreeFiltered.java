@@ -19,10 +19,8 @@ package com.io7m.cardant.gui.internal.model;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.WeakChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
-import javafx.collections.WeakMapChangeListener;
 import javafx.scene.control.TreeItem;
 
 import java.util.HashMap;
@@ -37,6 +35,22 @@ public final class CALocationTreeFiltered
   private final Optional<ItemFiltering> itemFiltering;
   private final TreeItem<CALocationItemType> root;
   private Optional<String> filter;
+
+  private CALocationTreeFiltered(
+    final CALocationTree inTree,
+    final Optional<ItemFiltering> inItemFiltering)
+  {
+    this.tree =
+      Objects.requireNonNull(inTree, "tree");
+    this.itemFiltering =
+      Objects.requireNonNull(inItemFiltering, "inItemFiltering");
+    this.root =
+      new TreeItem<>(CALocationItemAll.get());
+
+    this.filter = Optional.empty();
+    this.root.setExpanded(true);
+    this.rebuild();
+  }
 
   public static CALocationTreeFiltered filter(
     final CALocationTree tree)
@@ -75,34 +89,25 @@ public final class CALocationTreeFiltered
     return filtered;
   }
 
-  private record ItemFiltering(
-    ObservableMap<CAItemAndLocation, Long> itemLocations,
-    CAItemID itemID)
+  private static SimpleStringProperty produceDecoratedProperty(
+    final CALocationItemDefined location,
+    final ItemFiltering itemFilter)
   {
-    public Long count(
-      final CALocationID locationID)
-    {
-      return this.itemLocations.getOrDefault(
-        new CAItemAndLocation(this.itemID, locationID),
-        Long.valueOf(0L)
-      );
-    }
+    final var count = itemFilter.count(location.id());
+    return new SimpleStringProperty(
+      new StringBuilder(64)
+        .append(location.name().getValueSafe())
+        .append(" (")
+        .append(Long.toUnsignedString(count.longValue()))
+        .append(")")
+        .toString()
+    );
   }
 
-  private CALocationTreeFiltered(
-    final CALocationTree inTree,
-    final Optional<ItemFiltering> inItemFiltering)
+  private static TreeItem<CALocationItemType> soften(
+    final TreeItem<CALocationItemDefined> item)
   {
-    this.tree =
-      Objects.requireNonNull(inTree, "tree");
-    this.itemFiltering =
-      Objects.requireNonNull(inItemFiltering, "inItemFiltering");
-    this.root =
-      new TreeItem<>(CALocationItemAll.get());
-
-    this.filter = Optional.empty();
-    this.root.setExpanded(true);
-    this.rebuild();
+    return (TreeItem<CALocationItemType>) (Object) item;
   }
 
   public void setFilter(
@@ -153,6 +158,7 @@ public final class CALocationTreeFiltered
             defined.id(),
             defined.parent(),
             produceDecoratedProperty(defined, itemFilter),
+            defined.undecoratedName(),
             defined.description()
           )
         );
@@ -196,6 +202,7 @@ public final class CALocationTreeFiltered
               original.id(),
               original.parent(),
               produceDecoratedProperty(location, itemFilter),
+              original.undecoratedName(),
               original.description()
             )
           );
@@ -221,24 +228,17 @@ public final class CALocationTreeFiltered
     rootChildren.add(newEverywhere);
   }
 
-  private static SimpleStringProperty produceDecoratedProperty(
-    final CALocationItemDefined location,
-    final ItemFiltering itemFilter)
+  private record ItemFiltering(
+    ObservableMap<CAItemAndLocation, Long> itemLocations,
+    CAItemID itemID)
   {
-    final var count = itemFilter.count(location.id());
-    return new SimpleStringProperty(
-      new StringBuilder(64)
-        .append(location.name().getValueSafe())
-        .append(" (")
-        .append(Long.toUnsignedString(count.longValue()))
-        .append(")")
-        .toString()
-    );
-  }
-
-  private static TreeItem<CALocationItemType> soften(
-    final TreeItem<CALocationItemDefined> item)
-  {
-    return (TreeItem<CALocationItemType>) (Object) item;
+    public Long count(
+      final CALocationID locationID)
+    {
+      return this.itemLocations.getOrDefault(
+        new CAItemAndLocation(this.itemID, locationID),
+        Long.valueOf(0L)
+      );
+    }
   }
 }

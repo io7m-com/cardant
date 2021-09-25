@@ -555,7 +555,9 @@ public final class CAMainController implements CAServiceType
     final long toRemove)
   {
     final var bigExisting =
-      new BigInteger(Long.toUnsignedString(this.itemLocationCount(id, location)));
+      new BigInteger(Long.toUnsignedString(this.itemLocationCount(
+        id,
+        location)));
     final var bigToRemove =
       new BigInteger(Long.toUnsignedString(toRemove));
     final var resulting =

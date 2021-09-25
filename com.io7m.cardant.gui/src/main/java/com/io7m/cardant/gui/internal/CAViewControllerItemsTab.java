@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.gui.internal;
 
+import com.io7m.cardant.client.api.CAClientCommandError;
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
@@ -267,8 +268,13 @@ public final class CAViewControllerItemsTab implements Initializable
 
     controller.result()
       .ifPresent(reposit -> {
-        this.clientNow.itemReposit(reposit);
-        this.clientNow.itemLocationsList(reposit.item());
+        this.clientNow.itemReposit(reposit)
+          .thenAccept(result -> {
+            if (result instanceof CAClientCommandError) {
+              return;
+            }
+            this.clientNow.itemLocationsList(reposit.item());
+          });
       });
   }
 

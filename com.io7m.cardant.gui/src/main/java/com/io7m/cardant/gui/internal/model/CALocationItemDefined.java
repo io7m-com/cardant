@@ -26,6 +26,7 @@ public record CALocationItemDefined(
   CALocationID id,
   Optional<CALocationID> parent,
   SimpleStringProperty name,
+  SimpleStringProperty undecoratedName,
   SimpleStringProperty description)
   implements CALocationItemType
 {
@@ -36,6 +37,7 @@ public record CALocationItemDefined(
       location.id(),
       location.parent(),
       new SimpleStringProperty(location.name()),
+      new SimpleStringProperty(location.name()),
       new SimpleStringProperty(location.description())
     );
   }
@@ -44,7 +46,7 @@ public record CALocationItemDefined(
   public boolean matches(
     final String search)
   {
-    return CAStringSearch.containsIgnoreCase(this.name, search)
+    return CAStringSearch.containsIgnoreCase(this.undecoratedName, search)
       || CAStringSearch.containsIgnoreCase(this.description, search);
   }
 
@@ -52,8 +54,14 @@ public record CALocationItemDefined(
   public void updateFrom(
     final CALocation location)
   {
-    this.name.set(location.name());
+    this.undecoratedName.set(location.name());
     this.description.set(location.description());
+  }
+
+  @Override
+  public String undecoratedNameText()
+  {
+    return this.undecoratedName.getValueSafe();
   }
 
   @Override
@@ -67,7 +75,7 @@ public record CALocationItemDefined(
     return new CALocation(
       this.id,
       this.parent,
-      this.name.getValueSafe(),
+      this.undecoratedName.getValueSafe(),
       this.description.getValueSafe()
     );
   }

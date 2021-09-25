@@ -16,22 +16,21 @@
 
 package com.io7m.cardant.gui.internal.model;
 
-import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
+import javafx.beans.property.SimpleLongProperty;
 
-public sealed interface CALocationItemType
-  permits CALocationItemAll, CALocationItemDefined, CALocationItemRoot
+import java.util.Objects;
+
+public record CAItemLocationMutable(
+  CAItemID item,
+  CALocationID location,
+  SimpleLongProperty count)
 {
-  CALocationID id();
-
-  boolean matches(String search);
-
-  void updateFrom(CALocation location);
-
-  String nameText();
-
-  default String undecoratedNameText()
+  public CAItemLocationMutable
   {
-    return this.nameText();
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(location, "location");
+    Objects.requireNonNull(count, "count");
   }
 }

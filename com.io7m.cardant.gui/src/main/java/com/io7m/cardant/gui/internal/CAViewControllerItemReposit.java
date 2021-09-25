@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.gui.internal.views.CALongSpinnerValueFactory;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
@@ -24,6 +23,7 @@ import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
 import com.io7m.cardant.gui.internal.views.CAItemRepositSelection;
 import com.io7m.cardant.gui.internal.views.CAItemRepositSelectionStringConverter;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
+import com.io7m.cardant.gui.internal.views.CALongSpinnerValueFactory;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
@@ -65,7 +65,7 @@ public final class CAViewControllerItemReposit implements Initializable
   private CALocationTreeFiltered locationTreeMoveFrom;
   private CALocationTreeFiltered locationTreeMoveTo;
   private Optional<CAItemRepositType> result;
-  private CAItemMutable item;
+  private final CAItemMutable item;
 
   @FXML
   private TextField itemIdField;
@@ -78,7 +78,7 @@ public final class CAViewControllerItemReposit implements Initializable
   private Spinner<Long> itemRepositCount;
   @FXML
   private Label itemRepositCountBad;
-  private CALongSpinnerValueFactory itemRepositCountFactory;
+  private final CALongSpinnerValueFactory itemRepositCountFactory;
 
   @FXML
   private ChoiceBox<CAItemRepositSelection> itemRepositType;
@@ -251,15 +251,6 @@ public final class CAViewControllerItemReposit implements Initializable
     }
   }
 
-  private static final class ValidationException extends Exception {
-
-    private ValidationException(
-      final String message)
-    {
-      super(Objects.requireNonNull(message, "message"));
-    }
-  }
-
   private void validateRemove()
     throws ValidationException
   {
@@ -279,7 +270,7 @@ public final class CAViewControllerItemReposit implements Initializable
     final var itemNameText =
       this.item.name().getValueSafe();
     final var locationNameText =
-      targetLocation.nameText();
+      targetLocation.undecoratedNameText();
     final var resultStorageText =
       Long.toUnsignedString(resultStorage);
     final var resultTotal =
@@ -313,10 +304,10 @@ public final class CAViewControllerItemReposit implements Initializable
 
     final var resultCount =
       this.controller.itemLocationCouldRemoveItems(
-      this.item.id(),
-      locationID,
-      toRemove.longValue()
-    );
+        this.item.id(),
+        locationID,
+        toRemove.longValue()
+      );
 
     if (resultCount.isEmpty()) {
       throw new ValidationException(
@@ -358,9 +349,9 @@ public final class CAViewControllerItemReposit implements Initializable
     final var itemNameText =
       this.item.name().getValueSafe();
     final var locationFromNameText =
-      moveFromLocation.nameText();
+      moveFromLocation.undecoratedNameText();
     final var locationToNameText =
-      moveToLocation.nameText();
+      moveToLocation.undecoratedNameText();
     final var locationFromCount =
       this.controller.itemLocationCount(this.item.id(), moveFromLocation.id())
         - toMove.longValue();
@@ -419,7 +410,7 @@ public final class CAViewControllerItemReposit implements Initializable
         .getSelectedItem();
 
     final var targetLocation =
-     this.validateIsValidSelection(selection);
+      this.validateIsValidSelection(selection);
 
     this.validateCountIsValid();
 
@@ -430,7 +421,7 @@ public final class CAViewControllerItemReposit implements Initializable
     final var itemNameText =
       this.item.name().getValueSafe();
     final var locationNameText =
-      targetLocation.nameText();
+      targetLocation.undecoratedNameText();
     final var resultStorage =
       this.controller.itemLocationCount(
         this.item.id(), targetLocation.id()) + toAdd;
@@ -620,5 +611,15 @@ public final class CAViewControllerItemReposit implements Initializable
   public Optional<CAItemRepositType> result()
   {
     return this.result;
+  }
+
+  private static final class ValidationException extends Exception
+  {
+
+    private ValidationException(
+      final String message)
+    {
+      super(Objects.requireNonNull(message, "message"));
+    }
   }
 }
