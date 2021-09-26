@@ -85,6 +85,9 @@ public final class CAViewControllers
     if (Objects.equals(clazz, CAViewControllerError.class)) {
       return new CAViewControllerError(mainServices, stage);
     }
+    if (Objects.equals(clazz, CAViewControllerItemEditorLocationsTab.class)) {
+      return new CAViewControllerItemEditorLocationsTab(mainServices, stage);
+    }
 
     throw new IllegalStateException(
       String.format("Unrecognized class: %s", clazz)

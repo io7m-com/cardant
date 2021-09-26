@@ -19,6 +19,9 @@
           <Tab text="%item.attachments">
             <fx:include source="itemEditorAttachmentsTab.fxml" />
           </Tab>
+          <Tab text="%item.locations">
+            <fx:include source="itemEditorLocationsTab.fxml" />
+          </Tab>
         </tabs>
       </TabPane>
     <AnchorPane fx:id="itemEditorPlaceholder" disable="true" prefHeight="200.0" prefWidth="200.0">

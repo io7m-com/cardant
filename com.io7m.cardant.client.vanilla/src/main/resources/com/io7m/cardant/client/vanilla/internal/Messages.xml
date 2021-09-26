@@ -15,6 +15,7 @@
     {1}
 ]]></entry>
 
+  <entry key="errorTransactionFailedNoError">A transaction failed without providing a proper error response.></entry>
   <entry key="errorResponseTypeShort">Received an unexpected response type.></entry>
   <entry key="expected">Expected</entry>
   <entry key="received">Received</entry>

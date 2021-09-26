@@ -20,8 +20,6 @@ import com.io7m.cardant.database.api.CADatabaseOpenEvent;
 import com.io7m.cardant.database.api.CADatabaseParameters;
 import com.io7m.cardant.database.derby.CADatabasesDerby;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
-import com.io7m.cardant.model.CAUserID;
-import com.io7m.cardant.model.CAUsers;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerConfigurationParserFactoryType;
 import com.io7m.cardant.server.api.CAServerDatabaseLocalConfiguration;
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Paths;
-import java.security.SecureRandom;
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
@@ -80,9 +77,7 @@ public final class CAItemsClearDemo
           final var queries =
             transaction.queries(CAModelDatabaseQueriesType.class);
           final var items = queries.itemListDeleted();
-          for (final var item : items) {
-            queries.itemDelete(item);
-          }
+          queries.itemsDelete(items);
           transaction.commit();
         }
       }

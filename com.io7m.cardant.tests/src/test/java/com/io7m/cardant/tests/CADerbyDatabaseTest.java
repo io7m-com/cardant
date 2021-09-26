@@ -341,7 +341,7 @@ public final class CADerbyDatabaseTest
       final var id = CAItemID.random();
 
       queries.itemCreate(id);
-      queries.itemDeleteMarkOnly(id);
+      queries.itemsDeleteMarkOnly(Set.of(id));
 
       final var ex = assertThrows(CADatabaseException.class, () -> {
         queries.itemCreate(id);
@@ -367,7 +367,7 @@ public final class CADerbyDatabaseTest
           .collect(Collectors.toSet()));
       assertEquals(Set.of(), queries.itemListDeleted());
 
-      queries.itemDeleteMarkOnly(id);
+      queries.itemsDeleteMarkOnly(Set.of(id));
       assertEquals(Set.of(), queries.itemList(new CAListLocationsAll()));
       assertEquals(Set.of(id), queries.itemListDeleted());
     });
@@ -588,7 +588,7 @@ public final class CADerbyDatabaseTest
       queries.itemTagAdd(item0, tag0);
       assertEquals(setOf(tag0), queries.itemTagList(item0));
 
-      queries.itemDelete(item0);
+      queries.itemsDelete(Set.of(item0));
 
       this.expectedChangeCount = 1;
       this.expectedUpdates.add(item0);
@@ -705,7 +705,7 @@ public final class CADerbyDatabaseTest
 
       final var meta0 = new CAItemMetadata("Type", "Vegetable");
       queries.itemMetadataPut(item0, meta0);
-      queries.itemDelete(item0);
+      queries.itemsDelete(Set.of(item0));
 
       this.expectedChangeCount = 1;
       this.expectedUpdates.add(item0);
@@ -820,7 +820,7 @@ public final class CADerbyDatabaseTest
         );
 
       queries.itemAttachmentPut(item0, attachment0);
-      queries.itemDelete(item0);
+      queries.itemsDelete(Set.of(item0));
 
       this.expectedChangeCount = 1;
       this.expectedUpdates.add(item0);

@@ -30,9 +30,9 @@ public class ResponseDocumentImpl extends com.io7m.cardant.protocol.inventory.v1
     private static final QNameSet[] PROPERTY_QSET = {
     QNameSet.forArray( new QName[] { 
         new QName("urn:com.io7m.cardant.inventory:1", "ResponseTagList"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemRemove"),
         new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemList"),
         new QName("urn:com.io7m.cardant.inventory:1", "ResponseTagsDelete"),
+        new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemsRemove"),
         new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemMetadataRemove"),
         new QName("urn:com.io7m.cardant.inventory:1", "ResponseItemMetadataPut"),
         new QName("urn:com.io7m.cardant.inventory:1", "Response"),

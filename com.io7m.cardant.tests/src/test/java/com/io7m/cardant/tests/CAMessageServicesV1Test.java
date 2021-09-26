@@ -18,6 +18,7 @@ package com.io7m.cardant.tests;
 
 import com.io7m.anethum.common.ParseException;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
@@ -36,14 +37,12 @@ import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CAUserID;
-import com.io7m.cardant.protocol.inventory.api.CACommandType;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageServices;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
-import com.io7m.cardant.protocol.inventory.api.CAResponseType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
@@ -70,30 +69,31 @@ import java.util.stream.Stream;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.*;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationsList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.*;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemLocationsList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
@@ -248,7 +248,12 @@ public final class CAMessageServicesV1Test
     throws Exception
   {
     final var message =
-      new CACommandItemRemove(CAItemID.random());
+      new CACommandItemsRemove(
+        Set.of(
+          CAItemID.random(),
+          CAItemID.random(),
+          CAItemID.random())
+      );
     assertEquals(message, this.roundTrip(message));
   }
 
@@ -462,8 +467,12 @@ public final class CAMessageServicesV1Test
             CAItemID.random(), "Item"),
           new CACommandItemGet(
             CAItemID.random()),
-          new CACommandItemRemove(
-            CAItemID.random()),
+          new CACommandItemsRemove(
+            Set.of(
+              CAItemID.random(),
+              CAItemID.random(),
+              CAItemID.random()
+            )),
           new CACommandItemAttachmentPut(
             CAItemID.random(),
             ITEM_0.attachments().values().stream().findFirst().orElseThrow()),
@@ -513,7 +522,7 @@ public final class CAMessageServicesV1Test
       new CATransactionResponse(
         true,
         List.of(
-          new CAResponseItemRemove(CAItemID.random()),
+          new CAResponseItemsRemove(new CAIds(Set.of(CAItemID.random()))),
           new CAResponseError("Failed", 400, Map.of(), List.of())
         )
       );
@@ -528,9 +537,9 @@ public final class CAMessageServicesV1Test
       new CATransactionResponse(
         false,
         List.of(
-          new CAResponseItemRemove(CAItemID.random()),
-          new CAResponseItemRemove(CAItemID.random()),
-          new CAResponseItemRemove(CAItemID.random())
+          new CAResponseItemsRemove(new CAIds(Set.of(CAItemID.random()))),
+          new CAResponseItemsRemove(new CAIds(Set.of(CAItemID.random()))),
+          new CAResponseItemsRemove(new CAIds(Set.of(CAItemID.random())))
         )
       );
     assertEquals(message, this.roundTrip(message));
@@ -578,7 +587,12 @@ public final class CAMessageServicesV1Test
     throws Exception
   {
     final var message =
-      new CAResponseItemRemove(CAItemID.random());
+      new CAResponseItemsRemove(
+        new CAIds(Set.of(
+          CAItemID.random(),
+          CAItemID.random(),
+          CAItemID.random()
+        )));
     assertEquals(message, this.roundTrip(message));
   }
 

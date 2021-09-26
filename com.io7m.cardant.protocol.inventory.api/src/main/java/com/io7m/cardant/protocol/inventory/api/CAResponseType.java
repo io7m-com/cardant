@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.protocol.inventory.api;
 
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -28,6 +29,7 @@ import com.io7m.cardant.model.CATags;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The base type of responses.
@@ -273,20 +275,22 @@ public sealed interface CAResponseType extends CAMessageType
   }
 
   /**
-   * @param data The returned item ID
+   * @param data The returned item IDs
    *
-   * @see CACommandType.CACommandItemRemove
+   * @see CACommandType.CACommandItemsRemove
    */
 
-  record CAResponseItemRemove(
-    CAItemID data)
+  record CAResponseItemsRemove(
+    CAIds data)
     implements CAResponseWithElementType
   {
     /**
-     * @see CACommandType.CACommandItemRemove
+     * @param data The returned item IDs
+     *
+     * @see CACommandType.CACommandItemsRemove
      */
 
-    public CAResponseItemRemove
+    public CAResponseItemsRemove
     {
       Objects.requireNonNull(data, "id");
     }

@@ -35,6 +35,7 @@ import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
+import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
 import com.io7m.cardant.protocol.versioning.messages.CAVersion;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.junreachable.UnreachableCodeException;
@@ -52,6 +53,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -286,6 +288,15 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       Thread.currentThread().interrupt();
     } catch (final ParseException e) {
       LOG.error("received corrupted data: ", e);
+      for (final var status : e.statusValues()) {
+        LOG.error(
+          "{}: {}:{}: {}",
+          status.errorCode(),
+          Integer.valueOf(status.lexical().line()),
+          Integer.valueOf(status.lexical().column()),
+          status.message()
+        );
+      }
     } catch (final IOException e) {
       LOG.debug("i/o error: ", e);
       this.onDisconnected();
@@ -333,7 +344,57 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       return;
     }
 
+    if (data instanceof CATransactionResponse response) {
+      this.parseTransactionResponse(command, response);
+      return;
+    }
+
     throw new IllegalStateException();
+  }
+
+  private <T> void parseTransactionResponse(
+    final CAClientCommandType<T> command,
+    final CATransactionResponse transactionResponse)
+  {
+    final var commandFuture =
+      command.future();
+    final var responses =
+      transactionResponse.responses();
+
+    if (transactionResponse.failed()) {
+      final var firstError =
+        responses.stream()
+          .filter(r -> r instanceof CAResponseError)
+          .map(CAResponseError.class::cast)
+          .findFirst();
+
+      if (firstError.isPresent()) {
+        final CAClientCommandError<T> result = responseError(firstError.get());
+        this.events.submit(new CAClientEventCommandFailed<>(
+          command.getClass().getSimpleName(),
+          result
+        ));
+        commandFuture.complete(result);
+        return;
+      }
+
+      final CAClientCommandError<T> result =
+        new CAClientCommandError<T>(
+          this.strings.format("errorTransactionFailedNoError"),
+          500,
+          Map.of(),
+          List.of()
+        );
+
+      this.events.submit(new CAClientEventCommandFailed<>(
+        command.getClass().getSimpleName(),
+        result
+      ));
+      commandFuture.complete(result);
+      return;
+    }
+
+    this.parseResponse(command, responses.get(responses.size() - 1));
   }
 
   private <T> void parseResponse(

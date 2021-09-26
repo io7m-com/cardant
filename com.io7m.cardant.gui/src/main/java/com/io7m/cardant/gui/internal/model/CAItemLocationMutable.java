@@ -17,20 +17,39 @@
 package com.io7m.cardant.gui.internal.model;
 
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CALocationID;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 import java.util.Objects;
 
 public record CAItemLocationMutable(
   CAItemID item,
   CALocationID location,
+  SimpleStringProperty locationName,
   SimpleLongProperty count)
 {
   public CAItemLocationMutable
   {
     Objects.requireNonNull(item, "item");
     Objects.requireNonNull(location, "location");
+    Objects.requireNonNull(locationName, "locationName");
     Objects.requireNonNull(count, "count");
+  }
+
+  public static CAItemLocationMutable of(
+    final String location,
+    final CAItemLocation value)
+  {
+    Objects.requireNonNull(location, "location");
+    Objects.requireNonNull(value, "value");
+
+    return new CAItemLocationMutable(
+      value.item(),
+      value.location(),
+      new SimpleStringProperty(location),
+      new SimpleLongProperty(value.count())
+    );
   }
 }

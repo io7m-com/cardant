@@ -944,44 +944,44 @@
                type="iv1:ResponseItemGetType"
                substitutionGroup="iv1:Response"/>
 
-  <xsd:complexType name="CommandItemRemoveType">
+  <xsd:complexType name="CommandItemsRemoveType">
     <xsd:annotation>
       <xsd:documentation>
-        A request to remove an item.
+        A request to remove items.
       </xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexContent>
       <xsd:extension base="iv1:CommandType">
-        <xsd:attribute name="id"
-                       type="iv1:UUIDType"
-                       use="required"/>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="iv1:ItemID"/>
+        </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="CommandItemRemove"
-               type="iv1:CommandItemRemoveType"
+  <xsd:element name="CommandItemsRemove"
+               type="iv1:CommandItemsRemoveType"
                substitutionGroup="iv1:Command"/>
 
-  <xsd:complexType name="ResponseItemRemoveType">
+  <xsd:complexType name="ResponseItemsRemoveType">
     <xsd:annotation>
       <xsd:documentation>
-        The CommandItemRemove command succeeded.
+        The CommandItemsRemove command succeeded.
       </xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexContent>
       <xsd:extension base="iv1:ResponseType">
-        <xsd:attribute name="id"
-                       type="iv1:UUIDType"
-                       use="required"/>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="iv1:ItemID"/>
+        </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="ResponseItemRemove"
-               type="iv1:ResponseItemRemoveType"
+  <xsd:element name="ResponseItemsRemove"
+               type="iv1:ResponseItemsRemoveType"
                substitutionGroup="iv1:Response"/>
 
   <xsd:complexType name="CommandItemRepositType">
@@ -1444,7 +1444,7 @@
 
     <xsd:complexContent>
       <xsd:extension base="iv1:MessageType">
-        <xsd:sequence minOccurs="0"
+        <xsd:sequence minOccurs="1"
                       maxOccurs="unbounded">
           <xsd:element ref="iv1:Response"/>
         </xsd:sequence>
@@ -1503,7 +1503,7 @@
 
     <xsd:complexContent>
       <xsd:extension base="iv1:MessageType">
-        <xsd:sequence minOccurs="0"
+        <xsd:sequence minOccurs="1"
                       maxOccurs="unbounded">
           <xsd:element ref="iv1:Command"/>
         </xsd:sequence>
@@ -1531,7 +1531,7 @@
       <xsd:element ref="iv1:CommandItemLocationsList"/>
       <xsd:element ref="iv1:CommandItemMetadataPut"/>
       <xsd:element ref="iv1:CommandItemMetadataRemove"/>
-      <xsd:element ref="iv1:CommandItemRemove"/>
+      <xsd:element ref="iv1:CommandItemsRemove"/>
       <xsd:element ref="iv1:CommandItemReposit"/>
       <xsd:element ref="iv1:CommandItemUpdate"/>
       <xsd:element ref="iv1:CommandLocationGet"/>

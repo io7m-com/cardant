@@ -20,6 +20,7 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.ParseStatus;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAIdType;
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
@@ -61,9 +62,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationsListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveType;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemsRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordType;
@@ -103,9 +104,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemLocationsListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRepositType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemsRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLoginUsernamePasswordType;
@@ -156,9 +157,9 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
@@ -173,7 +174,7 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
@@ -322,8 +323,8 @@ public final class CA1MessageParser implements CAMessageParserType
     if (response instanceof ResponseItemGetType itemGet) {
       return parseResponseItemGet(itemGet);
     }
-    if (response instanceof ResponseItemRemoveType itemRemove) {
-      return parseResponseItemRemove(itemRemove);
+    if (response instanceof ResponseItemsRemoveType itemsRemove) {
+      return parseResponseItemsRemove(itemsRemove);
     }
     if (response instanceof ResponseItemAttachmentPutType itemAttachmentPut) {
       return parseResponseItemAttachmentPut(itemAttachmentPut);
@@ -525,11 +526,15 @@ public final class CA1MessageParser implements CAMessageParserType
     );
   }
 
-  private static CAResponseType parseResponseItemRemove(
-    final ResponseItemRemoveType itemRemove)
+  private static CAResponseType parseResponseItemsRemove(
+    final ResponseItemsRemoveType itemsRemove)
   {
-    return new CAResponseItemRemove(
-      CAItemID.of(itemRemove.getId())
+    return new CAResponseItemsRemove(
+      new CAIds(
+        itemsRemove.getItemIDList()
+          .stream().map(i -> CAItemID.of(i.getValue()))
+          .collect(Collectors.toSet())
+      )
     );
   }
 
@@ -707,8 +712,8 @@ public final class CA1MessageParser implements CAMessageParserType
     if (command instanceof CommandItemGetType itemGet) {
       return parseCommandItemGet(itemGet);
     }
-    if (command instanceof CommandItemRemoveType itemRemove) {
-      return parseCommandItemRemove(itemRemove);
+    if (command instanceof CommandItemsRemoveType itemsRemove) {
+      return parseCommandItemsRemove(itemsRemove);
     }
     if (command instanceof CommandItemUpdateType itemUpdate) {
       return parseCommandItemUpdate(itemUpdate);
@@ -863,11 +868,14 @@ public final class CA1MessageParser implements CAMessageParserType
     );
   }
 
-  private static CACommandType parseCommandItemRemove(
-    final CommandItemRemoveType itemRemove)
+  private static CACommandType parseCommandItemsRemove(
+    final CommandItemsRemoveType itemsRemove)
   {
-    return new CACommandItemRemove(
-      CAItemID.of(itemRemove.getId())
+    return new CACommandItemsRemove(
+      itemsRemove.getItemIDList()
+        .stream()
+        .map(i -> CAItemID.of(i.getValue()))
+        .collect(Collectors.toSet())
     );
   }
 

@@ -21,6 +21,7 @@ import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
@@ -88,7 +89,7 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
@@ -100,7 +101,7 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
@@ -523,12 +524,12 @@ public final class CAServerV1Test
       final var response =
         this.send(
           URI_COMMAND,
-          new CACommandItemRemove(item0.id()));
+          new CACommandItemsRemove(Set.of(item0.id())));
       final var message =
-        (CAResponseItemRemove) this.parse(response);
+        (CAResponseItemsRemove) this.parse(response);
 
       assertEquals(200, response.statusCode());
-      assertEquals(item0.id(), message.data());
+      assertEquals(new CAIds(Set.of(item0.id())), message.data());
     }
 
     {

@@ -303,22 +303,24 @@ public sealed interface CACommandType
   }
 
   /**
-   * Delete an item.
+   * Delete items.
    *
-   * @param id The item ID
+   * @param ids The item IDs
    */
 
-  record CACommandItemRemove(
-    CAItemID id)
+  record CACommandItemsRemove(
+    Set<CAItemID> ids)
     implements CACommandType
   {
     /**
-     * Delete an item.
+     * Delete items.
+     *
+     * @param ids The item IDs
      */
 
-    public CACommandItemRemove
+    public CACommandItemsRemove
     {
-      Objects.requireNonNull(id, "id");
+      Objects.requireNonNull(ids, "ids");
     }
   }
 

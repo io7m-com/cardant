@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -1279,76 +1280,86 @@ public final class CADatabaseModelQueriesItems
   }
 
   @Override
-  public void itemDelete(
-    final CAItemID item)
+  public void itemsDelete(
+    final Collection<CAItemID> items)
     throws CADatabaseException
   {
-    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(items, "items");
 
     this.withSQLConnection(connection -> {
-      final var currentItemDeleted =
-        itemGetInner(connection, item, true);
-      final var currentItemNotDeleted =
-        itemGetInner(connection, item, false);
-      final var currentItem =
-        currentItemDeleted.or(() -> currentItemNotDeleted)
-          .orElseThrow(() -> this.noSuchItem(item.id()));
+      final var removedAttachments =
+        new HashSet<CAItemAttachmentID>();
 
-      final var itemIdBytes = itemIdBytes(item);
-      try (var statement =
-             connection.prepareStatement(ITEM_ATTACHMENTS_REMOVE_ALL_BY_ITEM)) {
-        statement.setBytes(1, itemIdBytes);
-        statement.executeUpdate();
-      }
-      try (var statement =
-             connection.prepareStatement(ITEM_METADATA_REMOVE_ALL_BY_ITEM)) {
-        statement.setBytes(1, itemIdBytes);
-        statement.executeUpdate();
-      }
-      try (var statement =
-             connection.prepareStatement(ITEM_TAG_REMOVE_ALL_BY_ITEM)) {
-        statement.setBytes(1, itemIdBytes);
-        statement.executeUpdate();
-      }
-      try (var statement =
-             connection.prepareStatement(ITEM_DELETE)) {
-        statement.setBytes(1, itemIdBytes);
-        statement.executeUpdate();
+      for (final var item : items) {
+        final var currentItemDeleted =
+          itemGetInner(connection, item, true);
+        final var currentItemNotDeleted =
+          itemGetInner(connection, item, false);
+        final var currentItem =
+          currentItemDeleted.or(() -> currentItemNotDeleted)
+            .orElseThrow(() -> this.noSuchItem(item.id()));
+
+        final var itemIdBytes = itemIdBytes(item);
+        try (var statement =
+               connection.prepareStatement(ITEM_ATTACHMENTS_REMOVE_ALL_BY_ITEM)) {
+          statement.setBytes(1, itemIdBytes);
+          statement.executeUpdate();
+        }
+        try (var statement =
+               connection.prepareStatement(ITEM_METADATA_REMOVE_ALL_BY_ITEM)) {
+          statement.setBytes(1, itemIdBytes);
+          statement.executeUpdate();
+        }
+        try (var statement =
+               connection.prepareStatement(ITEM_TAG_REMOVE_ALL_BY_ITEM)) {
+          statement.setBytes(1, itemIdBytes);
+          statement.executeUpdate();
+        }
+        try (var statement =
+               connection.prepareStatement(ITEM_DELETE)) {
+          statement.setBytes(1, itemIdBytes);
+          statement.executeUpdate();
+        }
+
+        removedAttachments.addAll(currentItem.attachments().keySet());
       }
 
-      currentItem.attachments()
-        .keySet()
-        .forEach(this::publishRemove);
+      for (final var attachment : removedAttachments) {
+        this.publishRemove(attachment);
+      }
 
-      this.publishRemove(item);
+      for (final var item : items) {
+        this.publishRemove(item);
+      }
       return null;
     });
   }
 
   @Override
-  public void itemDeleteMarkOnly(final CAItemID item)
+  public void itemsDeleteMarkOnly(
+    final Collection<CAItemID> items)
     throws CADatabaseException
   {
-    Objects.requireNonNull(item, "item");
-
-    final var currentItem =
-      this.itemGet(item)
-        .orElseThrow(() -> this.noSuchItem(item.id()));
+    Objects.requireNonNull(items, "items");
 
     this.withSQLConnection(connection -> {
-      final var itemIdBytes = itemIdBytes(item);
+      for (final var item : items) {
+        final var currentItem =
+          itemGetInner(connection, item, false)
+            .orElseThrow(() -> this.noSuchItem(item.id()));
 
-      try (var statement =
-             connection.prepareStatement(ITEM_DELETE_MARK_ONLY)) {
-        statement.setBytes(1, itemIdBytes);
-        statement.executeUpdate();
+        final var itemIdBytes = itemIdBytes(item);
+        try (var statement =
+               connection.prepareStatement(ITEM_DELETE_MARK_ONLY)) {
+          statement.setBytes(1, itemIdBytes);
+          statement.executeUpdate();
+        }
+
+        currentItem.attachments()
+          .keySet()
+          .forEach(this::publishRemove);
+        this.publishRemove(item);
       }
-
-      currentItem.attachments()
-        .keySet()
-        .forEach(this::publishRemove);
-
-      this.publishRemove(item);
       return null;
     });
   }

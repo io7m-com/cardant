@@ -18,6 +18,7 @@ package com.io7m.cardant.model;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -89,14 +90,14 @@ public interface CAModelDatabaseQueriesItemsType
     throws CADatabaseException;
 
   /**
-   * Delete the given item.
+   * Delete the given items.
    *
-   * @param item The item
+   * @param item The items
    *
    * @throws CADatabaseException On database errors
    */
 
-  void itemDelete(CAItemID item)
+  void itemsDelete(Collection<CAItemID> item)
     throws CADatabaseException;
 
   /**
@@ -107,7 +108,7 @@ public interface CAModelDatabaseQueriesItemsType
    * @throws CADatabaseException On database errors
    */
 
-  void itemDeleteMarkOnly(CAItemID item)
+  void itemsDeleteMarkOnly(Collection<CAItemID> item)
     throws CADatabaseException;
 
   /**

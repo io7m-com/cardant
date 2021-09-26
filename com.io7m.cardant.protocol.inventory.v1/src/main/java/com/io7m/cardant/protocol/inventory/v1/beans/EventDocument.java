@@ -20,7 +20,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface EventDocument extends com.io7m.cardant.protocol.inventory.v1.beans.MessageDocument {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.EventDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sB4E2B3A435FC84169BAD368044F7CCA6.TypeSystemHolder.typeSystem, "event50bfdoctype");
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.EventDocument> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE8AC4557B7260DDF20EBB7BA8F2F0FBA.TypeSystemHolder.typeSystem, "event50bfdoctype");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 

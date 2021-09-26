@@ -36,6 +36,10 @@ public record CATransactionResponse(
 
   public CATransactionResponse
   {
-    Objects.requireNonNull(responses, "commands");
+    Objects.requireNonNull(responses, "responses");
+
+    if (responses.isEmpty()) {
+      throw new IllegalArgumentException("Must provide at least one response.");
+    }
   }
 }

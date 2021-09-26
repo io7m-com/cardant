@@ -36,5 +36,9 @@ public record CATransaction(
   public CATransaction
   {
     Objects.requireNonNull(commands, "commands");
+
+    if (commands.isEmpty()) {
+      throw new IllegalArgumentException("Must provide at least one command.");
+    }
   }
 }

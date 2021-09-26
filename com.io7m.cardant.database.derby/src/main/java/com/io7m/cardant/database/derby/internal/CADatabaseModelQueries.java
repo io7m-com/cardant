@@ -33,6 +33,7 @@ import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -143,19 +144,19 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public void itemDelete(
-    final CAItemID item)
+  public void itemsDelete(
+    final Collection<CAItemID> inItems)
     throws CADatabaseException
   {
-    this.items.itemDelete(item);
+    this.items.itemsDelete(inItems);
   }
 
   @Override
-  public void itemDeleteMarkOnly(
-    final CAItemID item)
+  public void itemsDeleteMarkOnly(
+    final Collection<CAItemID> inItems)
     throws CADatabaseException
   {
-    this.items.itemDeleteMarkOnly(item);
+    this.items.itemsDeleteMarkOnly(inItems);
   }
 
   @Override

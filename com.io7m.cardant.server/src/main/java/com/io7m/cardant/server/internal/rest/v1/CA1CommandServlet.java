@@ -22,6 +22,8 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAIdType;
+import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItems;
@@ -36,7 +38,7 @@ import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationGet;
@@ -69,11 +71,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
@@ -85,7 +90,7 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
@@ -277,6 +282,7 @@ public final class CA1CommandServlet
       if (mostRecent instanceof CAResponseError) {
         failed = true;
       }
+      responses.add(mostRecent);
     }
     return new CATransactionResponse(failed, responses);
   }
@@ -322,7 +328,7 @@ public final class CA1CommandServlet
     if (command instanceof CACommandItemUpdate itemUpdate) {
       return this.executeCommandItemUpdate(itemUpdate);
     }
-    if (command instanceof CACommandItemRemove itemRemove) {
+    if (command instanceof CACommandItemsRemove itemRemove) {
       return this.executeCommandItemRemove(itemRemove);
     }
     if (command instanceof CACommandItemList itemList) {
@@ -669,12 +675,11 @@ public final class CA1CommandServlet
   }
 
   private CAResponseType executeCommandItemRemove(
-    final CACommandItemRemove itemRemove)
+    final CACommandItemsRemove itemRemove)
   {
     try {
-      final var itemId = itemRemove.id();
-      this.queries.itemDeleteMarkOnly(itemId);
-      return new CAResponseItemRemove(itemId);
+      this.queries.itemsDeleteMarkOnly(itemRemove.ids());
+      return new CAResponseItemsRemove(new CAIds(Set.copyOf(itemRemove.ids())));
     } catch (final CADatabaseException e) {
       return this.errorDatabase(500, e);
     }

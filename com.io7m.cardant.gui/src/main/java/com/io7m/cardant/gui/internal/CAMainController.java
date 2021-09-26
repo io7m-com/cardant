@@ -26,6 +26,7 @@ import com.io7m.cardant.client.api.CAClientFactoryType;
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.gui.internal.model.CAItemAndLocation;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
+import com.io7m.cardant.gui.internal.model.CAItemLocationMutable;
 import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CALocationItemAll;
@@ -53,6 +54,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -78,6 +82,7 @@ public final class CAMainController implements CAServiceType
   private final SimpleObjectProperty<Optional<CALocationItemType>> locationTreeSelected;
   private final ObservableMap<CAItemAndLocation, Long> itemLocations;
   private final ObservableMap<CAItemAndLocation, Long> itemLocationsRead;
+  private CATableMap<CALocationID, CAItemLocationMutable> itemLocationsSelected;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
   private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
@@ -109,6 +114,8 @@ public final class CAMainController implements CAServiceType
       FXCollections.observableHashMap();
     this.itemLocationsRead =
       FXCollections.unmodifiableObservableMap(this.itemLocations);
+    this.itemLocationsSelected =
+      new CATableMap<>(FXCollections.observableHashMap());
 
     this.locationTreeSelected =
       new SimpleObjectProperty<>(Optional.empty());
@@ -214,6 +221,9 @@ public final class CAMainController implements CAServiceType
       this.itemAttachmentList =
         new CATableMap<>(FXCollections.observableHashMap());
     }
+
+    this.itemLocationsSelected =
+      new CATableMap<>(FXCollections.observableHashMap());
 
     this.itemMetadataList.setPredicate(this.itemMetadataPredicate);
     this.itemAttachmentList.setPredicate(this.itemAttachmentPredicate);
@@ -390,19 +400,44 @@ public final class CAMainController implements CAServiceType
   }
 
   private void onClientEventDataReceivedItemLocations(
-    final CAItemLocations itemLocations)
+    final CAItemLocations inItemLocations)
   {
+    final var itemCurrentlySelected =
+      this.itemSelected.get();
+    final var itemCurrentlySelectedId =
+      itemCurrentlySelected.map(CAItemMutable::id);
+    final var locationsSelectedMap =
+      this.itemLocationsSelected.writable();
+
+    locationsSelectedMap.clear();
+
     final var byLocation =
-      itemLocations.itemLocations();
+      inItemLocations.itemLocations();
     for (final var locationEntry : byLocation.entrySet()) {
       final var byItem =
         locationEntry.getValue();
 
       for (final var itemEntry : byItem.entrySet()) {
+        final var itemId =
+          itemEntry.getKey();
+        final var locationId =
+          locationEntry.getKey();
+
         this.itemLocations.put(
-          new CAItemAndLocation(itemEntry.getKey(), locationEntry.getKey()),
+          new CAItemAndLocation(itemId, locationId),
           Long.valueOf(itemEntry.getValue().count())
         );
+
+        if (itemCurrentlySelectedId.equals(Optional.of(itemId))) {
+          final var locationName =
+            Optional.ofNullable(this.locationTree.locations().get(locationId))
+              .map(CALocationItemDefined::nameText)
+              .orElse("");
+
+          final var locationMutable =
+            CAItemLocationMutable.of(locationName, itemEntry.getValue());
+          locationsSelectedMap.put(locationId, locationMutable);
+        }
       }
     }
   }
@@ -468,12 +503,37 @@ public final class CAMainController implements CAServiceType
     final CALocationID id)
   {
     this.locationTree.remove(id);
+
+    final var toRemove = new ArrayList<CAItemAndLocation>();
+    for (final var itemLocation : this.itemLocations.entrySet()) {
+      final var key = itemLocation.getKey();
+      if (Objects.equals(key.locationID(), id)) {
+        toRemove.add(key);
+      }
+    }
+
+    for (final var remove : toRemove) {
+      this.itemLocations.remove(remove);
+    }
   }
 
   private void onItemRemoved(
     final CAItemID id)
   {
-    this.itemList.writable().remove(id);
+    this.itemList.writable()
+      .remove(id);
+
+    final var toRemove = new ArrayList<CAItemAndLocation>();
+    for (final var itemLocation : this.itemLocations.entrySet()) {
+      final var key = itemLocation.getKey();
+      if (Objects.equals(key.itemId(), id)) {
+        toRemove.add(key);
+      }
+    }
+
+    for (final var remove : toRemove) {
+      this.itemLocations.remove(remove);
+    }
   }
 
   public void disconnect()
@@ -555,9 +615,8 @@ public final class CAMainController implements CAServiceType
     final long toRemove)
   {
     final var bigExisting =
-      new BigInteger(Long.toUnsignedString(this.itemLocationCount(
-        id,
-        location)));
+      new BigInteger(Long.toUnsignedString(
+        this.itemLocationCount(id, location)));
     final var bigToRemove =
       new BigInteger(Long.toUnsignedString(toRemove));
     final var resulting =
@@ -575,5 +634,10 @@ public final class CAMainController implements CAServiceType
   {
     return this.itemLocations.getOrDefault(
       new CAItemAndLocation(id, location), Long.valueOf(0L)).longValue();
+  }
+
+  public CATableMap<CALocationID, CAItemLocationMutable> itemLocationsSelected()
+  {
+    return this.itemLocationsSelected;
   }
 }

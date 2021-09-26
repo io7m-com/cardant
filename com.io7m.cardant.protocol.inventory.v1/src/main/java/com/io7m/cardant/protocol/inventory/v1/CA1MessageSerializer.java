@@ -52,9 +52,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemLocationsListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemMetadataRemoveDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemRepositDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemUpdateDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemsRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLocationPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandLoginUsernamePasswordDocument;
@@ -92,9 +92,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemLocationsListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemMetadataRemoveDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemRepositDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemUpdateDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemsRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLocationPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseLoginUsernamePasswordDocument;
@@ -137,7 +137,7 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
@@ -156,7 +156,7 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemLocationsList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
@@ -456,7 +456,7 @@ public final class CA1MessageSerializer
     if (command instanceof CACommandItemGet c) {
       return this.transformCommandItemGet(c);
     }
-    if (command instanceof CACommandItemRemove c) {
+    if (command instanceof CACommandItemsRemove c) {
       return this.transformCommandItemRemove(c);
     }
     if (command instanceof CACommandItemAttachmentPut c) {
@@ -670,14 +670,16 @@ public final class CA1MessageSerializer
   }
 
   private CommandDocument transformCommandItemRemove(
-    final CACommandItemRemove c)
+    final CACommandItemsRemove c)
   {
     final var document =
-      CommandItemRemoveDocument.Factory.newInstance(this.options);
+      CommandItemsRemoveDocument.Factory.newInstance(this.options);
     final var command =
-      document.addNewCommandItemRemove();
+      document.addNewCommandItemsRemove();
 
-    command.setId(c.id().id().toString());
+    for (final var id : c.ids()) {
+      command.addNewItemID().setValue(id.displayId());
+    }
     return document;
   }
 
@@ -805,7 +807,7 @@ public final class CA1MessageSerializer
     if (response instanceof CAResponseItemUpdate r) {
       return this.transformResponseItemUpdate(r);
     }
-    if (response instanceof CAResponseItemRemove r) {
+    if (response instanceof CAResponseItemsRemove r) {
       return this.transformResponseItemRemove(r);
     }
     if (response instanceof CAResponseItemGet r) {
@@ -936,14 +938,16 @@ public final class CA1MessageSerializer
   }
 
   private ResponseDocument transformResponseItemRemove(
-    final CAResponseItemRemove r)
+    final CAResponseItemsRemove r)
   {
     final var document =
-      ResponseItemRemoveDocument.Factory.newInstance(this.options);
+      ResponseItemsRemoveDocument.Factory.newInstance(this.options);
     final var response =
-      document.addNewResponseItemRemove();
+      document.addNewResponseItemsRemove();
 
-    response.setId(r.data().id().toString());
+    for (final var id : r.data().ids()) {
+      response.addNewItemID().setValue(id.displayId());
+    }
     return document;
   }
 

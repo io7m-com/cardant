@@ -21,7 +21,6 @@ import com.io7m.cardant.client.api.CAClientCommandResultType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientHostileType;
-import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
@@ -33,7 +32,6 @@ import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
-import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
@@ -48,7 +46,6 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -65,7 +62,7 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandIte
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 
 /**
  * The default client implementation.
@@ -328,20 +325,13 @@ public final class CAClient implements CAClientHostileType
     final var future =
       new CompletableFuture<CAClientCommandResultType<CAIds>>();
 
-    final var commands = new ArrayList<CACommandType>(items.size());
-    for (final var item : items) {
-      commands.add(new CACommandItemRemove(item));
-    }
-
-    final var transaction = new CATransaction(commands);
     this.requests.add(
-      new CAClientCommandTransactional<CAIds>(
+      new CAClientCommandValid<>(
         future,
-        transaction,
+        new CACommandItemsRemove(items),
         CAIds.class
       )
     );
-
     return future;
   }
 
