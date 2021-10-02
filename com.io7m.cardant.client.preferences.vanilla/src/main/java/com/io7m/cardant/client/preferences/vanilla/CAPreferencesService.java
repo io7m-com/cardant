@@ -79,7 +79,7 @@ public final class CAPreferencesService implements CAPreferencesServiceType
 
     return new CAPreferencesService(
       file,
-      new CAPreferencesLoader(LOG, file, properties).load()
+      new CAPreferencesLoader(properties).load()
     );
   }
 

@@ -26,7 +26,6 @@ import com.io7m.jproperties.JPropertyNonexistent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,27 +47,17 @@ public final class CAPreferencesLoader
   private static final Logger LOG =
     LoggerFactory.getLogger(CAPreferencesLoader.class);
 
-  private final Logger log;
-  private final Path file;
   private final Properties properties;
 
   /**
    * A preferences loader.
    *
-   * @param inLog        A logger
-   * @param inFile       A file
    * @param inProperties Properties
    */
 
   public CAPreferencesLoader(
-    final Logger inLog,
-    final Path inFile,
     final Properties inProperties)
   {
-    this.log =
-      Objects.requireNonNull(inLog, "log");
-    this.file =
-      Objects.requireNonNull(inFile, "file");
     this.properties =
       Objects.requireNonNull(inProperties, "properties");
   }
