@@ -19,6 +19,9 @@ package com.io7m.cardant.client.preferences.api;
 import com.io7m.cardant.services.api.CAServiceType;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -60,5 +63,32 @@ public interface CAPreferencesServiceType extends CAServiceType
   {
     Objects.requireNonNull(updater, "updater");
     this.save(updater.apply(this.preferences()));
+  }
+
+  /**
+   * Add a recent file to the current preferences.
+   *
+   * @param file The file
+   *
+   * @throws IOException On I/O errors
+   */
+
+  default Path addRecentFile(
+    final Path file)
+    throws IOException
+  {
+    Objects.requireNonNull(file, "file");
+
+    this.update(p -> {
+      final var newFiles = new HashSet<>(p.recentFiles());
+      newFiles.add(file.toAbsolutePath());
+
+      return new CAPreferences(
+        p.debuggingEnabled(),
+        p.serverBookmarks(),
+        List.copyOf(newFiles)
+      );
+    });
+    return file;
   }
 }

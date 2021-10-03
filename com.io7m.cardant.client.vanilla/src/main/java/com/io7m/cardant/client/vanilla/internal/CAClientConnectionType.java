@@ -16,7 +16,11 @@
 
 package com.io7m.cardant.client.vanilla.internal;
 
+import com.io7m.cardant.model.CAItemAttachmentID;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The type of client connections.
@@ -47,4 +51,15 @@ public interface CAClientConnectionType
    */
 
   <T> void sendCommand(CAClientCommandType<T> command);
+
+  /**
+   * Get the attachment data for an attachment on the server.
+   *
+   * @param itemAttachment The attachment
+   *
+   * @return A stream of data
+   */
+
+  CompletableFuture<InputStream> itemAttachmentData(
+    CAItemAttachmentID itemAttachment);
 }

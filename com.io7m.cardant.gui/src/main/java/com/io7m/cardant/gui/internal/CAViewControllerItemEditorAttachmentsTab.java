@@ -18,9 +18,16 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
+import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
+import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import com.io7m.cardant.gui.internal.views.CAItemAttachmentMutableCellFactory;
+import com.io7m.cardant.model.CAItemAttachment;
+import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.jwheatsheaf.api.JWFileChooserAction;
+import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -28,12 +35,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -51,6 +62,10 @@ public final class CAViewControllerItemEditorAttachmentsTab
   private final CAMainStrings strings;
   private final CAServiceDirectoryType services;
   private final CAMainController controller;
+  private final CAFileDialogs fileDialogs;
+  private final CAPreferencesServiceType preferences;
+  private final Stage stage;
+  private final CATransferServiceType transfers;
   private volatile CAClientType clientNow;
 
   @FXML
@@ -72,14 +87,23 @@ public final class CAViewControllerItemEditorAttachmentsTab
     final CAServiceDirectoryType mainServices,
     final Stage stage)
   {
+    this.services =
+      Objects.requireNonNull(mainServices, "mainServices");
+    this.stage =
+      Objects.requireNonNull(stage, "stage");
+
     this.events =
       mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =
       mainServices.requireService(CAMainController.class);
-
-    this.services = mainServices;
+    this.fileDialogs =
+      mainServices.requireService(CAFileDialogs.class);
+    this.preferences =
+      mainServices.requireService(CAPreferencesServiceType.class);
+    this.transfers =
+      mainServices.requireService(CATransferServiceType.class);
   }
 
   @Override
@@ -158,8 +182,51 @@ public final class CAViewControllerItemEditorAttachmentsTab
 
   @FXML
   private void onItemAttachmentDownloadSelected()
+    throws IOException
   {
+    final var fileChooserConfiguration =
+      JWFileChooserConfiguration.builder()
+        .setAction(JWFileChooserAction.CREATE)
+        .setCssStylesheet(CACSS.mainStylesheet())
+        .addFileFilters(this.fileDialogs.filterForImages())
+        .setFileSelectionMode(path -> Boolean.valueOf(Files.isRegularFile(path)))
+        .setRecentFiles(this.preferences.preferences().recentFiles())
+        .setConfirmFileSelection(true)
+        .build();
 
+    final var choosers =
+      this.fileDialogs.choosers();
+    final var chooser =
+      choosers.create(this.stage, fileChooserConfiguration);
+    final var files =
+      chooser.showAndWait();
+
+    if (files.isEmpty()) {
+      return;
+    }
+
+    final var file =
+      this.preferences.addRecentFile(files.get(0));
+
+    final var itemAttachment =
+      this.controller.itemAttachmentSelected()
+        .get()
+        .get();
+
+    final var title =
+      this.strings.format("transfer.attachment", itemAttachment.id().id());
+
+    this.clientNow.itemAttachmentData(itemAttachment.id())
+      .thenComposeAsync(inputStream -> {
+        return this.transfers.transferTo(
+          inputStream,
+          title,
+          itemAttachment.size(),
+          itemAttachment.hashAlgorithm(),
+          itemAttachment.hashValue(),
+          file
+        );
+      });
   }
 
   @FXML

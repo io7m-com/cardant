@@ -17,10 +17,13 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.stage.Stage;
+import org.apache.commons.io.input.BrokenInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +38,10 @@ public final class CAViewControllerDebuggingTab implements Initializable
 
   private final CAMainEventBusType events;
   private final CAMainController controller;
+  private final CATransferServiceType transfers;
   private volatile CAClientHostileType clientNow;
+
+  @FXML private CheckBox slowTransfers;
 
   public CAViewControllerDebuggingTab(
     final CAServiceDirectoryType mainServices,
@@ -45,6 +51,8 @@ public final class CAViewControllerDebuggingTab implements Initializable
       mainServices.requireService(CAMainEventBusType.class);
     this.controller =
       mainServices.requireService(CAMainController.class);
+    this.transfers =
+      mainServices.requireService(CATransferServiceType.class);
   }
 
   @Override
@@ -56,6 +64,8 @@ public final class CAViewControllerDebuggingTab implements Initializable
       .addListener((observable, oldValue, newValue) -> {
         this.onClientConnectionChanged(newValue);
       });
+
+    this.slowTransfers.setSelected(this.transfers.isSlowTransfers());
   }
 
   private void onClientConnectionChanged(
@@ -66,6 +76,24 @@ public final class CAViewControllerDebuggingTab implements Initializable
     } else {
       this.clientNow = null;
     }
+  }
+
+  @FXML
+  private void onSlowTransfersSelected()
+  {
+    this.transfers.setSlowTransfers(this.slowTransfers.isSelected());
+  }
+
+  @FXML
+  private void onInvalidTransferSelected()
+  {
+    this.transfers.transfer(
+      new BrokenInputStream(),
+      "Broken Transfer",
+      1000L,
+      "SHA-256",
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    );
   }
 
   @FXML

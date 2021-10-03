@@ -19,16 +19,22 @@ package com.io7m.cardant.gui.internal;
 import com.io7m.cardant.client.api.CAClientFactoryType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
+import com.io7m.cardant.client.transfer.api.CATransferServiceType;
+import com.io7m.cardant.client.transfer.vanilla.CATransferService;
 import com.io7m.cardant.client.vanilla.CAClients;
 import com.io7m.cardant.services.api.CAServiceDirectory;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import com.io7m.jade.api.ApplicationDirectories;
+import com.io7m.jade.api.ApplicationDirectoriesType;
 import com.io7m.jade.api.ApplicationDirectoryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Duration;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 public final class CAMainServices
 {
@@ -43,18 +49,38 @@ public final class CAMainServices
   public static CAServiceDirectoryType create()
     throws IOException
   {
-    final var services = new CAServiceDirectory();
+    final ApplicationDirectoriesType directories =
+      applicationDirectories();
 
-    final var mainStrings = new CAMainStrings(Locale.getDefault());
+    final var locale = Locale.getDefault();
+    final var services = new CAServiceDirectory();
+    final var mainStrings = new CAMainStrings(locale);
+    final var clock = new CAClockService(Clock.systemUTC());
+
+    services.register(
+      CAClockService.class,
+      clock
+    );
     services.register(
       CAMainStrings.class,
-      mainStrings);
+      mainStrings
+    );
     services.register(
       CAPreferencesServiceType.class,
-      openPreferences());
+      openPreferences(directories)
+    );
     services.register(
       CAIconsType.class,
-      new CAIcons());
+      new CAIcons()
+    );
+    services.register(
+      CAFileDialogs.class,
+      new CAFileDialogs(mainStrings)
+    );
+    services.register(
+      CAExternalImages.class,
+      new CAExternalImages(mainStrings)
+    );
 
     final var eventBus = new CAMainEventBus();
     services.register(CAMainEventBusType.class, eventBus);
@@ -62,25 +88,41 @@ public final class CAMainServices
     final var clients = new CAClients();
     services.register(CAClientFactoryType.class, clients);
 
-    services.register(
-      CAMainController.class,
-      new CAMainController(mainStrings, clients, eventBus)
-    );
+    final var mainController =
+      new CAMainController(mainStrings, clients, eventBus);
+    services.register(CAMainController.class, mainController);
 
+    final var transferIO =
+      Executors.newScheduledThreadPool(4, r -> {
+        final var thread = new Thread(r);
+        thread.setDaemon(true);
+        thread.setName(
+          new StringBuilder(64)
+            .append("com.io7m.cardant.client.transfer[")
+            .append(thread.getId())
+            .append("]")
+            .toString()
+        );
+        return thread;
+      });
+
+    final var transfers =
+      CATransferService.create(
+        Clock.systemUTC(),
+        transferIO,
+        Duration.ofMinutes(1L),
+        locale,
+        directories.cacheDirectory().resolve("transfers")
+      );
+
+    services.register(CATransferServiceType.class, transfers);
     return services;
   }
 
-  private static CAPreferencesServiceType openPreferences()
+  private static CAPreferencesServiceType openPreferences(
+    final ApplicationDirectoriesType directories)
     throws IOException
   {
-    final var configuration =
-      ApplicationDirectoryConfiguration.builder()
-        .setApplicationName("com.io7m.cardant")
-        .setPortablePropertyName("com.io7m.cardant.portable")
-        .build();
-
-    final var directories =
-      ApplicationDirectories.get(configuration);
     final var configurationDirectory =
       directories.configurationDirectory();
     final var configurationFile =
@@ -88,5 +130,16 @@ public final class CAMainServices
 
     LOG.info("preferences: {}", configurationFile);
     return CAPreferencesService.openOrDefault(configurationFile);
+  }
+
+  private static ApplicationDirectoriesType applicationDirectories()
+  {
+    final var configuration =
+      ApplicationDirectoryConfiguration.builder()
+        .setApplicationName("com.io7m.cardant")
+        .setPortablePropertyName("com.io7m.cardant.portable")
+        .build();
+
+    return ApplicationDirectories.get(configuration);
   }
 }

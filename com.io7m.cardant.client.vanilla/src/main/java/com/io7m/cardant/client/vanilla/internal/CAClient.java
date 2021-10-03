@@ -24,6 +24,7 @@ import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
@@ -33,18 +34,17 @@ import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocations;
-import com.io7m.cardant.protocol.inventory.api.CACommandType;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import com.io7m.cardant.protocol.inventory.api.CAMessageServicesType;
-import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParserFactoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.http.HttpClient;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -57,12 +57,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISCONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS_FAILED;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.*;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationsList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 
 /**
  * The default client implementation.
@@ -393,6 +397,33 @@ public final class CAClient implements CAClientHostileType
       new CAClientCommandValid<>(future, command, CAItem.class)
     );
     return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentPut(
+    final CAItemID id,
+    final CAItemAttachment itemAttachment)
+  {
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(itemAttachment, "itemAttachment");
+
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CAItem>>();
+    final var command =
+      new CACommandItemAttachmentPut(id, itemAttachment);
+
+    this.requests.add(
+      new CAClientCommandValid<>(future, command, CAItem.class)
+    );
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<InputStream> itemAttachmentData(
+    final CAItemAttachmentID itemAttachment)
+  {
+    Objects.requireNonNull(itemAttachment, "itemAttachment");
+    return this.connection.itemAttachmentData(itemAttachment);
   }
 
   @Override

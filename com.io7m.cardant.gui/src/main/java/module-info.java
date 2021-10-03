@@ -25,14 +25,23 @@ module com.io7m.cardant.gui
 
   requires com.io7m.cardant.client.preferences.api;
   requires com.io7m.cardant.client.preferences.vanilla;
+  requires com.io7m.cardant.client.transfer.api;
+  requires com.io7m.cardant.client.transfer.vanilla;
   requires com.io7m.cardant.client.vanilla;
+
   requires com.io7m.jade.api;
   requires com.io7m.jade.vanilla;
   requires com.io7m.jaffirm.core;
+  requires com.io7m.jwheatsheaf.api;
+  requires com.io7m.jwheatsheaf.filter.glob;
+  requires com.io7m.jwheatsheaf.oxygen;
+  requires com.io7m.jwheatsheaf.ui;
   requires com.io7m.jxtrand.vanilla;
   requires javafx.controls;
   requires javafx.fxml;
   requires javafx.graphics;
+  requires org.apache.commons.io;
+  requires org.apache.commons.lang3;
   requires org.slf4j;
 
   requires transitive com.io7m.cardant.client.api;

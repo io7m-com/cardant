@@ -60,26 +60,23 @@ public final class CAViewControllerItemReposit implements Initializable
   private final CAMainStrings strings;
   private final Stage stage;
   private final CAIconsType icons;
+  private final CAItemMutable item;
+  private final CALongSpinnerValueFactory itemRepositCountFactory;
   private CALocationTreeFiltered locationTreeAdd;
   private CALocationTreeFiltered locationTreeRemove;
   private CALocationTreeFiltered locationTreeMoveFrom;
   private CALocationTreeFiltered locationTreeMoveTo;
   private Optional<CAItemRepositType> result;
-  private final CAItemMutable item;
-
   @FXML
   private TextField itemIdField;
   @FXML
   private TextField itemNameField;
   @FXML
   private Button store;
-
   @FXML
   private Spinner<Long> itemRepositCount;
   @FXML
   private Label itemRepositCountBad;
-  private final CALongSpinnerValueFactory itemRepositCountFactory;
-
   @FXML
   private ChoiceBox<CAItemRepositSelection> itemRepositType;
   @FXML

@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.client.preferences.api;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,11 +25,13 @@ import java.util.Objects;
  *
  * @param debuggingEnabled A specification of whether or not debugging is enabled
  * @param serverBookmarks  The server bookmarks
+ * @param recentFiles      The recent files
  */
 
 public record CAPreferences(
   CAPreferencesDebuggingEnabled debuggingEnabled,
-  List<CAPreferenceServerBookmark> serverBookmarks)
+  List<CAPreferenceServerBookmark> serverBookmarks,
+  List<Path> recentFiles)
 {
   /**
    * A set of preferences.
@@ -38,5 +41,6 @@ public record CAPreferences(
   {
     Objects.requireNonNull(debuggingEnabled, "debuggingEnabled");
     Objects.requireNonNull(serverBookmarks, "serverBookmarks");
+    Objects.requireNonNull(recentFiles, "recentFiles");
   }
 }

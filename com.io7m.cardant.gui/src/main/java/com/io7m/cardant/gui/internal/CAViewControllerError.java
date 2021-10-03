@@ -93,10 +93,8 @@ public final class CAViewControllerError implements Initializable
   {
     this.errorMessage.setText(item.message());
 
-    if (item instanceof CAMainEventCommandFailed failed) {
-      final var command = failed.command();
-      final var error = command.result();
-      final var errorAttributes = error.attributes();
+    if (item instanceof CAMainEventErrorWithAttributesType failed) {
+      final var errorAttributes = failed.attributes();
 
       if (!errorAttributes.isEmpty()) {
         this.errorTableView.setItems(
@@ -116,9 +114,9 @@ public final class CAViewControllerError implements Initializable
           .remove(this.errorTableView);
       }
 
-      final var errorDetails = error.details();
+      final var errorDetails = failed.details();
       this.errorDetails.setText("");
-      this.errorDetails.appendText(error.summary());
+      this.errorDetails.appendText(failed.message());
       this.errorDetails.appendText("\n");
       this.errorDetails.appendText("\n");
 

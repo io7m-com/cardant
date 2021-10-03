@@ -65,7 +65,27 @@ public final class CAPreferencesStorer
     this.properties = new Properties();
     this.storeDebugging();
     this.storeServerBookmarks();
+    this.storeRecentFiles();
     this.properties.storeToXML(this.stream, "", UTF_8);
+  }
+
+  private void storeRecentFiles()
+  {
+    final var recentFiles = this.preferences.recentFiles();
+
+    this.properties.put(
+      "recentFiles.count",
+      Integer.toUnsignedString(recentFiles.size())
+    );
+
+    for (int index = 0; index < recentFiles.size(); ++index) {
+      final var path = recentFiles.get(index);
+      final var i = Integer.valueOf(index);
+      this.properties.put(
+        String.format("recentFiles.%s", i),
+        path.toAbsolutePath().toString()
+      );
+    }
   }
 
   private void storeDebugging()

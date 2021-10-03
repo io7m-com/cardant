@@ -38,11 +38,14 @@
     <module>com.io7m.cardant.server</module>
     <module>com.io7m.cardant.services.api</module>
     <module>com.io7m.cardant.tests</module>
+    <module>com.io7m.cardant.client.transfer.api</module>
+    <module>com.io7m.cardant.client.transfer.vanilla</module>
   </modules>
 
   <properties>
     <anethum.version>0.0.2-SNAPSHOT</anethum.version>
     <blackthorne.version>1.2.1</blackthorne.version>
+    <com.io7m.jwheatsheaf.version>3.0.0</com.io7m.jwheatsheaf.version>
     <com.io7m.xstructural.version>1.2.0</com.io7m.xstructural.version>
     <derby.version>10.15.2.0</derby.version>
     <dixmont.version>0.0.1-SNAPSHOT</dixmont.version>
@@ -56,6 +59,7 @@
     <jaxb.version>3.0.0</jaxb.version>
     <jetty.version>11.0.5</jetty.version>
     <jxtrand.version>1.0.0</jxtrand.version>
+    <org.apache.tika.version>2.1.0</org.apache.tika.version>
     <org.immutables.version>2.8.8</org.immutables.version>
   </properties>
 
@@ -298,6 +302,32 @@
         <artifactId>jgrapht-core</artifactId>
         <version>1.5.1</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-math3</artifactId>
+        <version>3.6.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.io7m.jwheatsheaf</groupId>
+        <artifactId>com.io7m.jwheatsheaf.api</artifactId>
+        <version>${com.io7m.jwheatsheaf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jwheatsheaf</groupId>
+        <artifactId>com.io7m.jwheatsheaf.oxygen</artifactId>
+        <version>${com.io7m.jwheatsheaf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jwheatsheaf</groupId>
+        <artifactId>com.io7m.jwheatsheaf.ui</artifactId>
+        <version>${com.io7m.jwheatsheaf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jwheatsheaf</groupId>
+        <artifactId>com.io7m.jwheatsheaf.filter.glob</artifactId>
+        <version>${com.io7m.jwheatsheaf.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.openjfx</groupId>
@@ -307,6 +337,11 @@
       <dependency>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-graphics</artifactId>
         <version>${javafx.version}</version>
       </dependency>
       <dependency>
@@ -324,6 +359,23 @@
         <groupId>com.io7m.jade</groupId>
         <artifactId>com.io7m.jade.vanilla</artifactId>
         <version>${jade.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-core</artifactId>
+        <version>${org.apache.tika.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-parser-image-module</artifactId>
+        <version>${org.apache.tika.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.12.0</version>
       </dependency>
 
       <dependency>

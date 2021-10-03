@@ -28,6 +28,7 @@ import com.io7m.cardant.client.api.CAClientEventDataReceived;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAInventoryElementType;
+import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAEventType.CAEventUpdated;
@@ -161,6 +162,16 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
       new Random(0L);
   }
 
+  private static <T> CAClientCommandError<T> responseError(
+    final CAResponseError error)
+  {
+    return new CAClientCommandError<>(
+      error.summary(),
+      error.statusCode(),
+      error.attributes(),
+      error.details()
+    );
+  }
 
   @Override
   public void poll()
@@ -207,6 +218,56 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     } catch (final Exception e) {
       LOG.debug("exception raised: ", e);
       command.future().completeExceptionally(e);
+    }
+  }
+
+  @Override
+  public CompletableFuture<InputStream> itemAttachmentData(
+    final CAItemAttachmentID itemAttachment)
+  {
+    Objects.requireNonNull(itemAttachment, "itemAttachment");
+
+    final var future =
+      new CompletableFuture<InputStream>();
+
+    try {
+      final var targetURI =
+        URI.create(new StringBuilder(128)
+                     .append(this.attachmentURI)
+                     .append("?id=")
+                     .append(itemAttachment.id())
+                     .toString());
+
+      LOG.debug("attachment fetch: {}", targetURI);
+
+      final var request =
+        HttpRequest.newBuilder(targetURI)
+          .GET()
+          .build();
+
+      final var response =
+        this.httpClient.send(
+          request, HttpResponse.BodyHandlers.ofInputStream());
+
+      LOG.debug(
+        "attachment response: {} {}",
+        Integer.valueOf(response.statusCode()),
+        response.headers().firstValue("content-type"));
+
+      if (response.statusCode() >= 300) {
+        future.completeExceptionally(new IOException(
+          this.strings.format(
+            "errorHTTPStatus",
+            Integer.valueOf(response.statusCode()))
+        ));
+        return future;
+      }
+
+      future.complete(response.body());
+      return future;
+    } catch (final IOException | InterruptedException e) {
+      future.completeExceptionally(e);
+      return future;
     }
   }
 
@@ -448,17 +509,6 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
 
     commandFuture.complete(
       this.responseTypeError(expectedReturn, data.getClass().getSimpleName())
-    );
-  }
-
-  private static <T> CAClientCommandError<T> responseError(
-    final CAResponseError error)
-  {
-    return new CAClientCommandError<>(
-      error.summary(),
-      error.statusCode(),
-      error.attributes(),
-      error.details()
     );
   }
 

@@ -18,16 +18,12 @@ package com.io7m.cardant.gui.internal.views;
 
 import com.io7m.cardant.gui.internal.CAMainStrings;
 import com.io7m.cardant.gui.internal.model.CAItemLocationMutable;
-import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import com.io7m.cardant.gui.internal.model.CATableMap;
 import com.io7m.cardant.model.CALocationID;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-
-import java.util.function.Consumer;
 
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
 

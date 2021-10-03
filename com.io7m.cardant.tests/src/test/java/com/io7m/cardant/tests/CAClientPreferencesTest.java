@@ -87,6 +87,11 @@ public final class CAClientPreferencesTest
             "name3", "host", 1000, true,
             new CAPreferenceServerUsernamePassword("user", "pass")
           )
+        ),
+        List.of(
+          this.directory,
+          this.directory.resolve("a"),
+          this.directory.resolve("b")
         )
       );
 
@@ -118,6 +123,11 @@ public final class CAClientPreferencesTest
             "name3", "host", 1000, true,
             new CAPreferenceServerUsernamePassword("user", "pass")
           )
+        ),
+        List.of(
+          this.directory,
+          this.directory.resolve("a"),
+          this.directory.resolve("b")
         )
       );
     service0.update(q -> p);

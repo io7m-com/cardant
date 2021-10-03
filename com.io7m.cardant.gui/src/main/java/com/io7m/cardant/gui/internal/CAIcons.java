@@ -25,6 +25,9 @@ public final class CAIcons implements CAIconsType
   private final Image inProgress;
   private final Image ok;
   private final Image cardant;
+  private final Image downloadOk;
+  private final Image downloadInProgress;
+  private final Image downloadError;
 
   public CAIcons()
   {
@@ -38,6 +41,12 @@ public final class CAIcons implements CAIconsType
       loadImage("clock.png");
     this.cardant =
       loadImage("cardant.png");
+    this.downloadOk =
+      loadImage("download-succeeded.png");
+    this.downloadError =
+      loadImage("error32.png");
+    this.downloadInProgress =
+      loadImage("download.png");
   }
 
   private static Image loadImage(
@@ -47,6 +56,24 @@ public final class CAIcons implements CAIconsType
       CAIcons.class.getResource("/com/io7m/cardant/gui/internal/" + name)
         .toString()
     );
+  }
+
+  @Override
+  public Image downloadOk()
+  {
+    return this.downloadOk;
+  }
+
+  @Override
+  public Image downloadError()
+  {
+    return this.downloadError;
+  }
+
+  @Override
+  public Image downloadInProgress()
+  {
+    return this.downloadInProgress;
   }
 
   @Override

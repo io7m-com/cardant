@@ -55,8 +55,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -480,6 +478,8 @@ public final class CAMainController implements CAServiceType
         clientNow.itemGet(id);
       } else if (update instanceof CALocationID id) {
         // clientNow.locationGet(id);
+      } else if (update instanceof CAItemAttachmentID id) {
+        // OK...
       } else {
         throw new IllegalStateException("Unexpected ID: " + update);
       }

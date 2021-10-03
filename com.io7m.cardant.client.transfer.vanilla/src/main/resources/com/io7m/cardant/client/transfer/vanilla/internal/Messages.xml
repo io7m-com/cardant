@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="expectedHash">Expected Hash</entry>
+  <entry key="receivedHash">Received Hash</entry>
+  <entry key="hashAlgorithm">Hash Algorithm</entry>
+  <entry key="hashCheckFailed">The downloaded file did not have the expected hash value.</entry>
+</properties>

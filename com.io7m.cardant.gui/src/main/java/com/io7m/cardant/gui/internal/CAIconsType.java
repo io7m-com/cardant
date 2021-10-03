@@ -23,6 +23,12 @@ public interface CAIconsType extends CAServiceType
 {
   Image error();
 
+  Image downloadOk();
+
+  Image downloadError();
+
+  Image downloadInProgress();
+
   Image info();
 
   Image inProgress();

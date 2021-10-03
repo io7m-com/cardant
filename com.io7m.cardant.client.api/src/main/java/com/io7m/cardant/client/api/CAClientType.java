@@ -18,6 +18,7 @@ package com.io7m.cardant.client.api;
 
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
@@ -29,6 +30,7 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocations;
 
 import java.io.Closeable;
+import java.io.InputStream;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow;
@@ -134,6 +136,30 @@ public interface CAClientType extends Closeable
 
   CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentDelete(
     CAItemID id,
+    CAItemAttachmentID itemAttachment);
+
+  /**
+   * Add an attachment to an item on the server.
+   *
+   * @param id             The item id
+   * @param itemAttachment The attachment
+   *
+   * @return An item
+   */
+
+  CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentPut(
+    CAItemID id,
+    CAItemAttachment itemAttachment);
+
+  /**
+   * Get the attachment data for an attachment on the server.
+   *
+   * @param itemAttachment The attachment
+   *
+   * @return A stream of data
+   */
+
+  CompletableFuture<InputStream> itemAttachmentData(
     CAItemAttachmentID itemAttachment);
 
   /**

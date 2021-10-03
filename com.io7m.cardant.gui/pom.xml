@@ -49,6 +49,16 @@
       <artifactId>com.io7m.cardant.client.preferences.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.client.transfer.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.client.transfer.vanilla</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>com.io7m.jade</groupId>
@@ -57,6 +67,36 @@
     <dependency>
       <groupId>com.io7m.jade</groupId>
       <artifactId>com.io7m.jade.api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.io7m.jwheatsheaf</groupId>
+      <artifactId>com.io7m.jwheatsheaf.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jwheatsheaf</groupId>
+      <artifactId>com.io7m.jwheatsheaf.oxygen</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jwheatsheaf</groupId>
+      <artifactId>com.io7m.jwheatsheaf.ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jwheatsheaf</groupId>
+      <artifactId>com.io7m.jwheatsheaf.filter.glob</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parser-image-module</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
 
     <dependency>

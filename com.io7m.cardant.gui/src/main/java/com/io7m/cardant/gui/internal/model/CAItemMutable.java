@@ -29,6 +29,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public record CAItemMutable(
   CAItemID id,
@@ -125,5 +126,13 @@ public record CAItemMutable(
     return CAStringSearch.containsIgnoreCase(this.name, search)
       || CAStringSearch.containsIgnoreCase(this.id.id(), search)
       || CAStringSearch.containsIgnoreCase(this.description, search);
+  }
+
+  public Optional<CAItemAttachmentMutable> imageAttachment()
+  {
+    return this.attachments.values()
+      .stream()
+      .filter(a -> Objects.equals(a.relation().getValueSafe(), "image"))
+      .findFirst();
   }
 }

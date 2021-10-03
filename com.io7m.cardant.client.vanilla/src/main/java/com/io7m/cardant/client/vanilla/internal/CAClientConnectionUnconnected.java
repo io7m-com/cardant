@@ -16,6 +16,12 @@
 
 package com.io7m.cardant.client.vanilla.internal;
 
+import com.io7m.cardant.model.CAItemAttachmentID;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
+
 /**
  * A connection that is never connected.
  */
@@ -49,5 +55,12 @@ public final class CAClientConnectionUnconnected
     final CAClientCommandType<T> command)
   {
 
+  }
+
+  @Override
+  public CompletableFuture<InputStream> itemAttachmentData(
+    final CAItemAttachmentID itemAttachment)
+  {
+    return CompletableFuture.failedFuture(new IOException("Not connected."));
   }
 }

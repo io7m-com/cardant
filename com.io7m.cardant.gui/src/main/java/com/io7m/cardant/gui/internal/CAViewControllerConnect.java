@@ -170,7 +170,8 @@ public final class CAViewControllerConnect implements Initializable
         newBookmarks.removeIf(mark -> Objects.equals(mark.name(), name));
         return new CAPreferences(
           oldPreferences.debuggingEnabled(),
-          List.copyOf(newBookmarks)
+          List.copyOf(newBookmarks),
+          oldPreferences.recentFiles()
         );
       });
     } catch (final IOException e) {
@@ -205,7 +206,8 @@ public final class CAViewControllerConnect implements Initializable
         newBookmarks.add(newBookmark);
         return new CAPreferences(
           oldPreferences.debuggingEnabled(),
-          List.copyOf(newBookmarks)
+          List.copyOf(newBookmarks),
+          oldPreferences.recentFiles()
         );
       });
     } catch (final IOException e) {

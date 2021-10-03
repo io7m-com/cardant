@@ -17,11 +17,15 @@
 package com.io7m.cardant.gui.internal.views;
 
 import com.io7m.cardant.gui.internal.CAMainStrings;
+import com.io7m.cardant.gui.internal.CAViewControllerMain;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Objects;
 
 /**
@@ -45,6 +49,18 @@ public final class CALocationItemCellFactory
   public ListCell<CALocationItemType> call(
     final ListView<CALocationItemType> param)
   {
-    return new CALocationItemCell(this.strings);
+    try {
+      final var source =
+        CAViewControllerMain.class.getResource(
+          "/com/io7m/cardant/gui/internal/transfer.fxml");
+      final var resources =
+        this.strings.resources();
+      final var loader =
+        new FXMLLoader(source, resources);
+
+      return loader.load();
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 }

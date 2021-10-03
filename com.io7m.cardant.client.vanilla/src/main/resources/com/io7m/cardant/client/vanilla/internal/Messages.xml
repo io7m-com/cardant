@@ -4,8 +4,8 @@
 
 <properties>
   <entry key="errorExpectedVersioningData"><![CDATA[The target server returned an unexpected response to our versioning request.
-  Expected: {1}
-  Received: {2}
+  Expected: {0}
+  Received: {1}
 ]]></entry>
 
   <entry key="errorNoSupportedVersions"><![CDATA[The target server uses a protocol that is not supported by this client.
@@ -15,6 +15,7 @@
     {1}
 ]]></entry>
 
+  <entry key="errorHTTPStatus">Unexpected HTTP status code: {0}</entry>
   <entry key="errorTransactionFailedNoError">A transaction failed without providing a proper error response.></entry>
   <entry key="errorResponseTypeShort">Received an unexpected response type.></entry>
   <entry key="expected">Expected</entry>

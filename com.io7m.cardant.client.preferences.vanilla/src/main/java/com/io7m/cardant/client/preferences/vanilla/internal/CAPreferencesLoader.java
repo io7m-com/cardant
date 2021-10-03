@@ -26,6 +26,8 @@ import com.io7m.jproperties.JPropertyNonexistent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,17 +49,22 @@ public final class CAPreferencesLoader
   private static final Logger LOG =
     LoggerFactory.getLogger(CAPreferencesLoader.class);
 
+  private final FileSystem fileSystem;
   private final Properties properties;
 
   /**
    * A preferences loader.
    *
+   * @param inFileSystem The filesystem used for paths
    * @param inProperties Properties
    */
 
   public CAPreferencesLoader(
+    final FileSystem inFileSystem,
     final Properties inProperties)
   {
+    this.fileSystem =
+      Objects.requireNonNull(inFileSystem, "fileSystem");
     this.properties =
       Objects.requireNonNull(inProperties, "properties");
   }
@@ -70,7 +77,44 @@ public final class CAPreferencesLoader
   {
     return new CAPreferences(
       this.loadDebuggingEnabled(),
-      this.loadServerBookmarks()
+      this.loadServerBookmarks(),
+      this.loadRecentFiles()
+    );
+  }
+
+  private List<Path> loadRecentFiles()
+  {
+    final var countText = this.properties.getProperty("recentFiles.count");
+    if (countText == null) {
+      return List.of();
+    }
+
+    int count = 0;
+    try {
+      count = Integer.parseUnsignedInt(countText);
+    } catch (final NumberFormatException e) {
+      LOG.error("unable to load recent files: ", e);
+    }
+
+    final var results = new ArrayList<Path>();
+    for (int index = 0; index < count; ++index) {
+      try {
+        results.add(this.loadRecentFile(Integer.valueOf(index)));
+      } catch (final Exception e) {
+        LOG.error("failed to load recent file: ", e);
+      }
+    }
+
+    LOG.debug("loaded {} recent files", Integer.valueOf(results.size()));
+    return List.copyOf(results);
+  }
+
+  private Path loadRecentFile(
+    final Integer index)
+    throws JPropertyNonexistent
+  {
+    return this.fileSystem.getPath(
+      getString(this.properties, String.format("recentFiles.%s", index))
     );
   }
 
