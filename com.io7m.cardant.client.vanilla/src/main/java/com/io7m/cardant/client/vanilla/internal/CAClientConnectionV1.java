@@ -27,8 +27,8 @@ import com.io7m.cardant.client.api.CAClientEventDataChanged;
 import com.io7m.cardant.client.api.CAClientEventDataReceived;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
+import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAInventoryElementType;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAEventType.CAEventUpdated;
@@ -92,7 +92,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   private final URI baseURI;
   private final URI loginURI;
   private final URI commandURI;
-  private final URI attachmentURI;
+  private final URI fileURI;
   private final URI eventsURI;
   private final Random random;
 
@@ -149,8 +149,8 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     this.commandURI =
       URI.create(this.baseURI + "/command")
         .normalize();
-    this.attachmentURI =
-      URI.create(this.baseURI + "/attachment")
+    this.fileURI =
+      URI.create(this.baseURI + "/file")
         .normalize();
     this.eventsURI =
       URI.create(this.baseURI + "/events")
@@ -222,10 +222,10 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
   }
 
   @Override
-  public CompletableFuture<InputStream> itemAttachmentData(
-    final CAItemAttachmentID itemAttachment)
+  public CompletableFuture<InputStream> fileData(
+    final CAFileID file)
   {
-    Objects.requireNonNull(itemAttachment, "itemAttachment");
+    Objects.requireNonNull(file, "file");
 
     final var future =
       new CompletableFuture<InputStream>();
@@ -233,12 +233,12 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
     try {
       final var targetURI =
         URI.create(new StringBuilder(128)
-                     .append(this.attachmentURI)
+                     .append(this.fileURI)
                      .append("?id=")
-                     .append(itemAttachment.id())
+                     .append(file.id())
                      .toString());
 
-      LOG.debug("attachment fetch: {}", targetURI);
+      LOG.debug("file fetch: {}", targetURI);
 
       final var request =
         HttpRequest.newBuilder(targetURI)
@@ -250,7 +250,7 @@ public final class CAClientConnectionV1 implements CAClientConnectionType
           request, HttpResponse.BodyHandlers.ofInputStream());
 
       LOG.debug(
-        "attachment response: {} {}",
+        "file response: {} {}",
         Integer.valueOf(response.statusCode()),
         response.headers().firstValue("content-type"));
 

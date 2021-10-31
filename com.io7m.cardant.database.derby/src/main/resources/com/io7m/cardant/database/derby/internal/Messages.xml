@@ -20,13 +20,14 @@
   <entry key="errorOpenDatabase">Failed to open the database: {0}.</entry>
   <entry key="errorSchemaVersionTableRow">Schema version table '{0}' must contain exactly one row</entry>
   <entry key="expectedCount">Expected Count</entry>
+  <entry key="file">File</entry>
   <entry key="item">Item</entry>
   <entry key="location">Location</entry>
   <entry key="object">Object</entry>
+  <entry key="problem">Problem</entry>
   <entry key="queriesClass">Queries class</entry>
   <entry key="receivedCount">Received Count</entry>
   <entry key="startingCount">Starting Count</entry>
   <entry key="tag">Tag</entry>
   <entry key="type">Type</entry>
-  <entry key="problem">Problem</entry>
 </properties>

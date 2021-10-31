@@ -22,7 +22,6 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
-import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -31,16 +30,18 @@ import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
-import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFilePut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFileRemove;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationGet;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
@@ -51,6 +52,7 @@ import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemReposit;
@@ -71,27 +73,23 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.SubmissionPublisher;
-import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
-import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
@@ -334,8 +332,8 @@ public final class CA1CommandServlet
     if (command instanceof CACommandItemList itemList) {
       return this.executeCommandItemList(itemList);
     }
-    if (command instanceof CACommandItemAttachmentPut itemAttachmentPut) {
-      return this.executeCommandItemAttachmentPut(itemAttachmentPut);
+    if (command instanceof CACommandItemAttachmentAdd itemAttachmentAdd) {
+      return this.executeCommandItemAttachmentAdd(itemAttachmentAdd);
     }
     if (command instanceof CACommandItemAttachmentRemove itemAttachmentRemove) {
       return this.executeCommandItemAttachmentRemove(itemAttachmentRemove);
@@ -364,8 +362,36 @@ public final class CA1CommandServlet
     if (command instanceof CACommandItemLocationsList itemLocations) {
       return this.executeCommandItemLocationsList(itemLocations);
     }
+    if (command instanceof CACommandFilePut filePut) {
+      return this.executeCommandFilePut(filePut);
+    }
+    if (command instanceof CACommandFileRemove fileRemove) {
+      return this.executeCommandFileRemove(fileRemove);
+    }
 
     throw new IllegalStateException();
+  }
+
+  private CAResponseType executeCommandFilePut(
+    final CACommandFilePut filePut)
+  {
+    try {
+      this.queries.filePut(filePut.data());
+      return new CAResponseType.CAResponseFilePut(filePut.data().withoutData());
+    } catch (final CADatabaseException e) {
+      return this.errorDatabase(500, e);
+    }
+  }
+
+  private CAResponseType executeCommandFileRemove(
+    final CACommandFileRemove fileRemove)
+  {
+    try {
+      this.queries.fileRemove(fileRemove.data());
+      return new CAResponseType.CAResponseFileRemove(fileRemove.data());
+    } catch (final CADatabaseException e) {
+      return this.errorDatabase(500, e);
+    }
   }
 
   private CAResponseType executeCommandItemLocationsList(
@@ -498,62 +524,16 @@ public final class CA1CommandServlet
     }
   }
 
-  private CAResponseType executeCommandItemAttachmentPut(
-    final CACommandItemAttachmentPut command)
+  private CAResponseType executeCommandItemAttachmentAdd(
+    final CACommandItemAttachmentAdd command)
   {
     try {
-      final var attachment =
-        command.attachment();
-      final var sizeLimitOpt =
-        this.limits.itemAttachmentMaximumSizeOctets();
-
-      if (sizeLimitOpt.isPresent()) {
-        final var sizeLimit =
-          sizeLimitOpt.getAsLong();
-
-        final var data =
-          attachment.data()
-            .orElseThrow(() -> {
-              final var attributes = new HashMap<String, String>();
-              attributes.put(
-                this.messages().format("item"),
-                command.item().id().toString());
-              attributes.put(
-                this.messages().format("attachment"),
-                command.attachment().id().id().toString());
-
-              return new CADatabaseException(
-                ERROR_PARAMETERS_INVALID,
-                attributes,
-                this.messages().format("errorAttachmentMissingData")
-              );
-            });
-
-        if (exceedsSizeLimit(sizeLimit, data)) {
-          final var attributes = new HashMap<String, String>();
-          attributes.put(
-            this.messages().format("item"),
-            command.item().id().toString());
-          attributes.put(
-            this.messages().format("attachment"),
-            command.attachment().id().id().toString());
-          attributes.put(
-            this.messages().format("sizeLimit"),
-            Long.toUnsignedString(sizeLimit));
-          attributes.put(
-            this.messages().format("sizeReceived"),
-            Long.toUnsignedString(Integer.toUnsignedLong(data.data().length)));
-
-          throw new CADatabaseException(
-            ERROR_PARAMETERS_INVALID,
-            attributes,
-            this.messages().format("errorAttachmentTooLarge")
-          );
-        }
-      }
-
-      this.queries.itemAttachmentPut(command.item(), attachment);
-      return new CAResponseItemAttachmentPut(
+      this.queries.itemAttachmentAdd(
+        command.item(),
+        command.file(),
+        command.relation()
+      );
+      return new CAResponseItemAttachmentAdd(
         this.fetchItem(command.item())
       );
     } catch (final CADatabaseException e) {
@@ -569,8 +549,10 @@ public final class CA1CommandServlet
     final CACommandItemAttachmentRemove itemAttachmentRemove)
   {
     try {
-      final var id = itemAttachmentRemove.attachmentID();
-      this.queries.itemAttachmentRemove(id);
+      this.queries.itemAttachmentRemove(
+        itemAttachmentRemove.item(),
+        itemAttachmentRemove.file(),
+        itemAttachmentRemove.relation());
       return new CAResponseItemAttachmentRemove(
         this.fetchItem(itemAttachmentRemove.item())
       );

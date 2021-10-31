@@ -17,48 +17,42 @@
 package com.io7m.cardant.gui.internal.model;
 
 import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
-import javafx.beans.property.SimpleStringProperty;
+import com.io7m.jaffirm.core.Preconditions;
+
+import java.util.Objects;
 
 import static com.io7m.cardant.gui.internal.model.CAStringSearch.containsIgnoreCase;
 
 public record CAItemAttachmentMutable(
-  CAItemAttachmentID id,
-  SimpleStringProperty description,
-  SimpleStringProperty mediaType,
-  SimpleStringProperty relation,
-  long size,
-  String hashAlgorithm,
-  String hashValue)
+  String relation,
+  CAFileMutable file)
 {
   public static CAItemAttachmentMutable ofItemAttachment(
     final CAItemAttachment itemAttachment)
   {
     return new CAItemAttachmentMutable(
-      itemAttachment.id(),
-      new SimpleStringProperty(itemAttachment.description()),
-      new SimpleStringProperty(itemAttachment.mediaType()),
-      new SimpleStringProperty(itemAttachment.relation()),
-      itemAttachment.size(),
-      itemAttachment.hashAlgorithm(),
-      itemAttachment.hashValue()
+      itemAttachment.relation(),
+      CAFileMutable.ofFile(itemAttachment.file())
     );
   }
 
   public void updateFrom(
     final CAItemAttachment attachment)
   {
-    this.description.set(attachment.description());
-    this.mediaType.set(attachment.mediaType());
-    this.relation.set(attachment.relation());
+    Preconditions.checkPreconditionV(
+      Objects.equals(attachment.relation(), this.relation),
+      "Relation %s must be %s",
+      attachment.relation(),
+      this.relation
+    );
+
+    this.file.updateFrom(attachment.file());
   }
 
   public boolean matches(
     final String search)
   {
-    return containsIgnoreCase(this.description, search)
-      || containsIgnoreCase(this.mediaType, search)
-      || containsIgnoreCase(this.relation, search)
-      || containsIgnoreCase(this.hashValue, search);
+    return containsIgnoreCase(this.relation, search)
+      || this.file.matches(search);
   }
 }

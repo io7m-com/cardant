@@ -17,9 +17,10 @@
 package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -51,6 +52,7 @@ public final class CADatabaseModelQueries
   private final CADatabaseModelQueriesTags tags;
   private final CADatabaseModelQueriesItems items;
   private final CADatabaseModelQueriesUsers users;
+  private final CADatabaseModelQueriesFiles files;
 
   CADatabaseModelQueries(
     final CADatabaseDerbyTransaction inTransaction)
@@ -59,35 +61,17 @@ public final class CADatabaseModelQueries
       new CADatabaseModelQueriesLocations(inTransaction);
     this.tags =
       new CADatabaseModelQueriesTags(inTransaction);
+    this.files =
+      new CADatabaseModelQueriesFiles(inTransaction);
     this.items =
-      new CADatabaseModelQueriesItems(this.locations, this.tags, inTransaction);
+      new CADatabaseModelQueriesItems(
+        this.locations,
+        this.files,
+        this.tags,
+        inTransaction
+      );
     this.users =
       new CADatabaseModelQueriesUsers(inTransaction);
-  }
-
-  @Override
-  public Map<CAItemAttachmentID, CAItemAttachment> itemAttachments(
-    final CAItemID item,
-    final boolean withData)
-    throws CADatabaseException
-  {
-    return this.items.itemAttachments(item, withData);
-  }
-
-  @Override
-  public Optional<CAItemAttachment> itemAttachmentGet(
-    final CAItemAttachmentID id,
-    final boolean withData)
-    throws CADatabaseException
-  {
-    return this.items.itemAttachmentGet(id, withData);
-  }
-
-  @Override
-  public void itemAttachmentRemove(final CAItemAttachmentID id)
-    throws CADatabaseException
-  {
-    this.items.itemAttachmentRemove(id);
   }
 
   @Override
@@ -212,12 +196,32 @@ public final class CADatabaseModelQueries
   }
 
   @Override
-  public void itemAttachmentPut(
+  public void itemAttachmentAdd(
     final CAItemID item,
-    final CAItemAttachment attachment)
+    final CAFileID file,
+    final String relation)
     throws CADatabaseException
   {
-    this.items.itemAttachmentPut(item, attachment);
+    this.items.itemAttachmentAdd(item, file, relation);
+  }
+
+  @Override
+  public void itemAttachmentRemove(
+    final CAItemID item,
+    final CAFileID file,
+    final String relation)
+    throws CADatabaseException
+  {
+    this.items.itemAttachmentRemove(item, file, relation);
+  }
+
+  @Override
+  public Set<CAItemAttachment> itemAttachments(
+    final CAItemID item,
+    final boolean withData)
+    throws CADatabaseException
+  {
+    return this.items.itemAttachments(item, withData);
   }
 
   @Override
@@ -296,5 +300,28 @@ public final class CADatabaseModelQueries
     throws CADatabaseException
   {
     return this.locations.locationList();
+  }
+
+  @Override
+  public void filePut(final CAFileType file)
+    throws CADatabaseException
+  {
+    this.files.filePut(file);
+  }
+
+  @Override
+  public Optional<CAFileType> fileGet(
+    final CAFileID file,
+    final boolean withData)
+    throws CADatabaseException
+  {
+    return this.files.fileGet(file, withData);
+  }
+
+  @Override
+  public void fileRemove(final CAFileID file)
+    throws CADatabaseException
+  {
+    this.files.fileRemove(file);
   }
 }

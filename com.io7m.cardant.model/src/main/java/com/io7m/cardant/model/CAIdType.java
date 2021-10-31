@@ -25,7 +25,7 @@ import java.util.UUID;
 public sealed interface CAIdType
   extends CAInventoryElementType
   permits
-  CAItemAttachmentID,
+  CAFileID,
   CAItemID,
   CALocationID,
   CATagID,

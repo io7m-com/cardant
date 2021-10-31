@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:iv1="urn:com.io7m.cardant.inventory:1"
+            targetNamespace="urn:com.io7m.cardant.inventory:1">
+
+  <xsd:include schemaLocation="inventory-1.messages.xsd"/>
+  <xsd:include schemaLocation="inventory-1.types.xsd"/>
+
+  <xsd:complexType name="CommandTagsPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to write tags.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Tags"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandTagsPut"
+               type="iv1:CommandTagsPutType"
+               substitutionGroup="iv1:Command"/>
+
+  <xsd:complexType name="ResponseTagsPutType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The CommandTagsPut command succeeded.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:ResponseType">
+        <xsd:sequence>
+          <xsd:element ref="iv1:Tags"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ResponseTagsPut"
+               type="iv1:ResponseTagsPutType"
+               substitutionGroup="iv1:Response"/>
+
+</xsd:schema>

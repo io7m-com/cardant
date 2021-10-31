@@ -16,8 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory.api;
 
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
@@ -108,13 +108,15 @@ public sealed interface CACommandType
   /**
    * Remove an attachment from an item.
    *
-   * @param item         The item ID
-   * @param attachmentID The attachment ID
+   * @param item     The item ID
+   * @param file     The file ID
+   * @param relation The relation
    */
 
   record CACommandItemAttachmentRemove(
     CAItemID item,
-    CAItemAttachmentID attachmentID)
+    CAFileID file,
+    String relation)
     implements CACommandType
   {
     /**
@@ -124,30 +126,34 @@ public sealed interface CACommandType
     public CACommandItemAttachmentRemove
     {
       Objects.requireNonNull(item, "item");
-      Objects.requireNonNull(attachmentID, "attachmentID");
+      Objects.requireNonNull(file, "fileID");
+      Objects.requireNonNull(relation, "relation");
     }
   }
 
   /**
    * Add an attachment to an item.
    *
-   * @param item       The item ID
-   * @param attachment The attachment
+   * @param item     The item ID
+   * @param file     The file
+   * @param relation The relation
    */
 
-  record CACommandItemAttachmentPut(
+  record CACommandItemAttachmentAdd(
     CAItemID item,
-    CAItemAttachment attachment)
+    CAFileID file,
+    String relation)
     implements CACommandType
   {
     /**
      * Add an attachment to an item.
      */
 
-    public CACommandItemAttachmentPut
+    public CACommandItemAttachmentAdd
     {
       Objects.requireNonNull(item, "item");
-      Objects.requireNonNull(attachment, "attachment");
+      Objects.requireNonNull(file, "file");
+      Objects.requireNonNull(relation, "relation");
     }
   }
 
@@ -391,6 +397,48 @@ public sealed interface CACommandType
     public CACommandTagsDelete
     {
       Objects.requireNonNull(tags, "tags");
+    }
+  }
+
+  /**
+   * Add or update files.
+   *
+   * @param data The file
+   */
+
+  record CACommandFilePut(CAFileType data)
+    implements CACommandType
+  {
+    /**
+     * Add or update files.
+     *
+     * @param data The file
+     */
+
+    public CACommandFilePut
+    {
+      Objects.requireNonNull(data, "data");
+    }
+  }
+
+  /**
+   * Delete files.
+   *
+   * @param data The file
+   */
+
+  record CACommandFileRemove(CAFileID data)
+    implements CACommandType
+  {
+    /**
+     * Delete files.
+     *
+     * @param data The file
+     */
+
+    public CACommandFileRemove
+    {
+      Objects.requireNonNull(data, "data");
     }
   }
 }

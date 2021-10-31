@@ -20,11 +20,8 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.SerializeException;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
-import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItems;
@@ -73,7 +70,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
@@ -82,32 +78,28 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseTagsPut;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class CAServerV1Test
@@ -867,160 +859,6 @@ public final class CAServerV1Test
 
       assertEquals(200, response.statusCode());
       assertEquals(new CAItems(Set.of()), message.data());
-    }
-  }
-
-  /**
-   * Adding, updating, and removing attachments works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemsCreateAttachments()
-    throws Exception
-  {
-    this.createUser("someone", "1234");
-
-    {
-      final var response =
-        this.send(
-          URI_LOGIN,
-          new CACommandLoginUsernamePassword("someone", "1234"));
-      assertEquals(200, response.statusCode());
-    }
-
-    final var item0 = CAItem.create();
-
-    {
-      this.sendCommandAssumingSuccess(
-        new CACommandItemCreate(item0.id(), item0.name()));
-    }
-
-    final var itemAttachment =
-      new CAItemAttachment(
-        CAItemAttachmentID.random(),
-        "An attachment.",
-        "text/plain",
-        "Datasheet",
-        10L,
-        "SHA-256",
-        "fbf8a33d8c8a1dccd71642c39b2f4b6622d93fccb4d73de2924c355603db9043",
-        Optional.of(new CAByteArray("ABCD123456".getBytes(UTF_8)))
-      );
-
-    {
-      this.sendCommandAssumingSuccess(
-        new CACommandItemAttachmentPut(item0.id(), itemAttachment));
-    }
-
-    final var attachmentWithout = itemAttachment.withoutData();
-    final var attachments = new TreeMap<CAItemAttachmentID, CAItemAttachment>();
-    attachments.put(itemAttachment.id(), attachmentWithout);
-
-    final var itemWith =
-      new CAItem(
-        item0.id(),
-        item0.name(),
-        item0.countTotal(),
-        item0.countHere(),
-        Collections.emptySortedMap(),
-        attachments,
-        Collections.emptySortedSet()
-      );
-
-    {
-      final var response =
-        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
-      final var message =
-        (CAResponseItemList) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(itemWith)), message.data());
-    }
-
-    {
-      final var response =
-        this.send(
-          URI_COMMAND,
-          new CACommandItemAttachmentRemove(item0.id(), itemAttachment.id()));
-      final var message =
-        (CAResponseItemAttachmentRemove) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-    }
-
-    {
-      final var response =
-        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
-      final var message =
-        (CAResponseItemList) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(item0)), message.data());
-    }
-  }
-
-  /**
-   * Exceeding the attachment size limit produces an error.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemsCreateAttachmentTooLarge()
-    throws Exception
-  {
-    this.createUser("someone", "1234");
-
-    {
-      final var response =
-        this.send(
-          URI_LOGIN,
-          new CACommandLoginUsernamePassword("someone", "1234"));
-      assertEquals(200, response.statusCode());
-    }
-
-    final var item0 = CAItem.create();
-
-    {
-      this.sendCommandAssumingSuccess(new CACommandItemCreate(
-        item0.id(),
-        item0.name()));
-    }
-
-    final var itemAttachment =
-      new CAItemAttachment(
-        CAItemAttachmentID.random(),
-        "An attachment.",
-        "text/plain",
-        "Datasheet",
-        256,
-        "SHA-256",
-        "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
-        Optional.of(new CAByteArray(new byte[256]))
-      );
-
-    {
-      final var response =
-        this.send(
-          URI_COMMAND,
-          new CACommandItemAttachmentPut(item0.id(), itemAttachment));
-
-      final var message =
-        (CAResponseError) this.parse(response);
-
-      assertEquals(400, response.statusCode());
-    }
-
-    {
-      final var response =
-        this.send(URI_COMMAND, new CACommandItemList(new CAListLocationsAll()));
-      final var message =
-        (CAResponseItemList) this.parse(response);
-
-      assertEquals(200, response.statusCode());
-      assertEquals(new CAItems(Set.of(item0)), message.data());
     }
   }
 

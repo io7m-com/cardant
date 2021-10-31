@@ -24,8 +24,11 @@ import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.vanilla.CAClients;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAItems;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAModelDatabaseQueriesType;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.CAUsers;
@@ -54,7 +57,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_CONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS_FAILED;
-import static com.io7m.cardant.model.CAListLocationBehaviourType.*;
+import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 
@@ -199,11 +203,106 @@ public final class CAClientTest
       this.client.events().subscribe(queueSubscriber);
       assertEquals(CLIENT_NEGOTIATING_PROTOCOLS, queue.take());
       assertEquals(CLIENT_CONNECTED, queue.take());
-      final CAClientCommandOK<CAItems> items =
+      final var items =
         (CAClientCommandOK<CAItems>)
           this.client.itemsList(new CAListLocationsAll())
-          .get();
+            .get();
       assertEquals(Set.of(), items.result().items());
+    });
+  }
+
+  /**
+   * Putting files works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFilePutOK()
+    throws Exception
+  {
+    this.createStandardUser();
+
+    final var queue =
+      new ArrayBlockingQueue<CAClientEventType>(2);
+    final var queueSubscriber =
+      new CAQueueSubscriber<>(
+        queue, o -> o instanceof CAClientEventStatusChanged);
+
+    assertTimeout(TEST_TIMEOUT, () -> {
+      this.client = this.clients.open(this.clientConfiguration);
+      this.client.events().subscribe(queueSubscriber);
+      assertEquals(CLIENT_NEGOTIATING_PROTOCOLS, queue.take());
+      assertEquals(CLIENT_CONNECTED, queue.take());
+
+      final var file =
+        new CAFileWithData(
+          CAFileID.random(),
+          "description",
+          "text/plain",
+          5L,
+          "SHA-256",
+          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+          new CAByteArray("HELLO".getBytes(UTF_8))
+        );
+
+      final var fileOk =
+        (CAClientCommandOK<CAFileType>)
+          this.client.filePut(file)
+            .get();
+
+      assertEquals(file.withoutData(), fileOk.result());
+    });
+  }
+
+  /**
+   * Removing files works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFilePutRemoveOK()
+    throws Exception
+  {
+    this.createStandardUser();
+
+    final var queue =
+      new ArrayBlockingQueue<CAClientEventType>(2);
+    final var queueSubscriber =
+      new CAQueueSubscriber<>(
+        queue, o -> o instanceof CAClientEventStatusChanged);
+
+    assertTimeout(TEST_TIMEOUT, () -> {
+      this.client = this.clients.open(this.clientConfiguration);
+      this.client.events().subscribe(queueSubscriber);
+      assertEquals(CLIENT_NEGOTIATING_PROTOCOLS, queue.take());
+      assertEquals(CLIENT_CONNECTED, queue.take());
+
+      final var file =
+        new CAFileWithData(
+          CAFileID.random(),
+          "description",
+          "text/plain",
+          5L,
+          "SHA-256",
+          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+          new CAByteArray("HELLO".getBytes(UTF_8))
+        );
+
+      final var fileOk =
+        (CAClientCommandOK<CAFileType>)
+          this.client.filePut(file)
+            .get();
+
+      assertEquals(file.withoutData(), fileOk.result());
+
+      final var deleteOk =
+        (CAClientCommandOK<CAFileID>)
+          this.client.fileDelete(file.id())
+            .get();
+
+      assertEquals(file.id(), deleteOk.result());
     });
   }
 

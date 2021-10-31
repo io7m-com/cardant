@@ -18,13 +18,12 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
-import com.io7m.cardant.client.preferences.api.CAPreferences;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CAMutableModelElementType;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
@@ -48,9 +47,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -176,22 +172,20 @@ public final class CAViewControllerItemEditorOverviewTab
       final var imageData =
         this.externalImages.open(file);
 
-      final var attachment =
-        new CAItemAttachment(
-          CAItemAttachmentID.random(),
+      final var fileWithData =
+        new CAFileWithData(
+          CAFileID.random(),
           this.strings.format("item.image"),
           imageData.mediaType(),
-          "image",
           imageData.size(),
           imageData.hashAlgorithm(),
           imageData.hashValue(),
-          Optional.of(imageData.data())
+          imageData.data()
         );
 
-      this.clientNow.itemAttachmentPut(
-        this.itemCurrent.get().id(),
-        attachment
-      );
+      this.clientNow.itemAttachmentAdd(
+        this.itemCurrent.get().id(), fileWithData, "image");
+
     } catch (final CAImageDataException e) {
       this.events.submit(
         new CAMainEventLocalError(
@@ -275,17 +269,22 @@ public final class CAViewControllerItemEditorOverviewTab
       final var imageAttachment =
         imageAttachmentOpt.get();
 
-      final var title =
-        this.strings.format("transfer.attachment.image", imageAttachment.id().id());
+      final var attachmentFile =
+        imageAttachment.file();
 
-      this.clientNow.itemAttachmentData(imageAttachment.id())
+      final var title =
+        this.strings.format(
+          "transfer.attachment.image",
+          attachmentFile.id().displayId());
+
+      this.clientNow.fileData(attachmentFile.id())
         .thenComposeAsync(inputStream -> {
           return this.transfers.transfer(
             inputStream,
             title,
-            imageAttachment.size(),
-            imageAttachment.hashAlgorithm(),
-            imageAttachment.hashValue()
+            attachmentFile.size(),
+            attachmentFile.hashAlgorithm(),
+            attachmentFile.hashValue()
           );
         }).thenAccept(path -> {
           Platform.runLater(() -> {

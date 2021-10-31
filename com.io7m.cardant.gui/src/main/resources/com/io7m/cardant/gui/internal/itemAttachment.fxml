@@ -65,7 +65,7 @@
           </HBox.margin>
           <children>
             <Label prefHeight="32.0"
-                   text="%item.attachment.id"/>
+                   text="%item.attachment.fileId"/>
             <Label prefHeight="32.0"
                    text="%item.attachment.description"
                    GridPane.rowIndex="1"/>
@@ -83,7 +83,7 @@
             <Label prefHeight="32.0"
                    text="%item.attachment.hash"
                    GridPane.rowIndex="5"/>
-            <TextField fx:id="idField"
+            <TextField fx:id="fileIdField"
                        editable="false"
                        GridPane.columnIndex="1"
                        GridPane.columnSpan="2147483647">

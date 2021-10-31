@@ -19,7 +19,6 @@ package com.io7m.cardant.model;
 import com.io7m.cardant.database.api.CADatabaseException;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -194,17 +193,35 @@ public interface CAModelDatabaseQueriesItemsType
     throws CADatabaseException;
 
   /**
-   * Create or update the given attachment.
+   * Add an attachment to the given item.
    *
-   * @param item       The item
-   * @param attachment The attachment
+   * @param item     The item
+   * @param file     The file
+   * @param relation The attachment relation
    *
    * @throws CADatabaseException On database errors
    */
 
-  void itemAttachmentPut(
+  void itemAttachmentAdd(
     CAItemID item,
-    CAItemAttachment attachment)
+    CAFileID file,
+    String relation)
+    throws CADatabaseException;
+
+  /**
+   * Remove an attachment from the given item.
+   *
+   * @param item     The item
+   * @param file     The file
+   * @param relation The attachment relation
+   *
+   * @throws CADatabaseException On database errors
+   */
+
+  void itemAttachmentRemove(
+    CAItemID item,
+    CAFileID file,
+    String relation)
     throws CADatabaseException;
 
   /**
@@ -218,37 +235,9 @@ public interface CAModelDatabaseQueriesItemsType
    * @throws CADatabaseException On database errors
    */
 
-  Map<CAItemAttachmentID, CAItemAttachment> itemAttachments(
+  Set<CAItemAttachment> itemAttachments(
     CAItemID item,
     boolean withData)
-    throws CADatabaseException;
-
-  /**
-   * Retrieve the attachment with the given ID.
-   *
-   * @param id       The attachment ID
-   * @param withData {@code true} if the attachment data should be retrieved
-   *
-   * @return The attachment
-   *
-   * @throws CADatabaseException On database errors
-   */
-
-  Optional<CAItemAttachment> itemAttachmentGet(
-    CAItemAttachmentID id,
-    boolean withData)
-    throws CADatabaseException;
-
-  /**
-   * Remove the attachment with the given ID.
-   *
-   * @param id The attachment ID
-   *
-   * @throws CADatabaseException On database errors
-   */
-
-  void itemAttachmentRemove(
-    CAItemAttachmentID id)
     throws CADatabaseException;
 
   /**

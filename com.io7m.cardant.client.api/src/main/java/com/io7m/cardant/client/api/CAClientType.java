@@ -16,10 +16,11 @@
 
 package com.io7m.cardant.client.api;
 
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -126,41 +127,67 @@ public interface CAClientType extends Closeable
     Set<CAItemMetadata> itemMetadatas);
 
   /**
-   * Delete an attachment from an item on the server.
+   * Add an attachment to an item on the server.
    *
-   * @param id             The item id
-   * @param itemAttachment The attachment
+   * @param id       The item id
+   * @param file     The file
+   * @param relation The relation
+   *
+   * @return An item
+   */
+
+  CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentAdd(
+    CAItemID id,
+    CAFileWithData file,
+    String relation);
+
+  /**
+   * Remove an attachment from an item on the server.
+   *
+   * @param item     The item id
+   * @param file     The file
+   * @param relation The relation
    *
    * @return An item
    */
 
   CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentDelete(
-    CAItemID id,
-    CAItemAttachmentID itemAttachment);
+    CAItemID item,
+    CAFileID file,
+    String relation);
 
   /**
-   * Add an attachment to an item on the server.
+   * Get the file data for a file on the server.
    *
-   * @param id             The item id
-   * @param itemAttachment The attachment
-   *
-   * @return An item
-   */
-
-  CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentPut(
-    CAItemID id,
-    CAItemAttachment itemAttachment);
-
-  /**
-   * Get the attachment data for an attachment on the server.
-   *
-   * @param itemAttachment The attachment
+   * @param file The file
    *
    * @return A stream of data
    */
 
-  CompletableFuture<InputStream> itemAttachmentData(
-    CAItemAttachmentID itemAttachment);
+  CompletableFuture<InputStream> fileData(
+    CAFileID file);
+
+  /**
+   * Create or update a file on the server.
+   *
+   * @param file The file
+   *
+   * @return A stream of data
+   */
+
+  CompletableFuture<CAClientCommandResultType<CAFileType>> filePut(
+    CAFileWithData file);
+
+  /**
+   * Create or update a file on the server.
+   *
+   * @param file The file
+   *
+   * @return A stream of data
+   */
+
+  CompletableFuture<CAClientCommandResultType<CAFileID>> fileDelete(
+    CAFileID file);
 
   /**
    * Create or update a location on the server.

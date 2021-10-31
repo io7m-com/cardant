@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:iv1="urn:com.io7m.cardant.inventory:1"
+            targetNamespace="urn:com.io7m.cardant.inventory:1">
+
+  <xsd:include schemaLocation="inventory-1.messages.xsd"/>
+  <xsd:include schemaLocation="inventory-1.types.xsd"/>
+
+  <xsd:complexType name="CommandLocationGetType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A request to get a location.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:CommandType">
+        <xsd:attribute name="id"
+                       type="iv1:UUIDType"
+                       use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CommandLocationGet"
+               type="iv1:CommandLocationGetType"
+               substitutionGroup="iv1:Command"/>
+
+</xsd:schema>

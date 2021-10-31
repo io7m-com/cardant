@@ -23,10 +23,12 @@ import com.io7m.cardant.database.api.CADatabaseParameters;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.derby.CADatabasesDerby;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
@@ -715,200 +717,6 @@ public final class CADerbyDatabaseTest
   }
 
   @Test
-  public void testItemAttachment0()
-    throws Exception
-  {
-    this.withDatabase((transaction, queries) -> {
-      final var item0 = CAItemID.random();
-
-      queries.itemCreate(item0);
-
-      final var attachmentID =
-        CAItemAttachmentID.random();
-
-      final var attachment0 =
-        new CAItemAttachment(
-          attachmentID,
-          "Item description",
-          "text/plain",
-          "nothing",
-          5L,
-          "SHA-256",
-          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
-          Optional.of(new CAByteArray("HELLO".getBytes(UTF_8)))
-        );
-
-      queries.itemAttachmentPut(item0, attachment0);
-
-      {
-        final var attachments = queries.itemAttachments(item0, true);
-        assertEquals(1, attachments.size());
-        assertEquals(attachment0, attachments.get(attachment0.id()));
-      }
-
-      final var attachment0p =
-        new CAItemAttachment(
-          attachmentID,
-          "Item description 2",
-          "text/plain",
-          "nothing",
-          7L,
-          "SHA-256",
-          "aa838baa048b2ca558d671b30f8c0a2ef7eeec70502a6fffccaefa837da07661",
-          Optional.of(new CAByteArray("GOODBYE".getBytes(UTF_8)))
-        );
-
-      queries.itemAttachmentPut(item0, attachment0p);
-
-      {
-        final var attachments = queries.itemAttachments(item0, true);
-        assertEquals(1, attachments.size());
-        assertEquals(attachment0p, attachments.get(attachment0.id()));
-      }
-
-      final var attachment0WithoutData =
-        attachment0p.withoutData();
-
-      {
-        final var attachments = queries.itemAttachments(item0, false);
-        assertEquals(1, attachments.size());
-        assertEquals(
-          attachment0WithoutData,
-          attachments.get(attachment0.id()));
-      }
-
-      {
-        final var attachment =
-          queries.itemAttachmentGet(attachment0p.id(), true)
-            .orElseThrow();
-        assertEquals(attachment0p, attachment);
-      }
-
-      {
-        final var attachment =
-          queries.itemAttachmentGet(attachment0p.id(), false)
-            .orElseThrow();
-        assertEquals(attachment0WithoutData, attachment);
-      }
-
-      this.expectedChangeCount = 1;
-      this.expectedUpdates.add(item0);
-      this.expectedUpdates.add(attachmentID);
-      transaction.commit();
-    });
-  }
-
-  @Test
-  public void testItemAttachmentIntegrity0()
-    throws Exception
-  {
-    this.withDatabase((transaction, queries) -> {
-      final var item0 = CAItemID.random();
-
-      queries.itemCreate(item0);
-
-      final var attachment0 =
-        new CAItemAttachment(
-          CAItemAttachmentID.random(),
-          "Item description",
-          "text/plain",
-          "nothing",
-          5L,
-          "SHA-256",
-          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
-          Optional.of(new CAByteArray("HELLO".getBytes(UTF_8)))
-        );
-
-      queries.itemAttachmentPut(item0, attachment0);
-      queries.itemsDelete(Set.of(item0));
-
-      this.expectedChangeCount = 1;
-      this.expectedUpdates.add(item0);
-      this.expectedUpdates.add(attachment0.id());
-      this.expectedRemoves.add(item0);
-      this.expectedRemoves.add(attachment0.id());
-      transaction.commit();
-    });
-  }
-
-  @Test
-  public void testItemAttachmentPutWithoutData0()
-    throws Exception
-  {
-    this.withDatabase((transaction, queries) -> {
-      final var item0 = CAItemID.random();
-
-      queries.itemCreate(item0);
-
-      final var attach0 =
-        CAItemAttachmentID.random();
-      final var attach1 =
-        CAItemAttachmentID.random();
-      final var attach2 =
-        CAItemAttachmentID.random();
-
-      {
-
-        final var attachment0 =
-          new CAItemAttachment(
-            attach0,
-            "Item description",
-            "text/plain",
-            "nothing",
-            5L,
-            "SHA-256",
-            "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
-            Optional.empty()
-          );
-
-        assertThrows(CADatabaseException.class, () -> {
-          queries.itemAttachmentPut(item0, attachment0);
-        });
-      }
-
-      {
-
-        final var attachment0 =
-          new CAItemAttachment(
-            attach1,
-            "Item description 2",
-            "text/plain",
-            "nothing",
-            5L,
-            "SHA-256",
-            "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
-            Optional.of(new CAByteArray("HELLO".getBytes(UTF_8)))
-          );
-
-        queries.itemAttachmentPut(item0, attachment0);
-      }
-
-      {
-        final var attachment0 =
-          new CAItemAttachment(
-            attach2,
-            "Item description 2",
-            "text/plain",
-            "nothing",
-            5L,
-            "SHA-256",
-            "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
-            Optional.empty()
-          );
-
-        assertThrows(CADatabaseException.class, () -> {
-          queries.itemAttachmentPut(item0, attachment0);
-        });
-      }
-
-      this.expectedChangeCount = 1;
-      this.expectedUpdates.add(item0);
-      this.expectedUpdates.add(attach1);
-      transaction.commit();
-    });
-  }
-
-  @Test
   public void testUserNonexistent()
     throws Exception
   {
@@ -993,15 +801,6 @@ public final class CADerbyDatabaseTest
     this.expectedChangeCount = 1;
     this.expectedUpdates.add(tag.id());
   }
-
-  interface WithDatabaseType
-  {
-    void call(
-      CADatabaseTransactionType transaction,
-      CAModelDatabaseQueriesType queries)
-      throws Exception;
-  }
-
 
   @Test
   public void testLocationNonexistent()
@@ -1468,5 +1267,202 @@ public final class CADerbyDatabaseTest
       this.expectedUpdates.add(location1.id());
       transaction.commit();
     });
+  }
+
+  @Test
+  public void testFilePutRemove()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var file =
+        new CAFileWithData(
+          CAFileID.random(),
+          "File description",
+          "text/plain",
+          5L,
+          "SHA-256",
+          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+          new CAByteArray("HELLO".getBytes(UTF_8))
+        );
+
+      queries.filePut(file);
+      queries.fileRemove(file.id());
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(file.id());
+      this.expectedRemoves.add(file.id());
+      transaction.commit();
+    });
+  }
+
+  @Test
+  public void testFileGet()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var file =
+        new CAFileWithData(
+          CAFileID.random(),
+          "File description",
+          "text/plain",
+          5L,
+          "SHA-256",
+          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+          new CAByteArray("HELLO".getBytes(UTF_8))
+        );
+
+      queries.filePut(file);
+
+      final var fileWith =
+        queries.fileGet(file.id(), true)
+          .orElseThrow();
+      assertEquals(file, fileWith);
+
+      final var fileWithout =
+        queries.fileGet(file.id(), false)
+          .orElseThrow();
+      assertEquals(fileWithout, file.withoutData());
+      assertEquals(fileWithout, fileWithout.withoutData());
+
+      queries.fileRemove(file.id());
+
+      assertEquals(Optional.empty(), queries.fileGet(file.id(), false));
+      assertEquals(Optional.empty(), queries.fileGet(file.id(), true));
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(file.id());
+      this.expectedRemoves.add(file.id());
+      transaction.commit();
+    });
+  }
+
+  @Test
+  public void testFilePutUpdate()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var file =
+        new CAFileWithData(
+          CAFileID.random(),
+          "File description",
+          "text/plain",
+          5L,
+          "SHA-256",
+          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+          new CAByteArray("HELLO".getBytes(UTF_8))
+        );
+
+      queries.filePut(file);
+
+      final var fileWith =
+        queries.fileGet(file.id(), true)
+          .orElseThrow();
+      assertEquals(file, fileWith);
+
+      final var fileUpdated =
+        new CAFileWithData(
+          file.id(),
+          "File description 2",
+          "text/plain 2",
+          6L,
+          "SHA-256",
+          "a2f6017f1fab81333a4288f68557b74495a27337c7d37b3eba46c866aa885098",
+          new CAByteArray("HELLO!".getBytes(UTF_8))
+        );
+
+      queries.filePut(fileUpdated);
+
+      final var fileUpdatedWith =
+        queries.fileGet(file.id(), true)
+          .orElseThrow();
+      assertEquals(fileUpdated, fileUpdatedWith);
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(file.id());
+      transaction.commit();
+    });
+  }
+
+  @Test
+  public void testItemAttachmentAddRemove()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var file =
+        new CAFileWithData(
+          CAFileID.random(),
+          "File description",
+          "text/plain",
+          5L,
+          "SHA-256",
+          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+          new CAByteArray("HELLO".getBytes(UTF_8))
+        );
+
+      queries.filePut(file);
+
+      final var id = CAItemID.random();
+
+      queries.itemCreate(id);
+      queries.itemAttachmentAdd(id, file.id(), "description");
+
+      final var item0Get =
+        queries.itemGet(id)
+          .orElseThrow();
+
+      final var attachment =
+        item0Get.attachments()
+          .get(new CAItemAttachmentKey(file.id(), "description"));
+
+      assertEquals(file.withoutData(), attachment.file());
+      assertEquals("description", attachment.relation());
+
+      queries.itemAttachmentRemove(id, file.id(), "description");
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(file.id());
+      this.expectedUpdates.add(id);
+      transaction.commit();
+    });
+  }
+
+  @Test
+  public void testFilePutRemoveAttachmentIntegrity()
+    throws Exception
+  {
+    this.withDatabase((transaction, queries) -> {
+      final var file =
+        new CAFileWithData(
+          CAFileID.random(),
+          "File description",
+          "text/plain",
+          5L,
+          "SHA-256",
+          "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+          new CAByteArray("HELLO".getBytes(UTF_8))
+        );
+
+      queries.filePut(file);
+
+      final var id = CAItemID.random();
+
+      queries.itemCreate(id);
+      queries.itemAttachmentAdd(id, file.id(), "description");
+      queries.fileRemove(file.id());
+
+      this.expectedChangeCount = 1;
+      this.expectedUpdates.add(file.id());
+      this.expectedUpdates.add(id);
+      this.expectedRemoves.add(file.id());
+      transaction.commit();
+    });
+  }
+
+  interface WithDatabaseType
+  {
+    void call(
+      CADatabaseTransactionType transaction,
+      CAModelDatabaseQueriesType queries)
+      throws Exception;
   }
 }

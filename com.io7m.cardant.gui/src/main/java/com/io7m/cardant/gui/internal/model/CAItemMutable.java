@@ -17,7 +17,7 @@
 package com.io7m.cardant.gui.internal.model;
 
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
@@ -27,6 +27,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +39,7 @@ public record CAItemMutable(
   LongProperty countHere,
   StringExpression description,
   ObservableMap<String, CAItemMetadataMutable> metadata,
-  ObservableMap<CAItemAttachmentID, CAItemAttachmentMutable> attachments)
+  ObservableMap<CAItemAttachmentKey, CAItemAttachmentMutable> attachments)
   implements CAMutableModelElementType
 {
   public CAItemMutable
@@ -75,11 +76,11 @@ public record CAItemMutable(
         return meta.value().get();
       }, descriptionMetaBinding);
 
-    final ObservableMap<CAItemAttachmentID, CAItemAttachmentMutable> attachmentMap =
+    final ObservableMap<CAItemAttachmentKey, CAItemAttachmentMutable> attachmentSet =
       FXCollections.observableHashMap();
 
     for (final var entry : item.attachments().entrySet()) {
-      attachmentMap.put(
+      attachmentSet.put(
         entry.getKey(),
         CAItemAttachmentMutable.ofItemAttachment(entry.getValue())
       );
@@ -92,7 +93,7 @@ public record CAItemMutable(
       new SimpleLongProperty(item.countHere()),
       descriptionStringBinding,
       metadataMap,
-      attachmentMap
+      attachmentSet
     );
   }
 
@@ -132,7 +133,7 @@ public record CAItemMutable(
   {
     return this.attachments.values()
       .stream()
-      .filter(a -> Objects.equals(a.relation().getValueSafe(), "image"))
+      .filter(a -> Objects.equals(a.relation(), "image"))
       .findFirst();
   }
 }

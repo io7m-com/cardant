@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface ListLocationsBehaviourType extends org.apache.xmlbeans.XmlObject {
-    AbstractDocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType> Factory = new AbstractDocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE8AC4557B7260DDF20EBB7BA8F2F0FBA.TypeSystemHolder.typeSystem, "listlocationsbehaviourtype53e0type");
+    AbstractDocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ListLocationsBehaviourType> Factory = new AbstractDocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE431AFF67C9477B4270ED45520E13157.TypeSystemHolder.typeSystem, "listlocationsbehaviourtype53e0type");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 }

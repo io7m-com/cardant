@@ -22,10 +22,12 @@ import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.vanilla.CAClientStrings;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAFileType.CAFileWithData;
+import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -34,17 +36,22 @@ import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocations;
-import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFilePut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFileRemove;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import com.io7m.cardant.protocol.inventory.api.CAMessageServicesType;
+import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParserFactoryType;
+import com.io7m.junreachable.UnimplementedCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.http.HttpClient;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -57,7 +64,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_DISCONNECTED;
 import static com.io7m.cardant.client.api.CAClientEventStatusChanged.CLIENT_NEGOTIATING_PROTOCOLS_FAILED;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationsList;
@@ -380,18 +386,52 @@ public final class CAClient implements CAClientHostileType
   }
 
   @Override
-  public CompletableFuture<CAClientCommandResultType<CAItem>>
-  itemAttachmentDelete(
+  public CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentAdd(
     final CAItemID id,
-    final CAItemAttachmentID itemAttachment)
+    final CAFileWithData file,
+    final String relation)
   {
     Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(itemAttachment, "itemAttachment");
+    Objects.requireNonNull(file, "file");
+    Objects.requireNonNull(relation, "relation");
+
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CAItem>>();
+
+    final var transaction =
+      new CATransaction(
+        List.of(
+          new CACommandFilePut(file),
+          new CACommandItemAttachmentAdd(id, file.id(), relation),
+          new CACommandItemGet(id)
+        )
+      );
+
+    final var transactional =
+      new CAClientCommandTransactional<>(
+        future,
+        transaction,
+        CAItem.class
+      );
+
+    this.requests.add(transactional);
+    return future;
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentDelete(
+    final CAItemID item,
+    final CAFileID file,
+    final String relation)
+  {
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(file, "file");
+    Objects.requireNonNull(relation, "relation");
 
     final var future =
       new CompletableFuture<CAClientCommandResultType<CAItem>>();
     final var command =
-      new CACommandItemAttachmentRemove(id, itemAttachment);
+      new CACommandType.CACommandItemAttachmentRemove(item, file, relation);
 
     this.requests.add(
       new CAClientCommandValid<>(future, command, CAItem.class)
@@ -400,30 +440,45 @@ public final class CAClient implements CAClientHostileType
   }
 
   @Override
-  public CompletableFuture<CAClientCommandResultType<CAItem>> itemAttachmentPut(
-    final CAItemID id,
-    final CAItemAttachment itemAttachment)
+  public CompletableFuture<InputStream> fileData(
+    final CAFileID file)
   {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(itemAttachment, "itemAttachment");
+    Objects.requireNonNull(file, "file");
+    return this.connection.fileData(file);
+  }
+
+  @Override
+  public CompletableFuture<CAClientCommandResultType<CAFileType>> filePut(
+    final CAFileWithData file)
+  {
+    Objects.requireNonNull(file, "file");
 
     final var future =
-      new CompletableFuture<CAClientCommandResultType<CAItem>>();
+      new CompletableFuture<CAClientCommandResultType<CAFileType>>();
     final var command =
-      new CACommandItemAttachmentPut(id, itemAttachment);
+      new CACommandFilePut(file);
 
     this.requests.add(
-      new CAClientCommandValid<>(future, command, CAItem.class)
+      new CAClientCommandValid<>(future, command, CAFileType.class)
     );
     return future;
   }
 
   @Override
-  public CompletableFuture<InputStream> itemAttachmentData(
-    final CAItemAttachmentID itemAttachment)
+  public CompletableFuture<CAClientCommandResultType<CAFileID>> fileDelete(
+    final CAFileID file)
   {
-    Objects.requireNonNull(itemAttachment, "itemAttachment");
-    return this.connection.itemAttachmentData(itemAttachment);
+    Objects.requireNonNull(file, "file");
+
+    final var future =
+      new CompletableFuture<CAClientCommandResultType<CAFileID>>();
+    final var command =
+      new CACommandFileRemove(file);
+
+    this.requests.add(
+      new CAClientCommandValid<>(future, command, CAFileID.class)
+    );
+    return future;
   }
 
   @Override

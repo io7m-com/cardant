@@ -41,7 +41,7 @@ public record CAItem(
   long countTotal,
   long countHere,
   SortedMap<String, CAItemMetadata> metadata,
-  SortedMap<CAItemAttachmentID, CAItemAttachment> attachments,
+  SortedMap<CAItemAttachmentKey, CAItemAttachment> attachments,
   SortedSet<CATag> tags
 ) implements CAInventoryElementType
 {

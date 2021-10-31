@@ -24,7 +24,8 @@ public class CommandItemAttachmentRemoveTypeImpl extends com.io7m.cardant.protoc
 
     private static final QName[] PROPERTY_QNAME = {
         new QName("", "item"),
-        new QName("", "attachment"),
+        new QName("", "file"),
+        new QName("", "relation"),
     };
 
 
@@ -87,10 +88,10 @@ public class CommandItemAttachmentRemoveTypeImpl extends com.io7m.cardant.protoc
     }
 
     /**
-     * Gets the "attachment" attribute
+     * Gets the "file" attribute
      */
     @Override
-    public java.lang.String getAttachment() {
+    public java.lang.String getFile() {
         synchronized (monitor()) {
             check_orphaned();
             org.apache.xmlbeans.SimpleValue target = null;
@@ -100,10 +101,10 @@ public class CommandItemAttachmentRemoveTypeImpl extends com.io7m.cardant.protoc
     }
 
     /**
-     * Gets (as xml) the "attachment" attribute
+     * Gets (as xml) the "file" attribute
      */
     @Override
-    public com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetAttachment() {
+    public com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetFile() {
         synchronized (monitor()) {
             check_orphaned();
             com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
@@ -113,10 +114,10 @@ public class CommandItemAttachmentRemoveTypeImpl extends com.io7m.cardant.protoc
     }
 
     /**
-     * Sets the "attachment" attribute
+     * Sets the "file" attribute
      */
     @Override
-    public void setAttachment(java.lang.String attachment) {
+    public void setFile(java.lang.String file) {
         synchronized (monitor()) {
             check_orphaned();
             org.apache.xmlbeans.SimpleValue target = null;
@@ -124,15 +125,15 @@ public class CommandItemAttachmentRemoveTypeImpl extends com.io7m.cardant.protoc
             if (target == null) {
                 target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[1]);
             }
-            target.setStringValue(attachment);
+            target.setStringValue(file);
         }
     }
 
     /**
-     * Sets (as xml) the "attachment" attribute
+     * Sets (as xml) the "file" attribute
      */
     @Override
-    public void xsetAttachment(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType attachment) {
+    public void xsetFile(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType file) {
         synchronized (monitor()) {
             check_orphaned();
             com.io7m.cardant.protocol.inventory.v1.beans.UUIDType target = null;
@@ -140,7 +141,65 @@ public class CommandItemAttachmentRemoveTypeImpl extends com.io7m.cardant.protoc
             if (target == null) {
                 target = (com.io7m.cardant.protocol.inventory.v1.beans.UUIDType)get_store().add_attribute_user(PROPERTY_QNAME[1]);
             }
-            target.set(attachment);
+            target.set(file);
+        }
+    }
+
+    /**
+     * Gets the "relation" attribute
+     */
+    @Override
+    public java.lang.String getRelation() {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            return (target == null) ? null : target.getStringValue();
+        }
+    }
+
+    /**
+     * Gets (as xml) the "relation" attribute
+     */
+    @Override
+    public com.io7m.cardant.protocol.inventory.v1.beans.RelationType xgetRelation() {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.RelationType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.RelationType)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            return target;
+        }
+    }
+
+    /**
+     * Sets the "relation" attribute
+     */
+    @Override
+    public void setRelation(java.lang.String relation) {
+        synchronized (monitor()) {
+            check_orphaned();
+            org.apache.xmlbeans.SimpleValue target = null;
+            target = (org.apache.xmlbeans.SimpleValue)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            if (target == null) {
+                target = (org.apache.xmlbeans.SimpleValue)get_store().add_attribute_user(PROPERTY_QNAME[2]);
+            }
+            target.setStringValue(relation);
+        }
+    }
+
+    /**
+     * Sets (as xml) the "relation" attribute
+     */
+    @Override
+    public void xsetRelation(com.io7m.cardant.protocol.inventory.v1.beans.RelationType relation) {
+        synchronized (monitor()) {
+            check_orphaned();
+            com.io7m.cardant.protocol.inventory.v1.beans.RelationType target = null;
+            target = (com.io7m.cardant.protocol.inventory.v1.beans.RelationType)get_store().find_attribute_user(PROPERTY_QNAME[2]);
+            if (target == null) {
+                target = (com.io7m.cardant.protocol.inventory.v1.beans.RelationType)get_store().add_attribute_user(PROPERTY_QNAME[2]);
+            }
+            target.set(relation);
         }
     }
 }

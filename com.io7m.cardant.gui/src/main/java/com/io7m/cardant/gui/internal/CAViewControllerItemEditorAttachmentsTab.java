@@ -20,14 +20,12 @@ import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
+import com.io7m.cardant.gui.internal.model.CAFileMutable;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import com.io7m.cardant.gui.internal.views.CAItemAttachmentMutableCellFactory;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.services.api.CAServiceDirectoryType;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -35,7 +33,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,7 +186,6 @@ public final class CAViewControllerItemEditorAttachmentsTab
         .setAction(JWFileChooserAction.CREATE)
         .setCssStylesheet(CACSS.mainStylesheet())
         .addFileFilters(this.fileDialogs.filterForImages())
-        .setFileSelectionMode(path -> Boolean.valueOf(Files.isRegularFile(path)))
         .setRecentFiles(this.preferences.preferences().recentFiles())
         .setConfirmFileSelection(true)
         .build();
@@ -213,17 +209,21 @@ public final class CAViewControllerItemEditorAttachmentsTab
         .get()
         .get();
 
-    final var title =
-      this.strings.format("transfer.attachment", itemAttachment.id().id());
+    final var attachmentFile =
+      itemAttachment.file();
 
-    this.clientNow.itemAttachmentData(itemAttachment.id())
+    final var title =
+      this.strings.format(
+        "transfer.attachment", attachmentFile.id().displayId());
+
+    this.clientNow.fileData(attachmentFile.id())
       .thenComposeAsync(inputStream -> {
         return this.transfers.transferTo(
           inputStream,
           title,
-          itemAttachment.size(),
-          itemAttachment.hashAlgorithm(),
-          itemAttachment.hashValue(),
+          attachmentFile.size(),
+          attachmentFile.hashAlgorithm(),
+          attachmentFile.hashValue(),
           file
         );
       });
@@ -255,11 +255,14 @@ public final class CAViewControllerItemEditorAttachmentsTab
             .get()
             .get();
 
+        final var attachmentSelected =
+          this.attachmentListView.getSelectionModel()
+            .getSelectedItem();
+
         this.clientNow.itemAttachmentDelete(
           item.id(),
-          this.attachmentListView.getSelectionModel()
-            .getSelectedItem()
-            .id()
+          attachmentSelected.file().id(),
+          attachmentSelected.relation()
         );
       }
     }

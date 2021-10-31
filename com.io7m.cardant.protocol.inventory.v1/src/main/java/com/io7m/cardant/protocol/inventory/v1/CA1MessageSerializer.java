@@ -17,10 +17,11 @@
 package com.io7m.cardant.protocol.inventory.v1;
 
 import com.io7m.anethum.common.SerializeException;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -35,16 +36,23 @@ import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFilePut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFileRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseFilePut;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseFileRemove;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandFilePutDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandFileRemoveDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentAddDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetDocument;
@@ -62,8 +70,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagListDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsDeleteDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.FileIDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.FileType;
 import com.io7m.cardant.protocol.inventory.v1.beans.IDType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType;
@@ -84,7 +93,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.ResponseDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributeType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDocument;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentPutDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseFilePutDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseFileRemoveDocument;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentAddDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemoveDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemCreateDocument;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetDocument;
@@ -119,6 +130,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -130,16 +142,16 @@ import java.util.stream.Collectors;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentAdd;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemUpdate;
+import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandLoginUsernamePassword;
@@ -148,7 +160,6 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTag
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
 import static com.io7m.cardant.protocol.inventory.api.CAEventType.CAEventUpdated;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
@@ -156,8 +167,8 @@ import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseI
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemLocationsList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemMetadataRemove;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemReposit;
+import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationList;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLocationPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
@@ -410,9 +421,9 @@ public final class CA1MessageSerializer
       return result;
     }
 
-    if (id instanceof CAItemAttachmentID inId) {
+    if (id instanceof CAFileID inId) {
       final var result =
-        ItemAttachmentIDType.Factory.newInstance(this.options);
+        FileIDType.Factory.newInstance(this.options);
       result.setValue(inId.id().toString());
       return result;
     }
@@ -459,8 +470,8 @@ public final class CA1MessageSerializer
     if (command instanceof CACommandItemsRemove c) {
       return this.transformCommandItemRemove(c);
     }
-    if (command instanceof CACommandItemAttachmentPut c) {
-      return this.transformCommandItemAttachmentPut(c);
+    if (command instanceof CACommandItemAttachmentAdd c) {
+      return this.transformCommandItemAttachmentAdd(c);
     }
     if (command instanceof CACommandItemAttachmentRemove c) {
       return this.transformCommandItemAttachmentRemove(c);
@@ -495,8 +506,38 @@ public final class CA1MessageSerializer
     if (command instanceof CACommandItemLocationsList c) {
       return this.transformCommandItemLocationsList(c);
     }
+    if (command instanceof CACommandFilePut c) {
+      return this.transformCACommandFilePut(c);
+    }
+    if (command instanceof CACommandFileRemove c) {
+      return this.transformCACommandFileRemove(c);
+    }
 
     throw new UnreachableCodeException();
+  }
+
+  private CommandDocument transformCACommandFilePut(
+    final CACommandFilePut c)
+  {
+    final var document =
+      CommandFilePutDocument.Factory.newInstance(this.options);
+    final var command =
+      document.addNewCommandFilePut();
+
+    command.setFile(this.transformFile(c.data()));
+    return document;
+  }
+
+  private CommandDocument transformCACommandFileRemove(
+    final CACommandFileRemove c)
+  {
+    final var document =
+      CommandFileRemoveDocument.Factory.newInstance(this.options);
+    final var command =
+      document.addNewCommandFileRemove();
+
+    command.setId(c.data().displayId());
+    return document;
   }
 
   private CommandDocument transformCommandItemLocationsList(
@@ -683,16 +724,17 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private CommandDocument transformCommandItemAttachmentPut(
-    final CACommandItemAttachmentPut c)
+  private CommandDocument transformCommandItemAttachmentAdd(
+    final CACommandItemAttachmentAdd c)
   {
     final var document =
-      CommandItemAttachmentPutDocument.Factory.newInstance(this.options);
+      CommandItemAttachmentAddDocument.Factory.newInstance(this.options);
     final var command =
-      document.addNewCommandItemAttachmentPut();
+      document.addNewCommandItemAttachmentAdd();
 
     command.setItem(c.item().id().toString());
-    command.setItemAttachment(this.transformItemAttachment(c.attachment()));
+    command.setFile(c.file().id().toString());
+    command.setRelation(c.relation());
     return document;
   }
 
@@ -705,7 +747,8 @@ public final class CA1MessageSerializer
       document.addNewCommandItemAttachmentRemove();
 
     command.setItem(c.item().id().toString());
-    command.setAttachment(c.attachmentID().id().toString());
+    command.setFile(c.file().id().toString());
+    command.setRelation(c.relation());
     return document;
   }
 
@@ -792,8 +835,8 @@ public final class CA1MessageSerializer
     if (response instanceof CAResponseItemAttachmentRemove r) {
       return this.transformItemAttachmentRemove(r);
     }
-    if (response instanceof CAResponseItemAttachmentPut r) {
-      return this.transformItemAttachmentPut(r);
+    if (response instanceof CAResponseItemAttachmentAdd r) {
+      return this.transformItemAttachmentAdd(r);
     }
     if (response instanceof CAResponseItemMetadataRemove r) {
       return this.transformItemMetadataRemove(r);
@@ -834,8 +877,38 @@ public final class CA1MessageSerializer
     if (response instanceof CAResponseItemReposit r) {
       return this.transformResponseItemReposit(r);
     }
+    if (response instanceof CAResponseFilePut r) {
+      return this.transformResponseFilePut(r);
+    }
+    if (response instanceof CAResponseFileRemove r) {
+      return this.transformResponseFileRemove(r);
+    }
 
     throw new UnreachableCodeException();
+  }
+
+  private ResponseDocument transformResponseFilePut(
+    final CAResponseFilePut r)
+  {
+    final var document =
+      ResponseFilePutDocument.Factory.newInstance(this.options);
+    final var response =
+      document.addNewResponseFilePut();
+
+    response.setFile(this.transformFile(r.data()));
+    return document;
+  }
+
+  private ResponseDocument transformResponseFileRemove(
+    final CAResponseFileRemove r)
+  {
+    final var document =
+      ResponseFileRemoveDocument.Factory.newInstance(this.options);
+    final var response =
+      document.addNewResponseFileRemove();
+
+    response.setId(r.data().displayId());
+    return document;
   }
 
   private ResponseDocument transformResponseItemReposit(
@@ -999,13 +1072,13 @@ public final class CA1MessageSerializer
     return document;
   }
 
-  private ResponseDocument transformItemAttachmentPut(
-    final CAResponseItemAttachmentPut r)
+  private ResponseDocument transformItemAttachmentAdd(
+    final CAResponseItemAttachmentAdd r)
   {
     final var document =
-      ResponseItemAttachmentPutDocument.Factory.newInstance(this.options);
+      ResponseItemAttachmentAddDocument.Factory.newInstance(this.options);
     final var response =
-      document.addNewResponseItemAttachmentPut();
+      document.addNewResponseItemAttachmentAdd();
 
     response.setItem(this.transformItem(r.data()));
     return document;
@@ -1129,7 +1202,7 @@ public final class CA1MessageSerializer
     result.setCountHere(
       new BigInteger(Long.toUnsignedString(item.countHere())));
     result.setItemAttachments(
-      this.transformItemAttachments(item.attachments()));
+      this.transformItemAttachments(item.attachments().values()));
     result.setItemMetadatas(
       this.transformItemMetadatas(item.metadata()));
     result.setTags(
@@ -1195,16 +1268,36 @@ public final class CA1MessageSerializer
   }
 
   private ItemAttachmentsType transformItemAttachments(
-    final Map<CAItemAttachmentID, CAItemAttachment> attachments)
+    final Collection<CAItemAttachment> attachments)
   {
     final var result =
       ItemAttachmentsType.Factory.newInstance(this.options);
     final var output =
       result.getItemAttachmentList();
 
-    for (final var attachment : attachments.values()) {
+    for (final var attachment : attachments) {
       output.add(this.transformItemAttachment(attachment));
     }
+    return result;
+  }
+
+  private FileType transformFile(
+    final CAFileType file)
+  {
+    final var result =
+      FileType.Factory.newInstance(this.options);
+
+    result.setId(file.id().id().toString());
+    result.setHashAlgorithm(file.hashAlgorithm());
+    result.setHashValue(file.hashValue());
+    result.setMediaType(file.mediaType());
+    result.setDescription(file.description());
+    result.setSize(BigInteger.valueOf(file.size()));
+
+    if (file instanceof CAFileType.CAFileWithData withData) {
+      result.setFileData(withData.data().data());
+    }
+
     return result;
   }
 
@@ -1214,17 +1307,8 @@ public final class CA1MessageSerializer
     final var result =
       ItemAttachmentType.Factory.newInstance(this.options);
 
-    result.setId(attachment.id().id().toString());
-    result.setHashAlgorithm(attachment.hashAlgorithm());
-    result.setHashValue(attachment.hashValue());
-    result.setMediaType(attachment.mediaType());
     result.setRelation(attachment.relation());
-    result.setDescription(attachment.description());
-    result.setSize(BigInteger.valueOf(attachment.size()));
-
-    attachment.data()
-      .ifPresent(data -> result.setItemAttachmentData(data.data()));
-
+    result.setFile(this.transformFile(attachment.file()));
     return result;
   }
 

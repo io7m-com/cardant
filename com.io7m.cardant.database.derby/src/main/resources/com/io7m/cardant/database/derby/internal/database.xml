@@ -40,6 +40,24 @@ create table cardant.tags (
 ]]></Statement>
 
     <Comment>
+      The files table contains files.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.files (
+  id              char(16) for bit data not null primary key,
+  description     varchar(256)          not null,
+  media_type      varchar(128)          not null,
+  hash_algorithm  varchar(32)           not null,
+  hash_value      varchar(256)          not null,
+  data            blob                  not null,
+  data_used       bigint                not null,
+
+  constraint check_natural_data check (data_used >= 0)
+)
+]]></Statement>
+
+    <Comment>
       The items table contains the list of items.
     </Comment>
 
@@ -48,7 +66,7 @@ create table cardant.items (
   item_id       char(16) for bit data not null primary key,
   item_name     varchar(128)          not null,
   item_count    bigint                not null,
-  item_deleted  boolean              not null,
+  item_deleted  boolean               not null,
 
   constraint check_natural_count check (item_count >= 0)
 )
@@ -75,18 +93,14 @@ create table cardant.item_tags (
 
     <Statement><![CDATA[
 create table cardant.item_attachments (
-  attachment_id              char(16) for bit data not null primary key,
-  attachment_item_id         char(16) for bit data not null,
-  attachment_description     varchar(256)          not null,
-  attachment_media_type      varchar(128)          not null,
-  attachment_relation        varchar(128)          not null,
-  attachment_hash_algorithm  varchar(32)           not null,
-  attachment_hash_value      varchar(256)          not null,
-  attachment_data            blob                  not null,
-  attachment_data_used       bigint                not null,
+  file_id   char(16) for bit data not null,
+  item_id   char(16) for bit data not null,
+  relation  varchar(128)          not null,
 
-  constraint attachment_item_exists foreign key (attachment_item_id) references cardant.items (item_id),
-  constraint check_natural_data check (attachment_data_used >= 0)
+  constraint file_exists foreign key (file_id) references cardant.files (id),
+  constraint item_exists foreign key (item_id) references cardant.items (item_id),
+
+  primary key (file_id, item_id, relation)
 )
 ]]></Statement>
 

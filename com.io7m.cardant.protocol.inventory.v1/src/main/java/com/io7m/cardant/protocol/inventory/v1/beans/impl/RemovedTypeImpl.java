@@ -29,10 +29,10 @@ public class RemovedTypeImpl extends org.apache.xmlbeans.impl.values.XmlComplexC
     private static final QNameSet[] PROPERTY_QSET = {
     QNameSet.forArray( new QName[] { 
         new QName("urn:com.io7m.cardant.inventory:1", "ItemID"),
-        new QName("urn:com.io7m.cardant.inventory:1", "ItemAttachmentID"),
         new QName("urn:com.io7m.cardant.inventory:1", "TagID"),
         new QName("urn:com.io7m.cardant.inventory:1", "LocationID"),
         new QName("urn:com.io7m.cardant.inventory:1", "ID"),
+        new QName("urn:com.io7m.cardant.inventory:1", "FileID"),
         new QName("urn:com.io7m.cardant.inventory:1", "UserID"),
     }),
     };

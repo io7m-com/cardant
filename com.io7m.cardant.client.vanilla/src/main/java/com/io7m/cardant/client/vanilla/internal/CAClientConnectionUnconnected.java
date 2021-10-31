@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.client.vanilla.internal;
 
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAFileID;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,9 +58,9 @@ public final class CAClientConnectionUnconnected
   }
 
   @Override
-  public CompletableFuture<InputStream> itemAttachmentData(
-    final CAItemAttachmentID itemAttachment)
+  public CompletableFuture<InputStream> fileData(
+    final CAFileID file)
   {
-    return CompletableFuture.failedFuture(new IOException("Not connected."));
+    return CompletableFuture.failedFuture(new IOException("Not connected"));
   }
 }

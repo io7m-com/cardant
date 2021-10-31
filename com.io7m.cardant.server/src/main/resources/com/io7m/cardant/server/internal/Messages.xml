@@ -8,7 +8,7 @@
   <entry key="errorAttachmentTooLarge">The given attachment is too large.</entry>
   <entry key="errorLoginFailed">Login failed.</entry>
   <entry key="errorMissingId">Missing a required id parameter.</entry>
-  <entry key="errorNoSuchAttachment">No such attachment.</entry>
+  <entry key="errorNoSuchFile">No such file.</entry>
   <entry key="errorNoSuchItem">No such item.</entry>
   <entry key="errorNoSuchLocation">No such location.</entry>
   <entry key="errorParseError">Error: {0}: {1}:{2}: {3}</entry>

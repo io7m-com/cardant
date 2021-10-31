@@ -45,7 +45,7 @@
   <properties>
     <anethum.version>0.0.2-SNAPSHOT</anethum.version>
     <blackthorne.version>1.2.1</blackthorne.version>
-    <com.io7m.jwheatsheaf.version>3.0.0</com.io7m.jwheatsheaf.version>
+    <com.io7m.jwheatsheaf.version>3.1.0-SNAPSHOT</com.io7m.jwheatsheaf.version>
     <com.io7m.xstructural.version>1.2.0</com.io7m.xstructural.version>
     <derby.version>10.15.2.0</derby.version>
     <dixmont.version>0.0.1-SNAPSHOT</dixmont.version>

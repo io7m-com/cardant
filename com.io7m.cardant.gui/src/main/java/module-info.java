@@ -32,6 +32,7 @@ module com.io7m.cardant.gui
   requires com.io7m.jade.api;
   requires com.io7m.jade.vanilla;
   requires com.io7m.jaffirm.core;
+  requires com.io7m.junreachable.core;
   requires com.io7m.jwheatsheaf.api;
   requires com.io7m.jwheatsheaf.filter.glob;
   requires com.io7m.jwheatsheaf.oxygen;

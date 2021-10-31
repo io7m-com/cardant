@@ -34,8 +34,10 @@ import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.model.CALocationTree;
 import com.io7m.cardant.gui.internal.model.CATableMap;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItems;
@@ -82,7 +84,7 @@ public final class CAMainController implements CAServiceType
   private final ObservableMap<CAItemAndLocation, Long> itemLocationsRead;
   private CATableMap<CALocationID, CAItemLocationMutable> itemLocationsSelected;
   private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
-  private volatile CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachmentList;
+  private volatile CATableMap<CAItemAttachmentKey, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
   private volatile Predicate<CAItemAttachmentMutable> itemAttachmentPredicate;
   private volatile Predicate<CAItemMetadataMutable> itemMetadataPredicate;
@@ -135,7 +137,7 @@ public final class CAMainController implements CAServiceType
     return this.itemLocationsRead;
   }
 
-  public CATableMap<CAItemAttachmentID, CAItemAttachmentMutable> itemAttachments()
+  public CATableMap<CAItemAttachmentKey, CAItemAttachmentMutable> itemAttachments()
   {
     return this.itemAttachmentList;
   }
@@ -394,6 +396,14 @@ public final class CAMainController implements CAServiceType
       return;
     }
 
+    if (element instanceof CAFileID) {
+      return;
+    }
+
+    if (element instanceof CAFileType) {
+      return;
+    }
+
     throw new IllegalStateException("Unexpected data: " + element);
   }
 
@@ -478,7 +488,7 @@ public final class CAMainController implements CAServiceType
         clientNow.itemGet(id);
       } else if (update instanceof CALocationID id) {
         // clientNow.locationGet(id);
-      } else if (update instanceof CAItemAttachmentID id) {
+      } else if (update instanceof CAFileID id) {
         // OK...
       } else {
         throw new IllegalStateException("Unexpected ID: " + update);
@@ -491,8 +501,6 @@ public final class CAMainController implements CAServiceType
         this.onItemRemoved(id);
       } else if (removedId instanceof CALocationID id) {
         this.onLocationRemoved(id);
-      } else if (removedId instanceof CAItemAttachmentID id) {
-        // Nothing to do
       } else {
         throw new IllegalStateException("Unexpected ID: " + removedId);
       }

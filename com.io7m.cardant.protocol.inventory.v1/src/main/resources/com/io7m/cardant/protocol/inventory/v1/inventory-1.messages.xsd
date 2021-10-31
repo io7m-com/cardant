@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:iv1="urn:com.io7m.cardant.inventory:1"
+            targetNamespace="urn:com.io7m.cardant.inventory:1">
+
+  <xsd:complexType name="MessageType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of messages for the v1 inventory protocol.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+  <xsd:element name="Message"
+               type="iv1:MessageType"
+               abstract="true"/>
+
+  <xsd:complexType name="EventType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of events.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Event"
+               type="iv1:EventType"
+               substitutionGroup="iv1:Message"
+               abstract="true"/>
+
+  <xsd:complexType name="ResponseType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of responses.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Response"
+               type="iv1:ResponseType"
+               substitutionGroup="iv1:Message"
+               abstract="true"/>
+
+  <xsd:complexType name="CommandType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of commands.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="iv1:MessageType"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Command"
+               type="iv1:CommandType"
+               substitutionGroup="iv1:Message"
+               abstract="true"/>
+
+</xsd:schema>

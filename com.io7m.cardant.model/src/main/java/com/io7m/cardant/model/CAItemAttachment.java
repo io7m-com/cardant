@@ -16,86 +16,48 @@
 
 package com.io7m.cardant.model;
 
+import java.util.Comparator;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * An item attachment.
  *
- * @param id            The ID
- * @param description   The attachment description
- * @param mediaType     The attachment media type
- * @param relation      The attachment relation
- * @param size          The attachment size in bytes
- * @param hashAlgorithm The attachment hash algorithm
- * @param hashValue     The attachment hash value
- * @param data          The attachment data
+ * @param file     The file
+ * @param relation The attachment relation
  */
 
 public record CAItemAttachment(
-  CAItemAttachmentID id,
-  String description,
-  String mediaType,
-  String relation,
-  long size,
-  String hashAlgorithm,
-  String hashValue,
-  Optional<CAByteArray> data
-) implements CAInventoryElementType
+  CAFileType file,
+  String relation
+) implements CAInventoryElementType, Comparable<CAItemAttachment>
 {
   /**
    * An item attachment.
    *
-   * @param id            The ID
-   * @param description   The attachment description
-   * @param mediaType     The attachment media type
-   * @param relation      The attachment relation
-   * @param size          The attachment size in bytes
-   * @param hashAlgorithm The attachment hash algorithm
-   * @param hashValue     The attachment hash value
-   * @param data          The attachment data
+   * @param file     The file
+   * @param relation The attachment relation
    */
 
   public CAItemAttachment
   {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(description, "description");
-    Objects.requireNonNull(mediaType, "mediaType");
+    Objects.requireNonNull(file, "file");
     Objects.requireNonNull(relation, "relation");
-    Objects.requireNonNull(hashAlgorithm, "hashAlgorithm");
-    Objects.requireNonNull(hashValue, "hashValue");
-    Objects.requireNonNull(data, "data");
-
-    if (data.isPresent()) {
-      final var dataArray = data.get();
-      if (dataArray.data().length != size) {
-        throw new IllegalArgumentException(
-          new StringBuilder(64)
-            .append("Data length ")
-            .append(dataArray.data().length)
-            .append(" != size ")
-            .append(size)
-            .toString()
-        );
-      }
-    }
   }
 
   /**
-   * @return This attachment without any associated data
+   * @return The attachment key
    */
 
-  public CAItemAttachment withoutData()
+  public CAItemAttachmentKey key()
   {
-    return new CAItemAttachment(
-      this.id,
-      this.description,
-      this.mediaType,
-      this.relation,
-      this.size,
-      this.hashAlgorithm,
-      this.hashValue,
-      Optional.empty()
-    );
+    return new CAItemAttachmentKey(this.file.id(), this.relation);
+  }
+
+  @Override
+  public int compareTo(final CAItemAttachment other)
+  {
+    return Comparator.comparing(CAItemAttachment::file)
+      .thenComparing(CAItemAttachment::relation)
+      .compare(this, other);
   }
 }

@@ -17,7 +17,7 @@
 package com.io7m.cardant.model;
 
 import java.util.Objects;
-import java.util.SortedMap;
+import java.util.SortedSet;
 
 /**
  * A set of attachments for an item.
@@ -26,7 +26,7 @@ import java.util.SortedMap;
  */
 
 public record CAItemAttachments(
-  SortedMap<CAItemAttachmentID, CAItemAttachment> attachments)
+  SortedSet<CAItemAttachment> attachments)
 {
   /**
    * A set of attachments for an item.

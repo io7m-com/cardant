@@ -18,10 +18,10 @@ package com.io7m.cardant.tests;
 
 import com.io7m.anethum.common.ParseException;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemLocations;
@@ -37,12 +37,18 @@ import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFilePut;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandFileRemove;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemReposit;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageParserFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageSerializerFactoryType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageServices;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseFilePut;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseFileRemove;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
@@ -62,15 +68,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
@@ -85,7 +86,6 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTag
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
@@ -104,17 +104,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class CAMessageServicesV1Test
 {
+  public static final CAFileType.CAFileWithData FILE_0 = new CAFileType.CAFileWithData(
+    CAFileID.random(),
+    "description",
+    "text/plain",
+    5L,
+    "SHA-256",
+    "3733cd977ff8eb18b987357e22ced99f46097f31ecb239e878ae63760e83e4d5",
+    new CAByteArray("HELLO".getBytes(UTF_8))
+  );
   private static final Logger LOG =
     LoggerFactory.getLogger(CAMessageServicesV1Test.class);
-
   private static final URI SOURCE = URI.create("urn:loop");
-  private CAMessageServices services;
-  private CAMessageParserFactoryType parsers;
-  private CAMessageSerializerFactoryType serializers;
-
   private static final CAItem ITEM_0 = makeItem(0);
   private static final CAItem ITEM_1 = makeItem(1);
   private static final CAItem ITEM_2 = makeItem(2);
+  private CAMessageServices services;
+  private CAMessageParserFactoryType parsers;
+  private CAMessageSerializerFactoryType serializers;
 
   private static CAItem makeItem(
     final int index)
@@ -132,38 +139,6 @@ public final class CAMessageServicesV1Test
         )
       ),
       new TreeMap<>(
-        Stream.of(
-          new CAItemAttachment(
-            CAItemAttachmentID.random(),
-            "Description",
-            "text/plain",
-            "text",
-            100L,
-            "SHA-256",
-            "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
-            Optional.empty()
-          ),
-          new CAItemAttachment(
-            CAItemAttachmentID.random(),
-            "Description",
-            "text/plain",
-            "text",
-            100L,
-            "SHA-256",
-            "73cb3858a687a8494ca3323053016282f3dad39d42cf62ca4e79dda2aac7d9ac",
-            Optional.empty()
-          ),
-          new CAItemAttachment(
-            CAItemAttachmentID.random(),
-            "Description",
-            "text/plain",
-            "text",
-            100L,
-            "SHA-256",
-            "3bb2abb69ebb27fbfe63c7639624c6ec5e331b841a5bc8c3ebc10b9285e90877",
-            Optional.empty()
-          )
-        ).collect(Collectors.toMap(CAItemAttachment::id, Function.identity()))
       ),
       new TreeSet<>(
         Set.of(
@@ -184,6 +159,24 @@ public final class CAMessageServicesV1Test
       this.services.findParserService(1);
     this.serializers =
       this.services.findSerializerService(1);
+  }
+
+  @Test
+  public void testCommandFilePut()
+    throws Exception
+  {
+    final var message =
+      new CACommandFilePut(FILE_0);
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandFileRemove()
+    throws Exception
+  {
+    final var message =
+      new CACommandFileRemove(FILE_0.id());
+    assertEquals(message, this.roundTrip(message));
   }
 
   @Test
@@ -254,57 +247,6 @@ public final class CAMessageServicesV1Test
           CAItemID.random(),
           CAItemID.random())
       );
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testCommandItemAttachmentRemove()
-    throws Exception
-  {
-    final var message =
-      new CACommandItemAttachmentRemove(
-        CAItemID.random(),
-        CAItemAttachmentID.random());
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testCommandItemAttachmentPut0()
-    throws Exception
-  {
-    final var message =
-      new CACommandItemAttachmentPut(
-        CAItemID.random(),
-        new CAItemAttachment(
-          CAItemAttachmentID.random(),
-          "Description",
-          "text/plain",
-          "text",
-          100L,
-          "SHA-256",
-          "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
-          Optional.empty()
-        ));
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testCommandItemAttachmentPut1()
-    throws Exception
-  {
-    final var message =
-      new CACommandItemAttachmentPut(
-        CAItemID.random(),
-        new CAItemAttachment(
-          CAItemAttachmentID.random(),
-          "Description",
-          "text/plain",
-          "text",
-          5L,
-          "SHA-256",
-          "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
-          Optional.of(new CAByteArray("HELLO".getBytes(UTF_8)))
-        ));
     assertEquals(message, this.roundTrip(message));
   }
 
@@ -473,12 +415,6 @@ public final class CAMessageServicesV1Test
               CAItemID.random(),
               CAItemID.random()
             )),
-          new CACommandItemAttachmentPut(
-            CAItemID.random(),
-            ITEM_0.attachments().values().stream().findFirst().orElseThrow()),
-          new CACommandItemAttachmentRemove(
-            CAItemID.random(),
-            CAItemAttachmentID.random()),
           new CACommandItemMetadataPut(
             CAItemID.random(),
             new HashSet<>(ITEM_0.metadata().values())),
@@ -546,6 +482,22 @@ public final class CAMessageServicesV1Test
   }
 
   @Test
+  public void testResponseFilePut()
+    throws Exception
+  {
+    final var message = new CAResponseFilePut(FILE_0);
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testResponseFileRemove()
+    throws Exception
+  {
+    final var message = new CAResponseFileRemove(FILE_0.id());
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
   public void testResponseLoginUsernamePassword()
     throws Exception
   {
@@ -602,24 +554,6 @@ public final class CAMessageServicesV1Test
   {
     final var message =
       new CAResponseItemAttachmentRemove(ITEM_0);
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testResponseItemAttachmentPut0()
-    throws Exception
-  {
-    final var message =
-      new CAResponseItemAttachmentPut(ITEM_0);
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testResponseItemAttachmentPut1()
-    throws Exception
-  {
-    final var message =
-      new CAResponseItemAttachmentPut(ITEM_0);
     assertEquals(message, this.roundTrip(message));
   }
 
@@ -777,14 +711,12 @@ public final class CAMessageServicesV1Test
       new CAEventType.CAEventUpdated(
         Set.of(
           CAItemID.random(),
-          CAItemAttachmentID.random(),
           CALocationID.random(),
           CATagID.random(),
           CAUserID.random()
         ),
         Set.of(
           CAItemID.random(),
-          CAItemAttachmentID.random(),
           CALocationID.random(),
           CATagID.random(),
           CAUserID.random()

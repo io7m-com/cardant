@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface ItemAttachmentsType extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE8AC4557B7260DDF20EBB7BA8F2F0FBA.TypeSystemHolder.typeSystem, "itemattachmentstype81b2type");
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE431AFF67C9477B4270ED45520E13157.TypeSystemHolder.typeSystem, "itemattachmentstype81b2type");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 

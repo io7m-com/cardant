@@ -25,7 +25,7 @@ import com.io7m.cardant.protocol.versioning.messages.CAVersioningAPIVersioning;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.internal.rest.CAServerEventType;
 import com.io7m.cardant.server.internal.rest.CAVersioningServlet;
-import com.io7m.cardant.server.internal.rest.v1.CA1AttachmentServlet;
+import com.io7m.cardant.server.internal.rest.v1.CA1FileServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1CommandServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1EventServlet;
 import com.io7m.cardant.server.internal.rest.v1.CA1LoginServlet;
@@ -184,8 +184,8 @@ public final class CAJettyServer implements Closeable
 
     servlets.addServlet(
       new CA1ServletHolder<>(
-        CA1AttachmentServlet.class, () -> {
-        return new CA1AttachmentServlet(
+        CA1FileServlet.class, () -> {
+        return new CA1FileServlet(
           serverEvents,
           inventoryParsersV1,
           inventorySerializersV1,
@@ -193,7 +193,7 @@ public final class CAJettyServer implements Closeable
           database
         );
       }),
-      "/v1/attachment"
+      "/v1/file"
     );
 
     /*

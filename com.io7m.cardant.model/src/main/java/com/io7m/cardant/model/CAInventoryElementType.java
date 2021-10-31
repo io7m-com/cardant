@@ -22,6 +22,7 @@ package com.io7m.cardant.model;
 
 public sealed interface CAInventoryElementType
   permits CAIdType,
+  CAFileType,
   CAIds,
   CAItem,
   CAItemAttachment,

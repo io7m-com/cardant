@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.database.derby.internal;
 
+import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATagID;
@@ -88,5 +89,17 @@ public final class CADatabaseBytes
     final byte[] bytes)
   {
     return new CATagID(uuidFromBytes(bytes));
+  }
+
+  static CAFileID fileIdFromBytes(
+    final byte[] bytes)
+  {
+    return new CAFileID(uuidFromBytes(bytes));
+  }
+
+  static byte[] fileIdBytes(
+    final CAFileID id)
+  {
+    return uuidBytes(id.id());
   }
 }

@@ -19,99 +19,24 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface ItemAttachmentType extends org.apache.xmlbeans.XmlObject {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE8AC4557B7260DDF20EBB7BA8F2F0FBA.TypeSystemHolder.typeSystem, "itemattachmenttypee627type");
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE431AFF67C9477B4270ED45520E13157.TypeSystemHolder.typeSystem, "itemattachmenttypee627type");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
     /**
-     * Gets the "ItemAttachmentData" element
+     * Gets the "File" element
      */
-    byte[] getItemAttachmentData();
+    com.io7m.cardant.protocol.inventory.v1.beans.FileType getFile();
 
     /**
-     * Gets (as xml) the "ItemAttachmentData" element
+     * Sets the "File" element
      */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDataType xgetItemAttachmentData();
+    void setFile(com.io7m.cardant.protocol.inventory.v1.beans.FileType file);
 
     /**
-     * True if has "ItemAttachmentData" element
+     * Appends and returns a new empty "File" element
      */
-    boolean isSetItemAttachmentData();
-
-    /**
-     * Sets the "ItemAttachmentData" element
-     */
-    void setItemAttachmentData(byte[] itemAttachmentData);
-
-    /**
-     * Sets (as xml) the "ItemAttachmentData" element
-     */
-    void xsetItemAttachmentData(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDataType itemAttachmentData);
-
-    /**
-     * Unsets the "ItemAttachmentData" element
-     */
-    void unsetItemAttachmentData();
-
-    /**
-     * Gets the "id" attribute
-     */
-    java.lang.String getId();
-
-    /**
-     * Gets (as xml) the "id" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetId();
-
-    /**
-     * Sets the "id" attribute
-     */
-    void setId(java.lang.String id);
-
-    /**
-     * Sets (as xml) the "id" attribute
-     */
-    void xsetId(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType id);
-
-    /**
-     * Gets the "description" attribute
-     */
-    java.lang.String getDescription();
-
-    /**
-     * Gets (as xml) the "description" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDescriptionType xgetDescription();
-
-    /**
-     * Sets the "description" attribute
-     */
-    void setDescription(java.lang.String description);
-
-    /**
-     * Sets (as xml) the "description" attribute
-     */
-    void xsetDescription(com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentDescriptionType description);
-
-    /**
-     * Gets the "mediaType" attribute
-     */
-    java.lang.String getMediaType();
-
-    /**
-     * Gets (as xml) the "mediaType" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.MediaType xgetMediaType();
-
-    /**
-     * Sets the "mediaType" attribute
-     */
-    void setMediaType(java.lang.String mediaType);
-
-    /**
-     * Sets (as xml) the "mediaType" attribute
-     */
-    void xsetMediaType(com.io7m.cardant.protocol.inventory.v1.beans.MediaType mediaType);
+    com.io7m.cardant.protocol.inventory.v1.beans.FileType addNewFile();
 
     /**
      * Gets the "relation" attribute
@@ -132,64 +57,4 @@ public interface ItemAttachmentType extends org.apache.xmlbeans.XmlObject {
      * Sets (as xml) the "relation" attribute
      */
     void xsetRelation(com.io7m.cardant.protocol.inventory.v1.beans.RelationType relation);
-
-    /**
-     * Gets the "size" attribute
-     */
-    java.math.BigInteger getSize();
-
-    /**
-     * Gets (as xml) the "size" attribute
-     */
-    org.apache.xmlbeans.XmlUnsignedLong xgetSize();
-
-    /**
-     * Sets the "size" attribute
-     */
-    void setSize(java.math.BigInteger size);
-
-    /**
-     * Sets (as xml) the "size" attribute
-     */
-    void xsetSize(org.apache.xmlbeans.XmlUnsignedLong size);
-
-    /**
-     * Gets the "hashAlgorithm" attribute
-     */
-    java.lang.String getHashAlgorithm();
-
-    /**
-     * Gets (as xml) the "hashAlgorithm" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.HashAlgorithmType xgetHashAlgorithm();
-
-    /**
-     * Sets the "hashAlgorithm" attribute
-     */
-    void setHashAlgorithm(java.lang.String hashAlgorithm);
-
-    /**
-     * Sets (as xml) the "hashAlgorithm" attribute
-     */
-    void xsetHashAlgorithm(com.io7m.cardant.protocol.inventory.v1.beans.HashAlgorithmType hashAlgorithm);
-
-    /**
-     * Gets the "hashValue" attribute
-     */
-    java.lang.String getHashValue();
-
-    /**
-     * Gets (as xml) the "hashValue" attribute
-     */
-    com.io7m.cardant.protocol.inventory.v1.beans.HashValueType xgetHashValue();
-
-    /**
-     * Sets the "hashValue" attribute
-     */
-    void setHashValue(java.lang.String hashValue);
-
-    /**
-     * Sets (as xml) the "hashValue" attribute
-     */
-    void xsetHashValue(com.io7m.cardant.protocol.inventory.v1.beans.HashValueType hashValue);
 }

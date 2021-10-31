@@ -28,7 +28,7 @@ public final class CAItemAttachmentMutableCellController
   private AnchorPane container;
 
   @FXML
-  private TextField idField;
+  private TextField fileIdField;
 
   @FXML
   private TextField descriptionField;
@@ -67,17 +67,18 @@ public final class CAItemAttachmentMutableCellController
   public void setItemAttachment(
     final CAItemAttachmentMutable attachment)
   {
-    this.idField.setText(attachment.id().id().toString());
+    final var file = attachment.file();
 
+    this.fileIdField.setText(file.id().displayId());
     this.descriptionField.textProperty()
-      .bind(attachment.description());
+      .bind(file.description());
     this.mediaTypeField.textProperty()
-      .bind(attachment.mediaType());
+      .bind(file.mediaType());
     this.relationField.textProperty()
-      .bind(attachment.relation());
+      .set(attachment.relation());
 
-    this.sizeField.setText(formatSize(attachment.size()));
-    this.hashAlgorithmField.setText(attachment.hashAlgorithm());
-    this.hashValueField.setText(attachment.hashValue());
+    this.sizeField.setText(formatSize(file.size()));
+    this.hashAlgorithmField.setText(file.hashAlgorithm());
+    this.hashValueField.setText(file.hashValue());
   }
 }

@@ -19,7 +19,7 @@ import org.apache.xmlbeans.impl.schema.SimpleTypeFactory;
  * This is a complex type.
  */
 public interface CommandItemAttachmentRemoveType extends com.io7m.cardant.protocol.inventory.v1.beans.CommandType {
-    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentRemoveType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE8AC4557B7260DDF20EBB7BA8F2F0FBA.TypeSystemHolder.typeSystem, "commanditemattachmentremovetypeef2atype");
+    DocumentFactory<com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentRemoveType> Factory = new DocumentFactory<>(com.io7m.cardant.protocol.inventory.v1.beans.system.sE431AFF67C9477B4270ED45520E13157.TypeSystemHolder.typeSystem, "commanditemattachmentremovetypeef2atype");
     org.apache.xmlbeans.SchemaType type = Factory.getType();
 
 
@@ -44,22 +44,42 @@ public interface CommandItemAttachmentRemoveType extends com.io7m.cardant.protoc
     void xsetItem(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType item);
 
     /**
-     * Gets the "attachment" attribute
+     * Gets the "file" attribute
      */
-    java.lang.String getAttachment();
+    java.lang.String getFile();
 
     /**
-     * Gets (as xml) the "attachment" attribute
+     * Gets (as xml) the "file" attribute
      */
-    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetAttachment();
+    com.io7m.cardant.protocol.inventory.v1.beans.UUIDType xgetFile();
 
     /**
-     * Sets the "attachment" attribute
+     * Sets the "file" attribute
      */
-    void setAttachment(java.lang.String attachment);
+    void setFile(java.lang.String file);
 
     /**
-     * Sets (as xml) the "attachment" attribute
+     * Sets (as xml) the "file" attribute
      */
-    void xsetAttachment(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType attachment);
+    void xsetFile(com.io7m.cardant.protocol.inventory.v1.beans.UUIDType file);
+
+    /**
+     * Gets the "relation" attribute
+     */
+    java.lang.String getRelation();
+
+    /**
+     * Gets (as xml) the "relation" attribute
+     */
+    com.io7m.cardant.protocol.inventory.v1.beans.RelationType xgetRelation();
+
+    /**
+     * Sets the "relation" attribute
+     */
+    void setRelation(java.lang.String relation);
+
+    /**
+     * Sets (as xml) the "relation" attribute
+     */
+    void xsetRelation(com.io7m.cardant.protocol.inventory.v1.beans.RelationType relation);
 }

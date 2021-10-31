@@ -19,6 +19,9 @@
   <logger name="com.io7m.jxe.core"
           level="ERROR"/>
 
+  <logger name="com.io7m.jwheatsheaf"
+          level="TRACE"/>
+
   <root level="DEBUG">
     <appender-ref ref="STDERR"/>
   </root>

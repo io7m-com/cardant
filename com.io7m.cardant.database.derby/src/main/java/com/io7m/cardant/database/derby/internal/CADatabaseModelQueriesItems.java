@@ -17,10 +17,10 @@
 package com.io7m.cardant.database.derby.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemLocations;
@@ -37,15 +37,12 @@ import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.apache.derby.shared.common.error.DerbySQLIntegrityConstraintViolationException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -56,9 +53,10 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_DUPLICATE;
-import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_GENERAL;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_NONEXISTENT;
 import static com.io7m.cardant.database.api.CADatabaseErrorCode.ERROR_PARAMETERS_INVALID;
+import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.fileIdBytes;
+import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.fileIdFromBytes;
 import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.itemIdBytes;
 import static com.io7m.cardant.database.derby.internal.CADatabaseBytes.locationIdBytes;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
@@ -155,75 +153,16 @@ public final class CADatabaseModelQueriesItems
     DELETE FROM cardant.item_metadata
       WHERE metadata_item_id = ?
     """;
-  private static final String ITEM_ATTACHMENT_GET = """
-    SELECT
-      cia.attachment_id,
-      cia.attachment_item_id,
-      cia.attachment_description,
-      cia.attachment_media_type,
-      cia.attachment_relation,
-      cia.attachment_hash_algorithm,
-      cia.attachment_hash_value,
-      cia.attachment_data,
-      cia.attachment_data_used
-    FROM cardant.item_attachments cia
-      WHERE attachment_id = ?
-    """;
-  private static final String ITEM_ATTACHMENT_PUT_INSERT = """
-    INSERT INTO cardant.item_attachments (
-      attachment_id,
-      attachment_item_id,
-      attachment_description,
-      attachment_media_type,
-      attachment_relation,
-      attachment_hash_algorithm,
-      attachment_hash_value,
-      attachment_data,
-      attachment_data_used
-    ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?
-    )
-    """;
-  private static final String ITEM_ATTACHMENT_PUT_UPDATE = """
-    UPDATE cardant.item_attachments
-      SET attachment_description = ?,
-          attachment_media_type = ?,
-          attachment_relation = ?,
-          attachment_hash_algorithm = ?,
-          attachment_hash_value = ?,
-          attachment_data = ?,
-          attachment_data_used = ?
-      WHERE attachment_id = ? AND attachment_item_id = ?
-    """;
-  private static final String ITEM_ATTACHMENTS_GET = """
-    SELECT
-      cia.attachment_id,
-      cia.attachment_item_id,
-      cia.attachment_description,
-      cia.attachment_media_type,
-      cia.attachment_relation,
-      cia.attachment_hash_algorithm,
-      cia.attachment_hash_value,
-      cia.attachment_data,
-      cia.attachment_data_used
-    FROM cardant.item_attachments cia
-      WHERE attachment_item_id = ?
-      ORDER BY attachment_id
-    """;
-  private static final String ITEM_FOR_ATTACHMENT = """
-    SELECT
-      cia.attachment_item_id
-    FROM cardant.item_attachments cia
-      WHERE attachment_id = ?
-    """;
 
   private static final String ITEM_ATTACHMENTS_REMOVE_ALL_BY_ITEM = """
     DELETE FROM cardant.item_attachments
-      WHERE attachment_item_id = ?
+      WHERE item_id = ?
     """;
   private static final String ITEM_ATTACHMENT_REMOVE = """
     DELETE FROM cardant.item_attachments
-      WHERE attachment_id = ?
+      WHERE item_id = ?
+        AND file_id = ?
+        AND relation = ?
     """;
   private static final String ITEM_COUNT_SUM_GET = """
     SELECT
@@ -276,13 +215,21 @@ public final class CADatabaseModelQueriesItems
     WHERE il.item_id = ?
       AND il.item_location = ?
     """;
-
+  private static final String ITEM_ATTACHMENT_ADD_INNER = """
+      INSERT INTO cardant.item_attachments (
+        file_id,
+        item_id,
+        relation
+      ) VALUES (?, ?, ?)
+    """;
   private final CADatabaseMessages messages;
   private final CADatabaseModelQueriesLocations locations;
+  private final CADatabaseModelQueriesFiles files;
   private final CADatabaseModelQueriesTags tags;
 
   CADatabaseModelQueriesItems(
     final CADatabaseModelQueriesLocations inLocations,
+    final CADatabaseModelQueriesFiles inFiles,
     final CADatabaseModelQueriesTags inTags,
     final CADatabaseDerbyTransaction inTransaction)
   {
@@ -290,6 +237,8 @@ public final class CADatabaseModelQueriesItems
 
     this.locations =
       Objects.requireNonNull(inLocations, "locations");
+    this.files =
+      Objects.requireNonNull(inFiles, "inFiles");
     this.tags =
       Objects.requireNonNull(inTags, "tags");
     this.messages =
@@ -326,121 +275,6 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private static void itemAttachmentPutInsert(
-    final Connection connection,
-    final CAItemID itemID,
-    final CAItemAttachment attachment,
-    final CAByteArray data)
-    throws SQLException, IOException
-  {
-    final var dataLength = data.data().length;
-    final var blob = connection.createBlob();
-    try (var output = blob.setBinaryStream(1L)) {
-      output.write(data.data());
-    }
-
-    try (var statement =
-           connection.prepareStatement(ITEM_ATTACHMENT_PUT_INSERT)) {
-      statement.setBytes(1, attachmentIdBytes(attachment.id()));
-      statement.setBytes(2, itemIdBytes(itemID));
-      statement.setString(3, attachment.description());
-      statement.setString(4, attachment.mediaType());
-      statement.setString(5, attachment.relation());
-      statement.setString(6, attachment.hashAlgorithm());
-      statement.setString(7, attachment.hashValue());
-      statement.setBlob(8, blob);
-      statement.setLong(9, Integer.toUnsignedLong(dataLength));
-      statement.executeUpdate();
-    }
-  }
-
-  private static CAItemAttachmentID attachmentIdFromBytes(
-    final byte[] bytes)
-  {
-    return new CAItemAttachmentID(CADatabaseBytes.uuidFromBytes(bytes));
-  }
-
-  private static byte[] attachmentIdBytes(
-    final CAItemAttachmentID id)
-  {
-    return CADatabaseBytes.uuidBytes(id.id());
-  }
-
-  private static void itemAttachmentPutUpdate(
-    final Connection connection,
-    final CAItemID itemID,
-    final CAItemAttachment attachment,
-    final CAByteArray data)
-    throws SQLException, IOException
-  {
-    final var dataLength = data.data().length;
-    final var blob = connection.createBlob();
-    try (var output = blob.setBinaryStream(1L)) {
-      output.write(data.data());
-    }
-
-    try (var statement =
-           connection.prepareStatement(ITEM_ATTACHMENT_PUT_UPDATE)) {
-      statement.setString(1, attachment.description());
-      statement.setString(2, attachment.mediaType());
-      statement.setString(3, attachment.relation());
-      statement.setString(4, attachment.hashAlgorithm());
-      statement.setString(5, attachment.hashValue());
-      statement.setBlob(6, blob);
-      statement.setLong(7, Integer.toUnsignedLong(dataLength));
-      statement.setBytes(8, attachmentIdBytes(attachment.id()));
-      statement.setBytes(9, itemIdBytes(itemID));
-      statement.executeUpdate();
-    }
-  }
-
-  private static CAItemAttachment itemAttachmentFromResultWithData(
-    final ResultSet result)
-    throws SQLException, IOException
-  {
-    final var blob =
-      result.getBlob("attachment_data");
-    final var size =
-      result.getLong("attachment_data_used");
-
-    final var byteArrayStream = new ByteArrayOutputStream();
-    try (var blobInput = blob.getBinaryStream()) {
-      for (long index = 0L; Long.compareUnsigned(index, size) < 0; ++index) {
-        byteArrayStream.write(blobInput.read());
-      }
-    }
-
-    final var bytes =
-      byteArrayStream.toByteArray();
-
-    return new CAItemAttachment(
-      attachmentIdFromBytes(result.getBytes("attachment_id")),
-      result.getString("attachment_description"),
-      result.getString("attachment_media_type"),
-      result.getString("attachment_relation"),
-      size,
-      result.getString("attachment_hash_algorithm"),
-      result.getString("attachment_hash_value"),
-      Optional.of(new CAByteArray(bytes))
-    );
-  }
-
-  private static CAItemAttachment itemAttachmentFromResultWithoutData(
-    final ResultSet result)
-    throws SQLException
-  {
-    return new CAItemAttachment(
-      attachmentIdFromBytes(result.getBytes("attachment_id")),
-      result.getString("attachment_description"),
-      result.getString("attachment_media_type"),
-      result.getString("attachment_relation"),
-      result.getLong("attachment_data_used"),
-      result.getString("attachment_hash_algorithm"),
-      result.getString("attachment_hash_value"),
-      Optional.empty()
-    );
-  }
-
   private static TreeMap<String, CAItemMetadata> itemMetadataInner(
     final Connection connection,
     final CAItemID itemId)
@@ -465,77 +299,6 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private static TreeMap<CAItemAttachmentID, CAItemAttachment> itemAttachmentsInner(
-    final Connection connection,
-    final CAItemID item,
-    final boolean withData)
-    throws SQLException, IOException
-  {
-    final var attachments =
-      new TreeMap<CAItemAttachmentID, CAItemAttachment>();
-
-    if (withData) {
-      try (var statement =
-             connection.prepareStatement(ITEM_ATTACHMENTS_GET)) {
-        statement.setBytes(1, itemIdBytes(item));
-
-        try (var results = statement.executeQuery()) {
-          while (results.next()) {
-            final var attachment =
-              itemAttachmentFromResultWithData(results);
-            attachments.put(attachment.id(), attachment);
-          }
-          return attachments;
-        }
-      }
-    }
-
-    try (var statement =
-           connection.prepareStatement(ITEM_ATTACHMENTS_GET)) {
-      statement.setBytes(1, itemIdBytes(item));
-
-      try (var results = statement.executeQuery()) {
-        while (results.next()) {
-          final var attachment =
-            itemAttachmentFromResultWithoutData(results);
-          attachments.put(attachment.id(), attachment);
-        }
-        return attachments;
-      }
-    }
-  }
-
-  private static Optional<CAItemAttachment> itemAttachmentGetInner(
-    final Connection connection,
-    final CAItemAttachmentID id,
-    final boolean withData)
-    throws SQLException, IOException
-  {
-    if (withData) {
-      try (var statement =
-             connection.prepareStatement(ITEM_ATTACHMENT_GET)) {
-        statement.setBytes(1, attachmentIdBytes(id));
-        try (var result = statement.executeQuery()) {
-          if (result.next()) {
-            return Optional.of(itemAttachmentFromResultWithData(result));
-          }
-          return Optional.empty();
-        }
-      }
-    }
-
-    try (var statement =
-           connection.prepareStatement(ITEM_ATTACHMENT_GET)) {
-      statement.setBytes(1, attachmentIdBytes(id));
-      try (var result = statement.executeQuery()) {
-        if (result.next()) {
-          return Optional.of(itemAttachmentFromResultWithoutData(result));
-        }
-        return Optional.empty();
-      }
-    }
-  }
-
   private static SortedSet<CATag> itemTagListInner(
     final Connection connection,
     final CAItemID item)
@@ -550,20 +313,6 @@ public final class CADatabaseModelQueriesItems
           tags.add(CADatabaseModelQueriesTags.tagParse(result));
         }
         return tags;
-      }
-    }
-  }
-
-  private static CAItemID itemForAttachment(
-    final Connection connection,
-    final CAItemAttachmentID id)
-    throws SQLException
-  {
-    try (var statement = connection.prepareStatement(ITEM_FOR_ATTACHMENT)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(id.id()));
-      try (var results = statement.executeQuery()) {
-        results.next();
-        return CADatabaseBytes.itemIdFromBytes(results.getBytes(1));
       }
     }
   }
@@ -612,11 +361,11 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private static Optional<CAItem> itemGetInner(
+  private Optional<CAItem> itemGetInner(
     final Connection connection,
     final CAItemID id,
     final boolean deleted)
-    throws SQLException, IOException
+    throws SQLException, IOException, CADatabaseException
   {
     try (var statement =
            connection.prepareStatement(ITEM_GET)) {
@@ -633,7 +382,7 @@ public final class CADatabaseModelQueriesItems
             result.getLong("item_count");
 
           final var itemAttachments =
-            itemAttachmentsInner(connection, itemId, false);
+            this.itemAttachmentsInner(connection, itemId, false);
           final var itemMetadatas =
             itemMetadataInner(connection, itemId);
           final var itemTags =
@@ -654,10 +403,50 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private static Set<CAItem> itemListInnerExact(
+  private static final String ITEM_ATTACHMENTS = """
+    SELECT
+      ia.file_id,
+      ia.item_id,
+      ia.relation
+    FROM
+      cardant.item_attachments ia
+    WHERE
+      ia.item_id = ?
+    """;
+
+  private SortedMap<CAItemAttachmentKey, CAItemAttachment> itemAttachmentsInner(
+    final Connection connection,
+    final CAItemID itemId,
+    final boolean withData)
+    throws SQLException, IOException, CADatabaseException
+  {
+    final var attachments =
+      new TreeMap<CAItemAttachmentKey, CAItemAttachment>();
+
+    try (var statement = connection.prepareStatement(ITEM_ATTACHMENTS)) {
+      statement.setBytes(1, itemIdBytes(itemId));
+      try (var results = statement.executeQuery()) {
+        while (results.next()) {
+          final var fileId =
+            fileIdFromBytes(results.getBytes("file_id"));
+          final var relation =
+            results.getString("relation");
+          final var file =
+            this.files.fileGetInner(connection, fileId, withData)
+              .orElseThrow(() -> this.files.noSuchFile(fileId.id()));
+
+          final var attachment = new CAItemAttachment(file, relation);
+          attachments.put(attachment.key(), attachment);
+        }
+      }
+    }
+    return attachments;
+  }
+
+  private Set<CAItem> itemListInnerExact(
     final Connection connection,
     final CALocationID location)
-    throws SQLException, IOException
+    throws SQLException, IOException, CADatabaseException
   {
     final var ids =
       itemListInnerExactIDsAll(connection, location);
@@ -666,7 +455,7 @@ public final class CADatabaseModelQueriesItems
     for (final var id : ids) {
       final var count =
         itemLocationCountGetInner(connection, id, location);
-      itemGetInner(connection, id, false)
+      this.itemGetInner(connection, id, false)
         .map(item -> item.withCountHere(count))
         .ifPresent(items::add);
     }
@@ -713,14 +502,14 @@ public final class CADatabaseModelQueriesItems
     }
   }
 
-  private static Set<CAItem> itemListInnerAll(
+  private Set<CAItem> itemListInnerAll(
     final Connection connection)
-    throws SQLException, IOException
+    throws SQLException, IOException, CADatabaseException
   {
     final var ids = itemListInnerIDsAll(connection);
     final var items = new HashSet<CAItem>(ids.size());
     for (final var id : ids) {
-      itemGetInner(connection, id, false).ifPresent(items::add);
+      this.itemGetInner(connection, id, false).ifPresent(items::add);
     }
     return items;
   }
@@ -742,6 +531,24 @@ public final class CADatabaseModelQueriesItems
         return ids;
       }
     }
+  }
+
+  private void itemAttachmentAddInner(
+    final Connection connection,
+    final CAItemID item,
+    final CAFileID file,
+    final String relation)
+    throws SQLException
+  {
+    try (var statement = connection.prepareStatement(ITEM_ATTACHMENT_ADD_INNER)) {
+      statement.setBytes(1, fileIdBytes(file));
+      statement.setBytes(2, itemIdBytes(item));
+      statement.setString(3, relation);
+      statement.executeUpdate();
+    }
+
+    this.publishUpdate(file);
+    this.publishUpdate(item);
   }
 
   private Object itemTagRemoveInner(
@@ -795,16 +602,19 @@ public final class CADatabaseModelQueriesItems
 
   private void itemAttachmentRemoveInner(
     final Connection connection,
-    final CAItemAttachmentID id)
+    final CAItemID itemId,
+    final CAFileID fileID,
+    final String relation)
     throws SQLException
   {
-    final var itemId = itemForAttachment(connection, id);
     try (var statement = connection.prepareStatement(ITEM_ATTACHMENT_REMOVE)) {
-      statement.setBytes(1, CADatabaseBytes.uuidBytes(id.id()));
+      statement.setBytes(1, itemIdBytes(itemId));
+      statement.setBytes(2, fileIdBytes(fileID));
+      statement.setString(3, relation);
       statement.executeUpdate();
     }
-    this.publishRemove(id);
     this.publishUpdate(itemId);
+    this.publishUpdate(fileID);
   }
 
   private void itemRepositInnerRemoveUpdate(
@@ -898,45 +708,6 @@ public final class CADatabaseModelQueriesItems
       attributes,
       this.messages.format("errorNonexistent")
     );
-  }
-
-  @Override
-  public Map<CAItemAttachmentID, CAItemAttachment> itemAttachments(
-    final CAItemID item,
-    final boolean withData)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(item, "item");
-
-    return this.withSQLConnection(connection -> {
-      this.itemCheck(connection, item, false);
-      return itemAttachmentsInner(connection, item, withData);
-    });
-  }
-
-  @Override
-  public Optional<CAItemAttachment> itemAttachmentGet(
-    final CAItemAttachmentID id,
-    final boolean withData)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    return this.withSQLConnection(
-      connection -> itemAttachmentGetInner(connection, id, withData));
-  }
-
-  @Override
-  public void itemAttachmentRemove(
-    final CAItemAttachmentID id)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    this.withSQLConnection(connection -> {
-      this.itemAttachmentRemoveInner(connection, id);
-      return null;
-    });
   }
 
   @Override
@@ -1134,7 +905,7 @@ public final class CADatabaseModelQueriesItems
     Objects.requireNonNull(id, "id");
 
     return this.withSQLConnection(
-      connection -> itemGetInner(connection, id, false));
+      connection -> this.itemGetInner(connection, id, false));
   }
 
   @Override
@@ -1147,14 +918,14 @@ public final class CADatabaseModelQueriesItems
     this.withSQLConnection(connection -> {
 
       {
-        final var existing = itemGetInner(connection, id, true);
+        final var existing = this.itemGetInner(connection, id, true);
         if (existing.isPresent()) {
           throw this.duplicateItemDeleted(id);
         }
       }
 
       {
-        final var existing = itemGetInner(connection, id, false);
+        final var existing = this.itemGetInner(connection, id, false);
         if (existing.isPresent()) {
           throw this.duplicateItem(id);
         }
@@ -1243,7 +1014,7 @@ public final class CADatabaseModelQueriesItems
         return itemListInnerAll(connection);
       }
       if (locationBehaviour instanceof CAListLocationExact exact) {
-        return itemListInnerExact(connection, exact.location());
+        return this.itemListInnerExact(connection, exact.location());
       }
       if (locationBehaviour instanceof CAListLocationWithDescendants with) {
         return this.itemListInnerWithDescendants(connection, with.location());
@@ -1287,14 +1058,11 @@ public final class CADatabaseModelQueriesItems
     Objects.requireNonNull(items, "items");
 
     this.withSQLConnection(connection -> {
-      final var removedAttachments =
-        new HashSet<CAItemAttachmentID>();
-
       for (final var item : items) {
         final var currentItemDeleted =
-          itemGetInner(connection, item, true);
+          this.itemGetInner(connection, item, true);
         final var currentItemNotDeleted =
-          itemGetInner(connection, item, false);
+          this.itemGetInner(connection, item, false);
         final var currentItem =
           currentItemDeleted.or(() -> currentItemNotDeleted)
             .orElseThrow(() -> this.noSuchItem(item.id()));
@@ -1320,12 +1088,6 @@ public final class CADatabaseModelQueriesItems
           statement.setBytes(1, itemIdBytes);
           statement.executeUpdate();
         }
-
-        removedAttachments.addAll(currentItem.attachments().keySet());
-      }
-
-      for (final var attachment : removedAttachments) {
-        this.publishRemove(attachment);
       }
 
       for (final var item : items) {
@@ -1345,7 +1107,7 @@ public final class CADatabaseModelQueriesItems
     this.withSQLConnection(connection -> {
       for (final var item : items) {
         final var currentItem =
-          itemGetInner(connection, item, false)
+          this.itemGetInner(connection, item, false)
             .orElseThrow(() -> this.noSuchItem(item.id()));
 
         final var itemIdBytes = itemIdBytes(item);
@@ -1355,9 +1117,6 @@ public final class CADatabaseModelQueriesItems
           statement.executeUpdate();
         }
 
-        currentItem.attachments()
-          .keySet()
-          .forEach(this::publishRemove);
         this.publishRemove(item);
       }
       return null;
@@ -1466,47 +1225,54 @@ public final class CADatabaseModelQueriesItems
   }
 
   @Override
-  public void itemAttachmentPut(
+  public void itemAttachmentAdd(
     final CAItemID item,
-    final CAItemAttachment attachment)
+    final CAFileID file,
+    final String relation)
     throws CADatabaseException
   {
     Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(attachment, "attachment");
-
-    final var data =
-      attachment.data()
-        .orElseThrow(() -> {
-          final var attributes = new HashMap<String, String>();
-          attributes.put(
-            this.messages.format("item"),
-            item.displayId());
-          attributes.put(
-            this.messages.format("attachment"),
-            attachment.id().id().toString());
-
-          return new CADatabaseException(
-            ERROR_GENERAL,
-            attributes,
-            this.messages.format("errorAttachmentMissingData")
-          );
-        });
+    Objects.requireNonNull(file, "file");
+    Objects.requireNonNull(relation, "relation");
 
     this.withSQLConnection(connection -> {
       this.itemCheck(connection, item, false);
-
-      final var existing =
-        itemAttachmentGetInner(connection, attachment.id(), false);
-
-      if (existing.isPresent()) {
-        itemAttachmentPutUpdate(connection, item, attachment, data);
-      } else {
-        itemAttachmentPutInsert(connection, item, attachment, data);
-      }
-
-      this.publishUpdate(item);
-      this.publishUpdate(attachment.id());
+      this.files.fileCheck(connection, file);
+      this.itemAttachmentAddInner(connection, item, file, relation);
       return null;
+    });
+  }
+
+  @Override
+  public void itemAttachmentRemove(
+    final CAItemID item,
+    final CAFileID file,
+    final String relation)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(file, "file");
+    Objects.requireNonNull(relation, "relation");
+
+    this.withSQLConnection(connection -> {
+      this.itemCheck(connection, item, false);
+      this.files.fileCheck(connection, file);
+      this.itemAttachmentRemoveInner(connection, item, file, relation);
+      return null;
+    });
+  }
+
+  @Override
+  public Set<CAItemAttachment> itemAttachments(
+    final CAItemID item,
+    final boolean withData)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(item, "item");
+
+    return this.withSQLConnection(connection -> {
+      this.itemCheck(connection, item, false);
+      throw new UnimplementedCodeException();
     });
   }
 

@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory.api;
 
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAInventoryElementType;
 import com.io7m.cardant.model.CAItem;
@@ -137,18 +139,18 @@ public sealed interface CAResponseType extends CAMessageType
   /**
    * @param data The returned item
    *
-   * @see CACommandType.CACommandItemAttachmentPut
+   * @see CACommandType.CACommandItemAttachmentAdd
    */
 
-  record CAResponseItemAttachmentPut(
+  record CAResponseItemAttachmentAdd(
     CAItem data)
     implements CAResponseWithElementType
   {
     /**
-     * @see CACommandType.CACommandItemAttachmentPut
+     * @see CACommandType.CACommandItemAttachmentAdd
      */
 
-    public CAResponseItemAttachmentPut
+    public CAResponseItemAttachmentAdd
     {
       Objects.requireNonNull(data, "item");
     }
@@ -429,6 +431,46 @@ public sealed interface CAResponseType extends CAMessageType
     public CAResponseLocationList
     {
       Objects.requireNonNull(data, "locations");
+    }
+  }
+
+  /**
+   * @param data The returned items
+   *
+   * @see CACommandType.CACommandFilePut
+   */
+
+  record CAResponseFilePut(
+    CAFileType data)
+    implements CAResponseWithElementType
+  {
+    /**
+     * @see CACommandType.CACommandFilePut
+     */
+
+    public CAResponseFilePut
+    {
+      Objects.requireNonNull(data, "data");
+    }
+  }
+
+  /**
+   * @param data The returned item
+   *
+   * @see CACommandType.CACommandFileRemove
+   */
+
+  record CAResponseFileRemove(
+    CAFileID data)
+    implements CAResponseWithElementType
+  {
+    /**
+     * @see CACommandType.CACommandFileRemove
+     */
+
+    public CAResponseFileRemove
+    {
+      Objects.requireNonNull(data, "data");
     }
   }
 }

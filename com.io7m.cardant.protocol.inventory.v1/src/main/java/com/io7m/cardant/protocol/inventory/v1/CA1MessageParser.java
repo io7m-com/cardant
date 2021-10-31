@@ -19,11 +19,13 @@ package com.io7m.cardant.protocol.inventory.v1;
 import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.ParseStatus;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentID;
+import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemLocations;
@@ -44,17 +46,23 @@ import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.api.CACommandType;
+import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import com.io7m.cardant.protocol.inventory.api.CAEventType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageParserType;
 import com.io7m.cardant.protocol.inventory.api.CAMessageType;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseFilePut;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseFileRemove;
+import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemUpdate;
 import com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseLoginUsernamePassword;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.protocol.inventory.api.CATransactionResponse;
-import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentPutType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandFilePutType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandFileRemoveType;
+import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentAddType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemAttachmentRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemCreateType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandItemGetType;
@@ -74,8 +82,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.CommandTagsPutType;
 import com.io7m.cardant.protocol.inventory.v1.beans.CommandType;
 import com.io7m.cardant.protocol.inventory.v1.beans.EventType;
 import com.io7m.cardant.protocol.inventory.v1.beans.EventUpdatedType;
+import com.io7m.cardant.protocol.inventory.v1.beans.FileIDType;
+import com.io7m.cardant.protocol.inventory.v1.beans.FileType;
 import com.io7m.cardant.protocol.inventory.v1.beans.IDType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentIDType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemAttachmentsType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ItemIDType;
@@ -96,7 +105,9 @@ import com.io7m.cardant.protocol.inventory.v1.beans.MessageType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorAttributeType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorDetailType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseErrorType;
-import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentPutType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseFilePutType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseFileRemoveType;
+import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentAddType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemAttachmentRemoveType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemCreateType;
 import com.io7m.cardant.protocol.inventory.v1.beans.ResponseItemGetType;
@@ -151,7 +162,6 @@ import java.util.stream.Collectors;
 
 import static com.io7m.anethum.common.ParseSeverity.PARSE_ERROR;
 import static com.io7m.anethum.common.ParseSeverity.PARSE_WARNING;
-import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemGet;
@@ -167,7 +177,6 @@ import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTag
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandTagsPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseError;
-import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentPut;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemAttachmentRemove;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemCreate;
 import static com.io7m.cardant.protocol.inventory.api.CAResponseType.CAResponseItemGet;
@@ -210,45 +219,6 @@ public final class CA1MessageParser implements CAMessageParserType
     this.errors =
       new ArrayList<>();
     this.validationFailed = false;
-  }
-
-  @Override
-  public CAMessageType execute()
-    throws ParseException
-  {
-    return this.executeTransformation(this.executeValidation());
-  }
-
-  private CAMessageType executeTransformation(
-    final byte[] data)
-    throws ParseException
-  {
-    try (var streamCopy = new ByteArrayInputStream(data)) {
-      final var options = new XmlOptions();
-      options.setBaseURI(this.source);
-      options.setLoadLineNumbers(true);
-      options.setLoadDTDGrammar(false);
-      options.setLoadStripComments(true);
-      options.setLoadStripProcinsts(true);
-      options.setLoadStripWhitespace(true);
-      options.setEntityExpansionLimit(1);
-
-      final var messageDocument =
-        MessageDocument.Factory.parse(streamCopy, options);
-
-      return parseMessage(messageDocument.getMessage());
-    } catch (final IOException e) {
-      this.logException(e);
-      throw new ParseException(e.getMessage(), this.errors);
-    } catch (final XmlException e) {
-      final var errors = e.getErrors();
-      if (errors != null) {
-        for (final var errorObject : errors) {
-          this.logXmlError((XmlError) errorObject);
-        }
-      }
-      throw new ParseException(e.getMessage(), this.errors);
-    }
   }
 
   private static CAMessageType parseMessage(
@@ -326,8 +296,8 @@ public final class CA1MessageParser implements CAMessageParserType
     if (response instanceof ResponseItemsRemoveType itemsRemove) {
       return parseResponseItemsRemove(itemsRemove);
     }
-    if (response instanceof ResponseItemAttachmentPutType itemAttachmentPut) {
-      return parseResponseItemAttachmentPut(itemAttachmentPut);
+    if (response instanceof ResponseItemAttachmentAddType itemAttachmentAdd) {
+      return parseResponseItemAttachmentAdd(itemAttachmentAdd);
     }
     if (response instanceof ResponseItemAttachmentRemoveType itemAttachmentRemove) {
       return parseResponseItemAttachmentRemove(itemAttachmentRemove);
@@ -353,8 +323,28 @@ public final class CA1MessageParser implements CAMessageParserType
     if (response instanceof ResponseItemRepositType itemReposit) {
       return parseResponseItemReposit(itemReposit);
     }
+    if (response instanceof ResponseFilePutType filePut) {
+      return parseResponseFilePut(filePut);
+    }
+    if (response instanceof ResponseFileRemoveType fileRemove) {
+      return parseResponseFileRemove(fileRemove);
+    }
 
     throw new IllegalStateException("Unexpected message: " + response);
+  }
+
+  private static CAResponseType parseResponseFileRemove(
+    final ResponseFileRemoveType fileRemove)
+  {
+    return new CAResponseFileRemove(
+      CAFileID.of(fileRemove.getId())
+    );
+  }
+
+  private static CAResponseType parseResponseFilePut(
+    final ResponseFilePutType filePut)
+  {
+    return new CAResponseFilePut(parseFile(filePut.getFile()));
   }
 
   private static CAResponseType parseResponseItemReposit(
@@ -470,11 +460,11 @@ public final class CA1MessageParser implements CAMessageParserType
     );
   }
 
-  private static CAResponseType parseResponseItemAttachmentPut(
-    final ResponseItemAttachmentPutType itemAttachmentPut)
+  private static CAResponseType parseResponseItemAttachmentAdd(
+    final ResponseItemAttachmentAddType itemAttachmentAdd)
   {
-    return new CAResponseItemAttachmentPut(
-      parseItem(itemAttachmentPut.getItem())
+    return new CAResponseItemAttachmentAdd(
+      parseItem(itemAttachmentAdd.getItem())
     );
   }
 
@@ -595,14 +585,42 @@ public final class CA1MessageParser implements CAMessageParserType
     );
   }
 
-  private static SortedMap<CAItemAttachmentID, CAItemAttachment> parseAttachments(
+  private static SortedMap<CAItemAttachmentKey, CAItemAttachment> parseAttachments(
     final ItemAttachmentsType itemAttachments)
   {
     return new TreeMap<>(
       itemAttachments.getItemAttachmentList()
         .stream()
         .map(CA1MessageParser::parseItemAttachment)
-        .collect(Collectors.toMap(CAItemAttachment::id, Function.identity()))
+        .collect(Collectors.toMap(
+          k -> new CAItemAttachmentKey(k.file().id(), k.relation()),
+          Function.identity()
+        ))
+    );
+  }
+
+  private static CAFileType parseFile(
+    final FileType file)
+  {
+    final var fileData = file.getFileData();
+    if (fileData != null) {
+      return new CAFileType.CAFileWithData(
+        CAFileID.of(file.getId()),
+        file.getDescription(),
+        file.getMediaType(),
+        file.getSize().longValue(),
+        file.getHashAlgorithm(),
+        file.getHashValue(),
+        new CAByteArray(fileData)
+      );
+    }
+    return new CAFileType.CAFileWithoutData(
+      CAFileID.of(file.getId()),
+      file.getDescription(),
+      file.getMediaType(),
+      file.getSize().longValue(),
+      file.getHashAlgorithm(),
+      file.getHashValue()
     );
   }
 
@@ -610,15 +628,8 @@ public final class CA1MessageParser implements CAMessageParserType
     final ItemAttachmentType itemAttachment)
   {
     return new CAItemAttachment(
-      CAItemAttachmentID.of(itemAttachment.getId()),
-      itemAttachment.getDescription(),
-      itemAttachment.getMediaType(),
-      itemAttachment.getRelation(),
-      itemAttachment.getSize().longValue(),
-      itemAttachment.getHashAlgorithm(),
-      itemAttachment.getHashValue(),
-      Optional.ofNullable(itemAttachment.getItemAttachmentData())
-        .map(CAByteArray::new)
+      parseFile(itemAttachment.getFile()),
+      itemAttachment.getRelation()
     );
   }
 
@@ -684,8 +695,8 @@ public final class CA1MessageParser implements CAMessageParserType
   {
     if (id instanceof ItemIDType) {
       return CAItemID.of(id.getValue());
-    } else if (id instanceof ItemAttachmentIDType) {
-      return CAItemAttachmentID.of(id.getValue());
+    } else if (id instanceof FileIDType) {
+      return CAFileID.of(id.getValue());
     } else if (id instanceof UserIDType) {
       return CAUserID.of(id.getValue());
     } else if (id instanceof LocationIDType) {
@@ -718,8 +729,8 @@ public final class CA1MessageParser implements CAMessageParserType
     if (command instanceof CommandItemUpdateType itemUpdate) {
       return parseCommandItemUpdate(itemUpdate);
     }
-    if (command instanceof CommandItemAttachmentPutType itemAttachmentPut) {
-      return parseCommandItemAttachmentPut(itemAttachmentPut);
+    if (command instanceof CommandItemAttachmentAddType itemAttachmentAdd) {
+      return parseCommandItemAttachmentAdd(itemAttachmentAdd);
     }
     if (command instanceof CommandItemAttachmentRemoveType itemAttachmentRemove) {
       return parseCommandItemAttachmentRemove(itemAttachmentRemove);
@@ -751,8 +762,30 @@ public final class CA1MessageParser implements CAMessageParserType
     if (command instanceof CommandItemLocationsListType itemLocations) {
       return parseCommandItemLocationsList(itemLocations);
     }
+    if (command instanceof CommandFilePutType filePut) {
+      return parseCommandFilePut(filePut);
+    }
+    if (command instanceof CommandFileRemoveType fileRemove) {
+      return parseCommandFileRemove(fileRemove);
+    }
 
     throw new IllegalStateException("Unexpected message: " + command);
+  }
+
+  private static CACommandType parseCommandFilePut(
+    final CommandFilePutType filePut)
+  {
+    return new CACommandType.CACommandFilePut(
+      parseFile(filePut.getFile())
+    );
+  }
+
+  private static CACommandType parseCommandFileRemove(
+    final CommandFileRemoveType fileRemove)
+  {
+    return new CACommandType.CACommandFileRemove(
+      CAFileID.of(fileRemove.getId())
+    );
   }
 
   private static CACommandType parseCommandItemLocationsList(
@@ -888,12 +921,13 @@ public final class CA1MessageParser implements CAMessageParserType
     );
   }
 
-  private static CACommandType parseCommandItemAttachmentPut(
-    final CommandItemAttachmentPutType itemAttachmentPut)
+  private static CACommandType parseCommandItemAttachmentAdd(
+    final CommandItemAttachmentAddType itemAttachmentAdd)
   {
-    return new CACommandItemAttachmentPut(
-      CAItemID.of(itemAttachmentPut.getItem()),
-      parseItemAttachment(itemAttachmentPut.getItemAttachment())
+    return new CACommandItemAttachmentAdd(
+      CAItemID.of(itemAttachmentAdd.getItem()),
+      CAFileID.of(itemAttachmentAdd.getFile()),
+      itemAttachmentAdd.getRelation()
     );
   }
 
@@ -902,7 +936,8 @@ public final class CA1MessageParser implements CAMessageParserType
   {
     return new CACommandItemAttachmentRemove(
       CAItemID.of(itemAttachmentRemove.getItem()),
-      CAItemAttachmentID.of(itemAttachmentRemove.getAttachment())
+      CAFileID.of(itemAttachmentRemove.getFile()),
+      itemAttachmentRemove.getRelation()
     );
   }
 
@@ -970,6 +1005,45 @@ public final class CA1MessageParser implements CAMessageParserType
     }
 
     throw new IllegalStateException("Unexpected message: " + behaviour);
+  }
+
+  @Override
+  public CAMessageType execute()
+    throws ParseException
+  {
+    return this.executeTransformation(this.executeValidation());
+  }
+
+  private CAMessageType executeTransformation(
+    final byte[] data)
+    throws ParseException
+  {
+    try (var streamCopy = new ByteArrayInputStream(data)) {
+      final var options = new XmlOptions();
+      options.setBaseURI(this.source);
+      options.setLoadLineNumbers(true);
+      options.setLoadDTDGrammar(false);
+      options.setLoadStripComments(true);
+      options.setLoadStripProcinsts(true);
+      options.setLoadStripWhitespace(true);
+      options.setEntityExpansionLimit(1);
+
+      final var messageDocument =
+        MessageDocument.Factory.parse(streamCopy, options);
+
+      return parseMessage(messageDocument.getMessage());
+    } catch (final IOException e) {
+      this.logException(e);
+      throw new ParseException(e.getMessage(), this.errors);
+    } catch (final XmlException e) {
+      final var errors = e.getErrors();
+      if (errors != null) {
+        for (final var errorObject : errors) {
+          this.logXmlError((XmlError) errorObject);
+        }
+      }
+      throw new ParseException(e.getMessage(), this.errors);
+    }
   }
 
   private void logXmlError(
