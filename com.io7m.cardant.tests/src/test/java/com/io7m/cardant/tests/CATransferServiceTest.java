@@ -47,7 +47,6 @@ import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeoutException;
@@ -128,7 +127,7 @@ public final class CATransferServiceTest
     throws Exception
   {
     final var ex =
-      Assertions.assertThrows(ExecutionException.class, () -> {
+      assertThrows(ExecutionException.class, () -> {
         this.transfers.transfer(
           new BrokenInputStream(),
           "Title",
@@ -353,7 +352,7 @@ public final class CATransferServiceTest
     throws Exception
   {
     final var ex =
-      Assertions.assertThrows(ExecutionException.class, () -> {
+      assertThrows(ExecutionException.class, () -> {
         this.transfers.transfer(
           new ByteArrayInputStream("HELLO".getBytes(UTF_8)),
           "Title",
@@ -399,7 +398,7 @@ public final class CATransferServiceTest
     throws Exception
   {
     final var ex =
-      Assertions.assertThrows(ExecutionException.class, () -> {
+      assertThrows(ExecutionException.class, () -> {
         this.transfers.transfer(
           new ByteArrayInputStream("HELLO".getBytes(UTF_8)),
           "Title",

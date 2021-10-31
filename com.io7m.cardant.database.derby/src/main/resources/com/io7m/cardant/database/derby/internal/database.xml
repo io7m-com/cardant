@@ -26,6 +26,23 @@ create table cardant.schema_version (
   </Schema>
 
   <Schema versionCurrent="1">
+
+    <Comment>
+      The users table contains authentication information for users.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.users (
+  user_id         char(16) for bit data not null primary key,
+  user_name       varchar(64)           not null,
+  user_pass_hash  varchar(256)          not null,
+  user_pass_salt  varchar(256)          not null,
+  user_pass_algo  varchar(32)           not null,
+
+  constraint unique_name unique (user_name)
+)
+]]></Statement>
+
     <Comment>
       The tags table contains the list of tags.
     </Comment>
@@ -152,22 +169,6 @@ create table cardant.item_locations (
 create view cardant.item_locations_summed (item_id, item_count)
   as select il.item_id, sum (il.count) from cardant.item_locations as il
     group by il.item_id
-]]></Statement>
-
-    <Comment>
-      The users table contains authentication information for users.
-    </Comment>
-
-    <Statement><![CDATA[
-create table cardant.users (
-  user_id         char(16) for bit data not null primary key,
-  user_name       varchar(64)           not null,
-  user_pass_hash  varchar(256)          not null,
-  user_pass_salt  varchar(256)          not null,
-  user_pass_algo  varchar(32)           not null,
-
-  constraint unique_name unique (user_name)
-)
 ]]></Statement>
 
   </Schema>

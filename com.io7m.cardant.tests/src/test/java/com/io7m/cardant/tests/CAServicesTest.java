@@ -32,57 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class CAServicesTest
 {
-  private static final class Service0
-    implements CAServiceType, Closeable
-  {
-    private boolean closed;
-    private boolean crash;
-
-    @Override
-    public void close()
-      throws IOException
-    {
-      this.closed = true;
-      if (this.crash) {
-        throw new IOException();
-      }
-    }
-  }
-
-  private static final class Service1
-    implements CAServiceType, Closeable
-  {
-    private boolean closed;
-    private boolean crash;
-
-    @Override
-    public void close()
-      throws IOException
-    {
-      this.closed = true;
-      if (this.crash) {
-        throw new IOException();
-      }
-    }
-  }
-
-  private static final class Service2
-    implements CAServiceType, Closeable
-  {
-    private boolean closed;
-    private boolean crash;
-
-    @Override
-    public void close()
-      throws IOException
-    {
-      this.closed = true;
-      if (this.crash) {
-        throw new IOException();
-      }
-    }
-  }
-
   @Test
   public void testRequiredButEmpty()
   {
@@ -199,5 +148,56 @@ public final class CAServicesTest
     assertTrue(s0.closed);
     assertTrue(s1.closed);
     assertTrue(s2.closed);
+  }
+
+  private static final class Service0
+    implements CAServiceType, Closeable
+  {
+    private boolean closed;
+    private boolean crash;
+
+    @Override
+    public void close()
+      throws IOException
+    {
+      this.closed = true;
+      if (this.crash) {
+        throw new IOException();
+      }
+    }
+  }
+
+  private static final class Service1
+    implements CAServiceType, Closeable
+  {
+    private boolean closed;
+    private boolean crash;
+
+    @Override
+    public void close()
+      throws IOException
+    {
+      this.closed = true;
+      if (this.crash) {
+        throw new IOException();
+      }
+    }
+  }
+
+  private static final class Service2
+    implements CAServiceType, Closeable
+  {
+    private boolean closed;
+    private boolean crash;
+
+    @Override
+    public void close()
+      throws IOException
+    {
+      this.closed = true;
+      if (this.crash) {
+        throw new IOException();
+      }
+    }
   }
 }

@@ -24,7 +24,6 @@ import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.derby.CADatabasesDerby;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;

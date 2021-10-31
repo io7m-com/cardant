@@ -33,20 +33,6 @@ public final class CABindingsDemo
 
   }
 
-  private static record ItemMetadata(
-    String name,
-    SimpleStringProperty description)
-  {
-
-  }
-
-  private static record Item(
-    String name,
-    ObservableMap<String, ItemMetadata> metadata)
-  {
-
-  }
-
   public static void main(
     final String[] args)
   {
@@ -87,5 +73,19 @@ public final class CABindingsDemo
 
     final var item =
       new Item("item", metadata);
+  }
+
+  private static record ItemMetadata(
+    String name,
+    SimpleStringProperty description)
+  {
+
+  }
+
+  private static record Item(
+    String name,
+    ObservableMap<String, ItemMetadata> metadata)
+  {
+
   }
 }
