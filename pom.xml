@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>6.4.3-SNAPSHOT</version>
+    <version>7.0.0-beta0004</version>
   </parent>
 
   <groupId>com.io7m.cardant</groupId>
@@ -41,6 +41,7 @@
     <module>com.io7m.cardant.client.transfer.api</module>
     <module>com.io7m.cardant.client.transfer.vanilla</module>
     <module>com.io7m.cardant.security.api</module>
+    <module>com.io7m.cardant.security.vanilla</module>
   </modules>
 
   <properties>
@@ -59,10 +60,10 @@
     <javafx.version>18-ea+1</javafx.version>
     <jaxb.version>3.0.0</jaxb.version>
     <jetty.version>11.0.5</jetty.version>
+    <jqwik.version>1.5.6</jqwik.version>
     <jxtrand.version>1.0.0</jxtrand.version>
     <org.apache.tika.version>2.1.0</org.apache.tika.version>
     <org.immutables.version>2.8.8</org.immutables.version>
-    <jqwik.version>1.5.6</jqwik.version>
   </properties>
 
   <licenses>
