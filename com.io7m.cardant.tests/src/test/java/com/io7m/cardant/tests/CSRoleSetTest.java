@@ -19,7 +19,7 @@ package com.io7m.cardant.tests;
 import com.io7m.anethum.common.ParseException;
 import com.io7m.cardant.security.api.CSRoleName;
 import com.io7m.cardant.security.api.CSRoleSet;
-import com.io7m.cardant.security.api.CSRoleSetParsers;
+import com.io7m.cardant.security.vanilla.CSRoleSetParsers;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;

@@ -20,7 +20,7 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.cardant.security.api.CSAttributeName;
 import com.io7m.cardant.security.api.CSAttributeValue;
 import com.io7m.cardant.security.api.CSLabel;
-import com.io7m.cardant.security.api.CSLabelParsers;
+import com.io7m.cardant.security.vanilla.CSLabelParsers;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ForAll;

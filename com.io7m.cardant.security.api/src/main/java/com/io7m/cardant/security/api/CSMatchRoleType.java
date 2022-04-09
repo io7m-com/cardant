@@ -16,52 +16,56 @@
 
 package com.io7m.cardant.security.api;
 
-import java.util.Collections;
 import java.util.Objects;
-import java.util.SortedMap;
 
 /**
- * A security label.
- *
- * @param attributes The set of attributes in the label
+ * An expression that matches roles.
  */
 
-public record CSLabel(
-  SortedMap<CSAttributeName, CSAttributeValue> attributes)
+public sealed interface CSMatchRoleType
 {
   /**
-   * A security label.
-   *
-   * @param attributes The set of attributes in the label
+   * An expression that matches any set of roles.
    */
 
-  public CSLabel
+  enum CSMatchRolesAny implements CSMatchRoleType
   {
-    Objects.requireNonNull(attributes, "attributes");
-  }
+    ANY_ROLES;
 
-  /**
-   * @return An empty security label
-   */
-
-  public static CSLabel empty()
-  {
-    return new CSLabel(Collections.emptySortedMap());
-  }
-
-  /**
-   * @return The label in canonical serialized form
-   */
-
-  public String serialized()
-  {
-    final var serialized = new StringBuilder(this.attributes.size() * 8);
-    for (final var entry : this.attributes.entrySet()) {
-      serialized.append(entry.getKey().value());
-      serialized.append('=');
-      serialized.append(entry.getValue().value());
-      serialized.append(';');
+    @Override
+    public String serialized()
+    {
+      return "roles *";
     }
-    return serialized.toString();
   }
+
+  /**
+   * An expression that matches if all of the provided roles are present.
+   */
+
+  record CSMatchRolesAllOf(CSRoleSet roles)
+    implements CSMatchRoleType
+  {
+    public CSMatchRolesAllOf
+    {
+      Objects.requireNonNull(roles, "roles");
+
+      if (roles.roles().isEmpty()) {
+        throw new IllegalArgumentException(
+          "Cannot match against an empty set of roles");
+      }
+    }
+
+    @Override
+    public String serialized()
+    {
+      return "roles all " + this.roles.serialized();
+    }
+  }
+
+  /**
+   * @return The serialized form of this expression
+   */
+
+  String serialized();
 }
