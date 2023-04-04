@@ -52,6 +52,10 @@ import static java.util.Locale.ROOT;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 
+/**
+ * A transfer operation.
+ */
+
 public final class CATransferOperation
 {
   private static final Logger LOG =
@@ -72,6 +76,22 @@ public final class CATransferOperation
   private long receivedSize;
   private MessageDigest messageDigest;
 
+  /**
+   * A transfer operation.
+   *
+   * @param clock           The lock
+   * @param inFuture        The future
+   * @param inStatus        The status receiver
+   * @param inStrings       The strings
+   * @param inOutputFile    The output file
+   * @param inInputStream   The input stream
+   * @param uuid            The UUID of the task
+   * @param inTitle         The title
+   * @param inExpectedSize  The expected size
+   * @param inHashAlgorithm The hash algorithm
+   * @param inHashValue     The expected hash value
+   */
+
   public CATransferOperation(
     final Clock clock,
     final CompletableFuture<?> inFuture,
@@ -85,7 +105,7 @@ public final class CATransferOperation
     final String inHashAlgorithm,
     final String inHashValue)
   {
-    this.future = 
+    this.future =
       Objects.requireNonNull(inFuture, "future");
     this.status =
       Objects.requireNonNull(inStatus, "status");
@@ -124,6 +144,15 @@ public final class CATransferOperation
     final var remaining = expectedSize - receivedSize;
     return Optional.of(Duration.ofSeconds(remaining / averageRate));
   }
+
+  /**
+   * Execute the task.
+   *
+   * @return The output file
+   *
+   * @throws CATransferException   On errors
+   * @throws CancellationException On cancellation
+   */
 
   public Path execute()
     throws CATransferException, CancellationException
@@ -330,7 +359,7 @@ public final class CATransferOperation
             receivedSecond += Integer.toUnsignedLong(r);
             digestOutput.write(buffer, 0, r);
 
-            if (this.octetsPerSecond.isReadyForMore()){
+            if (this.octetsPerSecond.isReadyForMore()) {
               this.octetsPerSecond.add(receivedSecond);
               receivedSecond = 0L;
             }

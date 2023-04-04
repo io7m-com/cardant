@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 import com.io7m.jwheatsheaf.api.JWFileChooserFilterType;
 import com.io7m.jwheatsheaf.api.JWFileChoosersType;
 import com.io7m.jwheatsheaf.ui.JWFileChoosers;
@@ -26,7 +26,7 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Objects;
 
-public final class CAFileDialogs implements CAServiceType
+public final class CAFileDialogs implements RPServiceType
 {
   private final JWFileChoosersType dialogs;
   private final CAMainStrings strings;
@@ -46,6 +46,12 @@ public final class CAFileDialogs implements CAServiceType
   public JWFileChooserFilterType filterForImages()
   {
     return new ImageFileFilter(this.strings);
+  }
+
+  @Override
+  public String description()
+  {
+    return "File dialog service";
   }
 
   private static final class ImageFileFilter

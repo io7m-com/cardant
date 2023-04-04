@@ -70,6 +70,10 @@ public record CATag(
       .compare(this, other);
   }
 
+  /**
+   * @return The tag display ID
+   */
+
   public String displayId()
   {
     return this.id.displayId();

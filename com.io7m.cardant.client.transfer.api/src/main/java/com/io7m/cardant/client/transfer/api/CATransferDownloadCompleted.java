@@ -19,6 +19,16 @@ package com.io7m.cardant.client.transfer.api;
 import java.time.Duration;
 import java.util.UUID;
 
+/**
+ * A download is completed.
+ *
+ * @param id             The ID
+ * @param title          The title
+ * @param expectedOctets The expected octet count
+ * @param receivedOctets The received octet count
+ * @param completedTime  The time the download took
+ */
+
 public record CATransferDownloadCompleted(
   UUID id,
   String title,

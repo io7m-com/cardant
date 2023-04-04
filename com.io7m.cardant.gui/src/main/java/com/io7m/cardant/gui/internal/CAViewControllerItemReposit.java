@@ -29,7 +29,7 @@ import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -110,7 +110,7 @@ public final class CAViewControllerItemReposit implements Initializable
   private Label infoText;
 
   public CAViewControllerItemReposit(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final CAItemMutable item,
     final Stage inStage)
   {

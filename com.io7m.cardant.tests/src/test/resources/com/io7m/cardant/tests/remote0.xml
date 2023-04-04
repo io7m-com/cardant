@@ -5,4 +5,5 @@
                   port="9999"/>
   <HTTP port="8080"
         sessionDirectory="/tmp/store"/>
+  <Limits/>
 </Configuration>

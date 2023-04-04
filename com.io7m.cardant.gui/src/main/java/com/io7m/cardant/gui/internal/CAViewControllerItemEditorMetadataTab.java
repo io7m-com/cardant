@@ -20,7 +20,7 @@ import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import com.io7m.cardant.gui.internal.views.CAItemMetadataTables;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -55,7 +55,7 @@ public final class CAViewControllerItemEditorMetadataTab
 
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private final CAMainController controller;
 
   @FXML private TableView<CAItemMetadataMutable> metadataTableView;
@@ -66,7 +66,7 @@ public final class CAViewControllerItemEditorMetadataTab
   private volatile CAClientType clientNow;
 
   public CAViewControllerItemEditorMetadataTab(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
     this.events =

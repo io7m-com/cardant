@@ -18,6 +18,10 @@ package com.io7m.cardant.client.transfer.api;
 
 import java.util.UUID;
 
+/**
+ * The status of a transfer.
+ */
+
 public sealed interface CATransferStatusType
   permits CATransferDownloadCancelled,
   CATransferDownloadCompleted,
@@ -25,13 +29,33 @@ public sealed interface CATransferStatusType
   CATransferDownloadWaiting,
   CATransferDownloading
 {
+  /**
+   * @return The transfer ID
+   */
+
   UUID id();
+
+  /**
+   * @return The transfer title
+   */
 
   String title();
 
+  /**
+   * @return The expected octets
+   */
+
   long expectedOctets();
 
+  /**
+   * @return The received octets
+   */
+
   long receivedOctets();
+
+  /**
+   * @return The progress
+   */
 
   double progress();
 }

@@ -18,7 +18,7 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.gui.internal.model.CAItemLocationMutable;
 import com.io7m.cardant.gui.internal.views.CAItemLocationTables;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableView;
@@ -37,13 +37,13 @@ public final class CAViewControllerItemEditorLocationsTab
 
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private final CAMainController controller;
 
   @FXML private TableView<CAItemLocationMutable> locationsTableView;
 
   public CAViewControllerItemEditorLocationsTab(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
     this.events =

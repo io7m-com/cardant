@@ -36,8 +36,8 @@
       <artifactId>com.io7m.anethum.common</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
+      <groupId>com.io7m.jxe</groupId>
+      <artifactId>com.io7m.jxe.core</artifactId>
     </dependency>
 
     <dependency>

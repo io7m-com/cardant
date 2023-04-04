@@ -16,12 +16,12 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 
 import java.util.concurrent.Flow;
 
 public interface CAMainEventBusType
-  extends Flow.Publisher<CAMainEventType>, CAServiceType
+  extends Flow.Publisher<CAMainEventType>, RPServiceType
 {
   void submit(CAMainEventType event);
 }

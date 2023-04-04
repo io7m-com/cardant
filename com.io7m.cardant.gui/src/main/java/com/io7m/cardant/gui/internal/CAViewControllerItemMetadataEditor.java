@@ -18,7 +18,7 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -42,7 +42,7 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
 
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType mainServices;
+  private final RPServiceDirectoryType mainServices;
   private final Stage stage;
 
   @FXML private Button cancelButton;
@@ -58,7 +58,7 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
   private boolean editingExisting;
 
   public CAViewControllerItemMetadataEditor(
-    final CAServiceDirectoryType inMainServices,
+    final RPServiceDirectoryType inMainServices,
     final Stage inStage)
   {
     this.stage =

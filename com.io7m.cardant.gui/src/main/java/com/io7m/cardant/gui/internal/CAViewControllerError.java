@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -42,7 +42,7 @@ public final class CAViewControllerError implements Initializable
     LoggerFactory.getLogger(CAViewControllerError.class);
 
   private final Stage stage;
-  private final CAServiceDirectoryType mainServices;
+  private final RPServiceDirectoryType mainServices;
   private final CAMainStrings strings;
   @FXML
   private TableColumn<ErrorAttribute, String> errorNameColumn;
@@ -60,7 +60,7 @@ public final class CAViewControllerError implements Initializable
   private Button dismiss;
 
   public CAViewControllerError(
-    final CAServiceDirectoryType inMainServices,
+    final RPServiceDirectoryType inMainServices,
     final Stage inStage)
   {
     this.stage =

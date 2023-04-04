@@ -16,13 +16,13 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Objects;
 
-public final class CAClockService implements CAServiceType
+public final class CAClockService implements RPServiceType
 {
   private final Clock clock;
 
@@ -35,5 +35,11 @@ public final class CAClockService implements CAServiceType
   public Instant now()
   {
     return Instant.now(this.clock);
+  }
+
+  @Override
+  public String description()
+  {
+    return "Clock service";
   }
 }

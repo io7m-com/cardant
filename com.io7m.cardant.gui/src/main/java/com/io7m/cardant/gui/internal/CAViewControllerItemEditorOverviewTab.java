@@ -25,7 +25,7 @@ import com.io7m.cardant.gui.internal.model.CAMutableModelElementType;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
 import javafx.application.Platform;
@@ -60,7 +60,7 @@ public final class CAViewControllerItemEditorOverviewTab
 
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private final Stage stage;
   private final CAMainController controller;
   private final CAFileDialogs fileDialogs;
@@ -86,7 +86,7 @@ public final class CAViewControllerItemEditorOverviewTab
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
 
   public CAViewControllerItemEditorOverviewTab(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage inStage)
   {
     this.services =

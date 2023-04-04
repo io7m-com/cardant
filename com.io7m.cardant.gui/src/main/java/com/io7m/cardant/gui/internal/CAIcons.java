@@ -111,4 +111,10 @@ public final class CAIcons implements CAIconsType
   {
     return String.format("[CAIcons 0x%08x]", Integer.valueOf(this.hashCode()));
   }
+
+  @Override
+  public String description()
+  {
+    return "Icon service";
+  }
 }

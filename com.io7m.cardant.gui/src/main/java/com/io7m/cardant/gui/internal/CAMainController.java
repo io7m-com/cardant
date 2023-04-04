@@ -45,7 +45,7 @@ import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
@@ -65,7 +65,7 @@ import java.util.function.Predicate;
 import static com.io7m.cardant.client.api.CAClientUnit.UNIT;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 
-public final class CAMainController implements CAServiceType
+public final class CAMainController implements RPServiceType
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CAMainController.class);
@@ -647,5 +647,11 @@ public final class CAMainController implements CAServiceType
   public CATableMap<CALocationID, CAItemLocationMutable> itemLocationsSelected()
   {
     return this.itemLocationsSelected;
+  }
+
+  @Override
+  public String description()
+  {
+    return "Main controller";
   }
 }

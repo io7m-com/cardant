@@ -24,6 +24,10 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
+/**
+ * The main GUI program.
+ */
+
 public final class CAGUIMain
 {
   private static final Logger LOG =
@@ -33,6 +37,12 @@ public final class CAGUIMain
   {
 
   }
+
+  /**
+   * The main GUI program.
+   *
+   * @param args The command-line arguments
+   */
 
   public static void main(
     final String[] args)

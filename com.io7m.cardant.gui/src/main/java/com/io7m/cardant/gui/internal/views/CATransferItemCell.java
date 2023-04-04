@@ -18,7 +18,7 @@ package com.io7m.cardant.gui.internal.views;
 
 import com.io7m.cardant.gui.internal.CAMainStrings;
 import com.io7m.cardant.gui.internal.model.CATransferMutable;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.Pane;
@@ -35,7 +35,7 @@ public final class CATransferItemCell extends ListCell<CATransferMutable>
   private final CATransferItemCellController controller;
 
   public CATransferItemCell(
-    final CAServiceDirectoryType mainServices)
+    final RPServiceDirectoryType mainServices)
   {
     Objects.requireNonNull(mainServices, "mainServices");
 

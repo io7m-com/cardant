@@ -235,6 +235,8 @@ public sealed interface CACommandType
 
   /**
    * Retrieve a location.
+   *
+   * @param id The location ID
    */
 
   record CACommandLocationGet(
@@ -265,7 +267,7 @@ public sealed interface CACommandType
   }
 
   /**
-   * List all of the locations an item is in, and how many times the item
+   * List all the locations an item is in, and how many times the item
    * is in them.
    *
    * @param item The item
@@ -276,10 +278,8 @@ public sealed interface CACommandType
     implements CACommandType
   {
     /**
-     * List all of the locations an item is in, and how many times the item
+     * List all the locations an item is in, and how many times the item
      * is in them.
-     *
-     * @param item The item
      */
 
     public CACommandItemLocationsList
@@ -320,8 +320,6 @@ public sealed interface CACommandType
   {
     /**
      * Delete items.
-     *
-     * @param ids The item IDs
      */
 
     public CACommandItemsRemove
@@ -411,8 +409,6 @@ public sealed interface CACommandType
   {
     /**
      * Add or update files.
-     *
-     * @param data The file
      */
 
     public CACommandFilePut
@@ -432,8 +428,6 @@ public sealed interface CACommandType
   {
     /**
      * Delete files.
-     *
-     * @param data The file
      */
 
     public CACommandFileRemove

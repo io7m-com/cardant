@@ -23,7 +23,7 @@ module com.io7m.cardant.client.preferences.vanilla
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.cardant.services.api;
+  requires transitive com.io7m.repetoir.core;
   requires transitive com.io7m.cardant.client.preferences.api;
 
   requires org.slf4j;

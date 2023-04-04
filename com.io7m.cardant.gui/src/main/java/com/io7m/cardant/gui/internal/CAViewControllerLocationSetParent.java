@@ -21,7 +21,7 @@ import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.model.CALocation;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -41,7 +41,7 @@ public final class CAViewControllerLocationSetParent implements Initializable
     LoggerFactory.getLogger(CAViewControllerLocationSetParent.class);
 
   private final Stage stage;
-  private final CAServiceDirectoryType mainServices;
+  private final RPServiceDirectoryType mainServices;
   private final CAMainStrings strings;
   private final CAMainController controller;
 
@@ -57,7 +57,7 @@ public final class CAViewControllerLocationSetParent implements Initializable
   private CAClientHostileType clientNow;
 
   public CAViewControllerLocationSetParent(
-    final CAServiceDirectoryType inMainServices,
+    final RPServiceDirectoryType inMainServices,
     final Stage inStage)
   {
     this.stage =

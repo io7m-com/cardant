@@ -46,6 +46,10 @@
     </dependency>
 
     <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.io7m.blackthorne</groupId>
       <artifactId>com.io7m.blackthorne.api</artifactId>
     </dependency>
@@ -56,6 +60,10 @@
     <dependency>
       <groupId>com.io7m.claypot</groupId>
       <artifactId>com.io7m.claypot.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.anethum</groupId>
+      <artifactId>com.io7m.anethum.common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -77,14 +85,6 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.io7m.jmulticlose</groupId>
-      <artifactId>com.io7m.jmulticlose.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.jlexing</groupId>
-      <artifactId>com.io7m.jlexing.core</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>
@@ -96,16 +96,24 @@
       <artifactId>org.osgi.annotation.versioning</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.io7m.immutables.style</groupId>
-      <artifactId>com.io7m.immutables.style</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.immutables</groupId>
-      <artifactId>value</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Ignore dependencies that bytecode analysis gets wrong. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <failOnWarning>true</failOnWarning>
+          <ignoredUnusedDeclaredDependencies>
+            <ignoredUnusedDeclaredDependency>com.io7m.cardant:*</ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>com.io7m.blackthorne:*</ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>org.eclipse.jetty:*</ignoredUnusedDeclaredDependency>
+          </ignoredUnusedDeclaredDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

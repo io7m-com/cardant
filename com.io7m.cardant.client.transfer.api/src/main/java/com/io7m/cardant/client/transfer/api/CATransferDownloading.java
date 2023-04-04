@@ -20,6 +20,17 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * A transfer is downloading.
+ *
+ * @param id                     The ID
+ * @param title                  The title
+ * @param expectedOctets         The expected octet count
+ * @param receivedOctets         The received octet count
+ * @param octetsPerSecondAverage The average number of octets per second
+ * @param expectedRemainingTime  The expected remaining time
+ */
+
 public record CATransferDownloading(
   UUID id,
   String title,

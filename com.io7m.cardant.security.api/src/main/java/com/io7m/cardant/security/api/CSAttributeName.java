@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public record CSAttributeName(String value)
   implements Comparable<CSAttributeName>
 {
-  public static final Pattern VALID_PATTERN =
+  private static final Pattern VALID_PATTERN =
     Pattern.compile("[a-z_0-9-\\.]{1,256}");
 
   /**

@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.client.transfer.api;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -24,9 +24,29 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Flow;
 
-public interface CATransferServiceType extends CAServiceType
+/**
+ * An asynchronous transfer service.
+ */
+
+public interface CATransferServiceType extends RPServiceType
 {
+  /**
+   * @return The transfer status
+   */
+
   Flow.Publisher<CATransferStatusType> status();
+
+  /**
+   * Start a transfer.
+   *
+   * @param stream        The input stream
+   * @param title         The transfer title
+   * @param expectedSize  The expected size
+   * @param hashAlgorithm The hash algorithm
+   * @param hashValue     The expected hash value
+   *
+   * @return A transfer in progress
+   */
 
   CompletableFuture<Path> transfer(
     InputStream stream,
@@ -35,6 +55,19 @@ public interface CATransferServiceType extends CAServiceType
     String hashAlgorithm,
     String hashValue
   );
+
+  /**
+   * Start a transfer.
+   *
+   * @param stream        The input stream
+   * @param title         The transfer title
+   * @param expectedSize  The expected size
+   * @param hashAlgorithm The hash algorithm
+   * @param hashValue     The expected hash value
+   * @param file          The output file
+   *
+   * @return A transfer in progress
+   */
 
   CompletableFuture<Path> transferTo(
     InputStream stream,
@@ -45,9 +78,25 @@ public interface CATransferServiceType extends CAServiceType
     Path file
   );
 
+  /**
+   * @return {@code true} if transfers are set to run slowly
+   */
+
   boolean isSlowTransfers();
 
+  /**
+   * Enable/disable slow transfers.
+   *
+   * @param slow {@code true} if transfers are set to run slowly
+   */
+
   void setSlowTransfers(boolean slow);
+
+  /**
+   * Cancel a transfer.
+   *
+   * @param id The transfer ID
+   */
 
   void cancel(UUID id);
 

@@ -25,7 +25,6 @@ import com.io7m.cardant.client.vanilla.CAClientStrings;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
-import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -44,7 +43,6 @@ import com.io7m.cardant.protocol.inventory.api.CACommandType.CACommandItemList;
 import com.io7m.cardant.protocol.inventory.api.CAMessageServicesType;
 import com.io7m.cardant.protocol.inventory.api.CATransaction;
 import com.io7m.cardant.protocol.versioning.CAVersioningMessageParserFactoryType;
-import com.io7m.junreachable.UnimplementedCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

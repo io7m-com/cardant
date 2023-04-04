@@ -50,4 +50,10 @@ public final class CAMainEventBus implements CAMainEventBusType
       "[CAMainEventBus 0x%08x]",
       Integer.valueOf(this.hashCode()));
   }
+
+  @Override
+  public String description()
+  {
+    return "Event bus service";
+  }
 }

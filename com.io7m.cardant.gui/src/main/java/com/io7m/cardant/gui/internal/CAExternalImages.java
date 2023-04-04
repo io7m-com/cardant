@@ -17,7 +17,7 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.model.CAByteArray;
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 import javafx.scene.image.Image;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public final class CAExternalImages implements CAServiceType
+public final class CAExternalImages implements RPServiceType
 {
   private final CAMainStrings strings;
 
@@ -99,5 +99,11 @@ public final class CAExternalImages implements CAServiceType
         e
       );
     }
+  }
+
+  @Override
+  public String description()
+  {
+    return "External image service";
   }
 }

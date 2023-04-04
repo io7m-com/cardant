@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.client.preferences.api;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,7 +29,7 @@ import java.util.function.Function;
  * The preferences service.
  */
 
-public interface CAPreferencesServiceType extends CAServiceType
+public interface CAPreferencesServiceType extends RPServiceType
 {
   /**
    * @return The current preferences
@@ -71,6 +71,8 @@ public interface CAPreferencesServiceType extends CAServiceType
    * @param file The file
    *
    * @throws IOException On I/O errors
+   *
+   * @return {@code file}
    */
 
   default Path addRecentFile(

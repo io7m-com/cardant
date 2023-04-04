@@ -23,6 +23,7 @@ import java.util.Objects;
  * A transaction response.
  *
  * @param responses The sequence of responses
+ * @param failed    {@code true} if the transaction failed
  */
 
 public record CATransactionResponse(

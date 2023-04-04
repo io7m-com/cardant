@@ -18,12 +18,11 @@
   <description>Inventory system (GUI)</description>
   <url>https://www.github.com/io7m/cardant</url>
 
+  <properties>
+    <checkstyle.skip>true</checkstyle.skip>
+  </properties>
+
   <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.services.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.cardant.model</artifactId>
@@ -60,6 +59,10 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.io7m.repetoir</groupId>
+      <artifactId>com.io7m.repetoir.core</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.io7m.jade</groupId>
       <artifactId>com.io7m.jade.vanilla</artifactId>
@@ -116,6 +119,22 @@
       <groupId>com.io7m.jxtrand</groupId>
       <artifactId>com.io7m.jxtrand.vanilla</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.io7m.jaffirm</groupId>
+      <artifactId>com.io7m.jaffirm.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jxtrand</groupId>
+      <artifactId>com.io7m.jxtrand.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>
@@ -128,5 +147,28 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Ignore dependencies that bytecode analysis gets wrong. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <failOnWarning>true</failOnWarning>
+          <ignoredUsedUndeclaredDependencies>
+            <ignoredUnusedDeclaredDependency>org.openjfx:*</ignoredUnusedDeclaredDependency>
+          </ignoredUsedUndeclaredDependencies>
+          <ignoredUnusedDeclaredDependencies>
+            <ignoredUnusedDeclaredDependency>org.openjfx:*</ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>com.io7m.jade:*</ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>com.io7m.jwheatsheaf:*</ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>org.apache.tika:*</ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>com.io7m.jxtrand:*</ignoredUnusedDeclaredDependency>
+          </ignoredUnusedDeclaredDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

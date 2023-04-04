@@ -47,7 +47,7 @@ module com.io7m.cardant.gui
 
   requires transitive com.io7m.cardant.client.api;
   requires transitive com.io7m.cardant.model;
-  requires transitive com.io7m.cardant.services.api;
+  requires transitive com.io7m.repetoir.core;
 
   opens com.io7m.cardant.gui.internal
     to com.io7m.jxtrand.vanilla, javafx.fxml;

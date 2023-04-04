@@ -41,6 +41,14 @@ public final class CAServerMessages extends JXTAbstractStrings
     );
   }
 
+  /**
+   * Format a parse status value.
+   *
+   * @param status The parse status
+   *
+   * @return A formatted status
+   */
+
   public String formatParseStatus(
     final ParseStatus status)
   {

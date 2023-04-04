@@ -20,12 +20,20 @@ import com.io7m.cardant.gui.CAMainApplication;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+/**
+ * GUI start methods.
+ */
+
 public final class CAGUIMainStart
 {
   private CAGUIMainStart()
   {
 
   }
+
+  /**
+   * Start the UI.
+   */
 
   public static void startApplication()
   {

@@ -39,6 +39,7 @@ module com.io7m.cardant.server
   requires transitive com.io7m.cardant.server.api;
   requires transitive com.io7m.cardant.database.api;
 
+  requires org.apache.commons.io;
   requires com.io7m.blackthorne.api;
   requires com.io7m.blackthorne.jxe;
   requires com.io7m.cardant.model;
@@ -51,7 +52,6 @@ module com.io7m.cardant.server
   requires com.io7m.jxtrand.vanilla;
   requires java.management;
   requires java.xml;
-  requires org.apache.commons.io;
   requires org.eclipse.jetty.jmx;
   requires org.eclipse.jetty.server;
   requires org.eclipse.jetty.servlet;

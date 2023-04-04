@@ -432,7 +432,7 @@ public final class CADatabaseModelQueriesItems
           final var relation =
             results.getString("relation");
           final var file =
-            this.files.fileGetInner(connection, fileId, withData)
+            CADatabaseModelQueriesFiles.fileGetInner(connection, fileId, withData)
               .orElseThrow(() -> this.files.noSuchFile(fileId.id()));
 
           final var attachment = new CAItemAttachment(file, relation);

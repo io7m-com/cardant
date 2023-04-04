@@ -60,4 +60,25 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <!-- Ignore dependencies that bytecode analysis gets wrong. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <failOnWarning>true</failOnWarning>
+          <ignoredUsedUndeclaredDependencies>
+            <ignoredUsedUndeclaredDependency>org.openjfx:*</ignoredUsedUndeclaredDependency>
+          </ignoredUsedUndeclaredDependencies>
+          <ignoredUnusedDeclaredDependencies>
+            <ignoredUnusedDeclaredDependency>com.io7m.cardant:*</ignoredUnusedDeclaredDependency>
+            <ignoredUsedUndeclaredDependency>ch.qos.logback:*</ignoredUsedUndeclaredDependency>
+            <ignoredUnusedDeclaredDependency>org.openjfx:*</ignoredUnusedDeclaredDependency>
+          </ignoredUnusedDeclaredDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

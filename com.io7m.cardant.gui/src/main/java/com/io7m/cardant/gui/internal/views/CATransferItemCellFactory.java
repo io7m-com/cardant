@@ -17,7 +17,7 @@
 package com.io7m.cardant.gui.internal.views;
 
 import com.io7m.cardant.gui.internal.model.CATransferMutable;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
@@ -29,10 +29,10 @@ public final class CATransferItemCellFactory
   ListView<CATransferMutable>,
   ListCell<CATransferMutable>>
 {
-  private final CAServiceDirectoryType mainServices;
+  private final RPServiceDirectoryType mainServices;
 
   public CATransferItemCellFactory(
-    final CAServiceDirectoryType inMainServices)
+    final RPServiceDirectoryType inMainServices)
   {
     this.mainServices =
       Objects.requireNonNull(inMainServices, "mainServices");

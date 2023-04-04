@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public final class CAViewControllers
   public static Object createController(
     final Class<?> clazz,
     final Stage stage,
-    final CAServiceDirectoryType mainServices)
+    final RPServiceDirectoryType mainServices)
   {
     LOG.debug("createController: {}", clazz);
 

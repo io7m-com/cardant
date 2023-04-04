@@ -18,6 +18,15 @@ package com.io7m.cardant.client.transfer.api;
 
 import java.util.UUID;
 
+/**
+ * A download is waiting.
+ *
+ * @param id             The ID
+ * @param title          The title
+ * @param expectedOctets The expected octet count
+ * @param receivedOctets The received octet count
+ */
+
 public record CATransferDownloadWaiting(
   UUID id,
   String title,

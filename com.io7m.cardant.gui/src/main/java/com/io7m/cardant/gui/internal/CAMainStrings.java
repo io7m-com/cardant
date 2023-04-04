@@ -16,8 +16,9 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 import com.io7m.jxtrand.api.JXTStringsType;
+import com.io7m.repetoir.core.RPServiceType;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -27,7 +28,7 @@ import java.util.ResourceBundle;
  */
 
 public final class CAMainStrings
-  implements CAServiceType, JXTStringsType
+  implements RPServiceType, JXTStringsType
 {
   private final ResourceBundle resources;
 
@@ -54,5 +55,11 @@ public final class CAMainStrings
       "[CAMainStrings 0x%08x]",
       Integer.valueOf(this.hashCode())
     );
+  }
+
+  @Override
+  public String description()
+  {
+    return "String service";
   }
 }

@@ -19,6 +19,17 @@ package com.io7m.cardant.client.transfer.api;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * A download failed.
+ *
+ * @param id              The ID
+ * @param title           The title
+ * @param expectedOctets  The expected octet count
+ * @param receivedOctets  The received octet count
+ * @param errorAttributes The error attributes
+ * @param errorMessage    The error message
+ */
+
 public record CATransferDownloadFailed(
   UUID id,
   String title,

@@ -24,10 +24,10 @@
       <artifactId>com.io7m.cardant.model</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.services.api</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.io7m.repetoir</groupId>
+      <artifactId>com.io7m.repetoir.core</artifactId>
     </dependency>
 
     <dependency>

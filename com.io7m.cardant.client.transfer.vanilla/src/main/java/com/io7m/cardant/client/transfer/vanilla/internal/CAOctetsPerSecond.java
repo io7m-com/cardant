@@ -22,13 +22,22 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Objects;
 
+/**
+ * An octets-per-second calculator.
+ */
+
 public final class CAOctetsPerSecond
 {
   private final Clock clock;
   private final DescriptiveStatistics stats;
   private volatile boolean first;
-  private volatile long thisSecond;
   private volatile Instant timeThen;
+
+  /**
+   * Create a new octets-per-second service.
+   *
+   * @param inClock The clock
+   */
 
   public CAOctetsPerSecond(
     final Clock inClock)
@@ -42,6 +51,10 @@ public final class CAOctetsPerSecond
 
     this.stats.setWindowSize(10);
   }
+
+  /**
+   * @return {@code true} if the service is ready for more samples
+   */
 
   public boolean isReadyForMore()
   {
@@ -63,10 +76,20 @@ public final class CAOctetsPerSecond
     return this.now().isAfter(this.timeThen.plusSeconds(1L));
   }
 
+  /**
+   * @return The current average
+   */
+
   public double average()
   {
     return this.stats.getMean();
   }
+
+  /**
+   * Add a new sample
+   *
+   * @param octets The number of octets received
+   */
 
   public void add(
     final long octets)

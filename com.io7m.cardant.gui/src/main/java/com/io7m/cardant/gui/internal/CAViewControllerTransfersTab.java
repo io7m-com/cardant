@@ -21,7 +21,7 @@ import com.io7m.cardant.client.transfer.api.CATransferStatusType;
 import com.io7m.cardant.gui.internal.model.CATableMap;
 import com.io7m.cardant.gui.internal.model.CATransferMutable;
 import com.io7m.cardant.gui.internal.views.CATransferItemCellFactory;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -41,13 +41,13 @@ public final class CAViewControllerTransfersTab implements Initializable
   private final CAMainStrings strings;
   private final CATableMap<UUID, CATransferMutable> transfersMap;
   private final CAPerpetualSubscriber<CATransferStatusType> transferSubscriber;
-  private final CAServiceDirectoryType mainServices;
+  private final RPServiceDirectoryType mainServices;
   private final CAClockService clock;
 
   @FXML private ListView<CATransferMutable> transfers;
 
   public CAViewControllerTransfersTab(
-    final CAServiceDirectoryType inMainServices,
+    final RPServiceDirectoryType inMainServices,
     final Stage stage)
   {
     this.mainServices =

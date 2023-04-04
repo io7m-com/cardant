@@ -59,6 +59,10 @@ public record CALocation(
     });
   }
 
+  /**
+   * @return The location display ID
+   */
+
   public String displayId()
   {
     return this.id.displayId();

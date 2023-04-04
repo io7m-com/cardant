@@ -18,7 +18,7 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -44,7 +44,7 @@ public final class CAViewControllerDebuggingTab implements Initializable
   @FXML private CheckBox slowTransfers;
 
   public CAViewControllerDebuggingTab(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
     this.events =

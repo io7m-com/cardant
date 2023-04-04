@@ -18,6 +18,11 @@
   <description>Inventory system (Security API)</description>
   <url>https://www.github.com/io7m/cardant</url>
 
+  <properties>
+    <!-- This module will be replaced with medrina. -->
+    <checkstyle.skip>true</checkstyle.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.osgi</groupId>
@@ -29,19 +34,14 @@
       <artifactId>org.osgi.annotation.versioning</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.io7m.jcip</groupId>
-      <artifactId>com.io7m.jcip.annotations</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>com.io7m.anethum</groupId>
-      <artifactId>com.io7m.anethum.api</artifactId>
+      <artifactId>com.io7m.anethum.common</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>com.io7m.anethum</groupId>
+      <artifactId>com.io7m.anethum.api</artifactId>
     </dependency>
   </dependencies>
 

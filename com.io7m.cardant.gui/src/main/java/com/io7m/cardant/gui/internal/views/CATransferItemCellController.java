@@ -27,7 +27,7 @@ import com.io7m.cardant.gui.internal.CAViewControllerMain;
 import com.io7m.cardant.gui.internal.CAViewControllers;
 import com.io7m.cardant.gui.internal.model.CATransferMutable;
 import com.io7m.cardant.gui.internal.model.CATransferStatus;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -50,7 +50,7 @@ public final class CATransferItemCellController
   private final CAMainStrings strings;
   private final CAIconsType icons;
   private final CATransferServiceType transfers;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private CATransferMutable item;
 
   @FXML private Pane container;
@@ -66,7 +66,7 @@ public final class CATransferItemCellController
 
 
   public CATransferItemCellController(
-    final CAServiceDirectoryType mainServices)
+    final RPServiceDirectoryType mainServices)
   {
     this.services =
       Objects.requireNonNull(mainServices, "mainServices");

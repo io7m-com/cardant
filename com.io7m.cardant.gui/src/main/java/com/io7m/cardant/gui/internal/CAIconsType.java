@@ -16,10 +16,10 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 import javafx.scene.image.Image;
 
-public interface CAIconsType extends CAServiceType
+public interface CAIconsType extends RPServiceType
 {
   Image error();
 

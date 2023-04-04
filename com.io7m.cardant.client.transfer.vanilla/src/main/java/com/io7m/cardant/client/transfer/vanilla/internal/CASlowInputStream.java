@@ -21,9 +21,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+/**
+ * An artificially slow input stream.
+ */
+
 public final class CASlowInputStream extends FilterInputStream
 {
   private int count;
+
+  /**
+   * An artificially slow input stream.
+   *
+   * @param input The underlying stream
+   */
 
   public CASlowInputStream(
     final InputStream input)

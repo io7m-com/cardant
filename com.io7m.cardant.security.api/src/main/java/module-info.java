@@ -25,7 +25,6 @@ module com.io7m.cardant.security.api
 
   requires transitive com.io7m.anethum.api;
   requires transitive com.io7m.anethum.common;
-  requires org.slf4j;
 
   exports com.io7m.cardant.security.api;
 }

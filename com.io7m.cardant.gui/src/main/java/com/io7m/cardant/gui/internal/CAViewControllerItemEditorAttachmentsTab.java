@@ -23,7 +23,7 @@ import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.model.CAFileMutable;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import com.io7m.cardant.gui.internal.views.CAItemAttachmentMutableCellFactory;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
 import javafx.fxml.FXML;
@@ -57,7 +57,7 @@ public final class CAViewControllerItemEditorAttachmentsTab
 
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private final CAMainController controller;
   private final CAFileDialogs fileDialogs;
   private final CAPreferencesServiceType preferences;
@@ -81,7 +81,7 @@ public final class CAViewControllerItemEditorAttachmentsTab
   private Button itemAttachmentRemove;
 
   public CAViewControllerItemEditorAttachmentsTab(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
     this.services =

@@ -22,8 +22,8 @@ import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.client.transfer.vanilla.CATransferService;
 import com.io7m.cardant.client.vanilla.CAClients;
-import com.io7m.cardant.services.api.CAServiceDirectory;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectory;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.jade.api.ApplicationDirectories;
 import com.io7m.jade.api.ApplicationDirectoriesType;
 import com.io7m.jade.api.ApplicationDirectoryConfiguration;
@@ -46,14 +46,14 @@ public final class CAMainServices
 
   }
 
-  public static CAServiceDirectoryType create()
+  public static RPServiceDirectoryType create()
     throws IOException
   {
     final ApplicationDirectoriesType directories =
       applicationDirectories();
 
     final var locale = Locale.getDefault();
-    final var services = new CAServiceDirectory();
+    final var services = new RPServiceDirectory();
     final var mainStrings = new CAMainStrings(locale);
     final var clock = new CAClockService(Clock.systemUTC());
 

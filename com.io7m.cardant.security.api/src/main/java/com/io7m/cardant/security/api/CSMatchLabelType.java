@@ -33,6 +33,10 @@ public sealed interface CSMatchLabelType
 
   enum CSMatchLabelAny implements CSMatchLabelType
   {
+    /**
+     * An expression that matches any label.
+     */
+
     ANY_LABEL;
 
     @Override
@@ -90,7 +94,7 @@ public sealed interface CSMatchLabelType
    */
 
   @SafeVarargs
-  public static CSMatchLabelAnyOf anyOf(
+  static CSMatchLabelAnyOf anyOf(
     final Map.Entry<CSAttributeName, CSMatchAttributeValueType>... entries)
   {
     return new CSMatchLabelAnyOf(

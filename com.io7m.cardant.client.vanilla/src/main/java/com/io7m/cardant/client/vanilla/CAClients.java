@@ -152,4 +152,10 @@ public final class CAClients implements CAClientFactoryType
       "[CAClients 0x%08x]",
       Integer.valueOf(this.hashCode()));
   }
+
+  @Override
+  public String description()
+  {
+    return "Client service";
+  }
 }

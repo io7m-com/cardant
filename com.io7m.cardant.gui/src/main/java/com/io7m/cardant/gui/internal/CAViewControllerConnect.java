@@ -21,7 +21,7 @@ import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
 import com.io7m.cardant.client.preferences.api.CAPreferences;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -54,7 +54,7 @@ public final class CAViewControllerConnect implements Initializable
     LoggerFactory.getLogger(CAViewControllerConnect.class);
 
   private final Stage stage;
-  private final CAServiceDirectoryType mainServices;
+  private final RPServiceDirectoryType mainServices;
   private final CAPreferencesServiceType preferences;
   private final CAMainStrings strings;
 
@@ -109,7 +109,7 @@ public final class CAViewControllerConnect implements Initializable
   private Optional<CAClientConfiguration> result;
 
   public CAViewControllerConnect(
-    final CAServiceDirectoryType inMainServices,
+    final RPServiceDirectoryType inMainServices,
     final Stage inStage)
   {
     this.stage =

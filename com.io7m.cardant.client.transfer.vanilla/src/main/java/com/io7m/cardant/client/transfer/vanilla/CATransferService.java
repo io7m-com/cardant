@@ -46,6 +46,10 @@ import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * The transfer service.
+ */
+
 public final class CATransferService implements CATransferServiceType
 {
   private static final Logger LOG =
@@ -80,6 +84,18 @@ public final class CATransferService implements CATransferServiceType
     this.status =
       new SubmissionPublisher<>();
   }
+
+  /**
+   * Create a transfer service.
+   *
+   * @param clock            The clock
+   * @param executor         The task executor
+   * @param cleanupFrequency The frequency of cleanups
+   * @param locale           The locale for string resources
+   * @param outputDirectory  The output directory
+   *
+   * @return A transfer service
+   */
 
   public static CATransferServiceType create(
     final Clock clock,
@@ -287,5 +303,11 @@ public final class CATransferService implements CATransferServiceType
     if (existing != null) {
       existing.cancel(true);
     }
+  }
+
+  @Override
+  public String description()
+  {
+    return "Transfer service.";
   }
 }

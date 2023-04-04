@@ -19,9 +19,29 @@ package com.io7m.cardant.client.transfer.vanilla.internal;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A transfer exception.
+ */
+
 public final class CATransferException extends Exception
 {
-  private Map<String, String> attributes;
+  private final Map<String, String> attributes;
+
+  /**
+   * @return The error attributes
+   */
+
+  public Map<String, String> attributes()
+  {
+    return this.attributes;
+  }
+
+  /**
+   * A transfer exception.
+   *
+   * @param inMessage    The message
+   * @param inAttributes The attributes
+   */
 
   public CATransferException(
     final String inMessage,
@@ -31,6 +51,14 @@ public final class CATransferException extends Exception
     this.attributes =
       Objects.requireNonNull(inAttributes, "attributes");
   }
+
+  /**
+   * A transfer exception.
+   *
+   * @param message      The message
+   * @param cause        The cause
+   * @param inAttributes The attributes
+   */
 
   public CATransferException(
     final String message,

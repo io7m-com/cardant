@@ -18,7 +18,7 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,7 +54,7 @@ public final class CAViewControllerMain implements Initializable
     LoggerFactory.getLogger(CAViewControllerMain.class);
 
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private final CAMainEventBusType events;
   private final CAIconsType icons;
   private final CAMainController clientController;
@@ -73,7 +73,7 @@ public final class CAViewControllerMain implements Initializable
   private CAClientType client;
 
   public CAViewControllerMain(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
     this.services =

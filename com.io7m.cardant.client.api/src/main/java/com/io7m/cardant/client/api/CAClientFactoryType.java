@@ -16,13 +16,13 @@
 
 package com.io7m.cardant.client.api;
 
-import com.io7m.cardant.services.api.CAServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 
 /**
  * The type of client factories.
  */
 
-public interface CAClientFactoryType extends CAServiceType
+public interface CAClientFactoryType extends RPServiceType
 {
   /**
    * Open a new client with the given configuration.

@@ -119,4 +119,10 @@ public final class CAPreferencesService implements CAPreferencesServiceType
       "[CAPreferencesService 0x%08x]",
       Integer.valueOf(this.hashCode()));
   }
+
+  @Override
+  public String description()
+  {
+    return "Preferences service.";
+  }
 }

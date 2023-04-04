@@ -20,7 +20,7 @@ import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -44,7 +44,7 @@ public final class CAViewControllerLocationCreate implements Initializable
     LoggerFactory.getLogger(CAViewControllerLocationCreate.class);
 
   private final Stage stage;
-  private final CAServiceDirectoryType mainServices;
+  private final RPServiceDirectoryType mainServices;
   private final CAPreferencesServiceType preferences;
   private final CAMainStrings strings;
 
@@ -72,7 +72,7 @@ public final class CAViewControllerLocationCreate implements Initializable
   private Optional<CALocation> parent;
 
   public CAViewControllerLocationCreate(
-    final CAServiceDirectoryType inMainServices,
+    final RPServiceDirectoryType inMainServices,
     final Stage inStage)
   {
     this.stage =

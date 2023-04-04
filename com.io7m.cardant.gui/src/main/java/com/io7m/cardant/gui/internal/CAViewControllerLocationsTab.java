@@ -22,7 +22,7 @@ import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -53,7 +53,7 @@ public final class CAViewControllerLocationsTab implements Initializable
   private final CAMainController controller;
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private final CALocationTreeFiltered locationTreeFiltered;
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
   private CAClientHostileType clientNow;
@@ -76,7 +76,7 @@ public final class CAViewControllerLocationsTab implements Initializable
   private TextArea locationDescriptionField;
 
   public CAViewControllerLocationsTab(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
     this.events =

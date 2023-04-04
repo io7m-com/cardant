@@ -229,7 +229,7 @@ public final class CADatabaseModelQueriesFiles extends
     throws CADatabaseException
   {
     return this.withSQLConnection(
-      connection -> this.fileGetInner(connection, file, withData));
+      connection -> fileGetInner(connection, file, withData));
   }
 
   @Override
@@ -249,7 +249,7 @@ public final class CADatabaseModelQueriesFiles extends
     throws SQLException, IOException
   {
     final var existing =
-      this.fileGetInner(connection, file.id(), false);
+      fileGetInner(connection, file.id(), false);
 
     if (existing.isPresent()) {
       filePutUpdate(connection, file);
@@ -297,7 +297,20 @@ public final class CADatabaseModelQueriesFiles extends
     }
   }
 
-  public Optional<CAFileType> fileGetInner(
+  /**
+   * Get a file.
+   *
+   * @param connection The connection
+   * @param file       The file ID
+   * @param withData   {@code true} if the file data should be read
+   *
+   * @return A file
+   *
+   * @throws SQLException On errors
+   * @throws IOException  On errors
+   */
+
+  public static Optional<CAFileType> fileGetInner(
     final Connection connection,
     final CAFileID file,
     final boolean withData)
@@ -328,14 +341,33 @@ public final class CADatabaseModelQueriesFiles extends
     }
   }
 
+  /**
+   * Check a file exists.
+   *
+   * @param connection The connection
+   * @param file       The file
+   *
+   * @throws SQLException        On errors
+   * @throws IOException         On errors
+   * @throws CADatabaseException On errors
+   */
+
   public void fileCheck(
     final Connection connection,
     final CAFileID file)
     throws SQLException, IOException, CADatabaseException
   {
-    this.fileGetInner(connection, file, false)
+    fileGetInner(connection, file, false)
       .orElseThrow(() -> this.noSuchFile(file.id()));
   }
+
+  /**
+   * No such file exists.
+   *
+   * @param file The file
+   *
+   * @return An exception
+   */
 
   public CADatabaseException noSuchFile(
     final UUID file)

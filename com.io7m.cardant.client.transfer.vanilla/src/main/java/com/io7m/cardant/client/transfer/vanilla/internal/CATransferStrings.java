@@ -27,6 +27,14 @@ import java.util.Locale;
 
 public final class CATransferStrings extends JXTAbstractStrings
 {
+  /**
+   * Transfer strings.
+   *
+   * @param locale The locale
+   *
+   * @throws IOException On errors
+   */
+
   public CATransferStrings(
     final Locale locale)
     throws IOException

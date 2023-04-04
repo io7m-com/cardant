@@ -23,8 +23,11 @@ import java.util.Objects;
 /**
  * A command failed.
  *
- * @param summary The error message summary
- * @param <T>     The returned value
+ * @param summary    The error message summary
+ * @param statusCode The error status code
+ * @param <T>        The returned value
+ * @param attributes The attributes
+ * @param details    The details
  */
 
 public record CAClientCommandError<T>(
@@ -34,6 +37,10 @@ public record CAClientCommandError<T>(
   List<String> details)
   implements CAClientCommandResultType<T>
 {
+  /**
+   * A command failed.
+   */
+
   public CAClientCommandError
   {
     Objects.requireNonNull(summary, "summary");

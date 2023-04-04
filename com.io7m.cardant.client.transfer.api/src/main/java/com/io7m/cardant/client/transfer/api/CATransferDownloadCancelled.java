@@ -18,6 +18,15 @@ package com.io7m.cardant.client.transfer.api;
 
 import java.util.UUID;
 
+/**
+ * A download was cancelled.
+ *
+ * @param id             The ID
+ * @param title          The title
+ * @param expectedOctets The expected octet count
+ * @param receivedOctets The received octet count
+ */
+
 public record CATransferDownloadCancelled(
   UUID id,
   String title,

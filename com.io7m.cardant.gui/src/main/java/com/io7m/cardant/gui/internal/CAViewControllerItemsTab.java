@@ -25,7 +25,7 @@ import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
 import com.io7m.cardant.gui.internal.views.CAItemMutableTables;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.services.api.CAServiceDirectoryType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -64,7 +64,7 @@ public final class CAViewControllerItemsTab implements Initializable
 
   private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final CAServiceDirectoryType services;
+  private final RPServiceDirectoryType services;
   private final CAMainController controller;
   private final CALocationTreeFiltered locationFilteredView;
 
@@ -103,7 +103,7 @@ public final class CAViewControllerItemsTab implements Initializable
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
 
   public CAViewControllerItemsTab(
-    final CAServiceDirectoryType mainServices,
+    final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
     this.events =

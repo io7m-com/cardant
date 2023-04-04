@@ -25,7 +25,6 @@ module com.io7m.cardant.client.transfer.vanilla
 
   requires com.io7m.jxtrand.vanilla;
   requires commons.math3;
-  requires org.apache.commons.io;
   requires org.slf4j;
 
   requires transitive com.io7m.cardant.client.transfer.api;

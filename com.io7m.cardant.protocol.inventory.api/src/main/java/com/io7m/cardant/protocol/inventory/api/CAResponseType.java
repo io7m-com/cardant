@@ -31,7 +31,6 @@ import com.io7m.cardant.model.CATags;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * The base type of responses.
@@ -71,11 +70,6 @@ public sealed interface CAResponseType extends CAMessageType
   {
     /**
      * A command failed.
-     *
-     * @param summary    The error summary
-     * @param statusCode The status code
-     * @param details    The error details
-     * @param attributes The error attributes
      */
 
     public CAResponseError
@@ -287,8 +281,6 @@ public sealed interface CAResponseType extends CAMessageType
     implements CAResponseWithElementType
   {
     /**
-     * @param data The returned item IDs
-     *
      * @see CACommandType.CACommandItemsRemove
      */
 
@@ -348,6 +340,10 @@ public sealed interface CAResponseType extends CAMessageType
     CATags data)
     implements CAResponseWithElementType
   {
+    /**
+     * @see CACommandType.CACommandTagsPut
+     */
+
     public CAResponseTagsPut
     {
       Objects.requireNonNull(data, "tags");
