@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,97 +16,48 @@
 
 package com.io7m.cardant.database.api;
 
+import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.error_codes.CAException;
+
 import java.util.Map;
-import java.util.Objects;
 
 /**
- * The type of exceptions raised by databases.
+ * The type of exceptions raised by the server database.
  */
 
-public class CADatabaseException extends Exception
+public final class CADatabaseException extends CAException
 {
-  private final CADatabaseErrorCode errorCode;
-  private final Map<String, String> attributes;
-
   /**
    * Construct an exception.
    *
-   * @param cause        The cause
-   * @param inAttributes The attributes
    * @param inErrorCode  The error code
+   * @param inMessage    The message
+   * @param inCause      The cause
+   * @param inAttributes The error attributes
    */
 
   public CADatabaseException(
-    final CADatabaseErrorCode inErrorCode,
-    final Map<String, String> inAttributes,
-    final Throwable cause)
+    final CAErrorCode inErrorCode,
+    final String inMessage,
+    final Throwable inCause,
+    final Map<String, String> inAttributes)
   {
-    super(Objects.requireNonNull(cause, "cause"));
-    this.errorCode =
-      Objects.requireNonNull(inErrorCode, "errorCode");
-    this.attributes =
-      Objects.requireNonNull(inAttributes, "attributes");
+    super(inErrorCode, inMessage, inCause, inAttributes);
   }
 
   /**
    * Construct an exception.
    *
-   * @param message      The error message
-   * @param inAttributes The attributes
    * @param inErrorCode  The error code
+   * @param inMessage    The message
+   * @param inAttributes The error attributes
    */
 
   public CADatabaseException(
-    final CADatabaseErrorCode inErrorCode,
-    final Map<String, String> inAttributes,
-    final String message)
+    final CAErrorCode inErrorCode,
+    final String inMessage,
+    final Map<String, String> inAttributes)
   {
-    super(Objects.requireNonNull(message, "message"));
-    this.errorCode =
-      Objects.requireNonNull(inErrorCode, "errorCode");
-    this.attributes =
-      Objects.requireNonNull(inAttributes, "attributes");
-  }
-
-  /**
-   * Construct an exception.
-   *
-   * @param message      The error message
-   * @param cause        The cause
-   * @param inAttributes The attributes
-   * @param inErrorCode  The error code
-   */
-
-  public CADatabaseException(
-    final CADatabaseErrorCode inErrorCode,
-    final Map<String, String> inAttributes,
-    final String message,
-    final Throwable cause)
-  {
-    super(
-      Objects.requireNonNull(message, "message"),
-      Objects.requireNonNull(cause, "cause"));
-    this.errorCode =
-      Objects.requireNonNull(inErrorCode, "errorCode");
-    this.attributes =
-      Objects.requireNonNull(inAttributes, "attributes");
-  }
-
-  /**
-   * @return The error attributes
-   */
-
-  public Map<String, String> attributes()
-  {
-    return this.attributes;
-  }
-
-  /**
-   * @return The error code
-   */
-
-  public CADatabaseErrorCode errorCode()
-  {
-    return this.errorCode;
+    super(inErrorCode, inMessage, inAttributes);
   }
 }

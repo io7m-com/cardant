@@ -35,7 +35,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.client.vanilla</artifactId>
+      <artifactId>com.io7m.cardant.client.basic</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.protocol.inventory</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -59,6 +64,10 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.io7m.hibiscus</groupId>
+      <artifactId>com.io7m.hibiscus.api</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.io7m.repetoir</groupId>
       <artifactId>com.io7m.repetoir.core</artifactId>

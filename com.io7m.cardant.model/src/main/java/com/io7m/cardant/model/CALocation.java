@@ -53,7 +53,7 @@ public record CALocation(
 
     parent.ifPresent(parentId -> {
       if (id.equals(parentId)) {
-        throw new IllegalArgumentException(
+        throw new CAValidityException(
           "A location's parent cannot equal itself");
       }
     });

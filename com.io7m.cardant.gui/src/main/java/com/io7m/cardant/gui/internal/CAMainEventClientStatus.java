@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientEventStatusChanged;
+import com.io7m.hibiscus.api.HBState;
 
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_ERROR;
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_INFO;
@@ -24,7 +24,7 @@ import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_IN_
 import static com.io7m.cardant.gui.internal.CAMainEventClassification.STATUS_UI;
 
 public record CAMainEventClientStatus(
-  CAClientEventStatusChanged status,
+  HBState status,
   String message)
   implements CAMainEventType
 {
@@ -33,12 +33,12 @@ public record CAMainEventClientStatus(
   public CAMainEventClassification classification()
   {
     return switch (this.status) {
-      case CLIENT_NEGOTIATING_PROTOCOLS,
-        CLIENT_SENDING_REQUEST,
+      case CLIENT_AUTHENTICATING,
+        CLIENT_SENDING_COMMAND,
         CLIENT_RECEIVING_DATA -> {
         yield STATUS_IN_PROGRESS;
       }
-      case CLIENT_NEGOTIATING_PROTOCOLS_FAILED -> {
+      case CLIENT_AUTHENTICATION_FAILED -> {
         yield STATUS_ERROR;
       }
       case CLIENT_CONNECTED, CLIENT_DISCONNECTED -> {

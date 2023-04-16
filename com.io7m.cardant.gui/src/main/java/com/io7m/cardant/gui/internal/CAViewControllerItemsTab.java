@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientCommandError;
-import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
@@ -25,6 +23,11 @@ import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
 import com.io7m.cardant.gui.internal.views.CAItemMutableTables;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
+import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
+import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
+import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
+import com.io7m.hibiscus.api.HBResultSuccess;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -178,7 +181,7 @@ public final class CAViewControllerItemsTab implements Initializable
   }
 
   private void onClientConnectionChanged(
-    final Optional<CAClientHostileType> clientOpt)
+    final Optional<CAClientType> clientOpt)
   {
     if (clientOpt.isPresent()) {
       this.clientNow = clientOpt.get();
@@ -268,13 +271,14 @@ public final class CAViewControllerItemsTab implements Initializable
 
     controller.result()
       .ifPresent(reposit -> {
-        this.clientNow.itemReposit(reposit)
-          .thenAccept(result -> {
-            if (result instanceof CAClientCommandError) {
-              return;
-            }
-            this.clientNow.itemLocationsList(reposit.item());
-          });
+        this.clientNow.runAsync(() -> {
+          return this.clientNow.execute(new CAICommandItemReposit(reposit))
+            .flatMap(r -> {
+              return this.clientNow.execute(
+                new CAICommandItemLocationsList(reposit.item())
+              );
+            });
+        });
       });
   }
 
@@ -303,7 +307,7 @@ public final class CAViewControllerItemsTab implements Initializable
     final CAViewControllerCreateItem create = loader.getController();
     final var itemOpt = create.result();
     itemOpt.ifPresent(item -> {
-      this.clientNow.itemCreate(item.id(), item.name());
+      this.clientNow.execute(new CAICommandItemCreate(item.id(), item.name()));
     });
   }
 
@@ -328,12 +332,14 @@ public final class CAViewControllerItemsTab implements Initializable
     if (resultOpt.isPresent()) {
       final var selected = resultOpt.get();
       if (selected.equals(YES)) {
-        this.clientNow.itemsDelete(
-          this.itemTableView.getSelectionModel()
-            .getSelectedItems()
-            .stream()
-            .map(CAItemMutable::id)
-            .collect(Collectors.toSet())
+        this.clientNow.execute(
+          new CAICommandItemsRemove(
+            this.itemTableView.getSelectionModel()
+              .getSelectedItems()
+              .stream()
+              .map(CAItemMutable::id)
+              .collect(Collectors.toSet())
+          )
         );
       }
     }

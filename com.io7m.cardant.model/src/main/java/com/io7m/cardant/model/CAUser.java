@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,42 +16,32 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.medrina.api.MSubject;
+
 import java.util.Objects;
+import java.util.UUID;
 
 /**
- * A user.
+ * A snapshot of a user.
  *
- * @param id                The user ID
- * @param name              The user name
- * @param passwordHash      The password hash
- * @param passwordSalt      The password salt
- * @param passwordAlgorithm The password algorithm
+ * @param userId  The user ID
+ * @param subject The user's security subject
  */
 
 public record CAUser(
-  CAUserID id,
-  String name,
-  String passwordHash,
-  String passwordSalt,
-  String passwordAlgorithm
-)
+  UUID userId,
+  MSubject subject)
 {
   /**
-   * Construct a user.
+   * A snapshot of a user.
    *
-   * @param id                The user ID
-   * @param name              The user name
-   * @param passwordHash      The password hash
-   * @param passwordSalt      The password salt
-   * @param passwordAlgorithm The password algorithm
+   * @param userId  The user ID
+   * @param subject The user's security subject
    */
 
   public CAUser
   {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(passwordHash, "passwordHash");
-    Objects.requireNonNull(passwordSalt, "passwordSalt");
-    Objects.requireNonNull(passwordAlgorithm, "passwordAlgorithm");
+    Objects.requireNonNull(userId, "userId");
+    Objects.requireNonNull(subject, "subject");
   }
 }

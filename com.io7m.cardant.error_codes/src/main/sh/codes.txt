@@ -1,0 +1,19 @@
+AUTHENTICATION|authentication|Authentication failed.
+CYCLIC|cyclic|A cycle was introduced into a structure that is not supposed to be cyclic.
+DUPLICATE|duplicate|An object already exists.
+HTTP_METHOD|http-method|The wrong HTTP method was used.
+IO|io|An internal I/O error.
+NONEXISTENT|nonexistent|A requested object was not found.
+NOT_LOGGED_IN|not-logged-in|A user is trying to perform an operation without having logged in.
+NO_SUPPORTED_PROTOCOLS|no-supported-protocols|The client and server have no supported protocols in common.
+OPERATION_NOT_PERMITTED|operation-not-permitted|A generic "operation not permitted" error.
+PROTOCOL|protocol|A client sent a broken message of some kind.
+RESOURCE_CLOSE_FAILED|resource-close-failed|One or more resources failed to close.
+SECURITY_POLICY_DENIED|security-policy-denied|An operation was denied by the security policy.
+SQL_FOREIGN_KEY|sql-foreign-key|A violation of an SQL foreign key integrity constraint.
+SQL_REVISION|sql-revision|An internal SQL database error relating to database revisioning.
+SQL_UNIQUE|sql-unique|A violation of an SQL uniqueness constraint.
+SQL_UNSUPPORTED_QUERY_CLASS|sql-unsupported-query-class|An attempt was made to use a query class that is unsupported.
+SQL|sql|An internal SQL database error.
+TRASCO|trasco|An error raised by the Trasco database versioning library.
+USER_NONEXISTENT|user-nonexistent|An attempt was made to reference a user that does not exist.

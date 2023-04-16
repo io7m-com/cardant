@@ -17,6 +17,7 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
@@ -39,7 +40,7 @@ public final class CAViewControllerDebuggingTab implements Initializable
   private final CAMainEventBusType events;
   private final CAMainController controller;
   private final CATransferServiceType transfers;
-  private volatile CAClientHostileType clientNow;
+  private volatile CAClientType clientNow;
 
   @FXML private CheckBox slowTransfers;
 
@@ -69,7 +70,7 @@ public final class CAViewControllerDebuggingTab implements Initializable
   }
 
   private void onClientConnectionChanged(
-    final Optional<CAClientHostileType> newValue)
+    final Optional<CAClientType> newValue)
   {
     if (newValue.isPresent()) {
       this.clientNow = newValue.get();
@@ -99,13 +100,16 @@ public final class CAViewControllerDebuggingTab implements Initializable
   @FXML
   private void onSendGarbageSelected()
   {
-    this.clientNow.garbageCommand();
+    if (this.clientNow instanceof CAClientHostileType hostile) {
+      hostile.garbageCommand();
+    }
   }
 
   @FXML
   private void onSendInvalidSelected()
   {
-    this.clientNow.invalidCommand();
+    if (this.clientNow instanceof CAClientHostileType hostile) {
+      hostile.invalidCommand();
+    }
   }
-
 }

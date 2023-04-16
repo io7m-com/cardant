@@ -16,10 +16,11 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import com.io7m.cardant.gui.internal.views.CAItemMetadataTables;
+import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -148,10 +149,10 @@ public final class CAViewControllerItemEditorMetadataTab
 
       final var itemMetadataOpt = create.result();
       itemMetadataOpt.ifPresent(metadata -> {
-        this.clientNow.itemMetadataUpdate(
+        this.clientNow.execute(new CAICommandItemMetadataPut(
           item.id(),
-          Set.of(metadata.toImmutable())
-        );
+          Set.of(itemMetadata.toImmutable())
+        ));
       });
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
@@ -201,10 +202,10 @@ public final class CAViewControllerItemEditorMetadataTab
     final var itemMetadataOpt = create.result();
     itemMetadataOpt.ifPresent(
       itemMetadata -> {
-        this.clientNow.itemMetadataUpdate(
+        this.clientNow.execute(new CAICommandItemMetadataPut(
           item.id(),
           Set.of(itemMetadata.toImmutable())
-        );
+        ));
       });
   }
 
@@ -234,10 +235,10 @@ public final class CAViewControllerItemEditorMetadataTab
             .orElseThrow()
             .toImmutable();
 
-        this.clientNow.itemMetadataDelete(
+        this.clientNow.execute(new CAICommandItemMetadataRemove(
           item.id(),
           Set.of(itemMetadata.name())
-        );
+        ));
       }
     }
   }
@@ -253,7 +254,7 @@ public final class CAViewControllerItemEditorMetadataTab
   }
 
   private void onClientConnectionChanged(
-    final Optional<CAClientHostileType> newValue)
+    final Optional<CAClientType> newValue)
   {
     if (newValue.isPresent()) {
       this.clientNow = newValue.get();

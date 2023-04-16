@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,36 +16,25 @@
 
 package com.io7m.cardant.server.api;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Configuration information for the internal web server.
+ * Configuration for the parts of the server that serve over HTTP.
  *
- * @param port             The port on which the web server will listen
- * @param sessionDirectory The directory that will hold session information
+ * @param inventoryService The inventory API service
  */
 
 public record CAServerHTTPConfiguration(
-  int port,
-  Path sessionDirectory)
+  CAServerHTTPServiceConfiguration inventoryService)
 {
   /**
-   * Configuration information for the internal web server.
+   * Configuration for the parts of the server that serve over HTTP.
    *
-   * @param port             The port on which the web server will listen
-   * @param sessionDirectory The directory that will hold session information
+   * @param inventoryService The inventory API service
    */
 
   public CAServerHTTPConfiguration
   {
-    Objects.requireNonNull(sessionDirectory, "sessionDirectory");
-
-    if (port < 1 || port >= 65536) {
-      throw new IllegalArgumentException(
-        "Port %d must be in the range [1, 65536)"
-          .formatted(Integer.valueOf(port))
-      );
-    }
+    Objects.requireNonNull(inventoryService, "inventoryService");
   }
 }

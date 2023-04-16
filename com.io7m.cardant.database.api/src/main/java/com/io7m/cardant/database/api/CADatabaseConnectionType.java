@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,10 +14,11 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.database.api;
 
 /**
- * An open database connection.
+ * The type of database connections.
  */
 
 public interface CADatabaseConnectionType extends AutoCloseable
@@ -27,13 +28,13 @@ public interface CADatabaseConnectionType extends AutoCloseable
     throws CADatabaseException;
 
   /**
-   * Execute a database transaction.
+   * Begin a new transaction.
    *
-   * @return A database transaction
+   * @return The transaction
    *
    * @throws CADatabaseException On errors
    */
 
-  CADatabaseTransactionType beginTransaction()
+  CADatabaseTransactionType openTransaction()
     throws CADatabaseException;
 }

@@ -16,6 +16,9 @@
 
 package com.io7m.cardant.client.api;
 
+import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.hibiscus.api.HBResultType;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -30,7 +33,7 @@ public interface CAClientHostileType extends CAClientType
    * @return The command result
    */
 
-  CompletableFuture<CAClientCommandResultType<Void>> garbageCommand();
+  CompletableFuture<HBResultType<CAClientUnit, CAIResponseError>> garbageCommand();
 
   /**
    * Send an invalid command to the server.
@@ -38,5 +41,5 @@ public interface CAClientHostileType extends CAClientType
    * @return The command result
    */
 
-  CompletableFuture<CAClientCommandResultType<Void>> invalidCommand();
+  CompletableFuture<HBResultType<CAClientUnit, CAIResponseError>> invalidCommand();
 }

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Schemas xmlns="urn:com.io7m.trasco.database.statements:1:0">
+  <Schema versionCurrent="0">
+    <Statement><![CDATA[
+create schema cardant
+]]>
+    </Statement>
+
+    <Comment>
+      The schema version table stores the current version of the database schema. Implementations are expected to query
+      this table on connecting to the database in order to ensure that the calling code is compatible with the tables in
+      the database.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.schema_version (
+  version_lock   char(1) not null default 'X',
+  version_number bigint  not null,
+
+  constraint check_lock_primary primary key (version_lock),
+  constraint check_lock_locked check (version_lock = 'X')
+)
+]]>
+    </Statement>
+  </Schema>
+
+  <Schema versionCurrent="1">
+    <Comment>
+      The users table stores the current set of users.
+    </Comment>
+
+    <Comment>
+      The users table stores the current set of users.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.users (
+  id      uuid     not null primary key,
+  initial boolean  not null,
+  roles   text[]   not null
+)
+]]></Statement>
+
+    <Statement>grant select, insert, update on cardant.users to cardant</Statement>
+    <Statement>grant select (id) on cardant.users to cardant_none</Statement>
+
+    <Statement><![CDATA[
+create function cardant.user_initial_check() returns trigger as $$
+  declare
+    count integer;
+  begin
+    if old.initial = false and new.initial = true then
+      select count(*) into count from cardant.users a where a.initial = true;
+      if count >= 1 then
+        raise sqlstate 'IC003' using message = 'Only one user can be the initial admin.';
+        return null;
+      end if;
+    end if;
+    return old;
+  end;
+$$ language plpgsql;
+]]></Statement>
+
+    <Statement><![CDATA[
+create trigger user_initial_check_insert
+  before insert on cardant.users
+    for each statement
+      execute function user_initial_check();
+]]></Statement>
+
+    <Statement><![CDATA[
+create trigger user_initial_check_update
+  before update on cardant.users
+    for each statement
+      execute function user_initial_check();
+]]></Statement>
+
+    <Comment>
+      The tags table contains the list of tags.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.tags (
+  tag_id    uuid         not null primary key,
+  tag_name  varchar(128) not null,
+
+  constraint unique_tags unique (tag_name)
+)
+]]></Statement>
+
+    <Comment>
+      The files table contains files.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.files (
+  id              uuid         not null primary key,
+  description     varchar(256) not null,
+  media_type      varchar(128) not null,
+  hash_algorithm  varchar(32)  not null,
+  hash_value      varchar(256) not null,
+  data            blob         not null,
+  data_used       bigint       not null,
+
+  constraint check_natural_data check (data_used >= 0)
+)
+]]></Statement>
+
+    <Comment>
+      The items table contains the list of items.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.items (
+  item_id       uuid         not null primary key,
+  item_name     varchar(128) not null,
+  item_count    bigint       not null,
+  item_deleted  boolean      not null,
+
+  constraint check_natural_count check (item_count >= 0)
+)
+]]></Statement>
+
+    <Comment>
+      The item_tags table contains the tags applied to each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.item_tags (
+  tag_item_id  uuid not null,
+  tag_id       uuid not null,
+
+  constraint unique_tagging  unique (tag_item_id, tag_id),
+  constraint tag_item_exists foreign key (tag_item_id) references cardant.items (item_id),
+  constraint tag_tag_exists  foreign key (tag_id)      references cardant.tags (tag_id)
+)
+]]></Statement>
+
+    <Comment>
+      The item_attachments table contains attachments for each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.item_attachments (
+  file_id   uuid         not null,
+  item_id   uuid         not null,
+  relation  varchar(128) not null,
+
+  constraint file_exists foreign key (file_id) references cardant.files (id),
+  constraint item_exists foreign key (item_id) references cardant.items (item_id),
+
+  primary key (file_id, item_id, relation)
+)
+]]></Statement>
+
+    <Comment>
+      The item_metadata table contains metadata for each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.item_metadata (
+  metadata_item_id  uuid          not null,
+  metadata_name     varchar(128)  not null,
+  metadata_value    varchar(1024) not null,
+
+  constraint metadata_item_exists foreign key (metadata_item_id) references cardant.items (item_id),
+  constraint metadata_name_unique unique (metadata_item_id, metadata_name)
+)
+]]></Statement>
+
+    <Comment>
+      The locations table contains storage/deployment locations for each item.
+    </Comment>
+
+    <Statement><![CDATA[
+create table cardant.locations (
+  location_id           uuid          not null primary key,
+  location_parent       uuid,
+  location_name         varchar(128)  not null,
+  location_description  varchar(1024) not null,
+
+  constraint location_parent_exists foreign key (location_parent) references cardant.locations (location_id)
+)
+]]></Statement>
+
+    <Statement><![CDATA[
+create table cardant.item_locations (
+  item_id              uuid   not null,
+  item_location        uuid   not null,
+  count                bigint not null,
+
+  constraint unique_item_location unique (item_id, item_location),
+  constraint item_id_exists       foreign key (item_id)       references cardant.items (item_id),
+  constraint item_location_exists foreign key (item_location) references cardant.locations (location_id),
+
+  constraint check_item_location_count check (count > 0)
+)
+]]></Statement>
+
+    <Statement><![CDATA[
+create view cardant.item_locations_summed (item_id, item_count)
+  as select il.item_id, sum (il.count) from cardant.item_locations as il
+    group by il.item_id
+]]></Statement>
+
+  </Schema>
+</Schemas>

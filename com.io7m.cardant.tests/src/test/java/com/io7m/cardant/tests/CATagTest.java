@@ -18,6 +18,7 @@ package com.io7m.cardant.tests;
 
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
+import com.io7m.cardant.model.CAValidityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -57,7 +58,7 @@ public final class CATagTest
       try {
         new CATag(CATagID.random(), text);
         Assertions.fail();
-      } catch (final IllegalArgumentException e) {
+      } catch (final CAValidityException e) {
         // OK
       }
     });

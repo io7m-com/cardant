@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,11 +16,36 @@
 
 package com.io7m.cardant.database.api;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
+import static java.time.ZoneOffset.UTC;
+
 /**
- * The base type of database queries.
+ * The base type of query interfaces.
  */
 
-public interface CADatabaseQueriesType
+public sealed interface CADatabaseQueriesType
+  permits CADatabaseQueriesFilesType,
+  CADatabaseQueriesItemsType,
+  CADatabaseQueriesLocationsType,
+  CADatabaseQueriesTagsType,
+  CADatabaseQueriesUsersType
 {
+  /**
+   * The earliest possible time considered by the server
+   */
 
+  OffsetDateTime EARLIEST =
+    LocalDateTime.ofEpochSecond(0L, 0, UTC)
+      .atOffset(UTC);
+
+  /**
+   * @return The earliest possible time considered by the server
+   */
+
+  static OffsetDateTime earliest()
+  {
+    return EARLIEST;
+  }
 }

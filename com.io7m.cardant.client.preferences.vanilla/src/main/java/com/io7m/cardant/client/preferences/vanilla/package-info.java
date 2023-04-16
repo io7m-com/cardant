@@ -15,7 +15,7 @@
  */
 
 /**
- * Inventory system (Client preferences vanilla implementation)
+ * Inventory system (Client preferences basic implementation)
  */
 
 @Export

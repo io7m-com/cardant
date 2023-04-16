@@ -43,13 +43,13 @@ public record CAItemMetadata(
     Objects.requireNonNull(value, "value");
 
     if (name.length() >= 128) {
-      throw new IllegalArgumentException(
+      throw new CAValidityException(
         String.format("Metadata name too long: %s", name)
       );
     }
 
     if (value.length() >= 1024) {
-      throw new IllegalArgumentException(
+      throw new CAValidityException(
         String.format("Metadata value too long: %s", name)
       );
     }

@@ -17,10 +17,12 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
 import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -54,7 +56,7 @@ public final class CAViewControllerLocationSetParent implements Initializable
   @FXML
   private TreeView<CALocationItemType> locationTree;
   private CALocationItemType target;
-  private CAClientHostileType clientNow;
+  private CAClientType clientNow;
 
   public CAViewControllerLocationSetParent(
     final RPServiceDirectoryType inMainServices,
@@ -85,12 +87,14 @@ public final class CAViewControllerLocationSetParent implements Initializable
         .getValue();
 
     if (this.target instanceof CALocationItemDefined definedTarget) {
-      this.clientNow.locationPut(
-        new CALocation(
-          definedTarget.id(),
-          Optional.of(selected.id()),
-          definedTarget.name().getValueSafe(),
-          definedTarget.description().getValueSafe()
+      this.clientNow.execute(
+        new CAICommandLocationPut(
+          new CALocation(
+            definedTarget.id(),
+            Optional.of(selected.id()),
+            definedTarget.name().getValueSafe(),
+            definedTarget.description().getValueSafe()
+          )
         )
       );
       this.stage.close();
@@ -130,7 +134,7 @@ public final class CAViewControllerLocationSetParent implements Initializable
   }
 
   private void onClientConnectionChanged(
-    final Optional<CAClientHostileType> clientOpt)
+    final Optional<CAClientType> clientOpt)
   {
     if (clientOpt.isPresent()) {
       this.clientNow = clientOpt.get();

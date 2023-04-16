@@ -17,11 +17,11 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientFactoryType;
+import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.client.transfer.vanilla.CATransferService;
-import com.io7m.cardant.client.vanilla.CAClients;
 import com.io7m.repetoir.core.RPServiceDirectory;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.jade.api.ApplicationDirectories;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,33 +16,68 @@
 
 package com.io7m.cardant.server.api;
 
+import com.io7m.cardant.database.api.CADatabaseConfiguration;
+import com.io7m.cardant.database.api.CADatabaseFactoryType;
+
+import java.time.Clock;
+import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
- * A server configuration.
+ * The configuration for a server.
  *
- * @param http     Configuration information for the internal HTTP server
- * @param database Configuration information for the database
- * @param limits   Configuration information regarding server limits
+ * @param clock                 The clock
+ * @param databaseConfiguration The database configuration for the server
+ * @param databases             The factory of databases that will be used for
+ *                              the server
+ * @param locale                The locale
+ * @param idstoreConfiguration  The idstore configuration
+ * @param openTelemetry         The OpenTelemetry configuration
+ * @param inventoryApiAddress   The inventory API address
  */
 
 public record CAServerConfiguration(
-  CAServerHTTPConfiguration http,
-  CAServerDatabaseConfigurationType database,
-  CAServerConfigurationLimits limits)
+  Locale locale,
+  Clock clock,
+  CADatabaseFactoryType databases,
+  CADatabaseConfiguration databaseConfiguration,
+  CAServerHTTPServiceConfiguration inventoryApiAddress,
+  CAServerIdstoreConfiguration idstoreConfiguration,
+  Optional<CAServerOpenTelemetryConfiguration> openTelemetry)
 {
   /**
-   * A server configuration.
+   * The configuration for a server.
    *
-   * @param http     Configuration information for the internal HTTP server
-   * @param database Configuration information for the database
-   * @param limits   Configuration information regarding server limits
+   * @param clock                 The clock
+   * @param databaseConfiguration The database configuration for the server
+   * @param databases             The factory of databases that will be used for
+   *                              the server
+   * @param locale                The locale
+   * @param idstoreConfiguration  The idstore configuration
+   * @param openTelemetry         The OpenTelemetry configuration
+   * @param inventoryApiAddress   The inventory API address
    */
 
   public CAServerConfiguration
   {
-    Objects.requireNonNull(http, "http");
-    Objects.requireNonNull(database, "database");
-    Objects.requireNonNull(limits, "limits");
+    Objects.requireNonNull(inventoryApiAddress, "inventoryApiAddress");
+    Objects.requireNonNull(clock, "clock");
+    Objects.requireNonNull(databaseConfiguration, "databaseConfiguration");
+    Objects.requireNonNull(databases, "databases");
+    Objects.requireNonNull(idstoreConfiguration, "idstoreConfiguration");
+    Objects.requireNonNull(locale, "locale");
+    Objects.requireNonNull(openTelemetry, "openTelemetry");
+  }
+
+  /**
+   * @return The current time based on the configuration's clock
+   */
+
+  public OffsetDateTime now()
+  {
+    return OffsetDateTime.now(this.clock)
+      .withNano(0);
   }
 }

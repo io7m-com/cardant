@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,35 +17,32 @@
 package com.io7m.cardant.database.api;
 
 /**
- * A database transaction.
+ * A database transaction. If the transaction is closed, it is automatically
+ * rolled back.
  */
 
-public interface CADatabaseTransactionType
-  extends AutoCloseable
+public interface CADatabaseTransactionType extends AutoCloseable
 {
-  /**
-   * Close this transaction. The transaction is rolled back if {@link #commit()} has not been
-   * called, or if changes have been made since the last call to {@link #commit()}.
-   *
-   * @throws CADatabaseException On errors
-   */
-
   @Override
   void close()
     throws CADatabaseException;
 
   /**
-   * Commit any changes made.
+   * Obtain queries for the transaction.
+   *
+   * @param queryClass The query type
+   * @param <T>        The query type
+   *
+   * @return Queries
    *
    * @throws CADatabaseException On errors
    */
 
-  void commit()
+  <T extends CADatabaseQueriesType> T queries(Class<T> queryClass)
     throws CADatabaseException;
 
   /**
-   * Roll back any changes made since the last call to {@link #commit()} (or everything, if {@link
-   * #commit()} has never been called).
+   * Roll back the transaction.
    *
    * @throws CADatabaseException On errors
    */
@@ -54,15 +51,11 @@ public interface CADatabaseTransactionType
     throws CADatabaseException;
 
   /**
-   * @param queriesClass The precise type of queries to execute in the transaction
-   * @param <P>          The precise type of queries to execute
-   *
-   * @return The transaction queries
+   * Commit the transaction.
    *
    * @throws CADatabaseException On errors
    */
 
-  <P extends CADatabaseQueriesType>
-  P queries(Class<P> queriesClass)
+  void commit()
     throws CADatabaseException;
 }

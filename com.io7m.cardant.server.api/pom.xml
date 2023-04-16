@@ -24,10 +24,10 @@
       <artifactId>com.io7m.cardant.database.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
-      <groupId>com.io7m.anethum</groupId>
-      <artifactId>com.io7m.anethum.api</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.error_codes</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

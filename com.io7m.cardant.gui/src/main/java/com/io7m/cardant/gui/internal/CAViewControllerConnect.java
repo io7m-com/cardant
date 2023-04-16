@@ -44,6 +44,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -268,6 +269,7 @@ public final class CAViewControllerConnect implements Initializable
 
       return Optional.of(
         new CAClientConfiguration(
+          Locale.getDefault(),
           this.hostField.getCharacters().toString(),
           port,
           this.httpsBox.isSelected(),

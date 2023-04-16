@@ -15,7 +15,7 @@
  */
 
 /**
- * Inventory system (Client preferences vanilla implementation [Internals])
+ * Inventory system (Client preferences basic implementation [Internals])
  */
 
 @Version("1.0.0")

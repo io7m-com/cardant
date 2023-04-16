@@ -16,15 +16,17 @@
 
 package com.io7m.cardant.client.api;
 
+import com.io7m.hibiscus.api.HBEventType;
+
 /**
  * The base type of events.
  */
 
 public sealed interface CAClientEventType
+  extends HBEventType
   permits CAClientEventCommandFailed,
   CAClientEventDataChanged,
-  CAClientEventDataReceived,
-  CAClientEventStatusChanged
+  CAClientEventDataReceived
 {
 
 }

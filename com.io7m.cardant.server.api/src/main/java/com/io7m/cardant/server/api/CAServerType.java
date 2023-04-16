@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -18,17 +18,38 @@ package com.io7m.cardant.server.api;
 
 import com.io7m.cardant.database.api.CADatabaseType;
 
-import java.io.Closeable;
-
 /**
  * The type of servers.
  */
 
-public interface CAServerType extends Closeable
+public interface CAServerType extends AutoCloseable
 {
   /**
-   * @return The underlying database instance
+   * Start the server instance. Can be called multiple times redundantly,
+   * and can be called before or after #close() has been called.
+   *
+   * @throws CAServerException On errors
+   */
+
+  void start()
+    throws CAServerException;
+
+  /**
+   * @return The server's database instance
    */
 
   CADatabaseType database();
+
+  /**
+   * @return {@code true} if the server is closed
+   *
+   * @see #start()
+   * @see #close()
+   */
+
+  boolean isClosed();
+
+  @Override
+  void close()
+    throws CAServerException;
 }

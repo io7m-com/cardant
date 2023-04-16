@@ -20,10 +20,10 @@ import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientEventCommandFailed;
 import com.io7m.cardant.client.api.CAClientEventDataChanged;
 import com.io7m.cardant.client.api.CAClientEventDataReceived;
-import com.io7m.cardant.client.api.CAClientEventStatusChanged;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientFactoryType;
 import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemAndLocation;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import com.io7m.cardant.gui.internal.model.CAItemLocationMutable;
@@ -45,6 +45,11 @@ import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
+import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
+import com.io7m.cardant.protocol.inventory.CAICommandItemList;
+import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
+import com.io7m.hibiscus.api.HBState;
 import com.io7m.repetoir.core.RPServiceType;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -54,7 +59,6 @@ import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -74,7 +78,7 @@ public final class CAMainController implements RPServiceType
   private final CAMainEventBusType eventBus;
   private final CAMainStrings strings;
   private final CATableMap<CAItemID, CAItemMutable> itemList;
-  private final SimpleObjectProperty<Optional<CAClientHostileType>> client;
+  private final SimpleObjectProperty<Optional<CAClientType>> client;
   private final SimpleObjectProperty<Optional<CAItemAttachmentMutable>> itemAttachmentSelected;
   private final SimpleObjectProperty<Optional<CAItemMetadataMutable>> itemMetadataSelected;
   private final SimpleObjectProperty<Optional<CAItemMutable>> itemSelected;
@@ -83,11 +87,12 @@ public final class CAMainController implements RPServiceType
   private final ObservableMap<CAItemAndLocation, Long> itemLocations;
   private final ObservableMap<CAItemAndLocation, Long> itemLocationsRead;
   private CATableMap<CALocationID, CAItemLocationMutable> itemLocationsSelected;
-  private volatile CAPerpetualSubscriber<CAClientEventType> clientSubscriber;
+  private volatile CAPerpetualSubscriber<CAClientEventType> clientEventSubscriber;
   private volatile CATableMap<CAItemAttachmentKey, CAItemAttachmentMutable> itemAttachmentList;
   private volatile CATableMap<String, CAItemMetadataMutable> itemMetadataList;
   private volatile Predicate<CAItemAttachmentMutable> itemAttachmentPredicate;
   private volatile Predicate<CAItemMetadataMutable> itemMetadataPredicate;
+  private volatile CAPerpetualSubscriber<HBState> clientStateSubscriber;
 
   public CAMainController(
     final CAMainStrings inStrings,
@@ -231,7 +236,7 @@ public final class CAMainController implements RPServiceType
 
     itemSelection.map(item -> {
       return this.client.get().map(currentClient -> {
-        currentClient.itemLocationsList(item.id());
+        currentClient.execute(new CAICommandItemLocationsList(item.id()));
         return UNIT;
       });
     });
@@ -249,7 +254,7 @@ public final class CAMainController implements RPServiceType
     this.itemMetadataSelected.set(metadataSelection);
   }
 
-  public ObservableObjectValue<Optional<CAClientHostileType>> connectedClient()
+  public ObservableObjectValue<Optional<CAClientType>> connectedClient()
   {
     return this.client;
   }
@@ -259,19 +264,22 @@ public final class CAMainController implements RPServiceType
     return this.itemAttachmentSelected;
   }
 
-  public CAClientHostileType connect(
+  public CAClientType connect(
     final CAClientConfiguration configuration)
   {
     Objects.requireNonNull(configuration, "configuration");
 
     final var newClient =
-      this.clients.openHostile(configuration);
+      this.clients.open(configuration);
     this.client.set(Optional.of(newClient));
-    this.clientSubscriber =
+    this.clientEventSubscriber =
       new CAPerpetualSubscriber<>(this::onClientEvent);
+    this.clientStateSubscriber =
+      new CAPerpetualSubscriber<>(this::onClientState);
 
-    newClient.events().subscribe(this.clientSubscriber);
-    newClient.locationList();
+    newClient.state().subscribe(this.clientStateSubscriber);
+    newClient.events().subscribe(this.clientEventSubscriber);
+    newClient.execute(new CAICommandLocationList());
     return newClient;
   }
 
@@ -279,13 +287,11 @@ public final class CAMainController implements RPServiceType
     final CAClientEventType item)
   {
     Platform.runLater(() -> {
-      if (item instanceof CAClientEventStatusChanged status) {
-        this.onClientEventStatusChanged(status);
-      } else if (item instanceof CAClientEventDataReceived data) {
+      if (item instanceof CAClientEventDataReceived data) {
         this.onClientEventDataReceived(data);
       } else if (item instanceof CAClientEventDataChanged data) {
         this.onClientEventDataChanged(data);
-      } else if (item instanceof CAClientEventCommandFailed<?> data) {
+      } else if (item instanceof CAClientEventCommandFailed data) {
         this.onClientEventCommandFailed(data);
       } else {
         throw new IllegalStateException("Unrecognized event: " + item);
@@ -294,7 +300,7 @@ public final class CAMainController implements RPServiceType
   }
 
   private void onClientEventCommandFailed(
-    final CAClientEventCommandFailed<?> data)
+    final CAClientEventCommandFailed data)
   {
     final var message =
       this.strings.format("status.commandFailed", data.command());
@@ -302,17 +308,17 @@ public final class CAMainController implements RPServiceType
     this.eventBus.submit(new CAMainEventCommandFailed(message, data));
   }
 
-  private void onClientEventStatusChanged(
-    final CAClientEventStatusChanged status)
+  private void onClientState(
+    final HBState status)
   {
     this.eventBus.submit(
       new CAMainEventClientStatus(
         status,
         switch (status) {
-          case CLIENT_NEGOTIATING_PROTOCOLS -> {
+          case CLIENT_AUTHENTICATING -> {
             yield this.strings.format("status.connecting");
           }
-          case CLIENT_NEGOTIATING_PROTOCOLS_FAILED -> {
+          case CLIENT_AUTHENTICATION_FAILED -> {
             yield this.strings.format("status.connectionFailed");
           }
           case CLIENT_CONNECTED -> {
@@ -321,7 +327,7 @@ public final class CAMainController implements RPServiceType
           case CLIENT_DISCONNECTED -> {
             yield this.strings.format("status.disconnected");
           }
-          case CLIENT_SENDING_REQUEST -> {
+          case CLIENT_SENDING_COMMAND -> {
             yield this.strings.format("status.sendingRequest");
           }
           case CLIENT_RECEIVING_DATA -> {
@@ -334,9 +340,9 @@ public final class CAMainController implements RPServiceType
       ));
 
     switch (status) {
-      case CLIENT_NEGOTIATING_PROTOCOLS,
-        CLIENT_NEGOTIATING_PROTOCOLS_FAILED,
-        CLIENT_SENDING_REQUEST,
+      case CLIENT_AUTHENTICATING,
+        CLIENT_AUTHENTICATION_FAILED,
+        CLIENT_SENDING_COMMAND,
         CLIENT_RECEIVING_DATA,
         CLIENT_IDLE -> {
       }
@@ -485,7 +491,7 @@ public final class CAMainController implements RPServiceType
     final var clientNow = clientOpt.get();
     for (final var update : data.updated()) {
       if (update instanceof CAItemID id) {
-        clientNow.itemGet(id);
+        clientNow.execute(new CAICommandItemGet(id));
       } else if (update instanceof CALocationID id) {
         // clientNow.locationGet(id);
       } else if (update instanceof CAFileID id) {
@@ -555,7 +561,7 @@ public final class CAMainController implements RPServiceType
       final var clientNow = clientOpt.get();
       this.client.set(Optional.empty());
       clientNow.close();
-    } catch (final IOException e) {
+    } catch (final Exception e) {
       LOG.debug("error closing client: ", e);
     }
   }
@@ -606,7 +612,9 @@ public final class CAMainController implements RPServiceType
     final var clientNow =
       this.client.get().orElseThrow(IllegalStateException::new);
 
-    clientNow.itemsList(new CAListLocationExact(defined.id()));
+    clientNow.execute(new CAICommandItemList(
+      new CAListLocationExact(defined.id())
+    ));
   }
 
   private void listItemsForAllLocations()
@@ -614,7 +622,9 @@ public final class CAMainController implements RPServiceType
     final var clientNow =
       this.client.get().orElseThrow(IllegalStateException::new);
 
-    clientNow.itemsList(new CAListLocationsAll());
+    clientNow.execute(new CAICommandItemList(
+      new CAListLocationsAll()
+    ));
   }
 
   public OptionalLong itemLocationCouldRemoveItems(

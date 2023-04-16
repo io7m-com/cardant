@@ -16,16 +16,15 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
-import com.io7m.cardant.gui.internal.model.CAFileMutable;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import com.io7m.cardant.gui.internal.views.CAItemAttachmentMutableCellFactory;
-import com.io7m.repetoir.core.RPServiceDirectoryType;
+import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -39,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -216,17 +214,19 @@ public final class CAViewControllerItemEditorAttachmentsTab
       this.strings.format(
         "transfer.attachment", attachmentFile.id().displayId());
 
-    this.clientNow.fileData(attachmentFile.id())
-      .thenComposeAsync(inputStream -> {
-        return this.transfers.transferTo(
-          inputStream,
-          title,
-          attachmentFile.size(),
-          attachmentFile.hashAlgorithm(),
-          attachmentFile.hashValue(),
-          file
-        );
-      });
+    this.clientNow.runAsync(() -> {
+      return this.clientNow.fileData(attachmentFile.id())
+        .map(inputStream -> {
+          return this.transfers.transferTo(
+            inputStream,
+            title,
+            attachmentFile.size(),
+            attachmentFile.hashAlgorithm(),
+            attachmentFile.hashValue(),
+            file
+          );
+        });
+    });
   }
 
   @FXML
@@ -259,17 +259,17 @@ public final class CAViewControllerItemEditorAttachmentsTab
           this.attachmentListView.getSelectionModel()
             .getSelectedItem();
 
-        this.clientNow.itemAttachmentDelete(
+        this.clientNow.execute(new CAICommandItemAttachmentRemove(
           item.id(),
           attachmentSelected.file().id(),
           attachmentSelected.relation()
-        );
+        ));
       }
     }
   }
 
   private void onClientConnectionChanged(
-    final Optional<CAClientHostileType> newValue)
+    final Optional<CAClientType> newValue)
   {
     if (newValue.isPresent()) {
       this.clientNow = newValue.get();

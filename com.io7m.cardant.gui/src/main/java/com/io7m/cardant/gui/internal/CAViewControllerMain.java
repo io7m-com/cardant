@@ -254,7 +254,8 @@ public final class CAViewControllerMain implements Initializable
 
     if (item instanceof CAMainEventClientStatus clientStatus) {
       switch (clientStatus.status()) {
-        case CLIENT_NEGOTIATING_PROTOCOLS, CLIENT_NEGOTIATING_PROTOCOLS_FAILED -> {
+        case CLIENT_AUTHENTICATING,
+          CLIENT_AUTHENTICATION_FAILED -> {
           Platform.runLater(this::onNotConnectedButStillTrying);
         }
         case CLIENT_CONNECTED -> {
@@ -263,7 +264,7 @@ public final class CAViewControllerMain implements Initializable
         case CLIENT_DISCONNECTED -> {
           Platform.runLater(this::onNotConnected);
         }
-        case CLIENT_SENDING_REQUEST, CLIENT_RECEIVING_DATA -> {
+        case CLIENT_SENDING_COMMAND, CLIENT_RECEIVING_DATA -> {
 
         }
       }

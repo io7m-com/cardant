@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientHostileType;
 import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
@@ -25,9 +24,15 @@ import com.io7m.cardant.gui.internal.model.CAMutableModelElementType;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.repetoir.core.RPServiceDirectoryType;
+import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
+import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.hibiscus.api.HBResultSuccess;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,6 +56,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public final class CAViewControllerItemEditorOverviewTab
   implements Initializable
@@ -132,7 +138,7 @@ public final class CAViewControllerItemEditorOverviewTab
   }
 
   private void onClientConnectionChanged(
-    final Optional<CAClientHostileType> newValue)
+    final Optional<CAClientType> newValue)
   {
     if (newValue.isPresent()) {
       this.clientNow = newValue.get();
@@ -183,8 +189,16 @@ public final class CAViewControllerItemEditorOverviewTab
           imageData.data()
         );
 
-      this.clientNow.itemAttachmentAdd(
-        this.itemCurrent.get().id(), fileWithData, "image");
+      this.clientNow.runAsync(() -> {
+        return this.clientNow.execute(new CAICommandFilePut(fileWithData))
+          .flatMap(r -> {
+            return this.clientNow.execute(new CAICommandItemAttachmentAdd(
+              this.itemCurrent.get().id(),
+              fileWithData.id(),
+              "image"
+            ));
+          });
+      });
 
     } catch (final CAImageDataException e) {
       this.events.submit(
@@ -208,13 +222,14 @@ public final class CAViewControllerItemEditorOverviewTab
   private void onItemDescriptionUpdateSelected()
   {
     final var item = this.itemCurrent.get();
-    this.clientNow.itemMetadataUpdate(
+    this.clientNow.execute(new CAICommandItemMetadataPut(
       item.id(),
       Set.of(
         new CAItemMetadata(
           "Description",
           this.itemDescriptionField.getText())
-      ));
+      ))
+    );
   }
 
   @FXML
@@ -277,30 +292,34 @@ public final class CAViewControllerItemEditorOverviewTab
           "transfer.attachment.image",
           attachmentFile.id().displayId());
 
-      this.clientNow.fileData(attachmentFile.id())
-        .thenComposeAsync(inputStream -> {
-          return this.transfers.transfer(
-            inputStream,
-            title,
-            attachmentFile.size(),
-            attachmentFile.hashAlgorithm(),
-            attachmentFile.hashValue()
-          );
-        }).thenAccept(path -> {
-          Platform.runLater(() -> {
-            LOG.debug("loading received image");
-            final var image =
-              new Image(
-                path.toUri().toString(),
-                this.itemImageRectangle.getWidth(),
-                this.itemImageRectangle.getHeight(),
-                false,
-                false
-              );
-            this.itemImage.setImage(image);
-            this.itemImageProgress.setVisible(false);
+      this.clientNow.runAsync(() -> {
+        return this.clientNow.fileData(attachmentFile.id())
+          .map(inputStream -> {
+            return this.transfers.transfer(
+              inputStream,
+              title,
+              attachmentFile.size(),
+              attachmentFile.hashAlgorithm(),
+              attachmentFile.hashValue()
+            );
+          }).map(pathFuture -> {
+            return pathFuture.thenAccept(path -> {
+              Platform.runLater(() -> {
+                LOG.debug("loading received image");
+                final var image =
+                  new Image(
+                    path.toUri().toString(),
+                    this.itemImageRectangle.getWidth(),
+                    this.itemImageRectangle.getHeight(),
+                    false,
+                    false
+                  );
+                this.itemImage.setImage(image);
+                this.itemImageProgress.setVisible(false);
+              });
+            });
           });
-        });
+      });
     } else {
       this.itemImage.setImage(null);
       this.itemImageProgress.setVisible(false);

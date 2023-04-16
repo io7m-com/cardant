@@ -35,9 +35,5 @@ public sealed interface CAMainEventErrorWithAttributesType
   @Override
   String message();
 
-  int statusCode();
-
   Map<String, String> attributes();
-
-  List<String> details();
 }

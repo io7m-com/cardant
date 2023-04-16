@@ -18,29 +18,17 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.api.CAClientEventCommandFailed;
 
-import java.util.List;
 import java.util.Map;
 
 public record CAMainEventCommandFailed(
   String message,
-  CAClientEventCommandFailed<?> command)
+  CAClientEventCommandFailed command)
   implements CAMainEventErrorWithAttributesType
 {
-  @Override
-  public int statusCode()
-  {
-    return this.command.result().statusCode();
-  }
-
   @Override
   public Map<String, String> attributes()
   {
     return this.command.result().attributes();
   }
 
-  @Override
-  public List<String> details()
-  {
-    return this.command.result().details();
-  }
 }

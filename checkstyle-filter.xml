@@ -15,4 +15,65 @@
   <suppress files="CA1EventServlet.java"
             checks="AnonInnerLength"/>
 
+  <suppress files="CAI1Validation.java"
+            checks="ClassDataAbstractionCoupling"/>
+  <suppress files="CAI1Validation.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAI1Validation.java"
+            checks="NPathComplexity"/>
+
+  <suppress files="CAICommandExecutor.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAICommandExecutor.java"
+            checks="NPathComplexity"/>
+  <suppress files="CAICmdAbstract.java"
+            checks="ThrowsCount"/>
+
+  <suppress files="CAI1Validation.java"
+            checks="ExecutableStatementCount"/>
+
+  <suppress files="CAI1ValidationCommon.java"
+            checks="ClassDataAbstractionCoupling"/>
+  <suppress files="CAI1ValidationCommon.java"
+            checks="MissingJavadocType"/>
+  <suppress files="CAI1ValidationCommon.java"
+            checks="MissingJavadocMethod"/>
+  <suppress files="CAI1ValidationCommon.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAI1ValidationCommon.java"
+            checks="NPathComplexity"/>
+
+  <suppress files="CAI1ValidationEvents.java"
+            checks="ClassDataAbstractionCoupling"/>
+  <suppress files="CAI1ValidationEvents.java"
+            checks="MissingJavadocType"/>
+  <suppress files="CAI1ValidationEvents.java"
+            checks="MissingJavadocMethod"/>
+  <suppress files="CAI1ValidationEvents.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAI1ValidationEvents.java"
+            checks="NPathComplexity"/>
+
+  <suppress files="CAI1ValidationResponses.java"
+            checks="ClassDataAbstractionCoupling"/>
+  <suppress files="CAI1ValidationResponses.java"
+            checks="MissingJavadocType"/>
+  <suppress files="CAI1ValidationResponses.java"
+            checks="MissingJavadocMethod"/>
+  <suppress files="CAI1ValidationResponses.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAI1ValidationResponses.java"
+            checks="NPathComplexity"/>
+
+  <suppress files="CAI1ValidationCommands.java"
+            checks="ClassDataAbstractionCoupling"/>
+  <suppress files="CAI1ValidationCommands.java"
+            checks="MissingJavadocType"/>
+  <suppress files="CAI1ValidationCommands.java"
+            checks="MissingJavadocMethod"/>
+  <suppress files="CAI1ValidationCommands.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAI1ValidationCommands.java"
+            checks="NPathComplexity"/>
+
 </suppressions>

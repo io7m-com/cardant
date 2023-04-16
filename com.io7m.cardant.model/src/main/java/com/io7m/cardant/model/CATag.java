@@ -56,7 +56,7 @@ public record CATag(
     Objects.requireNonNull(name, "name");
 
     if (!VALID_TAG_NAME.matcher(name).matches()) {
-      throw new IllegalArgumentException(
+      throw new CAValidityException(
         String.format("Tag name %s does not match %s", name, VALID_TAG_NAME)
       );
     }

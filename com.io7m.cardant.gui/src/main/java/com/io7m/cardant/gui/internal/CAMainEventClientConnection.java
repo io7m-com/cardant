@@ -16,10 +16,10 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.client.api.CAClientType;
 
 public record CAMainEventClientConnection(
-  CAClientHostileType client,
+  CAClientType client,
   String message)
   implements CAMainEventType
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,12 +16,16 @@
 
 package com.io7m.cardant.client.api;
 
+import com.io7m.hibiscus.api.HBConfigurationType;
+
 import java.net.URI;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
  * The client configuration.
  *
+ * @param locale   The locale for messages
  * @param host     The server host
  * @param port     The server port
  * @param https    {@code true} if https should be used
@@ -30,11 +34,13 @@ import java.util.Objects;
  */
 
 public record CAClientConfiguration(
+  Locale locale,
   String host,
   int port,
   boolean https,
   String username,
   String password)
+  implements HBConfigurationType
 {
   /**
    * The client configuration.
@@ -42,6 +48,7 @@ public record CAClientConfiguration(
 
   public CAClientConfiguration
   {
+    Objects.requireNonNull(locale, "locale");
     Objects.requireNonNull(host, "host");
     Objects.requireNonNull(username, "username");
     Objects.requireNonNull(password, "password");

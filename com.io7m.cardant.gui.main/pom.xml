@@ -26,12 +26,12 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.protocol.inventory.v1</artifactId>
+      <artifactId>com.io7m.cardant.protocol.inventory</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.database.derby</artifactId>
+      <artifactId>com.io7m.cardant.protocol.inventory.cb</artifactId>
       <version>${project.version}</version>
     </dependency>
 

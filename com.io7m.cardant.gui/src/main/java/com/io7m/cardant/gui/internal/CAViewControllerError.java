@@ -113,17 +113,6 @@ public final class CAViewControllerError implements Initializable
         this.errorContainerPane.getChildren()
           .remove(this.errorTableView);
       }
-
-      final var errorDetails = failed.details();
-      this.errorDetails.setText("");
-      this.errorDetails.appendText(failed.message());
-      this.errorDetails.appendText("\n");
-      this.errorDetails.appendText("\n");
-
-      for (final var detail : errorDetails) {
-        this.errorDetails.appendText(detail);
-        this.errorDetails.appendText("\n");
-      }
     } else {
       this.errorDetails.setText(item.message());
     }

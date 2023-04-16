@@ -16,12 +16,13 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientHostileType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CALocationItemAll;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -56,7 +57,7 @@ public final class CAViewControllerLocationsTab implements Initializable
   private final RPServiceDirectoryType services;
   private final CALocationTreeFiltered locationTreeFiltered;
   private CAPerpetualSubscriber<CAMainEventType> subscriber;
-  private CAClientHostileType clientNow;
+  private CAClientType clientNow;
 
   @FXML
   private TreeView<CALocationItemType> locationTreeView;
@@ -194,7 +195,7 @@ public final class CAViewControllerLocationsTab implements Initializable
   }
 
   private void onClientConnectionChanged(
-    final Optional<CAClientHostileType> clientOpt)
+    final Optional<CAClientType> clientOpt)
   {
     this.clientNow = clientOpt.orElse(null);
     this.splitPane.setDividerPositions(0.75);
@@ -243,7 +244,7 @@ public final class CAViewControllerLocationsTab implements Initializable
 
     final var locationOpt = create.result();
     locationOpt.ifPresent(location -> {
-      this.clientNow.locationPut(location);
+      this.clientNow.execute(new CAICommandLocationPut(location));
     });
   }
 

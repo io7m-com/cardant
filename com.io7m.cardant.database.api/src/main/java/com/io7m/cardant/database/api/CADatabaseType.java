@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,29 +16,29 @@
 
 package com.io7m.cardant.database.api;
 
-import java.io.Closeable;
-import java.util.concurrent.Flow;
+import com.io7m.repetoir.core.RPServiceType;
 
 /**
  * An open database.
  */
 
-public interface CADatabaseType extends Closeable
+public interface CADatabaseType extends AutoCloseable, RPServiceType
 {
+  @Override
+  void close()
+    throws CADatabaseException;
+
   /**
-   * Open a new database connection.
+   * Open a database connection using the given role.
    *
-   * @return A new database connection
+   * @param role The role
+   *
+   * @return A database connection
    *
    * @throws CADatabaseException On errors
    */
 
-  CADatabaseConnectionType openConnection()
+  CADatabaseConnectionType openConnection(
+    CADatabaseRole role)
     throws CADatabaseException;
-
-  /**
-   * @return An observable stream of database events
-   */
-
-  Flow.Publisher<CADatabaseEventType> events();
 }

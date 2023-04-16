@@ -27,7 +27,7 @@ module com.io7m.cardant.gui
   requires com.io7m.cardant.client.preferences.vanilla;
   requires com.io7m.cardant.client.transfer.api;
   requires com.io7m.cardant.client.transfer.vanilla;
-  requires com.io7m.cardant.client.vanilla;
+  requires com.io7m.cardant.client.basic;
 
   requires com.io7m.jade.api;
   requires com.io7m.jade.vanilla;
