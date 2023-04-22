@@ -27,6 +27,19 @@ public final class CAStandardErrorCodes
   {
   }
 
+  private static final CAErrorCode ERROR_API_MISUSE =
+    new CAErrorCode("error-api-misuse");
+
+  /**
+   * An API was used incorrectly.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorApiMisuse()
+  {
+    return ERROR_API_MISUSE;
+  }
+
   private static final CAErrorCode ERROR_AUTHENTICATION =
     new CAErrorCode("error-authentication");
 
@@ -157,6 +170,19 @@ public final class CAStandardErrorCodes
     return ERROR_PROTOCOL;
   }
 
+  private static final CAErrorCode ERROR_REMOVE_TOO_MANY_ITEMS =
+    new CAErrorCode("error-remove-too-many-items");
+
+  /**
+   * An attempt was made to remove more items than actually exist.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorRemoveTooManyItems()
+  {
+    return ERROR_REMOVE_TOO_MANY_ITEMS;
+  }
+
   private static final CAErrorCode ERROR_RESOURCE_CLOSE_FAILED =
     new CAErrorCode("error-resource-close-failed");
 
@@ -274,3 +300,4 @@ public final class CAStandardErrorCodes
     return ERROR_USER_NONEXISTENT;
   }
 }
+

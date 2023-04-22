@@ -68,6 +68,15 @@ public final class CAClients
   }
 
   @Override
+  public String toString()
+  {
+    return String.format(
+      "[CAClients 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
+
+  @Override
   public String description()
   {
     return "Inventory client service.";

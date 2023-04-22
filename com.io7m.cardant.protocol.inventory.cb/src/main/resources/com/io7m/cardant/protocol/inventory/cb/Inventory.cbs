@@ -65,7 +65,8 @@
     [documentation hashValue "The hash value."]
     [field hashValue cb:String]
     [documentation data "The file data."]
-    [field data cb:ByteArray]]]
+    [field data cb:ByteArray]]
+]
 
 [documentation CAI1ItemMetadata "An item metadata value."]
 [record CAI1ItemMetadata
@@ -126,7 +127,8 @@
   [case CAI1ListLocationWithDescendants
     [field locationId CAI1UUID]]
   [documentation CAI1ListLocationsAll "List items within all locations."]
-  [case CAI1ListLocationsAll]]
+  [case CAI1ListLocationsAll]
+]
 
 [documentation CAI1ItemLocation "An assertion that there are count instances of item at location."]
 [record CAI1ItemLocation
@@ -135,12 +137,14 @@
   [documentation locationId "The location ID."]
   [field locationId CAI1UUID]
   [documentation count "The count."]
-  [field count cb:IntegerUnsigned64]]
+  [field count cb:IntegerUnsigned64]
+]
 
 [documentation CAI1ItemLocations "A set of assertions indicating items in locations."]
 [record CAI1ItemLocations
   [documentation locations "The item locations."]
-  [field locations [cb:Map CAI1UUID [cb:Map CAI1UUID CAI1ItemLocation]]]]
+  [field locations [cb:Map CAI1UUID [cb:Map CAI1UUID CAI1ItemLocation]]]
+]
 
 [documentation CAI1ItemReposit "The type of item reposit operations."]
 [variant CAI1ItemReposit
@@ -169,7 +173,8 @@
     [documentation locationId "The location ID."]
     [field locationId CAI1UUID]
     [documentation count "The count."]
-    [field count cb:IntegerUnsigned64]]]
+    [field count cb:IntegerUnsigned64]]
+]
 
 [documentation CAI1Location "A location."]
 [record CAI1Location
@@ -180,7 +185,51 @@
   [documentation name "The location name."]
   [field name cb:String]
   [documentation description "The location description."]
-  [field description cb:String]]
+  [field description cb:String]
+]
+
+[documentation CAI1ItemColumn "The item column by which to order results."]
+[variant CAI1ItemColumn
+  [documentation CAI1ById "Order by item ID."]
+  [case CAI1ById]
+  [documentation CAI1ByName "Order by item name."]
+  [case CAI1ByName]
+]
+
+[documentation CAI1ItemColumnOrdering "The item column by which to order results."]
+[record CAI1ItemColumnOrdering
+  [documentation column "The item column."]
+  [field column CAI1ItemColumn]
+  [documentation ascending "Whether results should be in ascending order."]
+  [field ascending cb:Boolean]
+]
+
+[documentation CAI1ItemSearchParameters "The item search parameters."]
+[record CAI1ItemSearchParameters
+  [documentation location "The item location search behaviour."]
+  [field location CAI1ListLocationBehaviour]
+  [documentation search "The item search query."]
+  [field search [cb:Option cb:String]]
+  [documentation order "The item result ordering."]
+  [field order CAI1ItemColumnOrdering]
+  [documentation limit "The item limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
+[documentation CAI1Page "A page of search results."]
+[record CAI1Page
+  [parameter T]
+  [field items [cb:List T]]
+  [field pageIndex cb:IntegerUnsigned32]
+  [field pageCount cb:IntegerUnsigned32]
+  [field pageFirstOffset cb:IntegerUnsigned64]
+]
+
+[documentation CAI1ItemSummary "A summary of an item."]
+[record CAI1ItemSummary
+  [field id CAI1UUID]
+  [field name cb:String]
+]
 
 ;
 ; Commands.
@@ -318,6 +367,18 @@
   [documentation tags "The tags."]
   [field tags [cb:List CAI1Tag]]]
 
+[documentation CAI1CommandItemSearchBegin "Start searching for items."]
+[record CAI1CommandItemSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1ItemSearchParameters]
+]
+
+[documentation CAI1CommandItemSearchNext "Return the next page of search results."]
+[record CAI1CommandItemSearchNext]
+
+[documentation CAI1CommandItemSearchPrevious "Return the next page of search results."]
+[record CAI1CommandItemSearchPrevious]
+
 [variant CAI1Command
   [case C1CommandFilePut               [field command CAI1CommandFilePut]]
   [case C1CommandFileRemove            [field command CAI1CommandFileRemove]]
@@ -330,6 +391,9 @@
   [case C1CommandItemMetadataPut       [field command CAI1CommandItemMetadataPut]]
   [case C1CommandItemMetadataRemove    [field command CAI1CommandItemMetadataRemove]]
   [case C1CommandItemReposit           [field command CAI1CommandItemReposit]]
+  [case C1CommandItemSearchBegin       [field command CAI1CommandItemSearchBegin]]
+  [case C1CommandItemSearchNext        [field command CAI1CommandItemSearchNext]]
+  [case C1CommandItemSearchPrevious    [field command CAI1CommandItemSearchPrevious]]
   [case C1CommandItemUpdate            [field command CAI1CommandItemUpdate]]
   [case C1CommandItemsRemove           [field command CAI1CommandItemsRemove]]
   [case C1CommandLocationGet           [field command CAI1CommandLocationGet]]
@@ -496,21 +560,32 @@
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId CAI1UUID]
   [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]]
+  [field tags [cb:List CAI1Tag]]
+]
 
 [documentation CAI1ResponseTagsDelete "A response to CAI1CommandTagsDelete."]
 [record CAI1ResponseTagsDelete
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId CAI1UUID]
   [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]]
+  [field tags [cb:List CAI1Tag]]
+]
 
 [documentation CAI1ResponseTagsPut "A response to CAI1CommandTagsPut."]
 [record CAI1ResponseTagsPut
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId CAI1UUID]
   [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]]
+  [field tags [cb:List CAI1Tag]]
+]
+
+[documentation CAI1ResponseItemSearch "A response to CAI1CommandItemSearch."]
+[record CAI1ResponseItemSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId CAI1UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1ItemSummary]]
+]
 
 [variant CAI1Response
   [case C1ResponseError                 [field response CAI1ResponseError]]
@@ -525,6 +600,7 @@
   [case C1ResponseItemMetadataPut       [field response CAI1ResponseItemMetadataPut]]
   [case C1ResponseItemMetadataRemove    [field response CAI1ResponseItemMetadataRemove]]
   [case C1ResponseItemReposit           [field response CAI1ResponseItemReposit]]
+  [case C1ResponseItemSearch            [field response CAI1ResponseItemSearch]]
   [case C1ResponseItemUpdate            [field response CAI1ResponseItemUpdate]]
   [case C1ResponseItemsRemove           [field response CAI1ResponseItemsRemove]]
   [case C1ResponseLocationGet           [field response CAI1ResponseLocationGet]]
@@ -582,6 +658,9 @@
       CAI1CommandItemMetadataPut
       CAI1CommandItemMetadataRemove
       CAI1CommandItemReposit
+      CAI1CommandItemSearchBegin
+      CAI1CommandItemSearchNext
+      CAI1CommandItemSearchPrevious
       CAI1CommandItemUpdate
       CAI1CommandItemsRemove
       CAI1CommandLocationGet
@@ -604,6 +683,7 @@
       CAI1ResponseItemMetadataPut
       CAI1ResponseItemMetadataRemove
       CAI1ResponseItemReposit
+      CAI1ResponseItemSearch
       CAI1ResponseItemUpdate
       CAI1ResponseItemsRemove
       CAI1ResponseLocationGet

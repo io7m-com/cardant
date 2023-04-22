@@ -36,5 +36,8 @@ module com.io7m.cardant.client.basic
   requires transitive com.io7m.repetoir.core;
   requires com.io7m.cardant.protocol.inventory.cb;
 
+  opens com.io7m.cardant.client.basic.internal
+    to com.io7m.jxtrand.vanilla;
+
   exports com.io7m.cardant.client.basic;
 }

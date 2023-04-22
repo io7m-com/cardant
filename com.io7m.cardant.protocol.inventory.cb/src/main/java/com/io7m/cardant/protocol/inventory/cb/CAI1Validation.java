@@ -17,12 +17,17 @@
 package com.io7m.cardant.protocol.inventory.cb;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIEventType;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAITransaction;
 import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
@@ -32,10 +37,12 @@ import com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationEvents;
 import com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses;
 import com.io7m.cedarbridge.runtime.api.CBBooleanType;
 import com.io7m.cedarbridge.runtime.api.CBList;
+import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandFilePut;
@@ -216,6 +223,18 @@ public final class CAI1Validation
         out.add(convertFromWireCAI1CommandItemReposit(k.fieldCommand()));
         continue;
       }
+      if (c instanceof final CAI1Command.C1CommandItemSearchBegin k) {
+        out.add(convertFromWireCAI1CommandItemSearchBegin(k.fieldCommand()));
+        continue;
+      }
+      if (c instanceof final CAI1Command.C1CommandItemSearchNext k) {
+        out.add(convertFromWireCAI1CommandItemSearchNext(k.fieldCommand()));
+        continue;
+      }
+      if (c instanceof final CAI1Command.C1CommandItemSearchPrevious k) {
+        out.add(convertFromWireCAI1CommandItemSearchPrevious(k.fieldCommand()));
+        continue;
+      }
 
       throw new IllegalStateException("Unrecognized message: " + c.getClass());
     }
@@ -320,6 +339,10 @@ public final class CAI1Validation
         out.add(convertFromWireCAI1ResponseError(k.fieldResponse()));
         continue;
       }
+      if (c instanceof final CAI1Response.C1ResponseItemSearch k) {
+        out.add(convertFromWireCAI1ResponseItemSearch(k.fieldResponse()));
+        continue;
+      }
 
       throw new IllegalStateException("Unrecognized message: " + c.getClass());
     }
@@ -329,6 +352,28 @@ public final class CAI1Validation
       out.stream()
         .map(c -> (CAIResponseType) c)
         .toList()
+    );
+  }
+
+  private static CAIMessageType convertFromWireCAI1ResponseItemSearch(
+    final CAI1ResponseItemSearch c)
+  {
+    return new CAIResponseItemSearch(
+      convertFromWireUUID(c.fieldRequestId()),
+      convertFromWirePage(c.fieldResults(),
+                          CAI1ValidationCommon::convertFromWireItemSummary)
+    );
+  }
+
+  private static <A extends CBSerializableType, B> CAPage<B> convertFromWirePage(
+    final CAI1Page<A> page,
+    final Function<A, B> f)
+  {
+    return new CAPage<>(
+      page.fieldItems().values().stream().map(f).toList(),
+      (int) page.fieldPageIndex().value(),
+      (int) page.fieldPageCount().value(),
+      page.fieldPageFirstOffset().value()
     );
   }
 
@@ -351,6 +396,26 @@ public final class CAI1Validation
         ),
       Optional.empty()
     );
+  }
+
+  private static CAIMessageType convertFromWireCAI1CommandItemSearchBegin(
+    final CAI1CommandItemSearchBegin m)
+  {
+    return new CAICommandItemSearchBegin(
+      CAI1ValidationCommon.convertFromWireItemSearchParameters(m.fieldParameters())
+    );
+  }
+
+  private static CAIMessageType convertFromWireCAI1CommandItemSearchNext(
+    final CAI1CommandItemSearchNext m)
+  {
+    return new CAICommandItemSearchNext();
+  }
+
+  private static CAIMessageType convertFromWireCAI1CommandItemSearchPrevious(
+    final CAI1CommandItemSearchPrevious m)
+  {
+    return new CAICommandItemSearchPrevious();
   }
 
   @Override
@@ -460,6 +525,15 @@ public final class CAI1Validation
       }
       if (message instanceof final CAI1CommandTagsPut m) {
         return convertFromWireCAI1CommandTagsPut(m);
+      }
+      if (message instanceof final CAI1CommandItemSearchBegin m) {
+        return convertFromWireCAI1CommandItemSearchBegin(m);
+      }
+      if (message instanceof final CAI1CommandItemSearchNext m) {
+        return convertFromWireCAI1CommandItemSearchNext(m);
+      }
+      if (message instanceof final CAI1CommandItemSearchPrevious m) {
+        return convertFromWireCAI1CommandItemSearchPrevious(m);
       }
 
       /*

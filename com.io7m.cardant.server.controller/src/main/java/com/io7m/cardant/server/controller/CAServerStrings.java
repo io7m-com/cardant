@@ -48,7 +48,7 @@ public final class CAServerStrings extends JXTAbstractStrings
     super(
       locale,
       CAServerStrings.class,
-      "/com/io7m/cardant/server/controller",
+      "/com/io7m/cardant/server/controller/internal",
       "Messages"
     );
   }

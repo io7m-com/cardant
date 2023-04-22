@@ -53,7 +53,7 @@ public final class CARequestUniqueIDs implements HttpChannel.Listener
 
   public static String uniqueRequestIDKey()
   {
-    return "com.io7m.idstore.server.requestId";
+    return "com.io7m.cardant.server.requestId";
   }
 
   /**
@@ -62,7 +62,7 @@ public final class CARequestUniqueIDs implements HttpChannel.Listener
 
   public static String uniqueRequestTimeKey()
   {
-    return "com.io7m.idstore.server.requestTimeStart";
+    return "com.io7m.cardant.server.requestTimeStart";
   }
 
   /**

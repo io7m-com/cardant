@@ -94,4 +94,13 @@ public final class CAFileDialogs implements RPServiceType
       return Files.isDirectory(path);
     }
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CAFileDialogs 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

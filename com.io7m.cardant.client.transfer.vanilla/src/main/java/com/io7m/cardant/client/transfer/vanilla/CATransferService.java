@@ -310,4 +310,13 @@ public final class CATransferService implements CATransferServiceType
   {
     return "Transfer service.";
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CATransferService 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

@@ -24,6 +24,8 @@ import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentKey;
+import com.io7m.cardant.model.CAItemColumn;
+import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemLocations;
@@ -32,6 +34,8 @@ import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
+import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
@@ -46,15 +50,21 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1Id;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Item;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemAttachment;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemAttachmentKey;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemColumn;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemColumnOrdering;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemLocation;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemLocations;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemMetadata;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSearchParameters;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ListLocationBehaviour;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
 import com.io7m.cardant.protocol.inventory.cb.CAI1UUID;
+import com.io7m.cedarbridge.runtime.api.CBBooleanType;
 import com.io7m.cedarbridge.runtime.api.CBByteArray;
+import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned32;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
@@ -70,6 +80,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static java.lang.Integer.toUnsignedLong;
 
 public final class CAI1ValidationCommon
 {
@@ -707,6 +719,76 @@ public final class CAI1ValidationCommon
         .stream()
         .map(CAI1ValidationCommon::convertFromWireItem)
         .collect(Collectors.toUnmodifiableSet())
+    );
+  }
+
+  public static CAI1ItemSearchParameters convertToWireItemSearchParameters(
+    final CAItemSearchParameters parameters)
+  {
+    return new CAI1ItemSearchParameters(
+      convertToWireListLocationBehaviour(parameters.locationBehaviour()),
+      CBOptionType.fromOptional(parameters.search().map(CBString::new)),
+      convertToWireItemColumnOrdering(parameters.ordering()),
+      new CBIntegerUnsigned32(toUnsignedLong(parameters.limit()))
+    );
+  }
+
+  private static CAI1ItemColumnOrdering convertToWireItemColumnOrdering(
+    final CAItemColumnOrdering ordering)
+  {
+    return new CAI1ItemColumnOrdering(
+      convertToWireItemColumn(ordering.column()),
+      CBBooleanType.fromBoolean(ordering.ascending())
+    );
+  }
+
+  private static CAI1ItemColumn convertToWireItemColumn(
+    final CAItemColumn column)
+  {
+    return switch (column) {
+      case BY_ID -> new CAI1ItemColumn.CAI1ById();
+      case BY_NAME -> new CAI1ItemColumn.CAI1ByName();
+    };
+  }
+
+  public static CAItemSearchParameters convertFromWireItemSearchParameters(
+    final CAI1ItemSearchParameters p)
+  {
+    return new CAItemSearchParameters(
+      convertFromWireItemLocationBehaviour(p.fieldLocation()),
+      p.fieldSearch().asOptional().map(CBString::value),
+      convertFromWireItemColumnOrdering(p.fieldOrder()),
+      (int) p.fieldLimit().value()
+    );
+  }
+
+  private static CAItemColumnOrdering convertFromWireItemColumnOrdering(
+    final CAI1ItemColumnOrdering c)
+  {
+    return new CAItemColumnOrdering(
+      convertFromWireItemColumn(c.fieldColumn()),
+      c.fieldAscending().asBoolean()
+    );
+  }
+
+  private static CAItemColumn convertFromWireItemColumn(
+    final CAI1ItemColumn c)
+  {
+    if (c instanceof CAI1ItemColumn.CAI1ById) {
+      return CAItemColumn.BY_ID;
+    }
+    if (c instanceof CAI1ItemColumn.CAI1ByName) {
+      return CAItemColumn.BY_NAME;
+    }
+    throw new ProtocolUncheckedException(errorProtocol(c));
+  }
+
+  public static CAItemSummary convertFromWireItemSummary(
+    final CAI1ItemSummary x)
+  {
+    return new CAItemSummary(
+      new CAItemID(fromWireUUID(x.fieldId())),
+      x.fieldName().value()
     );
   }
 

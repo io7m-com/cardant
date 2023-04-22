@@ -23,6 +23,7 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
+import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CATag;
 
@@ -269,5 +270,19 @@ public non-sealed interface CADatabaseQueriesItemsType
    */
 
   CAItemLocations itemLocations(CAItemID item)
+    throws CADatabaseException;
+
+  /**
+   * Start searching for items.
+   *
+   * @param parameters The search parameters
+   *
+   * @return A paged search
+   *
+   * @throws CADatabaseException On database errors
+   */
+
+  CADatabaseItemSearchType itemSearch(
+    CAItemSearchParameters parameters)
     throws CADatabaseException;
 }

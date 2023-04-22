@@ -28,12 +28,16 @@ import com.io7m.cardant.server.inventory.v1.CAI1Sends;
 import com.io7m.cardant.server.inventory.v1.CAI1Server;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.configuration.CAConfigurationService;
+import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
+import com.io7m.cardant.server.service.idstore.CAIdstoreClients;
+import com.io7m.cardant.server.service.idstore.CAIdstoreClientsType;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimits;
 import com.io7m.cardant.server.service.sessions.CASessionService;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryNoOp;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFactoryType;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessages;
+import com.io7m.cardant.server.service.verdant.CAVerdantMessagesType;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
 import com.io7m.repetoir.core.RPServiceDirectory;
@@ -162,14 +166,21 @@ public final class CAServer implements CAServerType
 
     services.register(CASessionService.class, sessionInventoryService);
 
+    final var idstore =
+      CAIdstoreClients.create(
+        this.configuration.locale(),
+        this.configuration.idstoreConfiguration()
+      );
+    services.register(CAIdstoreClientsType.class, idstore);
+
     final var config = new CAConfigurationService(this.configuration);
-    services.register(CAConfigurationService.class, config);
+    services.register(CAConfigurationServiceType.class, config);
 
     final var clock = new CAServerClock(this.configuration.clock());
     services.register(CAServerClock.class, clock);
 
     final var vMessages = new CAVerdantMessages();
-    services.register(CAVerdantMessages.class, vMessages);
+    services.register(CAVerdantMessagesType.class, vMessages);
 
     final var idA1Messages = new CAI1Messages();
     services.register(CAI1Messages.class, idA1Messages);

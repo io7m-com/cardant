@@ -38,13 +38,14 @@ module com.io7m.cardant.server.basic
   requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.inventory.v1;
   requires com.io7m.cardant.server.service.clock;
+  requires com.io7m.cardant.server.service.configuration;
+  requires com.io7m.cardant.server.service.idstore;
+  requires com.io7m.cardant.server.service.reqlimit;
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.verdant;
-  requires com.io7m.cardant.server.service.configuration;
-  requires com.io7m.cardant.server.service.reqlimit;
-  requires org.eclipse.jetty.util;
   requires org.eclipse.jetty.server;
+  requires org.eclipse.jetty.util;
 
   provides CAServerFactoryType
     with CAServers;

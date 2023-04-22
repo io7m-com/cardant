@@ -50,7 +50,7 @@ public final class CAI1Messages
    */
 
   public static final String CONTENT_TYPE =
-    "application/idstore_user+cedarbridge";
+    "application/cardant_inventory+cedarbridge";
 
   private final BSSReaderProviderType readers;
   private final BSSWriterProviderType writers;
@@ -82,7 +82,7 @@ public final class CAI1Messages
   }
 
   /**
-   * The protocol messages for Admin v1 Cedarbridge.
+   * The protocol messages for Inventory v1 Cedarbridge.
    */
 
   public CAI1Messages()

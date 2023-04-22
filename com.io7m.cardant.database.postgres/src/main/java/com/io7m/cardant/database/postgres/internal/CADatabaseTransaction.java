@@ -37,7 +37,6 @@ import java.time.Clock;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSqlUnsupportedQueryClass;
@@ -51,8 +50,6 @@ final class CADatabaseTransaction
 {
   private final CADatabaseConnection connection;
   private final Span transactionSpan;
-  private UUID currentUserId;
-  private UUID currentAdminId;
 
   /**
    * @return The transaction span for metrics

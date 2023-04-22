@@ -20,7 +20,9 @@ import com.io7m.cardant.model.CAUser;
 import com.io7m.medrina.api.MSubject;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A controller for a single user session.
@@ -30,6 +32,7 @@ public final class CASession
 {
   private final CASessionSecretIdentifier sessionId;
   private final CAUser user;
+  private final ConcurrentHashMap<Class<?>, Object> properties;
 
   /**
    * A controller for a single user session.
@@ -46,6 +49,8 @@ public final class CASession
       Objects.requireNonNull(inUser, "user");
     this.sessionId =
       Objects.requireNonNull(inSessionId, "sessionId");
+    this.properties =
+      new ConcurrentHashMap<>();
   }
 
   /**
@@ -73,5 +78,39 @@ public final class CASession
   public UUID userId()
   {
     return this.user.userId();
+  }
+
+  /**
+   * Set the property.
+   *
+   * @param clazz The property class
+   * @param item  The property value
+   * @param <T>   The property type
+   */
+
+  public <T> void setProperty(
+    final Class<T> clazz,
+    final T item)
+  {
+    this.properties.put(
+      Objects.requireNonNull(clazz, "clazz"),
+      clazz.cast(Objects.requireNonNull(item, "item"))
+    );
+  }
+
+  /**
+   * Retrieve the value of a property.
+   *
+   * @param clazz The property class
+   * @param <T>   The property type
+   *
+   * @return The property value, if any
+   */
+
+  public <T> Optional<T> property(
+    final Class<T> clazz)
+  {
+    return Optional.ofNullable(this.properties.get(clazz))
+      .map(clazz::cast);
   }
 }

@@ -102,6 +102,15 @@ public final class CAExternalImages implements RPServiceType
   }
 
   @Override
+  public String toString()
+  {
+    return String.format(
+      "[CAExternalImages 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
+
+  @Override
   public String description()
   {
     return "External image service";

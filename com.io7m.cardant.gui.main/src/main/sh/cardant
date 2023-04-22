@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -z "${CARDANT_GUI_HOME}" ]
+then
+  echo "CARDANT_GUI_HOME is unset" 1>&2
+  exit 1
+fi
+
+exec /usr/bin/env java \
+-p "${CARDANT_GUI_HOME}/lib" \
+-m com.io7m.cardant.gui.main/com.io7m.cardant.gui.main.CAGUIMain \
+"$@"

@@ -29,7 +29,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
-import static com.io7m.cardant.database.postgres.internal.cardant.tables.Tags.TAGS;
+import static com.io7m.cardant.database.postgres.internal.tables.Tags.TAGS;
 
 /**
  * Tag related queries.

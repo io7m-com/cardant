@@ -7,7 +7,7 @@
 
   <id>distribution</id>
 
-  <baseDirectory>idstore</baseDirectory>
+  <baseDirectory>cardant</baseDirectory>
 
   <formats>
     <format>dir</format>
@@ -32,7 +32,7 @@
       <fileMode>0644</fileMode>
     </file>
     <file>
-      <source>src/main/sh/idstore</source>
+      <source>src/main/sh/cardant</source>
       <outputDirectory>/bin</outputDirectory>
       <fileMode>0755</fileMode>
     </file>

@@ -31,7 +31,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.LOCATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorCyclic;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 

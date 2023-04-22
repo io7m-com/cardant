@@ -17,14 +17,16 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseItemSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.postgres.internal.cardant.tables.records.ItemsRecord;
+import com.io7m.cardant.database.postgres.internal.tables.records.ItemsRecord;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentKey;
+import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -32,17 +34,33 @@ import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
+import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
+import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
+import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
+import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
+import com.io7m.jqpage.core.JQField;
+import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
+import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
+import com.io7m.jqpage.core.JQOrder;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Query;
+import org.jooq.Table;
 import org.jooq.UpdateConditionStep;
 import org.jooq.exception.DataAccessException;
+import org.jooq.exception.SQLStateClass;
+import org.jooq.impl.DSL;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -54,14 +72,19 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.FILES;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.ITEMS;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.ITEM_ATTACHMENTS;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.ITEM_METADATA;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.ITEM_TAGS;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.TAGS;
+import static com.io7m.cardant.database.postgres.internal.Tables.FILES;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS_SUMMED;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TAGS;
+import static com.io7m.cardant.database.postgres.internal.Tables.TAGS;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
+import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
@@ -910,15 +933,21 @@ final class CADatabaseQueriesItems
 
     try {
       if (reposit instanceof final CAItemRepositAdd add) {
-        this.itemRepositAdd(context, add);
+        final var c = itemRepositAdd(context, add);
+        updateItemCount(context, add.item(), c);
+        this.checkItemCountInvariant(context, add.item(), c);
         return;
       }
       if (reposit instanceof final CAItemRepositMove move) {
-        this.itemRepositMove(context, move);
+        final var c = this.itemRepositMove(context, move);
+        updateItemCount(context, move.item(), c);
+        this.checkItemCountInvariant(context, move.item(), c);
         return;
       }
       if (reposit instanceof final CAItemRepositRemove remove) {
-        this.itemRepositRemove(context, remove);
+        final var c = this.itemRepositRemove(context, remove);
+        updateItemCount(context, remove.item(), c);
+        this.checkItemCountInvariant(context, remove.item(), c);
         return;
       }
     } catch (final DataAccessException e) {
@@ -933,25 +962,135 @@ final class CADatabaseQueriesItems
     }
   }
 
-  private void itemRepositRemove(
+  private static void updateItemCount(
+    final DSLContext context,
+    final CAItemID itemID,
+    final long newCount)
+  {
+    context.update(ITEMS)
+      .set(ITEMS.ITEM_COUNT, Long.valueOf(newCount))
+      .where(ITEMS.ITEM_ID.eq(itemID.id()))
+      .execute();
+  }
+
+  private long itemRepositRemove(
     final DSLContext context,
     final CAItemRepositRemove remove)
+    throws CADatabaseException
   {
+    try {
+      final var matchItem =
+        ITEM_LOCATIONS.ITEM_ID.eq(remove.item().id());
+      final var matchLocation =
+        ITEM_LOCATIONS.ITEM_LOCATION.eq(remove.location().id());
+      final var matches =
+        matchItem.and(matchLocation);
 
+      final var newCount =
+        context.update(ITEM_LOCATIONS)
+          .set(
+            ITEM_LOCATIONS.COUNT,
+            ITEM_LOCATIONS.COUNT.sub(Long.valueOf(remove.count())))
+          .where(matches)
+          .returning(ITEM_LOCATIONS.COUNT)
+          .fetchOne(ITEM_LOCATIONS.COUNT)
+          .longValue();
+
+      if (newCount == 0L) {
+        context.deleteFrom(ITEM_LOCATIONS)
+          .where(matches)
+          .execute();
+      }
+
+      return newCount;
+    } catch (final DataAccessException e) {
+      if (e.sqlStateClass() == SQLStateClass.C23_INTEGRITY_CONSTRAINT_VIOLATION) {
+        if (e.getMessage().contains("check_item_location_count")) {
+          throw new CADatabaseException(
+            errorRemoveTooManyItems(),
+            this.messages().format("errorItemCountTooManyRemoved"),
+            Map.ofEntries(
+              Map.entry("Item ID", remove.item().displayId()),
+              Map.entry("Item Location", remove.location().displayId()),
+              Map.entry("Count", Long.toUnsignedString(remove.count()))
+            )
+          );
+        }
+      }
+      throw e;
+    }
   }
 
-  private void itemRepositMove(
+  private void checkItemCountInvariant(
+    final DSLContext context,
+    final CAItemID item,
+    final long newCount)
+    throws CADatabaseException
+  {
+    final var count =
+      context.select(ITEM_LOCATIONS_SUMMED.ITEM_COUNT)
+        .from(ITEM_LOCATIONS_SUMMED)
+        .where(ITEM_LOCATIONS_SUMMED.ITEM_ID.eq(item.id()))
+        .fetchOptional(ITEM_LOCATIONS_SUMMED.ITEM_COUNT)
+        .orElse(BigInteger.ZERO);
+
+    if (!Objects.equals(BigInteger.valueOf(newCount), count)) {
+      throw new CADatabaseException(
+        errorSql(),
+        this.messages().format("errorItemCountStoreInvariant"),
+        Map.ofEntries(
+          Map.entry("Item ID", item.displayId()),
+          Map.entry("Count Expected", Long.toUnsignedString(newCount)),
+          Map.entry("Count Received", count.toString())
+        )
+      );
+    }
+  }
+
+  private long itemRepositMove(
     final DSLContext context,
     final CAItemRepositMove move)
+    throws CADatabaseException
   {
+    final var newCount0 =
+      this.itemRepositRemove(context, new CAItemRepositRemove(
+        move.item(),
+        move.fromLocation(),
+        move.count()
+      ));
 
+    final var newCount1 =
+      itemRepositAdd(context, new CAItemRepositAdd(
+        move.item(),
+        move.toLocation(),
+        move.count()
+      ));
+
+    return newCount0 + newCount1;
   }
 
-  private void itemRepositAdd(
+  private static long itemRepositAdd(
     final DSLContext context,
     final CAItemRepositAdd add)
   {
-
+    final var newCount =
+      context.insertInto(
+          ITEM_LOCATIONS,
+          ITEM_LOCATIONS.ITEM_ID,
+          ITEM_LOCATIONS.ITEM_LOCATION,
+          ITEM_LOCATIONS.COUNT)
+        .values(
+          add.item().id(),
+          add.location().id(),
+          Long.valueOf(add.count())
+        )
+        .onDuplicateKeyUpdate()
+        .set(
+          ITEM_LOCATIONS.COUNT,
+          ITEM_LOCATIONS.COUNT.add(Long.valueOf(add.count())))
+        .returning(ITEM_LOCATIONS.COUNT)
+        .fetchOne(ITEM_LOCATIONS.COUNT);
+    return newCount;
   }
 
   @Override
@@ -960,6 +1099,181 @@ final class CADatabaseQueriesItems
     throws CADatabaseException
   {
     return null;
+  }
+
+  @Override
+  public CADatabaseItemSearchType itemSearch(
+    final CAItemSearchParameters parameters)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(parameters, "parameters");
+
+    final var transaction =
+      this.transaction();
+    final var context =
+      transaction.createContext();
+    final var querySpan =
+      transaction.createQuerySpan(
+        "CADatabaseQueriesItems.itemSearch");
+
+    try {
+      final Table<?> tableSource;
+
+      /*
+       * The location query.
+       *
+       * Note that we only join the ITEM_LOCATIONS table if a search query
+       * actually requires it.
+       */
+
+      final Condition locationCondition;
+      final var behaviour = parameters.locationBehaviour();
+      if (behaviour instanceof final CAListLocationExact exact) {
+        tableSource =
+          ITEMS.join(ITEM_LOCATIONS).on(ITEM_LOCATIONS.ITEM_ID.eq(ITEMS.ITEM_ID));
+        locationCondition =
+          ITEM_LOCATIONS.ITEM_LOCATION.eq(exact.location().id());
+
+      } else if (behaviour instanceof final CAListLocationWithDescendants descendants) {
+        tableSource =
+          ITEMS.join(ITEM_LOCATIONS).on(ITEM_LOCATIONS.ITEM_ID.eq(ITEMS.ITEM_ID));
+
+        final var funcCall =
+          DSL.select(DSL.field("location_descendants.location"))
+            .from("location_descendants(?)", descendants.location().id())
+            .asField();
+
+        locationCondition =
+          ITEM_LOCATIONS.ITEM_LOCATION.in(funcCall);
+      } else if (behaviour instanceof final CAListLocationsAll all) {
+        tableSource = ITEMS;
+        locationCondition = DSL.trueCondition();
+      } else {
+        tableSource = ITEMS;
+        locationCondition = DSL.trueCondition();
+      }
+
+      /*
+       * A search query might be present.
+       */
+
+      final Condition searchCondition;
+      final var search = parameters.search();
+      if (search.isPresent()) {
+        final var searchText = "%%%s%%".formatted(search.get());
+        searchCondition =
+          DSL.condition(ITEMS.ITEM_NAME.likeIgnoreCase(searchText));
+      } else {
+        searchCondition = DSL.trueCondition();
+      }
+
+      /*
+       * Items might be deleted.
+       */
+
+      final Condition deletedCondition =
+        DSL.condition(ITEMS.ITEM_DELETED.eq(FALSE));
+
+      final var allConditions =
+        searchCondition
+          .and(locationCondition)
+          .and(deletedCondition);
+
+      final var orderField =
+        orderingToJQField(parameters.ordering());
+
+      final var pages =
+        JQKeysetRandomAccessPagination.createPageDefinitions(
+          context,
+          tableSource,
+          List.of(orderField),
+          List.of(allConditions),
+          List.of(),
+          Integer.toUnsignedLong(parameters.limit()),
+          statement -> {
+            querySpan.setAttribute(DB_STATEMENT, statement.toString());
+          }
+        );
+
+      return new ItemSearch(pages);
+    } catch (final DataAccessException e) {
+      querySpan.recordException(e);
+      throw handleDatabaseException(transaction, e);
+    } finally {
+      querySpan.end();
+    }
+  }
+
+  private static final class ItemSearch
+    extends CAAbstractSearch<CADatabaseQueriesItems, CADatabaseQueriesItemsType, CAItemSummary>
+    implements CADatabaseItemSearchType
+  {
+    ItemSearch(
+      final List<JQKeysetRandomAccessPageDefinition> inPages)
+    {
+      super(inPages);
+    }
+
+    @Override
+    protected CAPage<CAItemSummary> page(
+      final CADatabaseQueriesItems queries,
+      final JQKeysetRandomAccessPageDefinition page)
+      throws CADatabaseException
+    {
+      final var transaction =
+        queries.transaction();
+      final var context =
+        transaction.createContext();
+
+      final var querySpan =
+        transaction.createQuerySpan(
+          "CADatabaseQueriesItems.itemSearch.page");
+
+      try {
+        final var query =
+          page.queryFields(context, List.of(
+            ITEMS.ITEM_ID,
+            ITEMS.ITEM_NAME
+          ));
+
+        querySpan.setAttribute(DB_STATEMENT, query.toString());
+
+        final var items =
+          query.fetch().map(record -> {
+            return new CAItemSummary(
+              new CAItemID(record.get(ITEMS.ITEM_ID)),
+              record.get(ITEMS.ITEM_NAME)
+            );
+          });
+
+        return new CAPage<>(
+          items,
+          (int) page.index(),
+          this.pageCount(),
+          page.firstOffset()
+        );
+      } catch (final DataAccessException e) {
+        querySpan.recordException(e);
+        throw handleDatabaseException(transaction, e);
+      } finally {
+        querySpan.end();
+      }
+    }
+  }
+
+  private static JQField orderingToJQField(
+    final CAItemColumnOrdering ordering)
+  {
+    final var field =
+      switch (ordering.column()) {
+        case BY_ID -> ITEMS.ITEM_ID;
+        case BY_NAME -> ITEMS.ITEM_NAME;
+      };
+
+    return new JQField(
+      field,
+      ordering.ascending() ? JQOrder.ASCENDING : JQOrder.DESCENDING
+    );
   }
 
   private enum IncludeTags

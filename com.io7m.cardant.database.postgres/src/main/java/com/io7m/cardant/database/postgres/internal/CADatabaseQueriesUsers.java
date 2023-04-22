@@ -18,12 +18,13 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
-import com.io7m.cardant.database.postgres.internal.cardant.tables.records.UsersRecord;
+import com.io7m.cardant.database.postgres.internal.tables.records.UsersRecord;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.medrina.api.MSubject;
 import org.jooq.exception.DataAccessException;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
-import static com.io7m.cardant.database.postgres.internal.cardant.Tables.USERS;
+import static com.io7m.cardant.database.postgres.internal.Tables.USERS;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
@@ -64,6 +65,19 @@ final class CADatabaseQueriesUsers
         userRec.set(USERS.ID, user.userId());
         userRec.set(USERS.INITIAL, FALSE);
       }
+
+      final var sourceRoles =
+        user.subject().roles();
+
+      final var roles = new String[sourceRoles.size()];
+      var index = 0;
+      for (final var role : sourceRoles) {
+        roles[index] = role.value();
+        ++index;
+      }
+      Arrays.sort(roles);
+
+      userRec.setRoles(roles);
       userRec.store();
     } catch (final DataAccessException e) {
       querySpan.recordException(e);
@@ -130,6 +144,7 @@ final class CADatabaseQueriesUsers
         userRec.set(USERS.ID, id);
       }
       userRec.set(USERS.INITIAL, TRUE);
+      userRec.set(USERS.ROLES, new String[0]);
       userRec.store();
     } catch (final DataAccessException e) {
       querySpan.recordException(e);

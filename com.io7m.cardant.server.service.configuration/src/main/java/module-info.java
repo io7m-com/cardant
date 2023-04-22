@@ -14,6 +14,8 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
+
 /**
  * Inventory server (Server configuration service)
  */
@@ -28,6 +30,9 @@ module com.io7m.cardant.server.service.configuration
   requires transitive com.io7m.repetoir.core;
   requires jakarta.xml.bind;
   requires org.slf4j;
+
+  opens com.io7m.cardant.server.service.configuration.xml
+    to jakarta.xml.bind;
 
   exports com.io7m.cardant.server.service.configuration;
 }

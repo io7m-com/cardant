@@ -1,3 +1,4 @@
+API_MISUSE|api-misuse|An API was used incorrectly.
 AUTHENTICATION|authentication|Authentication failed.
 CYCLIC|cyclic|A cycle was introduced into a structure that is not supposed to be cyclic.
 DUPLICATE|duplicate|An object already exists.
@@ -8,6 +9,7 @@ NOT_LOGGED_IN|not-logged-in|A user is trying to perform an operation without hav
 NO_SUPPORTED_PROTOCOLS|no-supported-protocols|The client and server have no supported protocols in common.
 OPERATION_NOT_PERMITTED|operation-not-permitted|A generic "operation not permitted" error.
 PROTOCOL|protocol|A client sent a broken message of some kind.
+REMOVE_TOO_MANY_ITEMS|remove-too-many-items|An attempt was made to remove more items than actually exist.
 RESOURCE_CLOSE_FAILED|resource-close-failed|One or more resources failed to close.
 SECURITY_POLICY_DENIED|security-policy-denied|An operation was denied by the security policy.
 SQL_FOREIGN_KEY|sql-foreign-key|A violation of an SQL foreign key integrity constraint.

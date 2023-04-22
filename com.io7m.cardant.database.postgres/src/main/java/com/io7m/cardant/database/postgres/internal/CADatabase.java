@@ -81,7 +81,7 @@ public final class CADatabase implements CADatabaseType
     this.telemetry =
       Objects.requireNonNull(inOpenTelemetry, "inOpenTelemetry");
     this.tracer =
-      this.telemetry.getTracer("com.io7m.idstore.database.postgres", version());
+      this.telemetry.getTracer("com.io7m.cardant.database.postgres", version());
     this.clock =
       Objects.requireNonNull(inClock, "clock");
     this.dataSource =
@@ -91,7 +91,7 @@ public final class CADatabase implements CADatabaseType
 
     final var meters =
       this.telemetry.meterBuilder(
-        "com.io7m.idstore.database.postgres")
+        "com.io7m.cardant.database.postgres")
         .build();
 
     this.transactions =

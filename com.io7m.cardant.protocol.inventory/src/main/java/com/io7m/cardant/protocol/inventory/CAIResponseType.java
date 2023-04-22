@@ -26,9 +26,10 @@ import java.util.UUID;
 
 public sealed interface CAIResponseType
   extends CAIMessageType, HBResponseType
-  permits CAIResponseLogin,
-  CAIResponseWithElementType,
-  CAIResponseError
+  permits CAIResponseError,
+  CAIResponseItemSearch,
+  CAIResponseLogin,
+  CAIResponseWithElementType
 {
   /**
    * @return The ID of the request that yielded this response

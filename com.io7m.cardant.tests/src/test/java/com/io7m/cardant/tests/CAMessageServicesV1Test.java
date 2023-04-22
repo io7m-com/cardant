@@ -22,6 +22,8 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemColumn;
+import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocation;
 import com.io7m.cardant.model.CAItemLocations;
@@ -29,6 +31,7 @@ import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -45,6 +48,9 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
@@ -385,6 +391,40 @@ public final class CAMessageServicesV1Test
   }
 
   @Test
+  public void testCommandItemSearchBegin()
+    throws Exception
+  {
+    final var message =
+      new CAICommandItemSearchBegin(
+        new CAItemSearchParameters(
+          new CAListLocationExact(CALocationID.random()),
+          Optional.of("item"),
+          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
+          100
+        )
+      );
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandItemSearchNext()
+    throws Exception
+  {
+    final var message =
+      new CAICommandItemSearchNext();
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandItemSearchPrevious()
+    throws Exception
+  {
+    final var message =
+      new CAICommandItemSearchPrevious();
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
   public void testTransaction()
     throws Exception
   {
@@ -436,7 +476,17 @@ public final class CAMessageServicesV1Test
             CALocationID.random(),
             CALocationID.random(),
             0xffff_ffff_ffff_ffffL
-          ))
+          )),
+          new CAICommandItemSearchBegin(
+            new CAItemSearchParameters(
+              new CAListLocationsAll(),
+              Optional.of("x"),
+              new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
+              1000
+            )
+          ),
+          new CAICommandItemSearchNext(),
+          new CAICommandItemSearchPrevious()
         ));
     assertEquals(message, this.roundTrip(message));
   }

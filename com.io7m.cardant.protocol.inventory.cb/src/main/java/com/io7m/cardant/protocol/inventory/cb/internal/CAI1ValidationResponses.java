@@ -17,6 +17,8 @@
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CAIds;
+import com.io7m.cardant.model.CAItemSummary;
+import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
@@ -30,6 +32,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemUpdate;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
@@ -40,7 +43,9 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
+import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Response;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseError;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFilePut;
@@ -54,6 +59,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemReposit;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemUpdate;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationGet;
@@ -65,8 +71,11 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
 import com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.ProtocolUncheckedException;
+import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned32;
+import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
+import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 import com.io7m.cedarbridge.runtime.api.CBString;
 
 import java.util.Map;
@@ -80,6 +89,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationComm
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertToWireLocation;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertToWireUUID;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.errorProtocol;
+import static java.lang.Integer.toUnsignedLong;
 
 public final class CAI1ValidationResponses
 {
@@ -154,8 +164,41 @@ public final class CAI1ValidationResponses
     if (cmd instanceof final CAIResponseError c) {
       return convertToWireResponseCAIResponseError(c);
     }
+    if (cmd instanceof final CAIResponseItemSearch c) {
+      return convertToWireResponseCAIResponseItemSearch(c);
+    }
 
     throw new ProtocolUncheckedException(errorProtocol(cmd));
+  }
+
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseItemSearch(
+    final CAIResponseItemSearch c)
+  {
+    return new CAI1ResponseItemSearch(
+      convertToWireUUID(c.requestId()),
+      convertToWirePage(c.data(), CAI1ValidationResponses::convertToWireItemSummary)
+    );
+  }
+
+  private static CAI1ItemSummary convertToWireItemSummary(
+    final CAItemSummary i)
+  {
+    return new CAI1ItemSummary(
+      convertToWireUUID(i.id().id()),
+      new CBString(i.name())
+    );
+  }
+
+  private static <A, B extends CBSerializableType> CAI1Page<B> convertToWirePage(
+    final CAPage<A> data,
+    final Function<A, B> f)
+  {
+    return new CAI1Page<>(
+      new CBList<>(data.items().stream().map(f).toList()),
+      new CBIntegerUnsigned32(toUnsignedLong(data.pageIndex())),
+      new CBIntegerUnsigned32(toUnsignedLong(data.pageCount())),
+      new CBIntegerUnsigned64(data.pageFirstOffset())
+    );
   }
 
   private static ProtocolCAIv1Type convertToWireResponseCAIResponseError(

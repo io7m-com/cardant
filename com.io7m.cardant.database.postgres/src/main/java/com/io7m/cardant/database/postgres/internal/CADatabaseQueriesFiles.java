@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
-import static com.io7m.cardant.database.postgres.internal.cardant.tables.Files.FILES;
+import static com.io7m.cardant.database.postgres.internal.tables.Files.FILES;
 import static java.lang.Integer.toUnsignedLong;
 
 /**
@@ -73,9 +73,13 @@ public final class CADatabaseQueriesFiles
       fileRec.set(FILES.HASH_ALGORITHM, file.hashAlgorithm());
       fileRec.set(FILES.HASH_VALUE, file.hashValue());
       if (file instanceof final CAFileType.CAFileWithData withData) {
-        final var bytes = withData.data().data();
+        final var bytes =
+          withData.data().data();
+        final var size =
+          toUnsignedLong(bytes.length);
+
         fileRec.set(FILES.DATA, bytes);
-        fileRec.set(FILES.DATA_USED, toUnsignedLong(bytes.length));
+        fileRec.set(FILES.DATA_USED, size);
       }
 
       fileRec.store();
@@ -114,12 +118,16 @@ public final class CADatabaseQueriesFiles
         return Optional.empty();
       }
 
+      final var size =
+        fileRec.getDataUsed()
+          .longValue();
+
       if (withData) {
         return Optional.of(new CAFileType.CAFileWithData(
           file,
           fileRec.getDescription(),
           fileRec.getMediaType(),
-          toUnsignedLong(fileRec.size()),
+          size,
           fileRec.getHashAlgorithm(),
           fileRec.getHashValue(),
           new CAByteArray(fileRec.getData())
@@ -130,7 +138,7 @@ public final class CADatabaseQueriesFiles
         file,
         fileRec.getDescription(),
         fileRec.getMediaType(),
-        toUnsignedLong(fileRec.size()),
+        size,
         fileRec.getHashAlgorithm(),
         fileRec.getHashValue()
       ));

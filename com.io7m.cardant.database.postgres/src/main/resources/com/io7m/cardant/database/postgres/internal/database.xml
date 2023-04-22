@@ -2,10 +2,28 @@
 
 <Schemas xmlns="urn:com.io7m.trasco.database.statements:1:0">
   <Schema versionCurrent="0">
+    <Comment>
+      The cardant role is a least-privilege role that can perform only those operations required to run the system and
+      no others.
+    </Comment>
+
     <Statement><![CDATA[
-create schema cardant
-]]>
-    </Statement>
+drop role if exists cardant;
+]]></Statement>
+    <Statement><![CDATA[
+create role cardant with nosuperuser nocreatedb nocreaterole noinherit nologin;
+]]></Statement>
+
+    <Comment>
+      The cardant_none role is a no-privilege role that cannot perform any actions.
+    </Comment>
+
+    <Statement><![CDATA[
+drop role if exists cardant_none;
+]]></Statement>
+    <Statement><![CDATA[
+create role cardant_none with nosuperuser nocreatedb nocreaterole noinherit nologin;
+]]></Statement>
 
     <Comment>
       The schema version table stores the current version of the database schema. Implementations are expected to query
@@ -14,7 +32,7 @@ create schema cardant
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.schema_version (
+create table schema_version (
   version_lock   char(1) not null default 'X',
   version_number bigint  not null,
 
@@ -35,23 +53,22 @@ create table cardant.schema_version (
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.users (
+create table users (
   id      uuid     not null primary key,
   initial boolean  not null,
   roles   text[]   not null
 )
 ]]></Statement>
 
-    <Statement>grant select, insert, update on cardant.users to cardant</Statement>
-    <Statement>grant select (id) on cardant.users to cardant_none</Statement>
+    <Statement>grant select, insert, update on users to cardant</Statement>
 
     <Statement><![CDATA[
-create function cardant.user_initial_check() returns trigger as $$
+create function user_initial_check() returns trigger as $$
   declare
     count integer;
   begin
     if old.initial = false and new.initial = true then
-      select count(*) into count from cardant.users a where a.initial = true;
+      select count(*) into count from users a where a.initial = true;
       if count >= 1 then
         raise sqlstate 'IC003' using message = 'Only one user can be the initial admin.';
         return null;
@@ -64,14 +81,14 @@ $$ language plpgsql;
 
     <Statement><![CDATA[
 create trigger user_initial_check_insert
-  before insert on cardant.users
+  before insert on users
     for each statement
       execute function user_initial_check();
 ]]></Statement>
 
     <Statement><![CDATA[
 create trigger user_initial_check_update
-  before update on cardant.users
+  before update on users
     for each statement
       execute function user_initial_check();
 ]]></Statement>
@@ -81,7 +98,7 @@ create trigger user_initial_check_update
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.tags (
+create table tags (
   tag_id    uuid         not null primary key,
   tag_name  varchar(128) not null,
 
@@ -89,30 +106,34 @@ create table cardant.tags (
 )
 ]]></Statement>
 
+    <Statement>grant select, insert, update, delete on tags to cardant</Statement>
+
     <Comment>
       The files table contains files.
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.files (
+create table files (
   id              uuid         not null primary key,
   description     varchar(256) not null,
   media_type      varchar(128) not null,
   hash_algorithm  varchar(32)  not null,
   hash_value      varchar(256) not null,
-  data            blob         not null,
+  data            bytea        not null,
   data_used       bigint       not null,
 
   constraint check_natural_data check (data_used >= 0)
 )
 ]]></Statement>
 
+    <Statement>grant select, insert, update, delete on files to cardant</Statement>
+
     <Comment>
       The items table contains the list of items.
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.items (
+create table items (
   item_id       uuid         not null primary key,
   item_name     varchar(128) not null,
   item_count    bigint       not null,
@@ -122,86 +143,194 @@ create table cardant.items (
 )
 ]]></Statement>
 
+    <Statement>grant select, insert, update, delete on items to cardant</Statement>
+
     <Comment>
       The item_tags table contains the tags applied to each item.
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.item_tags (
+create table item_tags (
   tag_item_id  uuid not null,
   tag_id       uuid not null,
 
   constraint unique_tagging  unique (tag_item_id, tag_id),
-  constraint tag_item_exists foreign key (tag_item_id) references cardant.items (item_id),
-  constraint tag_tag_exists  foreign key (tag_id)      references cardant.tags (tag_id)
+  constraint tag_item_exists foreign key (tag_item_id) references items (item_id),
+  constraint tag_tag_exists  foreign key (tag_id)      references tags (tag_id)
 )
 ]]></Statement>
+
+    <Statement>grant select, insert, update, delete on item_tags to cardant</Statement>
 
     <Comment>
       The item_attachments table contains attachments for each item.
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.item_attachments (
+create table item_attachments (
   file_id   uuid         not null,
   item_id   uuid         not null,
   relation  varchar(128) not null,
 
-  constraint file_exists foreign key (file_id) references cardant.files (id),
-  constraint item_exists foreign key (item_id) references cardant.items (item_id),
+  constraint file_exists foreign key (file_id) references files (id),
+  constraint item_exists foreign key (item_id) references items (item_id),
 
   primary key (file_id, item_id, relation)
 )
 ]]></Statement>
+
+    <Statement>grant select, insert, update, delete on item_attachments to cardant</Statement>
 
     <Comment>
       The item_metadata table contains metadata for each item.
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.item_metadata (
+create table item_metadata (
   metadata_item_id  uuid          not null,
   metadata_name     varchar(128)  not null,
   metadata_value    varchar(1024) not null,
 
-  constraint metadata_item_exists foreign key (metadata_item_id) references cardant.items (item_id),
+  constraint metadata_item_exists foreign key (metadata_item_id) references items (item_id),
   constraint metadata_name_unique unique (metadata_item_id, metadata_name)
 )
 ]]></Statement>
+
+    <Statement>grant select, insert, update, delete on item_metadata to cardant</Statement>
 
     <Comment>
       The locations table contains storage/deployment locations for each item.
     </Comment>
 
     <Statement><![CDATA[
-create table cardant.locations (
+create table locations (
   location_id           uuid          not null primary key,
   location_parent       uuid,
   location_name         varchar(128)  not null,
   location_description  varchar(1024) not null,
 
-  constraint location_parent_exists foreign key (location_parent) references cardant.locations (location_id)
+  constraint location_parent_exists foreign key (location_parent) references locations (location_id)
 )
 ]]></Statement>
 
+    <Statement>grant select, insert, update, delete on locations to cardant</Statement>
+
     <Statement><![CDATA[
-create table cardant.item_locations (
+create table item_locations (
   item_id              uuid   not null,
   item_location        uuid   not null,
   count                bigint not null,
 
-  constraint unique_item_location unique (item_id, item_location),
-  constraint item_id_exists       foreign key (item_id)       references cardant.items (item_id),
-  constraint item_location_exists foreign key (item_location) references cardant.locations (location_id),
+  primary key (item_id, item_location),
 
-  constraint check_item_location_count check (count > 0)
+  constraint item_id_exists       foreign key (item_id)       references items (item_id),
+  constraint item_location_exists foreign key (item_location) references locations (location_id),
+
+  constraint check_item_location_count check (count >= 0)
 )
 ]]></Statement>
 
+    <Statement>grant select, insert, update, delete on item_locations to cardant</Statement>
+
     <Statement><![CDATA[
-create view cardant.item_locations_summed (item_id, item_count)
-  as select il.item_id, sum (il.count) from cardant.item_locations as il
+create view item_locations_summed (item_id, item_count)
+  as select il.item_id, sum (il.count) from item_locations as il
     group by il.item_id
+]]></Statement>
+
+    <Statement>grant select on item_locations_summed to cardant</Statement>
+
+    <Comment>
+      The location_descendants function returns the descendants of a given location. The location
+      itself is included in the results.
+    </Comment>
+
+    <Statement><![CDATA[
+create function location_descendants (x uuid)
+  returns table (location uuid)
+  language sql
+  as
+$$
+with recursive location_tree as (
+  select
+    locations.location_parent,
+    locations.location_id
+  from locations
+  where
+    locations.location_parent = x
+  union
+    select
+      L.location_parent,
+      L.location_id
+    from locations L
+    join location_tree
+      on location_tree.location_id = L.location_parent
+)
+select
+  location_id
+from location_tree
+union
+  select Q.location_id
+    from locations Q
+    where Q.location_id = x
+$$
+]]></Statement>
+
+    <Comment>
+      The location_descendants function returns the descendants of a given location. The location
+      itself is not included in the results.
+    </Comment>
+
+    <Statement><![CDATA[
+create function location_descendants_strict (x uuid)
+  returns table (location uuid)
+  language sql
+  as
+$$
+with recursive location_tree as (
+  select
+    locations.location_parent,
+    locations.location_id
+  from locations
+  where
+    locations.location_parent = x
+  union
+    select
+      L.location_parent,
+      L.location_id
+    from locations L
+    join location_tree
+      on location_tree.location_id = L.location_parent
+)
+select location_id from location_tree
+$$
+]]></Statement>
+
+    <Comment>
+      The location_is_descendant_of function returns true if x is a descendant of y in terms
+      of the locations table.
+    </Comment>
+
+    <Statement><![CDATA[
+create function location_is_descendant_of(
+  x uuid,
+  y uuid
+) returns bool
+  language plpgsql
+  as $$
+begin
+  if x = y then
+    return true;
+  end if;
+
+  declare
+    yp uuid;
+  begin
+    select location_parent into yp from locations where location_id = y;
+    return location_is_descendant_of (x, yp);
+  end;
+end
+$$
 ]]></Statement>
 
   </Schema>

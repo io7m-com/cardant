@@ -27,6 +27,9 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
@@ -50,6 +53,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemReposit;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchBegin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchNext;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationGet;
@@ -137,8 +143,37 @@ public final class CAI1ValidationCommands
     if (cmd instanceof final CAICommandTagsPut c) {
       return convertToWireCommandCAICommandTagsPut(c);
     }
+    if (cmd instanceof final CAICommandItemSearchBegin c) {
+      return convertToWireCommandCAICommandItemSearchBegin(c);
+    }
+    if (cmd instanceof final CAICommandItemSearchNext c) {
+      return convertToWireCommandCAICommandItemSearchNext(c);
+    }
+    if (cmd instanceof final CAICommandItemSearchPrevious c) {
+      return convertToWireCommandCAICommandItemSearchPrevious(c);
+    }
 
     throw new ProtocolUncheckedException(CAI1ValidationCommon.errorProtocol(cmd));
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandItemSearchPrevious(
+    final CAICommandItemSearchPrevious c)
+  {
+    return new CAI1CommandItemSearchPrevious();
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandItemSearchNext(
+    final CAICommandItemSearchNext c)
+  {
+    return new CAI1CommandItemSearchNext();
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandItemSearchBegin(
+    final CAICommandItemSearchBegin c)
+  {
+    return new CAI1CommandItemSearchBegin(
+      CAI1ValidationCommon.convertToWireItemSearchParameters(c.parameters())
+    );
   }
 
   private static ProtocolCAIv1Type convertToWireCommandCAICommandItemReposit(
@@ -560,6 +595,15 @@ public final class CAI1ValidationCommands
     }
     if (msg instanceof final CAI1CommandTagsPut c) {
       return new CAI1Command.C1CommandTagsPut(c);
+    }
+    if (msg instanceof final CAI1CommandItemSearchBegin c) {
+      return new CAI1Command.C1CommandItemSearchBegin(c);
+    }
+    if (msg instanceof final CAI1CommandItemSearchNext c) {
+      return new CAI1Command.C1CommandItemSearchNext(c);
+    }
+    if (msg instanceof final CAI1CommandItemSearchPrevious c) {
+      return new CAI1Command.C1CommandItemSearchPrevious(c);
     }
 
     throw new IllegalStateException();

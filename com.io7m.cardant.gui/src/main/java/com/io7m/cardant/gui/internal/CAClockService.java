@@ -42,4 +42,13 @@ public final class CAClockService implements RPServiceType
   {
     return "Clock service";
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CAClockService 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

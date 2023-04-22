@@ -20,6 +20,7 @@
 
 module com.io7m.cardant.server.api
 {
+  uses com.io7m.cardant.database.api.CADatabaseFactoryType;
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 

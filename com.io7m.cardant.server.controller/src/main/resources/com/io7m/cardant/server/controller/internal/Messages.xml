@@ -4,4 +4,5 @@
 
 <properties>
   <entry key="operationNotPermitted">Operation not permitted.</entry>
+  <entry key="errorSearchNotActive">No search is currently active.</entry>
 </properties>

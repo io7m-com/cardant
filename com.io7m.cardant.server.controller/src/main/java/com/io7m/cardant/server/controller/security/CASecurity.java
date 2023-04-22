@@ -23,6 +23,8 @@ import com.io7m.medrina.api.MPolicyAccess;
 import com.io7m.medrina.api.MPolicyEvaluator;
 import com.io7m.medrina.api.MPolicyEvaluatorType;
 import com.io7m.medrina.api.MSubject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +37,9 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPol
 
 public final class CASecurity
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CASecurity.class);
+
   private static volatile MPolicy POLICY =
     new MPolicy(List.of());
 
@@ -82,6 +87,13 @@ public final class CASecurity
       EVALUATOR.evaluate(POLICY, subject, object, actionName);
 
     if (result.accessResult() == MPolicyAccess.ACCESS_DENIED) {
+      LOG.warn(
+        "deny {} {} on {}",
+        subject.roles(),
+        actionName.value(),
+        object.type().value()
+      );
+
       throw new CASecurityException(
         errorSecurityPolicyDenied(),
         "Operation not permitted."

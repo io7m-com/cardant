@@ -27,6 +27,9 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemUpdate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
@@ -143,6 +146,15 @@ public final class CAICommandExecutor
     }
     if (command instanceof CAICommandTagsPut m) {
       return new CAICmdTagsPut().execute(context, m);
+    }
+    if (command instanceof CAICommandItemSearchBegin m) {
+      return new CAICmdItemSearchBegin().execute(context, m);
+    }
+    if (command instanceof CAICommandItemSearchNext m) {
+      return new CAICmdItemSearchNext().execute(context, m);
+    }
+    if (command instanceof CAICommandItemSearchPrevious m) {
+      return new CAICmdItemSearchPrevious().execute(context, m);
     }
 
     throw new IllegalStateException();

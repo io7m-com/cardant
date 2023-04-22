@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.Locale;
 import java.util.ServiceLoader;
-import java.util.UUID;
 
 import static com.io7m.claypot.core.CLPCommandType.Status.SUCCESS;
 
@@ -46,41 +45,6 @@ public final class CACmdInitialize extends CLPAbstractCommand
     required = true
   )
   private Path configurationFile;
-
-  @Parameter(
-    names = "--admin-id",
-    description = "The ID of the initial administrator",
-    required = false
-  )
-  private UUID adminId;
-
-  @Parameter(
-    names = "--admin-username",
-    description = "The initial administrator to create.",
-    required = true
-  )
-  private String adminUsername;
-
-  @Parameter(
-    names = "--admin-password",
-    description = "The password of the initial administrator.",
-    required = true
-  )
-  private String adminPassword;
-
-  @Parameter(
-    names = "--admin-email",
-    description = "The email address of the initial administrator.",
-    required = true
-  )
-  private String adminEmail;
-
-  @Parameter(
-    names = "--admin-realname",
-    description = "The real name of the initial administrator.",
-    required = true
-  )
-  private String adminRealname;
 
   /**
    * Construct a command.
