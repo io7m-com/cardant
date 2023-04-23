@@ -547,12 +547,10 @@ public final class CAI1Validation
         return convertFromWireCAI1ResponseFileRemove(m);
       }
       if (message instanceof final CAI1ResponseItemAttachmentAdd m) {
-        return convertFromWireCAI1ResponseItemAttachmentAdd(
-          m);
+        return convertFromWireCAI1ResponseItemAttachmentAdd(m);
       }
       if (message instanceof final CAI1ResponseItemAttachmentRemove m) {
-        return convertFromWireCAI1ResponseItemAttachmentRemove(
-          m);
+        return convertFromWireCAI1ResponseItemAttachmentRemove(m);
       }
       if (message instanceof final CAI1ResponseItemCreate m) {
         return convertFromWireCAI1ResponseItemCreate(m);
@@ -564,16 +562,13 @@ public final class CAI1Validation
         return convertFromWireCAI1ResponseItemList(m);
       }
       if (message instanceof final CAI1ResponseItemLocationsList m) {
-        return convertFromWireCAI1ResponseItemLocationsList(
-          m);
+        return convertFromWireCAI1ResponseItemLocationsList(m);
       }
       if (message instanceof final CAI1ResponseItemMetadataPut m) {
-        return convertFromWireCAI1ResponseItemMetadataPut(
-          m);
+        return convertFromWireCAI1ResponseItemMetadataPut(m);
       }
       if (message instanceof final CAI1ResponseItemMetadataRemove m) {
-        return convertFromWireCAI1ResponseItemMetadataRemove(
-          m);
+        return convertFromWireCAI1ResponseItemMetadataRemove(m);
       }
       if (message instanceof final CAI1ResponseItemReposit m) {
         return convertFromWireCAI1ResponseItemReposit(m);
@@ -604,6 +599,9 @@ public final class CAI1Validation
       }
       if (message instanceof final CAI1ResponseTagsPut m) {
         return convertFromWireCAI1ResponseTagsPut(m);
+      }
+      if (message instanceof final CAI1ResponseError m) {
+        return convertFromWireCAI1ResponseError(m);
       }
 
       /*
