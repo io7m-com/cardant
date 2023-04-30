@@ -47,29 +47,16 @@ public final class CAViewControllerLocationCreate implements Initializable
   private final RPServiceDirectoryType mainServices;
   private final CAPreferencesServiceType preferences;
   private final CAMainStrings strings;
-
-  @FXML
-  private Label idBad;
-
-  @FXML
-  private TextField idField;
-
-  @FXML
-  private TextField nameField;
-
-  @FXML
-  private TextField parentNameField;
-
-  @FXML
-  private TextField parentIdField;
-
-  @FXML
-  private TextArea descriptionArea;
-
-  @FXML
-  private Button createButton;
   private Optional<CALocation> result;
   private Optional<CALocation> parent;
+
+  @FXML private Label idBad;
+  @FXML private TextField idField;
+  @FXML private TextField nameField;
+  @FXML private TextField parentNameField;
+  @FXML private TextField parentIdField;
+  @FXML private TextArea descriptionArea;
+  @FXML private Button createButton;
 
   public CAViewControllerLocationCreate(
     final RPServiceDirectoryType inMainServices,

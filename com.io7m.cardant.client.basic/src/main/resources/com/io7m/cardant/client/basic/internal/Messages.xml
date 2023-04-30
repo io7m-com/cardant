@@ -3,6 +3,9 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 
 <properties>
+  <entry key="Could not connect to server.">Could not connect to server.</entry>
+  <entry key="Received Content Type">Received Content Type</entry>
+  <entry key="Expected Content Type">Expected Content Type</entry>
   <entry key="Expected Response Type">Expected Response Type</entry>
   <entry key="HTTP Response Code">HTTP Response Code</entry>
   <entry key="Received Response Type">Received Response Type</entry>

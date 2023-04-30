@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMetadataMutable;
 import com.io7m.cardant.gui.internal.views.CAItemMetadataTables;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
@@ -54,28 +53,26 @@ public final class CAViewControllerItemEditorMetadataTab
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemEditorMetadataTab.class);
 
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final RPServiceDirectoryType services;
   private final CAMainController controller;
+  private final CAMainClientService clientService;
 
   @FXML private TableView<CAItemMetadataMutable> metadataTableView;
   @FXML private Button itemMetadataAdd;
   @FXML private Button itemMetadataRemove;
   @FXML private TextField searchField;
 
-  private volatile CAClientType clientNow;
-
   public CAViewControllerItemEditorMetadataTab(
     final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =
       mainServices.requireService(CAMainController.class);
+    this.clientService =
+      mainServices.requireService(CAMainClientService.class);
 
     this.services = mainServices;
   }
@@ -90,11 +87,6 @@ public final class CAViewControllerItemEditorMetadataTab
       this.metadataTableView,
       this::onWantEditMetadataValue
     );
-
-    this.controller.connectedClient()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onClientConnectionChanged(newValue);
-      });
 
     this.metadataTableView.getSelectionModel()
       .selectedItemProperty()
@@ -149,10 +141,11 @@ public final class CAViewControllerItemEditorMetadataTab
 
       final var itemMetadataOpt = create.result();
       itemMetadataOpt.ifPresent(metadata -> {
-        this.clientNow.execute(new CAICommandItemMetadataPut(
-          item.id(),
-          Set.of(itemMetadata.toImmutable())
-        ));
+        this.clientService.client()
+          .executeAsync(
+            new CAICommandItemMetadataPut(
+              item.id(), Set.of(itemMetadata.toImmutable())
+            ));
       });
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
@@ -202,10 +195,11 @@ public final class CAViewControllerItemEditorMetadataTab
     final var itemMetadataOpt = create.result();
     itemMetadataOpt.ifPresent(
       itemMetadata -> {
-        this.clientNow.execute(new CAICommandItemMetadataPut(
-          item.id(),
-          Set.of(itemMetadata.toImmutable())
-        ));
+        this.clientService.client()
+          .executeAsync(
+            new CAICommandItemMetadataPut(
+              item.id(), Set.of(itemMetadata.toImmutable())
+            ));
       });
   }
 
@@ -235,10 +229,11 @@ public final class CAViewControllerItemEditorMetadataTab
             .orElseThrow()
             .toImmutable();
 
-        this.clientNow.execute(new CAICommandItemMetadataRemove(
-          item.id(),
-          Set.of(itemMetadata.name())
-        ));
+        this.clientService.client()
+          .executeAsync(
+            new CAICommandItemMetadataRemove(
+              item.id(), Set.of(itemMetadata.name()))
+          );
       }
     }
   }
@@ -251,15 +246,5 @@ public final class CAViewControllerItemEditorMetadataTab
         .trim()
         .toUpperCase(Locale.ROOT)
     );
-  }
-
-  private void onClientConnectionChanged(
-    final Optional<CAClientType> newValue)
-  {
-    if (newValue.isPresent()) {
-      this.clientNow = newValue.get();
-    } else {
-      this.clientNow = null;
-    }
   }
 }

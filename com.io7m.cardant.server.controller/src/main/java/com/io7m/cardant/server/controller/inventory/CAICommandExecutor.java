@@ -22,7 +22,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
-import com.io7m.cardant.protocol.inventory.CAICommandItemList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
@@ -35,6 +34,9 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
@@ -108,9 +110,6 @@ public final class CAICommandExecutor
     if (command instanceof CAICommandItemGet m) {
       return new CAICmdItemGet().execute(context, m);
     }
-    if (command instanceof CAICommandItemList m) {
-      return new CAICmdItemsList().execute(context, m);
-    }
     if (command instanceof CAICommandItemLocationsList m) {
       return new CAICmdItemLocationsList().execute(context, m);
     }
@@ -155,6 +154,15 @@ public final class CAICommandExecutor
     }
     if (command instanceof CAICommandItemSearchPrevious m) {
       return new CAICmdItemSearchPrevious().execute(context, m);
+    }
+    if (command instanceof CAICommandRolesAssign m) {
+      return new CAICmdRolesAssign().execute(context, m);
+    }
+    if (command instanceof CAICommandRolesRevoke m) {
+      return new CAICmdRolesRevoke().execute(context, m);
+    }
+    if (command instanceof CAICommandRolesGet m) {
+      return new CAICmdRolesGet().execute(context, m);
     }
 
     throw new IllegalStateException();

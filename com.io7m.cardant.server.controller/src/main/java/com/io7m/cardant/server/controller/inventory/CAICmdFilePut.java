@@ -21,11 +21,11 @@ import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.server.controller.security.CASecurityException;
 
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_FILES;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.WRITE;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_FILES;
+import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 
 /**
  * @see CAICommandFilePut

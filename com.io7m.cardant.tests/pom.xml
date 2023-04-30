@@ -123,7 +123,20 @@
       <artifactId>com.io7m.cardant.gui.main</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.server.service.maintenance</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.tests.extensions</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
@@ -132,7 +145,10 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
+    </dependency>
     <dependency>
       <groupId>net.jqwik</groupId>
       <artifactId>jqwik-api</artifactId>

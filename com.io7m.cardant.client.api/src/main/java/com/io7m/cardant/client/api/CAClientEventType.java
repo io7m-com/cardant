@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,14 +19,13 @@ package com.io7m.cardant.client.api;
 import com.io7m.hibiscus.api.HBEventType;
 
 /**
- * The base type of events.
+ * The base type of client events.
  */
 
 public sealed interface CAClientEventType
   extends HBEventType
-  permits CAClientEventCommandFailed,
-  CAClientEventDataChanged,
-  CAClientEventDataReceived
+  permits CAClientEventDataReceived,
+  CAClientEventDataUpdated
 {
 
 }

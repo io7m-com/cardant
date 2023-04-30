@@ -26,6 +26,7 @@ import io.opentelemetry.context.Context;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Optional;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 
@@ -61,10 +62,11 @@ record CADatabaseConnection(
       transactionSpan.recordException(e);
       transactionSpan.end();
       throw new CADatabaseException(
-        errorSql(),
         e.getMessage(),
         e,
-        Collections.emptySortedMap()
+        errorSql(),
+        Collections.emptySortedMap(),
+        Optional.empty()
       );
     }
   }
@@ -80,10 +82,11 @@ record CADatabaseConnection(
     } catch (final SQLException e) {
       this.connectionSpan.recordException(e);
       throw new CADatabaseException(
-        errorSql(),
         e.getMessage(),
         e,
-        Collections.emptySortedMap()
+        errorSql(),
+        Collections.emptySortedMap(),
+        Optional.empty()
       );
     } finally {
       this.connectionSpan.end();

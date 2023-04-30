@@ -63,7 +63,24 @@
       <artifactId>com.io7m.cardant.client.transfer.vanilla</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.error_codes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
+    <dependency>
+      <groupId>com.io7m.medrina</groupId>
+      <artifactId>com.io7m.medrina.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.seltzer</groupId>
+      <artifactId>com.io7m.seltzer.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.model</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.io7m.hibiscus</groupId>
       <artifactId>com.io7m.hibiscus.api</artifactId>
@@ -159,6 +176,36 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>com.io7m.stmp</groupId>
+        <artifactId>string-template-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-version</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>render</goal>
+            </goals>
+            <configuration>
+              <templates>
+                <template>
+                  <directory>src/main/string-template</directory>
+                  <name>CAGVersion</name>
+                  <target>
+                    ${project.build.directory}/generated-sources/string-template/com/io7m/cardant/gui/internal/CAGVersion.java
+                  </target>
+                  <properties>
+                    <appURL>${project.distributionManagement.site.url}</appURL>
+                    <appVersion>${project.version}</appVersion>
+                    <appBuild>${buildNumber}</appBuild>
+                  </properties>
+                </template>
+              </templates>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Ignore dependencies that bytecode analysis gets wrong. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

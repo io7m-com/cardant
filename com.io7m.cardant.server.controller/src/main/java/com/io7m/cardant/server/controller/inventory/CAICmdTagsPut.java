@@ -21,10 +21,10 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTagsType;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.server.controller.security.CASecurityException;
+import com.io7m.cardant.security.CASecurityException;
 
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_TAGS;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.WRITE;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_TAGS;
+import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 
 /**
  * @see CAICommandTagsPut

@@ -18,23 +18,23 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
-import com.io7m.cardant.database.postgres.internal.tables.records.UsersRecord;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.medrina.api.MSubject;
 import org.jooq.exception.DataAccessException;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
+import static com.io7m.cardant.database.postgres.internal.Tables.AUDIT;
 import static com.io7m.cardant.database.postgres.internal.Tables.USERS;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 final class CADatabaseQueriesUsers
   extends CABaseQueries
@@ -63,28 +63,58 @@ final class CADatabaseQueriesUsers
       if (userRec == null) {
         userRec = context.newRecord(USERS);
         userRec.set(USERS.ID, user.userId());
-        userRec.set(USERS.INITIAL, FALSE);
+
+        final var auditRec = context.newRecord(AUDIT);
+        auditRec.setUserId(transaction.userId());
+        auditRec.setTime(OffsetDateTime.now(transaction.clock()));
+        auditRec.setType("USER_FIRST_LOGIN");
+        auditRec.setMessage(user.userId().toString());
+        auditRec.store();
       }
 
       final var sourceRoles =
-        user.subject().roles();
+        user.subject()
+          .roles();
 
-      final var roles = new String[sourceRoles.size()];
-      var index = 0;
-      for (final var role : sourceRoles) {
-        roles[index] = role.value();
-        ++index;
+      final Set<MRoleName> targetRoles;
+      if (sourceRoles.contains(CASecurityPolicy.ROLE_INVENTORY_ADMIN)) {
+        targetRoles = CASecurityPolicy.ROLES_ALL;
+      } else {
+        targetRoles = sourceRoles;
       }
-      Arrays.sort(roles);
+
+      final String[] roles =
+        roleSetToStringArray(targetRoles);
 
       userRec.setRoles(roles);
       userRec.store();
+
+      final var auditRec = context.newRecord(AUDIT);
+      auditRec.setUserId(transaction.userId());
+      auditRec.setTime(OffsetDateTime.now(transaction.clock()));
+      auditRec.setType("USER_ROLES_CHANGED");
+      auditRec.setMessage(String.join(",", roles));
+      auditRec.store();
+
     } catch (final DataAccessException e) {
       querySpan.recordException(e);
       throw handleDatabaseException(transaction, e);
     } finally {
       querySpan.end();
     }
+  }
+
+  private static String[] roleSetToStringArray(
+    final Set<MRoleName> targetRoles)
+  {
+    final var roles = new String[targetRoles.size()];
+    var index = 0;
+    for (final var role : targetRoles) {
+      roles[index] = role.value();
+      ++index;
+    }
+    Arrays.sort(roles);
+    return roles;
   }
 
   @Override
@@ -115,90 +145,6 @@ final class CADatabaseQueriesUsers
           )
         )
       );
-    } catch (final DataAccessException e) {
-      querySpan.recordException(e);
-      throw handleDatabaseException(transaction, e);
-    } finally {
-      querySpan.end();
-    }
-  }
-
-  @Override
-  public void userInitialSet(
-    final UUID id)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    final var transaction =
-      this.transaction();
-    final var context =
-      transaction.createContext();
-    final var querySpan =
-      transaction.createQuerySpan("CADatabaseUsersQueries.userInitialSet");
-
-    try {
-      var userRec = context.fetchOne(USERS, USERS.ID.eq(id));
-      if (userRec == null) {
-        userRec = context.newRecord(USERS);
-        userRec.set(USERS.ID, id);
-      }
-      userRec.set(USERS.INITIAL, TRUE);
-      userRec.set(USERS.ROLES, new String[0]);
-      userRec.store();
-    } catch (final DataAccessException e) {
-      querySpan.recordException(e);
-      throw handleDatabaseException(transaction, e);
-    } finally {
-      querySpan.end();
-    }
-  }
-
-  @Override
-  public Optional<UUID> userInitial()
-    throws CADatabaseException
-  {
-    final var transaction =
-      this.transaction();
-    final var context =
-      transaction.createContext();
-    final var querySpan =
-      transaction.createQuerySpan("CADatabaseUsersQueries.userInitial");
-
-    try {
-      return context.selectFrom(USERS)
-        .where(USERS.INITIAL.eq(TRUE))
-        .fetchOptional()
-        .map(UsersRecord::getId);
-    } catch (final DataAccessException e) {
-      querySpan.recordException(e);
-      throw handleDatabaseException(transaction, e);
-    } finally {
-      querySpan.end();
-    }
-  }
-
-  @Override
-  public void userInitialUnset(
-    final UUID id)
-    throws CADatabaseException
-  {
-    Objects.requireNonNull(id, "id");
-
-    final var transaction =
-      this.transaction();
-    final var context =
-      transaction.createContext();
-    final var querySpan =
-      transaction.createQuerySpan("CADatabaseUsersQueries.userInitialUnset");
-
-    try {
-      final var userRec = context.fetchOne(USERS, USERS.ID.eq(id));
-      if (userRec == null) {
-        return;
-      }
-      userRec.set(USERS.INITIAL, FALSE);
-      userRec.store();
     } catch (final DataAccessException e) {
       querySpan.recordException(e);
       throw handleDatabaseException(transaction, e);

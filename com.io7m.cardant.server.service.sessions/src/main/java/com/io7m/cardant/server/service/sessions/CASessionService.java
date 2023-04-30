@@ -133,6 +133,7 @@ public final class CASessionService implements RPServiceType
       "Session ID cannot already have been used."
     );
 
+    LOG.debug("{} create session", id.value());
     final var session = new CASession(id, new CAUser(userId, subject));
     this.sessions.put(id, session);
     this.sessionsGauge.record(this.sessions.estimatedSize());

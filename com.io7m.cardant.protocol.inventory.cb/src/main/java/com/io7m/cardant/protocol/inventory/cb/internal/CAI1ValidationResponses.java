@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
+import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
@@ -27,7 +28,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemCreate;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemGet;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemList;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
@@ -39,6 +39,9 @@ import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
@@ -54,7 +57,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemCreate;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemGet;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataRemove;
@@ -66,6 +68,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLogin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesGet;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsPut;
@@ -75,15 +80,19 @@ import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned32;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
+import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 import com.io7m.cedarbridge.runtime.api.CBString;
+import com.io7m.medrina.api.MRoleName;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertFromWireFile;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertFromWireFileId;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertFromWireUUID;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertToWireFile;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertToWireItem;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertToWireLocation;
@@ -118,9 +127,6 @@ public final class CAI1ValidationResponses
     }
     if (cmd instanceof final CAIResponseItemGet c) {
       return convertToWireResponseCAIResponseItemGet(c);
-    }
-    if (cmd instanceof final CAIResponseItemList c) {
-      return convertToWireResponseCAIResponseItemList(c);
     }
     if (cmd instanceof final CAIResponseItemLocationsList c) {
       return convertToWireResponseCAIResponseItemLocationsList(c);
@@ -167,8 +173,48 @@ public final class CAI1ValidationResponses
     if (cmd instanceof final CAIResponseItemSearch c) {
       return convertToWireResponseCAIResponseItemSearch(c);
     }
+    if (cmd instanceof final CAIResponseRolesAssign c) {
+      return convertToWireResponseCAIResponseRolesAssign(c);
+    }
+    if (cmd instanceof final CAIResponseRolesRevoke c) {
+      return convertToWireResponseCAIResponseRolesRevoke(c);
+    }
+    if (cmd instanceof final CAIResponseRolesGet c) {
+      return convertToWireResponseCAIResponseRolesGet(c);
+    }
 
     throw new ProtocolUncheckedException(errorProtocol(cmd));
+  }
+
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseRolesGet(
+    final CAIResponseRolesGet c)
+  {
+    return new CAI1ResponseRolesGet(
+      convertToWireUUID(c.requestId()),
+      new CBList<>(
+        c.roles()
+          .stream()
+          .map(MRoleName::value)
+          .map(CBString::new)
+          .toList()
+      )
+    );
+  }
+
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseRolesRevoke(
+    final CAIResponseRolesRevoke c)
+  {
+    return new CAI1ResponseRolesRevoke(
+      convertToWireUUID(c.requestId())
+    );
+  }
+
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseRolesAssign(
+    final CAIResponseRolesAssign c)
+  {
+    return new CAI1ResponseRolesAssign(
+      convertToWireUUID(c.requestId())
+    );
   }
 
   private static ProtocolCAIv1Type convertToWireResponseCAIResponseItemSearch(
@@ -207,7 +253,7 @@ public final class CAI1ValidationResponses
     return new CAI1ResponseError(
       convertToWireUUID(c.requestId()),
       new CBString(c.errorCode().id()),
-      new CBString(c.summary()),
+      new CBString(c.message()),
       new CBMap<>(
         c.attributes()
           .entrySet()
@@ -222,7 +268,8 @@ public final class CAI1ValidationResponses
             Map.Entry::getKey,
             Map.Entry::getValue
           ))
-      )
+      ),
+      CBOptionType.fromOptional(c.remediatingAction().map(CBString::new))
     );
   }
 
@@ -262,7 +309,8 @@ public final class CAI1ValidationResponses
     final CAIResponseLogin c)
   {
     return new CAI1ResponseLogin(
-      convertToWireUUID(c.requestId())
+      convertToWireUUID(c.requestId()),
+      convertToWireUUID(c.userId())
     );
   }
 
@@ -372,21 +420,6 @@ public final class CAI1ValidationResponses
     return new CAI1ResponseItemLocationsList(
       convertToWireUUID(c.requestId()),
       CAI1ValidationCommon.convertToWireItemLocations(c.data())
-    );
-  }
-
-  private static ProtocolCAIv1Type convertToWireResponseCAIResponseItemList(
-    final CAIResponseItemList c)
-  {
-    return new CAI1ResponseItemList(
-      convertToWireUUID(c.requestId()),
-      new CBList<>(
-        c.data()
-          .items()
-          .stream()
-          .map(CAI1ValidationCommon::convertToWireItem)
-          .toList()
-      )
     );
   }
 
@@ -535,7 +568,8 @@ public final class CAI1ValidationResponses
     final CAI1ResponseLogin m)
   {
     return new CAIResponseLogin(
-      CAI1ValidationCommon.convertFromWireUUID(m.fieldRequestId())
+      CAI1ValidationCommon.convertFromWireUUID(m.fieldRequestId()),
+      CAI1ValidationCommon.convertFromWireUUID(m.fieldUserId())
     );
   }
 
@@ -563,15 +597,6 @@ public final class CAI1ValidationResponses
     return new CAIResponseItemLocationsList(
       CAI1ValidationCommon.convertFromWireUUID(m.fieldRequestId()),
       CAI1ValidationCommon.convertFromWireItemLocations(m.fieldItemLocations())
-    );
-  }
-
-  public static CAIMessageType convertFromWireCAI1ResponseItemList(
-    final CAI1ResponseItemList m)
-  {
-    return new CAIResponseItemList(
-      CAI1ValidationCommon.convertFromWireUUID(m.fieldRequestId()),
-      CAI1ValidationCommon.convertFromWireItems(m.fieldItems())
     );
   }
 
@@ -653,9 +678,6 @@ public final class CAI1ValidationResponses
     if (msg instanceof final CAI1ResponseItemGet c) {
       return new CAI1Response.C1ResponseItemGet(c);
     }
-    if (msg instanceof final CAI1ResponseItemList c) {
-      return new CAI1Response.C1ResponseItemList(c);
-    }
     if (msg instanceof final CAI1ResponseItemLocationsList c) {
       return new CAI1Response.C1ResponseItemLocationsList(c);
     }
@@ -695,7 +717,78 @@ public final class CAI1ValidationResponses
     if (msg instanceof final CAI1ResponseTagsPut c) {
       return new CAI1Response.C1ResponseTagsPut(c);
     }
+    if (msg instanceof final CAI1ResponseRolesAssign c) {
+      return new CAI1Response.C1ResponseRolesAssign(c);
+    }
+    if (msg instanceof final CAI1ResponseRolesRevoke c) {
+      return new CAI1Response.C1ResponseRolesRevoke(c);
+    }
 
     throw new IllegalStateException();
+  }
+
+  public static CAIMessageType convertFromWireCAI1ResponseItemSearch(
+    final CAI1ResponseItemSearch c)
+  {
+    return new CAIResponseItemSearch(
+      convertFromWireUUID(c.fieldRequestId()),
+      CAI1ValidationCommon.convertFromWirePage(
+        c.fieldResults(),
+        CAI1ValidationCommon::convertFromWireItemSummary)
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1ResponseError(
+    final CAI1ResponseError m)
+  {
+    return new CAIResponseError(
+      convertFromWireUUID(m.fieldRequestId()),
+      m.fieldMessage().value(),
+      new CAErrorCode(m.fieldErrorCode().value()),
+      m.fieldAttributes()
+        .values()
+        .entrySet()
+        .stream()
+        .map(e -> Map.entry(e.getKey().value(), e.getValue().value()))
+        .collect(
+          Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue)
+        ),
+      m.fieldRemediatingAction()
+        .asOptional()
+        .map(CBString::value),
+      Optional.empty()
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1ResponseRolesRevoke(
+    final CAI1ResponseRolesRevoke m)
+  {
+    return new CAIResponseRolesRevoke(
+      convertFromWireUUID(m.fieldRequestId())
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1ResponseRolesAssign(
+    final CAI1ResponseRolesAssign m)
+  {
+    return new CAIResponseRolesAssign(
+      convertFromWireUUID(m.fieldRequestId())
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1ResponseRolesGet(
+    final CAI1ResponseRolesGet m)
+  {
+    return new CAIResponseRolesGet(
+      convertFromWireUUID(m.fieldRequestId()),
+      m.fieldRoles()
+        .values()
+        .stream()
+        .map(CBString::value)
+        .map(MRoleName::new)
+        .collect(Collectors.toUnmodifiableSet())
+    );
   }
 }

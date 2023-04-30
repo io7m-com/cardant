@@ -397,9 +397,10 @@ final class CADatabaseQueriesItems
       var itemRec = context.fetchOne(ITEMS, ITEMS.ITEM_ID.eq(id.id()));
       if (itemRec != null) {
         throw new CADatabaseException(
-          errorDuplicate(),
           this.messages().format("errorDuplicate"),
-          errorAttributes
+          errorDuplicate(),
+          errorAttributes,
+          Optional.empty()
         );
       }
 
@@ -441,9 +442,10 @@ final class CADatabaseQueriesItems
       final var itemRec = context.fetchOne(ITEMS, ITEMS.ITEM_ID.eq(id.id()));
       if (itemRec == null) {
         throw new CADatabaseException(
-          errorNonexistent(),
           this.messages().format("errorNonexistent"),
-          errorAttributes
+          errorNonexistent(),
+          errorAttributes,
+          Optional.empty()
         );
       }
       itemRec.setItemName(name);
@@ -1007,13 +1009,15 @@ final class CADatabaseQueriesItems
       if (e.sqlStateClass() == SQLStateClass.C23_INTEGRITY_CONSTRAINT_VIOLATION) {
         if (e.getMessage().contains("check_item_location_count")) {
           throw new CADatabaseException(
-            errorRemoveTooManyItems(),
             this.messages().format("errorItemCountTooManyRemoved"),
+            e,
+            errorRemoveTooManyItems(),
             Map.ofEntries(
               Map.entry("Item ID", remove.item().displayId()),
               Map.entry("Item Location", remove.location().displayId()),
               Map.entry("Count", Long.toUnsignedString(remove.count()))
-            )
+            ),
+            Optional.empty()
           );
         }
       }
@@ -1036,13 +1040,14 @@ final class CADatabaseQueriesItems
 
     if (!Objects.equals(BigInteger.valueOf(newCount), count)) {
       throw new CADatabaseException(
-        errorSql(),
         this.messages().format("errorItemCountStoreInvariant"),
+        errorSql(),
         Map.ofEntries(
           Map.entry("Item ID", item.displayId()),
           Map.entry("Count Expected", Long.toUnsignedString(newCount)),
           Map.entry("Count Received", count.toString())
-        )
+        ),
+        Optional.empty()
       );
     }
   }
@@ -1073,24 +1078,23 @@ final class CADatabaseQueriesItems
     final DSLContext context,
     final CAItemRepositAdd add)
   {
-    final var newCount =
-      context.insertInto(
-          ITEM_LOCATIONS,
-          ITEM_LOCATIONS.ITEM_ID,
-          ITEM_LOCATIONS.ITEM_LOCATION,
-          ITEM_LOCATIONS.COUNT)
-        .values(
-          add.item().id(),
-          add.location().id(),
-          Long.valueOf(add.count())
-        )
-        .onDuplicateKeyUpdate()
-        .set(
-          ITEM_LOCATIONS.COUNT,
-          ITEM_LOCATIONS.COUNT.add(Long.valueOf(add.count())))
-        .returning(ITEM_LOCATIONS.COUNT)
-        .fetchOne(ITEM_LOCATIONS.COUNT);
-    return newCount;
+    return context.insertInto(
+        ITEM_LOCATIONS,
+        ITEM_LOCATIONS.ITEM_ID,
+        ITEM_LOCATIONS.ITEM_LOCATION,
+        ITEM_LOCATIONS.COUNT)
+      .values(
+        add.item().id(),
+        add.location().id(),
+        Long.valueOf(add.count())
+      )
+      .onDuplicateKeyUpdate()
+      .set(
+        ITEM_LOCATIONS.COUNT,
+        ITEM_LOCATIONS.COUNT.add(Long.valueOf(add.count())))
+      .returning(ITEM_LOCATIONS.COUNT)
+      .fetchOne(ITEM_LOCATIONS.COUNT)
+      .longValue();
   }
 
   @Override

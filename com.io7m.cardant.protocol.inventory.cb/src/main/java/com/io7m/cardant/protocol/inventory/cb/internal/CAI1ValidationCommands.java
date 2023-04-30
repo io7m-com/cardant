@@ -22,7 +22,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
-import com.io7m.cardant.protocol.inventory.CAICommandItemList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
@@ -36,6 +35,9 @@ import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAICommandLogin;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
@@ -48,7 +50,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemGet;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemMetadataRemove;
@@ -62,6 +63,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLogin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesGet;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsPut;
@@ -70,8 +74,12 @@ import com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.Prot
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.idstore.model.IdName;
+import com.io7m.medrina.api.MRoleName;
 
 import java.util.stream.Collectors;
+
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertFromWireUUID;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.convertToWireUUID;
 
 public final class CAI1ValidationCommands
 {
@@ -100,9 +108,6 @@ public final class CAI1ValidationCommands
     }
     if (cmd instanceof final CAICommandItemGet c) {
       return convertToWireCommandCAICommandItemGet(c);
-    }
-    if (cmd instanceof final CAICommandItemList c) {
-      return convertToWireCommandCAICommandItemList(c);
     }
     if (cmd instanceof final CAICommandItemLocationsList c) {
       return convertToWireCommandCAICommandItemLocationsList(c);
@@ -152,8 +157,53 @@ public final class CAI1ValidationCommands
     if (cmd instanceof final CAICommandItemSearchPrevious c) {
       return convertToWireCommandCAICommandItemSearchPrevious(c);
     }
+    if (cmd instanceof final CAICommandRolesRevoke c) {
+      return convertToWireCommandCAICommandRolesRevoke(c);
+    }
+    if (cmd instanceof final CAICommandRolesAssign c) {
+      return convertToWireCommandCAICommandRolesAssign(c);
+    }
+    if (cmd instanceof final CAICommandRolesGet c) {
+      return convertToWireCommandCAICommandRolesGet(c);
+    }
 
     throw new ProtocolUncheckedException(CAI1ValidationCommon.errorProtocol(cmd));
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandRolesGet(
+    final CAICommandRolesGet c)
+  {
+    return new CAI1CommandRolesGet(
+      convertToWireUUID(c.user())
+    );
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandRolesAssign(
+    final CAICommandRolesAssign c)
+  {
+    return new CAI1CommandRolesAssign(
+      convertToWireUUID(c.user()),
+      new CBList<>(
+      c.roles()
+        .stream()
+        .map(r -> new CBString(r.value()))
+        .toList()
+      )
+    );
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandRolesRevoke(
+    final CAICommandRolesRevoke c)
+  {
+    return new CAI1CommandRolesRevoke(
+      convertToWireUUID(c.user()),
+      new CBList<>(
+        c.roles()
+          .stream()
+          .map(r -> new CBString(r.value()))
+          .toList()
+      )
+    );
   }
 
   private static ProtocolCAIv1Type convertToWireCommandCAICommandItemSearchPrevious(
@@ -191,7 +241,7 @@ public final class CAI1ValidationCommands
       new CBList<>(
         c.ids()
           .stream()
-          .map(i -> CAI1ValidationCommon.convertToWireUUID(i.id()))
+          .map(i -> convertToWireUUID(i.id()))
           .toList())
     );
   }
@@ -200,7 +250,7 @@ public final class CAI1ValidationCommands
     final CAICommandItemUpdate c)
   {
     return new CAI1CommandItemUpdate(
-      CAI1ValidationCommon.convertToWireUUID(c.id().id()),
+      convertToWireUUID(c.id().id()),
       new CBString(c.name())
     );
   }
@@ -259,7 +309,7 @@ public final class CAI1ValidationCommands
   private static ProtocolCAIv1Type convertToWireCommandCAICommandLocationGet(
     final CAICommandLocationGet c)
   {
-    return new CAI1CommandLocationGet(CAI1ValidationCommon.convertToWireUUID(c.id().id()));
+    return new CAI1CommandLocationGet(convertToWireUUID(c.id().id()));
   }
 
   private static ProtocolCAIv1Type convertToWireCommandCAICommandLocationList(
@@ -272,7 +322,7 @@ public final class CAI1ValidationCommands
     final CAICommandItemMetadataRemove c)
   {
     return new CAI1CommandItemMetadataRemove(
-      CAI1ValidationCommon.convertToWireUUID(c.item().id()),
+      convertToWireUUID(c.item().id()),
       new CBList<>(
         c.metadataNames()
           .stream()
@@ -286,7 +336,7 @@ public final class CAI1ValidationCommands
     final CAICommandItemMetadataPut c)
   {
     return new CAI1CommandItemMetadataPut(
-      CAI1ValidationCommon.convertToWireUUID(c.item().id()),
+      convertToWireUUID(c.item().id()),
       new CBList<>(
         c.metadatas()
           .stream()
@@ -300,29 +350,21 @@ public final class CAI1ValidationCommands
     final CAICommandItemLocationsList c)
   {
     return new CAI1CommandItemLocationsList(
-      CAI1ValidationCommon.convertToWireUUID(c.item().id())
-    );
-  }
-
-  private static ProtocolCAIv1Type convertToWireCommandCAICommandItemList(
-    final CAICommandItemList c)
-  {
-    return new CAI1CommandItemList(
-      CAI1ValidationCommon.convertToWireListLocationBehaviour(c.locationBehaviour())
+      convertToWireUUID(c.item().id())
     );
   }
 
   private static ProtocolCAIv1Type convertToWireCommandCAICommandItemGet(
     final CAICommandItemGet c)
   {
-    return new CAI1CommandItemGet(CAI1ValidationCommon.convertToWireUUID(c.id().id()));
+    return new CAI1CommandItemGet(convertToWireUUID(c.id().id()));
   }
 
   private static ProtocolCAIv1Type convertToWireCommandCAICommandItemCreate(
     final CAICommandItemCreate c)
   {
     return new CAI1CommandItemCreate(
-      CAI1ValidationCommon.convertToWireUUID(c.id().id()),
+      convertToWireUUID(c.id().id()),
       new CBString(c.name())
     );
   }
@@ -331,8 +373,8 @@ public final class CAI1ValidationCommands
     final CAICommandItemAttachmentRemove c)
   {
     return new CAI1CommandItemAttachmentRemove(
-      CAI1ValidationCommon.convertToWireUUID(c.item().id()),
-      CAI1ValidationCommon.convertToWireUUID(c.file().id()),
+      convertToWireUUID(c.item().id()),
+      convertToWireUUID(c.file().id()),
       new CBString(c.relation())
     );
   }
@@ -341,8 +383,8 @@ public final class CAI1ValidationCommands
     final CAICommandItemAttachmentAdd c)
   {
     return new CAI1CommandItemAttachmentAdd(
-      CAI1ValidationCommon.convertToWireUUID(c.item().id()),
-      CAI1ValidationCommon.convertToWireUUID(c.file().id()),
+      convertToWireUUID(c.item().id()),
+      convertToWireUUID(c.file().id()),
       new CBString(c.relation())
     );
   }
@@ -350,7 +392,7 @@ public final class CAI1ValidationCommands
   private static ProtocolCAIv1Type convertToWireCommandCAICommandFileRemove(
     final CAICommandFileRemove c)
   {
-    return new CAI1CommandFileRemove(CAI1ValidationCommon.convertToWireUUID(c.data().id()));
+    return new CAI1CommandFileRemove(convertToWireUUID(c.data().id()));
   }
 
   private static ProtocolCAIv1Type convertToWireCommandCAICommandFilePut(
@@ -472,14 +514,6 @@ public final class CAI1ValidationCommands
     );
   }
 
-  public static CAIMessageType convertFromWireCAI1CommandItemList(
-    final CAI1CommandItemList m)
-  {
-    return new CAICommandItemList(
-      CAI1ValidationCommon.convertFromWireItemLocationBehaviour(m.fieldLocationBehaviour())
-    );
-  }
-
   public static CAIMessageType convertFromWireCAI1CommandItemGet(
     final CAI1CommandItemGet m)
   {
@@ -554,9 +588,6 @@ public final class CAI1ValidationCommands
     if (msg instanceof final CAI1CommandItemGet c) {
       return new CAI1Command.C1CommandItemGet(c);
     }
-    if (msg instanceof final CAI1CommandItemList c) {
-      return new CAI1Command.C1CommandItemList(c);
-    }
     if (msg instanceof final CAI1CommandItemLocationsList c) {
       return new CAI1Command.C1CommandItemLocationsList(c);
     }
@@ -605,7 +636,67 @@ public final class CAI1ValidationCommands
     if (msg instanceof final CAI1CommandItemSearchPrevious c) {
       return new CAI1Command.C1CommandItemSearchPrevious(c);
     }
+    if (msg instanceof final CAI1CommandRolesAssign c) {
+      return new CAI1Command.C1CommandRolesAssign(c);
+    }
+    if (msg instanceof final CAI1CommandRolesRevoke c) {
+      return new CAI1Command.C1CommandRolesRevoke(c);
+    }
 
     throw new IllegalStateException();
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandItemSearchBegin(
+    final CAI1CommandItemSearchBegin m)
+  {
+    return new CAICommandItemSearchBegin(
+      CAI1ValidationCommon.convertFromWireItemSearchParameters(m.fieldParameters())
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandItemSearchNext(
+    final CAI1CommandItemSearchNext m)
+  {
+    return new CAICommandItemSearchNext();
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandItemSearchPrevious(
+    final CAI1CommandItemSearchPrevious m)
+  {
+    return new CAICommandItemSearchPrevious();
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandRolesAssign(
+    final CAI1CommandRolesAssign m)
+  {
+    return new CAICommandRolesAssign(
+      convertFromWireUUID(m.fieldUser()),
+      m.fieldRoles()
+        .values()
+        .stream().map(CBString::value)
+        .map(MRoleName::new)
+        .collect(Collectors.toUnmodifiableSet())
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandRolesRevoke(
+    final CAI1CommandRolesRevoke m)
+  {
+    return new CAICommandRolesRevoke(
+      convertFromWireUUID(m.fieldUser()),
+      m.fieldRoles()
+        .values()
+        .stream().map(CBString::value)
+        .map(MRoleName::new)
+        .collect(Collectors.toUnmodifiableSet())
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandRolesGet(
+    final CAI1CommandRolesGet m)
+  {
+    return new CAICommandRolesGet(
+      convertFromWireUUID(m.fieldUser())
+    );
   }
 }

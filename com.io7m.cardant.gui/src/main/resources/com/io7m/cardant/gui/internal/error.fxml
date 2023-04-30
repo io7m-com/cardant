@@ -15,7 +15,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="errorContainerPane" prefHeight="480.0" prefWidth="640.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerError">
+<VBox fx:id="errorContainerPane" prefHeight="480.0" prefWidth="640.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerError">
    <children>
       <HBox>
          <children>
@@ -43,9 +43,7 @@
             </VBox>
          </children>
       </HBox>
-      <Region maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" />
-      <Label text="%error.details" />
-      <TableView fx:id="errorTableView" prefHeight="200.0" prefWidth="200.0" styleClass="noHeader">
+      <TableView fx:id="errorTableView" prefHeight="64.0" styleClass="noHeader" VBox.vgrow="ALWAYS">
         <columns>
           <TableColumn fx:id="errorNameColumn" editable="false" prefWidth="75.0" sortable="false" />
           <TableColumn fx:id="errorValueColumn" prefWidth="75.0" />
@@ -57,14 +55,14 @@
             <Insets top="16.0" />
          </VBox.margin>
       </TableView>
-      <TextArea fx:id="errorDetails" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS">
+      <TextArea fx:id="errorDetails" editable="false" wrapText="true" VBox.vgrow="ALWAYS">
          <font>
             <Font name="Monospaced Regular" size="11.0" />
          </font>
          <VBox.margin>
             <Insets top="16.0" />
          </VBox.margin></TextArea>
-      <Region layoutX="26.0" layoutY="106.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" />
+      <Region layoutX="26.0" layoutY="106.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" VBox.vgrow="ALWAYS" />
       <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0">
          <children>
             <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />

@@ -49,20 +49,12 @@ public final class CAViewControllerCreateItem implements Initializable
   private final CAPreferencesServiceType preferences;
   private final CAMainStrings strings;
 
-  @FXML
-  private Label idBad;
+  @FXML private Label idBad;
+  @FXML private TextField idField;
+  @FXML private TextField nameField;
+  @FXML private TextArea descriptionArea;
+  @FXML private Button createButton;
 
-  @FXML
-  private TextField idField;
-
-  @FXML
-  private TextField nameField;
-
-  @FXML
-  private TextArea descriptionArea;
-
-  @FXML
-  private Button createButton;
   private Optional<CAItem> result;
 
   public CAViewControllerCreateItem(

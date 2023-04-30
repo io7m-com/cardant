@@ -27,7 +27,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import javafx.collections.ObservableSet;
 
 import java.util.Objects;
 import java.util.Optional;

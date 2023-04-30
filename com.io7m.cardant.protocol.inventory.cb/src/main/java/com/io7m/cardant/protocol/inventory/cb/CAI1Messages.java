@@ -17,9 +17,13 @@
 
 package com.io7m.cardant.protocol.inventory.cb;
 
+import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessagesType;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cedarbridge.runtime.api.CBProtocolMessageVersionedSerializerType;
 import com.io7m.cedarbridge.runtime.bssio.CBSerializationContextBSSIO;
 import com.io7m.jbssio.api.BSSReaderProviderType;
@@ -30,8 +34,12 @@ import com.io7m.repetoir.core.RPServiceType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
@@ -122,10 +130,11 @@ public final class CAI1Messages
       );
     } catch (final IOException e) {
       throw new CAProtocolException(
-        errorIo(),
         e.getMessage(),
         e,
-        Collections.emptySortedMap()
+        errorIo(),
+        Collections.emptySortedMap(),
+        Optional.empty()
       );
     }
   }
@@ -139,15 +148,37 @@ public final class CAI1Messages
       final var context =
         CBSerializationContextBSSIO.createFromOutputStream(
           this.writers,
-          output);
-      this.serializer.serialize(context, this.validator.convertToWire(message));
+          output
+        );
+
+      if (message instanceof final CAICommandDebugInvalid invalid) {
+        this.serializer.serialize(
+          context,
+          this.validator.convertToWire(new CAIResponseError(
+            UUID.randomUUID(),
+            "Invalid!",
+            new CAErrorCode("error-invalid"),
+            Map.of("X", "Y"),
+            Optional.of("Avoid sending this."),
+            Optional.empty()
+          ))
+        );
+      } else if (message instanceof CAICommandDebugRandom) {
+        final var random = SecureRandom.getInstanceStrong();
+        final var data = new byte[1024];
+        random.nextBytes(data);
+      } else {
+        this.serializer.serialize(context, this.validator.convertToWire(message));
+      }
+
       return output.toByteArray();
-    } catch (final IOException e) {
+    } catch (final IOException | NoSuchAlgorithmException e) {
       throw new CAProtocolException(
-        errorIo(),
         e.getMessage(),
         e,
-        Collections.emptySortedMap()
+        errorIo(),
+        Collections.emptySortedMap(),
+        Optional.empty()
       );
     }
   }

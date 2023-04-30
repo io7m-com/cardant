@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
@@ -27,9 +26,6 @@ import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
-import com.io7m.cardant.protocol.inventory.CAIResponseError;
-import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.hibiscus.api.HBResultSuccess;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
@@ -56,7 +52,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 public final class CAViewControllerItemEditorOverviewTab
   implements Initializable
@@ -64,15 +59,15 @@ public final class CAViewControllerItemEditorOverviewTab
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemEditorOverviewTab.class);
 
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final RPServiceDirectoryType services;
   private final Stage stage;
   private final CAMainController controller;
   private final CAFileDialogs fileDialogs;
   private final CAPreferencesServiceType preferences;
   private final CAExternalImages externalImages;
   private final CATransferServiceType transfers;
+  private final CAMainClientService clientService;
+  private final CAStatusServiceType statusService;
 
   @FXML private AnchorPane itemEditorPlaceholder;
   @FXML private Button itemDescriptionUpdate;
@@ -88,20 +83,16 @@ public final class CAViewControllerItemEditorOverviewTab
   @FXML private ProgressIndicator itemImageProgress;
 
   private Optional<CAItemMutable> itemCurrent;
-  private volatile CAClientType clientNow;
-  private CAPerpetualSubscriber<CAMainEventType> subscriber;
 
   public CAViewControllerItemEditorOverviewTab(
     final RPServiceDirectoryType mainServices,
     final Stage inStage)
   {
-    this.services =
-      Objects.requireNonNull(mainServices, "mainServices");
     this.stage =
       Objects.requireNonNull(inStage, "stage");
 
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
+    this.statusService =
+      mainServices.requireService(CAStatusServiceType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =
@@ -114,6 +105,8 @@ public final class CAViewControllerItemEditorOverviewTab
       mainServices.requireService(CAExternalImages.class);
     this.transfers =
       mainServices.requireService(CATransferServiceType.class);
+    this.clientService =
+      mainServices.requireService(CAMainClientService.class);
 
     this.itemCurrent = Optional.empty();
   }
@@ -127,24 +120,6 @@ public final class CAViewControllerItemEditorOverviewTab
       .addListener((observable, oldValue, newValue) -> {
         this.onItemSelected(newValue);
       });
-
-    this.controller.connectedClient()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onClientConnectionChanged(newValue);
-      });
-
-    this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
-    this.events.subscribe(this.subscriber);
-  }
-
-  private void onClientConnectionChanged(
-    final Optional<CAClientType> newValue)
-  {
-    if (newValue.isPresent()) {
-      this.clientNow = newValue.get();
-    } else {
-      this.clientNow = null;
-    }
   }
 
   @FXML
@@ -189,24 +164,24 @@ public final class CAViewControllerItemEditorOverviewTab
           imageData.data()
         );
 
-      this.clientNow.runAsync(() -> {
-        return this.clientNow.execute(new CAICommandFilePut(fileWithData))
-          .flatMap(r -> {
-            return this.clientNow.execute(new CAICommandItemAttachmentAdd(
-              this.itemCurrent.get().id(),
-              fileWithData.id(),
-              "image"
-            ));
-          });
-      });
+      final var client = this.clientService.client();
+      client.executeAsync(new CAICommandFilePut(fileWithData))
+        .thenCompose(r -> {
+          return client.executeAsync(new CAICommandItemAttachmentAdd(
+            this.itemCurrent.get().id(),
+            fileWithData.id(),
+            "image"
+          ));
+        });
 
     } catch (final CAImageDataException e) {
-      this.events.submit(
-        new CAMainEventLocalError(
+      this.statusService.publish(
+        new CAStatusEventType.CAStatusEventError(
+          e.errorCode(),
           e.getMessage(),
-          0,
           e.attributes(),
-          e.details()
+          e.remediatingAction(),
+          e.exception()
         )
       );
     }
@@ -222,14 +197,15 @@ public final class CAViewControllerItemEditorOverviewTab
   private void onItemDescriptionUpdateSelected()
   {
     final var item = this.itemCurrent.get();
-    this.clientNow.execute(new CAICommandItemMetadataPut(
-      item.id(),
-      Set.of(
-        new CAItemMetadata(
-          "Description",
-          this.itemDescriptionField.getText())
-      ))
-    );
+    this.clientService.client()
+      .executeAsync(new CAICommandItemMetadataPut(
+        item.id(),
+        Set.of(
+          new CAItemMetadata(
+            "Description",
+            this.itemDescriptionField.getText())
+        ))
+      );
   }
 
   @FXML
@@ -292,47 +268,36 @@ public final class CAViewControllerItemEditorOverviewTab
           "transfer.attachment.image",
           attachmentFile.id().displayId());
 
-      this.clientNow.runAsync(() -> {
-        return this.clientNow.fileData(attachmentFile.id())
-          .map(inputStream -> {
-            return this.transfers.transfer(
-              inputStream,
-              title,
-              attachmentFile.size(),
-              attachmentFile.hashAlgorithm(),
-              attachmentFile.hashValue()
-            );
-          }).map(pathFuture -> {
-            return pathFuture.thenAccept(path -> {
-              Platform.runLater(() -> {
-                LOG.debug("loading received image");
-                final var image =
-                  new Image(
-                    path.toUri().toString(),
-                    this.itemImageRectangle.getWidth(),
-                    this.itemImageRectangle.getHeight(),
-                    false,
-                    false
-                  );
-                this.itemImage.setImage(image);
-                this.itemImageProgress.setVisible(false);
-              });
-            });
+      this.clientService.client()
+        .fileDataAsyncOrElseThrow(attachmentFile.id())
+        .thenCompose(stream -> {
+          return this.transfers.transfer(
+            stream,
+            title,
+            attachmentFile.size(),
+            attachmentFile.hashAlgorithm(),
+            attachmentFile.hashValue()
+          );
+        }).thenAcceptAsync(path -> {
+          Platform.runLater(() -> {
+            LOG.debug("loading received image");
+            final var image =
+              new Image(
+                path.toUri().toString(),
+                this.itemImageRectangle.getWidth(),
+                this.itemImageRectangle.getHeight(),
+                false,
+                false
+              );
+            this.itemImage.setImage(image);
+            this.itemImageProgress.setVisible(false);
           });
-      });
+        });
     } else {
       this.itemImage.setImage(null);
       this.itemImageProgress.setVisible(false);
     }
 
     this.onItemDescriptionEditChanged();
-  }
-
-  private void onMainEvent(
-    final CAMainEventType item)
-  {
-    if (item instanceof CAMainEventClientData clientData) {
-      this.onDataReceived(clientData.data());
-    }
   }
 }

@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.Locale;
 import java.util.ServiceLoader;
+import java.util.UUID;
 
 import static com.io7m.claypot.core.CLPCommandType.Status.SUCCESS;
 
@@ -45,6 +46,13 @@ public final class CACmdInitialize extends CLPAbstractCommand
     required = true
   )
   private Path configurationFile;
+
+  @Parameter(
+    names = "--admin",
+    description = "The ID of the user that will be the administrator",
+    required = true
+  )
+  private String adminId;
 
   /**
    * Construct a command.
@@ -68,6 +76,9 @@ public final class CACmdInitialize extends CLPAbstractCommand
     SLF4JBridgeHandler.removeHandlersForRootLogger();
     SLF4JBridgeHandler.install();
 
+    final var adminUUID =
+      UUID.fromString(this.adminId);
+
     final var configFile =
       new CAConfigurationFiles()
         .parse(this.configurationFile);
@@ -85,7 +96,7 @@ public final class CACmdInitialize extends CLPAbstractCommand
         .orElseThrow(CACmdInitialize::noService);
 
     try (var server = servers.createServer(configuration)) {
-      // Nothing to do
+      server.setup(adminUUID);
     }
 
     return SUCCESS;

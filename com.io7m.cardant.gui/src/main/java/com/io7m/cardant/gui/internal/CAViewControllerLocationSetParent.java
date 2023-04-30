@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientHostileType;
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.views.CALocationTreeCellFactory;
@@ -46,17 +44,14 @@ public final class CAViewControllerLocationSetParent implements Initializable
   private final RPServiceDirectoryType mainServices;
   private final CAMainStrings strings;
   private final CAMainController controller;
+  private final CAMainClientService clientService;
 
-  @FXML
-  private TreeView<CALocationItemType> locationTreeView;
-  @FXML
-  private Button cancelButton;
-  @FXML
-  private Button selectButton;
-  @FXML
-  private TreeView<CALocationItemType> locationTree;
+  @FXML private TreeView<CALocationItemType> locationTreeView;
+  @FXML private Button cancelButton;
+  @FXML private Button selectButton;
+  @FXML private TreeView<CALocationItemType> locationTree;
+
   private CALocationItemType target;
-  private CAClientType clientNow;
 
   public CAViewControllerLocationSetParent(
     final RPServiceDirectoryType inMainServices,
@@ -70,6 +65,8 @@ public final class CAViewControllerLocationSetParent implements Initializable
       this.mainServices.requireService(CAMainController.class);
     this.strings =
       this.mainServices.requireService(CAMainStrings.class);
+    this.clientService =
+      this.mainServices.requireService(CAMainClientService.class);
   }
 
   @FXML
@@ -87,16 +84,17 @@ public final class CAViewControllerLocationSetParent implements Initializable
         .getValue();
 
     if (this.target instanceof CALocationItemDefined definedTarget) {
-      this.clientNow.execute(
-        new CAICommandLocationPut(
-          new CALocation(
-            definedTarget.id(),
-            Optional.of(selected.id()),
-            definedTarget.name().getValueSafe(),
-            definedTarget.description().getValueSafe()
+      this.clientService.client()
+        .executeAsync(
+          new CAICommandLocationPut(
+            new CALocation(
+              definedTarget.id(),
+              Optional.of(selected.id()),
+              definedTarget.name().getValueSafe(),
+              definedTarget.description().getValueSafe()
+            )
           )
-        )
-      );
+        );
       this.stage.close();
     }
   }
@@ -111,16 +109,6 @@ public final class CAViewControllerLocationSetParent implements Initializable
         .get()
         .orElseThrow(IllegalStateException::new);
 
-    this.controller.connectedClient()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onClientConnectionChanged(newValue);
-      });
-
-    this.clientNow =
-      this.controller.connectedClient()
-        .get()
-        .orElse(null);
-
     this.locationTreeView.setRoot(
       this.controller.locationTree().root());
     this.locationTreeView.setShowRoot(false);
@@ -131,17 +119,6 @@ public final class CAViewControllerLocationSetParent implements Initializable
       .addListener((observable, oldValue, newValue) -> {
         this.onLocationSelectionChanged();
       });
-  }
-
-  private void onClientConnectionChanged(
-    final Optional<CAClientType> clientOpt)
-  {
-    if (clientOpt.isPresent()) {
-      this.clientNow = clientOpt.get();
-    } else {
-      this.selectButton.setDisable(true);
-      this.clientNow = null;
-    }
   }
 
   private void onLocationSelectionChanged()

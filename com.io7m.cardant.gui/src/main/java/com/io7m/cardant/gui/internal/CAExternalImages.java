@@ -29,9 +29,11 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 
 public final class CAExternalImages implements RPServiceType
 {
@@ -73,10 +75,12 @@ public final class CAExternalImages implements RPServiceType
         final var exception = image.exceptionProperty().get();
         throw new CAImageDataException(
           this.strings.format("file.notAnImage"),
+          exception,
+          errorIo(),
           Map.ofEntries(
             Map.entry(this.strings.format("file"), file.toString())
           ),
-          List.of(exception.getMessage())
+          Optional.empty()
         );
       }
 
@@ -91,12 +95,13 @@ public final class CAExternalImages implements RPServiceType
     } catch (final NoSuchAlgorithmException | IOException e) {
       throw new CAImageDataException(
         e.getMessage(),
+        e,
+        errorIo(),
         Map.of(
           this.strings.format("item.attachment.hashAlgorithm"), hashAlgorithm,
           this.strings.format("file"), file.toString()
         ),
-        List.of(),
-        e
+        Optional.empty()
       );
     }
   }

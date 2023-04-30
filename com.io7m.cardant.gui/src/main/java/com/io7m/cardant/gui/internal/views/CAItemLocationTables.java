@@ -25,7 +25,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
+import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN;
 
 public final class CAItemLocationTables
 {
@@ -65,7 +65,7 @@ public final class CAItemLocationTables
       param -> param.getValue().count().asObject()
     );
 
-    tableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
+    tableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
     tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
   }
 

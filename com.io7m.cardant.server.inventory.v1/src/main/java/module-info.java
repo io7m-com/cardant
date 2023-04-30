@@ -27,6 +27,7 @@ module com.io7m.cardant.server.inventory.v1
   requires com.io7m.cardant.protocol.api;
   requires com.io7m.cardant.protocol.inventory.cb;
   requires com.io7m.cardant.protocol.inventory;
+  requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.api;
   requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.http;

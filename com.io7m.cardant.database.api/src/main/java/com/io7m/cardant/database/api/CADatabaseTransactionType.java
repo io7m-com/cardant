@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.database.api;
 
+import java.util.UUID;
+
 /**
  * A database transaction. If the transaction is closed, it is automatically
  * rolled back.
@@ -58,4 +60,19 @@ public interface CADatabaseTransactionType extends AutoCloseable
 
   void commit()
     throws CADatabaseException;
+
+  /**
+   * Set the transaction's user ID.
+   *
+   * @param newUserId The user ID
+   */
+
+  void setUserId(
+    UUID newUserId);
+
+  /**
+   * @return The transaction's user ID
+   */
+
+  UUID userId();
 }

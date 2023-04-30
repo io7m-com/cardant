@@ -16,9 +16,14 @@
 
 package com.io7m.cardant.server.basic.internal;
 
+import com.io7m.cardant.database.api.CADatabaseConfiguration;
+import com.io7m.cardant.database.api.CADatabaseCreate;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.database.api.CADatabaseUpgrade;
 import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerException;
@@ -31,6 +36,7 @@ import com.io7m.cardant.server.service.configuration.CAConfigurationService;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
 import com.io7m.cardant.server.service.idstore.CAIdstoreClients;
 import com.io7m.cardant.server.service.idstore.CAIdstoreClientsType;
+import com.io7m.cardant.server.service.maintenance.CAMaintenanceService;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimits;
 import com.io7m.cardant.server.service.sessions.CASessionService;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryNoOp;
@@ -40,6 +46,7 @@ import com.io7m.cardant.server.service.verdant.CAVerdantMessages;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessagesType;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
+import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceDirectory;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.opentelemetry.api.OpenTelemetry;
@@ -48,10 +55,15 @@ import org.eclipse.jetty.server.Server;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
+import static com.io7m.cardant.security.CASecurityPolicy.ROLES_ALL;
 
 /**
  * The basic server frontend.
@@ -60,8 +72,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class CAServer implements CAServerType
 {
   private final CAServerConfiguration configuration;
-  private CloseableCollectionType<CAServerException> resources;
   private final AtomicBoolean stopped;
+  private CloseableCollectionType<CAServerException> resources;
   private CAServerTelemetryServiceType telemetry;
   private CADatabaseType database;
 
@@ -80,6 +92,20 @@ public final class CAServer implements CAServerType
       createResourceCollection();
     this.stopped =
       new AtomicBoolean(true);
+  }
+
+  private static CloseableCollectionType<CAServerException> createResourceCollection()
+  {
+    return CloseableCollection.create(
+      () -> {
+        return new CAServerException(
+          "Server creation failed.",
+          new CAErrorCode("server-creation"),
+          Map.of(),
+          Optional.empty()
+        );
+      }
+    );
   }
 
   @Override
@@ -115,10 +141,11 @@ public final class CAServer implements CAServerType
             e.addSuppressed(ex);
           }
           throw new CAServerException(
-            new CAErrorCode("database"),
             e.getMessage(),
             e,
-            Collections.emptySortedMap()
+            new CAErrorCode("database"),
+            e.attributes(),
+            e.remediatingAction()
           );
         } catch (final Exception e) {
           startupSpan.recordException(e);
@@ -129,10 +156,11 @@ public final class CAServer implements CAServerType
             e.addSuppressed(ex);
           }
           throw new CAServerException(
-            new CAErrorCode("startup"),
             e.getMessage(),
             e,
-            Collections.emptySortedMap()
+            new CAErrorCode("startup"),
+            Map.of(),
+            Optional.empty()
           );
         } finally {
           startupSpan.end();
@@ -186,6 +214,10 @@ public final class CAServer implements CAServerType
     services.register(CAI1Messages.class, idA1Messages);
     services.register(CAI1Sends.class, new CAI1Sends(idA1Messages));
 
+    final var maintenance =
+      CAMaintenanceService.create(clock, this.telemetry, newDatabase);
+
+    services.register(CAMaintenanceService.class, maintenance);
     services.register(CARequestLimits.class, new CARequestLimits(size -> {
       return strings.format("requestTooLarge", size);
     }));
@@ -226,9 +258,82 @@ public final class CAServer implements CAServerType
   }
 
   @Override
+  public CAServerConfiguration configuration()
+  {
+    return this.configuration;
+  }
+
+  @Override
   public boolean isClosed()
   {
     return this.stopped.get();
+  }
+
+  @Override
+  public void setup(
+    final UUID adminId)
+    throws CAServerException
+  {
+    Objects.requireNonNull(adminId, "adminId");
+
+    if (this.stopped.compareAndSet(true, false)) {
+      try {
+        this.resources = createResourceCollection();
+        this.telemetry = this.createTelemetry();
+
+        final var baseConfiguration =
+          this.configuration.databaseConfiguration();
+
+        final var setupConfiguration =
+          new CADatabaseConfiguration(
+            baseConfiguration.locale(),
+            baseConfiguration.user(),
+            baseConfiguration.password(),
+            baseConfiguration.address(),
+            baseConfiguration.port(),
+            baseConfiguration.databaseName(),
+            CADatabaseCreate.CREATE_DATABASE,
+            CADatabaseUpgrade.UPGRADE_DATABASE,
+            baseConfiguration.clock()
+          );
+
+        final var db =
+          this.resources.add(
+            this.configuration.databases()
+              .open(
+                setupConfiguration,
+                this.telemetry.openTelemetry(),
+                event -> {
+                }));
+
+        try (var connection = db.openConnection(CARDANT)) {
+          try (var transaction = connection.openTransaction()) {
+            final var users =
+              transaction.queries(CADatabaseQueriesUsersType.class);
+
+            transaction.setUserId(adminId);
+            users.userPut(new CAUser(adminId, new MSubject(ROLES_ALL)));
+            transaction.commit();
+          }
+        }
+      } catch (final CADatabaseException e) {
+        throw new CAServerException(
+          e.getMessage(),
+          e.errorCode(),
+          e.attributes(),
+          e.remediatingAction()
+        );
+      } finally {
+        this.close();
+      }
+    } else {
+      throw new CAServerException(
+        "Server must be closed before setup.",
+        new CAErrorCode("server-misuse"),
+        Map.of(),
+        Optional.empty()
+      );
+    }
   }
 
   @Override
@@ -238,17 +343,5 @@ public final class CAServer implements CAServerType
     if (this.stopped.compareAndSet(false, true)) {
       this.resources.close();
     }
-  }
-
-  private static CloseableCollectionType<CAServerException> createResourceCollection()
-  {
-    return CloseableCollection.create(
-      () -> {
-        return new CAServerException(
-          new CAErrorCode("server-creation"),
-          "Server creation failed."
-        );
-      }
-    );
   }
 }

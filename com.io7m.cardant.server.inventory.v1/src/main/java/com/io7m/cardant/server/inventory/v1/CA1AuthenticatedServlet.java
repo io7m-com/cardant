@@ -120,18 +120,20 @@ public abstract class CA1AuthenticatedServlet
           this.strings.format("unauthorized"),
           errorAuthentication(),
           Map.of(),
+          Optional.empty(),
           Optional.empty()
         )
       );
     } catch (final CAHTTPErrorStatusException e) {
       this.sends.send(
         servletResponse,
-        e.statusCode(),
+        e.httpStatusCode(),
         new CAIResponseError(
           requestId,
           e.getMessage(),
           e.errorCode(),
-          Map.of(),
+          e.attributes(),
+          e.remediatingAction(),
           Optional.of(e)
         )
       );
@@ -144,6 +146,7 @@ public abstract class CA1AuthenticatedServlet
           e.getMessage(),
           e.errorCode(),
           e.attributes(),
+          e.remediatingAction(),
           Optional.of(e)
         )
       );

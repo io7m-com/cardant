@@ -19,7 +19,6 @@ package com.io7m.cardant.gui.internal.views;
 import com.io7m.cardant.client.transfer.api.CATransferDownloadFailed;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.CAIconsType;
-import com.io7m.cardant.gui.internal.CAMainEventLocalError;
 import com.io7m.cardant.gui.internal.CAMainStrings;
 import com.io7m.cardant.gui.internal.CAObservables;
 import com.io7m.cardant.gui.internal.CAViewControllerError;
@@ -42,7 +41,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.List;
 import java.util.Objects;
 
 public final class CATransferItemCellController
@@ -201,12 +199,7 @@ public final class CATransferItemCellController
         final CAViewControllerError controller =
           loader.getController();
 
-        controller.setEvent(new CAMainEventLocalError(
-          failed.errorMessage(),
-          0,
-          failed.errorAttributes(),
-          List.of()
-        ));
+        controller.setError(failed);
 
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene(pane));

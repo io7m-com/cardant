@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.server.inventory.v1;
 
+import com.io7m.cardant.security.CASecurity;
+import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.server.http.CAPlainErrorHandler;
 import com.io7m.cardant.server.http.CARequestUniqueIDs;
 import com.io7m.cardant.server.http.CAServletHolders;
@@ -77,6 +79,8 @@ public final class CAI1Server
         httpConfig.listenPort()
       );
 
+    CASecurity.setPolicy(CASecurityPolicy.open());
+
     final var server =
       new Server(address);
 
@@ -92,6 +96,10 @@ public final class CAI1Server
     servlets.addServlet(
       servletHolders.create(CAI1Versions.class, CAI1Versions::new),
       "/"
+    );
+    servlets.addServlet(
+      servletHolders.create(CA1VersionServlet.class, CA1VersionServlet::new),
+      "/version"
     );
     servlets.addServlet(
       servletHolders.create(CAI1Login.class, CAI1Login::new),

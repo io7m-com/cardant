@@ -16,9 +16,10 @@
 
 package com.io7m.cardant.error_codes;
 
-import java.util.Collections;
-import java.util.Objects;
+import com.io7m.seltzer.api.SStructuredErrorExceptionType;
+
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -26,105 +27,65 @@ import java.util.Optional;
  */
 
 public class CAException extends Exception
-  implements CAErrorStructuredType
+  implements SStructuredErrorExceptionType<CAErrorCode>
 {
   private final CAErrorCode errorCode;
   private final Map<String, String> attributes;
+  private final Optional<String> remediatingAction;
 
   /**
    * Construct an exception.
    *
-   * @param inErrorCode The error code
-   * @param message     The message
+   * @param message             The message
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
    */
 
   public CAException(
+    final String message,
     final CAErrorCode inErrorCode,
-    final String message)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction)
   {
-    super(message);
-    this.errorCode =
-      Objects.requireNonNull(inErrorCode, "errorCode");
-    this.attributes =
-      Collections.emptyMap();
-  }
-
-  /**
-   * Construct an exception.
-   *
-   * @param inErrorCode  The error code
-   * @param inMessage    The message
-   * @param inCause      The cause
-   * @param inAttributes The error attributes
-   */
-
-  public CAException(
-    final CAErrorCode inErrorCode,
-    final String inMessage,
-    final Throwable inCause,
-    final Map<String, String> inAttributes)
-  {
-    super(
-      Objects.requireNonNull(inMessage, "inMessage"),
-      Objects.requireNonNull(inCause, "inCause")
-    );
+    super(Objects.requireNonNull(message, "message"));
 
     this.errorCode =
       Objects.requireNonNull(inErrorCode, "errorCode");
     this.attributes =
       Objects.requireNonNull(inAttributes, "attributes");
+    this.remediatingAction =
+      Objects.requireNonNull(inRemediatingAction, "remediatingAction");
   }
 
   /**
    * Construct an exception.
    *
-   * @param inErrorCode  The error code
-   * @param inMessage    The message
-   * @param inAttributes The error attributes
+   * @param message             The message
+   * @param cause               The cause
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
    */
 
   public CAException(
+    final String message,
+    final Throwable cause,
     final CAErrorCode inErrorCode,
-    final String inMessage,
-    final Map<String, String> inAttributes)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction)
   {
     super(
-      Objects.requireNonNull(inMessage, "inMessage")
+      Objects.requireNonNull(message, "message"),
+      Objects.requireNonNull(cause, "cause")
     );
-
     this.errorCode =
       Objects.requireNonNull(inErrorCode, "errorCode");
     this.attributes =
       Objects.requireNonNull(inAttributes, "attributes");
+    this.remediatingAction =
+      Objects.requireNonNull(inRemediatingAction, "remediatingAction");
   }
-
-  /**
-   * Construct an exception.
-   *
-   * @param inErrorCode The error code
-   * @param cause       The cause
-   */
-
-  public CAException(
-    final CAErrorCode inErrorCode,
-    final Throwable cause)
-  {
-    super(cause);
-    this.errorCode =
-      Objects.requireNonNull(inErrorCode, "errorCode");
-    this.attributes =
-      Collections.emptyMap();
-  }
-
-  @Override
-  public final String summary()
-  {
-    return this.getMessage();
-  }
-
-  /**
-   * @return The error code
-   */
 
   @Override
   public final CAErrorCode errorCode()
@@ -136,6 +97,12 @@ public class CAException extends Exception
   public final Map<String, String> attributes()
   {
     return this.attributes;
+  }
+
+  @Override
+  public final Optional<String> remediatingAction()
+  {
+    return this.remediatingAction;
   }
 
   @Override

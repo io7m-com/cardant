@@ -36,6 +36,7 @@ import java.time.Clock;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_SYSTEM;
@@ -168,10 +169,11 @@ public final class CADatabase implements CADatabaseType
       span.recordException(e);
       span.end();
       throw new CADatabaseException(
-        errorSql(),
         e.getMessage(),
         e,
-        Collections.emptySortedMap()
+        errorSql(),
+        Collections.emptySortedMap(),
+        Optional.empty()
       );
     }
   }

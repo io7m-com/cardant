@@ -3,6 +3,13 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 
 <properties>
+  <entry key="An error occurred whilst communicating with the authentication server.">An error occurred whilst communicating with the authentication server.</entry>
+  <entry key="expectedType">Expected Type</entry>
+  <entry key="receivedType">Received Type</entry>
+  <entry key="expectedCommand">Expected a command.</entry>
   <entry key="operationNotPermitted">Operation not permitted.</entry>
   <entry key="errorSearchNotActive">No search is currently active.</entry>
+  <entry key="duplicate">Attempted to create a duplicate object.</entry>
+  <entry key="notFound">An object does not exist.</entry>
+  <entry key="unauthorized">Operation not permitted.</entry>
 </properties>

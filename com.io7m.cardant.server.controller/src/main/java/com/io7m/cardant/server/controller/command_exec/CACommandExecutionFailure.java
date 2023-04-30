@@ -21,6 +21,7 @@ import com.io7m.cardant.error_codes.CAException;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -51,26 +52,25 @@ public final class CACommandExecutionFailure extends CAException
   }
 
   /**
-   * A failure to execute a command.
+   * Construct an exception.
    *
-   * @param inErrorCode      The error code
-   * @param inMessage        The message
-   * @param inCause          The cause
-   * @param inAttributes     The error attributes
-   * @param inRequestId      The request ID
-   * @param inHttpStatusCode The HTTP status code
+   * @param message             The message
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   * @param inRequestId         The request ID
+   * @param inHttpStatusCode    The HTTP status code
    */
 
   public CACommandExecutionFailure(
+    final String message,
     final CAErrorCode inErrorCode,
-    final String inMessage,
-    final Throwable inCause,
     final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction,
     final UUID inRequestId,
     final int inHttpStatusCode)
   {
-    super(inErrorCode, inMessage, inCause, inAttributes);
-
+    super(message, inErrorCode, inAttributes, inRemediatingAction);
     this.requestId =
       Objects.requireNonNull(inRequestId, "requestId");
     this.httpStatusCode =
@@ -78,24 +78,27 @@ public final class CACommandExecutionFailure extends CAException
   }
 
   /**
-   * A failure to execute a command.
+   * Construct an exception.
    *
-   * @param inErrorCode      The error code
-   * @param inMessage        The message
-   * @param inAttributes     The error attributes
-   * @param inRequestId      The request ID
-   * @param inHttpStatusCode The HTTP status code
+   * @param message             The message
+   * @param cause               The cause
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   * @param inRequestId         The request ID
+   * @param inHttpStatusCode    The HTTP status code
    */
 
   public CACommandExecutionFailure(
+    final String message,
+    final Throwable cause,
     final CAErrorCode inErrorCode,
-    final String inMessage,
     final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction,
     final UUID inRequestId,
     final int inHttpStatusCode)
   {
-    super(inErrorCode, inMessage, inAttributes);
-
+    super(message, cause, inErrorCode, inAttributes, inRemediatingAction);
     this.requestId =
       Objects.requireNonNull(inRequestId, "requestId");
     this.httpStatusCode =

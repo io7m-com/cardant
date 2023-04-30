@@ -23,9 +23,9 @@ import com.io7m.cardant.model.CAValidityException;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutorType;
-import com.io7m.cardant.server.controller.security.CASecurityException;
 
 import java.io.IOException;
 import java.util.Objects;

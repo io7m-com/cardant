@@ -67,47 +67,26 @@ public final class CAViewControllerItemReposit implements Initializable
   private CALocationTreeFiltered locationTreeMoveFrom;
   private CALocationTreeFiltered locationTreeMoveTo;
   private Optional<CAItemRepositType> result;
-  @FXML
-  private TextField itemIdField;
-  @FXML
-  private TextField itemNameField;
-  @FXML
-  private Button store;
-  @FXML
-  private Spinner<Long> itemRepositCount;
-  @FXML
-  private Label itemRepositCountBad;
-  @FXML
-  private ChoiceBox<CAItemRepositSelection> itemRepositType;
-  @FXML
-  private Pane itemRepositAdd;
-  @FXML
-  private TreeView<CALocationItemType> itemRepositAddLocation;
-  @FXML
-  private TextField itemRepositAddLocationSearch;
 
-  @FXML
-  private Pane itemRepositRemove;
-  @FXML
-  private TreeView<CALocationItemType> itemRepositRemoveLocation;
-  @FXML
-  private TextField itemRepositRemoveLocationSearch;
-
-  @FXML
-  private Pane itemRepositMove;
-  @FXML
-  private TreeView<CALocationItemType> itemRepositMoveLocationFrom;
-  @FXML
-  private TreeView<CALocationItemType> itemRepositMoveLocationTo;
-  @FXML
-  private TextField itemRepositMoveLocationFromSearch;
-  @FXML
-  private TextField itemRepositMoveLocationToSearch;
-
-  @FXML
-  private ImageView infoIcon;
-  @FXML
-  private Label infoText;
+  @FXML private TextField itemIdField;
+  @FXML private TextField itemNameField;
+  @FXML private Button store;
+  @FXML private Spinner<Long> itemRepositCount;
+  @FXML private Label itemRepositCountBad;
+  @FXML private ChoiceBox<CAItemRepositSelection> itemRepositType;
+  @FXML private Pane itemRepositAdd;
+  @FXML private TreeView<CALocationItemType> itemRepositAddLocation;
+  @FXML private TextField itemRepositAddLocationSearch;
+  @FXML private Pane itemRepositRemove;
+  @FXML private TreeView<CALocationItemType> itemRepositRemoveLocation;
+  @FXML private TextField itemRepositRemoveLocationSearch;
+  @FXML private Pane itemRepositMove;
+  @FXML private TreeView<CALocationItemType> itemRepositMoveLocationFrom;
+  @FXML private TreeView<CALocationItemType> itemRepositMoveLocationTo;
+  @FXML private TextField itemRepositMoveLocationFromSearch;
+  @FXML private TextField itemRepositMoveLocationToSearch;
+  @FXML private ImageView infoIcon;
+  @FXML private Label infoText;
 
   public CAViewControllerItemReposit(
     final RPServiceDirectoryType mainServices,
@@ -351,10 +330,10 @@ public final class CAViewControllerItemReposit implements Initializable
       moveToLocation.undecoratedNameText();
     final var locationFromCount =
       this.controller.itemLocationCount(this.item.id(), moveFromLocation.id())
-        - toMove.longValue();
+      - toMove.longValue();
     final var locationToCount =
       this.controller.itemLocationCount(this.item.id(), moveToLocation.id())
-        + toMove.longValue();
+      + toMove.longValue();
     final var locationFromCountText =
       Long.toUnsignedString(locationFromCount);
     final var locationToCountText =

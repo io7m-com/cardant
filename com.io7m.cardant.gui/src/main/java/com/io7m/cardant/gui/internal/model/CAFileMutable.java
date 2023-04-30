@@ -18,7 +18,6 @@ package com.io7m.cardant.gui.internal.model;
 
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType;
-import com.io7m.cardant.model.CAItemAttachment;
 import javafx.beans.property.SimpleStringProperty;
 
 import static com.io7m.cardant.gui.internal.model.CAStringSearch.containsIgnoreCase;

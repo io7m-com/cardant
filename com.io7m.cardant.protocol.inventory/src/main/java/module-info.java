@@ -23,10 +23,11 @@ module com.io7m.cardant.protocol.inventory
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.cardant.protocol.api;
   requires transitive com.io7m.cardant.model;
-  requires transitive com.io7m.idstore.model;
+  requires transitive com.io7m.cardant.protocol.api;
   requires transitive com.io7m.hibiscus.api;
+  requires transitive com.io7m.idstore.model;
+  requires transitive com.io7m.medrina.api;
 
   exports com.io7m.cardant.protocol.inventory;
 }

@@ -16,9 +16,23 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientType;
+import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
+import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.gui.internal.CAStatusEventType.CAStatusEventBooting;
+import com.io7m.cardant.gui.internal.CAStatusEventType.CAStatusEventError;
+import com.io7m.cardant.gui.internal.CAStatusEventType.CAStatusEventInProgress;
+import com.io7m.cardant.gui.internal.CAStatusEventType.CAStatusEventOK;
+import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.hibiscus.api.HBStateType;
+import com.io7m.hibiscus.api.HBStateType.HBStateConnected;
+import com.io7m.hibiscus.api.HBStateType.HBStateDisconnected;
+import com.io7m.hibiscus.api.HBStateType.HBStateExecutingLogin;
+import com.io7m.hibiscus.api.HBStateType.HBStateExecutingLoginFailed;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
+import com.io7m.seltzer.api.SStructuredErrorType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +44,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -55,10 +70,11 @@ public final class CAViewControllerMain implements Initializable
 
   private final CAMainStrings strings;
   private final RPServiceDirectoryType services;
-  private final CAMainEventBusType events;
+  private final CAStatusServiceType statusService;
   private final CAIconsType icons;
-  private final CAMainController clientController;
   private final CAPreferencesServiceType preferences;
+  private final CAMainClientService clientService;
+  private final CAPerpetualSubscriber<CAStatusEventType> statusSubscriber;
 
   @FXML private TabPane mainTabs;
   @FXML private MenuItem fileConnect;
@@ -69,8 +85,7 @@ public final class CAViewControllerMain implements Initializable
   @FXML private Tab locationsTab;
   @FXML private Tab transfersTab;
   @FXML private Tab debuggingTab;
-
-  private CAClientType client;
+  private Tooltip errorTooltip;
 
   public CAViewControllerMain(
     final RPServiceDirectoryType mainServices,
@@ -82,34 +97,107 @@ public final class CAViewControllerMain implements Initializable
       mainServices.requireService(CAPreferencesServiceType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
+    this.statusService =
+      mainServices.requireService(CAStatusServiceType.class);
     this.icons =
       mainServices.requireService(CAIconsType.class);
-    this.clientController =
-      mainServices.requireService(CAMainController.class);
+    this.clientService =
+      mainServices.requireService(CAMainClientService.class);
+
+    this.statusSubscriber =
+      new CAPerpetualSubscriber<>(this::onStatusEvent);
+    this.statusService.statusEvents()
+      .subscribe(this.statusSubscriber);
+  }
+
+  private void onStatusEvent(
+    final CAStatusEventType event)
+  {
+    if (event instanceof final CAStatusEventBooting booting) {
+      this.onStatusEventBooting(booting);
+      return;
+    }
+    if (event instanceof final CAStatusEventError error) {
+      this.onStatusEventError(error);
+      return;
+    }
+    if (event instanceof final CAStatusEventOK ok) {
+      this.onStatusEventOK(ok);
+      return;
+    }
+    if (event instanceof final CAStatusEventInProgress inProgress) {
+      this.onStatusEventInProgress(inProgress);
+      return;
+    }
+  }
+
+  private void onStatusEventInProgress(
+    final CAStatusEventInProgress inProgress)
+  {
+    Platform.runLater(() -> {
+      Tooltip.uninstall(this.statusIcon, this.errorTooltip);
+      this.statusProgress.setVisible(true);
+      this.statusIcon.setImage(this.icons.inProgress());
+      this.statusIcon.setOnMouseReleased(null);
+      this.statusText.setText("");
+    });
+  }
+
+  private void onStatusEventBooting(
+    final CAStatusEventBooting booting)
+  {
+    Platform.runLater(() -> {
+      Tooltip.uninstall(this.statusIcon, this.errorTooltip);
+      this.statusProgress.setVisible(true);
+      this.statusIcon.setImage(this.icons.inProgress());
+      this.statusIcon.setOnMouseReleased(null);
+      this.statusText.setText("");
+    });
+  }
+
+  private void onStatusEventOK(
+    final CAStatusEventOK ok)
+  {
+    Platform.runLater(() -> {
+      Tooltip.uninstall(this.statusIcon, this.errorTooltip);
+      this.statusProgress.setVisible(false);
+      this.statusIcon.setImage(this.icons.ok());
+      this.statusIcon.setOnMouseReleased(null);
+      this.statusText.setText(ok.message());
+    });
+  }
+
+  private void onStatusEventError(
+    final CAStatusEventError error)
+  {
+    Platform.runLater(() -> {
+      Tooltip.install(this.statusIcon, this.errorTooltip);
+      this.statusProgress.setVisible(false);
+      this.statusIcon.setImage(this.icons.error());
+      this.statusIcon.setOnMouseReleased(e -> this.onClickedErrorIcon(error));
+      this.statusText.setText(error.message());
+      this.onClickedErrorIcon(error);
+    });
   }
 
   private void onRequestFileDisconnect()
     throws IOException
   {
-    final var currentClient = this.client;
-    if (currentClient != null) {
-      final var confirmText =
-        this.strings.format("disconnect.confirm");
-      final var alert =
-        new Alert(CONFIRMATION, confirmText, NO, YES);
+    final var confirmText =
+      this.strings.format("disconnect.confirm");
+    final var alert =
+      new Alert(CONFIRMATION, confirmText, NO, YES);
 
-      final var alertResult = alert.showAndWait();
-      if (alertResult.isEmpty()) {
-        return;
-      }
-      if (!Objects.equals(alertResult.get(), YES)) {
-        return;
-      }
-
-      this.clientController.disconnect();
+    final var alertResult = alert.showAndWait();
+    if (alertResult.isEmpty()) {
+      return;
     }
+    if (!Objects.equals(alertResult.get(), YES)) {
+      return;
+    }
+
+    this.clientService.client()
+      .disconnectAsync();
   }
 
   private void onRequestFileConnect()
@@ -136,8 +224,40 @@ public final class CAViewControllerMain implements Initializable
     final CAViewControllerConnect connectView = loader.getController();
     final var configurationOpt = connectView.result();
     if (configurationOpt.isPresent()) {
-      this.client = this.clientController.connect(configurationOpt.get());
+      this.clientService.client().loginAsync(configurationOpt.get());
       this.setMenuToDisconnect();
+    }
+  }
+
+  @FXML
+  private void onAbout()
+  {
+    try {
+      final var stage = new Stage();
+
+      final var connectXML =
+        CAViewControllerMain.class.getResource("about.fxml");
+
+      final var resources =
+        this.strings.resources();
+      final var loader =
+        new FXMLLoader(connectXML, resources);
+
+      loader.setControllerFactory(
+        clazz -> CAViewControllers.createController(clazz, stage, this.services)
+      );
+
+      final Pane pane =
+        loader.load();
+
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setMinWidth(320.0);
+      stage.setMinHeight(240.0);
+      stage.setScene(new Scene(pane));
+      stage.setTitle(this.strings.format("about.title"));
+      stage.showAndWait();
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -153,6 +273,9 @@ public final class CAViewControllerMain implements Initializable
     final URL url,
     final ResourceBundle resourceBundle)
   {
+    this.errorTooltip =
+      new Tooltip(this.strings.format("status.clickForDetails"));
+
     this.mainTabs.setVisible(false);
 
     switch (this.preferences.preferences().debuggingEnabled()) {
@@ -165,8 +288,12 @@ public final class CAViewControllerMain implements Initializable
     }
 
     this.setMenuToConnect();
-    this.events.subscribe(new CAPerpetualSubscriber<>(this::onMainEvent));
-    this.events.submit(new CAMainEventBoot());
+
+    this.clientService.client()
+      .state()
+      .subscribe(new CAPerpetualSubscriber<>(this::onClientState));
+
+    this.statusProgress.setVisible(false);
   }
 
   private void setMenuToDisconnect()
@@ -193,86 +320,44 @@ public final class CAViewControllerMain implements Initializable
     });
   }
 
-  private void onNotConnectedButStillTrying()
+  private void onClientNotConnectedButStillTrying()
   {
     this.setMenuToDisconnect();
     this.mainTabs.setVisible(false);
   }
 
-  private void onConnected()
+  private void onClientConnected()
   {
     this.setMenuToDisconnect();
     this.mainTabs.setVisible(true);
   }
 
-  private void onNotConnected()
+  private void onClientNotConnected()
   {
     this.setMenuToConnect();
     this.mainTabs.setVisible(false);
   }
 
-  private void onMainEvent(
-    final CAMainEventType item)
+  private void onClientState(
+    final HBStateType<CAICommandType<?>, CAIResponseType, CAIResponseError, CAClientCredentials> state)
   {
-    Platform.runLater(() -> {
-      this.statusIcon.setImage(null);
-      this.statusIcon.setImage(
-        switch (item.classification()) {
-          case STATUS_IN_PROGRESS -> null;
-          case STATUS_INFO -> this.icons.info();
-          case STATUS_OK -> this.icons.ok();
-          case STATUS_ERROR -> this.icons.error();
-          case STATUS_BOOT -> this.icons.cardant();
-          case STATUS_UI -> null;
-          case STATUS_DATA_RECEIVED -> null;
-        }
-      );
-
-      switch (item.classification()) {
-        case STATUS_IN_PROGRESS -> {
-          this.statusProgress.setVisible(true);
-          this.statusIcon.setOnMouseReleased(event -> {
-
-          });
-        }
-        case STATUS_INFO, STATUS_OK, STATUS_BOOT, STATUS_DATA_RECEIVED, STATUS_UI -> {
-          this.statusProgress.setVisible(false);
-          this.statusIcon.setOnMouseReleased(event -> {
-
-          });
-        }
-        case STATUS_ERROR -> {
-          this.statusProgress.setVisible(false);
-          this.statusIcon.setOnMouseReleased(event -> {
-            this.onClickedErrorIcon(item);
-          });
-        }
-      }
-
-      this.statusText.setText(item.message());
-    });
-
-    if (item instanceof CAMainEventClientStatus clientStatus) {
-      switch (clientStatus.status()) {
-        case CLIENT_AUTHENTICATING,
-          CLIENT_AUTHENTICATION_FAILED -> {
-          Platform.runLater(this::onNotConnectedButStillTrying);
-        }
-        case CLIENT_CONNECTED -> {
-          Platform.runLater(this::onConnected);
-        }
-        case CLIENT_DISCONNECTED -> {
-          Platform.runLater(this::onNotConnected);
-        }
-        case CLIENT_SENDING_COMMAND, CLIENT_RECEIVING_DATA -> {
-
-        }
-      }
+    if (state instanceof HBStateExecutingLogin) {
+      Platform.runLater(this::onClientNotConnectedButStillTrying);
+      return;
+    }
+    if (state instanceof HBStateConnected) {
+      Platform.runLater(this::onClientConnected);
+      return;
+    }
+    if (state instanceof HBStateDisconnected
+      || state instanceof HBStateExecutingLoginFailed) {
+      Platform.runLater(this::onClientNotConnected);
+      return;
     }
   }
 
   private void onClickedErrorIcon(
-    final CAMainEventType item)
+    final SStructuredErrorType<CAErrorCode> item)
   {
     try {
       final var stage = new Stage();
@@ -280,8 +365,10 @@ public final class CAViewControllerMain implements Initializable
       final var connectXML =
         CAViewControllerMain.class.getResource("error.fxml");
 
-      final var resources = this.strings.resources();
-      final var loader = new FXMLLoader(connectXML, resources);
+      final var resources =
+        this.strings.resources();
+      final var loader =
+        new FXMLLoader(connectXML, resources);
 
       loader.setControllerFactory(
         clazz -> CAViewControllers.createController(clazz, stage, this.services)
@@ -292,9 +379,11 @@ public final class CAViewControllerMain implements Initializable
       final CAViewControllerError controller =
         loader.getController();
 
-      controller.setEvent(item);
+      controller.setError(item);
 
       stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setMinWidth(320.0);
+      stage.setMinHeight(240.0);
       stage.setScene(new Scene(pane));
       stage.setTitle(this.strings.format("error.title"));
       stage.showAndWait();

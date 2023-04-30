@@ -24,6 +24,7 @@ import org.postgresql.util.PSQLState;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -86,10 +87,12 @@ public final class CADatabaseExceptions
     final CADatabaseException result = switch (e.sqlState()) {
       case "42501" -> {
         yield new CADatabaseException(
-          errorOperationNotPermitted(),
           m,
           e,
-          attributes);
+          errorOperationNotPermitted(),
+          attributes,
+          Optional.empty()
+        );
       }
 
       default -> {
@@ -105,19 +108,41 @@ public final class CADatabaseExceptions
           yield switch (actual) {
             case FOREIGN_KEY_VIOLATION -> {
               yield new CADatabaseException(
-                errorSqlForeignKey(),
                 m,
                 e,
-                attributes);
+                errorSqlForeignKey(),
+                attributes,
+                Optional.empty()
+              );
             }
             case UNIQUE_VIOLATION -> {
-              yield new CADatabaseException(errorSqlUnique(), m, e, attributes);
+              yield new CADatabaseException(
+                m,
+                e,
+                errorSqlUnique(),
+                attributes,
+                Optional.empty()
+              );
             }
-            default -> new CADatabaseException(errorSql(), m, e, attributes);
+            default -> {
+              yield new CADatabaseException(
+                m,
+                e,
+                errorSql(),
+                attributes,
+                Optional.empty()
+              );
+            }
           };
         }
 
-        yield new CADatabaseException(errorSql(), m, e, attributes);
+        yield new CADatabaseException(
+          m,
+          e,
+          errorSql(),
+          attributes,
+          Optional.empty()
+        );
       }
     };
 

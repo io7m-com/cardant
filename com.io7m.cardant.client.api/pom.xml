@@ -39,6 +39,10 @@
       <groupId>com.io7m.hibiscus</groupId>
       <artifactId>com.io7m.hibiscus.api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.model</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.io7m.repetoir</groupId>

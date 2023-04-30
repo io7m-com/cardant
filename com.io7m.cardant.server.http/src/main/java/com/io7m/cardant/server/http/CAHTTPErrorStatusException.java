@@ -14,96 +14,72 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package com.io7m.cardant.server.http;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.error_codes.CAException;
 
-import java.util.Objects;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * An exception with an associated error code and HTTP status code.
  */
 
-public final class CAHTTPErrorStatusException extends Exception
+public final class CAHTTPErrorStatusException extends CAException
 {
-  private final int statusCode;
-  private final CAErrorCode errorCode;
+  private final int httpStatusCode;
 
   /**
    * Construct an exception.
    *
-   * @param inStatusCode The HTTP status code
-   * @param inErrorCode  The error code
-   * @param inMessage    The error message
+   * @param message             The message
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   * @param inHttpStatusCode    The HTTP status code
    */
 
   public CAHTTPErrorStatusException(
-    final int inStatusCode,
+    final String message,
     final CAErrorCode inErrorCode,
-    final String inMessage)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction,
+    final int inHttpStatusCode)
   {
-    super(Objects.requireNonNull(inMessage, "message"));
-    this.statusCode = inStatusCode;
-    this.errorCode = Objects.requireNonNull(inErrorCode, "errorCode");
+    super(message, inErrorCode, inAttributes, inRemediatingAction);
+    this.httpStatusCode = inHttpStatusCode;
   }
 
   /**
    * Construct an exception.
    *
-   * @param inStatusCode The HTTP status code
-   * @param inErrorCode  The error code
-   * @param inMessage    The error message
-   * @param cause        The cause
-   */
-
-
-  public CAHTTPErrorStatusException(
-    final int inStatusCode,
-    final CAErrorCode inErrorCode,
-    final String inMessage,
-    final Throwable cause)
-  {
-    super(
-      Objects.requireNonNull(inMessage, "message"),
-      Objects.requireNonNull(cause, "cause"));
-    this.statusCode = inStatusCode;
-    this.errorCode = Objects.requireNonNull(inErrorCode, "errorCode");
-  }
-
-  /**
-   * Construct an exception.
-   *
-   * @param inStatusCode The HTTP status code
-   * @param inErrorCode  The error code
-   * @param cause        The cause
+   * @param message             The message
+   * @param cause               The cause
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   * @param inHttpStatusCode    The HTTP status code
    */
 
   public CAHTTPErrorStatusException(
-    final int inStatusCode,
+    final String message,
+    final Throwable cause,
     final CAErrorCode inErrorCode,
-    final Throwable cause)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction,
+    final int inHttpStatusCode)
   {
-    super(Objects.requireNonNull(cause, "cause"));
-    this.statusCode = inStatusCode;
-    this.errorCode = Objects.requireNonNull(inErrorCode, "errorCode");
+    super(message, cause, inErrorCode, inAttributes, inRemediatingAction);
+    this.httpStatusCode = inHttpStatusCode;
   }
 
   /**
    * @return The HTTP status code
    */
 
-  public int statusCode()
+  public int httpStatusCode()
   {
-    return this.statusCode;
-  }
-
-  /**
-   * @return The error code
-   */
-
-  public CAErrorCode errorCode()
-  {
-    return this.errorCode;
+    return this.httpStatusCode;
   }
 }

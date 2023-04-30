@@ -29,6 +29,9 @@ public sealed interface CAIResponseType
   permits CAIResponseError,
   CAIResponseItemSearch,
   CAIResponseLogin,
+  CAIResponseRolesAssign,
+  CAIResponseRolesGet,
+  CAIResponseRolesRevoke,
   CAIResponseWithElementType
 {
   /**

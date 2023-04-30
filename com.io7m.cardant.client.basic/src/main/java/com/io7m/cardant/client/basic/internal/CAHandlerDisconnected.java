@@ -17,7 +17,10 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
@@ -25,9 +28,11 @@ import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.hibiscus.api.HBResultFailure;
 import com.io7m.hibiscus.api.HBResultType;
+import com.io7m.hibiscus.basic.HBClientNewHandler;
 
 import java.io.InputStream;
 import java.net.http.HttpClient;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,7 +41,8 @@ import java.util.UUID;
  * The initial "disconnected" protocol handler.
  */
 
-public final class CAHandlerDisconnected extends CAHandlerAbstract
+public final class CAHandlerDisconnected
+  extends CAHandlerAbstract
 {
   CAHandlerDisconnected(
     final CAClientConfiguration inConfiguration,
@@ -44,19 +50,6 @@ public final class CAHandlerDisconnected extends CAHandlerAbstract
     final HttpClient inHttpClient)
   {
     super(inConfiguration, inStrings, inHttpClient);
-  }
-
-  @Override
-  public void pollEvents()
-  {
-
-  }
-
-  @Override
-  public <R extends CAIResponseType> HBResultType<R, CAIResponseError> executeCommand(
-    final CAICommandType<R> command)
-  {
-    return this.notLoggedIn();
   }
 
   private <A> HBResultFailure<A, CAIResponseError> notLoggedIn()
@@ -67,37 +60,57 @@ public final class CAHandlerDisconnected extends CAHandlerAbstract
         this.strings().format("notLoggedIn"),
         CAStandardErrorCodes.errorNotLoggedIn(),
         Map.of(),
+        Optional.empty(),
         Optional.empty()
       )
     );
   }
 
   @Override
-  public boolean isConnected()
+  public boolean onIsConnected()
   {
     return false;
   }
 
   @Override
-  public HBResultType<CANewHandler, CAIResponseError> login()
+  public List<CAClientEventType> onPollEvents()
+  {
+    return List.of();
+  }
+
+  @Override
+  public HBResultType<
+    HBClientNewHandler<
+      CAClientException,
+      CAICommandType<?>,
+      CAIResponseType,
+      CAIResponseType,
+      CAIResponseError,
+      CAClientEventType,
+      CAClientCredentials>,
+    CAIResponseError>
+  onExecuteLogin(
+    final CAClientCredentials credentials)
     throws InterruptedException
   {
     try {
       final var handler =
         CAProtocolNegotiation.negotiateProtocolHandler(
           this.configuration(),
+          credentials,
           this.httpClient(),
           this.strings()
         );
 
-      return handler.login();
+      return handler.onExecuteLogin(credentials);
     } catch (final CAClientException e) {
       return new HBResultFailure<>(
         new CAIResponseError(
           UUID.randomUUID(),
-          e.summary(),
+          e.message(),
           e.errorCode(),
           e.attributes(),
+          e.remediatingAction(),
           Optional.of(e)
         )
       );
@@ -105,8 +118,33 @@ public final class CAHandlerDisconnected extends CAHandlerAbstract
   }
 
   @Override
-  public HBResultType<InputStream, CAIResponseError> fileData(
-    final CAFileID id)
+  public HBResultType<CAIResponseType, CAIResponseError> onExecuteCommand(
+    final CAICommandType<?> command)
+  {
+    return this.notLoggedIn();
+  }
+
+  @Override
+  public void onDisconnect()
+  {
+
+  }
+
+  @Override
+  public HBResultType<InputStream, CAIResponseError> onExecuteFileData(
+    final CAFileID fileID)
+  {
+    return this.notLoggedIn();
+  }
+
+  @Override
+  public HBResultType<CAClientUnit, CAIResponseError> onExecuteGarbage()
+  {
+    return this.notLoggedIn();
+  }
+
+  @Override
+  public HBResultType<CAClientUnit, CAIResponseError> onExecuteInvalid()
   {
     return this.notLoggedIn();
   }

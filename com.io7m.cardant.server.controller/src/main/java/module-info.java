@@ -24,6 +24,7 @@ module com.io7m.cardant.server.controller
   requires static org.osgi.annotation.bundle;
 
   requires com.io7m.cardant.protocol.inventory;
+  requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;

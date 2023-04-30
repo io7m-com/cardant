@@ -16,17 +16,15 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientFactoryType;
-import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.client.transfer.vanilla.CATransferService;
-import com.io7m.repetoir.core.RPServiceDirectory;
-import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.jade.api.ApplicationDirectories;
 import com.io7m.jade.api.ApplicationDirectoriesType;
 import com.io7m.jade.api.ApplicationDirectoryConfiguration;
+import com.io7m.repetoir.core.RPServiceDirectory;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,19 +50,24 @@ public final class CAMainServices
     final ApplicationDirectoriesType directories =
       applicationDirectories();
 
-    final var locale = Locale.getDefault();
-    final var services = new RPServiceDirectory();
-    final var mainStrings = new CAMainStrings(locale);
-    final var clock = new CAClockService(Clock.systemUTC());
+    final var locale =
+      Locale.getDefault();
+    final var services =
+      new RPServiceDirectory();
 
-    services.register(
-      CAClockService.class,
-      clock
-    );
-    services.register(
-      CAMainStrings.class,
-      mainStrings
-    );
+    final var mainStrings = new CAMainStrings(locale);
+    services.register(CAMainStrings.class, mainStrings);
+
+    final var clock = new CAClockService(Clock.systemUTC());
+    services.register(CAClockService.class, clock);
+
+    final var statusService = new CAStatusService();
+    services.register(CAStatusServiceType.class, statusService);
+
+    final var clients =
+      CAMainClientService.create(services, locale);
+    services.register(CAMainClientService.class, clients);
+
     services.register(
       CAPreferencesServiceType.class,
       openPreferences(directories)
@@ -82,14 +85,7 @@ public final class CAMainServices
       new CAExternalImages(mainStrings)
     );
 
-    final var eventBus = new CAMainEventBus();
-    services.register(CAMainEventBusType.class, eventBus);
-
-    final var clients = new CAClients();
-    services.register(CAClientFactoryType.class, clients);
-
-    final var mainController =
-      new CAMainController(mainStrings, clients, eventBus);
+    final var mainController = new CAMainController(services);
     services.register(CAMainController.class, mainController);
 
     final var transferIO =

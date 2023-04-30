@@ -18,6 +18,8 @@ package com.io7m.cardant.server.api;
 
 import com.io7m.cardant.database.api.CADatabaseType;
 
+import java.util.UUID;
+
 /**
  * The type of servers.
  */
@@ -25,8 +27,8 @@ import com.io7m.cardant.database.api.CADatabaseType;
 public interface CAServerType extends AutoCloseable
 {
   /**
-   * Start the server instance. Can be called multiple times redundantly,
-   * and can be called before or after #close() has been called.
+   * Start the server instance. Can be called multiple times redundantly, and
+   * can be called before or after #close() has been called.
    *
    * @throws CAServerException On errors
    */
@@ -41,6 +43,12 @@ public interface CAServerType extends AutoCloseable
   CADatabaseType database();
 
   /**
+   * @return The server's associated configuration
+   */
+
+  CAServerConfiguration configuration();
+
+  /**
    * @return {@code true} if the server is closed
    *
    * @see #start()
@@ -48,6 +56,20 @@ public interface CAServerType extends AutoCloseable
    */
 
   boolean isClosed();
+
+  /**
+   * Do the work necessary to set up a server instance (such as initializing
+   * and/or upgrading the database) but do not actually start the instance. A
+   * user with the given ID will be marked as the administrator and assigned all
+   * available security roles.
+   *
+   * @param adminId The admin ID
+   *
+   * @throws CAServerException On errors
+   */
+
+  void setup(UUID adminId)
+    throws CAServerException;
 
   @Override
   void close()

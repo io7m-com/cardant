@@ -64,6 +64,10 @@
       <groupId>com.io7m.jbssio</groupId>
       <artifactId>com.io7m.jbssio.api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.io7m.medrina</groupId>
+      <artifactId>com.io7m.medrina.api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>

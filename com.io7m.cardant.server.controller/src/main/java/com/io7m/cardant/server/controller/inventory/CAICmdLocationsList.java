@@ -22,10 +22,10 @@ import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.server.controller.security.CASecurityException;
+import com.io7m.cardant.security.CASecurityException;
 
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_LOCATIONS;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.READ;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
+import static com.io7m.cardant.security.CASecurityPolicy.READ;
 
 /**
  * @see CAICommandLocationList

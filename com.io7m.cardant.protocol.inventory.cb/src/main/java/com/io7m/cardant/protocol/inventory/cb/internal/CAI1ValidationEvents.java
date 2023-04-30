@@ -18,6 +18,7 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAIEventType;
+import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1EventUpdated;
 import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
@@ -36,7 +37,7 @@ public final class CAI1ValidationEvents
     final CAIEventType event)
     throws CAProtocolException
   {
-    if (event instanceof final CAIEventType.CAEventUpdated u) {
+    if (event instanceof final CAIEventUpdated u) {
       return convertToWireEventUpdated(u);
     }
 
@@ -44,7 +45,7 @@ public final class CAI1ValidationEvents
   }
 
   private static ProtocolCAIv1Type convertToWireEventUpdated(
-    final CAIEventType.CAEventUpdated u)
+    final CAIEventUpdated u)
   {
     return new CAI1EventUpdated(
       new CBList<>(
@@ -65,7 +66,7 @@ public final class CAI1ValidationEvents
   public static CAIMessageType convertFromWireCAI1EventUpdated(
     final CAI1EventUpdated m)
   {
-    return new CAIEventType.CAEventUpdated(
+    return new CAIEventUpdated(
       m.fieldUpdated()
         .values()
         .stream()

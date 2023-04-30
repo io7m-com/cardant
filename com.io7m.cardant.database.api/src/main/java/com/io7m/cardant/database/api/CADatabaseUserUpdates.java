@@ -72,6 +72,7 @@ public final class CADatabaseUserUpdates
     throws CADatabaseException
   {
     try (var transaction = connection.openTransaction()) {
+      transaction.setUserId(user.userId());
       final var r = userMerge(transaction, user);
       transaction.commit();
       return r;

@@ -20,8 +20,18 @@
 
   <dependencies>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.error_codes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.io7m.repetoir</groupId>
       <artifactId>com.io7m.repetoir.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.seltzer</groupId>
+      <artifactId>com.io7m.seltzer.api</artifactId>
     </dependency>
 
     <dependency>

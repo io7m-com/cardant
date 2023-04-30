@@ -32,9 +32,12 @@ public interface CAClientFactoryType extends RPServiceType,
     CAClientConfiguration,
     CAICommandType<?>,
     CAIResponseType,
+    CAIResponseType,
     CAIResponseError,
     CAClientEventType,
-    CAClientType>
+    CAClientCredentials,
+    CAClientAsynchronousType,
+    CAClientSynchronousType>
 {
 
 }

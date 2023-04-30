@@ -16,10 +16,10 @@
 
 package com.io7m.cardant.server.inventory.v1;
 
-import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.api.CADatabaseUserUpdates;
 import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.protocol.api.CAProtocolException;
@@ -31,11 +31,11 @@ import com.io7m.cardant.server.controller.CAServerStrings;
 import com.io7m.cardant.server.http.CACommonInstrumentedServlet;
 import com.io7m.cardant.server.http.CAHTTPErrorStatusException;
 import com.io7m.cardant.server.service.idstore.CAIdstoreClientsType;
-import com.io7m.cardant.server.service.reqlimit.CARequestLimitExceeded;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimits;
 import com.io7m.cardant.server.service.sessions.CASessionService;
 import com.io7m.idstore.model.IdLoginMetadataStandard;
-import com.io7m.idstore.model.IdUser;
+import com.io7m.idstore.protocol.user.IdUResponseLogin;
+import com.io7m.idstore.user_client.api.IdUClientCredentials;
 import com.io7m.idstore.user_client.api.IdUClientException;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorHttpMethod;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
@@ -104,46 +105,55 @@ public final class CAI1Login extends CACommonInstrumentedServlet
     try {
       if (!Objects.equals(request.getMethod(), "POST")) {
         throw new CAHTTPErrorStatusException(
-          METHOD_NOT_ALLOWED_405,
+          this.strings.format("methodNotAllowed"),
           errorHttpMethod(),
-          this.strings.format("methodNotAllowed")
+          Map.of(),
+          Optional.empty(),
+          METHOD_NOT_ALLOWED_405
         );
       }
 
       final var login =
         this.readLoginCommand(request);
 
-      final IdUser user;
+      final UUID userId;
       try (var client = this.idClients.createClient()) {
-        user = client.login(
-          login.userName().value(),
-          login.password(),
-          this.idClients.baseURI(),
-          Map.ofEntries(
-            Map.entry(
-              IdLoginMetadataStandard.remoteHostProxied(),
-              request.getRemoteAddr()
-            )
-          )
-        );
+        final var result =
+          client.login(new IdUClientCredentials(
+              login.userName().value(),
+              login.password(),
+              this.idClients.baseURI(),
+              Map.ofEntries(
+                Map.entry(
+                  IdLoginMetadataStandard.remoteHostProxied(),
+                  request.getRemoteAddr()
+                )
+              )
+            )).map(IdUResponseLogin.class::cast)
+            .orElseThrow(IdUClientException::ofError);
+        userId = result.user().id();
       }
 
-      var icUser = new CAUser(user.id(), new MSubject(Set.of()));
+      var icUser = new CAUser(userId, new MSubject(Set.of()));
       icUser = CADatabaseUserUpdates.userMerge(this.database, icUser);
-      final var httpSession = request.getSession(true);
-      this.sessions.createSession(icUser.userId(), icUser.subject());
-      httpSession.setAttribute("UserID", user.id());
-      this.sendLoginResponse(request, response);
+      final var session =
+        this.sessions.createSession(icUser.userId(), icUser.subject());
+      final var httpSession =
+        request.getSession(true);
+
+      httpSession.setAttribute("ID", session.id());
+      this.sendLoginResponse(request, response, userId);
 
     } catch (final CAHTTPErrorStatusException e) {
       this.errors.send(
         response,
-        e.statusCode(),
+        e.httpStatusCode(),
         new CAIResponseError(
           requestIdFor(request),
           e.getMessage(),
           e.errorCode(),
-          Map.of(),
+          e.attributes(),
+          e.remediatingAction(),
           Optional.of(e)
         )
       );
@@ -153,13 +163,27 @@ public final class CAI1Login extends CACommonInstrumentedServlet
         401,
         new CAIResponseError(
           requestIdFor(request),
-          e.getMessage(),
+          e.message(),
           new CAErrorCode(e.errorCode().id()),
-          Map.of(),
+          e.attributes(),
+          e.remediatingAction(),
           Optional.of(e)
         )
       );
-    } catch (final InterruptedException e) {
+    } catch (final CAException e) {
+      this.errors.send(
+        response,
+        500,
+        new CAIResponseError(
+          requestIdFor(request),
+          e.getMessage(),
+          e.errorCode(),
+          e.attributes(),
+          e.remediatingAction(),
+          Optional.of(e)
+        )
+      );
+    } catch (final Exception e) {
       this.errors.send(
         response,
         500,
@@ -168,18 +192,7 @@ public final class CAI1Login extends CACommonInstrumentedServlet
           e.getMessage(),
           CAStandardErrorCodes.errorIo(),
           Map.of(),
-          Optional.of(e)
-        )
-      );
-    } catch (final CADatabaseException e) {
-      this.errors.send(
-        response,
-        500,
-        new CAIResponseError(
-          requestIdFor(request),
-          e.getMessage(),
-          e.errorCode(),
-          Map.of(),
+          Optional.empty(),
           Optional.of(e)
         )
       );
@@ -188,7 +201,8 @@ public final class CAI1Login extends CACommonInstrumentedServlet
 
   private void sendLoginResponse(
     final HttpServletRequest request,
-    final HttpServletResponse response)
+    final HttpServletResponse response,
+    final UUID userId)
     throws IOException
   {
     response.setStatus(200);
@@ -196,7 +210,12 @@ public final class CAI1Login extends CACommonInstrumentedServlet
 
     try {
       final var data =
-        this.messages.serialize(new CAIResponseLogin(requestIdFor(request)));
+        this.messages.serialize(
+          new CAIResponseLogin(
+            requestIdFor(request),
+            userId
+          )
+        );
       response.setContentLength(data.length);
       try (var output = response.getOutputStream()) {
         output.write(data);
@@ -216,19 +235,23 @@ public final class CAI1Login extends CACommonInstrumentedServlet
       if (message instanceof CAICommandLogin login) {
         return login;
       }
-    } catch (final CAProtocolException | CARequestLimitExceeded e) {
+    } catch (final CAException e) {
       throw new CAHTTPErrorStatusException(
-        BAD_REQUEST_400,
-        errorProtocol(),
         e.getMessage(),
-        e
+        e,
+        errorProtocol(),
+        e.attributes(),
+        e.remediatingAction(),
+        BAD_REQUEST_400
       );
     }
 
     throw new CAHTTPErrorStatusException(
-      BAD_REQUEST_400,
+      this.strings.format("expectedCommand", "CommandLogin"),
       errorProtocol(),
-      this.strings.format("expectedCommand", "CommandLogin")
+      Map.of(),
+      Optional.empty(),
+      BAD_REQUEST_400
     );
   }
 }

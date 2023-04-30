@@ -22,12 +22,12 @@ import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.server.controller.security.CASecurityException;
+import com.io7m.cardant.security.CASecurityException;
 
 import java.util.Set;
 
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.DELETE;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_ITEMS;
+import static com.io7m.cardant.security.CASecurityPolicy.DELETE;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 
 /**
  * @see CAICommandItemsRemove

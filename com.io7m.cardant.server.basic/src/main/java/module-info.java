@@ -31,19 +31,21 @@ module com.io7m.cardant.server.basic
 
   requires transitive com.io7m.cardant.server.api;
 
-  requires com.io7m.jmulticlose.core;
-
   requires com.io7m.cardant.protocol.inventory.cb;
   requires com.io7m.cardant.protocol.inventory;
+  requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.inventory.v1;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
   requires com.io7m.cardant.server.service.idstore;
+  requires com.io7m.cardant.server.service.maintenance;
   requires com.io7m.cardant.server.service.reqlimit;
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.verdant;
+
+  requires com.io7m.jmulticlose.core;
   requires org.eclipse.jetty.server;
   requires org.eclipse.jetty.util;
 

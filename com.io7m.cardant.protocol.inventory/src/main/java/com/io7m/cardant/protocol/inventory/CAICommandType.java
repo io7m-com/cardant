@@ -26,13 +26,14 @@ import com.io7m.hibiscus.api.HBCommandType;
 
 public sealed interface CAICommandType<R extends CAIResponseType>
   extends CAIMessageType, HBCommandType
-  permits CAICommandFilePut,
+  permits CAICommandDebugInvalid,
+  CAICommandDebugRandom,
+  CAICommandFilePut,
   CAICommandFileRemove,
   CAICommandItemAttachmentAdd,
   CAICommandItemAttachmentRemove,
   CAICommandItemCreate,
   CAICommandItemGet,
-  CAICommandItemList,
   CAICommandItemLocationsList,
   CAICommandItemMetadataPut,
   CAICommandItemMetadataRemove,
@@ -46,6 +47,9 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   CAICommandLocationList,
   CAICommandLocationPut,
   CAICommandLogin,
+  CAICommandRolesAssign,
+  CAICommandRolesGet,
+  CAICommandRolesRevoke,
   CAICommandTagList,
   CAICommandTagsDelete,
   CAICommandTagsPut

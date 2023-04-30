@@ -24,8 +24,8 @@ import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAValidityException;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.CAServerStrings;
-import com.io7m.cardant.server.controller.security.CASecurityException;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.sessions.CASession;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
@@ -35,6 +35,7 @@ import io.opentelemetry.api.trace.Tracer;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -215,9 +216,10 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final Map<String, String> attributes)
   {
     return new CACommandExecutionFailure(
-      errorCode,
       message,
+      errorCode,
       attributes,
+      Optional.empty(),
       this.requestId,
       statusCode
     );
@@ -243,10 +245,11 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final Map<String, String> attributes)
   {
     return new CACommandExecutionFailure(
-      errorCode,
       message,
       cause,
+      errorCode,
       attributes,
+      Optional.empty(),
       this.requestId,
       statusCode
     );
@@ -264,10 +267,11 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final CADatabaseException e)
   {
     return new CACommandExecutionFailure(
-      e.errorCode(),
       e.getMessage(),
       e,
+      e.errorCode(),
       e.attributes(),
+      Optional.empty(),
       this.requestId,
       500
     );
@@ -285,10 +289,11 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final CASecurityException e)
   {
     return new CACommandExecutionFailure(
-      CAStandardErrorCodes.errorSecurityPolicyDenied(),
       e.getMessage(),
       e,
+      CAStandardErrorCodes.errorSecurityPolicyDenied(),
       e.attributes(),
+      Optional.empty(),
       this.requestId,
       400
     );
@@ -306,10 +311,11 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final CAProtocolException e)
   {
     return new CACommandExecutionFailure(
-      CAStandardErrorCodes.errorProtocol(),
       e.getMessage(),
       e,
+      CAStandardErrorCodes.errorProtocol(),
       e.attributes(),
+      Optional.empty(),
       this.requestId,
       400
     );
@@ -327,10 +333,11 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final CAValidityException e)
   {
     return new CACommandExecutionFailure(
-      CAStandardErrorCodes.errorProtocol(),
       e.getMessage(),
       e,
+      CAStandardErrorCodes.errorProtocol(),
       Map.of(),
+      Optional.empty(),
       this.requestId,
       400
     );

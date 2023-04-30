@@ -19,9 +19,9 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.security.CASecurity;
+import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandContext;
-import com.io7m.cardant.server.controller.security.CASecurity;
-import com.io7m.cardant.server.controller.security.CASecurityException;
 import com.io7m.cardant.server.service.sessions.CASession;
 import com.io7m.medrina.api.MActionName;
 import com.io7m.medrina.api.MObject;
@@ -80,6 +80,11 @@ public final class CAICommandContext
     final MActionName action)
     throws CASecurityException
   {
-    CASecurity.check(this.session().subject(), object, action);
+    CASecurity.check(
+      this.session().userId(),
+      this.session().subject(),
+      object,
+      action
+    );
   }
 }

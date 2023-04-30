@@ -29,12 +29,13 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.database.postgres;
   requires com.io7m.cardant.error_codes;
-  requires com.io7m.cardant.gui;
   requires com.io7m.cardant.gui.main;
+  requires com.io7m.cardant.gui;
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.protocol.api;
-  requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.protocol.inventory.cb;
+  requires com.io7m.cardant.protocol.inventory;
+  requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.api;
   requires com.io7m.cardant.server.basic;
   requires com.io7m.cardant.server.controller;
@@ -44,6 +45,7 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
   requires com.io7m.cardant.server.service.idstore;
+  requires com.io7m.cardant.server.service.maintenance;
   requires com.io7m.cardant.server.service.reqlimit;
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
@@ -53,12 +55,14 @@ open module com.io7m.cardant.tests
   requires com.io7m.jmulticlose.core;
   requires com.io7m.verdant.core.cb;
   requires com.io7m.verdant.core;
+  requires jakarta.mail;
   requires java.net.http;
   requires java.sql;
   requires jul.to.slf4j;
   requires org.apache.commons.io;
   requires org.eclipse.jetty.server;
   requires org.eclipse.jetty.servlet;
+  requires org.mockito;
   requires org.slf4j;
 
   requires transitive org.junit.jupiter.api;

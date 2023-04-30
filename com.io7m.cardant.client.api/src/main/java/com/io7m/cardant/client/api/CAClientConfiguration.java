@@ -18,58 +18,27 @@ package com.io7m.cardant.client.api;
 
 import com.io7m.hibiscus.api.HBConfigurationType;
 
-import java.net.URI;
 import java.util.Locale;
 import java.util.Objects;
 
 /**
  * The client configuration.
  *
- * @param locale   The locale for messages
- * @param host     The server host
- * @param port     The server port
- * @param https    {@code true} if https should be used
- * @param username The server username
- * @param password The server password
+ * @param locale The locale for messages
  */
 
 public record CAClientConfiguration(
-  Locale locale,
-  String host,
-  int port,
-  boolean https,
-  String username,
-  String password)
+  Locale locale)
   implements HBConfigurationType
 {
   /**
    * The client configuration.
+   *
+   * @param locale The locale for messages
    */
 
   public CAClientConfiguration
   {
     Objects.requireNonNull(locale, "locale");
-    Objects.requireNonNull(host, "host");
-    Objects.requireNonNull(username, "username");
-    Objects.requireNonNull(password, "password");
-  }
-
-  /**
-   * @return The server base URI
-   */
-
-  public URI baseURI()
-  {
-    final var builder = new StringBuilder(128);
-    if (this.https) {
-      builder.append("https://");
-    } else {
-      builder.append("http://");
-    }
-    builder.append(this.host);
-    builder.append(":");
-    builder.append(this.port);
-    builder.append("/");
-    return URI.create(builder.toString());
   }
 }

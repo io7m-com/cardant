@@ -19,6 +19,7 @@ package com.io7m.cardant.server.inventory.v1;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
@@ -38,6 +39,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -88,26 +90,36 @@ public final class CA1CommandServlet extends CA1AuthenticatedServlet
     final CASession session)
     throws Exception
   {
+    final Object received;
     try (var input = this.limits.boundedMaximumInput(request, 1048576)) {
       final var data = input.readAllBytes();
       final var message = this.messages.parse(data);
+      received = message;
       if (message instanceof CAICommandType<?> command) {
         this.executeCommand(request, servletResponse, session, command);
         return;
       }
     } catch (final CAProtocolException e) {
       throw new CAHTTPErrorStatusException(
-        BAD_REQUEST_400,
-        errorProtocol(),
         e.getMessage(),
-        e
+        e,
+        errorProtocol(),
+        e.attributes(),
+        e.remediatingAction(),
+        BAD_REQUEST_400
       );
     }
 
+    final var strings = this.strings();
     throw new CAHTTPErrorStatusException(
-      BAD_REQUEST_400,
+      strings.format("expectedCommand"),
       errorProtocol(),
-      this.strings().format("expectedCommand", "EIPCommandType")
+      Map.ofEntries(
+        Map.entry(strings.format("expectedType"), CAICommandType.class.getSimpleName()),
+        Map.entry(strings.format("receivedType"), received.getClass().getSimpleName())
+      ),
+      Optional.empty(),
+      BAD_REQUEST_400
     );
   }
 
@@ -156,6 +168,8 @@ public final class CA1CommandServlet extends CA1AuthenticatedServlet
     final var sends = this.sends();
 
     try {
+      transaction.setUserId(session.userId());
+
       final CAIResponseType result = this.executor.execute(context, command);
       sends.send(servletResponse, 200, result);
       if (result instanceof CAIResponseError error) {
@@ -173,6 +187,20 @@ public final class CA1CommandServlet extends CA1AuthenticatedServlet
           e.getMessage(),
           e.errorCode(),
           e.attributes(),
+          e.remediatingAction(),
+          Optional.of(e)
+        )
+      );
+    } catch (final CAException e) {
+      sends.send(
+        servletResponse,
+        500,
+        new CAIResponseError(
+          requestId,
+          e.getMessage(),
+          e.errorCode(),
+          e.attributes(),
+          e.remediatingAction(),
           Optional.of(e)
         )
       );
@@ -182,9 +210,10 @@ public final class CA1CommandServlet extends CA1AuthenticatedServlet
         500,
         new CAIResponseError(
           requestId,
-          e.getMessage(),
+          Objects.requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
           errorIo(),
           Collections.emptySortedMap(),
+          Optional.empty(),
           Optional.of(e)
         )
       );

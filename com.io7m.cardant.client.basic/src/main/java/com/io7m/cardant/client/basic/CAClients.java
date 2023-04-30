@@ -16,10 +16,12 @@
 
 package com.io7m.cardant.client.basic;
 
+import com.io7m.cardant.client.api.CAClientAsynchronousType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientFactoryType;
-import com.io7m.cardant.client.api.CAClientType;
-import com.io7m.cardant.client.basic.internal.CAClient;
+import com.io7m.cardant.client.api.CAClientSynchronousType;
+import com.io7m.cardant.client.basic.internal.CAClientAsynchronous;
+import com.io7m.cardant.client.basic.internal.CAClientSynchronous;
 import com.io7m.cardant.client.basic.internal.CAStrings;
 
 import java.io.IOException;
@@ -44,7 +46,22 @@ public final class CAClients
   }
 
   @Override
-  public CAClientType open(
+  public String toString()
+  {
+    return String.format(
+      "[CAClients 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
+
+  @Override
+  public String description()
+  {
+    return "Inventory client service.";
+  }
+
+  @Override
+  public CAClientAsynchronousType openAsynchronousClient(
     final CAClientConfiguration configuration)
   {
     final var cookieJar =
@@ -64,21 +81,30 @@ public final class CAClients
         .cookieHandler(cookieJar)
         .build();
 
-    return CAClient.open(configuration, strings, httpClient);
+    return new CAClientAsynchronous(configuration, strings, httpClient);
   }
 
   @Override
-  public String toString()
+  public CAClientSynchronousType openSynchronousClient(
+    final CAClientConfiguration configuration)
   {
-    return String.format(
-      "[CAClients 0x%08x]",
-      Integer.valueOf(this.hashCode())
-    );
-  }
+    final var cookieJar =
+      new CookieManager();
+    final var locale =
+      configuration.locale();
 
-  @Override
-  public String description()
-  {
-    return "Inventory client service.";
+    final CAStrings strings;
+    try {
+      strings = new CAStrings(locale);
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
+    final var httpClient =
+      HttpClient.newBuilder()
+        .cookieHandler(cookieJar)
+        .build();
+
+    return new CAClientSynchronous(configuration, strings, httpClient);
   }
 }

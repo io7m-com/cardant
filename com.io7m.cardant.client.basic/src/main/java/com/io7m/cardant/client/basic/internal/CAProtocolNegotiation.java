@@ -17,6 +17,7 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.genevan.core.GenProtocolException;
@@ -40,6 +41,7 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.io7m.cardant.client.basic.internal.CACompression.decompressResponse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorHttpMethod;
@@ -79,19 +81,32 @@ public final class CAProtocolNegotiation
     try {
       response = httpClient.send(request, ofByteArray());
     } catch (final IOException e) {
-      throw new CAClientException(errorIo(), e.getMessage(), e, Map.of());
+      throw new CAClientException(
+        Objects.requireNonNullElse(
+          e.getMessage(),
+          strings.format("Could not connect to server.")
+        ),
+        e,
+        errorIo(),
+        Map.ofEntries(
+          Map.entry("URI", base.toString())
+        ),
+        Optional.empty(),
+        Optional.empty()
+      );
     }
 
     LOG.debug("server: status {}", response.statusCode());
 
     if (response.statusCode() >= 400) {
       throw new CAClientException(
-        errorHttpMethod(),
         strings.format("httpError", Integer.valueOf(response.statusCode())),
-        Map.of(
-          strings.format("URI"),
-          base.toString()
-        )
+        errorHttpMethod(),
+        Map.ofEntries(
+          Map.entry("URI", base.toString())
+        ),
+        Optional.empty(),
+        Optional.empty()
       );
     }
 
@@ -103,9 +118,30 @@ public final class CAProtocolNegotiation
       final var body = decompressResponse(response, response.headers());
       message = protocols.parse(base, body);
     } catch (final VProtocolException e) {
-      throw new CAClientException(errorProtocol(), e.getMessage(), e, Map.of());
+      throw new CAClientException(
+        e.getMessage(),
+        e,
+        errorProtocol(),
+        Map.ofEntries(
+          Map.entry("URI", base.toString())
+        ),
+        Optional.empty(),
+        Optional.empty()
+      );
     } catch (final IOException e) {
-      throw new CAClientException(errorIo(), e.getMessage(), e, Map.of());
+      throw new CAClientException(
+        Objects.requireNonNullElse(
+          e.getMessage(),
+          e.getClass().getSimpleName()
+        ),
+        e,
+        errorIo(),
+        Map.ofEntries(
+          Map.entry("URI", base.toString())
+        ),
+        Optional.empty(),
+        Optional.empty()
+      );
     }
 
     return message.protocols()
@@ -139,23 +175,26 @@ public final class CAProtocolNegotiation
   /**
    * Negotiate a protocol handler.
    *
-   * @param configuration     The configuration
-   * @param httpClient The HTTP client
-   * @param strings    The string resources
+   * @param credentials   The credentials
+   * @param configuration The configuration
+   * @param httpClient    The HTTP client
+   * @param strings       The string resources
    *
    * @return The protocol handler
    *
-   * @throws CAClientException   On errors
+   * @throws CAClientException    On errors
    * @throws InterruptedException On interruption
    */
 
   public static CAHandlerType negotiateProtocolHandler(
     final CAClientConfiguration configuration,
+    final CAClientCredentials credentials,
     final HttpClient httpClient,
     final CAStrings strings)
     throws CAClientException, InterruptedException
   {
     Objects.requireNonNull(configuration, "configuration");
+    Objects.requireNonNull(credentials, "credentials");
     Objects.requireNonNull(httpClient, "httpClient");
     Objects.requireNonNull(strings, "strings");
 
@@ -165,7 +204,7 @@ public final class CAProtocolNegotiation
       );
 
     final var serverProtocols =
-      fetchSupportedVersions(configuration.baseURI(), httpClient, strings);
+      fetchSupportedVersions(credentials.baseURI(), httpClient, strings);
 
     LOG.debug("server supports {} protocols", serverProtocols.size());
 
@@ -182,17 +221,19 @@ public final class CAProtocolNegotiation
       );
     } catch (final GenProtocolException e) {
       throw new CAClientException(
-        errorNoSupportedProtocols(),
         e.getMessage(),
         e,
-        Map.of()
+        errorNoSupportedProtocols(),
+        Map.of(),
+        Optional.empty(),
+        Optional.empty()
       );
     }
 
     final var serverEndpoint =
       solved.serverEndpoint();
     final var target =
-      configuration.baseURI()
+      credentials.baseURI()
         .resolve(serverEndpoint.endpoint())
         .normalize();
 

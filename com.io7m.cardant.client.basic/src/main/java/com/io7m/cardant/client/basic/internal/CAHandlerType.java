@@ -16,11 +16,16 @@
 
 package com.io7m.cardant.client.basic.internal;
 
+import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.client.api.CAClientEventType;
+import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.hibiscus.api.HBResultType;
+import com.io7m.hibiscus.basic.HBClientHandlerType;
 
 import java.io.InputStream;
 
@@ -29,57 +34,47 @@ import java.io.InputStream;
  */
 
 public interface CAHandlerType
+  extends HBClientHandlerType<
+  CAClientException,
+  CAICommandType<?>,
+  CAIResponseType,
+  CAIResponseType,
+  CAIResponseError,
+  CAClientEventType,
+  CAClientCredentials>
 {
   /**
-   * Poll the server for events.
-   */
-
-  void pollEvents();
-
-  /**
-   * Execute the given command.
+   * Retrieve data for the given file.
    *
-   * @param command The command
-   * @param <R>     The response type
-   *
-   * @return The response
-   *
-   * @throws InterruptedException On interruption
-   */
-
-  <R extends CAIResponseType>
-  HBResultType<R, CAIResponseError>
-  executeCommand(CAICommandType<R> command)
-    throws InterruptedException;
-
-  /**
-   * @return {@code true} if this handler is connected (logged in)
-   */
-
-  boolean isConnected();
-
-  /**
-   * Execute the login process.
+   * @param fileID The file ID
    *
    * @return The result
    *
    * @throws InterruptedException On interruption
    */
 
-  HBResultType<CANewHandler, CAIResponseError> login()
+  HBResultType<InputStream, CAIResponseError> onExecuteFileData(CAFileID fileID)
     throws InterruptedException;
 
   /**
-   * Download file data.
-   *
-   * @param id The file data
+   * Send garbage to the server.
    *
    * @return The result
    *
    * @throws InterruptedException On interruption
    */
 
-  HBResultType<InputStream, CAIResponseError> fileData(
-    CAFileID id)
+  HBResultType<CAClientUnit, CAIResponseError> onExecuteGarbage()
+    throws InterruptedException;
+
+  /**
+   * Send a well-formed but invalid command to the server.
+   *
+   * @return The result
+   *
+   * @throws InterruptedException On interruption
+   */
+
+  HBResultType<CAClientUnit, CAIResponseError> onExecuteInvalid()
     throws InterruptedException;
 }

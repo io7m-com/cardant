@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
@@ -36,7 +35,6 @@ public final class CAViewControllerItemEditor implements Initializable
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemEditor.class);
 
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final RPServiceDirectoryType services;
   private final CAMainController controller;
@@ -44,15 +42,10 @@ public final class CAViewControllerItemEditor implements Initializable
   @FXML private AnchorPane itemEditorPlaceholder;
   @FXML private TabPane itemEditorContainer;
 
-  private CAPerpetualSubscriber<CAMainEventType> subscriber;
-  private volatile CAClientType clientNow;
-
   public CAViewControllerItemEditor(
     final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =

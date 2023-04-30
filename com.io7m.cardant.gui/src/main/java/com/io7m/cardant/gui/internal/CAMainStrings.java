@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.repetoir.core.RPServiceType;
 import com.io7m.jxtrand.api.JXTStringsType;
 import com.io7m.repetoir.core.RPServiceType;
 

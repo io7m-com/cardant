@@ -23,10 +23,10 @@ import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.server.controller.security.CASecurityException;
+import com.io7m.cardant.security.CASecurityException;
 
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_TAGS;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.READ;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_TAGS;
+import static com.io7m.cardant.security.CASecurityPolicy.READ;
 
 /**
  * @see CAICommandTagList

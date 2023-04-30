@@ -27,7 +27,7 @@ import javafx.scene.control.TableView;
 
 import java.util.function.Consumer;
 
-import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
+import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN;
 
 public final class CAItemMetadataTables
 {
@@ -69,7 +69,7 @@ public final class CAItemMetadataTables
     tableValueColumn.setCellValueFactory(
       param -> param.getValue().value());
 
-    tableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
+    tableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
     tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
   }
 

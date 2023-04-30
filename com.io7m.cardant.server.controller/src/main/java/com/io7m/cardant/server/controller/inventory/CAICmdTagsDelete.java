@@ -21,10 +21,10 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTagsType;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.server.controller.security.CASecurityException;
+import com.io7m.cardant.security.CASecurityException;
 
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.DELETE;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_TAGS;
+import static com.io7m.cardant.security.CASecurityPolicy.DELETE;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_TAGS;
 
 /**
  * @see CAICommandTagsDelete

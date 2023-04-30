@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
 import com.io7m.cardant.gui.internal.model.CALocationTreeFiltered;
@@ -27,7 +26,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
-import com.io7m.hibiscus.api.HBResultSuccess;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -65,56 +63,38 @@ public final class CAViewControllerItemsTab implements Initializable
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemsTab.class);
 
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final RPServiceDirectoryType services;
   private final CAMainController controller;
   private final CALocationTreeFiltered locationFilteredView;
+  private final CAMainClientService clientService;
 
-  @FXML
-  private SplitPane splitPane;
-  @FXML
-  private TableView<CAItemMutable> itemTableView;
-  @FXML
-  private TableColumn<CAItem, String> itemNameColumn;
-  @FXML
-  private TableColumn<CAItem, String> itemDescriptionColumn;
-  @FXML
-  private TableColumn<CAItem, Long> itemCountColumn;
-  @FXML
-  private TextField searchField;
-  @FXML
-  private Button itemCreate;
-  @FXML
-  private ImageView itemCreateImage;
-  @FXML
-  private Button itemCreateFile;
-  @FXML
-  private ImageView itemCreateFileImage;
-  @FXML
-  private Button itemDelete;
-  @FXML
-  private Button itemReposit;
-  @FXML
-  private ImageView itemDeleteImage;
-  @FXML
-  private TreeView<CALocationItemType> locationTreeView;
-  @FXML
-  private TextField locationSearchField;
-
-  private volatile CAClientType clientNow;
-  private CAPerpetualSubscriber<CAMainEventType> subscriber;
+  @FXML private SplitPane splitPane;
+  @FXML private TableView<CAItemMutable> itemTableView;
+  @FXML private TableColumn<CAItem, String> itemNameColumn;
+  @FXML private TableColumn<CAItem, String> itemDescriptionColumn;
+  @FXML private TableColumn<CAItem, Long> itemCountColumn;
+  @FXML private TextField searchField;
+  @FXML private Button itemCreate;
+  @FXML private ImageView itemCreateImage;
+  @FXML private Button itemCreateFile;
+  @FXML private ImageView itemCreateFileImage;
+  @FXML private Button itemDelete;
+  @FXML private Button itemReposit;
+  @FXML private ImageView itemDeleteImage;
+  @FXML private TreeView<CALocationItemType> locationTreeView;
+  @FXML private TextField locationSearchField;
 
   public CAViewControllerItemsTab(
     final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =
       mainServices.requireService(CAMainController.class);
+    this.clientService =
+      mainServices.requireService(CAMainClientService.class);
 
     this.services = mainServices;
 
@@ -152,9 +132,6 @@ public final class CAViewControllerItemsTab implements Initializable
         this.onLocationSelectionChanged();
       });
 
-    this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
-    this.events.subscribe(this.subscriber);
-
     this.itemTableView.getSelectionModel()
       .selectedIndexProperty()
       .addListener((observable, oldValue, newValue) -> {
@@ -166,29 +143,7 @@ public final class CAViewControllerItemsTab implements Initializable
         this.onItemSelectionChanged(newValue);
       });
 
-    this.controller.connectedClient()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onClientConnectionChanged(newValue);
-      });
-
     this.onItemTableSelectionChanged();
-  }
-
-  private void onMainEvent(
-    final CAMainEventType event)
-  {
-
-  }
-
-  private void onClientConnectionChanged(
-    final Optional<CAClientType> clientOpt)
-  {
-    if (clientOpt.isPresent()) {
-      this.clientNow = clientOpt.get();
-      this.splitPane.setDividerPositions(0.25);
-    } else {
-      this.clientNow = null;
-    }
   }
 
   private void onItemSelectionChanged(
@@ -269,16 +224,15 @@ public final class CAViewControllerItemsTab implements Initializable
     stage.setTitle(this.strings.format("items.reposit"));
     stage.showAndWait();
 
+    final var client = this.clientService.client();
     controller.result()
       .ifPresent(reposit -> {
-        this.clientNow.runAsync(() -> {
-          return this.clientNow.execute(new CAICommandItemReposit(reposit))
-            .flatMap(r -> {
-              return this.clientNow.execute(
-                new CAICommandItemLocationsList(reposit.item())
-              );
-            });
-        });
+        client.executeAsync(new CAICommandItemReposit(reposit))
+          .thenCompose(ignored -> {
+            return client.executeAsync(
+              new CAICommandItemLocationsList(reposit.item())
+            );
+          });
       });
   }
 
@@ -307,7 +261,8 @@ public final class CAViewControllerItemsTab implements Initializable
     final CAViewControllerCreateItem create = loader.getController();
     final var itemOpt = create.result();
     itemOpt.ifPresent(item -> {
-      this.clientNow.execute(new CAICommandItemCreate(item.id(), item.name()));
+      this.clientService.client()
+        .executeAsync(new CAICommandItemCreate(item.id(), item.name()));
     });
   }
 
@@ -332,15 +287,16 @@ public final class CAViewControllerItemsTab implements Initializable
     if (resultOpt.isPresent()) {
       final var selected = resultOpt.get();
       if (selected.equals(YES)) {
-        this.clientNow.execute(
-          new CAICommandItemsRemove(
-            this.itemTableView.getSelectionModel()
-              .getSelectedItems()
-              .stream()
-              .map(CAItemMutable::id)
-              .collect(Collectors.toSet())
-          )
-        );
+        this.clientService.client()
+          .executeAsync(
+            new CAICommandItemsRemove(
+              this.itemTableView.getSelectionModel()
+                .getSelectedItems()
+                .stream()
+                .map(CAItemMutable::id)
+                .collect(Collectors.toSet())
+            )
+          );
       }
     }
   }

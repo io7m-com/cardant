@@ -20,7 +20,8 @@ package com.io7m.cardant.server.api;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
 
-import java.util.SortedMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * The type of exceptions raised by the server.
@@ -31,46 +32,38 @@ public final class CAServerException extends CAException
   /**
    * Construct an exception.
    *
-   * @param inErrorCode The error code
-   * @param message     The message
+   * @param message             The message
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
    */
 
   public CAServerException(
+    final String message,
     final CAErrorCode inErrorCode,
-    final String message)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction)
   {
-    super(inErrorCode, message);
+    super(message, inErrorCode, inAttributes, inRemediatingAction);
   }
 
   /**
    * Construct an exception.
    *
-   * @param inErrorCode  The error code
-   * @param inMessage    The message
-   * @param inCause      The cause
-   * @param inAttributes The error attributes
+   * @param message             The message
+   * @param cause               The cause
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
    */
 
   public CAServerException(
+    final String message,
+    final Throwable cause,
     final CAErrorCode inErrorCode,
-    final String inMessage,
-    final Throwable inCause,
-    final SortedMap<String, String> inAttributes)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction)
   {
-    super(inErrorCode, inMessage, inCause, inAttributes);
-  }
-
-  /**
-   * Construct an exception.
-   *
-   * @param inErrorCode The error code
-   * @param cause       The cause
-   */
-
-  public CAServerException(
-    final CAErrorCode inErrorCode,
-    final Throwable cause)
-  {
-    super(inErrorCode, cause);
+    super(message, cause, inErrorCode, inAttributes, inRemediatingAction);
   }
 }

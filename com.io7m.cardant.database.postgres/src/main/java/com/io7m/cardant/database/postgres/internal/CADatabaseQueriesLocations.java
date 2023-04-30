@@ -94,10 +94,11 @@ public final class CADatabaseQueriesLocations
       );
     } catch (final SQLException e) {
       throw new CADatabaseException(
-        errorSql(),
         e.getMessage(),
         e,
-        errorAttributes
+        errorSql(),
+        errorAttributes,
+        Optional.empty()
       );
     } finally {
       querySpan.end();
@@ -190,10 +191,11 @@ public final class CADatabaseQueriesLocations
       });
 
       throw new CADatabaseException(
-        errorCyclic(),
         e.getMessage(),
         e,
-        errorAttributes
+        errorCyclic(),
+        errorAttributes,
+        Optional.empty()
       );
     }
   }

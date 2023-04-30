@@ -28,7 +28,9 @@ module com.io7m.cardant.database.postgres
   requires static org.osgi.annotation.versioning;
 
   requires transitive com.io7m.cardant.database.api;
+  requires com.io7m.cardant.security;
 
+  requires com.io7m.jdeferthrow.core;
   requires com.io7m.anethum.common;
   requires com.io7m.jqpage.core;
   requires com.io7m.jxtrand.vanilla;

@@ -18,10 +18,17 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.client.api.CAClientEventDataUpdated;
+import com.io7m.cardant.client.api.CAClientEventType;
+import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAIEventType;
+import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
@@ -30,7 +37,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.hibiscus.api.HBResultFailure;
 import com.io7m.hibiscus.api.HBResultSuccess;
 import com.io7m.hibiscus.api.HBResultType;
-import com.io7m.idstore.model.IdName;
+import com.io7m.hibiscus.basic.HBClientNewHandler;
 import com.io7m.junreachable.UnreachableCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,17 +48,21 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
+import static com.io7m.cardant.client.api.CAClientUnit.UNIT;
 import static com.io7m.cardant.client.basic.internal.CACompression.decompressResponse;
 import static com.io7m.cardant.client.basic.internal.CAUUIDs.nullUUID;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorAuthentication;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
-import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
 
 /**
  * The version 1 protocol handler.
@@ -67,7 +78,7 @@ public final class CAHandler1 extends CAHandlerAbstract
   private final URI commandURI;
   private final URI fileURI;
   private final URI eventsURI;
-  private final boolean connected;
+  private final LinkedList<CAClientEventType> events;
   private CAICommandLogin mostRecentLogin;
 
   /**
@@ -103,7 +114,7 @@ public final class CAHandler1 extends CAHandlerAbstract
       baseURI.resolve("events")
         .normalize();
 
-    this.connected = false;
+    this.events = new LinkedList<>();
   }
 
   private static boolean isAuthenticationError(
@@ -122,88 +133,6 @@ public final class CAHandler1 extends CAHandlerAbstract
       version = "0.0.0";
     }
     return "com.io7m.cardant.client/%s".formatted(version);
-  }
-
-  @Override
-  public void pollEvents()
-  {
-
-  }
-
-  @Override
-  public <R extends CAIResponseType> HBResultType<R, CAIResponseError> executeCommand(
-    final CAICommandType<R> command)
-    throws InterruptedException
-  {
-    return this.sendCommand(command);
-  }
-
-  @Override
-  public boolean isConnected()
-  {
-    return this.connected;
-  }
-
-  @Override
-  public HBResultType<CANewHandler, CAIResponseError> login()
-    throws InterruptedException
-  {
-    final var c = this.configuration();
-    this.mostRecentLogin =
-      new CAICommandLogin(new IdName(c.username()), c.password(), Map.of());
-
-    final var response =
-      this.sendLogin(this.mostRecentLogin);
-
-    if (response instanceof final HBResultSuccess<CAIResponseLogin, CAIResponseError> success) {
-      return new HBResultSuccess<>(
-        new CANewHandler(this, success.result())
-      );
-    }
-    if (response instanceof final HBResultFailure<CAIResponseLogin, CAIResponseError> failure) {
-      return failure.cast();
-    }
-
-    throw new UnreachableCodeException();
-  }
-
-  @Override
-  public HBResultType<InputStream, CAIResponseError> fileData(
-    final CAFileID id)
-    throws InterruptedException
-  {
-    final var targetURI =
-      URI.create(new StringBuilder(128)
-                   .append(this.fileURI)
-                   .append("?id=")
-                   .append(id.id())
-                   .toString());
-
-    LOG.debug("file fetch: {}", targetURI);
-
-    final var request =
-      HttpRequest.newBuilder(targetURI)
-        .header("User-Agent", userAgent())
-        .GET()
-        .build();
-
-    final HttpResponse<InputStream> response;
-    try {
-      response = this.httpClient().send(request, ofInputStream());
-    } catch (final IOException e) {
-      return this.fileDataErrorIO(targetURI, e);
-    }
-
-    LOG.debug(
-      "file response: {} {}",
-      Integer.valueOf(response.statusCode()),
-      response.headers().firstValue("content-type"));
-
-    if (response.statusCode() >= 300) {
-      return this.fileDataServerError(targetURI, response);
-    }
-
-    return new HBResultSuccess<>(response.body());
   }
 
   private HBResultFailure<InputStream, CAIResponseError> fileDataServerError(
@@ -226,6 +155,7 @@ public final class CAHandler1 extends CAHandlerAbstract
         this.local("Received an error from the server."),
         errorIo(),
         attributes,
+        Optional.empty(),
         Optional.empty()
       )
     );
@@ -246,7 +176,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         e.getMessage(),
         errorIo(),
         attributes,
-        Optional.empty()
+        Optional.empty(),
+        Optional.of(e)
       )
     );
   }
@@ -359,9 +290,10 @@ public final class CAHandler1 extends CAHandlerAbstract
       return new HBResultFailure<>(
         new CAIResponseError(
           nullUUID(),
-          e.summary(),
+          e.message(),
           e.errorCode(),
           e.attributes(),
+          e.remediatingAction(),
           Optional.of(e)
         )
       );
@@ -373,6 +305,7 @@ public final class CAHandler1 extends CAHandlerAbstract
           e.getMessage(),
           errorIo(),
           Map.of(),
+          Optional.empty(),
           Optional.of(e)
         )
       );
@@ -425,6 +358,7 @@ public final class CAHandler1 extends CAHandlerAbstract
         this.local("Received an unexpected content type."),
         errorProtocol(),
         attributes,
+        Optional.empty(),
         Optional.empty()
       )
     );
@@ -451,6 +385,7 @@ public final class CAHandler1 extends CAHandlerAbstract
         this.local("Received an unexpected response type."),
         errorProtocol(),
         attributes,
+        Optional.empty(),
         Optional.empty()
       )
     );
@@ -461,5 +396,329 @@ public final class CAHandler1 extends CAHandlerAbstract
     final Object... args)
   {
     return this.strings().format(id, args);
+  }
+
+  @Override
+  public boolean onIsConnected()
+  {
+    return true;
+  }
+
+  @Override
+  public List<CAClientEventType> onPollEvents()
+    throws InterruptedException
+  {
+    try {
+      final var request =
+        HttpRequest.newBuilder(this.eventsURI)
+          .header("User-Agent", userAgent())
+          .GET()
+          .build();
+
+      final var response =
+        this.httpClient()
+          .send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+      LOG.debug("server: status {}", response.statusCode());
+
+      final var responseHeaders =
+        response.headers();
+
+      /*
+       * Check the content type.
+       */
+
+      final var contentType =
+        responseHeaders.firstValue("content-type")
+          .orElse("application/octet-stream");
+
+      final var expectedContentType = CAI1Messages.contentType();
+      if (!contentType.equals(expectedContentType)) {
+        LOG.debug(
+          "unexpected content type: {} (expected {})",
+          contentType,
+          expectedContentType
+        );
+        return this.allBufferedEvents();
+      }
+
+      /*
+       * Parse the response message, decompressing if necessary.
+       */
+
+      final var responseMessage =
+        this.messages.parse(decompressResponse(response, responseHeaders));
+
+      if (responseMessage instanceof final CAIEventType event) {
+        if (event instanceof final CAIEventUpdated updated) {
+          this.events.add(
+            new CAClientEventDataUpdated(updated.updated(), updated.removed())
+          );
+        }
+        return this.allBufferedEvents();
+      }
+
+      LOG.debug(
+        "unexpected message type: {} (expected {})",
+        responseMessage.getClass().getCanonicalName(),
+        CAIEventType.class.getCanonicalName()
+      );
+      return this.allBufferedEvents();
+    } catch (final CAProtocolException e) {
+      LOG.debug("protocol exception: ", e);
+      return this.allBufferedEvents();
+    } catch (final IOException e) {
+      LOG.debug("i/o exception: ", e);
+      return this.allBufferedEvents();
+    }
+  }
+
+  private List<CAClientEventType> allBufferedEvents()
+  {
+    final var eventsCopy =
+      List.copyOf(this.events);
+    this.events.clear();
+    return eventsCopy;
+  }
+
+  @Override
+  public HBResultType<
+    HBClientNewHandler<
+      CAClientException,
+      CAICommandType<?>,
+      CAIResponseType,
+      CAIResponseType,
+      CAIResponseError,
+      CAClientEventType,
+      CAClientCredentials>,
+    CAIResponseError>
+  onExecuteLogin(
+    final CAClientCredentials credentials)
+    throws InterruptedException
+  {
+    LOG.debug("login: {}", credentials.baseURI());
+
+    this.mostRecentLogin =
+      new CAICommandLogin(
+        credentials.username(),
+        credentials.password(),
+        credentials.metadata()
+      );
+
+    final var response =
+      this.sendLogin(this.mostRecentLogin);
+
+    if (response instanceof final HBResultSuccess<CAIResponseLogin, CAIResponseError> success) {
+      LOG.debug("login: succeeded");
+      return new HBResultSuccess<>(
+        new HBClientNewHandler<>(this, success.result())
+      );
+    }
+    if (response instanceof final HBResultFailure<CAIResponseLogin, CAIResponseError> failure) {
+      LOG.debug("login: failed ({})", failure.result().message());
+      return failure.cast();
+    }
+
+    throw new UnreachableCodeException();
+  }
+
+  @Override
+  public HBResultType<CAIResponseType, CAIResponseError> onExecuteCommand(
+    final CAICommandType<?> command)
+    throws InterruptedException
+  {
+    return this.send(1, this.commandURI, false, command)
+      .map(x -> x);
+  }
+
+  @Override
+  public void onDisconnect()
+  {
+
+  }
+
+  @Override
+  public HBResultType<InputStream, CAIResponseError> onExecuteFileData(
+    final CAFileID fileID)
+  {
+    Objects.requireNonNull(fileID, "fileID");
+
+    return new HBResultFailure<>(
+      new CAIResponseError(
+        nullUUID(),
+        "File not available.",
+        errorIo(),
+        Map.of(),
+        Optional.empty(),
+        Optional.empty()
+      )
+    );
+  }
+
+  @Override
+  public HBResultType<CAClientUnit, CAIResponseError> onExecuteGarbage()
+    throws InterruptedException
+  {
+    try {
+      final var data = new byte[128];
+      SecureRandom.getInstanceStrong().nextBytes(data);
+
+      final var request =
+        HttpRequest.newBuilder(this.commandURI)
+          .header("User-Agent", userAgent())
+          .POST(HttpRequest.BodyPublishers.ofByteArray(data))
+          .build();
+
+      final var response =
+        this.httpClient()
+          .send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+      LOG.debug("server: status {}", response.statusCode());
+
+      final var responseHeaders =
+        response.headers();
+
+      /*
+       * Check the content type. Fail if it's not what we expected.
+       */
+
+      final var contentType =
+        responseHeaders.firstValue("content-type")
+          .orElse("application/octet-stream");
+
+      final var expectedContentType = CAI1Messages.contentType();
+      if (!contentType.equals(expectedContentType)) {
+        return this.errorContentType(contentType, expectedContentType)
+          .cast()
+          .cast();
+      }
+
+      /*
+       * Parse the response message, decompressing if necessary. If the
+       * parsed message isn't a response... fail.
+       */
+
+      final var responseMessage =
+        this.messages.parse(decompressResponse(response, responseHeaders));
+
+      if (!(responseMessage instanceof final CAIResponseType responseActual)) {
+        return new HBResultFailure<>(
+          new CAIResponseError(
+            nullUUID(),
+            this.local("Received an unexpected response type."),
+            errorProtocol(),
+            Map.of(),
+            Optional.empty(),
+            Optional.empty()
+          )
+        );
+      }
+
+      if (responseActual instanceof final CAIResponseError error) {
+        return new HBResultFailure<>(error);
+      }
+
+      return new HBResultSuccess<>(UNIT);
+    } catch (final InterruptedException e) {
+      throw e;
+    } catch (final Exception e) {
+      return new HBResultFailure<>(
+        new CAIResponseError(
+          nullUUID(),
+          e.getMessage(),
+          errorIo(),
+          Map.of(),
+          Optional.empty(),
+          Optional.of(e)
+        )
+      );
+    }
+  }
+
+  @Override
+  public HBResultType<CAClientUnit, CAIResponseError> onExecuteInvalid()
+    throws InterruptedException
+  {
+    try {
+      final var data =
+        this.messages.serialize(new CAIResponseError(
+          UUID.randomUUID(),
+          "Summary",
+          errorIo(),
+          Map.of("x", "y"),
+          Optional.empty(),
+          Optional.empty()
+        ));
+
+      final var request =
+        HttpRequest.newBuilder(this.commandURI)
+          .header("User-Agent", userAgent())
+          .POST(HttpRequest.BodyPublishers.ofByteArray(data))
+          .build();
+
+      final var response =
+        this.httpClient()
+          .send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+      LOG.debug("server: status {}", response.statusCode());
+
+      final var responseHeaders =
+        response.headers();
+
+      /*
+       * Check the content type. Fail if it's not what we expected.
+       */
+
+      final var contentType =
+        responseHeaders.firstValue("content-type")
+          .orElse("application/octet-stream");
+
+      final var expectedContentType = CAI1Messages.contentType();
+      if (!contentType.equals(expectedContentType)) {
+        return this.errorContentType(contentType, expectedContentType)
+          .cast()
+          .cast();
+      }
+
+      /*
+       * Parse the response message, decompressing if necessary. If the
+       * parsed message isn't a response... fail.
+       */
+
+      final var responseMessage =
+        this.messages.parse(decompressResponse(response, responseHeaders));
+
+      if (!(responseMessage instanceof final CAIResponseType responseActual)) {
+        return new HBResultFailure<>(
+          new CAIResponseError(
+            nullUUID(),
+            this.local("Received an unexpected response type."),
+            errorProtocol(),
+            Map.of(),
+            Optional.empty(),
+            Optional.empty()
+          )
+        );
+      }
+
+      if (responseActual instanceof final CAIResponseError error) {
+        return new HBResultFailure<>(error);
+      }
+
+      return new HBResultSuccess<>(UNIT);
+    } catch (final InterruptedException e) {
+      throw e;
+    } catch (final Exception e) {
+      return new HBResultFailure<>(
+        new CAIResponseError(
+          nullUUID(),
+          e.getMessage(),
+          errorIo(),
+          Map.of(),
+          Optional.empty(),
+          Optional.of(e)
+        )
+      );
+    }
   }
 }

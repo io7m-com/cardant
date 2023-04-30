@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
@@ -53,42 +52,27 @@ public final class CAViewControllerItemEditorAttachmentsTab
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemEditorAttachmentsTab.class);
 
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
-  private final RPServiceDirectoryType services;
   private final CAMainController controller;
   private final CAFileDialogs fileDialogs;
   private final CAPreferencesServiceType preferences;
   private final Stage stage;
   private final CATransferServiceType transfers;
-  private volatile CAClientType clientNow;
+  private final CAMainClientService clientService;
 
-  @FXML
-  private ListView<CAItemAttachmentMutable> attachmentListView;
-
-  @FXML
-  private TextField searchField;
-
-  @FXML
-  private Button itemAttachmentDownload;
-
-  @FXML
-  private Button itemAttachmentAdd;
-
-  @FXML
-  private Button itemAttachmentRemove;
+  @FXML private ListView<CAItemAttachmentMutable> attachmentListView;
+  @FXML private TextField searchField;
+  @FXML private Button itemAttachmentDownload;
+  @FXML private Button itemAttachmentAdd;
+  @FXML private Button itemAttachmentRemove;
 
   public CAViewControllerItemEditorAttachmentsTab(
     final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
-    this.services =
-      Objects.requireNonNull(mainServices, "mainServices");
     this.stage =
       Objects.requireNonNull(stage, "stage");
 
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =
@@ -99,6 +83,8 @@ public final class CAViewControllerItemEditorAttachmentsTab
       mainServices.requireService(CAPreferencesServiceType.class);
     this.transfers =
       mainServices.requireService(CATransferServiceType.class);
+    this.clientService =
+      mainServices.requireService(CAMainClientService.class);
   }
 
   @Override
@@ -106,11 +92,6 @@ public final class CAViewControllerItemEditorAttachmentsTab
     final URL url,
     final ResourceBundle resourceBundle)
   {
-    this.controller.connectedClient()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onClientConnectionChanged(newValue);
-      });
-
     this.controller.itemAttachmentSelected()
       .addListener((observable, oldValue, newValue) -> {
         this.onItemAttachmentSelectionChanged(newValue);
@@ -214,19 +195,18 @@ public final class CAViewControllerItemEditorAttachmentsTab
       this.strings.format(
         "transfer.attachment", attachmentFile.id().displayId());
 
-    this.clientNow.runAsync(() -> {
-      return this.clientNow.fileData(attachmentFile.id())
-        .map(inputStream -> {
-          return this.transfers.transferTo(
-            inputStream,
-            title,
-            attachmentFile.size(),
-            attachmentFile.hashAlgorithm(),
-            attachmentFile.hashValue(),
-            file
-          );
-        });
-    });
+    this.clientService.client()
+      .fileDataAsyncOrElseThrow(attachmentFile.id())
+      .thenCompose(stream -> {
+        return this.transfers.transferTo(
+          stream,
+          title,
+          attachmentFile.size(),
+          attachmentFile.hashAlgorithm(),
+          attachmentFile.hashValue(),
+          file
+        );
+      });
   }
 
   @FXML
@@ -259,22 +239,13 @@ public final class CAViewControllerItemEditorAttachmentsTab
           this.attachmentListView.getSelectionModel()
             .getSelectedItem();
 
-        this.clientNow.execute(new CAICommandItemAttachmentRemove(
-          item.id(),
-          attachmentSelected.file().id(),
-          attachmentSelected.relation()
-        ));
+        this.clientService.client()
+          .executeAsync(new CAICommandItemAttachmentRemove(
+            item.id(),
+            attachmentSelected.file().id(),
+            attachmentSelected.relation()
+          ));
       }
-    }
-  }
-
-  private void onClientConnectionChanged(
-    final Optional<CAClientType> newValue)
-  {
-    if (newValue.isPresent()) {
-      this.clientNow = newValue.get();
-    } else {
-      this.clientNow = null;
     }
   }
 }

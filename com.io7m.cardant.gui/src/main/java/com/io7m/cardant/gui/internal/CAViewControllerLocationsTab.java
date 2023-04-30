@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.gui.internal.model.CALocationItemAll;
 import com.io7m.cardant.gui.internal.model.CALocationItemDefined;
 import com.io7m.cardant.gui.internal.model.CALocationItemType;
@@ -52,40 +51,30 @@ public final class CAViewControllerLocationsTab implements Initializable
     LoggerFactory.getLogger(CAViewControllerLocationsTab.class);
 
   private final CAMainController controller;
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final RPServiceDirectoryType services;
   private final CALocationTreeFiltered locationTreeFiltered;
-  private CAPerpetualSubscriber<CAMainEventType> subscriber;
-  private CAClientType clientNow;
+  private final CAMainClientService clientService;
 
-  @FXML
-  private TreeView<CALocationItemType> locationTreeView;
-  @FXML
-  private Button locationReparent;
-  @FXML
-  private Button locationCreate;
-  @FXML
-  private TextField locationSearch;
-  @FXML
-  private SplitPane splitPane;
-  @FXML
-  private TextField locationIdField;
-  @FXML
-  private TextField locationNameField;
-  @FXML
-  private TextArea locationDescriptionField;
+  @FXML private TreeView<CALocationItemType> locationTreeView;
+  @FXML private Button locationReparent;
+  @FXML private Button locationCreate;
+  @FXML private TextField locationSearch;
+  @FXML private SplitPane splitPane;
+  @FXML private TextField locationIdField;
+  @FXML private TextField locationNameField;
+  @FXML private TextArea locationDescriptionField;
 
   public CAViewControllerLocationsTab(
     final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =
       mainServices.requireService(CAMainController.class);
+    this.clientService =
+      mainServices.requireService(CAMainClientService.class);
 
     this.services = mainServices;
 
@@ -114,9 +103,6 @@ public final class CAViewControllerLocationsTab implements Initializable
     final URL url,
     final ResourceBundle resourceBundle)
   {
-    this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
-    this.events.subscribe(this.subscriber);
-
     this.locationSearch.textProperty()
       .addListener((observable, oldValue, newValue) -> {
         this.locationTreeFiltered.setFilterChecked(newValue);
@@ -135,11 +121,6 @@ public final class CAViewControllerLocationsTab implements Initializable
     this.controller.locationTreeSelected()
       .addListener((observable, oldValue, newValue) -> {
         this.onLocationSelected(newValue);
-      });
-
-    this.controller.connectedClient()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onClientConnectionChanged(newValue);
       });
   }
 
@@ -188,19 +169,6 @@ public final class CAViewControllerLocationsTab implements Initializable
     this.locationReparent.setDisable(!allowsReparenting(selectedItem));
   }
 
-  private void onMainEvent(
-    final CAMainEventType event)
-  {
-
-  }
-
-  private void onClientConnectionChanged(
-    final Optional<CAClientType> clientOpt)
-  {
-    this.clientNow = clientOpt.orElse(null);
-    this.splitPane.setDividerPositions(0.75);
-  }
-
   @FXML
   private void onLocationDescriptionUpdateSelected()
   {
@@ -244,7 +212,8 @@ public final class CAViewControllerLocationsTab implements Initializable
 
     final var locationOpt = create.result();
     locationOpt.ifPresent(location -> {
-      this.clientNow.execute(new CAICommandLocationPut(location));
+      this.clientService.client()
+        .executeAsync(new CAICommandLocationPut(location));
     });
   }
 

@@ -16,11 +16,12 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
 import com.io7m.cardant.client.preferences.api.CAPreferences;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
+import com.io7m.idstore.model.IdName;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -44,7 +45,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -59,55 +60,24 @@ public final class CAViewControllerConnect implements Initializable
   private final CAPreferencesServiceType preferences;
   private final CAMainStrings strings;
 
-  @FXML
-  private Button bookmarkCreate;
+  @FXML private Button bookmarkCreate;
+  @FXML private Button bookmarkDelete;
+  @FXML private Button cancelButton;
+  @FXML private Button connectButton;
+  @FXML private TextField hostField;
+  @FXML private Label hostFieldBad;
+  @FXML private TextField portField;
+  @FXML private Label portFieldBad;
+  @FXML private TextField userField;
+  @FXML private Label userFieldBad;
+  @FXML private PasswordField passField;
+  @FXML private Label passFieldBad;
+  @FXML private CheckBox httpsBox;
+  @FXML private GridPane grid;
+  @FXML private ComboBox<CAPreferenceServerBookmark> bookmarks;
+  @FXML private HBox bookmarksContainer;
 
-  @FXML
-  private Button bookmarkDelete;
-
-  @FXML
-  private Button cancelButton;
-
-  @FXML
-  private Button connectButton;
-
-  @FXML
-  private TextField hostField;
-
-  @FXML
-  private Label hostFieldBad;
-
-  @FXML
-  private TextField portField;
-
-  @FXML
-  private Label portFieldBad;
-
-  @FXML
-  private TextField userField;
-
-  @FXML
-  private Label userFieldBad;
-
-  @FXML
-  private PasswordField passField;
-
-  @FXML
-  private Label passFieldBad;
-
-  @FXML
-  private CheckBox httpsBox;
-
-  @FXML
-  private GridPane grid;
-
-  @FXML
-  private ComboBox<CAPreferenceServerBookmark> bookmarks;
-
-  @FXML
-  private HBox bookmarksContainer;
-
-  private Optional<CAClientConfiguration> result;
+  private Optional<CAClientCredentials> result;
 
   public CAViewControllerConnect(
     final RPServiceDirectoryType inMainServices,
@@ -182,7 +152,7 @@ public final class CAViewControllerConnect implements Initializable
 
   private void bookmarkSaveNow(
     final String name,
-    final CAClientConfiguration configuration)
+    final CAClientCredentials credentials)
   {
     try {
       LOG.debug("save bookmark {}", name);
@@ -191,12 +161,12 @@ public final class CAViewControllerConnect implements Initializable
         final var newBookmark =
           new CAPreferenceServerBookmark(
             name,
-            configuration.host(),
-            configuration.port(),
-            configuration.https(),
+            credentials.host(),
+            credentials.port(),
+            credentials.https(),
             new CAPreferenceServerUsernamePassword(
-              configuration.username(),
-              configuration.password()
+              credentials.username().value(),
+              credentials.password()
             )
           );
 
@@ -217,7 +187,7 @@ public final class CAViewControllerConnect implements Initializable
   }
 
   @FXML
-  private Optional<CAClientConfiguration> validate()
+  private Optional<CAClientCredentials> validate()
   {
     boolean ok = true;
 
@@ -268,13 +238,13 @@ public final class CAViewControllerConnect implements Initializable
       this.connectButton.setDisable(false);
 
       return Optional.of(
-        new CAClientConfiguration(
-          Locale.getDefault(),
+        new CAClientCredentials(
           this.hostField.getCharacters().toString(),
           port,
           this.httpsBox.isSelected(),
-          this.userField.getCharacters().toString(),
-          this.passField.getCharacters().toString()
+          new IdName(this.userField.getCharacters().toString()),
+          this.passField.getCharacters().toString(),
+          Map.of()
         ));
     }
 
@@ -377,7 +347,7 @@ public final class CAViewControllerConnect implements Initializable
     this.validate();
   }
 
-  public Optional<CAClientConfiguration> result()
+  public Optional<CAClientCredentials> result()
   {
     return this.result;
   }

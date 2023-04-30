@@ -234,7 +234,7 @@ public final class CATransferMutable
       this.timeRemaining.set(Optional.empty());
       this.receivedSize.set(failed.receivedOctets());
       this.statusProperty.set(CATransferStatus.STATUS_FAILED);
-      this.statusTextProperty.set(failed.errorMessage());
+      this.statusTextProperty.set(failed.message());
       return;
     }
     if (status instanceof CATransferDownloadCompleted completed) {

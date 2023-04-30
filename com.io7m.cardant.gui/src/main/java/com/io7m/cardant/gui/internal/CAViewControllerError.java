@@ -16,7 +16,9 @@
 
 package com.io7m.cardant.gui.internal;
 
+import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
+import com.io7m.seltzer.api.SStructuredErrorType;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -31,10 +33,18 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class CAViewControllerError implements Initializable
 {
@@ -44,20 +54,14 @@ public final class CAViewControllerError implements Initializable
   private final Stage stage;
   private final RPServiceDirectoryType mainServices;
   private final CAMainStrings strings;
-  @FXML
-  private TableColumn<ErrorAttribute, String> errorNameColumn;
-  @FXML
-  private TableColumn<ErrorAttribute, String> errorValueColumn;
-  @FXML
-  private TableView<ErrorAttribute> errorTableView;
-  @FXML
-  private Label errorMessage;
-  @FXML
-  private TextArea errorDetails;
-  @FXML
-  private Pane errorContainerPane;
-  @FXML
-  private Button dismiss;
+
+  @FXML private TableColumn<Map.Entry<String, String>, String> errorNameColumn;
+  @FXML private TableColumn<Map.Entry<String, String>, String> errorValueColumn;
+  @FXML private TableView<Map.Entry<String, String>> errorTableView;
+  @FXML private Label errorMessage;
+  @FXML private TextArea errorDetails;
+  @FXML private Pane errorContainerPane;
+  @FXML private Button dismiss;
 
   public CAViewControllerError(
     final RPServiceDirectoryType inMainServices,
@@ -83,42 +87,53 @@ public final class CAViewControllerError implements Initializable
     final ResourceBundle resources)
   {
     this.errorNameColumn.setCellValueFactory(
-      param -> new ReadOnlyObjectWrapper<>(param.getValue().name()));
+      param -> new ReadOnlyObjectWrapper<>(param.getValue().getKey()));
     this.errorValueColumn.setCellValueFactory(
-      param -> new ReadOnlyObjectWrapper<>(param.getValue().value()));
+      param -> new ReadOnlyObjectWrapper<>(param.getValue().getValue()));
   }
 
-  public void setEvent(
-    final CAMainEventType item)
+  public void setError(
+    final SStructuredErrorType<CAErrorCode> error)
   {
-    this.errorMessage.setText(item.message());
+    this.errorMessage.setText(error.message());
 
-    if (item instanceof CAMainEventErrorWithAttributesType failed) {
-      final var errorAttributes = failed.attributes();
-
-      if (!errorAttributes.isEmpty()) {
-        this.errorTableView.setItems(
-          FXCollections.observableList(
-            errorAttributes
-              .entrySet()
-              .stream()
-              .map(e -> new ErrorAttribute(e.getKey(), e.getValue()))
-              .sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(
-                o1.name(),
-                o2.name()))
-              .collect(Collectors.toList())
-          )
-        );
-      } else {
-        this.errorContainerPane.getChildren()
-          .remove(this.errorTableView);
+    final var exceptionOpt = error.exception();
+    if (exceptionOpt.isPresent()) {
+      try (var bytes = new ByteArrayOutputStream()) {
+        try (var outputS = new PrintStream(bytes, false, UTF_8)) {
+          exceptionOpt.get().printStackTrace(outputS);
+          outputS.flush();
+        }
+        this.errorDetails.setText(bytes.toString(UTF_8));
+      } catch (final IOException e) {
+        // Can't actually happen
       }
     } else {
-      this.errorDetails.setText(item.message());
+      this.errorContainerPane.getChildren()
+        .remove(this.errorDetails);
+    }
+
+    final var errorAttributes = error.attributes();
+    if (!errorAttributes.isEmpty()) {
+      this.errorTableView.setItems(
+        FXCollections.observableList(
+          errorAttributes
+            .entrySet()
+            .stream()
+            .sorted(CAViewControllerError::compareEntries)
+            .collect(Collectors.toList())
+        )
+      );
+    } else {
+      this.errorContainerPane.getChildren()
+        .remove(this.errorTableView);
     }
   }
 
-  private record ErrorAttribute(String name, String value)
+  private static int compareEntries(
+    final Map.Entry<String, String> o1,
+    final Map.Entry<String, String> o2)
   {
+    return String.CASE_INSENSITIVE_ORDER.compare(o1.getKey(), o2.getKey());
   }
 }

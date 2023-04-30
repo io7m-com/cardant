@@ -23,7 +23,9 @@ module com.io7m.cardant.client.transfer.api
   requires static org.osgi.annotation.versioning;
   requires static org.osgi.annotation.bundle;
 
+  requires transitive com.io7m.cardant.error_codes;
   requires transitive com.io7m.repetoir.core;
+  requires transitive com.io7m.seltzer.api;
 
   exports com.io7m.cardant.client.transfer.api;
 }

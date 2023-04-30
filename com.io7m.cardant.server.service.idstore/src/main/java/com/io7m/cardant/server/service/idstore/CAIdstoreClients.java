@@ -18,9 +18,9 @@ package com.io7m.cardant.server.service.idstore;
 
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
 import com.io7m.idstore.user_client.IdUClients;
-import com.io7m.idstore.user_client.api.IdUClientException;
+import com.io7m.idstore.user_client.api.IdUClientConfiguration;
 import com.io7m.idstore.user_client.api.IdUClientFactoryType;
-import com.io7m.idstore.user_client.api.IdUClientType;
+import com.io7m.idstore.user_client.api.IdUClientSynchronousType;
 
 import java.net.URI;
 import java.util.Locale;
@@ -74,10 +74,11 @@ public final class CAIdstoreClients
   }
 
   @Override
-  public IdUClientType createClient()
-    throws IdUClientException, InterruptedException
+  public IdUClientSynchronousType createClient()
   {
-    return this.clients.create(this.locale);
+    return this.clients.openSynchronousClient(
+      new IdUClientConfiguration(this.locale)
+    );
   }
 
   @Override

@@ -22,14 +22,14 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.server.controller.security.CASecurityException;
 
 import java.util.Map;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_ITEMS;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.READ;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
+import static com.io7m.cardant.security.CASecurityPolicy.READ;
 
 /**
  * @see CAICommandItemSearchNext

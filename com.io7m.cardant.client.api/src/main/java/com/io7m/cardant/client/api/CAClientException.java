@@ -14,13 +14,16 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package com.io7m.cardant.client.api;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.protocol.inventory.CAIResponseError;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * The type of exceptions raised by the client.
@@ -28,37 +31,78 @@ import java.util.Map;
 
 public final class CAClientException extends CAException
 {
+  private final Optional<UUID> requestId;
+
   /**
-   * Create an exception.
+   * Construct an exception.
    *
-   * @param inMessage    The message
-   * @param inCause      The cause
-   * @param inErrorCode  The error code
-   * @param inAttributes The error attributes
+   * @param message             The message
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   * @param inRequestId         The request ID
    */
 
   public CAClientException(
+    final String message,
     final CAErrorCode inErrorCode,
-    final String inMessage,
-    final Throwable inCause,
-    final Map<String, String> inAttributes)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction,
+    final Optional<UUID> inRequestId)
   {
-    super(inErrorCode, inMessage, inCause, inAttributes);
+    super(message, inErrorCode, inAttributes, inRemediatingAction);
+    this.requestId = Objects.requireNonNull(inRequestId, "requestId");
   }
 
   /**
-   * Create an exception.
+   * Construct an exception.
    *
-   * @param inMessage    The message
-   * @param inErrorCode  The error code
-   * @param inAttributes The error attributes
+   * @param message             The message
+   * @param cause               The cause
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   * @param inRequestId         The request ID
    */
 
   public CAClientException(
+    final String message,
+    final Throwable cause,
     final CAErrorCode inErrorCode,
-    final String inMessage,
-    final Map<String, String> inAttributes)
+    final Map<String, String> inAttributes,
+    final Optional<String> inRemediatingAction,
+    final Optional<UUID> inRequestId)
   {
-    super(inErrorCode, inMessage, inAttributes);
+    super(message, cause, inErrorCode, inAttributes, inRemediatingAction);
+    this.requestId = Objects.requireNonNull(inRequestId, "requestId");
+  }
+
+  /**
+   * @return The ID associated with the request, if the server returned one
+   */
+
+  public Optional<UUID> requestId()
+  {
+    return this.requestId;
+  }
+
+  /**
+   * Transform an error response to an exception.
+   *
+   * @param error The error
+   *
+   * @return The exception
+   */
+
+  public static CAClientException ofError(
+    final CAIResponseError error)
+  {
+    return new CAClientException(
+      error.message(),
+      error.errorCode(),
+      error.attributes(),
+      error.remediatingAction(),
+      Optional.of(error.requestId())
+    );
   }
 }

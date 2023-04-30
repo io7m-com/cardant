@@ -26,7 +26,8 @@ module com.io7m.cardant.client.basic
   requires java.net.http;
 
   requires com.io7m.genevan.core;
-  requires com.io7m.jmulticlose.core;
+  requires com.io7m.hibiscus.api;
+  requires com.io7m.hibiscus.basic;
   requires com.io7m.junreachable.core;
   requires com.io7m.jxtrand.vanilla;
   requires com.io7m.verdant.core.cb;

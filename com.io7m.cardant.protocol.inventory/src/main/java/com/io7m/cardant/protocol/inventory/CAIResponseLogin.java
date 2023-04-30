@@ -23,20 +23,24 @@ import java.util.UUID;
  * A response to {@link CAICommandLogin}.
  *
  * @param requestId The request ID
+ * @param userId    The user ID of the user that logged in
  */
 
 public record CAIResponseLogin(
-  UUID requestId)
+  UUID requestId,
+  UUID userId)
   implements CAIResponseType
 {
   /**
    * A response to {@link CAICommandLogin}.
    *
    * @param requestId The request ID
+   * @param userId    The user ID of the user that logged in
    */
 
   public CAIResponseLogin
   {
     Objects.requireNonNull(requestId, "requestId");
+    Objects.requireNonNull(userId, "userId");
   }
 }

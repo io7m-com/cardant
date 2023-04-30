@@ -35,7 +35,6 @@ public final class CAViewControllerItemEditorLocationsTab
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemEditorLocationsTab.class);
 
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final RPServiceDirectoryType services;
   private final CAMainController controller;
@@ -46,8 +45,6 @@ public final class CAViewControllerItemEditorLocationsTab
     final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
     this.strings =
       mainServices.requireService(CAMainStrings.class);
     this.controller =

@@ -16,28 +16,38 @@
 
 package com.io7m.cardant.client.transfer.api;
 
+import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.seltzer.api.SStructuredErrorType;
+
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * A download failed.
  *
- * @param id              The ID
- * @param title           The title
- * @param expectedOctets  The expected octet count
- * @param receivedOctets  The received octet count
- * @param errorAttributes The error attributes
- * @param errorMessage    The error message
+ * @param id                The ID
+ * @param title             The title
+ * @param expectedOctets    The expected octet count
+ * @param receivedOctets    The received octet count
+ * @param attributes        The error attributes
+ * @param message           The error message
+ * @param remediatingAction The remediating action
+ * @param exception         The exception
+ * @param errorCode         The error code
  */
 
 public record CATransferDownloadFailed(
   UUID id,
   String title,
+  CAErrorCode errorCode,
   long expectedOctets,
   long receivedOctets,
-  Map<String, String> errorAttributes,
-  String errorMessage)
-  implements CATransferStatusType
+  Map<String, String> attributes,
+  String message,
+  Optional<String> remediatingAction,
+  Optional<Throwable> exception)
+  implements CATransferStatusType, SStructuredErrorType<CAErrorCode>
 {
   @Override
   public double progress()

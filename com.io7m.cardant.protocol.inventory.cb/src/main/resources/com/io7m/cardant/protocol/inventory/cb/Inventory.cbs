@@ -291,12 +291,6 @@
   [field itemId CAI1UUID]
 ]
 
-[documentation CAI1CommandItemList "List items."]
-[record CAI1CommandItemList
-  [documentation locationBehaviour "The item location list behaviour."]
-  [field locationBehaviour CAI1ListLocationBehaviour]
-]
-
 [documentation CAI1CommandItemLocationsList "List all the locations an item is in, and how many times the item is in them."]
 [record CAI1CommandItemLocationsList
   [documentation itemId "The item ID."]
@@ -379,6 +373,28 @@
 [documentation CAI1CommandItemSearchPrevious "Return the next page of search results."]
 [record CAI1CommandItemSearchPrevious]
 
+[documentation CAI1CommandRolesAssign "Assign a set of roles to a user."]
+[record CAI1CommandRolesAssign
+  [documentation user "The target user."]
+  [field user CAI1UUID]
+  [documentation roles "The assigned roles."]
+  [field roles [cb:List cb:String]]
+]
+
+[documentation CAI1CommandRolesRevoke "Revoke a set of roles from a user."]
+[record CAI1CommandRolesRevoke
+  [documentation user "The target user."]
+  [field user CAI1UUID]
+  [documentation roles "The roles."]
+  [field roles [cb:List cb:String]]
+]
+
+[documentation CAI1CommandRolesRevoke "Get the roles for a user."]
+[record CAI1CommandRolesGet
+  [documentation user "The target user."]
+  [field user CAI1UUID]
+]
+
 [variant CAI1Command
   [case C1CommandFilePut               [field command CAI1CommandFilePut]]
   [case C1CommandFileRemove            [field command CAI1CommandFileRemove]]
@@ -386,7 +402,6 @@
   [case C1CommandItemAttachmentRemove  [field command CAI1CommandItemAttachmentRemove]]
   [case C1CommandItemCreate            [field command CAI1CommandItemCreate]]
   [case C1CommandItemGet               [field command CAI1CommandItemGet]]
-  [case C1CommandItemList              [field command CAI1CommandItemList]]
   [case C1CommandItemLocationsList     [field command CAI1CommandItemLocationsList]]
   [case C1CommandItemMetadataPut       [field command CAI1CommandItemMetadataPut]]
   [case C1CommandItemMetadataRemove    [field command CAI1CommandItemMetadataRemove]]
@@ -400,6 +415,9 @@
   [case C1CommandLocationList          [field command CAI1CommandLocationList]]
   [case C1CommandLocationPut           [field command CAI1CommandLocationPut]]
   [case C1CommandLogin                 [field command CAI1CommandLogin]]
+  [case C1CommandRolesAssign           [field command CAI1CommandRolesAssign]]
+  [case C1CommandRolesGet              [field command CAI1CommandRolesGet]]
+  [case C1CommandRolesRevoke           [field command CAI1CommandRolesRevoke]]
   [case C1CommandTagList               [field command CAI1CommandTagList]]
   [case C1CommandTagsDelete            [field command CAI1CommandTagsDelete]]
   [case C1CommandTagsPut               [field command CAI1CommandTagsPut]]
@@ -419,12 +437,16 @@
   [field message cb:String]
   [documentation attributes "The error attributes."]
   [field attributes [cb:Map cb:String cb:String]]
+  [documentation remediatingAction "The remediating action, if any."]
+  [field remediatingAction [cb:Option cb:String]]
 ]
 
 [documentation CAI1ResponseLogin "A response to CAI1CommandLogin."]
 [record CAI1ResponseLogin
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId CAI1UUID]
+  [documentation userId "The ID of the user that logged in."]
+  [field userId CAI1UUID]
 ]
 
 [documentation CAI1ResponseFilePut "A response to CAI1CommandFilePut."]
@@ -473,14 +495,6 @@
   [field requestId CAI1UUID]
   [documentation item "The item."]
   [field item CAI1Item]
-]
-
-[documentation CAI1ResponseItemList "A response to CAI1CommandItemList."]
-[record CAI1ResponseItemList
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId CAI1UUID]
-  [documentation items "The item."]
-  [field items [cb:List CAI1Item]]
 ]
 
 [documentation CAI1ResponseItemLocationsList "A response to CAI1CommandItemLocationsList."]
@@ -587,6 +601,26 @@
   [field results [CAI1Page CAI1ItemSummary]]
 ]
 
+[documentation CAI1ResponseRolesAssign "A response to CAI1ResponseRolesAssign."]
+[record CAI1ResponseRolesAssign
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId CAI1UUID]
+]
+
+[documentation CAI1ResponseRolesRevoke "A response to CAI1ResponseRolesRevoke."]
+[record CAI1ResponseRolesRevoke
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId CAI1UUID]
+]
+
+[documentation CAI1ResponseRolesGet "A response to CAI1ResponseRolesGet."]
+[record CAI1ResponseRolesGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId CAI1UUID]
+  [documentation roles "The roles."]
+  [field roles [cb:List cb:String]]
+]
+
 [variant CAI1Response
   [case C1ResponseError                 [field response CAI1ResponseError]]
   [case C1ResponseFilePut               [field response CAI1ResponseFilePut]]
@@ -595,7 +629,6 @@
   [case C1ResponseItemAttachmentRemove  [field response CAI1ResponseItemAttachmentRemove]]
   [case C1ResponseItemCreate            [field response CAI1ResponseItemCreate]]
   [case C1ResponseItemGet               [field response CAI1ResponseItemGet]]
-  [case C1ResponseItemList              [field response CAI1ResponseItemList]]
   [case C1ResponseItemLocationsList     [field response CAI1ResponseItemLocationsList]]
   [case C1ResponseItemMetadataPut       [field response CAI1ResponseItemMetadataPut]]
   [case C1ResponseItemMetadataRemove    [field response CAI1ResponseItemMetadataRemove]]
@@ -607,6 +640,9 @@
   [case C1ResponseLocationList          [field response CAI1ResponseLocationList]]
   [case C1ResponseLocationPut           [field response CAI1ResponseLocationPut]]
   [case C1ResponseLogin                 [field response CAI1ResponseLogin]]
+  [case C1ResponseRolesAssign           [field response CAI1ResponseRolesAssign]]
+  [case C1ResponseRolesGet              [field response CAI1ResponseRolesGet]]
+  [case C1ResponseRolesRevoke           [field response CAI1ResponseRolesRevoke]]
   [case C1ResponseTagList               [field response CAI1ResponseTagList]]
   [case C1ResponseTagsDelete            [field response CAI1ResponseTagsDelete]]
   [case C1ResponseTagsPut               [field response CAI1ResponseTagsPut]]
@@ -653,7 +689,6 @@
       CAI1CommandItemAttachmentRemove
       CAI1CommandItemCreate
       CAI1CommandItemGet
-      CAI1CommandItemList
       CAI1CommandItemLocationsList
       CAI1CommandItemMetadataPut
       CAI1CommandItemMetadataRemove
@@ -667,6 +702,9 @@
       CAI1CommandLocationList
       CAI1CommandLocationPut
       CAI1CommandLogin
+      CAI1CommandRolesAssign
+      CAI1CommandRolesGet
+      CAI1CommandRolesRevoke
       CAI1CommandTagList
       CAI1CommandTagsDelete
       CAI1CommandTagsPut
@@ -678,7 +716,6 @@
       CAI1ResponseItemAttachmentRemove
       CAI1ResponseItemCreate
       CAI1ResponseItemGet
-      CAI1ResponseItemList
       CAI1ResponseItemLocationsList
       CAI1ResponseItemMetadataPut
       CAI1ResponseItemMetadataRemove
@@ -690,6 +727,9 @@
       CAI1ResponseLocationList
       CAI1ResponseLocationPut
       CAI1ResponseLogin
+      CAI1ResponseRolesAssign
+      CAI1ResponseRolesGet
+      CAI1ResponseRolesRevoke
       CAI1ResponseTagList
       CAI1ResponseTagsDelete
       CAI1ResponseTagsPut

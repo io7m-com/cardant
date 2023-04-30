@@ -16,31 +16,23 @@
 
 package com.io7m.cardant.gui.internal;
 
-import com.io7m.cardant.client.api.CAClientHostileType;
-import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.transfer.api.CATransferServiceType;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.stage.Stage;
 import org.apache.commons.io.input.BrokenInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public final class CAViewControllerDebuggingTab implements Initializable
 {
-  private static final Logger LOG =
-    LoggerFactory.getLogger(CAViewControllerDebuggingTab.class);
-
-  private final CAMainEventBusType events;
-  private final CAMainController controller;
   private final CATransferServiceType transfers;
-  private volatile CAClientType clientNow;
+  private final CAMainClientService clientService;
 
   @FXML private CheckBox slowTransfers;
 
@@ -48,12 +40,10 @@ public final class CAViewControllerDebuggingTab implements Initializable
     final RPServiceDirectoryType mainServices,
     final Stage stage)
   {
-    this.events =
-      mainServices.requireService(CAMainEventBusType.class);
-    this.controller =
-      mainServices.requireService(CAMainController.class);
     this.transfers =
       mainServices.requireService(CATransferServiceType.class);
+    this.clientService =
+      mainServices.requireService(CAMainClientService.class);
   }
 
   @Override
@@ -61,22 +51,7 @@ public final class CAViewControllerDebuggingTab implements Initializable
     final URL url,
     final ResourceBundle resourceBundle)
   {
-    this.controller.connectedClient()
-      .addListener((observable, oldValue, newValue) -> {
-        this.onClientConnectionChanged(newValue);
-      });
-
     this.slowTransfers.setSelected(this.transfers.isSlowTransfers());
-  }
-
-  private void onClientConnectionChanged(
-    final Optional<CAClientType> newValue)
-  {
-    if (newValue.isPresent()) {
-      this.clientNow = newValue.get();
-    } else {
-      this.clientNow = null;
-    }
   }
 
   @FXML
@@ -100,16 +75,14 @@ public final class CAViewControllerDebuggingTab implements Initializable
   @FXML
   private void onSendGarbageSelected()
   {
-    if (this.clientNow instanceof CAClientHostileType hostile) {
-      hostile.garbageCommand();
-    }
+    this.clientService.client()
+      .executeAsync(new CAICommandDebugRandom());
   }
 
   @FXML
   private void onSendInvalidSelected()
   {
-    if (this.clientNow instanceof CAClientHostileType hostile) {
-      hostile.invalidCommand();
-    }
+    this.clientService.client()
+      .executeAsync(new CAICommandDebugInvalid());
   }
 }

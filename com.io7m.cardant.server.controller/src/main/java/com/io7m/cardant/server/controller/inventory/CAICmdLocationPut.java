@@ -21,10 +21,10 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.server.controller.security.CASecurityException;
+import com.io7m.cardant.security.CASecurityException;
 
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.INVENTORY_LOCATIONS;
-import static com.io7m.cardant.server.controller.inventory.CAISecurityObjects.WRITE;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
+import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 
 /**
  * @see CAICommandLocationPut

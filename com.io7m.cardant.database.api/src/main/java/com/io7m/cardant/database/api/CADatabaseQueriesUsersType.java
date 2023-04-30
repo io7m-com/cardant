@@ -49,35 +49,4 @@ public non-sealed interface CADatabaseQueriesUsersType
 
   Optional<CAUser> userGet(UUID id)
     throws CADatabaseException;
-
-  /**
-   * Set the user as the initial user. Only one user can be the initial user.
-   *
-   * @param id The user ID
-   *
-   * @throws CADatabaseException On errors
-   */
-
-  void userInitialSet(UUID id)
-    throws CADatabaseException;
-
-  /**
-   * @return The initial user
-   *
-   * @throws CADatabaseException On errors
-   */
-
-  Optional<UUID> userInitial()
-    throws CADatabaseException;
-
-  /**
-   * Unset the user as the initial user. Only one user can be the initial user.
-   *
-   * @param id The user ID
-   *
-   * @throws CADatabaseException On errors
-   */
-
-  void userInitialUnset(UUID id)
-    throws CADatabaseException;
 }

@@ -31,6 +31,8 @@
 
   <suppress files="CAI1Validation.java"
             checks="ExecutableStatementCount"/>
+  <suppress files="CAI1Validation.java"
+            checks="JavaNCSS"/>
 
   <suppress files="CAI1ValidationCommon.java"
             checks="ClassDataAbstractionCoupling"/>

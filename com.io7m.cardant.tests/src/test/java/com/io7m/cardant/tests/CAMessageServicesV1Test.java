@@ -43,7 +43,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
-import com.io7m.cardant.protocol.inventory.CAICommandItemList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
@@ -58,7 +57,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
-import com.io7m.cardant.protocol.inventory.CAIEventType;
+import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
@@ -66,7 +65,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemCreate;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemGet;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemList;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
@@ -183,35 +181,6 @@ public final class CAMessageServicesV1Test
     final var message =
       new CAICommandLogin(new IdName("user"), "password", Map.of());
 
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testCommandItemList0()
-    throws Exception
-  {
-    final var message =
-      new CAICommandItemList(new CAListLocationsAll());
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testCommandItemList1()
-    throws Exception
-  {
-    final var message =
-      new CAICommandItemList(
-        new CAListLocationExact(CALocationID.random()));
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testCommandItemList2()
-    throws Exception
-  {
-    final var message =
-      new CAICommandItemList(
-        new CAListLocationWithDescendants(CALocationID.random()));
     assertEquals(message, this.roundTrip(message));
   }
 
@@ -434,8 +403,6 @@ public final class CAMessageServicesV1Test
           new CAICommandItemLocationsList(CAItemID.random()),
           new CAICommandLogin(
             new IdName("user"), "pass", Map.of()),
-          new CAICommandItemList(
-            new CAListLocationsAll()),
           new CAICommandItemCreate(
             CAItemID.random(), "Item"),
           new CAICommandItemGet(
@@ -507,6 +474,7 @@ public final class CAMessageServicesV1Test
             "Failed",
             CAStandardErrorCodes.errorIo(),
             Map.of(),
+            Optional.empty(),
             Optional.empty())
         )
       );
@@ -521,12 +489,15 @@ public final class CAMessageServicesV1Test
       new CAITransactionResponse(
         false,
         List.of(
-          new CAIResponseItemsRemove(UUID.randomUUID(),
-                                     new CAIds(Set.of(CAItemID.random()))),
-          new CAIResponseItemsRemove(UUID.randomUUID(),
-                                     new CAIds(Set.of(CAItemID.random()))),
-          new CAIResponseItemsRemove(UUID.randomUUID(),
-                                     new CAIds(Set.of(CAItemID.random())))
+          new CAIResponseItemsRemove(
+            UUID.randomUUID(),
+            new CAIds(Set.of(CAItemID.random()))),
+          new CAIResponseItemsRemove(
+            UUID.randomUUID(),
+            new CAIds(Set.of(CAItemID.random()))),
+          new CAIResponseItemsRemove(
+            UUID.randomUUID(),
+            new CAIds(Set.of(CAItemID.random())))
         )
       );
     assertEquals(message, this.roundTrip(message));
@@ -544,8 +515,9 @@ public final class CAMessageServicesV1Test
   public void testResponseFileRemove()
     throws Exception
   {
-    final var message = new CAIResponseFileRemove(UUID.randomUUID(),
-                                                  FILE_0.id());
+    final var message = new CAIResponseFileRemove(
+      UUID.randomUUID(),
+      FILE_0.id());
     assertEquals(message, this.roundTrip(message));
   }
 
@@ -554,18 +526,11 @@ public final class CAMessageServicesV1Test
     throws Exception
   {
     final var message =
-      new CAIResponseLogin(UUID.randomUUID());
+      new CAIResponseLogin(
+        UUID.randomUUID(),
+        UUID.randomUUID()
+      );
 
-    assertEquals(message, this.roundTrip(message));
-  }
-
-  @Test
-  public void testResponseItemList0()
-    throws Exception
-  {
-    final var message =
-      new CAIResponseItemList(UUID.randomUUID(),
-                              new CAItems(Set.of(ITEM_0, ITEM_1, ITEM_2)));
     assertEquals(message, this.roundTrip(message));
   }
 
@@ -766,7 +731,7 @@ public final class CAMessageServicesV1Test
     throws Exception
   {
     final var message =
-      new CAIEventType.CAEventUpdated(
+      new CAIEventUpdated(
         Set.of(
           CAItemID.random(),
           CALocationID.random(),

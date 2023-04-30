@@ -16,13 +16,18 @@
 
 package com.io7m.cardant.server.service.reqlimit;
 
+import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * An exception indicating that a request size limit was exceeded.
  */
 
-public final class CARequestLimitExceeded extends Exception
+public final class CARequestLimitExceeded extends CAException
 {
   private final long sizeLimit;
   private final long sizeProvided;
@@ -40,7 +45,15 @@ public final class CARequestLimitExceeded extends Exception
     final long inSizeLimit,
     final long inSizeProvided)
   {
-    super(Objects.requireNonNull(message, "message"));
+    super(
+      Objects.requireNonNull(message, "message"),
+      CAStandardErrorCodes.errorApiMisuse(),
+      Map.ofEntries(
+        Map.entry("Size Limit", Long.toUnsignedString(inSizeLimit)),
+        Map.entry("Size Provided", Long.toUnsignedString(inSizeProvided))
+      ),
+      Optional.empty()
+    );
     this.sizeLimit = inSizeLimit;
     this.sizeProvided = inSizeProvided;
   }

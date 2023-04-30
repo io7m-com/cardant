@@ -16,51 +16,49 @@
 
 package com.io7m.cardant.gui.internal;
 
-import java.util.List;
+import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.error_codes.CAException;
+
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
-public final class CAImageDataException extends Exception
+public final class CAImageDataException extends CAException
 {
-  private final Map<String, String> attributes;
-  private final List<String> details;
+  /**
+   * Construct an exception.
+   *
+   * @param message             The message
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   */
 
   public CAImageDataException(
     final String message,
+    final CAErrorCode inErrorCode,
     final Map<String, String> inAttributes,
-    final List<String> inDetails)
+    final Optional<String> inRemediatingAction)
   {
-    super(Objects.requireNonNull(message, "message"));
-
-    this.attributes =
-      Objects.requireNonNull(inAttributes, "attributes");
-    this.details =
-      Objects.requireNonNull(inDetails, "details");
+    super(message, inErrorCode, inAttributes, inRemediatingAction);
   }
+
+  /**
+   * Construct an exception.
+   *
+   * @param message             The message
+   * @param cause               The cause
+   * @param inErrorCode         The error code
+   * @param inAttributes        The error attributes
+   * @param inRemediatingAction The remediating action, if any
+   */
 
   public CAImageDataException(
     final String message,
+    final Throwable cause,
+    final CAErrorCode inErrorCode,
     final Map<String, String> inAttributes,
-    final List<String> inDetails,
-    final Throwable cause)
+    final Optional<String> inRemediatingAction)
   {
-    super(
-      Objects.requireNonNull(message, "message"),
-      Objects.requireNonNull(cause, "cause"));
-
-    this.attributes =
-      Objects.requireNonNull(inAttributes, "attributes");
-    this.details =
-      Objects.requireNonNull(inDetails, "details");
-  }
-
-  public Map<String, String> attributes()
-  {
-    return this.attributes;
-  }
-
-  public List<String> details()
-  {
-    return this.details;
+    super(message, cause, inErrorCode, inAttributes, inRemediatingAction);
   }
 }

@@ -43,6 +43,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.SubmissionPublisher;
 
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -248,10 +249,13 @@ public final class CATransferOperation
       new CATransferDownloadFailed(
         this.id,
         this.title,
+        errorIo(),
         this.expectedSize,
         this.receivedSize,
         errorAttributes,
-        errorMessage
+        errorMessage,
+        Optional.empty(),
+        Optional.of(e)
       )
     );
 
@@ -276,10 +280,13 @@ public final class CATransferOperation
       new CATransferDownloadFailed(
         this.id,
         this.title,
+        errorIo(),
         this.expectedSize,
         this.receivedSize,
         errorAttributes,
-        errorMessage
+        errorMessage,
+        Optional.empty(),
+        Optional.of(e)
       )
     );
 
@@ -293,10 +300,13 @@ public final class CATransferOperation
       new CATransferDownloadFailed(
         this.id,
         this.title,
+        errorIo(),
         this.expectedSize,
         this.receivedSize,
         Map.of(),
-        e.getMessage()
+        e.getMessage(),
+        Optional.empty(),
+        Optional.of(e)
       )
     );
 
@@ -315,10 +325,13 @@ public final class CATransferOperation
       new CATransferDownloadFailed(
         this.id,
         this.title,
+        errorIo(),
         this.expectedSize,
         this.receivedSize,
         errorAttributes,
-        e.getMessage()
+        e.getMessage(),
+        Optional.empty(),
+        Optional.of(e)
       )
     );
 

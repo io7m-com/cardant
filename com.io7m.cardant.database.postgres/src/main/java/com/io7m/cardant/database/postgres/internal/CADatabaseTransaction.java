@@ -21,6 +21,7 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesMaintenanceType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTagsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
@@ -37,6 +38,8 @@ import java.time.Clock;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSqlUnsupportedQueryClass;
@@ -50,6 +53,17 @@ final class CADatabaseTransaction
 {
   private final CADatabaseConnection connection;
   private final Span transactionSpan;
+  private UUID userId;
+
+  CADatabaseTransaction(
+    final CADatabaseConnection inConnection,
+    final Span inTransactionScope)
+  {
+    this.connection =
+      Objects.requireNonNull(inConnection, "connection");
+    this.transactionSpan =
+      Objects.requireNonNull(inTransactionScope, "inMetricsScope");
+  }
 
   /**
    * @return The transaction span for metrics
@@ -82,16 +96,6 @@ final class CADatabaseTransaction
   CADatabaseConnection connection()
   {
     return this.connection;
-  }
-
-  CADatabaseTransaction(
-    final CADatabaseConnection inConnection,
-    final Span inTransactionScope)
-  {
-    this.connection =
-      Objects.requireNonNull(inConnection, "connection");
-    this.transactionSpan =
-      Objects.requireNonNull(inTransactionScope, "inMetricsScope");
   }
 
   void setRole(
@@ -136,11 +140,15 @@ final class CADatabaseTransaction
     if (Objects.equals(qClass, CADatabaseQueriesItemsType.class)) {
       return qClass.cast(new CADatabaseQueriesItems(this));
     }
+    if (Objects.equals(qClass, CADatabaseQueriesMaintenanceType.class)) {
+      return qClass.cast(new CADatabaseQueriesMaintenance(this));
+    }
 
     throw new CADatabaseException(
-      errorSqlUnsupportedQueryClass(),
       "Unsupported query type: %s".formatted(qClass),
-      Map.of()
+      errorSqlUnsupportedQueryClass(),
+      Map.of(),
+      Optional.empty()
     );
   }
 
@@ -169,10 +177,11 @@ final class CADatabaseTransaction
         .add(1L);
     } catch (final SQLException e) {
       throw new CADatabaseException(
-        errorSql(),
         e.getMessage(),
         e,
-        Collections.emptySortedMap()
+        errorSql(),
+        Collections.emptySortedMap(),
+        Optional.empty()
       );
     }
   }
@@ -188,10 +197,11 @@ final class CADatabaseTransaction
         .add(1L);
     } catch (final SQLException e) {
       throw new CADatabaseException(
-        errorSql(),
         e.getMessage(),
         e,
-        Collections.emptySortedMap()
+        errorSql(),
+        Collections.emptySortedMap(),
+        Optional.empty()
       );
     }
   }
@@ -217,5 +227,21 @@ final class CADatabaseTransaction
   public Tracer tracer()
   {
     return this.connection.database().tracer();
+  }
+
+  @Override
+  public void setUserId(
+    final UUID newUserId)
+  {
+    this.userId = Objects.requireNonNull(newUserId, "userId");
+  }
+
+  @Override
+  public UUID userId()
+  {
+    if (this.userId == null) {
+      throw new IllegalStateException("No user ID has been set.");
+    }
+    return this.userId;
   }
 }

@@ -40,7 +40,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
   private static final Logger LOG =
     LoggerFactory.getLogger(CAViewControllerItemMetadataEditor.class);
 
-  private final CAMainEventBusType events;
   private final CAMainStrings strings;
   private final RPServiceDirectoryType mainServices;
   private final Stage stage;
@@ -53,7 +52,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
   @FXML private Tooltip nameBadTooltip;
 
   private CAItemMutable currentItem;
-  private CAPerpetualSubscriber<CAMainEventType> subscriber;
   private Optional<CAItemMetadataMutable> result;
   private boolean editingExisting;
 
@@ -67,8 +65,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
       Objects.requireNonNull(inMainServices, "mainServices");
     this.strings =
       this.mainServices.requireService(CAMainStrings.class);
-    this.events =
-      this.mainServices.requireService(CAMainEventBusType.class);
     this.editingExisting =
       false;
 
@@ -80,7 +76,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
   private void onCreateSelected()
   {
     this.validate();
-    this.subscriber.close();
     this.stage.close();
   }
 
@@ -94,7 +89,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
   private void onCancelSelected()
   {
     this.result = Optional.empty();
-    this.subscriber.close();
     this.stage.close();
   }
 
@@ -108,9 +102,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
 
     this.nameBad.setVisible(false);
     this.createButton.setDisable(true);
-
-    this.subscriber = new CAPerpetualSubscriber<>(this::onMainEvent);
-    this.events.subscribe(this.subscriber);
   }
 
   private void validate()
@@ -181,12 +172,6 @@ public final class CAViewControllerItemMetadataEditor implements Initializable
     this.createButton.setText(
       this.strings.format("items.metadata.modify"));
     this.createButton.setDisable(false);
-  }
-
-  private void onMainEvent(
-    final CAMainEventType item)
-  {
-
   }
 
   public void setItem(

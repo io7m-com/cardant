@@ -17,7 +17,7 @@
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
-import com.io7m.cardant.error_codes.CAErrorStructuredType;
+import com.io7m.seltzer.api.SStructuredErrorType;
 
 import java.util.Map;
 import java.util.Objects;
@@ -27,28 +27,41 @@ import java.util.UUID;
 /**
  * A command failed.
  *
- * @param requestId  The request ID
- * @param summary    The error summary
- * @param errorCode  The error code
- * @param attributes The error attributes
- * @param exception  The exception associated with the error, if any
+ * @param requestId         The request ID
+ * @param message           The error summary
+ * @param remediatingAction The remediating action, if any
+ * @param errorCode         The error code
+ * @param attributes        The error attributes
+ * @param exception         The exception associated with the error, if any
  */
 
 public record CAIResponseError(
   UUID requestId,
-  String summary,
+  String message,
   CAErrorCode errorCode,
   Map<String, String> attributes,
+  Optional<String> remediatingAction,
   Optional<Throwable> exception)
-  implements CAIResponseType, CAErrorStructuredType
+  implements CAIResponseType, SStructuredErrorType<CAErrorCode>
 {
   /**
    * A command failed.
+   *
+   * @param requestId         The request ID
+   * @param message           The error summary
+   * @param remediatingAction The remediating action, if any
+   * @param errorCode         The error code
+   * @param attributes        The error attributes
+   * @param exception         The exception associated with the error, if any
    */
 
   public CAIResponseError
   {
-    Objects.requireNonNull(summary, "summary");
+    Objects.requireNonNull(requestId, "requestId");
+    Objects.requireNonNull(errorCode, "errorCode");
+    Objects.requireNonNull(remediatingAction, "remediatingAction");
+    Objects.requireNonNull(exception, "exception");
+    Objects.requireNonNull(message, "summary");
     Objects.requireNonNull(attributes, "attributes");
   }
 }

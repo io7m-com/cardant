@@ -55,8 +55,8 @@
       <artifactId>com.io7m.hibiscus.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.io7m.idstore</groupId>
-      <artifactId>com.io7m.idstore.model</artifactId>
+      <groupId>com.io7m.hibiscus</groupId>
+      <artifactId>com.io7m.hibiscus.basic</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -81,10 +81,6 @@
     <dependency>
       <groupId>com.io7m.verdant</groupId>
       <artifactId>com.io7m.verdant.core.cb</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.jmulticlose</groupId>
-      <artifactId>com.io7m.jmulticlose.core</artifactId>
     </dependency>
 
     <dependency>

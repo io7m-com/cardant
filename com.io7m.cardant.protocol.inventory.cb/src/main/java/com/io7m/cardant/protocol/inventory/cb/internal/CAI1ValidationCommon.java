@@ -41,6 +41,7 @@ import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
+import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
@@ -60,6 +61,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ListLocationBehaviour;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
+import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
 import com.io7m.cardant.protocol.inventory.cb.CAI1UUID;
 import com.io7m.cedarbridge.runtime.api.CBBooleanType;
@@ -69,6 +71,7 @@ import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
+import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 import com.io7m.cedarbridge.runtime.api.CBString;
 
 import java.nio.ByteBuffer;
@@ -79,6 +82,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.toUnsignedLong;
@@ -240,8 +244,10 @@ public final class CAI1ValidationCommon
 
     throw new ProtocolUncheckedException(
       new CAProtocolException(
+        "Unrecognized ID type: %s".formatted(id),
         CAStandardErrorCodes.errorProtocol(),
-        "Unrecognized ID type: %s".formatted(id)
+        Map.of(),
+        Optional.empty()
       )
     );
   }
@@ -406,8 +412,10 @@ public final class CAI1ValidationCommon
     final Object msg)
   {
     return new CAProtocolException(
+      "Unrecognized message: %s".formatted(msg),
       CAStandardErrorCodes.errorProtocol(),
-      "Unrecognized message: %s".formatted(msg)
+      Map.of(),
+      Optional.empty()
     );
   }
 
@@ -789,6 +797,18 @@ public final class CAI1ValidationCommon
     return new CAItemSummary(
       new CAItemID(fromWireUUID(x.fieldId())),
       x.fieldName().value()
+    );
+  }
+
+  public static <A extends CBSerializableType, B> CAPage<B> convertFromWirePage(
+    final CAI1Page<A> page,
+    final Function<A, B> f)
+  {
+    return new CAPage<>(
+      page.fieldItems().values().stream().map(f).toList(),
+      (int) page.fieldPageIndex().value(),
+      (int) page.fieldPageCount().value(),
+      page.fieldPageFirstOffset().value()
     );
   }
 

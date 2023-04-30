@@ -33,8 +33,9 @@ create role cardant_none with nosuperuser nocreatedb nocreaterole noinherit nolo
 
     <Statement><![CDATA[
 create table schema_version (
-  version_lock   char(1) not null default 'X',
-  version_number bigint  not null,
+  version_lock            char(1) not null default 'X',
+  version_application_id  text    not null,
+  version_number          bigint  not null,
 
   constraint check_lock_primary primary key (version_lock),
   constraint check_lock_locked check (version_lock = 'X')
@@ -48,50 +49,14 @@ create table schema_version (
       The users table stores the current set of users.
     </Comment>
 
-    <Comment>
-      The users table stores the current set of users.
-    </Comment>
-
     <Statement><![CDATA[
 create table users (
-  id      uuid     not null primary key,
-  initial boolean  not null,
-  roles   text[]   not null
+  id    uuid   not null primary key,
+  roles text[] not null
 )
 ]]></Statement>
 
     <Statement>grant select, insert, update on users to cardant</Statement>
-
-    <Statement><![CDATA[
-create function user_initial_check() returns trigger as $$
-  declare
-    count integer;
-  begin
-    if old.initial = false and new.initial = true then
-      select count(*) into count from users a where a.initial = true;
-      if count >= 1 then
-        raise sqlstate 'IC003' using message = 'Only one user can be the initial admin.';
-        return null;
-      end if;
-    end if;
-    return old;
-  end;
-$$ language plpgsql;
-]]></Statement>
-
-    <Statement><![CDATA[
-create trigger user_initial_check_insert
-  before insert on users
-    for each statement
-      execute function user_initial_check();
-]]></Statement>
-
-    <Statement><![CDATA[
-create trigger user_initial_check_update
-  before update on users
-    for each statement
-      execute function user_initial_check();
-]]></Statement>
 
     <Comment>
       The tags table contains the list of tags.
@@ -333,5 +298,20 @@ end
 $$
 ]]></Statement>
 
+    <Comment>
+      The audit table stores a list of auditable events. Who did it? What did they do? When did they do it?
+    </Comment>
+
+    <Statement><![CDATA[
+create table audit (
+  id             bigint                   not null primary key generated always as identity,
+  user_id        uuid                     not null,
+  time           timestamp with time zone not null,
+  type           varchar(1000000)         not null,
+  message        varchar(1000000)         not null
+)
+]]></Statement>
+
+    <Statement>grant select, insert on audit to cardant</Statement>
   </Schema>
 </Schemas>
