@@ -26,6 +26,7 @@ import com.io7m.cardant.server.service.sessions.CASessionSecretIdentifier;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryNoOp;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.cardant.tests.CAFakeClock;
+import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceDirectory;
@@ -76,6 +77,7 @@ public abstract class CACmdAbstractContract
     this.user =
       new CAUser(
         UUID.randomUUID(),
+        new IdName("x"),
         new MSubject(Set.of())
       );
 
@@ -91,6 +93,7 @@ public abstract class CACmdAbstractContract
   {
     this.user = new CAUser(
       this.user.userId(),
+      new IdName("x"),
       new MSubject(Set.of(roles))
     );
   }

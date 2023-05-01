@@ -17,6 +17,7 @@
 package com.io7m.cardant.server.api;
 
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.idstore.model.IdName;
 
 import java.util.UUID;
 
@@ -58,17 +59,22 @@ public interface CAServerType extends AutoCloseable
   boolean isClosed();
 
   /**
-   * Do the work necessary to set up a server instance (such as initializing
+   * <p>Do the work necessary to set up a server instance (such as initializing
    * and/or upgrading the database) but do not actually start the instance. A
    * user with the given ID will be marked as the administrator and assigned all
-   * available security roles.
+   * available security roles.</p>
+   * <p>The given name is simply informative; it will be replaced by the
+   * name in the identity server the first time the user logs in.</p>
    *
-   * @param adminId The admin ID
+   * @param adminId   The admin ID
+   * @param adminName The name
    *
    * @throws CAServerException On errors
    */
 
-  void setup(UUID adminId)
+  void setup(
+    UUID adminId,
+    IdName adminName)
     throws CAServerException;
 
   @Override

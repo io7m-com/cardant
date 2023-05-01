@@ -109,7 +109,13 @@ public final class CAICmdRolesRevoke extends CAICmdAbstract<CAICommandRolesRevok
 
     final var newRoles = new HashSet<>(targetUser.subject().roles());
     newRoles.removeAll(rolesTaken);
-    queries.userPut(new CAUser(targetUser.userId(), new MSubject(newRoles)));
+    queries.userPut(
+      new CAUser(
+        targetUser.userId(),
+        targetUser.name(),
+        new MSubject(newRoles)
+      )
+    );
     return new CAIResponseRolesRevoke(context.requestId());
   }
 }

@@ -105,6 +105,7 @@ public final class CADatabaseUserUpdates
       final var merged =
         new CAUser(
           user.userId(),
+          user.name(),
           existing.subject()
         );
       users.userPut(merged);
@@ -114,6 +115,7 @@ public final class CADatabaseUserUpdates
     final var merged =
       new CAUser(
         user.userId(),
+        user.name(),
         new MSubject(Set.of())
       );
     users.userPut(merged);

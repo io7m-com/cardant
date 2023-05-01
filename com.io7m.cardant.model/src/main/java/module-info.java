@@ -23,6 +23,7 @@ module com.io7m.cardant.model
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires transitive com.io7m.idstore.model;
   requires transitive com.io7m.medrina.api;
 
   exports com.io7m.cardant.model;

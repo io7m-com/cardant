@@ -22,6 +22,7 @@ import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.inventory.CAICmdRolesRevoke;
+import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MSubject;
 import org.junit.jupiter.api.Test;
 
@@ -158,6 +159,7 @@ public final class CAICmdRolesRevokeTest
       .thenReturn(Optional.of(
         new CAUser(
           targetUser,
+          new IdName("x"),
           new MSubject(Set.of())
         )
       ));
@@ -184,7 +186,7 @@ public final class CAICmdRolesRevokeTest
       .userGet(targetUser);
     verify(users)
       .userPut(
-        new CAUser(targetUser, new MSubject(Set.of()))
+        new CAUser(targetUser, new IdName("x"), new MSubject(Set.of()))
       );
 
     verifyNoMoreInteractions(transaction);
@@ -217,6 +219,7 @@ public final class CAICmdRolesRevokeTest
       .thenReturn(Optional.of(
         new CAUser(
           targetUser,
+          new IdName("x"),
           new MSubject(Set.of())
         )
       ));
@@ -243,7 +246,7 @@ public final class CAICmdRolesRevokeTest
       .userGet(targetUser);
     verify(users)
       .userPut(
-        new CAUser(targetUser, new MSubject(Set.of()))
+        new CAUser(targetUser, new IdName("x"), new MSubject(Set.of()))
       );
 
     verifyNoMoreInteractions(transaction);

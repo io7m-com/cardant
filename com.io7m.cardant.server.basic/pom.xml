@@ -101,6 +101,10 @@
     </dependency>
 
     <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.io7m.medrina</groupId>
       <artifactId>com.io7m.medrina.api</artifactId>
     </dependency>

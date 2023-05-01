@@ -18,14 +18,18 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.security.CASecurityPolicy;
+import com.io7m.idstore.model.IdName;
+import com.io7m.idstore.model.IdValidityException;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.medrina.api.MSubject;
 import org.jooq.exception.DataAccessException;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -63,6 +67,7 @@ final class CADatabaseQueriesUsers
       if (userRec == null) {
         userRec = context.newRecord(USERS);
         userRec.set(USERS.ID, user.userId());
+        userRec.set(USERS.NAME, user.name().value());
 
         final var auditRec = context.newRecord(AUDIT);
         auditRec.setUserId(transaction.userId());
@@ -86,6 +91,7 @@ final class CADatabaseQueriesUsers
       final String[] roles =
         roleSetToStringArray(targetRoles);
 
+      userRec.set(USERS.NAME, user.name().value());
       userRec.setRoles(roles);
       userRec.store();
 
@@ -138,12 +144,22 @@ final class CADatabaseQueriesUsers
       return Optional.of(
         new CAUser(
           id,
+          new IdName(userRec.get(USERS.NAME)),
           new MSubject(
             Stream.of(userRec.getRoles())
               .map(MRoleName::new)
               .collect(Collectors.toUnmodifiableSet())
           )
         )
+      );
+    } catch (final IdValidityException e) {
+      querySpan.recordException(e);
+      throw new CADatabaseException(
+        e.getMessage(),
+        e,
+        CAStandardErrorCodes.errorProtocol(),
+        Map.of(),
+        Optional.empty()
       );
     } catch (final DataAccessException e) {
       querySpan.recordException(e);

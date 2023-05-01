@@ -23,6 +23,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.inventory.CAICmdRolesGet;
+import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MSubject;
 import org.junit.jupiter.api.Test;
 
@@ -114,6 +115,7 @@ public final class CAICmdRolesGetTest
       .thenReturn(Optional.of(
         new CAUser(
           targetUser,
+          new IdName("x"),
           new MSubject(Set.of(
             ROLE_INVENTORY_TAGS_WRITER,
             ROLE_INVENTORY_ITEMS_WRITER,

@@ -20,6 +20,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.idstore.model.IdName;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceType;
@@ -113,6 +114,7 @@ public final class CASessionService implements RPServiceType
    * Create a new session.
    *
    * @param userId  The user ID
+   * @param name    The user's latest username
    * @param subject The user subject
    *
    * @return A new session
@@ -120,9 +122,11 @@ public final class CASessionService implements RPServiceType
 
   public CASession createSession(
     final UUID userId,
+    final IdName name,
     final MSubject subject)
   {
     Objects.requireNonNull(userId, "userId");
+    Objects.requireNonNull(name, "name");
     Objects.requireNonNull(subject, "subject");
 
     final var id =
@@ -134,7 +138,7 @@ public final class CASessionService implements RPServiceType
     );
 
     LOG.debug("{} create session", id.value());
-    final var session = new CASession(id, new CAUser(userId, subject));
+    final var session = new CASession(id, new CAUser(userId, name, subject));
     this.sessions.put(id, session);
     this.sessionsGauge.record(this.sessions.estimatedSize());
     return session;

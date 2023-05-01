@@ -134,13 +134,22 @@ public final class CAI1Login extends CACommonInstrumentedServlet
         userId = result.user().id();
       }
 
-      var icUser = new CAUser(userId, new MSubject(Set.of()));
+      var icUser =
+        new CAUser(
+          userId,
+          login.userName(),
+          new MSubject(Set.of())
+        );
+
       icUser = CADatabaseUserUpdates.userMerge(this.database, icUser);
       final var session =
-        this.sessions.createSession(icUser.userId(), icUser.subject());
-      final var httpSession =
-        request.getSession(true);
+        this.sessions.createSession(
+          icUser.userId(),
+          login.userName(),
+          icUser.subject()
+        );
 
+      final var httpSession = request.getSession(true);
       httpSession.setAttribute("ID", session.id());
       this.sendLoginResponse(request, response, userId);
 

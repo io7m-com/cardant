@@ -46,12 +46,15 @@ create table schema_version (
 
   <Schema versionCurrent="1">
     <Comment>
-      The users table stores the current set of users.
+      The users table stores the current set of users. The name field is neither
+      authoritative, nor expected to be unique, because the external identity server
+      is the authoritative source for names.
     </Comment>
 
     <Statement><![CDATA[
 create table users (
   id    uuid   not null primary key,
+  name  text   not null,
   roles text[] not null
 )
 ]]></Statement>

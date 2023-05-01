@@ -41,6 +41,10 @@
     </dependency>
 
     <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.io7m.jdeferthrow</groupId>
       <artifactId>com.io7m.jdeferthrow.core</artifactId>
     </dependency>

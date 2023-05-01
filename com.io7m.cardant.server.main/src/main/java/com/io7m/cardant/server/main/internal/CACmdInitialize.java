@@ -23,6 +23,7 @@ import com.io7m.cardant.server.api.CAServerFactoryType;
 import com.io7m.cardant.server.service.configuration.CAConfigurationFiles;
 import com.io7m.claypot.core.CLPAbstractCommand;
 import com.io7m.claypot.core.CLPCommandContextType;
+import com.io7m.idstore.model.IdName;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.nio.file.Path;
@@ -48,11 +49,18 @@ public final class CACmdInitialize extends CLPAbstractCommand
   private Path configurationFile;
 
   @Parameter(
-    names = "--admin",
+    names = "--admin-id",
     description = "The ID of the user that will be the administrator",
     required = true
   )
-  private String adminId;
+  private String adminIdS;
+
+  @Parameter(
+    names = "--admin-name",
+    description = "The name of the user that will be the administrator",
+    required = true
+  )
+  private String adminNameS;
 
   /**
    * Construct a command.
@@ -77,7 +85,9 @@ public final class CACmdInitialize extends CLPAbstractCommand
     SLF4JBridgeHandler.install();
 
     final var adminUUID =
-      UUID.fromString(this.adminId);
+      UUID.fromString(this.adminIdS);
+    final var adminName =
+      new IdName(this.adminNameS);
 
     final var configFile =
       new CAConfigurationFiles()
@@ -96,7 +106,7 @@ public final class CACmdInitialize extends CLPAbstractCommand
         .orElseThrow(CACmdInitialize::noService);
 
     try (var server = servers.createServer(configuration)) {
-      server.setup(adminUUID);
+      server.setup(adminUUID, adminName);
     }
 
     return SUCCESS;

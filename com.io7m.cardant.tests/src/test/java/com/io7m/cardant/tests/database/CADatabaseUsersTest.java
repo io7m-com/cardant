@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.medrina.api.MSubject;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,7 @@ public final class CADatabaseUsersTest
     final var user =
       new CAUser(
         UUID.randomUUID(),
+        new IdName("x"),
         new MSubject(Set.of())
       );
 
@@ -81,6 +83,7 @@ public final class CADatabaseUsersTest
     final var user =
       new CAUser(
         UUID.randomUUID(),
+        new IdName("x"),
         new MSubject(Set.of(
           new MRoleName("role0"),
           new MRoleName("role1"),

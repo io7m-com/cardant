@@ -109,7 +109,13 @@ public final class CAICmdRolesAssign extends CAICmdAbstract<CAICommandRolesAssig
 
     final var newRoles = new HashSet<>(targetUser.subject().roles());
     newRoles.addAll(rolesGiven);
-    queries.userPut(new CAUser(targetUser.userId(), new MSubject(newRoles)));
+    queries.userPut(
+      new CAUser(
+        targetUser.userId(),
+        targetUser.name(),
+        new MSubject(newRoles)
+      )
+    );
     return new CAIResponseRolesAssign(context.requestId());
   }
 }

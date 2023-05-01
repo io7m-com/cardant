@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MSubject;
 
 import java.util.Objects;
@@ -25,23 +26,27 @@ import java.util.UUID;
  * A snapshot of a user.
  *
  * @param userId  The user ID
+ * @param name    The user name
  * @param subject The user's security subject
  */
 
 public record CAUser(
   UUID userId,
+  IdName name,
   MSubject subject)
 {
   /**
    * A snapshot of a user.
    *
    * @param userId  The user ID
+   * @param name    The user name
    * @param subject The user's security subject
    */
 
   public CAUser
   {
     Objects.requireNonNull(userId, "userId");
+    Objects.requireNonNull(name, "name");
     Objects.requireNonNull(subject, "subject");
   }
 }

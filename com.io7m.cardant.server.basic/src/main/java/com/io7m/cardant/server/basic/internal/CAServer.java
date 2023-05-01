@@ -44,6 +44,7 @@ import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFac
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessages;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessagesType;
+import com.io7m.idstore.model.IdName;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
 import com.io7m.medrina.api.MSubject;
@@ -271,10 +272,12 @@ public final class CAServer implements CAServerType
 
   @Override
   public void setup(
-    final UUID adminId)
+    final UUID adminId,
+    final IdName adminName)
     throws CAServerException
   {
     Objects.requireNonNull(adminId, "adminId");
+    Objects.requireNonNull(adminName, "adminName");
 
     if (this.stopped.compareAndSet(true, false)) {
       try {
@@ -312,7 +315,12 @@ public final class CAServer implements CAServerType
               transaction.queries(CADatabaseQueriesUsersType.class);
 
             transaction.setUserId(adminId);
-            users.userPut(new CAUser(adminId, new MSubject(ROLES_ALL)));
+            users.userPut(
+              new CAUser(
+                adminId,
+                adminName,
+                new MSubject(ROLES_ALL))
+            );
             transaction.commit();
           }
         }
