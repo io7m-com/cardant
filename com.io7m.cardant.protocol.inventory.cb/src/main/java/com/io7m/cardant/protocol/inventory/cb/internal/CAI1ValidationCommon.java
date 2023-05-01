@@ -36,7 +36,6 @@ import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -63,7 +62,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ListLocationBehaviour;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
-import com.io7m.cardant.protocol.inventory.cb.CAI1UUID;
 import com.io7m.cedarbridge.runtime.api.CBBooleanType;
 import com.io7m.cedarbridge.runtime.api.CBByteArray;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned32;
@@ -73,6 +71,8 @@ import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 import com.io7m.cedarbridge.runtime.api.CBString;
+import com.io7m.cedarbridge.runtime.api.CBUUID;
+import com.io7m.cedarbridge.runtime.convenience.CBSets;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -81,9 +81,7 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.lang.Integer.toUnsignedLong;
 
@@ -128,7 +126,7 @@ public final class CAI1ValidationCommon
     }
 
     return new CAI1Item(
-      convertToWireUUID(item.id().id()),
+      new CBUUID(item.id().id()),
       new CBString(item.name()),
       new CBIntegerUnsigned64(item.countTotal()),
       new CBIntegerUnsigned64(item.countHere()),
@@ -147,7 +145,7 @@ public final class CAI1ValidationCommon
     final CAItemAttachmentKey key)
   {
     return new CAI1ItemAttachmentKey(
-      convertToWireUUID(key.fileID().id()),
+      new CBUUID(key.fileID().id()),
       new CBString(key.relation())
     );
   }
@@ -195,7 +193,7 @@ public final class CAI1ValidationCommon
     }
 
     return new CAItem(
-      convertFromWireItemID(item.fieldId()),
+      new CAItemID(item.fieldId().value()),
       item.fieldName().value(),
       item.fieldCountTotal().value(),
       item.fieldCountHere().value(),
@@ -215,7 +213,7 @@ public final class CAI1ValidationCommon
     final CAI1ItemAttachmentKey key)
   {
     return new CAItemAttachmentKey(
-      convertFromWireFileId(key.fieldId()),
+      new CAFileID(key.fieldId().value()),
       key.fieldRelation().value()
     );
   }
@@ -233,13 +231,13 @@ public final class CAI1ValidationCommon
     final CAIdType id)
   {
     if (id instanceof final CAFileID xid) {
-      return new CAI1Id.CAI1FileID(convertToWireUUID(xid.id()));
+      return new CAI1Id.CAI1FileID(new CBUUID(xid.id()));
     } else if (id instanceof final CALocationID xid) {
-      return new CAI1Id.CAI1LocationID(convertToWireUUID(xid.id()));
+      return new CAI1Id.CAI1LocationID(new CBUUID(xid.id()));
     } else if (id instanceof final CATagID xid) {
-      return new CAI1Id.CAI1TagID(convertToWireUUID(xid.id()));
+      return new CAI1Id.CAI1TagID(new CBUUID(xid.id()));
     } else if (id instanceof final CAItemID xid) {
-      return new CAI1Id.CAI1ItemID(convertToWireUUID(xid.id()));
+      return new CAI1Id.CAI1ItemID(new CBUUID(xid.id()));
     }
 
     throw new ProtocolUncheckedException(
@@ -249,15 +247,6 @@ public final class CAI1ValidationCommon
         Map.of(),
         Optional.empty()
       )
-    );
-  }
-
-  public static CAI1UUID convertToWireUUID(
-    final UUID id)
-  {
-    return new CAI1UUID(
-      new CBIntegerUnsigned64(id.getMostSignificantBits()),
-      new CBIntegerUnsigned64(id.getLeastSignificantBits())
     );
   }
 
@@ -279,9 +268,9 @@ public final class CAI1ValidationCommon
     final CAItemRepositMove m)
   {
     return new CAI1ItemReposit.CAI1ItemRepositMove(
-      convertToWireUUID(m.item().id()),
-      convertToWireUUID(m.fromLocation().id()),
-      convertToWireUUID(m.toLocation().id()),
+      new CBUUID(m.item().id()),
+      new CBUUID(m.fromLocation().id()),
+      new CBUUID(m.toLocation().id()),
       new CBIntegerUnsigned64(m.count())
     );
   }
@@ -290,8 +279,8 @@ public final class CAI1ValidationCommon
     final CAItemRepositRemove r)
   {
     return new CAI1ItemReposit.CAI1ItemRepositRemove(
-      convertToWireUUID(r.item().id()),
-      convertToWireUUID(r.location().id()),
+      new CBUUID(r.item().id()),
+      new CBUUID(r.location().id()),
       new CBIntegerUnsigned64(r.count())
     );
   }
@@ -300,27 +289,17 @@ public final class CAI1ValidationCommon
     final CAItemRepositAdd a)
   {
     return new CAI1ItemReposit.CAI1ItemRepositAdd(
-      convertToWireUUID(a.item().id()),
-      convertToWireUUID(a.location().id()),
+      new CBUUID(a.item().id()),
+      new CBUUID(a.location().id()),
       new CBIntegerUnsigned64(a.count())
     );
-  }
-
-  public static CBMap<CBString, CBString> convertToWireStringMap(
-    final Map<String, String> metadata)
-  {
-    final var r = new HashMap<CBString, CBString>();
-    for (final var e : metadata.entrySet()) {
-      r.put(new CBString(e.getKey()), new CBString(e.getValue()));
-    }
-    return new CBMap<>(r);
   }
 
   public static CAI1Tag convertToWireTag(
     final CATag t)
   {
     return new CAI1Tag(
-      convertToWireUUID(t.id().id()),
+      new CBUUID(t.id().id()),
       new CBString(t.name())
     );
   }
@@ -329,17 +308,11 @@ public final class CAI1ValidationCommon
     final CALocation location)
   {
     return new CAI1Location(
-      convertToWireUUID(location.id().id()),
-      convertToWireUUIDOption(location.parent()),
+      new CBUUID(location.id().id()),
+      CBOptionType.fromOptional(location.parent().map(x -> new CBUUID(x.id()))),
       new CBString(location.name()),
       new CBString(location.description())
     );
-  }
-
-  private static CBOptionType<CAI1UUID> convertToWireUUIDOption(
-    final Optional<CALocationID> parent)
-  {
-    return CBOptionType.fromOptional(parent.map(i -> convertToWireUUID(i.id())));
   }
 
   public static CAI1ItemMetadata convertToWireItemMetadata(
@@ -358,11 +331,11 @@ public final class CAI1ValidationCommon
       return new CAI1ListLocationBehaviour.CAI1ListLocationsAll();
     } else if (b instanceof final CAListLocationBehaviourType.CAListLocationExact e) {
       return new CAI1ListLocationBehaviour.CAI1ListLocationExact(
-        convertToWireUUID(e.location().id())
+        new CBUUID(e.location().id())
       );
     } else if (b instanceof final CAListLocationBehaviourType.CAListLocationWithDescendants e) {
       return new CAI1ListLocationBehaviour.CAI1ListLocationWithDescendants(
-        convertToWireUUID(e.location().id())
+        new CBUUID(e.location().id())
       );
     }
 
@@ -385,7 +358,7 @@ public final class CAI1ValidationCommon
     final CAFileType.CAFileWithoutData withoutData)
   {
     return new CAI1File.CAI1FileWithoutData(
-      convertToWireUUID(withoutData.id().id()),
+      new CBUUID(withoutData.id().id()),
       new CBString(withoutData.description()),
       new CBString(withoutData.mediaType()),
       new CBIntegerUnsigned64(withoutData.size()),
@@ -398,7 +371,7 @@ public final class CAI1ValidationCommon
     final CAFileType.CAFileWithData withData)
   {
     return new CAI1File.CAI1FileWithData(
-      convertToWireUUID(withData.id().id()),
+      new CBUUID(withData.id().id()),
       new CBString(withData.description()),
       new CBString(withData.mediaType()),
       new CBIntegerUnsigned64(withData.size()),
@@ -437,8 +410,8 @@ public final class CAI1ValidationCommon
     final CAI1ItemReposit.CAI1ItemRepositAdd m)
   {
     return new CAItemRepositAdd(
-      convertFromWireItemID(m.fieldItemId()),
-      convertFromWireLocationId(m.fieldLocationId()),
+      new CAItemID(m.fieldItemId().value()),
+      new CALocationID(m.fieldLocationId().value()),
       m.fieldCount().value()
     );
   }
@@ -447,17 +420,9 @@ public final class CAI1ValidationCommon
     final CAI1ItemReposit.CAI1ItemRepositRemove m)
   {
     return new CAItemRepositRemove(
-      convertFromWireItemID(m.fieldItemId()),
-      convertFromWireLocationId(m.fieldLocationId()),
+      new CAItemID(m.fieldItemId().value()),
+      new CALocationID(m.fieldLocationId().value()),
       m.fieldCount().value()
-    );
-  }
-
-  public static CALocationID convertFromWireLocationId(
-    final CAI1UUID i)
-  {
-    return new CALocationID(
-      fromWireUUID(i)
     );
   }
 
@@ -465,81 +430,43 @@ public final class CAI1ValidationCommon
     final CAI1ItemReposit.CAI1ItemRepositMove m)
   {
     return new CAItemRepositMove(
-      convertFromWireItemID(m.fieldItemId()),
-      convertFromWireLocationId(m.fieldLocationFrom()),
-      convertFromWireLocationId(m.fieldLocationTo()),
+      new CAItemID(m.fieldItemId().value()),
+      new CALocationID(m.fieldLocationFrom().value()),
+      new CALocationID(m.fieldLocationTo().value()),
       m.fieldCount().value()
     );
-  }
-
-  public static CAItemID convertFromWireItemID(
-    final CAI1UUID i)
-  {
-    return new CAItemID(fromWireUUID(i));
   }
 
   public static CATags convertFromWireTags(
     final CBList<CAI1Tag> c)
   {
     return new CATags(
-      new TreeSet<>(
-        c.values()
-          .stream()
-          .map(CAI1ValidationCommon::convertFromWireTag)
-          .collect(Collectors.toUnmodifiableSet())
-      )
+      new TreeSet<>(CBSets.toSet(c, CAI1ValidationCommon::convertFromWireTag))
     );
   }
 
   private static CATag convertFromWireTag(
     final CAI1Tag t)
   {
-    return new CATag(convertFromWireTagID(t.fieldId()), t.fieldValue().value());
+    return new CATag(new CATagID(t.fieldId().value()), t.fieldValue().value());
   }
 
   public static CAIdType convertFromWireId(final CAI1Id i)
   {
     if (i instanceof final CAI1Id.CAI1LocationID ii) {
-      return convertFromWireLocationId(ii.fieldId());
+      return new CALocationID(ii.fieldId().value());
     }
     if (i instanceof final CAI1Id.CAI1ItemID ii) {
-      return convertFromWireItemID(ii.fieldId());
+      return new CAItemID(ii.fieldId().value());
     }
     if (i instanceof final CAI1Id.CAI1TagID ii) {
-      return convertFromWireTagID(ii.fieldId());
+      return new CATagID(ii.fieldId().value());
     }
     if (i instanceof final CAI1Id.CAI1FileID ii) {
-      return convertFromWireFileId(ii.fieldId());
+      return new CAFileID(ii.fieldId().value());
     }
 
     throw new ProtocolUncheckedException(errorProtocol(i));
-  }
-
-  public static CAFileID convertFromWireFileId(
-    final CAI1UUID i)
-  {
-    return new CAFileID(fromWireUUID(i));
-  }
-
-  private static UUID fromWireUUID(final CAI1UUID i)
-  {
-    return new UUID(i.fieldMsb().value(), i.fieldLsb().value());
-  }
-
-  private static CATagID convertFromWireTagID(
-    final CAI1UUID i)
-  {
-    return new CATagID(fromWireUUID(i));
-  }
-
-  public static Map<String, String> convertFromWireStringMap(
-    final CBMap<CBString, CBString> m)
-  {
-    final var r = new HashMap<String, String>();
-    for (final var e : m.values().entrySet()) {
-      r.put(e.getKey().value(), e.getValue().value());
-    }
-    return r;
   }
 
   public static CAItemMetadata convertFromWireItemMetadata(
@@ -556,7 +483,7 @@ public final class CAI1ValidationCommon
   {
     if (b instanceof final CAI1ListLocationBehaviour.CAI1ListLocationExact x) {
       return new CAListLocationBehaviourType.CAListLocationExact(
-        convertFromWireLocationId(x.fieldLocationId())
+        new CALocationID(x.fieldLocationId().value())
       );
     }
     if (b instanceof final CAI1ListLocationBehaviour.CAI1ListLocationsAll a) {
@@ -564,7 +491,7 @@ public final class CAI1ValidationCommon
     }
     if (b instanceof final CAI1ListLocationBehaviour.CAI1ListLocationWithDescendants x) {
       return new CAListLocationBehaviourType.CAListLocationWithDescendants(
-        convertFromWireLocationId(x.fieldLocationId())
+        new CALocationID(x.fieldLocationId().value())
       );
     }
 
@@ -576,7 +503,7 @@ public final class CAI1ValidationCommon
   {
     if (f instanceof final CAI1File.CAI1FileWithData with) {
       return new CAFileType.CAFileWithData(
-        convertFromWireFileId(with.fieldId()),
+        new CAFileID(with.fieldId().value()),
         with.fieldDescription().value(),
         with.fieldMediaType().value(),
         with.fieldSize().value(),
@@ -588,7 +515,7 @@ public final class CAI1ValidationCommon
 
     if (f instanceof final CAI1File.CAI1FileWithoutData with) {
       return new CAFileType.CAFileWithoutData(
-        convertFromWireFileId(with.fieldId()),
+        new CAFileID(with.fieldId().value()),
         with.fieldDescription().value(),
         with.fieldMediaType().value(),
         with.fieldSize().value(),
@@ -613,10 +540,10 @@ public final class CAI1ValidationCommon
     final CAI1Location c)
   {
     return new CALocation(
-      convertFromWireLocationId(c.fieldLocationId()),
+      new CALocationID(c.fieldLocationId().value()),
       c.fieldParent()
         .asOptional()
-        .map(CAI1ValidationCommon::convertFromWireLocationId),
+        .map(x -> new CALocationID(x.value())),
       c.fieldName().value(),
       c.fieldDescription().value()
     );
@@ -628,13 +555,13 @@ public final class CAI1ValidationCommon
     final var input =
       data.itemLocations();
     final var output =
-      new HashMap<CAI1UUID, CBMap<CAI1UUID, CAI1ItemLocation>>();
+      new HashMap<CBUUID, CBMap<CBUUID, CAI1ItemLocation>>();
 
     for (final var locationId : input.keySet()) {
       final var locationMap =
         input.get(locationId);
       final var outLocations =
-        new HashMap<CAI1UUID, CAI1ItemLocation>();
+        new HashMap<CBUUID, CAI1ItemLocation>();
 
       for (final var itemId : locationMap.keySet()) {
         final var itemLocation =
@@ -644,7 +571,7 @@ public final class CAI1ValidationCommon
         outLocations.put(outLocation.fieldItemId(), outLocation);
       }
 
-      output.put(convertToWireUUID(locationId.id()), new CBMap<>(outLocations));
+      output.put(new CBUUID(locationId.id()), new CBMap<>(outLocations));
     }
 
     return new CAI1ItemLocations(new CBMap<>(output));
@@ -654,20 +581,14 @@ public final class CAI1ValidationCommon
     final CAItemLocation itemLocation)
   {
     return new CAI1ItemLocation(
-      convertToWireUUID(itemLocation.item().id()),
-      convertToWireUUID(itemLocation.location().id()),
+      new CBUUID(itemLocation.item().id()),
+      new CBUUID(itemLocation.location().id()),
       new CBIntegerUnsigned64(itemLocation.count())
     );
   }
 
-  public static UUID convertFromWireUUID(
-    final CAI1UUID in)
-  {
-    return new UUID(in.fieldMsb().value(), in.fieldLsb().value());
-  }
-
   public static CALocations convertFromWireLocations(
-    final CBMap<CAI1UUID, CAI1Location> locations)
+    final CBMap<CBUUID, CAI1Location> locations)
   {
     final var results = new TreeMap<CALocationID, CALocation>();
     for (final var entry : locations.values().entrySet()) {
@@ -701,7 +622,7 @@ public final class CAI1ValidationCommon
       }
 
       output.put(
-        convertFromWireLocationId(locationId),
+        new CALocationID(locationId.value()),
         outLocations
       );
     }
@@ -713,20 +634,9 @@ public final class CAI1ValidationCommon
     final CAI1ItemLocation itemLocation)
   {
     return new CAItemLocation(
-      convertFromWireItemID(itemLocation.fieldItemId()),
-      convertFromWireLocationId(itemLocation.fieldLocationId()),
+      new CAItemID(itemLocation.fieldItemId().value()),
+      new CALocationID(itemLocation.fieldLocationId().value()),
       itemLocation.fieldCount().value()
-    );
-  }
-
-  public static CAItems convertFromWireItems(
-    final CBList<CAI1Item> items)
-  {
-    return new CAItems(
-      items.values()
-        .stream()
-        .map(CAI1ValidationCommon::convertFromWireItem)
-        .collect(Collectors.toUnmodifiableSet())
     );
   }
 
@@ -795,7 +705,7 @@ public final class CAI1ValidationCommon
     final CAI1ItemSummary x)
   {
     return new CAItemSummary(
-      new CAItemID(fromWireUUID(x.fieldId())),
+      new CAItemID(x.fieldId().value()),
       x.fieldName().value()
     );
   }

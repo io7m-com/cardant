@@ -22,9 +22,8 @@ import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1EventUpdated;
 import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
-import com.io7m.cedarbridge.runtime.api.CBList;
-
-import java.util.stream.Collectors;
+import com.io7m.cedarbridge.runtime.convenience.CBLists;
+import com.io7m.cedarbridge.runtime.convenience.CBSets;
 
 public final class CAI1ValidationEvents
 {
@@ -48,18 +47,8 @@ public final class CAI1ValidationEvents
     final CAIEventUpdated u)
   {
     return new CAI1EventUpdated(
-      new CBList<>(
-        u.updated()
-          .stream()
-          .map(CAI1ValidationCommon::convertToWireID)
-          .toList()
-      ),
-      new CBList<>(
-        u.removed()
-          .stream()
-          .map(CAI1ValidationCommon::convertToWireID)
-          .toList()
-      )
+      CBLists.ofCollection(u.updated(), CAI1ValidationCommon::convertToWireID),
+      CBLists.ofCollection(u.removed(), CAI1ValidationCommon::convertToWireID)
     );
   }
 
@@ -67,16 +56,8 @@ public final class CAI1ValidationEvents
     final CAI1EventUpdated m)
   {
     return new CAIEventUpdated(
-      m.fieldUpdated()
-        .values()
-        .stream()
-        .map(CAI1ValidationCommon::convertFromWireId)
-        .collect(Collectors.toUnmodifiableSet()),
-      m.fieldRemoved()
-        .values()
-        .stream()
-        .map(CAI1ValidationCommon::convertFromWireId)
-        .collect(Collectors.toUnmodifiableSet())
+      CBSets.toSet(m.fieldUpdated(), CAI1ValidationCommon::convertFromWireId),
+      CBSets.toSet(m.fieldRemoved(), CAI1ValidationCommon::convertFromWireId)
     );
   }
 }
