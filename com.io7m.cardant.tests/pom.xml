@@ -81,7 +81,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.server.main</artifactId>
+      <artifactId>com.io7m.cardant.main</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

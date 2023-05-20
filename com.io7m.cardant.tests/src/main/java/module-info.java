@@ -41,7 +41,7 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.http;
   requires com.io7m.cardant.server.inventory.v1;
-  requires com.io7m.cardant.server.main;
+  requires com.io7m.cardant.main;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
   requires com.io7m.cardant.server.service.idstore;

@@ -32,6 +32,7 @@
     <module>com.io7m.cardant.error_codes</module>
     <module>com.io7m.cardant.gui.main</module>
     <module>com.io7m.cardant.gui</module>
+    <module>com.io7m.cardant.main</module>
     <module>com.io7m.cardant.model</module>
     <module>com.io7m.cardant.protocol.api</module>
     <module>com.io7m.cardant.protocol.inventory.cb</module>
@@ -42,7 +43,6 @@
     <module>com.io7m.cardant.server.controller</module>
     <module>com.io7m.cardant.server.http</module>
     <module>com.io7m.cardant.server.inventory.v1</module>
-    <module>com.io7m.cardant.server.main</module>
     <module>com.io7m.cardant.server.service.clock</module>
     <module>com.io7m.cardant.server.service.configuration</module>
     <module>com.io7m.cardant.server.service.idstore</module>

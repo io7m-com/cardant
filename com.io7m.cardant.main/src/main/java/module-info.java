@@ -18,7 +18,7 @@
  * The server main distribution.
  */
 
-open module com.io7m.cardant.server.main
+open module com.io7m.cardant.main
 {
   uses com.io7m.cardant.server.api.CAServerFactoryType;
 
