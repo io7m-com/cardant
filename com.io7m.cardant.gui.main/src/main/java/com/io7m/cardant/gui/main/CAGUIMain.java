@@ -17,12 +17,8 @@
 package com.io7m.cardant.gui.main;
 
 import com.io7m.cardant.gui.main.internal.CAGUIMainStart;
-import com.io7m.claypot.core.CLPApplicationConfiguration;
-import com.io7m.claypot.core.Claypot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URI;
 
 /**
  * The main GUI program.
@@ -47,20 +43,6 @@ public final class CAGUIMain
   public static void main(
     final String[] args)
   {
-    if (args.length == 0) {
-      CAGUIMainStart.startApplication();
-      return;
-    }
-
-    final var applicationConfiguration =
-      CLPApplicationConfiguration.builder()
-        .setLogger(LOG)
-        .setDocumentationURI(URI.create(
-          "https://www.io7m.com/software/cardant"))
-        .setProgramName("cardant")
-        .build();
-
-    final var claypot = Claypot.create(applicationConfiguration);
-    claypot.execute(args);
+    CAGUIMainStart.startApplication();
   }
 }

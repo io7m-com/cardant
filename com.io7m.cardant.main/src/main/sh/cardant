@@ -1,12 +1,12 @@
 #!/bin/sh
 
-if [ -z "${CARDANT_SERVER_HOME}" ]
+if [ -z "${CARDANT_HOME}" ]
 then
-  echo "CARDANT_SERVER_HOME is unset" 1>&2
+  echo "CARDANT_HOME is unset" 1>&2
   exit 1
 fi
 
 exec /usr/bin/env java \
--p "${CARDANT_SERVER_HOME}/lib" \
--m com.io7m.cardant.server.main/com.io7m.cardant.server.main.CAServerMain \
+-p "${CARDANT_HOME}/lib" \
+-m com.io7m.cardant.main/com.io7m.cardant.main.CAServerMain \
 "$@"

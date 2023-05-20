@@ -14,52 +14,89 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.main.internal;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+package com.io7m.cardant.main.internal;
+
 import com.io7m.cardant.server.api.CAServerConfigurations;
 import com.io7m.cardant.server.api.CAServerFactoryType;
 import com.io7m.cardant.server.service.configuration.CAConfigurationFiles;
-import com.io7m.claypot.core.CLPAbstractCommand;
-import com.io7m.claypot.core.CLPCommandContextType;
+import com.io7m.quarrel.core.QCommandContextType;
+import com.io7m.quarrel.core.QCommandMetadata;
+import com.io7m.quarrel.core.QCommandStatus;
+import com.io7m.quarrel.core.QCommandType;
+import com.io7m.quarrel.core.QParameterNamed1;
+import com.io7m.quarrel.core.QParameterNamedType;
+import com.io7m.quarrel.core.QParametersPositionalNone;
+import com.io7m.quarrel.core.QParametersPositionalType;
+import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.quarrel.ext.logback.QLogback;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.nio.file.Path;
 import java.time.Clock;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.stream.Stream;
 
-import static com.io7m.claypot.core.CLPCommandType.Status.SUCCESS;
+import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
  * The "server" command.
  */
 
-@Parameters(commandDescription = "Start the server.")
-public final class CACmdServer extends CLPAbstractCommand
+public final class CMCmdServer implements QCommandType
 {
-  @Parameter(
-    names = "--configuration",
-    description = "The configuration file",
-    required = true
-  )
-  private Path configurationFile;
+  private static final QParameterNamed1<Path> CONFIGURATION_FILE =
+    new QParameterNamed1<>(
+      "--configuration",
+      List.of(),
+      new QConstant("The configuration file."),
+      Optional.empty(),
+      Path.class
+    );
+
+  private final QCommandMetadata metadata;
 
   /**
    * Construct a command.
-   *
-   * @param inContext The command context
    */
 
-  public CACmdServer(
-    final CLPCommandContextType inContext)
+  public CMCmdServer()
   {
-    super(inContext);
+    this.metadata = new QCommandMetadata(
+      "server",
+      new QConstant("Start the server."),
+      Optional.empty()
+    );
+  }
+
+  private static IllegalStateException noService()
+  {
+    return new IllegalStateException(
+      "No services available of %s".formatted(CAServerFactoryType.class)
+    );
   }
 
   @Override
-  protected Status executeActual()
+  public List<QParameterNamedType<?>> onListNamedParameters()
+  {
+    return Stream.concat(
+      Stream.of(CONFIGURATION_FILE),
+      QLogback.parameters().stream()
+    ).toList();
+  }
+
+  @Override
+  public QParametersPositionalType onListPositionalParameters()
+  {
+    return new QParametersPositionalNone();
+  }
+
+  @Override
+  public QCommandStatus onExecute(
+    final QCommandContextType context)
     throws Exception
   {
     System.setProperty("org.jooq.no-tips", "true");
@@ -68,9 +105,14 @@ public final class CACmdServer extends CLPAbstractCommand
     SLF4JBridgeHandler.removeHandlersForRootLogger();
     SLF4JBridgeHandler.install();
 
+    QLogback.configure(context);
+
+    final var configurationFile =
+      context.parameterValue(CONFIGURATION_FILE);
+
     final var configFile =
       new CAConfigurationFiles()
-        .parse(this.configurationFile);
+        .parse(configurationFile);
 
     final var configuration =
       CAServerConfigurations.ofFile(
@@ -82,7 +124,7 @@ public final class CACmdServer extends CLPAbstractCommand
     final var servers =
       ServiceLoader.load(CAServerFactoryType.class)
         .findFirst()
-        .orElseThrow(CACmdServer::noService);
+        .orElseThrow(CMCmdServer::noService);
 
     try (var server = servers.createServer(configuration)) {
       server.start();
@@ -99,16 +141,9 @@ public final class CACmdServer extends CLPAbstractCommand
     return SUCCESS;
   }
 
-  private static IllegalStateException noService()
-  {
-    return new IllegalStateException(
-      "No services available of %s".formatted(CAServerFactoryType.class)
-    );
-  }
-
   @Override
-  public String name()
+  public QCommandMetadata metadata()
   {
-    return "server";
+    return this.metadata;
   }
 }

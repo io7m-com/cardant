@@ -14,16 +14,14 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.server.main;
+package com.io7m.cardant.main;
 
-import com.io7m.cardant.server.main.internal.CACmdServer;
-import com.io7m.claypot.core.CLPApplicationConfiguration;
-import com.io7m.claypot.core.CLPCommandConstructorType;
-import com.io7m.claypot.core.CLPCommandType;
-import com.io7m.claypot.core.Claypot;
-import com.io7m.claypot.core.ClaypotType;
-import com.io7m.cardant.server.main.internal.CACmdInitialize;
-import com.io7m.cardant.server.main.internal.CACmdVersion;
+import com.io7m.cardant.main.internal.CMCmdInitialize;
+import com.io7m.cardant.main.internal.CMCmdServer;
+import com.io7m.cardant.model.CAVersion;
+import com.io7m.quarrel.core.QApplication;
+import com.io7m.quarrel.core.QApplicationMetadata;
+import com.io7m.quarrel.core.QApplicationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +29,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.SortedMap;
-import java.util.stream.Stream;
 
 /**
  * IdServerMain command line entry point.
@@ -40,10 +36,12 @@ import java.util.stream.Stream;
 
 public final class CAServerMain implements Runnable
 {
-  private static final Logger LOG = LoggerFactory.getLogger(CAServerMain.class);
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CAServerMain.class);
 
-  private final String[] args;
-  private final ClaypotType claypot;
+  private final List<String> args;
+  private final QApplicationType application;
+  private int exitCode;
 
   /**
    * The main entry point.
@@ -55,25 +53,25 @@ public final class CAServerMain implements Runnable
     final String[] inArgs)
   {
     this.args =
-      Objects.requireNonNull(inArgs, "Command line arguments");
+      Objects.requireNonNull(List.of(inArgs), "Command line arguments");
 
-    final List<CLPCommandConstructorType> commands =
-      List.of(
-        CACmdInitialize::new,
-        CACmdServer::new,
-        CACmdVersion::new
+    final var metadata =
+      new QApplicationMetadata(
+        "cardant",
+        "com.io7m.cardant",
+        CAVersion.MAIN_VERSION,
+        CAVersion.MAIN_BUILD,
+        "The cardant server and command-line application.",
+        Optional.of(URI.create("https://www.io7m.com/software/cardant/"))
       );
 
-    final var configuration =
-      CLPApplicationConfiguration.builder()
-        .setLogger(LOG)
-        .setProgramName("cardant")
-        .setCommands(commands)
-        .setDocumentationURI(URI.create(
-          "https://www.io7m.com/software/cardant/documentation/"))
-        .build();
+    final var builder =
+      QApplication.builder(metadata);
+    builder.addCommand(new CMCmdInitialize());
+    builder.addCommand(new CMCmdServer());
 
-    this.claypot = Claypot.create(configuration);
+    this.application = builder.build();
+    this.exitCode = 0;
   }
 
   /**
@@ -110,33 +108,13 @@ public final class CAServerMain implements Runnable
 
   public int exitCode()
   {
-    return this.claypot.exitCode();
+    return this.exitCode;
   }
 
   @Override
   public void run()
   {
-    this.claypot.execute(this.args);
-  }
-
-  /**
-   * @return The names of the available commands
-   */
-
-  public Stream<String> commandNames()
-  {
-    return this.commands()
-      .keySet()
-      .stream();
-  }
-
-  /**
-   * @return The available commands
-   */
-
-  public SortedMap<String, CLPCommandType> commands()
-  {
-    return this.claypot.commands();
+    this.exitCode = this.application.run(LOG, this.args).exitCode();
   }
 
   @Override
@@ -146,14 +124,5 @@ public final class CAServerMain implements Runnable
       "[CAServerMain 0x%s]",
       Long.toUnsignedString(System.identityHashCode(this), 16)
     );
-  }
-
-  /**
-   * @return The exception that caused the exit
-   */
-
-  public Optional<Exception> exitCause()
-  {
-    return this.claypot.exitCause();
   }
 }

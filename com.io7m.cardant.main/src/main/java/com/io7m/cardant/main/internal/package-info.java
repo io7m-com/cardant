@@ -19,6 +19,6 @@
  */
 
 @Version("1.0.0")
-package com.io7m.cardant.server.main.internal;
+package com.io7m.cardant.main.internal;
 
 import org.osgi.annotation.versioning.Version;

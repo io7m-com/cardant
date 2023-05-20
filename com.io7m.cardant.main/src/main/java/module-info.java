@@ -15,7 +15,7 @@
  */
 
 /**
- * The server main distribution.
+ * The main distribution.
  */
 
 open module com.io7m.cardant.main
@@ -43,15 +43,15 @@ open module com.io7m.cardant.main
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.telemetry.otp;
   requires com.io7m.cardant.server.service.verdant;
-  requires com.io7m.repetoir.core;
 
+  requires com.io7m.quarrel.core;
+  requires com.io7m.quarrel.ext.logback;
+  requires com.io7m.repetoir.core;
   requires jul.to.slf4j;
   requires org.slf4j;
-  requires com.io7m.claypot.core;
-  requires jcommander;
 
-  exports com.io7m.cardant.server.main.internal
+  exports com.io7m.cardant.main.internal
     to com.io7m.cardant.documentation;
 
-  exports com.io7m.cardant.server.main;
+  exports com.io7m.cardant.main;
 }
