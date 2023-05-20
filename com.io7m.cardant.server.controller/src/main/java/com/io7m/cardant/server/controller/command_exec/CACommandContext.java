@@ -199,6 +199,38 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   }
 
   /**
+   * Produce an exception indicating an error, with a formatted error message.
+   *
+   * @param statusCode The HTTP status code
+   * @param exception  The exception
+   * @param errorCode  The error code
+   * @param attributes The error attributes
+   * @param messageId  The string resource message ID
+   * @param args       The string resource format arguments
+   *
+   * @return An execution failure
+   */
+
+  public final CACommandExecutionFailure failFormatted(
+    final Exception exception,
+    final int statusCode,
+    final CAErrorCode errorCode,
+    final Map<String, String> attributes,
+    final String messageId,
+    final Object... args)
+  {
+    return new CACommandExecutionFailure(
+      this.strings.format(messageId, args),
+      exception,
+      errorCode,
+      attributes,
+      Optional.empty(),
+      this.requestId,
+      statusCode
+    );
+  }
+
+  /**
    * Produce an exception indicating an error, with a string constant message.
    *
    * @param statusCode The HTTP status code

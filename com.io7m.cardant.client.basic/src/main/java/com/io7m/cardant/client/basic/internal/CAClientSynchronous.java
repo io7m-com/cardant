@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
+import static java.lang.Integer.toUnsignedString;
 
 /**
  * The synchronous client.
@@ -84,7 +85,7 @@ public final class CAClientSynchronous
   {
     if (ex instanceof final CAClientException ca) {
       return new CAIResponseError(
-        ca.requestId().orElse(new UUID(0L, 0L)),
+        ca.requestId().orElseGet(CAUUIDs::nullUUID),
         ca.message(),
         ca.errorCode(),
         ca.attributes(),
@@ -95,7 +96,7 @@ public final class CAClientSynchronous
     }
 
     return new CAIResponseError(
-      new UUID(0L, 0L),
+      CAUUIDs.nullUUID(),
       Objects.requireNonNullElse(
         ex.getMessage(),
         ex.getClass().getSimpleName()),
@@ -122,5 +123,12 @@ public final class CAClientSynchronous
 
     final var handler = (CAHandlerType) this.currentHandler();
     return handler.onExecuteFileData(fileID);
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[CAClientSynchronous 0x%s]"
+      .formatted(toUnsignedString(this.hashCode(), 16));
   }
 }

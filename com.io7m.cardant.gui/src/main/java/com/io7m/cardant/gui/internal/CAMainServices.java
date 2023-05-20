@@ -45,7 +45,7 @@ public final class CAMainServices
   }
 
   public static RPServiceDirectoryType create()
-    throws IOException
+    throws Exception
   {
     final ApplicationDirectoriesType directories =
       applicationDirectories();

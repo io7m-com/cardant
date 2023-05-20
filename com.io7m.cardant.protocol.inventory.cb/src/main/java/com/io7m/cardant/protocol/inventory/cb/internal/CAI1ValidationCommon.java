@@ -557,13 +557,15 @@ public final class CAI1ValidationCommon
     final var output =
       new HashMap<CBUUID, CBMap<CBUUID, CAI1ItemLocation>>();
 
-    for (final var locationId : input.keySet()) {
+    for (final var e0 : input.entrySet()) {
+      final var locationId = e0.getKey();
       final var locationMap =
         input.get(locationId);
       final var outLocations =
         new HashMap<CBUUID, CAI1ItemLocation>();
 
-      for (final var itemId : locationMap.keySet()) {
+      for (final var e1 : locationMap.entrySet()) {
+        final var itemId = e1.getKey();
         final var itemLocation =
           locationMap.get(itemId);
         final var outLocation =

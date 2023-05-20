@@ -268,8 +268,8 @@ public final class CATransferOperation
   {
     final var errorAttributes =
       ofEntries(
-        entry(this.strings.format("expectedHash"), e.expected),
-        entry(this.strings.format("receivedHash"), e.received),
+        entry(this.strings.format("expectedHash"), e.expected()),
+        entry(this.strings.format("receivedHash"), e.received()),
         entry(this.strings.format("hashAlgorithm"), this.hashAlgorithm)
       );
 
@@ -451,5 +451,24 @@ public final class CATransferOperation
       this.received =
         Objects.requireNonNull(inReceived, "received");
     }
+
+    public String expected()
+    {
+      return this.expected;
+    }
+
+    public String received()
+    {
+      return this.received;
+    }
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CATransferOperation 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
   }
 }

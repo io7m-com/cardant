@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.server.service.telemetry.otp;
 
+import com.io7m.cardant.model.CAVersion;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFactoryType;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
@@ -126,24 +127,11 @@ public final class CAServerTelemetryServices
         .buildAndRegisterGlobal();
 
     final var tracer =
-      openTelemetry.getTracer("com.io7m.idstore", version());
+      openTelemetry.getTracer("com.io7m.cardant", CAVersion.MAIN_VERSION);
 
     return new CAServerTelemetryService(
       openTelemetry,
       tracer
     );
-  }
-
-  private static String version()
-  {
-    final var p =
-      CAServerTelemetryService.class.getPackage();
-    final var v =
-      p.getImplementationVersion();
-
-    if (v == null) {
-      return "0.0.0";
-    }
-    return v;
   }
 }

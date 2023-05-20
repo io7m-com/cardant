@@ -70,6 +70,7 @@ public final class CAICmdItemCreate extends CAICmdAbstract<CAICommandItemCreate>
     } catch (final CADatabaseException e) {
       if (Objects.equals(e.errorCode(), errorDuplicate())) {
         throw context.failFormatted(
+          e,
           400,
           errorDuplicate(),
           e.attributes(),

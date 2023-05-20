@@ -164,4 +164,11 @@ public final class CASessionService implements RPServiceType
   {
     return "Session service.";
   }
+
+  @Override
+  public String toString()
+  {
+    return "[CASessionService 0x%s]"
+      .formatted(Long.toUnsignedString(this.hashCode(), 16));
+  }
 }

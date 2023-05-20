@@ -21,6 +21,7 @@ import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAVersion;
 import com.zaxxer.hikari.HikariDataSource;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.metrics.LongCounter;
@@ -48,7 +49,6 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DbSys
 
 public final class CADatabase implements CADatabaseType
 {
-  private final OpenTelemetry telemetry;
   private final Clock clock;
   private final HikariDataSource dataSource;
   private final Settings settings;
@@ -79,10 +79,15 @@ public final class CADatabase implements CADatabaseType
       throw new UncheckedIOException(e);
     }
 
-    this.telemetry =
+    final var telemetry =
       Objects.requireNonNull(inOpenTelemetry, "inOpenTelemetry");
+
     this.tracer =
-      this.telemetry.getTracer("com.io7m.cardant.database.postgres", version());
+      telemetry.getTracer(
+        "com.io7m.cardant.database.postgres",
+        CAVersion.MAIN_VERSION
+      );
+
     this.clock =
       Objects.requireNonNull(inClock, "clock");
     this.dataSource =
@@ -91,7 +96,7 @@ public final class CADatabase implements CADatabaseType
       new Settings().withRenderNameCase(RenderNameCase.LOWER);
 
     final var meters =
-      this.telemetry.meterBuilder(
+      telemetry.meterBuilder(
         "com.io7m.cardant.database.postgres")
         .build();
 
@@ -104,19 +109,6 @@ public final class CADatabase implements CADatabaseType
     this.transactionRollbacks =
       meters.counterBuilder("CADatabase.commits")
         .build();
-  }
-
-  private static String version()
-  {
-    final var p =
-      CADatabase.class.getPackage();
-    final var v =
-      p.getImplementationVersion();
-
-    if (v == null) {
-      return "0.0.0";
-    }
-    return v;
   }
 
   LongCounter counterTransactions()
@@ -144,7 +136,7 @@ public final class CADatabase implements CADatabaseType
    * @return The OpenTelemetry tracer
    */
 
-  public Tracer tracer()
+  Tracer tracer()
   {
     return this.tracer;
   }
@@ -182,7 +174,7 @@ public final class CADatabase implements CADatabaseType
    * @return The jooq SQL settings
    */
 
-  public Settings settings()
+  Settings settings()
   {
     return this.settings;
   }
@@ -191,7 +183,7 @@ public final class CADatabase implements CADatabaseType
    * @return The clock used for time-related queries
    */
 
-  public Clock clock()
+  Clock clock()
   {
     return this.clock;
   }

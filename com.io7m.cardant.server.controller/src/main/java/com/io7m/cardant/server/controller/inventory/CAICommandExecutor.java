@@ -126,7 +126,7 @@ public final class CAICommandExecutor
     if (command instanceof final CAICommandItemUpdate m) {
       return new CAICmdItemUpdate().execute(context, m);
     }
-    if (command instanceof final CAICommandLocationGet m) {
+    if (command instanceof CAICommandLocationGet) {
       throw new IllegalStateException();
     }
     if (command instanceof final CAICommandLocationList m) {

@@ -96,4 +96,13 @@ public final class CAOctetsPerSecond
   {
     this.stats.addValue((double) octets);
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CAOctetsPerSecond 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

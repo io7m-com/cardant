@@ -43,12 +43,18 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationComm
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemMetadataPut;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemReposit;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchBegin;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchNext;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchPrevious;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemUpdate;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandLocationGet;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandLocationList;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandLocationPut;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandLogin;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandRolesAssign;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandRolesGet;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandRolesRevoke;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandTagList;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandTagsPut;
@@ -209,15 +215,15 @@ public final class CAI1Validation
         continue;
       }
       if (c instanceof final CAI1Command.C1CommandItemSearchBegin k) {
-        out.add(CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchBegin(k.fieldCommand()));
+        out.add(convertFromWireCAI1CommandItemSearchBegin(k.fieldCommand()));
         continue;
       }
       if (c instanceof final CAI1Command.C1CommandItemSearchNext k) {
-        out.add(CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchNext(k.fieldCommand()));
+        out.add(convertFromWireCAI1CommandItemSearchNext(k.fieldCommand()));
         continue;
       }
       if (c instanceof final CAI1Command.C1CommandItemSearchPrevious k) {
-        out.add(CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchPrevious(k.fieldCommand()));
+        out.add(convertFromWireCAI1CommandItemSearchPrevious(k.fieldCommand()));
         continue;
       }
 
@@ -437,23 +443,23 @@ public final class CAI1Validation
         return convertFromWireCAI1CommandTagsPut(m);
       }
       if (message instanceof final CAI1CommandItemSearchBegin m) {
-        return CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchBegin(m);
+        return convertFromWireCAI1CommandItemSearchBegin(m);
       }
       if (message instanceof final CAI1CommandItemSearchNext m) {
-        return CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchNext(m);
+        return convertFromWireCAI1CommandItemSearchNext(m);
       }
       if (message instanceof final CAI1CommandItemSearchPrevious m) {
-        return CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchPrevious(m);
+        return convertFromWireCAI1CommandItemSearchPrevious(m);
       }
 
       if (message instanceof final CAI1CommandRolesAssign m) {
-        return CAI1ValidationCommands.convertFromWireCAI1CommandRolesAssign(m);
+        return convertFromWireCAI1CommandRolesAssign(m);
       }
       if (message instanceof final CAI1CommandRolesRevoke m) {
-        return CAI1ValidationCommands.convertFromWireCAI1CommandRolesRevoke(m);
+        return convertFromWireCAI1CommandRolesRevoke(m);
       }
       if (message instanceof final CAI1CommandRolesGet m) {
-        return CAI1ValidationCommands.convertFromWireCAI1CommandRolesGet(m);
+        return convertFromWireCAI1CommandRolesGet(m);
       }
 
       /*

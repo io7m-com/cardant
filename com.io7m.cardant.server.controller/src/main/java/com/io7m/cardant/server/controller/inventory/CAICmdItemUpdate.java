@@ -65,6 +65,7 @@ public final class CAICmdItemUpdate extends CAICmdAbstract<CAICommandItemUpdate>
     } catch (final CADatabaseException e) {
       if (Objects.equals(e.errorCode(), errorNonexistent())) {
         throw context.failFormatted(
+          e,
           400,
           errorNonexistent(),
           e.attributes(),

@@ -81,6 +81,7 @@ import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TAGS;
 import static com.io7m.cardant.database.postgres.internal.Tables.TAGS;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
@@ -463,14 +464,24 @@ final class CADatabaseQueriesItems
     final CAListLocationBehaviourType locationBehaviour)
     throws CADatabaseException
   {
-    return null;
+    throw new CADatabaseException(
+      "Unimplemented code.",
+      errorIo(),
+      Map.of(),
+      Optional.empty()
+    );
   }
 
   @Override
   public Set<CAItemID> itemListDeleted()
     throws CADatabaseException
   {
-    return null;
+    throw new CADatabaseException(
+      "Unimplemented code.",
+      errorIo(),
+      Map.of(),
+      Optional.empty()
+    );
   }
 
   @Override
@@ -995,7 +1006,8 @@ final class CADatabaseQueriesItems
             ITEM_LOCATIONS.COUNT.sub(Long.valueOf(remove.count())))
           .where(matches)
           .returning(ITEM_LOCATIONS.COUNT)
-          .fetchOne(ITEM_LOCATIONS.COUNT)
+          .fetchOptional(ITEM_LOCATIONS.COUNT)
+          .orElse(Long.valueOf(0L))
           .longValue();
 
       if (newCount == 0L) {
@@ -1093,7 +1105,8 @@ final class CADatabaseQueriesItems
         ITEM_LOCATIONS.COUNT,
         ITEM_LOCATIONS.COUNT.add(Long.valueOf(add.count())))
       .returning(ITEM_LOCATIONS.COUNT)
-      .fetchOne(ITEM_LOCATIONS.COUNT)
+      .fetchOptional(ITEM_LOCATIONS.COUNT)
+      .orElse(Long.valueOf(0L))
       .longValue();
   }
 
@@ -1102,7 +1115,12 @@ final class CADatabaseQueriesItems
     final CAItemID item)
     throws CADatabaseException
   {
-    return null;
+    throw new CADatabaseException(
+      "Unimplemented code.",
+      errorIo(),
+      Map.of(),
+      Optional.empty()
+    );
   }
 
   @Override
@@ -1147,14 +1165,12 @@ final class CADatabaseQueriesItems
             .from("location_descendants(?)", descendants.location().id())
             .asField();
 
-        locationCondition =
-          ITEM_LOCATIONS.ITEM_LOCATION.in(funcCall);
-      } else if (behaviour instanceof final CAListLocationsAll all) {
+        locationCondition = ITEM_LOCATIONS.ITEM_LOCATION.in(funcCall);
+      } else if (behaviour instanceof CAListLocationsAll) {
         tableSource = ITEMS;
         locationCondition = DSL.trueCondition();
       } else {
-        tableSource = ITEMS;
-        locationCondition = DSL.trueCondition();
+        throw new IllegalStateException();
       }
 
       /*

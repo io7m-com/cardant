@@ -49,7 +49,7 @@ public final class CA1Errors
    * @return An error response
    */
 
-  public static CAIResponseError errorOf(
+  static CAIResponseError errorOf(
     final CAHTTPServletRequestInformation information,
     final CAIResponseBlame blame,
     final CAException exception)

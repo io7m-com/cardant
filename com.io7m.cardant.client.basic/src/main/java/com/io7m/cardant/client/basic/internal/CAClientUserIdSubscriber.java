@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Flow;
 
+import static java.lang.Integer.toUnsignedString;
+
 /**
  * A subscriber that tracks user IDs.
  */
@@ -82,7 +84,7 @@ public final class CAClientUserIdSubscriber
       }
 
       if (item instanceof HBStateDisconnected<
-        ?, CAIResponseType, CAIResponseError, CAClientCredentials> c) {
+        ?, CAIResponseType, CAIResponseError, CAClientCredentials>) {
         this.userId = Optional.empty();
         return;
       }
@@ -108,5 +110,12 @@ public final class CAClientUserIdSubscriber
   public void close()
   {
     this.subscription.cancel();
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[CAClientUserIdSubscriber 0x%s]"
+      .formatted(toUnsignedString(this.hashCode(), 16));
   }
 }

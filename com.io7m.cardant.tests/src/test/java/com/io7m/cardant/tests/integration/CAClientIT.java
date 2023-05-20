@@ -113,6 +113,7 @@ public final class CAClientIT
 
   @BeforeEach
   public void setup()
+    throws Exception
   {
     this.clients =
       new CAClients();

@@ -36,6 +36,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import static java.lang.Integer.toUnsignedString;
+
 /**
  * The asynchronous client.
  */
@@ -101,5 +103,12 @@ public final class CAClientAsynchronous
       }
     });
     return future;
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[CAClientAsynchronous 0x%s]"
+      .formatted(toUnsignedString(this.hashCode(), 16));
   }
 }

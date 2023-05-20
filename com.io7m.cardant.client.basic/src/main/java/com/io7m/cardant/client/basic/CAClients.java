@@ -18,16 +18,20 @@ package com.io7m.cardant.client.basic;
 
 import com.io7m.cardant.client.api.CAClientAsynchronousType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.api.CAClientFactoryType;
 import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.basic.internal.CAClientAsynchronous;
 import com.io7m.cardant.client.basic.internal.CAClientSynchronous;
 import com.io7m.cardant.client.basic.internal.CAStrings;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.CookieManager;
 import java.net.http.HttpClient;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * The default client factory.
@@ -63,18 +67,14 @@ public final class CAClients
   @Override
   public CAClientAsynchronousType openAsynchronousClient(
     final CAClientConfiguration configuration)
+    throws CAClientException
   {
     final var cookieJar =
       new CookieManager();
     final var locale =
       configuration.locale();
-
-    final CAStrings strings;
-    try {
-      strings = new CAStrings(locale);
-    } catch (final IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    final var strings =
+      openStrings(locale);
 
     final var httpClient =
       HttpClient.newBuilder()
@@ -87,18 +87,14 @@ public final class CAClients
   @Override
   public CAClientSynchronousType openSynchronousClient(
     final CAClientConfiguration configuration)
+    throws CAClientException
   {
     final var cookieJar =
       new CookieManager();
     final var locale =
       configuration.locale();
-
-    final CAStrings strings;
-    try {
-      strings = new CAStrings(locale);
-    } catch (final IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    final var strings =
+      openStrings(locale);
 
     final var httpClient =
       HttpClient.newBuilder()
@@ -106,5 +102,23 @@ public final class CAClients
         .build();
 
     return new CAClientSynchronous(configuration, strings, httpClient);
+  }
+
+  private static CAStrings openStrings(
+    final Locale locale)
+    throws CAClientException
+  {
+    try {
+      return new CAStrings(locale);
+    } catch (final IOException e) {
+      throw new CAClientException(
+        e.getMessage(),
+        e,
+        CAStandardErrorCodes.errorIo(),
+        Map.of(),
+        Optional.empty(),
+        Optional.empty()
+      );
+    }
   }
 }

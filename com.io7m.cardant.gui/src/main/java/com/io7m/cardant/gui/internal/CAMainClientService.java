@@ -20,6 +20,7 @@ package com.io7m.cardant.gui.internal;
 import com.io7m.cardant.client.api.CAClientAsynchronousType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.gui.internal.CAStatusEventType.CAStatusEventError;
 import com.io7m.cardant.gui.internal.CAStatusEventType.CAStatusEventInProgress;
@@ -68,6 +69,7 @@ public final class CAMainClientService
   public static CAMainClientService create(
     final RPServiceDirectoryType services,
     final Locale locale)
+    throws CAClientException
   {
     Objects.requireNonNull(services, "services");
     Objects.requireNonNull(locale, "locale");

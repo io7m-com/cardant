@@ -24,6 +24,7 @@ import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAVersion;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
@@ -64,6 +65,7 @@ import static com.io7m.cardant.client.basic.internal.CAUUIDs.nullUUID;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorAuthentication;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
+import static java.lang.Integer.toUnsignedString;
 
 /**
  * The version 1 protocol handler.
@@ -126,14 +128,7 @@ public final class CAHandler1 extends CAHandlerAbstract
 
   private static String userAgent()
   {
-    final String version;
-    final var pack = CAHandler1.class.getPackage();
-    if (pack != null) {
-      version = pack.getImplementationVersion();
-    } else {
-      version = "0.0.0";
-    }
-    return "com.io7m.cardant.client/%s".formatted(version);
+    return "com.io7m.cardant.client/%s".formatted(CAVersion.MAIN_VERSION);
   }
 
   private HBResultFailure<InputStream, CAIResponseError> fileDataServerError(
@@ -190,14 +185,6 @@ public final class CAHandler1 extends CAHandlerAbstract
     throws InterruptedException
   {
     return this.send(1, this.loginURI, true, message);
-  }
-
-  private <R extends CAIResponseType, C extends CAICommandType<R>>
-  HBResultType<R, CAIResponseError>
-  sendCommand(final C command)
-    throws InterruptedException
-  {
-    return this.send(1, this.commandURI, false, command);
   }
 
   private <R extends CAIResponseType, C extends CAICommandType<R>>
@@ -733,5 +720,12 @@ public final class CAHandler1 extends CAHandlerAbstract
         )
       );
     }
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[CAHandler1 0x%s]"
+      .formatted(toUnsignedString(this.hashCode(), 16));
   }
 }

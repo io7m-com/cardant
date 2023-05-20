@@ -64,7 +64,7 @@ public record CASessionSecretIdentifier(
   @Override
   public String toString()
   {
-    return this.value;
+    return "[CASessionSecretIdentifier <redacted>]";
   }
 
   /**

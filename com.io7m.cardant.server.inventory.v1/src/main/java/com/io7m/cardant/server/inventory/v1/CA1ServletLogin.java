@@ -56,6 +56,7 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_CLIENT;
 import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_SERVER;
 import static com.io7m.cardant.server.http.CAHTTPServletCoreInstrumented.withInstrumentation;
+import static com.io7m.cardant.server.inventory.v1.CA1Errors.errorResponseOf;
 import static com.io7m.cardant.server.inventory.v1.CA1ServletCoreTransactional.withTransaction;
 import static java.util.Map.entry;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
@@ -132,7 +133,7 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
     try {
       login = readLoginCommand(strings, limits, messages, request);
     } catch (final CAException e) {
-      return CA1Errors.errorResponseOf(messages, information, BLAME_CLIENT, e);
+      return errorResponseOf(messages, information, BLAME_CLIENT, e);
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
     }
@@ -165,7 +166,7 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
           .orElseThrow(IdUClientException::ofError);
       userId = result.user().id();
     } catch (final IdUClientException e) {
-      return CA1Errors.errorResponseOf(
+      return errorResponseOf(
         messages,
         information,
         BLAME_CLIENT,
@@ -191,7 +192,7 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
     try {
       icUser = CADatabaseUserUpdates.userMerge(database, icUser);
     } catch (final CADatabaseException e) {
-      return CA1Errors.errorResponseOf(messages, information, BLAME_SERVER, e);
+      return errorResponseOf(messages, information, BLAME_SERVER, e);
     }
 
     /*
@@ -204,6 +205,12 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
         login.userName(),
         icUser.subject()
       );
+
+    try {
+      transaction.commit();
+    } catch (final CADatabaseException e) {
+      return errorResponseOf(messages, information, BLAME_SERVER, e);
+    }
 
     final var httpSession = request.getSession(true);
     httpSession.setAttribute("ID", session.id());

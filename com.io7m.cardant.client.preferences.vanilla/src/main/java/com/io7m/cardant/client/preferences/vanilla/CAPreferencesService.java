@@ -97,7 +97,9 @@ public final class CAPreferencesService implements CAPreferencesServiceType
       Objects.requireNonNull(newPreferences, "newPreferences");
 
     final var parent = this.file.getParent();
-    Files.createDirectories(parent);
+    if (parent != null) {
+      Files.createDirectories(parent);
+    }
 
     final var tmp =
       this.file.resolveSibling(String.format("%s.xml", UUID.randomUUID()));

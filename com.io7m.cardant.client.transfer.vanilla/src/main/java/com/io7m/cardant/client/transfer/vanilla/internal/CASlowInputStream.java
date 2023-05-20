@@ -55,4 +55,13 @@ public final class CASlowInputStream extends FilterInputStream
     }
     return super.read(b, off, 0);
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CASlowInputStream 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

@@ -224,7 +224,7 @@ final class CADatabaseTransaction
    * @return The metrics tracer
    */
 
-  public Tracer tracer()
+  Tracer tracer()
   {
     return this.connection.database().tracer();
   }
@@ -243,5 +243,12 @@ final class CADatabaseTransaction
       throw new IllegalStateException("No user ID has been set.");
     }
     return this.userId;
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[CADatabaseTransaction 0x%s]"
+      .formatted(Long.toUnsignedString(this.hashCode(), 16));
   }
 }

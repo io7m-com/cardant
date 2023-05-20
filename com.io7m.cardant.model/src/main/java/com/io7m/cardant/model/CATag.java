@@ -39,9 +39,10 @@ public record CATag(
    */
 
   public static final Pattern VALID_TAG_NAME =
-    Pattern.compile("""
-                        [\\p{IsAlphabetic}\\p{Digit}_\\-]{1,127}
-                      """.trim(), UNICODE_CHARACTER_CLASS);
+    Pattern.compile(
+      "[\\p{IsAlphabetic}\\p{Digit}_\\-]{1,127}",
+      UNICODE_CHARACTER_CLASS
+    );
 
   /**
    * A tag.

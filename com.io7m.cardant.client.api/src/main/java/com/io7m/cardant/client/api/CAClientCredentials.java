@@ -75,9 +75,9 @@ public record CAClientCredentials(
       builder.append("http://");
     }
     builder.append(this.host);
-    builder.append(":");
+    builder.append(':');
     builder.append(this.port);
-    builder.append("/");
+    builder.append('/');
     return URI.create(builder.toString());
   }
 }

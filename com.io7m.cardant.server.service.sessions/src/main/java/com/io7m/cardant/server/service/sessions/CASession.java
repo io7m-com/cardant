@@ -53,6 +53,12 @@ public final class CASession
       new ConcurrentHashMap<>();
   }
 
+  @Override
+  public String toString()
+  {
+    return "[CASession]";
+  }
+
   /**
    * @return The user subject
    */

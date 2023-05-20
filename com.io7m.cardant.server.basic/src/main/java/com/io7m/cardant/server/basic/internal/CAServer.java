@@ -64,6 +64,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLES_ALL;
+import static java.lang.Integer.toUnsignedString;
 
 /**
  * The basic server frontend.
@@ -188,7 +189,7 @@ public final class CAServer implements CAServerType
         this.telemetry.openTelemetry(),
         this.configuration.inventoryApiAddress()
           .sessionExpiration()
-          .orElse(Duration.ofDays(3650L)),
+          .orElseGet(() -> Duration.ofDays(3650L)),
         "inventory"
       );
 
@@ -349,5 +350,11 @@ public final class CAServer implements CAServerType
     if (this.stopped.compareAndSet(false, true)) {
       this.resources.close();
     }
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[CAServer 0x%s]".formatted(toUnsignedString(this.hashCode(), 16));
   }
 }

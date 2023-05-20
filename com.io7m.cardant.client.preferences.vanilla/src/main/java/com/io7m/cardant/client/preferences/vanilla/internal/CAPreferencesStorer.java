@@ -73,7 +73,7 @@ public final class CAPreferencesStorer
   {
     final var recentFiles = this.preferences.recentFiles();
 
-    this.properties.put(
+    this.properties.setProperty(
       "recentFiles.count",
       Integer.toUnsignedString(recentFiles.size())
     );
@@ -81,7 +81,7 @@ public final class CAPreferencesStorer
     for (int index = 0; index < recentFiles.size(); ++index) {
       final var path = recentFiles.get(index);
       final var i = Integer.valueOf(index);
-      this.properties.put(
+      this.properties.setProperty(
         String.format("recentFiles.%s", i),
         path.toAbsolutePath().toString()
       );
@@ -90,7 +90,7 @@ public final class CAPreferencesStorer
 
   private void storeDebugging()
   {
-    this.properties.put(
+    this.properties.setProperty(
       "debugging",
       switch (this.preferences.debuggingEnabled()) {
         case DEBUGGING_DISABLED -> "false";
@@ -104,7 +104,7 @@ public final class CAPreferencesStorer
     final var bookmarks =
       this.preferences.serverBookmarks();
 
-    this.properties.put(
+    this.properties.setProperty(
       "server.bookmarks",
       Integer.toUnsignedString(bookmarks.size())
     );
@@ -113,38 +113,46 @@ public final class CAPreferencesStorer
       final var bookmark = bookmarks.get(index);
       final var i = Integer.valueOf(index);
 
-      this.properties.put(
+      this.properties.setProperty(
         String.format("server.bookmarks.%s.name", i),
         bookmark.name()
       );
-      this.properties.put(
+      this.properties.setProperty(
         String.format("server.bookmarks.%s.host", i),
         bookmark.host()
       );
-      this.properties.put(
+      this.properties.setProperty(
         String.format("server.bookmarks.%s.port", i),
         Integer.toUnsignedString(bookmark.port())
       );
-      this.properties.put(
+      this.properties.setProperty(
         String.format("server.bookmarks.%s.https", i),
         Boolean.toString(bookmark.isHTTPs())
       );
 
       final var credentials = bookmark.credentials();
       if (credentials instanceof CAPreferenceServerUsernamePassword usernamePassword) {
-        this.properties.put(
+        this.properties.setProperty(
           String.format("server.bookmarks.%s.credentials.type", i),
           "usernamePassword"
         );
-        this.properties.put(
+        this.properties.setProperty(
           String.format("server.bookmarks.%s.credentials.username", i),
           usernamePassword.username()
         );
-        this.properties.put(
+        this.properties.setProperty(
           String.format("server.bookmarks.%s.credentials.password", i),
           usernamePassword.password()
         );
       }
     }
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CAPreferencesStorer 0x%08x]",
+      Integer.valueOf(this.hashCode()));
   }
 }

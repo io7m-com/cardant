@@ -193,4 +193,12 @@ public final class CAPreferencesLoader
       default -> throw new IllegalStateException("Unexpected value: " + value);
     };
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[CAPreferencesLoader 0x%08x]",
+      Integer.valueOf(this.hashCode()));
+  }
 }
