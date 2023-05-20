@@ -420,6 +420,14 @@
 ; Responses.
 ;
 
+[documentation CAI1ResponseBlame "A blame assignment."]
+[variant CAI1ResponseBlame
+  [documentation BlameClient "The client sent a bad response."]
+  [case BlameClient]
+  [documentation BlameServer "Something went wrong on the server."]
+  [case BlameServer]
+]
+
 [documentation CAI1ResponseError "An error response."]
 [record CAI1ResponseError
   [documentation requestId "The ID of the request that yielded this response."]
@@ -432,6 +440,8 @@
   [field attributes [cb:Map cb:String cb:String]]
   [documentation remediatingAction "The remediating action, if any."]
   [field remediatingAction [cb:Option cb:String]]
+  [documentation blame "The blame assignment."]
+  [field blame CAI1ResponseBlame]
 ]
 
 [documentation CAI1ResponseLogin "A response to CAI1CommandLogin."]

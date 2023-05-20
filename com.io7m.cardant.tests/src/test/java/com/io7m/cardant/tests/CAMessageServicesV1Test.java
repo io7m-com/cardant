@@ -59,6 +59,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
@@ -475,7 +476,9 @@ public final class CAMessageServicesV1Test
             CAStandardErrorCodes.errorIo(),
             Map.of(),
             Optional.empty(),
-            Optional.empty())
+            Optional.empty(),
+            CAIResponseBlame.BLAME_SERVER
+          )
         )
       );
     assertEquals(message, this.roundTrip(message));

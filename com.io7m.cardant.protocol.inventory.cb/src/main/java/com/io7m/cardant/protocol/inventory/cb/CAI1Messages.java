@@ -34,6 +34,7 @@ import com.io7m.repetoir.core.RPServiceType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
+import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_CLIENT;
 
 /**
  * The protocol messages for Inventory Cedarbridge.
@@ -142,7 +144,6 @@ public final class CAI1Messages
   @Override
   public byte[] serialize(
     final CAIMessageType message)
-    throws CAProtocolException
   {
     try (var output = new ByteArrayOutputStream()) {
       final var context =
@@ -160,7 +161,8 @@ public final class CAI1Messages
             new CAErrorCode("error-invalid"),
             Map.of("X", "Y"),
             Optional.of("Avoid sending this."),
-            Optional.empty()
+            Optional.empty(),
+            BLAME_CLIENT
           ))
         );
       } else if (message instanceof CAICommandDebugRandom) {
@@ -172,14 +174,10 @@ public final class CAI1Messages
       }
 
       return output.toByteArray();
-    } catch (final IOException | NoSuchAlgorithmException e) {
-      throw new CAProtocolException(
-        e.getMessage(),
-        e,
-        errorIo(),
-        Collections.emptySortedMap(),
-        Optional.empty()
-      );
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
+    } catch (final CAProtocolException | NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
     }
   }
 

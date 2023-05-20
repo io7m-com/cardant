@@ -1,5 +1,5 @@
 /*
- * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,27 +14,41 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.server.http;
+
+import java.util.Objects;
+import java.util.OptionalLong;
+
 /**
- * Identity server (Server HTTP base classes)
+ * A redirect response.
+ *
+ * @param path The path
  */
 
-module com.io7m.cardant.server.http
+public record CAHTTPServletResponseRedirect(
+  String path)
+  implements CAHTTPServletResponseType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * A redirect response.
+   *
+   * @param path The path
+   */
 
-  requires com.io7m.cardant.error_codes;
-  requires com.io7m.cardant.model;
-  requires com.io7m.cardant.server.service.telemetry.api;
+  public CAHTTPServletResponseRedirect
+  {
+    Objects.requireNonNull(path, "path");
+  }
 
-  requires io.opentelemetry.api;
-  requires io.opentelemetry.semconv;
-  requires io.opentelemetry.context;
+  @Override
+  public int statusCode()
+  {
+    return 302;
+  }
 
-  requires jetty.servlet.api;
-  requires org.eclipse.jetty.http;
-  requires org.eclipse.jetty.servlet;
-  requires org.eclipse.jetty.util;
-
-  exports com.io7m.cardant.server.http;
+  @Override
+  public OptionalLong contentLengthOptional()
+  {
+    return OptionalLong.empty();
+  }
 }

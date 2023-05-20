@@ -33,6 +33,7 @@ import java.util.UUID;
  * @param errorCode         The error code
  * @param attributes        The error attributes
  * @param exception         The exception associated with the error, if any
+ * @param blame             The blame assignment
  */
 
 public record CAIResponseError(
@@ -41,7 +42,8 @@ public record CAIResponseError(
   CAErrorCode errorCode,
   Map<String, String> attributes,
   Optional<String> remediatingAction,
-  Optional<Throwable> exception)
+  Optional<Throwable> exception,
+  CAIResponseBlame blame)
   implements CAIResponseType, SStructuredErrorType<CAErrorCode>
 {
   /**
@@ -53,6 +55,7 @@ public record CAIResponseError(
    * @param errorCode         The error code
    * @param attributes        The error attributes
    * @param exception         The exception associated with the error, if any
+   * @param blame             The blame assignment
    */
 
   public CAIResponseError
@@ -63,5 +66,6 @@ public record CAIResponseError(
     Objects.requireNonNull(exception, "exception");
     Objects.requireNonNull(message, "summary");
     Objects.requireNonNull(attributes, "attributes");
+    Objects.requireNonNull(blame, "blame");
   }
 }

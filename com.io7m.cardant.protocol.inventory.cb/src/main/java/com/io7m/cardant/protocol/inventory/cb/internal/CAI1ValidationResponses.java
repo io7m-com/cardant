@@ -23,6 +23,7 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
@@ -52,6 +53,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Response;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame.BlameClient;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame.BlameServer;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseError;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFilePut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFileRemove;
@@ -255,8 +259,18 @@ public final class CAI1ValidationResponses
       new CBString(c.errorCode().id()),
       new CBString(c.message()),
       CBMaps.ofMapString(c.attributes()),
-      CBOptionType.fromOptional(c.remediatingAction().map(CBString::new))
+      CBOptionType.fromOptional(c.remediatingAction().map(CBString::new)),
+      convertToWireBlame(c.blame())
     );
+  }
+
+  private static CAI1ResponseBlame convertToWireBlame(
+    final CAIResponseBlame blame)
+  {
+    return switch (blame) {
+      case BLAME_SERVER -> new BlameServer();
+      case BLAME_CLIENT -> new BlameClient();
+    };
   }
 
   private static ProtocolCAIv1Type convertToWireResponseCAIResponseItemReposit(
@@ -715,8 +729,21 @@ public final class CAI1ValidationResponses
       m.fieldRemediatingAction()
         .asOptional()
         .map(CBString::value),
-      Optional.empty()
+      Optional.empty(),
+      convertFromWireBlame(m.fieldBlame())
     );
+  }
+
+  private static CAIResponseBlame convertFromWireBlame(
+    final CAI1ResponseBlame blame)
+  {
+    if (blame instanceof BlameClient) {
+      return CAIResponseBlame.BLAME_CLIENT;
+    }
+    if (blame instanceof BlameServer) {
+      return CAIResponseBlame.BLAME_SERVER;
+    }
+    throw new ProtocolUncheckedException(errorProtocol(blame));
   }
 
   public static CAIMessageType convertFromWireCAI1ResponseRolesRevoke(

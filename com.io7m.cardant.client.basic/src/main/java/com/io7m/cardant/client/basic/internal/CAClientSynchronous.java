@@ -23,6 +23,7 @@ import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.hibiscus.api.HBResultType;
@@ -88,7 +89,8 @@ public final class CAClientSynchronous
         ca.errorCode(),
         ca.attributes(),
         ca.remediatingAction(),
-        Optional.of(ca)
+        Optional.of(ca),
+        CAIResponseBlame.BLAME_CLIENT
       );
     }
 
@@ -100,7 +102,8 @@ public final class CAClientSynchronous
       errorIo(),
       Map.of(),
       Optional.empty(),
-      Optional.of(ex)
+      Optional.of(ex),
+      CAIResponseBlame.BLAME_CLIENT
     );
   }
 

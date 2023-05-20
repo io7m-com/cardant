@@ -24,6 +24,7 @@ import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.hibiscus.api.HBResultFailure;
@@ -61,7 +62,8 @@ public final class CAHandlerDisconnected
         CAStandardErrorCodes.errorNotLoggedIn(),
         Map.of(),
         Optional.empty(),
-        Optional.empty()
+        Optional.empty(),
+        CAIResponseBlame.BLAME_CLIENT
       )
     );
   }
@@ -111,7 +113,8 @@ public final class CAHandlerDisconnected
           e.errorCode(),
           e.attributes(),
           e.remediatingAction(),
-          Optional.of(e)
+          Optional.of(e),
+          CAIResponseBlame.BLAME_CLIENT
         )
       );
     }

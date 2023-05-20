@@ -1,5 +1,5 @@
 /*
- * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,27 +14,23 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.protocol.inventory;
+
 /**
- * Identity server (Server HTTP base classes)
+ * A notion of whether the client is to blame for an error response, or the server.
  */
 
-module com.io7m.cardant.server.http
+public enum CAIResponseBlame
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * The client sent a bad response.
+   */
 
-  requires com.io7m.cardant.error_codes;
-  requires com.io7m.cardant.model;
-  requires com.io7m.cardant.server.service.telemetry.api;
+  BLAME_CLIENT,
 
-  requires io.opentelemetry.api;
-  requires io.opentelemetry.semconv;
-  requires io.opentelemetry.context;
+  /**
+   * Something went wrong on the server.
+   */
 
-  requires jetty.servlet.api;
-  requires org.eclipse.jetty.http;
-  requires org.eclipse.jetty.servlet;
-  requires org.eclipse.jetty.util;
-
-  exports com.io7m.cardant.server.http;
+  BLAME_SERVER
 }

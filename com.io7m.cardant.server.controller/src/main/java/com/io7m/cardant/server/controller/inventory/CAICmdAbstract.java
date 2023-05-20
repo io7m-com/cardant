@@ -27,7 +27,6 @@ import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutorType;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -48,7 +47,7 @@ public abstract class CAICmdAbstract<C extends CAProtocolMessageType>
   public final CAIResponseType execute(
     final CAICommandContext context,
     final C command)
-    throws CACommandExecutionFailure, IOException, InterruptedException
+    throws CACommandExecutionFailure
   {
     Objects.requireNonNull(context, "context");
     Objects.requireNonNull(command, "command");

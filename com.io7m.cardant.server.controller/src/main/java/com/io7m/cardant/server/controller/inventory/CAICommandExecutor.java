@@ -45,8 +45,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutorType;
 
-import java.io.IOException;
-
 /**
  * A command executor for public commands.
  */
@@ -70,7 +68,7 @@ public final class CAICommandExecutor
   public CAIResponseType execute(
     final CAICommandContext context,
     final CAICommandType<? extends CAIResponseType> command)
-    throws CACommandExecutionFailure, IOException, InterruptedException
+    throws CACommandExecutionFailure
   {
     final var span =
       context.tracer()
@@ -90,78 +88,78 @@ public final class CAICommandExecutor
   private static CAIResponseType executeCommand(
     final CAICommandContext context,
     final CAICommandType<? extends CAIResponseType> command)
-    throws CACommandExecutionFailure, IOException, InterruptedException
+    throws CACommandExecutionFailure
   {
-    if (command instanceof CAICommandFilePut m) {
+    if (command instanceof final CAICommandFilePut m) {
       return new CAICmdFilePut().execute(context, m);
     }
-    if (command instanceof CAICommandFileRemove m) {
+    if (command instanceof final CAICommandFileRemove m) {
       return new CAICmdFileRemove().execute(context, m);
     }
-    if (command instanceof CAICommandItemAttachmentAdd m) {
+    if (command instanceof final CAICommandItemAttachmentAdd m) {
       return new CAICmdItemAttachmentAdd().execute(context, m);
     }
-    if (command instanceof CAICommandItemAttachmentRemove m) {
+    if (command instanceof final CAICommandItemAttachmentRemove m) {
       return new CAICmdItemAttachmentRemove().execute(context, m);
     }
-    if (command instanceof CAICommandItemCreate m) {
+    if (command instanceof final CAICommandItemCreate m) {
       return new CAICmdItemCreate().execute(context, m);
     }
-    if (command instanceof CAICommandItemGet m) {
+    if (command instanceof final CAICommandItemGet m) {
       return new CAICmdItemGet().execute(context, m);
     }
-    if (command instanceof CAICommandItemLocationsList m) {
+    if (command instanceof final CAICommandItemLocationsList m) {
       return new CAICmdItemLocationsList().execute(context, m);
     }
-    if (command instanceof CAICommandItemMetadataPut m) {
+    if (command instanceof final CAICommandItemMetadataPut m) {
       return new CAICmdItemMetadataPut().execute(context, m);
     }
-    if (command instanceof CAICommandItemMetadataRemove m) {
+    if (command instanceof final CAICommandItemMetadataRemove m) {
       return new CAICmdItemMetadataRemove().execute(context, m);
     }
-    if (command instanceof CAICommandItemReposit m) {
+    if (command instanceof final CAICommandItemReposit m) {
       return new CAICmdItemReposit().execute(context, m);
     }
-    if (command instanceof CAICommandItemsRemove m) {
+    if (command instanceof final CAICommandItemsRemove m) {
       return new CAICmdItemsRemove().execute(context, m);
     }
-    if (command instanceof CAICommandItemUpdate m) {
+    if (command instanceof final CAICommandItemUpdate m) {
       return new CAICmdItemUpdate().execute(context, m);
     }
-    if (command instanceof CAICommandLocationGet m) {
+    if (command instanceof final CAICommandLocationGet m) {
       throw new IllegalStateException();
     }
-    if (command instanceof CAICommandLocationList m) {
+    if (command instanceof final CAICommandLocationList m) {
       return new CAICmdLocationsList().execute(context, m);
     }
-    if (command instanceof CAICommandLocationPut m) {
+    if (command instanceof final CAICommandLocationPut m) {
       return new CAICmdLocationPut().execute(context, m);
     }
-    if (command instanceof CAICommandTagList m) {
+    if (command instanceof final CAICommandTagList m) {
       return new CAICmdTagsList().execute(context, m);
     }
-    if (command instanceof CAICommandTagsDelete m) {
+    if (command instanceof final CAICommandTagsDelete m) {
       return new CAICmdTagsDelete().execute(context, m);
     }
-    if (command instanceof CAICommandTagsPut m) {
+    if (command instanceof final CAICommandTagsPut m) {
       return new CAICmdTagsPut().execute(context, m);
     }
-    if (command instanceof CAICommandItemSearchBegin m) {
+    if (command instanceof final CAICommandItemSearchBegin m) {
       return new CAICmdItemSearchBegin().execute(context, m);
     }
-    if (command instanceof CAICommandItemSearchNext m) {
+    if (command instanceof final CAICommandItemSearchNext m) {
       return new CAICmdItemSearchNext().execute(context, m);
     }
-    if (command instanceof CAICommandItemSearchPrevious m) {
+    if (command instanceof final CAICommandItemSearchPrevious m) {
       return new CAICmdItemSearchPrevious().execute(context, m);
     }
-    if (command instanceof CAICommandRolesAssign m) {
+    if (command instanceof final CAICommandRolesAssign m) {
       return new CAICmdRolesAssign().execute(context, m);
     }
-    if (command instanceof CAICommandRolesRevoke m) {
+    if (command instanceof final CAICommandRolesRevoke m) {
       return new CAICmdRolesRevoke().execute(context, m);
     }
-    if (command instanceof CAICommandRolesGet m) {
+    if (command instanceof final CAICommandRolesGet m) {
       return new CAICmdRolesGet().execute(context, m);
     }
 

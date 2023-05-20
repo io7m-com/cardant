@@ -21,12 +21,17 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.error_codes</artifactId>
+      <artifactId>com.io7m.cardant.database.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.server.service.clock</artifactId>
+      <artifactId>com.io7m.cardant.model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.error_codes</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

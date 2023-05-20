@@ -113,10 +113,6 @@
     </dependency>
     <dependency>
       <groupId>com.io7m.idstore</groupId>
-      <artifactId>com.io7m.idstore.error_codes</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.idstore</groupId>
       <artifactId>com.io7m.idstore.model</artifactId>
     </dependency>
     <dependency>
@@ -163,38 +159,5 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.io7m.stmp</groupId>
-        <artifactId>string-template-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-version</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>render</goal>
-            </goals>
-            <configuration>
-              <templates>
-                <template>
-                  <directory>src/main/string-template</directory>
-                  <name>CAI1Version</name>
-                  <target>
-                    ${project.build.directory}/generated-sources/string-template/com/io7m/cardant/server/inventory/v1/CAI1Version.java
-                  </target>
-                  <properties>
-                    <appVersion>${project.version}</appVersion>
-                    <appBuild>${buildNumber}</appBuild>
-                  </properties>
-                </template>
-              </templates>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

@@ -19,7 +19,6 @@ package com.io7m.cardant.server.inventory.v1;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.server.http.CAPlainErrorHandler;
-import com.io7m.cardant.server.http.CARequestUniqueIDs;
 import com.io7m.cardant.server.http.CAServletHolders;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
@@ -34,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -94,21 +92,15 @@ public final class CAI1Server
       new ServletContextHandler();
 
     servlets.addServlet(
-      servletHolders.create(CAI1Versions.class, CAI1Versions::new),
+      servletHolders.create(CA1ServletVersions.class, CA1ServletVersions::new),
       "/"
     );
     servlets.addServlet(
-      servletHolders.create(CA1VersionServlet.class, CA1VersionServlet::new),
-      "/version"
-    );
-    servlets.addServlet(
-      servletHolders.create(CAI1Login.class, CAI1Login::new),
+      servletHolders.create(CA1ServletLogin.class, CA1ServletLogin::new),
       "/inventory/1/0/login"
     );
     servlets.addServlet(
-      servletHolders.create(
-        CA1CommandServlet.class,
-        CA1CommandServlet::new),
+      servletHolders.create(CA1ServletCommand.class, CA1ServletCommand::new),
       "/inventory/1/0/command"
     );
 
@@ -136,14 +128,6 @@ public final class CAI1Server
 
     final var gzip = new GzipHandler();
     gzip.setHandler(sessionHandler);
-
-    /*
-     * Add a connector listener that adds unique identifiers to all requests.
-     */
-
-    Arrays.stream(server.getConnectors()).forEach(
-      connector -> connector.addBean(new CARequestUniqueIDs(services))
-    );
 
     server.setErrorHandler(new CAPlainErrorHandler());
     server.setHandler(gzip);

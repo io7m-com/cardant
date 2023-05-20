@@ -30,6 +30,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIEventType;
 import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -156,7 +157,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         errorIo(),
         attributes,
         Optional.empty(),
-        Optional.empty()
+        Optional.empty(),
+        CAIResponseBlame.BLAME_SERVER
       )
     );
   }
@@ -177,7 +179,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         errorIo(),
         attributes,
         Optional.empty(),
-        Optional.of(e)
+        Optional.of(e),
+        CAIResponseBlame.BLAME_SERVER
       )
     );
   }
@@ -294,7 +297,8 @@ public final class CAHandler1 extends CAHandlerAbstract
           e.errorCode(),
           e.attributes(),
           e.remediatingAction(),
-          Optional.of(e)
+          Optional.of(e),
+          CAIResponseBlame.BLAME_SERVER
         )
       );
     } catch (final IOException e) {
@@ -306,7 +310,8 @@ public final class CAHandler1 extends CAHandlerAbstract
           errorIo(),
           Map.of(),
           Optional.empty(),
-          Optional.of(e)
+          Optional.of(e),
+          CAIResponseBlame.BLAME_CLIENT
         )
       );
     }
@@ -359,7 +364,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         errorProtocol(),
         attributes,
         Optional.empty(),
-        Optional.empty()
+        Optional.empty(),
+        CAIResponseBlame.BLAME_SERVER
       )
     );
   }
@@ -386,7 +392,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         errorProtocol(),
         attributes,
         Optional.empty(),
-        Optional.empty()
+        Optional.empty(),
+        CAIResponseBlame.BLAME_SERVER
       )
     );
   }
@@ -550,7 +557,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         errorIo(),
         Map.of(),
         Optional.empty(),
-        Optional.empty()
+        Optional.empty(),
+        CAIResponseBlame.BLAME_CLIENT
       )
     );
   }
@@ -609,7 +617,8 @@ public final class CAHandler1 extends CAHandlerAbstract
             errorProtocol(),
             Map.of(),
             Optional.empty(),
-            Optional.empty()
+            Optional.empty(),
+            CAIResponseBlame.BLAME_SERVER
           )
         );
       }
@@ -629,7 +638,8 @@ public final class CAHandler1 extends CAHandlerAbstract
           errorIo(),
           Map.of(),
           Optional.empty(),
-          Optional.of(e)
+          Optional.of(e),
+          CAIResponseBlame.BLAME_CLIENT
         )
       );
     }
@@ -647,7 +657,8 @@ public final class CAHandler1 extends CAHandlerAbstract
           errorIo(),
           Map.of("x", "y"),
           Optional.empty(),
-          Optional.empty()
+          Optional.empty(),
+          CAIResponseBlame.BLAME_CLIENT
         ));
 
       final var request =
@@ -696,7 +707,8 @@ public final class CAHandler1 extends CAHandlerAbstract
             errorProtocol(),
             Map.of(),
             Optional.empty(),
-            Optional.empty()
+            Optional.empty(),
+            CAIResponseBlame.BLAME_SERVER
           )
         );
       }
@@ -716,7 +728,8 @@ public final class CAHandler1 extends CAHandlerAbstract
           errorIo(),
           Map.of(),
           Optional.empty(),
-          Optional.of(e)
+          Optional.of(e),
+          CAIResponseBlame.BLAME_CLIENT
         )
       );
     }

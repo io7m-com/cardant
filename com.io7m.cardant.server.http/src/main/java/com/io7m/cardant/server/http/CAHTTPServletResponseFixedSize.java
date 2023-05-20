@@ -16,45 +16,40 @@
 
 package com.io7m.cardant.server.http;
 
-import jakarta.servlet.Servlet;
-import org.eclipse.jetty.servlet.ServletHolder;
-
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.OptionalLong;
 
 /**
- * A servlet holder used to inject dependencies into servlets.
+ * A fixed size servlet response.
  *
- * @param <T> The type of servlet
+ * @param statusCode  The status code
+ * @param contentType The content type
+ * @param data        The data
  */
 
-public final class CAServletHolder<T extends Servlet>
-  extends ServletHolder
+public record CAHTTPServletResponseFixedSize(
+  int statusCode,
+  String contentType,
+  byte[] data)
+  implements CAHTTPServletResponseType
 {
-  private final Supplier<T> constructor;
-
   /**
-   * Construct a holder.
+   * A fixed size servlet response.
    *
-   * @param inClazz       The servlet class
-   * @param inConstructor A constructor function to produce servlet instances
+   * @param statusCode  The status code
+   * @param contentType The content type
+   * @param data        The data
    */
 
-  public CAServletHolder(
-    final Class<T> inClazz,
-    final Supplier<T> inConstructor)
+  public CAHTTPServletResponseFixedSize
   {
-    final Class<T> clazz =
-      Objects.requireNonNull(inClazz, "clazz");
-    this.constructor =
-      Objects.requireNonNull(inConstructor, "constructor");
-
-    this.setHeldClass(clazz);
+    Objects.requireNonNull(contentType, "contentType");
+    Objects.requireNonNull(data, "data");
   }
 
   @Override
-  protected Servlet newInstance()
+  public OptionalLong contentLengthOptional()
   {
-    return this.constructor.get();
+    return OptionalLong.of(Integer.toUnsignedLong(this.data.length));
   }
 }

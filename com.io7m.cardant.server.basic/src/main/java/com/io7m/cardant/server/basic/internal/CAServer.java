@@ -29,7 +29,6 @@ import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerException;
 import com.io7m.cardant.server.api.CAServerType;
 import com.io7m.cardant.server.controller.CAServerStrings;
-import com.io7m.cardant.server.inventory.v1.CAI1Sends;
 import com.io7m.cardant.server.inventory.v1.CAI1Server;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.configuration.CAConfigurationService;
@@ -213,7 +212,6 @@ public final class CAServer implements CAServerType
 
     final var idA1Messages = new CAI1Messages();
     services.register(CAI1Messages.class, idA1Messages);
-    services.register(CAI1Sends.class, new CAI1Sends(idA1Messages));
 
     final var maintenance =
       CAMaintenanceService.create(clock, this.telemetry, newDatabase);
