@@ -23,12 +23,16 @@ import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration;
+import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CAMetrics;
+import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CAOTLPProtocol;
+import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CATraces;
 import com.io7m.cardant.server.service.configuration.xml.Database;
 import com.io7m.cardant.server.service.configuration.xml.HTTPService;
 import com.io7m.cardant.server.service.configuration.xml.IdStore;
 import com.io7m.cardant.server.service.configuration.xml.Configuration;
 import com.io7m.cardant.server.service.configuration.xml.DatabaseKind;
 import com.io7m.cardant.server.service.configuration.xml.OpenTelemetry;
+import com.io7m.cardant.server.service.configuration.xml.OpenTelemetryProtocol;
 import com.io7m.repetoir.core.RPServiceType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -138,18 +142,41 @@ public final class CAConfigurationFiles
 
   private static Optional<CAServerOpenTelemetryConfiguration> processOpenTelemetry(
     final OpenTelemetry openTelemetry)
-    throws URISyntaxException
   {
     if (openTelemetry == null) {
       return Optional.empty();
     }
 
+    final var metrics =
+      Optional.ofNullable(openTelemetry.getMetrics())
+        .map(m -> new CAMetrics(
+          URI.create(m.getEndpoint()),
+          processProtocol(m.getProtocol())
+        ));
+
+    final var traces =
+      Optional.ofNullable(openTelemetry.getTraces())
+        .map(m -> new CATraces(
+          URI.create(m.getEndpoint()),
+          processProtocol(m.getProtocol())
+        ));
+
     return Optional.of(
       new CAServerOpenTelemetryConfiguration(
         openTelemetry.getLogicalServiceName(),
-        new URI(openTelemetry.getCollectorAddress())
+        metrics,
+        traces
       )
     );
+  }
+
+  private static CAOTLPProtocol processProtocol(
+    final OpenTelemetryProtocol protocol)
+  {
+    return switch (protocol) {
+      case GRPC -> CAOTLPProtocol.GRPC;
+      case HTTP -> CAOTLPProtocol.HTTP;
+    };
   }
 
   private static CAServerIdstoreConfiguration processIdstore(

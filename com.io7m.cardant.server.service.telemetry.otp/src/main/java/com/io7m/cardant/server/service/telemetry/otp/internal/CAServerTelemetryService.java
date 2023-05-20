@@ -53,7 +53,7 @@ public final class CAServerTelemetryService
   @Override
   public String toString()
   {
-    return "[IdServerTelemetryService 0x%s]"
+    return "[CAServerTelemetryService 0x%s]"
       .formatted(Long.toUnsignedString(this.hashCode(), 16));
   }
 

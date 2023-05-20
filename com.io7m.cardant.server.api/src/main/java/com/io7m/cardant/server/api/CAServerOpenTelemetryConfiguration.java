@@ -18,28 +18,96 @@ package com.io7m.cardant.server.api;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Configuration information for OpenTelemetry.
  *
  * @param logicalServiceName The logical service name
- * @param collectorAddress   The address of the OTEL collector
+ * @param metrics            The configuration for OTLP metrics
+ * @param traces             The configuration for OTLP traces
  */
 
 public record CAServerOpenTelemetryConfiguration(
   String logicalServiceName,
-  URI collectorAddress)
+  Optional<CAMetrics> metrics,
+  Optional<CATraces> traces)
 {
   /**
    * Configuration information for OpenTelemetry.
    *
-   * @param collectorAddress   The address of the OTEL collector
    * @param logicalServiceName The logical service name
+   * @param metrics            The configuration for OTLP metrics
+   * @param traces             The configuration for OTLP traces
    */
 
   public CAServerOpenTelemetryConfiguration
   {
     Objects.requireNonNull(logicalServiceName, "logicalServiceName");
-    Objects.requireNonNull(collectorAddress, "collectorAddress");
+    Objects.requireNonNull(metrics, "metrics");
+    Objects.requireNonNull(traces, "traces");
+  }
+
+  /**
+   * The protocol used to deliver OpenTelemetry data.
+   */
+
+  public enum CAOTLPProtocol
+  {
+    /**
+     * gRPC
+     */
+
+    GRPC,
+
+    /**
+     * HTTP(s)
+     */
+
+    HTTP
+  }
+
+  /**
+   * Metrics configuration.
+   *
+   * @param endpoint The endpoint to which OTLP metrics data will be sent.
+   * @param protocol The protocol used to deliver OpenTelemetry data.
+   */
+
+  public record CAMetrics(
+    URI endpoint,
+    CAOTLPProtocol protocol)
+  {
+    /**
+     * Metrics configuration.
+     */
+
+    public CAMetrics
+    {
+      Objects.requireNonNull(endpoint, "endpoint");
+      Objects.requireNonNull(protocol, "protocol");
+    }
+  }
+
+  /**
+   * Trace configuration.
+   *
+   * @param endpoint The endpoint to which OTLP trace data will be sent.
+   * @param protocol The protocol used to deliver OpenTelemetry data.
+   */
+
+  public record CATraces(
+    URI endpoint,
+    CAOTLPProtocol protocol)
+  {
+    /**
+     * Trace configuration.
+     */
+
+    public CATraces
+    {
+      Objects.requireNonNull(endpoint, "endpoint");
+      Objects.requireNonNull(protocol, "protocol");
+    }
   }
 }
