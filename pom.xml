@@ -34,6 +34,7 @@
     <module>com.io7m.cardant.gui</module>
     <module>com.io7m.cardant.main</module>
     <module>com.io7m.cardant.model</module>
+    <module>com.io7m.cardant.oci</module>
     <module>com.io7m.cardant.protocol.api</module>
     <module>com.io7m.cardant.protocol.inventory.cb</module>
     <module>com.io7m.cardant.protocol.inventory</module>
@@ -575,6 +576,11 @@
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-stdlib</artifactId>
         <version>1.8.21</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okio</groupId>
+        <artifactId>okio-jvm</artifactId>
+        <version>3.3.0</version>
       </dependency>
 
       <!-- Database -->
