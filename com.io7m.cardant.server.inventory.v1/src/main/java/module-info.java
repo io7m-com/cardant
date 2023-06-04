@@ -43,6 +43,7 @@ module com.io7m.cardant.server.inventory.v1
   requires org.eclipse.jetty.http;
   requires org.eclipse.jetty.server;
   requires org.eclipse.jetty.servlet;
+  requires com.io7m.cardant.server.service.health;
 
   exports com.io7m.cardant.server.inventory.v1;
 }

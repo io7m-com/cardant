@@ -22,6 +22,8 @@ import com.io7m.cardant.server.http.CAPlainErrorHandler;
 import com.io7m.cardant.server.http.CAServletHolders;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
+import org.eclipse.jetty.server.ForwardedRequestCustomizer;
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
@@ -83,6 +85,20 @@ public final class CAI1Server
       new Server(address);
 
     /*
+     * Add a request customizer that properly handles headers such as
+     * X-Forwarded-For and so on.
+     */
+
+    for (final var connector : server.getConnectors()) {
+      for (final var factory : connector.getConnectionFactories()) {
+        if (factory instanceof final HttpConfiguration.ConnectionFactory http) {
+          http.getHttpConfiguration()
+            .addCustomizer(new ForwardedRequestCustomizer());
+        }
+      }
+    }
+
+    /*
      * Configure all the servlets.
      */
 
@@ -102,6 +118,18 @@ public final class CAI1Server
     servlets.addServlet(
       servletHolders.create(CA1ServletCommand.class, CA1ServletCommand::new),
       "/inventory/1/0/command"
+    );
+    servlets.addServlet(
+      servletHolders.create(
+        CA1ServletHealth.class,
+        CA1ServletHealth::new),
+      "/health"
+    );
+    servlets.addServlet(
+      servletHolders.create(
+        CA1ServletVersion.class,
+        CA1ServletVersion::new),
+      "/version"
     );
 
     /*
@@ -130,6 +158,9 @@ public final class CAI1Server
     gzip.setHandler(sessionHandler);
 
     server.setErrorHandler(new CAPlainErrorHandler());
+    server.setRequestLog((request, response) -> {
+
+    });
     server.setHandler(gzip);
     server.start();
     LOG.info("[{}] inventory server started", address);

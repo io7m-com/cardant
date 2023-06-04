@@ -23,6 +23,7 @@ import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration;
+import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CALogs;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CAMetrics;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CAOTLPProtocol;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CATraces;
@@ -147,6 +148,13 @@ public final class CAConfigurationFiles
       return Optional.empty();
     }
 
+    final var logs =
+      Optional.ofNullable(openTelemetry.getLogs())
+        .map(m -> new CALogs(
+          URI.create(m.getEndpoint()),
+          processProtocol(m.getProtocol())
+        ));
+
     final var metrics =
       Optional.ofNullable(openTelemetry.getMetrics())
         .map(m -> new CAMetrics(
@@ -164,6 +172,7 @@ public final class CAConfigurationFiles
     return Optional.of(
       new CAServerOpenTelemetryConfiguration(
         openTelemetry.getLogicalServiceName(),
+        logs,
         metrics,
         traces
       )

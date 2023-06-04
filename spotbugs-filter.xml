@@ -475,6 +475,16 @@
     <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
   </Match>
 
+  <!--                                        -->
+  <!-- com.io7m.cardant.server.service.health -->
+  <!--                                        -->
+
+  <!-- It's an API. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.health.CAServerHealth"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
   <!--                                    -->
   <!-- com.io7m.cardant.server.controller -->
   <!--                                    -->
@@ -597,6 +607,13 @@
     <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletLogin"/>
     <Method name="execute"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- This string specifically needs to write \r\n\r\n -->
+  <Match>
+    <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletVersion"/>
+    <Method name="execute"/>
+    <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
   </Match>
 
   <!--                              -->

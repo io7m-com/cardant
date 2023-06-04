@@ -24,12 +24,14 @@ import java.util.Optional;
  * Configuration information for OpenTelemetry.
  *
  * @param logicalServiceName The logical service name
+ * @param logs               The configuration for OTLP logs
  * @param metrics            The configuration for OTLP metrics
  * @param traces             The configuration for OTLP traces
  */
 
 public record CAServerOpenTelemetryConfiguration(
   String logicalServiceName,
+  Optional<CALogs> logs,
   Optional<CAMetrics> metrics,
   Optional<CATraces> traces)
 {
@@ -37,6 +39,7 @@ public record CAServerOpenTelemetryConfiguration(
    * Configuration information for OpenTelemetry.
    *
    * @param logicalServiceName The logical service name
+   * @param logs               The configuration for OTLP logs
    * @param metrics            The configuration for OTLP metrics
    * @param traces             The configuration for OTLP traces
    */
@@ -44,6 +47,7 @@ public record CAServerOpenTelemetryConfiguration(
   public CAServerOpenTelemetryConfiguration
   {
     Objects.requireNonNull(logicalServiceName, "logicalServiceName");
+    Objects.requireNonNull(logs, "logs");
     Objects.requireNonNull(metrics, "metrics");
     Objects.requireNonNull(traces, "traces");
   }
@@ -105,6 +109,28 @@ public record CAServerOpenTelemetryConfiguration(
      */
 
     public CATraces
+    {
+      Objects.requireNonNull(endpoint, "endpoint");
+      Objects.requireNonNull(protocol, "protocol");
+    }
+  }
+
+  /**
+   * Logs configuration.
+   *
+   * @param endpoint The endpoint to which OTLP log data will be sent.
+   * @param protocol The protocol used to deliver OpenTelemetry data.
+   */
+
+  public record CALogs(
+    URI endpoint,
+    CAOTLPProtocol protocol)
+  {
+    /**
+     * Logs configuration.
+     */
+
+    public CALogs
     {
       Objects.requireNonNull(endpoint, "endpoint");
       Objects.requireNonNull(protocol, "protocol");

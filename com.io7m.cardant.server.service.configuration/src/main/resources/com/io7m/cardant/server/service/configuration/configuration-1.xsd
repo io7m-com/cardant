@@ -99,6 +99,36 @@
     </restriction>
   </simpleType>
 
+  <element name="Logs">
+    <annotation>
+      <documentation>
+        Configuration information for OpenTelemetry logs.
+      </documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="Endpoint"
+                 use="required"
+                 type="anyURI">
+        <annotation>
+          <documentation>
+            The endpoint to which OTLP log data will be sent.
+          </documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="Protocol"
+                 use="required"
+                 type="c:OpenTelemetryProtocol">
+        <annotation>
+          <documentation>
+            The protocol used to send log data.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
   <element name="Metrics">
     <annotation>
       <documentation>
@@ -168,6 +198,9 @@
 
     <complexType>
       <sequence>
+        <element ref="c:Logs"
+                 minOccurs="0"
+                 maxOccurs="1"/>
         <element ref="c:Metrics"
                  minOccurs="0"
                  maxOccurs="1"/>
