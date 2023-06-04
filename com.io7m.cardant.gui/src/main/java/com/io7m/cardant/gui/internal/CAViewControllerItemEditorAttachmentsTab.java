@@ -172,7 +172,7 @@ public final class CAViewControllerItemEditorAttachmentsTab
     final var choosers =
       this.fileDialogs.choosers();
     final var chooser =
-      choosers.create(this.stage, fileChooserConfiguration);
+      choosers.create(fileChooserConfiguration);
     final var files =
       chooser.showAndWait();
 
