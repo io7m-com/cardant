@@ -18,8 +18,6 @@ package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
-import com.io7m.cardant.client.transfer.api.CATransferServiceType;
-import com.io7m.cardant.client.transfer.vanilla.CATransferService;
 import com.io7m.jade.api.ApplicationDirectories;
 import com.io7m.jade.api.ApplicationDirectoriesType;
 import com.io7m.jade.api.ApplicationDirectoryConfiguration;
@@ -30,9 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Clock;
-import java.time.Duration;
 import java.util.Locale;
-import java.util.concurrent.Executors;
 
 public final class CAMainServices
 {
@@ -64,8 +60,7 @@ public final class CAMainServices
     final var statusService = new CAStatusService();
     services.register(CAStatusServiceType.class, statusService);
 
-    final var clients =
-      CAMainClientService.create(services, locale);
+    final var clients = CAMainClientService.create(services, locale);
     services.register(CAMainClientService.class, clients);
 
     services.register(
@@ -88,30 +83,6 @@ public final class CAMainServices
     final var mainController = new CAMainController(services);
     services.register(CAMainController.class, mainController);
 
-    final var transferIO =
-      Executors.newScheduledThreadPool(4, r -> {
-        final var thread = new Thread(r);
-        thread.setDaemon(true);
-        thread.setName(
-          new StringBuilder(64)
-            .append("com.io7m.cardant.client.transfer[")
-            .append(thread.getId())
-            .append("]")
-            .toString()
-        );
-        return thread;
-      });
-
-    final var transfers =
-      CATransferService.create(
-        Clock.systemUTC(),
-        transferIO,
-        Duration.ofMinutes(1L),
-        locale,
-        directories.cacheDirectory().resolve("transfers")
-      );
-
-    services.register(CATransferServiceType.class, transfers);
     return services;
   }
 

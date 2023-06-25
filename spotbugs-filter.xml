@@ -152,6 +152,7 @@
       <Class name="com.io7m.cardant.client.api.CAClientEventDataUpdated"/>
       <Class name="com.io7m.cardant.client.api.CAClientException"/>
       <Class name="com.io7m.cardant.client.api.CAClientUnit"/>
+      <Class name="com.io7m.cardant.client.api.CAClientTransferStatistics"/>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>
@@ -376,6 +377,24 @@
     </Or>
   </Match>
 
+  <!-- This is, depressingly, the only way to use ALTER ROLE. -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Method name="updateWorkerRolePassword"/>
+    <Or>
+      <Bug pattern="SQL_INJECTION_JDBC"/>
+      <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
+    </Or>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Method name="updateReadOnlyRolePassword"/>
+    <Or>
+      <Bug pattern="SQL_INJECTION_JDBC"/>
+      <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
+    </Or>
+  </Match>
+
   <Match>
     <Package name="com.io7m.cardant.database.postgres.internal"/>
     <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS"/>
@@ -528,6 +547,12 @@
     <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
   </Match>
 
+  <!-- Translating XML to records. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAConfigurationFiles"/>
+    <Bug pattern="CE_CLASS_ENVY"/>
+  </Match>
+
   <!--                              -->
   <!-- com.io7m.cardant.server.http -->
   <!--                              -->
@@ -604,7 +629,10 @@
 
   <!-- IOException -> UncheckedIOException -->
   <Match>
-    <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletLogin"/>
+    <Or>
+      <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletLogin"/>
+      <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletFileUpload"/>
+    </Or>
     <Method name="execute"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
   </Match>
@@ -621,11 +649,11 @@
   <!--                              -->
 
   <Match>
-    <Class name="com.io7m.cardant.main.CAServerMain"/>
+    <Class name="com.io7m.cardant.main.CAMain"/>
     <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
   </Match>
   <Match>
-    <Class name="com.io7m.cardant.main.CAServerMain"/>
+    <Class name="com.io7m.cardant.main.CAMain"/>
     <Bug pattern="UVA_USE_VAR_ARGS"/>
   </Match>
   <Match>
@@ -635,6 +663,31 @@
   <Match>
     <Package name="com.io7m.cardant.main.internal"/>
     <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+  </Match>
+
+  <!--                        -->
+  <!-- com.io7m.cardant.shell -->
+  <!--                        -->
+
+  <!-- Record types. -->
+  <Match>
+    <Class name="com.io7m.cardant.shell.internal.CAShellOptions"/>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!-- JDK 21 pattern matching required. -->
+  <Match>
+    <Class name="com.io7m.cardant.shell.internal.CAShellCmdHelp"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.shell.internal.CAShellCmdFileSearchBegin"/>
+    <Bug pattern="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
   </Match>
 
 </FindBugsFilter>

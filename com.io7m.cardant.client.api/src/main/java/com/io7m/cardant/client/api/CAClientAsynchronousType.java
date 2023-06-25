@@ -16,19 +16,13 @@
 
 package com.io7m.cardant.client.api;
 
-import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.hibiscus.api.HBClientAsynchronousType;
-import com.io7m.hibiscus.api.HBResultFailure;
-import com.io7m.hibiscus.api.HBResultSuccess;
-import com.io7m.hibiscus.api.HBResultType;
 
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * The type of client instances.
@@ -49,41 +43,4 @@ public interface CAClientAsynchronousType
    */
 
   Optional<UUID> userId();
-
-  /**
-   * Download the data associated with the given file.
-   *
-   * @param fileID The file ID
-   *
-   * @return The operation in progress
-   */
-
-  CompletableFuture<HBResultType<InputStream, CAIResponseError>> fileDataAsync(
-    CAFileID fileID);
-
-  /**
-   * Download the data associated with the given file. The result of the operation is
-   * mapped to an exception if the command results in a failure response.
-   *
-   * @param fileID The file ID
-   *
-   * @return The result
-   */
-
-  default CompletableFuture<InputStream> fileDataAsyncOrElseThrow(
-    final CAFileID fileID)
-  {
-    return this.fileDataAsync(fileID)
-      .thenCompose(r -> {
-        if (r instanceof HBResultFailure<InputStream, CAIResponseError> failure) {
-          return CompletableFuture.failedFuture(
-            CAClientException.ofError(failure.result())
-          );
-        } else if (r instanceof HBResultSuccess<InputStream, CAIResponseError> success) {
-          return CompletableFuture.completedFuture(success.result());
-        } else {
-          throw new IllegalStateException();
-        }
-      });
-  }
 }

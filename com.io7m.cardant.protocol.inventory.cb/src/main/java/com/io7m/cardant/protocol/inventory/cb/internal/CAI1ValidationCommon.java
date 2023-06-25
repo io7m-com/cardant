@@ -18,7 +18,10 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileColumn;
+import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
@@ -41,11 +44,15 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CASizeRange;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.cb.CAI1File;
+import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumn;
+import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumnOrdering;
+import com.io7m.cardant.protocol.inventory.cb.CAI1FileSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Id;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Item;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemAttachment;
@@ -61,6 +68,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ListLocationBehaviour;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
+import com.io7m.cardant.protocol.inventory.cb.CAI1SizeRange;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
 import com.io7m.cedarbridge.runtime.api.CBBooleanType;
 import com.io7m.cedarbridge.runtime.api.CBByteArray;
@@ -83,6 +91,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 
+import static com.io7m.cedarbridge.runtime.api.CBCore.unsigned64;
 import static java.lang.Integer.toUnsignedLong;
 
 public final class CAI1ValidationCommon
@@ -653,6 +662,50 @@ public final class CAI1ValidationCommon
     );
   }
 
+  public static CAI1FileSearchParameters convertToWireFileSearchParameters(
+    final CAFileSearchParameters parameters)
+  {
+    return new CAI1FileSearchParameters(
+      CBOptionType.fromOptional(parameters.description().map(CBString::new)),
+      CBOptionType.fromOptional(parameters.mediaType().map(CBString::new)),
+      CBOptionType.fromOptional(
+        parameters.sizeRange()
+          .map(CAI1ValidationCommon::convertToWireSizeRange)
+      ),
+      convertToWireFileColumnOrdering(parameters.ordering()),
+      new CBIntegerUnsigned32(toUnsignedLong(parameters.limit()))
+    );
+  }
+
+  private static CAI1SizeRange convertToWireSizeRange(
+    final CASizeRange range)
+  {
+    return new CAI1SizeRange(
+      unsigned64(range.sizeMinimum()),
+      unsigned64(range.sizeMaximum())
+    );
+  }
+
+
+  private static CAI1FileColumnOrdering convertToWireFileColumnOrdering(
+    final CAFileColumnOrdering ordering)
+  {
+    return new CAI1FileColumnOrdering(
+      convertToWireFileColumn(ordering.column()),
+      CBBooleanType.fromBoolean(ordering.ascending())
+    );
+  }
+
+  private static CAI1FileColumn convertToWireFileColumn(
+    final CAFileColumn column)
+  {
+    return switch (column) {
+      case BY_ID -> new CAI1FileColumn.CAI1ById();
+      case BY_DESCRIPTION -> new CAI1FileColumn.CAI1ByDescription();
+    };
+  }
+
+
   private static CAI1ItemColumnOrdering convertToWireItemColumnOrdering(
     final CAItemColumnOrdering ordering)
   {
@@ -702,6 +755,55 @@ public final class CAI1ValidationCommon
     }
     throw new ProtocolUncheckedException(errorProtocol(c));
   }
+
+  public static CAFileSearchParameters convertFromWireFileSearchParameters(
+    final CAI1FileSearchParameters p)
+  {
+    return new CAFileSearchParameters(
+      p.fieldSearch().asOptional().map(CBString::value),
+      p.fieldMediaType()
+        .asOptional().map(CBString::value),
+      p.fieldSizeRange()
+        .asOptional().map(CAI1ValidationCommon::convertFromWireSizeRange),
+      convertFromWireFileColumnOrdering(p.fieldOrder()),
+      (int) p.fieldLimit().value()
+    );
+  }
+
+  private static CASizeRange convertFromWireSizeRange(
+    final CAI1SizeRange r)
+  {
+    return new CASizeRange(
+      r.fieldSizeMinimum().value(),
+      r.fieldSizeMaximum().value()
+    );
+  }
+
+  private static CAFileColumnOrdering convertFromWireFileColumnOrdering(
+    final CAI1FileColumnOrdering c)
+  {
+    return new CAFileColumnOrdering(
+      convertFromWireFileColumn(c.fieldColumn()),
+      c.fieldAscending().asBoolean()
+    );
+  }
+
+  private static CAFileColumn convertFromWireFileColumn(
+    final CAI1FileColumn c)
+  {
+    if (c instanceof CAI1FileColumn.CAI1ById) {
+      return CAFileColumn.BY_ID;
+    }
+    if (c instanceof CAI1FileColumn.CAI1ByDescription) {
+      return CAFileColumn.BY_DESCRIPTION;
+    }
+    throw new ProtocolUncheckedException(errorProtocol(c));
+  }
+
+
+
+
+
 
   public static CAItemSummary convertFromWireItemSummary(
     final CAI1ItemSummary x)

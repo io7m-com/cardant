@@ -15,7 +15,7 @@
   <artifactId>com.io7m.cardant.server.service.telemetry.api</artifactId>
 
   <name>com.io7m.cardant.server.service.telemetry.api</name>
-  <description>Identity server (Server telemetry service API)</description>
+  <description>Inventory server (Server telemetry service API)</description>
   <url>https://www.io7m.com/software/cardant</url>
 
   <dependencies>
@@ -24,12 +24,21 @@
       <artifactId>com.io7m.cardant.server.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.error_codes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.io7m.jmulticlose</groupId>
+      <artifactId>com.io7m.jmulticlose.core</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.io7m.repetoir</groupId>
       <artifactId>com.io7m.repetoir.core</artifactId>

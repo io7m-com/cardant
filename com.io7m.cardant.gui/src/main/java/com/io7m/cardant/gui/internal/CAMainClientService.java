@@ -42,6 +42,7 @@ import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.repetoir.core.RPServiceType;
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.time.Clock;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
@@ -80,7 +81,7 @@ public final class CAMainClientService
       services.requireService(CAMainStrings.class);
 
     final var configuration =
-      new CAClientConfiguration(locale);
+      new CAClientConfiguration(locale, Clock.systemUTC());
     final var clientFactory =
       new CAClients();
     final var newClient =

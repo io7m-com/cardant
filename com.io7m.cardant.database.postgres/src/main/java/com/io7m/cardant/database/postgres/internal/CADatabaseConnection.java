@@ -25,14 +25,18 @@ import io.opentelemetry.context.Context;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
+import static java.util.Objects.requireNonNullElse;
 
 record CADatabaseConnection(
   CADatabase database,
   Connection connection,
+  OffsetDateTime timeStart,
   CADatabaseRole role,
   Span connectionSpan)
   implements CADatabaseConnectionType
@@ -62,10 +66,10 @@ record CADatabaseConnection(
       transactionSpan.recordException(e);
       transactionSpan.end();
       throw new CADatabaseException(
-        e.getMessage(),
+        requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
         e,
         errorSql(),
-        Collections.emptySortedMap(),
+        Map.of(),
         Optional.empty()
       );
     }
@@ -76,16 +80,21 @@ record CADatabaseConnection(
     throws CADatabaseException
   {
     try {
+      final var timeNow = OffsetDateTime.now();
+      this.database.setConnectionTimeNow(
+        Duration.between(this.timeStart, timeNow).toNanos()
+      );
+
       if (!this.connection.isClosed()) {
         this.connection.close();
       }
     } catch (final SQLException e) {
       this.connectionSpan.recordException(e);
       throw new CADatabaseException(
-        e.getMessage(),
+        requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
         e,
         errorSql(),
-        Collections.emptySortedMap(),
+        Map.of(),
         Optional.empty()
       );
     } finally {

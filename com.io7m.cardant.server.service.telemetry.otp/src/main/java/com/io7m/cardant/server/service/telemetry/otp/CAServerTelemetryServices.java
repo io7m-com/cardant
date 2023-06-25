@@ -26,11 +26,15 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
 import io.opentelemetry.exporter.otlp.http.metrics.OtlpHttpMetricExporter;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
+import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
 import io.opentelemetry.exporter.otlp.metrics.OtlpGrpcMetricExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.logs.SdkLoggerProvider;
+import io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
 import io.opentelemetry.sdk.resources.Resource;
@@ -40,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_NAME;
 import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_VERSION;
@@ -81,10 +86,12 @@ public final class CAServerTelemetryServices
       telemetryConfiguration.metrics();
     final var tracesOpt =
       telemetryConfiguration.traces();
+    final var logsOpt =
+      telemetryConfiguration.logs();
 
-    if (metricsOpt.isEmpty() && tracesOpt.isEmpty()) {
+    if (metricsOpt.isEmpty() && tracesOpt.isEmpty() && logsOpt.isEmpty()) {
       LOG.warn(
-        "Neither metrics nor trace configurations were provided; no telemetry will be sent!");
+        "No metrics, logs, or trace configurations were provided; no telemetry will be sent!");
       return CAServerTelemetryNoOp.noop();
     }
 
@@ -108,12 +115,16 @@ public final class CAServerTelemetryServices
       builder.setTracerProvider(createTracerProvider(resource, traces));
     });
 
+    logsOpt.ifPresent(logs -> {
+      builder.setLoggerProvider(createLoggerProvider(resource, logs));
+    });
+
     final var contextPropagators =
       ContextPropagators.create(W3CTraceContextPropagator.getInstance());
 
     final OpenTelemetry openTelemetry =
       builder.setPropagators(contextPropagators)
-        .buildAndRegisterGlobal();
+        .build();
 
     final var tracer =
       openTelemetry.getTracer(
@@ -121,10 +132,17 @@ public final class CAServerTelemetryServices
         CAVersion.MAIN_VERSION
       );
 
-    return new CAServerTelemetryService(
-      openTelemetry,
-      tracer
-    );
+    final var meter =
+      openTelemetry.getMeter(
+        "com.io7m.cardant"
+      );
+
+    final var logger =
+      openTelemetry.getLogsBridge()
+        .loggerBuilder("com.io7m.cardant")
+        .build();
+
+    return new CAServerTelemetryService(openTelemetry, tracer, meter, logger);
   }
 
   private static SdkMeterProvider createMeterProvider(
@@ -154,10 +172,46 @@ public final class CAServerTelemetryServices
 
     final var periodicMetricReader =
       PeriodicMetricReader.builder(metricExporter)
+        .setInterval(1L, TimeUnit.SECONDS)
         .build();
 
     return SdkMeterProvider.builder()
       .registerMetricReader(periodicMetricReader)
+      .setResource(resource)
+      .build();
+  }
+
+  private static SdkLoggerProvider createLoggerProvider(
+    final Resource resource,
+    final CAServerOpenTelemetryConfiguration.CALogs logs)
+  {
+    final var endpoint = logs.endpoint().toString();
+    LOG.info(
+      "log data will be sent to {} using {}",
+      endpoint,
+      logs.protocol()
+    );
+
+    final var logExporter =
+      switch (logs.protocol()) {
+        case HTTP -> {
+          yield OtlpHttpLogRecordExporter.builder()
+            .setEndpoint(endpoint)
+            .build();
+        }
+        case GRPC -> {
+          yield OtlpGrpcLogRecordExporter.builder()
+            .setEndpoint(endpoint)
+            .build();
+        }
+      };
+
+    final var processor =
+      BatchLogRecordProcessor.builder(logExporter)
+        .build();
+
+    return SdkLoggerProvider.builder()
+      .addLogRecordProcessor(processor)
       .setResource(resource)
       .build();
   }

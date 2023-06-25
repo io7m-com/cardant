@@ -19,6 +19,7 @@ package com.io7m.cardant.server.api;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.idstore.model.IdName;
 
+import java.net.URI;
 import java.util.UUID;
 
 /**
@@ -42,6 +43,15 @@ public interface CAServerType extends AutoCloseable
    */
 
   CADatabaseType database();
+
+  /**
+   * @return The address of the inventory API
+   */
+
+  default URI inventoryAPI()
+  {
+    return this.configuration().inventoryApiAddress().externalAddress();
+  }
 
   /**
    * @return The server's associated configuration
@@ -72,7 +82,7 @@ public interface CAServerType extends AutoCloseable
    * @throws CAServerException On errors
    */
 
-  void setup(
+  void setUserAsAdmin(
     UUID adminId,
     IdName adminName)
     throws CAServerException;

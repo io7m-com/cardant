@@ -21,20 +21,24 @@ import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.api.CAClientSynchronousType;
+import com.io7m.cardant.client.api.CAClientTransferStatistics;
+import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.hibiscus.api.HBResultType;
 import com.io7m.hibiscus.basic.HBClientSynchronousAbstract;
 
-import java.io.InputStream;
 import java.net.http.HttpClient;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static java.lang.Integer.toUnsignedString;
@@ -115,14 +119,56 @@ public final class CAClientSynchronous
   }
 
   @Override
-  public HBResultType<InputStream, CAIResponseError> fileData(
-    final CAFileID fileID)
+  public HBResultType<Path, CAIResponseError> fileDownload(
+    final CAFileID fileID,
+    final Path file,
+    final Path fileTmp,
+    final long size,
+    final String hashAlgorithm,
+    final String hashValue,
+    final Consumer<CAClientTransferStatistics> statistics)
     throws InterruptedException
   {
     Objects.requireNonNull(fileID, "fileID");
 
     final var handler = (CAHandlerType) this.currentHandler();
-    return handler.onExecuteFileData(fileID);
+    return handler.onExecuteFileDownload(
+      fileID,
+      file,
+      fileTmp,
+      size,
+      hashAlgorithm,
+      hashValue,
+      statistics
+    );
+  }
+
+  @Override
+  public HBResultType<CAFileID, CAIResponseError> fileUpload(
+    final CAFileID fileID,
+    final Path file,
+    final String contentType,
+    final Consumer<CAClientTransferStatistics> statistics)
+    throws InterruptedException
+  {
+    final var handler = (CAHandlerType) this.currentHandler();
+    return handler.onExecuteFileUpload(fileID, file, contentType, statistics);
+  }
+
+  @Override
+  public HBResultType<CAClientUnit, CAIResponseError> garbage()
+    throws InterruptedException
+  {
+    final var handler = (CAHandlerType) this.currentHandler();
+    return handler.onExecuteGarbage();
+  }
+
+  @Override
+  public HBResultType<CAClientUnit, CAIResponseError> invalid()
+    throws InterruptedException
+  {
+    final var handler = (CAHandlerType) this.currentHandler();
+    return handler.onExecuteInvalid();
   }
 
   @Override

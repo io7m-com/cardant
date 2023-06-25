@@ -15,8 +15,8 @@
  */
 
 import com.io7m.cardant.server.api.CAServerFactoryType;
-import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFactoryType;
 import com.io7m.cardant.server.basic.CAServers;
+import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFactoryType;
 
 /**
  * Identity server (Server basic implementation)
@@ -34,10 +34,10 @@ module com.io7m.cardant.server.basic
   requires com.io7m.cardant.protocol.inventory.cb;
   requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.security;
-  requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.inventory.v1;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
+  requires com.io7m.cardant.server.service.health;
   requires com.io7m.cardant.server.service.idstore;
   requires com.io7m.cardant.server.service.maintenance;
   requires com.io7m.cardant.server.service.reqlimit;

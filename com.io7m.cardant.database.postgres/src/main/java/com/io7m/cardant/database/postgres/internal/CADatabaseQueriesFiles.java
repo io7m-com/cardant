@@ -17,18 +17,33 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseFileSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
+import com.io7m.cardant.model.CAPage;
+import com.io7m.jqpage.core.JQField;
+import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
+import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
+import com.io7m.jqpage.core.JQOrder;
+import org.jooq.Condition;
+import org.jooq.Table;
 import org.jooq.exception.DataAccessException;
+import org.jooq.impl.DSL;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
 import static com.io7m.cardant.database.postgres.internal.tables.Files.FILES;
+import static com.io7m.cardant.strings.CAStringConstants.FILE;
+import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 import static java.lang.Integer.toUnsignedLong;
 
 /**
@@ -88,7 +103,7 @@ public final class CADatabaseQueriesFiles
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("File", file.id().displayId())
+        Map.entry(this.local(FILE), file.id().displayId())
       );
     } finally {
       querySpan.end();
@@ -134,7 +149,7 @@ public final class CADatabaseQueriesFiles
         ));
       }
 
-      return Optional.of(new CAFileType.CAFileWithoutData(
+      return Optional.of(new CAFileWithoutData(
         file,
         fileRec.getDescription(),
         fileRec.getMediaType(),
@@ -147,7 +162,7 @@ public final class CADatabaseQueriesFiles
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("File", file.displayId())
+        Map.entry(this.local(FILE), file.displayId())
       );
     } finally {
       querySpan.end();
@@ -179,10 +194,176 @@ public final class CADatabaseQueriesFiles
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("File", file.displayId())
+        Map.entry(this.local(FILE), file.displayId())
       );
     } finally {
       querySpan.end();
     }
+  }
+
+  @Override
+  public CADatabaseFileSearchType fileSearch(
+    final CAFileSearchParameters parameters)
+    throws CADatabaseException
+  {
+    Objects.requireNonNull(parameters, "parameters");
+
+    final var transaction =
+      this.transaction();
+    final var context =
+      transaction.createContext();
+    final var querySpan =
+      transaction.createQuerySpan(
+        "CADatabaseQueriesFiles.fileSearch");
+
+    try {
+      final Table<?> tableSource =
+        FILES;
+
+      /*
+       * Search queries might be present.
+       */
+
+      final Condition descriptionCondition;
+      final var descriptionQuery = parameters.description();
+      if (descriptionQuery.isPresent()) {
+        descriptionCondition =
+          DSL.condition(
+            "files.description_search @@ websearch_to_tsquery(?)",
+            DSL.inline(descriptionQuery.get())
+          );
+      } else {
+        descriptionCondition = DSL.trueCondition();
+      }
+
+      final Condition mediaCondition;
+      final var mediaQuery = parameters.mediaType();
+      if (mediaQuery.isPresent()) {
+        final var searchText = "%%%s%%".formatted(mediaQuery.get());
+        mediaCondition =
+          DSL.condition(FILES.MEDIA_TYPE.likeIgnoreCase(searchText));
+      } else {
+        mediaCondition = DSL.trueCondition();
+      }
+
+      final Condition sizeCondition;
+      final var sizeQuery = parameters.sizeRange();
+      if (sizeQuery.isPresent()) {
+        final var range = sizeQuery.get();
+        final var sizeLowerCondition =
+          DSL.condition(FILES.DATA_USED.ge(Long.valueOf(range.sizeMinimum())));
+        final var sizeUpperCondition =
+          DSL.condition(FILES.DATA_USED.le(Long.valueOf(range.sizeMaximum())));
+        sizeCondition = DSL.and(sizeLowerCondition, sizeUpperCondition);
+      } else {
+        sizeCondition = DSL.trueCondition();
+      }
+
+      final var allConditions =
+        DSL.and(descriptionCondition, mediaCondition, sizeCondition);
+
+      final var orderField =
+        orderingToJQField(parameters.ordering());
+
+      final var pages =
+        JQKeysetRandomAccessPagination.createPageDefinitions(
+          context,
+          tableSource,
+          List.of(orderField),
+          List.of(allConditions),
+          List.of(),
+          toUnsignedLong(parameters.limit()),
+          statement -> {
+            querySpan.setAttribute(DB_STATEMENT, statement.toString());
+          }
+        );
+
+      return new FileSearch(pages);
+    } catch (final DataAccessException e) {
+      querySpan.recordException(e);
+      throw handleDatabaseException(transaction, e);
+    } finally {
+      querySpan.end();
+    }
+  }
+
+  private static final class FileSearch
+    extends CAAbstractSearch<CADatabaseQueriesFiles, CADatabaseQueriesFilesType, CAFileWithoutData>
+    implements CADatabaseFileSearchType
+  {
+    FileSearch(
+      final List<JQKeysetRandomAccessPageDefinition> inPages)
+    {
+      super(inPages);
+    }
+
+    @Override
+    protected CAPage<CAFileWithoutData> page(
+      final CADatabaseQueriesFiles queries,
+      final JQKeysetRandomAccessPageDefinition page)
+      throws CADatabaseException
+    {
+      final var transaction =
+        queries.transaction();
+      final var context =
+        transaction.createContext();
+
+      final var querySpan =
+        transaction.createQuerySpan(
+          "CADatabaseQueriesFiles.fileSearch.page");
+
+      try {
+        final var query =
+          page.queryFields(context, List.of(
+            FILES.DATA_USED,
+            FILES.DESCRIPTION,
+            FILES.HASH_ALGORITHM,
+            FILES.HASH_VALUE,
+            FILES.ID,
+            FILES.MEDIA_TYPE
+          ));
+
+        querySpan.setAttribute(DB_STATEMENT, query.toString());
+
+        final var items =
+          query.fetch().map(record -> {
+            return new CAFileWithoutData(
+              new CAFileID(record.get(FILES.ID)),
+              record.get(FILES.DESCRIPTION),
+              record.get(FILES.MEDIA_TYPE),
+              record.<Long>get(FILES.DATA_USED).longValue(),
+              record.get(FILES.HASH_ALGORITHM),
+              record.get(FILES.HASH_VALUE)
+            );
+          });
+
+        return new CAPage<>(
+          items,
+          (int) page.index(),
+          this.pageCount(),
+          page.firstOffset()
+        );
+      } catch (final DataAccessException e) {
+        querySpan.recordException(e);
+        throw handleDatabaseException(transaction, e);
+      } finally {
+        querySpan.end();
+      }
+    }
+  }
+
+  private static JQField orderingToJQField(
+    final CAFileColumnOrdering ordering)
+  {
+    final var field =
+      switch (ordering.column()) {
+        case BY_ID -> FILES.ID;
+        case BY_DESCRIPTION -> FILES.DESCRIPTION;
+      };
+
+    return new JQField(
+      field,
+      ordering.ascending() ? JQOrder.ASCENDING : JQOrder.DESCENDING
+    );
   }
 }

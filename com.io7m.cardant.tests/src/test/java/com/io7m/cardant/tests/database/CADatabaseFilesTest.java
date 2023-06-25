@@ -20,13 +20,20 @@ import com.github.dockerjava.zerodep.shaded.org.apache.commons.codec.binary.Hex;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileColumn;
+import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAFileType.CAFileWithData;
+import com.io7m.cardant.model.CASizeRange;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -52,23 +59,7 @@ public final class CADatabaseFilesTest
     final var q =
       transaction.queries(CADatabaseQueriesFilesType.class);
 
-    final var digest =
-      MessageDigest.getInstance("SHA-256");
-    final var hash =
-      digest.digest("HELLO!".getBytes(UTF_8));
-    final var hashS =
-      Hex.encodeHexString(hash);
-
-    final var file =
-      new CAFileType.CAFileWithData(
-        CAFileID.random(),
-        "File 0",
-        "text/plain",
-        6L,
-        "SHA-256",
-        hashS,
-        new CAByteArray("HELLO!".getBytes(UTF_8))
-      );
+    final var file = createFile(0);
 
     q.filePut(file);
 
@@ -104,23 +95,7 @@ public final class CADatabaseFilesTest
     final var q =
       transaction.queries(CADatabaseQueriesFilesType.class);
 
-    final var digest =
-      MessageDigest.getInstance("SHA-256");
-    final var hash =
-      digest.digest("HELLO!".getBytes(UTF_8));
-    final var hashS =
-      Hex.encodeHexString(hash);
-
-    final var file =
-      new CAFileType.CAFileWithData(
-        CAFileID.random(),
-        "File 0",
-        "text/plain",
-        6L,
-        "SHA-256",
-        hashS,
-        new CAByteArray("HELLO!".getBytes(UTF_8))
-      );
+    final var file = createFile(0);
 
     q.filePut(file);
     q.fileRemove(file.id());
@@ -132,6 +107,329 @@ public final class CADatabaseFilesTest
     assertEquals(
       Optional.empty(),
       q.fileGet(file.id(), true)
+    );
+  }
+
+  /**
+   * Searching for files works.
+   *
+   * @param transaction The transaction
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFileSearch0(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var q =
+      transaction.queries(CADatabaseQueriesFilesType.class);
+
+    final var file0 = createFile(0);
+    final var file1 = createFile(1);
+    final var file2 = createFile(2);
+
+    q.filePut(file0);
+    q.filePut(file1);
+    q.filePut(file2);
+
+    transaction.commit();
+
+    final var s =
+      q.fileSearch(new CAFileSearchParameters(
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
+        100
+      ));
+
+    {
+      final var p = s.pageCurrent(q);
+      assertEquals("File 0", p.items().get(0).description());
+      assertEquals("File 1", p.items().get(1).description());
+      assertEquals("File 2", p.items().get(2).description());
+      assertEquals(3, p.items().size());
+    }
+  }
+
+  /**
+   * Searching for files works.
+   *
+   * @param transaction The transaction
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFileSearch1(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var q =
+      transaction.queries(CADatabaseQueriesFilesType.class);
+
+    final var file0 = createFile(0);
+    final var file1 = createFile(1);
+    final var file2 = createFile(2);
+
+    q.filePut(file0);
+    q.filePut(file1);
+    q.filePut(file2);
+
+    transaction.commit();
+
+    final var s =
+      q.fileSearch(new CAFileSearchParameters(
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, false),
+        100
+      ));
+
+    {
+      final var p = s.pageCurrent(q);
+      assertEquals("File 2", p.items().get(0).description());
+      assertEquals("File 1", p.items().get(1).description());
+      assertEquals("File 0", p.items().get(2).description());
+      assertEquals(3, p.items().size());
+    }
+  }
+
+  /**
+   * Searching for files works.
+   *
+   * @param transaction The transaction
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFileSearch2(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var q =
+      transaction.queries(CADatabaseQueriesFilesType.class);
+
+    final var file0 = createFile(0);
+    final var file1 = createFile(1);
+    final var file2 = createFile(2);
+
+    q.filePut(file0);
+    q.filePut(file1);
+    q.filePut(file2);
+
+    transaction.commit();
+
+    final var s =
+      q.fileSearch(new CAFileSearchParameters(
+        Optional.of("File 1"),
+        Optional.empty(),
+        Optional.empty(),
+        new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
+        100
+      ));
+
+    {
+      final var p = s.pageCurrent(q);
+      assertEquals("File 1", p.items().get(0).description());
+      assertEquals(1, p.items().size());
+    }
+  }
+
+  /**
+   * Searching for files works.
+   *
+   * @param transaction The transaction
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFileSearch3(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var q =
+      transaction.queries(CADatabaseQueriesFilesType.class);
+
+    final var file0 = createFile(0);
+    final var file1 = createFile(1);
+    final var file2 = createFile(2);
+
+    q.filePut(file0);
+    q.filePut(file1);
+    q.filePut(file2);
+
+    transaction.commit();
+
+    final var s =
+      q.fileSearch(new CAFileSearchParameters(
+        Optional.empty(),
+        Optional.of("text/plain+1"),
+        Optional.empty(),
+        new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
+        100
+      ));
+
+    {
+      final var p = s.pageCurrent(q);
+      assertEquals("File 1", p.items().get(0).description());
+      assertEquals(1, p.items().size());
+    }
+  }
+
+  /**
+   * Searching for files works.
+   *
+   * @param transaction The transaction
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFileSearch4(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var q =
+      transaction.queries(CADatabaseQueriesFilesType.class);
+
+    final var file0 = createFile(0);
+    final var file1 = createFile(1);
+    final var file2 = createFile(2);
+
+    q.filePut(file0);
+    q.filePut(file1);
+    q.filePut(file2);
+
+    transaction.commit();
+
+    final var s =
+      q.fileSearch(new CAFileSearchParameters(
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of(new CASizeRange(0L, 3L)),
+        new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
+        100
+      ));
+
+    {
+      final var p = s.pageCurrent(q);
+      assertEquals(0, p.items().size());
+    }
+  }
+
+  /**
+   * Searching for files works.
+   *
+   * @param transaction The transaction
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFileSearch5(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var q =
+      transaction.queries(CADatabaseQueriesFilesType.class);
+
+    final var file0 = createFile(0);
+    final var file1 = createFile(1);
+    final var file2 = createFile(2);
+
+    q.filePut(file0);
+    q.filePut(file1);
+    q.filePut(file2);
+
+    transaction.commit();
+
+    final var s =
+      q.fileSearch(new CAFileSearchParameters(
+        Optional.empty(),
+        Optional.of("text/plain+1"),
+        Optional.empty(),
+        new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
+        100
+      ));
+
+    {
+      final var p = s.pageCurrent(q);
+      assertEquals("File 1", p.items().get(0).description());
+      assertEquals(1, p.items().size());
+    }
+  }
+
+  /**
+   * Searching for files works.
+   *
+   * @param transaction The transaction
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testFileSearch6(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var q =
+      transaction.queries(CADatabaseQueriesFilesType.class);
+
+    final var file0 = createFile(0);
+    final var file1 = createFile(1);
+    final var file2 = createFile(2);
+
+    q.filePut(file0);
+    q.filePut(file1);
+    q.filePut(file2);
+
+    transaction.commit();
+
+    final var s =
+      q.fileSearch(new CAFileSearchParameters(
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of(new CASizeRange(9L, Long.MAX_VALUE)),
+        new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
+        100
+      ));
+
+    {
+      final var p = s.pageCurrent(q);
+      assertEquals("File 2", p.items().get(0).description());
+      assertEquals(1, p.items().size());
+    }
+  }
+
+  private static CAFileWithData createFile(
+    final int index)
+    throws NoSuchAlgorithmException
+  {
+    final var digest =
+      MessageDigest.getInstance("SHA-256");
+    final var content =
+      "HELLO! %s".formatted("X".repeat(index));
+    final var contentBytes =
+      content.getBytes(UTF_8);
+    final var hash =
+      digest.digest(contentBytes);
+    final var hashS =
+      Hex.encodeHexString(hash);
+
+    return new CAFileWithData(
+      CAFileID.random(),
+      "File %d".formatted(Integer.valueOf(index)),
+      "text/plain+%d".formatted(Integer.valueOf(index)),
+      contentBytes.length,
+      "SHA-256",
+      hashS,
+      new CAByteArray(contentBytes)
     );
   }
 }

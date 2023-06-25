@@ -17,10 +17,10 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
-import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.model.CAItemAttachmentMutable;
 import com.io7m.cardant.gui.internal.views.CAItemAttachmentMutableCellFactory;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
+import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
@@ -57,7 +57,6 @@ public final class CAViewControllerItemEditorAttachmentsTab
   private final CAFileDialogs fileDialogs;
   private final CAPreferencesServiceType preferences;
   private final Stage stage;
-  private final CATransferServiceType transfers;
   private final CAMainClientService clientService;
 
   @FXML private ListView<CAItemAttachmentMutable> attachmentListView;
@@ -81,8 +80,6 @@ public final class CAViewControllerItemEditorAttachmentsTab
       mainServices.requireService(CAFileDialogs.class);
     this.preferences =
       mainServices.requireService(CAPreferencesServiceType.class);
-    this.transfers =
-      mainServices.requireService(CATransferServiceType.class);
     this.clientService =
       mainServices.requireService(CAMainClientService.class);
   }
@@ -195,18 +192,7 @@ public final class CAViewControllerItemEditorAttachmentsTab
       this.strings.format(
         "transfer.attachment", attachmentFile.id().displayId());
 
-    this.clientService.client()
-      .fileDataAsyncOrElseThrow(attachmentFile.id())
-      .thenCompose(stream -> {
-        return this.transfers.transferTo(
-          stream,
-          title,
-          attachmentFile.size(),
-          attachmentFile.hashAlgorithm(),
-          attachmentFile.hashValue(),
-          file
-        );
-      });
+    throw new UnimplementedCodeException();
   }
 
   @FXML

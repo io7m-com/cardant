@@ -17,6 +17,8 @@
 package com.io7m.cardant.server.service.telemetry.api;
 
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Tracer;
 
 import java.util.Objects;
@@ -28,17 +30,25 @@ import java.util.Objects;
 public final class CAServerTelemetryNoOp
   implements CAServerTelemetryServiceType
 {
-  private final OpenTelemetry openTelemetry;
+  private final Meter meter;
   private final Tracer tracer;
+  private final Logger logger;
+  private final OpenTelemetry openTelemetry;
 
   private CAServerTelemetryNoOp(
     final OpenTelemetry inOpenTelemetry,
-    final Tracer inTracer)
+    final Meter inMeter,
+    final Tracer inTracer,
+    final Logger inLogger)
   {
     this.openTelemetry =
       Objects.requireNonNull(inOpenTelemetry, "openTelemetry");
+    this.meter =
+      Objects.requireNonNull(inMeter, "meter");
     this.tracer =
       Objects.requireNonNull(inTracer, "tracer");
+    this.logger =
+      Objects.requireNonNull(inLogger, "logger");
   }
 
   /**
@@ -50,13 +60,11 @@ public final class CAServerTelemetryNoOp
     final var noop = OpenTelemetry.noop();
     return new CAServerTelemetryNoOp(
       noop,
-      noop.getTracer("noop")
+      noop.getMeter("noop"),
+      noop.getTracer("noop"),
+      noop.getLogsBridge().get("noop")
     );
   }
-
-  /**
-   * @return The main tracer
-   */
 
   @Override
   public Tracer tracer()
@@ -64,9 +72,23 @@ public final class CAServerTelemetryNoOp
     return this.tracer;
   }
 
-  /**
-   * @return The OpenTelemetry instance
-   */
+  @Override
+  public Meter meter()
+  {
+    return this.meter;
+  }
+
+  @Override
+  public Logger logger()
+  {
+    return this.logger;
+  }
+
+  @Override
+  public boolean isNoOp()
+  {
+    return true;
+  }
 
   @Override
   public OpenTelemetry openTelemetry()

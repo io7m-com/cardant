@@ -29,6 +29,7 @@ import com.io7m.medrina.api.MMatchObjectType.MMatchObjectWithType;
 import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
+import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -114,6 +115,8 @@ public final class CAICmdLocationsPutTest
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
+        MRuleName.of("x"),
+        "",
         ALLOW,
         new MMatchSubjectWithRolesAny(Set.of(ROLE_INVENTORY_LOCATIONS_WRITER)),
         new MMatchObjectWithType(INVENTORY_LOCATIONS.type()),

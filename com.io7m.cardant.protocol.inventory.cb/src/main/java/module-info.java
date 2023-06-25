@@ -26,12 +26,13 @@ module com.io7m.cardant.protocol.inventory.cb
   requires com.io7m.cardant.protocol.api;
   requires com.io7m.cardant.protocol.inventory;
 
-  requires com.io7m.cedarbridge.runtime.convenience;
+  requires com.io7m.cedarbridge.runtime.api;
   requires com.io7m.cedarbridge.runtime.bssio;
+  requires com.io7m.cedarbridge.runtime.convenience;
   requires com.io7m.jbssio.api;
   requires com.io7m.jbssio.vanilla;
-  requires transitive com.io7m.cedarbridge.runtime.api;
-  requires transitive com.io7m.repetoir.core;
+  requires com.io7m.lanark.core;
+  requires com.io7m.repetoir.core;
 
   exports com.io7m.cardant.protocol.inventory.cb;
 }

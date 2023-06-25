@@ -20,6 +20,7 @@ import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseCreate;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
+import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.api.CADatabaseUpgrade;
 import com.io7m.cardant.error_codes.CAErrorCode;
@@ -28,32 +29,33 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerException;
 import com.io7m.cardant.server.api.CAServerType;
-import com.io7m.cardant.server.controller.CAServerStrings;
 import com.io7m.cardant.server.inventory.v1.CAI1Server;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.configuration.CAConfigurationService;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
+import com.io7m.cardant.server.service.health.CAServerHealth;
 import com.io7m.cardant.server.service.idstore.CAIdstoreClients;
 import com.io7m.cardant.server.service.idstore.CAIdstoreClientsType;
 import com.io7m.cardant.server.service.maintenance.CAMaintenanceService;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimits;
 import com.io7m.cardant.server.service.sessions.CASessionService;
+import com.io7m.cardant.server.service.telemetry.api.CAMetricsService;
+import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryNoOp;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFactoryType;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessages;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessagesType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.idstore.model.IdName;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceDirectory;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
-import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.SpanKind;
 import org.eclipse.jetty.server.Server;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
@@ -64,6 +66,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLES_ALL;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_REQUEST_TOO_LARGE;
 import static java.lang.Integer.toUnsignedString;
 
 /**
@@ -126,7 +129,16 @@ public final class CAServer implements CAServerType
 
         try {
           this.database =
-            this.resources.add(this.createDatabase(this.telemetry.openTelemetry()));
+            this.resources.add(
+              this.createDatabase(
+                new CADatabaseTelemetry(
+                  this.telemetry.isNoOp(),
+                  this.telemetry.meter(),
+                  this.telemetry.tracer()
+                )
+              )
+            );
+
           final var services =
             this.resources.add(this.createServiceDirectory(this.database));
 
@@ -175,22 +187,26 @@ public final class CAServer implements CAServerType
 
   private RPServiceDirectoryType createServiceDirectory(
     final CADatabaseType newDatabase)
-    throws IOException
   {
     final var services = new RPServiceDirectory();
+    final var strings = this.configuration.strings();
+    services.register(CAStrings.class, strings);
+
     services.register(CAServerTelemetryServiceType.class, this.telemetry);
     services.register(CADatabaseType.class, newDatabase);
 
-    final var strings = new CAServerStrings(this.configuration.locale());
-    services.register(CAServerStrings.class, strings);
+    final var metrics = new CAMetricsService(this.telemetry);
+    services.register(CAMetricsServiceType.class, metrics);
+
+    final var health = CAServerHealth.create(services);
+    services.register(CAServerHealth.class, health);
 
     final var sessionInventoryService =
       new CASessionService(
-        this.telemetry.openTelemetry(),
+        metrics,
         this.configuration.inventoryApiAddress()
           .sessionExpiration()
-          .orElseGet(() -> Duration.ofDays(3650L)),
-        "inventory"
+          .orElseGet(() -> Duration.ofDays(3650L))
       );
 
     services.register(CASessionService.class, sessionInventoryService);
@@ -198,12 +214,13 @@ public final class CAServer implements CAServerType
     final var idstore =
       CAIdstoreClients.create(
         this.configuration.locale(),
+        this.telemetry,
         this.configuration.idstoreConfiguration()
       );
     services.register(CAIdstoreClientsType.class, idstore);
 
-    final var config = new CAConfigurationService(this.configuration);
-    services.register(CAConfigurationServiceType.class, config);
+    final var configService = new CAConfigurationService(this.configuration);
+    services.register(CAConfigurationServiceType.class, configService);
 
     final var clock = new CAServerClock(this.configuration.clock());
     services.register(CAServerClock.class, clock);
@@ -218,20 +235,22 @@ public final class CAServer implements CAServerType
       CAMaintenanceService.create(clock, this.telemetry, newDatabase);
 
     services.register(CAMaintenanceService.class, maintenance);
-    services.register(CARequestLimits.class, new CARequestLimits(size -> {
-      return strings.format("requestTooLarge", size);
-    }));
+    services.register(
+      CARequestLimits.class,
+      new CARequestLimits(configService, size -> {
+        return strings.format(ERROR_REQUEST_TOO_LARGE, size);
+      }));
     return services;
   }
 
   private CADatabaseType createDatabase(
-    final OpenTelemetry openTelemetry)
+    final CADatabaseTelemetry dbTelemetry)
     throws CADatabaseException
   {
     return this.configuration.databases()
       .open(
         this.configuration.databaseConfiguration(),
-        openTelemetry,
+        dbTelemetry,
         event -> {
 
         });
@@ -270,7 +289,7 @@ public final class CAServer implements CAServerType
   }
 
   @Override
-  public void setup(
+  public void setUserAsAdmin(
     final UUID adminId,
     final IdName adminName)
     throws CAServerException
@@ -289,14 +308,18 @@ public final class CAServer implements CAServerType
         final var setupConfiguration =
           new CADatabaseConfiguration(
             baseConfiguration.locale(),
-            baseConfiguration.user(),
-            baseConfiguration.password(),
+            baseConfiguration.ownerRoleName(),
+            baseConfiguration.ownerRolePassword(),
+            baseConfiguration.workerRolePassword(),
+            baseConfiguration.readerRolePassword(),
             baseConfiguration.address(),
             baseConfiguration.port(),
             baseConfiguration.databaseName(),
             CADatabaseCreate.CREATE_DATABASE,
             CADatabaseUpgrade.UPGRADE_DATABASE,
-            baseConfiguration.clock()
+            baseConfiguration.language(),
+            baseConfiguration.clock(),
+            baseConfiguration.strings()
           );
 
         final var db =
@@ -304,8 +327,13 @@ public final class CAServer implements CAServerType
             this.configuration.databases()
               .open(
                 setupConfiguration,
-                this.telemetry.openTelemetry(),
+                new CADatabaseTelemetry(
+                  this.telemetry.isNoOp(),
+                  this.telemetry.meter(),
+                  this.telemetry.tracer()
+                ),
                 event -> {
+
                 }));
 
         try (var connection = db.openConnection(CARDANT)) {

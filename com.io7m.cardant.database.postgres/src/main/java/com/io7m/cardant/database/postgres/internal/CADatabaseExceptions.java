@@ -20,7 +20,8 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import org.jooq.exception.DataAccessException;
-import org.postgresql.util.PSQLState;
+import org.postgresql.util.PSQLException;
+import org.postgresql.util.ServerErrorMessage;
 
 import java.util.Map;
 import java.util.Objects;
@@ -28,10 +29,10 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNotPermitted;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSqlForeignKey;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSqlUnique;
 
 /**
  * Functions to handle database exceptions.
@@ -84,58 +85,174 @@ public final class CADatabaseExceptions
   {
     final var m = e.getMessage();
 
-    final CADatabaseException result = switch (e.sqlState()) {
-      case "42501" -> {
+    CADatabaseException result =
+      new CADatabaseException(
+        m,
+        e,
+        errorSql(),
+        attributes,
+        Optional.empty()
+      );
+
+    if (e.getCause() instanceof final PSQLException psqlException) {
+      final var serverError =
+        Objects.requireNonNullElse(
+          psqlException.getServerErrorMessage(),
+          new ServerErrorMessage("")
+        );
+
+      /*
+       * See https://www.postgresql.org/docs/current/errcodes-appendix.html
+       * for all of these numeric codes.
+       */
+
+      result = switch (psqlException.getSQLState()) {
+
+        /*
+         * foreign_key_violation
+         */
+
+        case "23503" ->
+          handleForeignKeyViolation(e, attributes, m);
+
+        /*
+         * unique_violation
+         */
+
+        case "23505" ->
+          handleUniqueViolation(e, attributes, m, serverError);
+
+        /*
+         * PostgreSQL: character_not_in_repertoire
+         */
+
+        case "22021" ->
+          handleCharacterEncoding(e, attributes, serverError);
+
+        /*
+         * insufficient_privilege
+         */
+
+        case "42501" -> {
+          yield new CADatabaseException(
+            m,
+            e,
+            errorOperationNotPermitted(),
+            attributes,
+            Optional.empty()
+          );
+        }
+
+        default -> {
+          yield new CADatabaseException(
+            m,
+            e,
+            errorSql(),
+            attributes,
+            Optional.empty()
+          );
+        }
+      };
+    }
+
+    try {
+      transaction.rollback();
+    } catch (final CADatabaseException ex) {
+      result.addSuppressed(ex);
+    }
+    return result;
+  }
+
+  private static CADatabaseException handleCharacterEncoding(
+    final DataAccessException e,
+    final SortedMap<String, String> attributes,
+    final ServerErrorMessage serverError)
+  {
+    return new CADatabaseException(
+      Objects.requireNonNullElse(
+        serverError.getMessage(),
+        e.getMessage()),
+      e,
+      errorProtocol(),
+      attributes,
+      Optional.empty()
+    );
+  }
+
+  private static CADatabaseException handleUniqueViolation(
+    final DataAccessException e,
+    final SortedMap<String, String> attributes,
+    final String m,
+    final ServerErrorMessage serverError)
+  {
+    final var constraint =
+      Objects.requireNonNullElse(serverError.getConstraint(), "");
+
+    return switch (constraint) {
+      case "files_pkey" -> {
         yield new CADatabaseException(
-          m,
-          e,
-          errorOperationNotPermitted(),
+          "File already exists.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      case "item_attachments_pkey" -> {
+        yield new CADatabaseException(
+          "Item attachment already exists.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      case "item_locations_pkey" -> {
+        yield new CADatabaseException(
+          "Item location already exists.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      case "items_pkey" -> {
+        yield new CADatabaseException(
+          "Item already exists.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      case "locations_pkey" -> {
+        yield new CADatabaseException(
+          "Location already exists.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      case "tags_pkey" -> {
+        yield new CADatabaseException(
+          "Tag already exists.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      case "users_pkey" -> {
+        yield new CADatabaseException(
+          "User already exists.",
+          errorDuplicate(),
           attributes,
           Optional.empty()
         );
       }
 
       default -> {
-        PSQLState actual = null;
-        for (final var possible : PSQLState.values()) {
-          if (Objects.equals(possible.getState(), e.sqlState())) {
-            actual = possible;
-            break;
-          }
-        }
-
-        if (actual != null) {
-          yield switch (actual) {
-            case FOREIGN_KEY_VIOLATION -> {
-              yield new CADatabaseException(
-                m,
-                e,
-                errorSqlForeignKey(),
-                attributes,
-                Optional.empty()
-              );
-            }
-            case UNIQUE_VIOLATION -> {
-              yield new CADatabaseException(
-                m,
-                e,
-                errorSqlUnique(),
-                attributes,
-                Optional.empty()
-              );
-            }
-            default -> {
-              yield new CADatabaseException(
-                m,
-                e,
-                errorSql(),
-                attributes,
-                Optional.empty()
-              );
-            }
-          };
-        }
-
         yield new CADatabaseException(
           m,
           e,
@@ -145,12 +262,19 @@ public final class CADatabaseExceptions
         );
       }
     };
+  }
 
-    try {
-      transaction.rollback();
-    } catch (final CADatabaseException ex) {
-      result.addSuppressed(ex);
-    }
-    return result;
+  private static CADatabaseException handleForeignKeyViolation(
+    final DataAccessException e,
+    final SortedMap<String, String> attributes,
+    final String m)
+  {
+    return new CADatabaseException(
+      m,
+      e,
+      errorSql(),
+      attributes,
+      Optional.empty()
+    );
   }
 }

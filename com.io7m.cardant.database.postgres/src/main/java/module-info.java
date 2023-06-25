@@ -29,11 +29,13 @@ module com.io7m.cardant.database.postgres
 
   requires transitive com.io7m.cardant.database.api;
   requires com.io7m.cardant.security;
+  requires com.io7m.cardant.strings;
 
+  requires com.io7m.anethum.api;
   requires com.io7m.jdeferthrow.core;
-  requires com.io7m.anethum.common;
+  requires com.io7m.jmulticlose.core;
   requires com.io7m.jqpage.core;
-  requires com.io7m.jxtrand.vanilla;
+  requires com.io7m.lanark.core;
   requires com.io7m.trasco.api;
   requires com.io7m.trasco.vanilla;
   requires com.zaxxer.hikari;
@@ -41,13 +43,11 @@ module com.io7m.cardant.database.postgres
   requires io.opentelemetry.context;
   requires io.opentelemetry.semconv;
   requires java.sql;
+  requires org.apache.commons.text;
   requires org.jgrapht.core;
   requires org.jooq;
   requires org.postgresql.jdbc;
   requires org.slf4j;
-
-  opens com.io7m.cardant.database.postgres.internal
-    to com.io7m.jxtrand.vanilla;
 
   exports com.io7m.cardant.database.postgres.internal.tables
     to org.jooq;

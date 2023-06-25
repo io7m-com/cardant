@@ -22,16 +22,18 @@ import com.io7m.cardant.server.api.CAServerDatabaseKind;
 import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
+import com.io7m.cardant.server.api.CAServerLimitsConfiguration;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CALogs;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CAMetrics;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CAOTLPProtocol;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CATraces;
+import com.io7m.cardant.server.service.configuration.xml.Configuration;
 import com.io7m.cardant.server.service.configuration.xml.Database;
+import com.io7m.cardant.server.service.configuration.xml.DatabaseKind;
 import com.io7m.cardant.server.service.configuration.xml.HTTPService;
 import com.io7m.cardant.server.service.configuration.xml.IdStore;
-import com.io7m.cardant.server.service.configuration.xml.Configuration;
-import com.io7m.cardant.server.service.configuration.xml.DatabaseKind;
+import com.io7m.cardant.server.service.configuration.xml.Limits;
 import com.io7m.cardant.server.service.configuration.xml.OpenTelemetry;
 import com.io7m.cardant.server.service.configuration.xml.OpenTelemetryProtocol;
 import com.io7m.repetoir.core.RPServiceType;
@@ -137,7 +139,17 @@ public final class CAConfigurationFiles
       ),
       processDatabase(configuration.getDatabase()),
       processIdstore(configuration.getIdStore()),
+      processLimits(configuration.getLimits()),
       processOpenTelemetry(configuration.getOpenTelemetry())
+    );
+  }
+
+  private static CAServerLimitsConfiguration processLimits(
+    final Limits limits)
+  {
+    return new CAServerLimitsConfiguration(
+      limits.getMaximumFileUploadSizeOctets().longValueExact(),
+      limits.getMaximumCommandSizeOctets().longValueExact()
     );
   }
 
@@ -203,11 +215,14 @@ public final class CAConfigurationFiles
   {
     return new CAServerDatabaseConfiguration(
       processDatabaseKind(database.getKind()),
-      database.getUser(),
-      database.getPassword(),
-      database.getDatabaseAddress(),
-      database.getDatabasePort().intValue(),
-      database.getDatabaseName(),
+      database.getOwnerRoleName(),
+      database.getOwnerRolePassword(),
+      database.getWorkerRolePassword(),
+      Optional.ofNullable(database.getReaderRolePassword()),
+      database.getAddress(),
+      database.getPort().intValue(),
+      database.getName(),
+      database.getLanguage(),
       database.isCreate(),
       database.isUpgrade()
     );

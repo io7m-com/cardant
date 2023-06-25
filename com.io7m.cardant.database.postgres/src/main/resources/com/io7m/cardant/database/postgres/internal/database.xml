@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Schemas xmlns="urn:com.io7m.trasco.database.statements:1:0">
+
+  <Parameters>
+    <Parameter name="search.language"
+               type="STRING"/>
+  </Parameters>
+
   <Schema versionCurrent="0">
     <Comment>
       The cardant role is a least-privilege role that can perform only those operations required to run the system and
@@ -26,6 +32,17 @@ create role cardant_none with nosuperuser nocreatedb nocreaterole noinherit nolo
 ]]></Statement>
 
     <Comment>
+      The cardant_read_only role is a read-only role that cannot write to anything.
+    </Comment>
+
+    <Statement><![CDATA[
+drop role if exists cardant_read_only;
+]]></Statement>
+    <Statement><![CDATA[
+create role cardant_read_only with nosuperuser nocreatedb nocreaterole noinherit nologin;
+]]></Statement>
+
+    <Comment>
       The schema version table stores the current version of the database schema. Implementations are expected to query
       this table on connecting to the database in order to ensure that the calling code is compatible with the tables in
       the database.
@@ -46,9 +63,8 @@ create table schema_version (
 
   <Schema versionCurrent="1">
     <Comment>
-      The users table stores the current set of users. The name field is neither
-      authoritative, nor expected to be unique, because the external identity server
-      is the authoritative source for names.
+      The users table stores the current set of users. The name field is neither authoritative, nor expected to be
+      unique, because the external identity server is the authoritative source for names.
     </Comment>
 
     <Statement><![CDATA[
@@ -60,6 +76,7 @@ create table users (
 ]]></Statement>
 
     <Statement>grant select, insert, update on users to cardant</Statement>
+    <Statement>grant select on users to cardant_read_only</Statement>
 
     <Comment>
       The tags table contains the list of tags.
@@ -75,26 +92,38 @@ create table tags (
 ]]></Statement>
 
     <Statement>grant select, insert, update, delete on tags to cardant</Statement>
+    <Statement>grant select on tags to cardant_read_only</Statement>
 
     <Comment>
       The files table contains files.
     </Comment>
 
-    <Statement><![CDATA[
+    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
+      <ParameterReferences>
+        <ParameterReference order="0"
+                            name="search.language"/>
+      </ParameterReferences>
+      <Text>
+      <![CDATA[
 create table files (
-  id              uuid         not null primary key,
-  description     varchar(256) not null,
-  media_type      varchar(128) not null,
-  hash_algorithm  varchar(32)  not null,
-  hash_value      varchar(256) not null,
-  data            bytea        not null,
-  data_used       bigint       not null,
+  id                 uuid         not null primary key,
+  description        varchar(256) not null,
+  -- [jooq ignore start]
+  description_search tsvector     not null generated always as (to_tsvector(%s, description)) stored,
+  -- [jooq ignore stop]
+  media_type         varchar(128) not null,
+  hash_algorithm     varchar(32)  not null,
+  hash_value         varchar(256) not null,
+  data               bytea        not null,
+  data_used          bigint       not null,
 
   constraint check_natural_data check (data_used >= 0)
 )
-]]></Statement>
+]]></Text>
+    </StatementParameterized>
 
     <Statement>grant select, insert, update, delete on files to cardant</Statement>
+    <Statement>grant select on files to cardant_read_only</Statement>
 
     <Comment>
       The items table contains the list of items.
@@ -104,14 +133,12 @@ create table files (
 create table items (
   item_id       uuid         not null primary key,
   item_name     varchar(128) not null,
-  item_count    bigint       not null,
-  item_deleted  boolean      not null,
-
-  constraint check_natural_count check (item_count >= 0)
+  item_deleted  boolean      not null
 )
 ]]></Statement>
 
     <Statement>grant select, insert, update, delete on items to cardant</Statement>
+    <Statement>grant select on items to cardant_read_only</Statement>
 
     <Comment>
       The item_tags table contains the tags applied to each item.
@@ -129,6 +156,7 @@ create table item_tags (
 ]]></Statement>
 
     <Statement>grant select, insert, update, delete on item_tags to cardant</Statement>
+    <Statement>grant select on item_tags to cardant_read_only</Statement>
 
     <Comment>
       The item_attachments table contains attachments for each item.
@@ -148,6 +176,7 @@ create table item_attachments (
 ]]></Statement>
 
     <Statement>grant select, insert, update, delete on item_attachments to cardant</Statement>
+    <Statement>grant select on item_attachments to cardant_read_only</Statement>
 
     <Comment>
       The item_metadata table contains metadata for each item.
@@ -165,6 +194,7 @@ create table item_metadata (
 ]]></Statement>
 
     <Statement>grant select, insert, update, delete on item_metadata to cardant</Statement>
+    <Statement>grant select on item_metadata to cardant_read_only</Statement>
 
     <Comment>
       The locations table contains storage/deployment locations for each item.
@@ -182,6 +212,7 @@ create table locations (
 ]]></Statement>
 
     <Statement>grant select, insert, update, delete on locations to cardant</Statement>
+    <Statement>grant select on locations to cardant_read_only</Statement>
 
     <Statement><![CDATA[
 create table item_locations (
@@ -199,6 +230,7 @@ create table item_locations (
 ]]></Statement>
 
     <Statement>grant select, insert, update, delete on item_locations to cardant</Statement>
+    <Statement>grant select on item_locations to cardant_read_only</Statement>
 
     <Statement><![CDATA[
 create view item_locations_summed (item_id, item_count)
@@ -207,10 +239,11 @@ create view item_locations_summed (item_id, item_count)
 ]]></Statement>
 
     <Statement>grant select on item_locations_summed to cardant</Statement>
+    <Statement>grant select on item_locations_summed to cardant_read_only</Statement>
 
     <Comment>
-      The location_descendants function returns the descendants of a given location. The location
-      itself is included in the results.
+      The location_descendants function returns the descendants of a given location. The location itself is included in
+      the results.
     </Comment>
 
     <Statement><![CDATA[
@@ -245,8 +278,8 @@ $$
 ]]></Statement>
 
     <Comment>
-      The location_descendants function returns the descendants of a given location. The location
-      itself is not included in the results.
+      The location_descendants function returns the descendants of a given location. The location itself is not included
+      in the results.
     </Comment>
 
     <Statement><![CDATA[
@@ -275,8 +308,7 @@ $$
 ]]></Statement>
 
     <Comment>
-      The location_is_descendant_of function returns true if x is a descendant of y in terms
-      of the locations table.
+      The location_is_descendant_of function returns true if x is a descendant of y in terms of the locations table.
     </Comment>
 
     <Statement><![CDATA[
@@ -316,5 +348,6 @@ create table audit (
 ]]></Statement>
 
     <Statement>grant select, insert on audit to cardant</Statement>
+    <Statement>grant select on audit to cardant_read_only</Statement>
   </Schema>
 </Schemas>

@@ -23,7 +23,9 @@ module com.io7m.cardant.server.service.idstore
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.api;
+
   requires com.io7m.idstore.user_client.api;
   requires com.io7m.idstore.user_client;
   requires com.io7m.repetoir.core;

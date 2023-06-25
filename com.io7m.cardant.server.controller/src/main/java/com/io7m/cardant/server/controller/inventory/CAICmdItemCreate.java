@@ -24,9 +24,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 
-import java.util.Objects;
-
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 
@@ -57,27 +54,14 @@ public final class CAICmdItemCreate extends CAICmdAbstract<CAICommandItemCreate>
       context.transaction()
         .queries(CADatabaseQueriesItemsType.class);
 
-    try {
-      final var itemId = command.id();
-      queries.itemCreate(itemId);
-      queries.itemNameSet(itemId, command.name());
+    final var itemId = command.id();
+    queries.itemCreate(itemId);
+    queries.itemNameSet(itemId, command.name());
 
-      final var updated =
-        queries.itemGet(itemId)
-          .orElseThrow();
+    final var updated =
+      queries.itemGet(itemId)
+        .orElseThrow();
 
-      return new CAIResponseItemCreate(context.requestId(), updated);
-    } catch (final CADatabaseException e) {
-      if (Objects.equals(e.errorCode(), errorDuplicate())) {
-        throw context.failFormatted(
-          e,
-          400,
-          errorDuplicate(),
-          e.attributes(),
-          "duplicate"
-        );
-      }
-      throw e;
-    }
+    return new CAIResponseItemCreate(context.requestId(), updated);
   }
 }

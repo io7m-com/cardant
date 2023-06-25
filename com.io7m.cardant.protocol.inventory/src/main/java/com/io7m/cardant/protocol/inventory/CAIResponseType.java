@@ -27,6 +27,7 @@ import java.util.UUID;
 public sealed interface CAIResponseType
   extends CAIMessageType, HBResponseType
   permits CAIResponseError,
+  CAIResponseFileSearch,
   CAIResponseItemSearch,
   CAIResponseLogin,
   CAIResponseRolesAssign,

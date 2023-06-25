@@ -28,8 +28,12 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   extends CAIMessageType, HBCommandType
   permits CAICommandDebugInvalid,
   CAICommandDebugRandom,
+  CAICommandFileGet,
   CAICommandFilePut,
   CAICommandFileRemove,
+  CAICommandFileSearchBegin,
+  CAICommandFileSearchNext,
+  CAICommandFileSearchPrevious,
   CAICommandItemAttachmentAdd,
   CAICommandItemAttachmentRemove,
   CAICommandItemCreate,

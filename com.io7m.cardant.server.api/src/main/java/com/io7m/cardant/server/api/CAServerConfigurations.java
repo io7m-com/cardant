@@ -18,6 +18,7 @@ package com.io7m.cardant.server.api;
 
 import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseFactoryType;
+import com.io7m.cardant.strings.CAStrings;
 
 import java.time.Clock;
 import java.util.ArrayList;
@@ -62,20 +63,27 @@ public final class CAServerConfigurations
     Objects.requireNonNull(clock, "clock");
     Objects.requireNonNull(file, "file");
 
+    final var strings =
+      CAStrings.create(locale);
+
     final var fileDbConfig =
       file.databaseConfiguration();
 
     final var databaseConfiguration =
       new CADatabaseConfiguration(
         locale,
-        fileDbConfig.user(),
-        fileDbConfig.password(),
+        fileDbConfig.ownerRoleName(),
+        fileDbConfig.ownerRolePassword(),
+        fileDbConfig.workerRolePassword(),
+        fileDbConfig.readerRolePassword(),
         fileDbConfig.address(),
         fileDbConfig.port(),
         fileDbConfig.databaseName(),
         fileDbConfig.create() ? CREATE_DATABASE : DO_NOT_CREATE_DATABASE,
         fileDbConfig.upgrade() ? UPGRADE_DATABASE : DO_NOT_UPGRADE_DATABASE,
-        clock
+        fileDbConfig.databaseLanguage(),
+        clock,
+        strings
       );
 
     final var databaseFactories =
@@ -88,10 +96,12 @@ public final class CAServerConfigurations
     return new CAServerConfiguration(
       locale,
       clock,
+      strings,
       database,
       databaseConfiguration,
       file.httpConfiguration().inventoryService(),
       file.idstoreConfiguration(),
+      file.limitsConfiguration(),
       file.openTelemetry()
     );
   }

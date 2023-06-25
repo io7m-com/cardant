@@ -23,7 +23,8 @@ module com.io7m.cardant.server.service.sessions
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.cardant.model;
+  requires com.io7m.cardant.model;
+  requires com.io7m.cardant.server.service.telemetry.api;
 
   requires com.github.benmanes.caffeine;
   requires com.io7m.jaffirm.core;

@@ -25,6 +25,7 @@ module com.io7m.cardant.server.http
 
   requires com.io7m.cardant.error_codes;
   requires com.io7m.cardant.model;
+  requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.telemetry.api;
 
   requires io.opentelemetry.api;

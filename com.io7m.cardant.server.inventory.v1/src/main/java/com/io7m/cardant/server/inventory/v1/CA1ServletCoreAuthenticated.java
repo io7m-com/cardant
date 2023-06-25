@@ -25,7 +25,6 @@ import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
-import com.io7m.cardant.server.controller.CAServerStrings;
 import com.io7m.cardant.server.http.CAHTTPServletFunctionalCoreAuthenticatedType;
 import com.io7m.cardant.server.http.CAHTTPServletFunctionalCoreType;
 import com.io7m.cardant.server.http.CAHTTPServletRequestInformation;
@@ -34,6 +33,7 @@ import com.io7m.cardant.server.http.CAHTTPServletResponseType;
 import com.io7m.cardant.server.service.sessions.CASession;
 import com.io7m.cardant.server.service.sessions.CASessionSecretIdentifier;
 import com.io7m.cardant.server.service.sessions.CASessionService;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -46,6 +46,7 @@ import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_CLIENT;
 import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_SERVER;
 import static com.io7m.cardant.server.inventory.v1.CA1Errors.errorResponseOf;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_UNAUTHORIZED;
 
 /**
  * A core that executes the given core under authentication.
@@ -58,7 +59,7 @@ public final class CA1ServletCoreAuthenticated
   private final CADatabaseType database;
   private final CASessionService sessions;
   private final CAI1Messages messages;
-  private final CAServerStrings strings;
+  private final CAStrings strings;
 
   private CA1ServletCoreAuthenticated(
     final RPServiceDirectoryType services,
@@ -69,7 +70,7 @@ public final class CA1ServletCoreAuthenticated
     this.core =
       Objects.requireNonNull(inCore, "core");
     this.strings =
-      services.requireService(CAServerStrings.class);
+      services.requireService(CAStrings.class);
     this.database =
       services.requireService(CADatabaseType.class);
     this.sessions =
@@ -144,7 +145,7 @@ public final class CA1ServletCoreAuthenticated
       this.messages.serialize(
         new CAIResponseError(
           information.requestId(),
-          this.strings.format("unauthorized"),
+          this.strings.format(ERROR_UNAUTHORIZED),
           CAStandardErrorCodes.errorAuthentication(),
           Map.of(),
           Optional.empty(),

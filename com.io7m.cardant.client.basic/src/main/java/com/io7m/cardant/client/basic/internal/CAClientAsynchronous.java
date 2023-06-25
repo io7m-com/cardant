@@ -22,19 +22,15 @@ import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
-import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.hibiscus.api.HBResultType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.hibiscus.basic.HBClientAsynchronousAbstract;
 
-import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static java.lang.Integer.toUnsignedString;
 
@@ -83,26 +79,6 @@ public final class CAClientAsynchronous
   public Optional<UUID> userId()
   {
     return this.subscriber.getUserId();
-  }
-
-  @Override
-  public CompletableFuture<HBResultType<InputStream, CAIResponseError>>
-  fileDataAsync(
-    final CAFileID fileID)
-  {
-    super.checkNotClosingOrClosed();
-
-    final var future =
-      new CompletableFuture<HBResultType<InputStream, CAIResponseError>>();
-    this.commandExecutor().execute(() -> {
-      try {
-        final var client = (CAClientSynchronousType) this.delegate();
-        future.complete(client.fileData(fileID));
-      } catch (final Throwable e) {
-        future.completeExceptionally(e);
-      }
-    });
-    return future;
   }
 
   @Override

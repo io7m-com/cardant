@@ -52,7 +52,7 @@
     </annotation>
 
     <complexType>
-      <attribute name="baseURI"
+      <attribute name="BaseURI"
                  type="anyURI"
                  use="required">
         <annotation>
@@ -62,7 +62,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="passwordResetURI"
+      <attribute name="PasswordResetURI"
                  type="anyURI"
                  use="required">
         <annotation>
@@ -229,30 +229,53 @@
     </annotation>
 
     <complexType>
-      <attribute name="kind"
+      <attribute name="Kind"
                  type="c:DatabaseKind"
                  use="required"/>
-      <attribute name="user"
-                 type="string"
-                 use="required">
+
+      <attribute name="OwnerRoleName"
+                 use="required"
+                 type="string">
         <annotation>
           <documentation>
-            The username used to connect to the database.
+            The name of the role that owns the database. This is used for the initial database setup, and for upgrades.
           </documentation>
         </annotation>
       </attribute>
 
-      <attribute name="password"
-                 type="string"
-                 use="required">
+      <attribute name="OwnerRolePassword"
+                 use="required"
+                 type="string">
         <annotation>
           <documentation>
-            The password used to connect to the database.
+            The password of the role that owns the database.
           </documentation>
         </annotation>
       </attribute>
 
-      <attribute name="databaseAddress"
+      <attribute name="WorkerRolePassword"
+                 use="required"
+                 type="string">
+        <annotation>
+          <documentation>
+            The password of the role used for normal database operation. This is an unprivileged role that does not have
+            the ability to perform DDL or other database-changing operations.
+          </documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="ReaderRolePassword"
+                 use="optional"
+                 type="string">
+        <annotation>
+          <documentation>
+            The password of the role used for read-only database operation. If this attribute is not specified, the
+            read-only role is not allowed to log in.
+          </documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="Address"
                  type="string"
                  use="required">
         <annotation>
@@ -262,7 +285,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="databasePort"
+      <attribute name="Port"
                  type="integer"
                  use="required">
         <annotation>
@@ -272,7 +295,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="databaseName"
+      <attribute name="Name"
                  type="string"
                  use="required">
         <annotation>
@@ -282,7 +305,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="create"
+      <attribute name="Create"
                  type="boolean"
                  use="required">
         <annotation>
@@ -291,7 +314,8 @@
           </documentation>
         </annotation>
       </attribute>
-      <attribute name="upgrade"
+
+      <attribute name="Upgrade"
                  type="boolean"
                  use="required">
         <annotation>
@@ -300,11 +324,22 @@
           </documentation>
         </annotation>
       </attribute>
+
+      <attribute name="Language"
+                 type="string"
+                 use="required">
+        <annotation>
+          <documentation>
+            The language used for database search indexes (such as 'english'). See
+            https://www.postgresql.org/docs/current/locale.html.
+          </documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
 
   <complexType name="HTTPService">
-    <attribute name="listenAddress"
+    <attribute name="ListenAddress"
                type="string"
                use="required">
       <annotation>
@@ -314,7 +349,7 @@
       </annotation>
     </attribute>
 
-    <attribute name="listenPort"
+    <attribute name="ListenPort"
                type="integer"
                use="required">
       <annotation>
@@ -324,7 +359,7 @@
       </annotation>
     </attribute>
 
-    <attribute name="externalAddress"
+    <attribute name="ExternalAddress"
                type="anyURI"
                use="required">
       <annotation>
@@ -335,7 +370,7 @@
       </annotation>
     </attribute>
 
-    <attribute name="sessionExpiration"
+    <attribute name="SessionExpiration"
                type="duration"
                use="optional">
       <annotation>
@@ -355,6 +390,36 @@
     </annotation>
   </element>
 
+  <element name="Limits">
+    <annotation>
+      <documentation>
+        Configuration for various limits.
+      </documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="MaximumFileUploadSizeOctets"
+                 type="unsignedLong"
+                 use="required">
+        <annotation>
+          <documentation>
+            The maximum permitted size of uploaded files (in octets).
+          </documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="MaximumCommandSizeOctets"
+                 type="unsignedLong"
+                 use="required">
+        <annotation>
+          <documentation>
+            The maximum permitted size of ordinary commands (in octets).
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
   <element name="Configuration">
     <annotation>
       <documentation>
@@ -367,6 +432,7 @@
         <element ref="c:InventoryService"/>
         <element ref="c:Database"/>
         <element ref="c:IdStore"/>
+        <element ref="c:Limits"/>
         <element ref="c:OpenTelemetry"
                  minOccurs="0"
                  maxOccurs="1"/>

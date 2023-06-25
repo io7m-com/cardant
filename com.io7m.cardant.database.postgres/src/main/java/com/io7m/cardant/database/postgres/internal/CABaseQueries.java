@@ -16,9 +16,10 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
+import com.io7m.cardant.strings.CAStringConstantType;
+import com.io7m.cardant.strings.CAStrings;
 import io.opentelemetry.api.trace.Span;
 
-import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -46,16 +47,16 @@ abstract class CABaseQueries
     return this.transaction;
   }
 
-  protected final CADatabaseMessages messages()
+  private CAStrings messages()
   {
     return this.transaction.connection()
       .database()
       .messages();
   }
 
-  protected final OffsetDateTime currentTime()
+  protected final String local(
+    final CAStringConstantType constant)
   {
-    return OffsetDateTime.now(this.transaction.clock())
-      .withNano(0);
+    return this.messages().format(constant);
   }
 }

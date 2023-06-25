@@ -18,6 +18,7 @@ package com.io7m.cardant.client.api;
 
 import com.io7m.hibiscus.api.HBConfigurationType;
 
+import java.time.Clock;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -25,20 +26,24 @@ import java.util.Objects;
  * The client configuration.
  *
  * @param locale The locale for messages
+ * @param clock  The clock service
  */
 
 public record CAClientConfiguration(
-  Locale locale)
+  Locale locale,
+  Clock clock)
   implements HBConfigurationType
 {
   /**
    * The client configuration.
    *
    * @param locale The locale for messages
+   * @param clock  The clock service
    */
 
   public CAClientConfiguration
   {
     Objects.requireNonNull(locale, "locale");
+    Objects.requireNonNull(clock, "clock");
   }
 }

@@ -25,20 +25,20 @@ module com.io7m.cardant.client.basic
 
   requires java.net.http;
 
+  requires transitive com.io7m.cardant.client.api;
+  requires com.io7m.cardant.strings;
+  requires com.io7m.cardant.protocol.inventory.cb;
+
   requires com.io7m.genevan.core;
   requires com.io7m.hibiscus.api;
   requires com.io7m.hibiscus.basic;
   requires com.io7m.junreachable.core;
-  requires com.io7m.jxtrand.vanilla;
+  requires com.io7m.jxtrand.api;
   requires com.io7m.verdant.core.cb;
+  requires commons.math3;
   requires org.slf4j;
 
-  requires transitive com.io7m.cardant.client.api;
   requires transitive com.io7m.repetoir.core;
-  requires com.io7m.cardant.protocol.inventory.cb;
-
-  opens com.io7m.cardant.client.basic.internal
-    to com.io7m.jxtrand.vanilla;
 
   exports com.io7m.cardant.client.basic;
 }

@@ -27,7 +27,6 @@ import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
-import com.io7m.cardant.server.controller.CAServerStrings;
 import com.io7m.cardant.server.http.CAHTTPErrorStatusException;
 import com.io7m.cardant.server.http.CAHTTPServletFunctional;
 import com.io7m.cardant.server.http.CAHTTPServletFunctionalCoreType;
@@ -37,6 +36,8 @@ import com.io7m.cardant.server.http.CAHTTPServletResponseType;
 import com.io7m.cardant.server.service.idstore.CAIdstoreClientsType;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimits;
 import com.io7m.cardant.server.service.sessions.CASessionService;
+import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.idstore.model.IdLoginMetadataStandard;
 import com.io7m.idstore.protocol.user.IdUResponseLogin;
 import com.io7m.idstore.user_client.api.IdUClientCredentials;
@@ -52,12 +53,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_CLIENT;
 import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_SERVER;
 import static com.io7m.cardant.server.http.CAHTTPServletCoreInstrumented.withInstrumentation;
 import static com.io7m.cardant.server.inventory.v1.CA1Errors.errorResponseOf;
 import static com.io7m.cardant.server.inventory.v1.CA1ServletCoreTransactional.withTransaction;
+import static com.io7m.cardant.strings.CAStringConstants.COMMAND;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_EXPECTED_COMMAND;
 import static java.util.Map.entry;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 
@@ -87,13 +91,15 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
     final var messages =
       services.requireService(CAI1Messages.class);
     final var strings =
-      services.requireService(CAServerStrings.class);
+      services.requireService(CAStrings.class);
     final var idClients =
       services.requireService(CAIdstoreClientsType.class);
     final var database =
       services.requireService(CADatabaseType.class);
     final var sessions =
       services.requireService(CASessionService.class);
+    final var telemetry =
+      services.requireService(CAServerTelemetryServiceType.class);
 
     return (request, information) -> {
       return withInstrumentation(
@@ -109,6 +115,7 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
                 idClients,
                 database,
                 sessions,
+                telemetry,
                 req1,
                 info1,
                 transaction
@@ -119,12 +126,13 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
   }
 
   private static CAHTTPServletResponseType execute(
-    final CAServerStrings strings,
+    final CAStrings strings,
     final CARequestLimits limits,
     final CAI1Messages messages,
     final CAIdstoreClientsType idClients,
     final CADatabaseType database,
     final CASessionService sessions,
+    final CAServerTelemetryServiceType telemetry,
     final HttpServletRequest request,
     final CAHTTPServletRequestInformation information,
     final CADatabaseTransactionType transaction)
@@ -159,27 +167,37 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
         clientMetadata
       );
 
-    try (var client = idClients.createClient()) {
-      final var result =
-        client.login(clientCredentials)
-          .map(IdUResponseLogin.class::cast)
-          .orElseThrow(IdUClientException::ofError);
-      userId = result.user().id();
-    } catch (final IdUClientException e) {
-      return errorResponseOf(
-        messages,
-        information,
-        BLAME_CLIENT,
-        new CAException(
-          e.getMessage(),
-          e,
-          CAStandardErrorCodes.errorAuthentication(),
-          e.attributes(),
-          e.remediatingAction()
-        )
-      );
-    } catch (final InterruptedException e) {
-      throw new IllegalStateException(e);
+    final var span =
+      telemetry.tracer()
+        .spanBuilder("IdstoreLogin")
+        .startSpan();
+
+    try (var ignored = span.makeCurrent()) {
+      try (var client = idClients.createClient()) {
+        final var result =
+          client.login(clientCredentials)
+            .map(IdUResponseLogin.class::cast)
+            .orElseThrow(IdUClientException::ofError);
+        userId = result.user().id();
+      } catch (final IdUClientException e) {
+        span.setAttribute("idstore.errorCode", e.errorCode().id());
+        return errorResponseOf(
+          messages,
+          information,
+          BLAME_CLIENT,
+          new CAException(
+            e.getMessage(),
+            e,
+            CAStandardErrorCodes.errorAuthentication(),
+            e.attributes(),
+            e.remediatingAction()
+          )
+        );
+      } catch (final InterruptedException e) {
+        throw new IllegalStateException(e);
+      }
+    } finally {
+      span.end();
     }
 
     /*
@@ -195,10 +213,32 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
       return errorResponseOf(messages, information, BLAME_SERVER, e);
     }
 
-    /*
-     * Create a new session.
-     */
+    return createNewSession(
+      messages,
+      sessions,
+      request,
+      information,
+      transaction,
+      login,
+      userId,
+      icUser
+    );
+  }
 
+  /**
+   * Create a new session.
+   */
+
+  private static CAHTTPServletResponseType createNewSession(
+    final CAI1Messages messages,
+    final CASessionService sessions,
+    final HttpServletRequest request,
+    final CAHTTPServletRequestInformation information,
+    final CADatabaseTransactionType transaction,
+    final CAICommandLogin login,
+    final UUID userId,
+    final CAUser icUser)
+  {
     final var session =
       sessions.createSession(
         icUser.userId(),
@@ -228,13 +268,13 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
   }
 
   private static CAICommandLogin readLoginCommand(
-    final CAServerStrings strings,
+    final CAStrings strings,
     final CARequestLimits limits,
     final CAI1Messages messages,
     final HttpServletRequest request)
     throws CAHTTPErrorStatusException, IOException
   {
-    try (var input = limits.boundedMaximumInput(request, 1024)) {
+    try (var input = limits.boundedMaximumInputForLoginCommand(request)) {
       final var data = input.readAllBytes();
       final var message = messages.parse(data);
       if (message instanceof final CAICommandLogin login) {
@@ -252,9 +292,11 @@ public final class CA1ServletLogin extends CAHTTPServletFunctional
     }
 
     throw new CAHTTPErrorStatusException(
-      strings.format("expectedCommand", "CommandLogin"),
-      errorProtocol(),
-      Map.of(),
+      strings.format(ERROR_EXPECTED_COMMAND),
+      errorApiMisuse(),
+      Map.of(
+        strings.format(COMMAND), "CommandLogin"
+      ),
       Optional.empty(),
       BAD_REQUEST_400
     );

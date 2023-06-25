@@ -17,6 +17,7 @@
 package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
 
 import java.util.Optional;
@@ -66,5 +67,19 @@ public non-sealed interface CADatabaseQueriesFilesType
 
   void fileRemove(
     CAFileID file)
+    throws CADatabaseException;
+
+  /**
+   * Search for files.
+   *
+   * @param parameters The search parameters
+   *
+   * @return The file search
+   *
+   * @throws CADatabaseException On database errors
+   */
+
+  CADatabaseFileSearchType fileSearch(
+    CAFileSearchParameters parameters)
     throws CADatabaseException;
 }

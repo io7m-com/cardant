@@ -20,6 +20,7 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesMaintenanceType;
 import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.jdeferthrow.core.ExceptionTracker;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 import org.jooq.exception.DataAccessException;
 
@@ -82,12 +83,13 @@ public final class CADatabaseQueriesMaintenance
         CASecurityPolicy.ROLES_ALL.stream()
           .sorted()
           .map(MRoleName::value)
+          .map(RDottedName::value)
           .toList()
           .toArray(roleArray);
 
       final var hasAdmin =
         USERS.ROLES.contains(new String[]{
-          CASecurityPolicy.ROLE_INVENTORY_ADMIN.value(),
+          CASecurityPolicy.ROLE_INVENTORY_ADMIN.value().value(),
         });
 
       context.update(USERS)

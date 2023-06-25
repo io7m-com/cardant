@@ -19,6 +19,8 @@ package com.io7m.cardant.server.service.telemetry.otp.internal;
 
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Tracer;
 
 import java.util.Objects;
@@ -30,24 +32,34 @@ import java.util.Objects;
 public final class CAServerTelemetryService
   implements CAServerTelemetryServiceType
 {
-  private final OpenTelemetry openTelemetry;
   private final Tracer tracer;
+  private final Meter meter;
+  private final Logger logger;
+  private final OpenTelemetry openTelemetry;
 
   /**
    * An OpenTelemetry service.
    *
-   * @param inOpenTelemetry The OT instance
+   * @param inOpenTelemetry The OpenTelemetry instance
    * @param inTracer        The tracer instance
+   * @param inMeter         The meter
+   * @param inLogger        The logger
    */
 
   public CAServerTelemetryService(
     final OpenTelemetry inOpenTelemetry,
-    final Tracer inTracer)
+    final Tracer inTracer,
+    final Meter inMeter,
+    final Logger inLogger)
   {
     this.openTelemetry =
-      Objects.requireNonNull(inOpenTelemetry, "openTelemetry");
+      Objects.requireNonNull(inOpenTelemetry, "inOpenTelemetry");
     this.tracer =
       Objects.requireNonNull(inTracer, "tracer");
+    this.meter =
+      Objects.requireNonNull(inMeter, "meter");
+    this.logger =
+      Objects.requireNonNull(inLogger, "logger");
   }
 
   @Override
@@ -67,6 +79,24 @@ public final class CAServerTelemetryService
   public Tracer tracer()
   {
     return this.tracer;
+  }
+
+  @Override
+  public Meter meter()
+  {
+    return this.meter;
+  }
+
+  @Override
+  public Logger logger()
+  {
+    return this.logger;
+  }
+
+  @Override
+  public boolean isNoOp()
+  {
+    return false;
   }
 
   @Override

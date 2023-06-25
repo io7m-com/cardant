@@ -17,6 +17,7 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.genevan.core.GenProtocolClientHandlerType;
 
 import java.net.URI;
@@ -44,5 +45,6 @@ public interface CAHandlerFactoryType
     CAClientConfiguration configuration,
     HttpClient inHttpClient,
     CAStrings inStrings,
-    URI baseURI);
+    URI baseURI
+  );
 }

@@ -19,8 +19,10 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseCreate;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseUpgrade;
 import com.io7m.cardant.database.postgres.CAPGDatabases;
+import com.io7m.cardant.strings.CAStrings;
 import io.opentelemetry.api.OpenTelemetry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Clock;
 import java.util.Locale;
+import java.util.Optional;
 
 import static com.io7m.cardant.tests.database.CADatabaseExtension.POSTGRES_VERSION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,12 +96,16 @@ public final class CAPGDatabasesTest
         Locale.ROOT,
         "postgres",
         "12345678",
+        "12345678",
+        Optional.of("12345678"),
         CONTAINER.getHost(),
         CONTAINER.getFirstMappedPort().intValue(),
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
         CADatabaseUpgrade.UPGRADE_DATABASE,
-        Clock.systemUTC()
+        "english",
+        Clock.systemUTC(),
+        CAStrings.create(Locale.ROOT)
       );
 
     this.databaseConfigurationWithoutUpgrades =
@@ -106,12 +113,16 @@ public final class CAPGDatabasesTest
         Locale.ROOT,
         "postgres",
         "12345678",
+        "12345678",
+        Optional.of("12345678"),
         CONTAINER.getHost(),
         CONTAINER.getFirstMappedPort().intValue(),
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
         CADatabaseUpgrade.DO_NOT_UPGRADE_DATABASE,
-        Clock.systemUTC()
+        "english",
+        Clock.systemUTC(),
+        CAStrings.create(Locale.ROOT)
       );
 
     final var url = new StringBuilder(128);
@@ -124,8 +135,8 @@ public final class CAPGDatabasesTest
 
     this.dataSource = new PGConnectionPoolDataSource();
     this.dataSource.setUrl(url.toString());
-    this.dataSource.setUser(this.databaseConfiguration.user());
-    this.dataSource.setPassword(this.databaseConfiguration.password());
+    this.dataSource.setUser(this.databaseConfiguration.ownerRoleName());
+    this.dataSource.setPassword(this.databaseConfiguration.ownerRolePassword());
     this.dataSource.setDefaultAutoCommit(false);
 
     this.databases = new CAPGDatabases();
@@ -175,7 +186,11 @@ public final class CAPGDatabasesTest
       assertThrows(CADatabaseException.class, () -> {
         this.databases.open(
           this.databaseConfiguration,
-          OpenTelemetry.noop(),
+          new CADatabaseTelemetry(
+            true,
+            OpenTelemetry.noop().getMeter("x"),
+            OpenTelemetry.noop().getTracer("x")
+          ),
           s -> {
           }
         );
@@ -223,7 +238,11 @@ public final class CAPGDatabasesTest
       assertThrows(CADatabaseException.class, () -> {
         this.databases.open(
           this.databaseConfiguration,
-          OpenTelemetry.noop(),
+          new CADatabaseTelemetry(
+            true,
+            OpenTelemetry.noop().getMeter("x"),
+            OpenTelemetry.noop().getTracer("x")
+          ),
           s -> {
           }
         );
@@ -259,7 +278,11 @@ public final class CAPGDatabasesTest
       assertThrows(CADatabaseException.class, () -> {
         this.databases.open(
           this.databaseConfiguration,
-          OpenTelemetry.noop(),
+          new CADatabaseTelemetry(
+            true,
+            OpenTelemetry.noop().getMeter("x"),
+            OpenTelemetry.noop().getTracer("x")
+          ),
           s -> {
           }
         );
@@ -308,7 +331,11 @@ public final class CAPGDatabasesTest
       assertThrows(CADatabaseException.class, () -> {
         this.databases.open(
           this.databaseConfigurationWithoutUpgrades,
-          OpenTelemetry.noop(),
+          new CADatabaseTelemetry(
+            true,
+            OpenTelemetry.noop().getMeter("x"),
+            OpenTelemetry.noop().getTracer("x")
+          ),
           s -> {
           }
         );

@@ -27,8 +27,6 @@ import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QCommandType;
 import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
-import com.io7m.quarrel.core.QParametersPositionalNone;
-import com.io7m.quarrel.core.QParametersPositionalType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.quarrel.ext.logback.QLogback;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -106,16 +104,11 @@ public final class CMCmdInitialize implements QCommandType
     return Stream.concat(
       Stream.of(
         CONFIGURATION_FILE,
-        ADMIN
+        ADMIN,
+        ADMIN_NAME
       ),
       QLogback.parameters().stream()
     ).toList();
-  }
-
-  @Override
-  public QParametersPositionalType onListPositionalParameters()
-  {
-    return new QParametersPositionalNone();
   }
 
   @Override
@@ -151,7 +144,7 @@ public final class CMCmdInitialize implements QCommandType
         .orElseThrow(CMCmdInitialize::noService);
 
     try (var server = servers.createServer(configuration)) {
-      server.setup(
+      server.setUserAsAdmin(
         context.parameterValue(ADMIN),
         new IdName(context.parameterValue(ADMIN_NAME))
       );

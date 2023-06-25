@@ -25,7 +25,8 @@ import com.io7m.cardant.model.CAInventoryElementType;
 
 sealed public interface CAIResponseWithElementType
   extends CAIResponseType
-  permits CAIResponseFilePut,
+  permits CAIResponseFileGet,
+  CAIResponseFilePut,
   CAIResponseFileRemove,
   CAIResponseItemAttachmentAdd,
   CAIResponseItemAttachmentRemove,

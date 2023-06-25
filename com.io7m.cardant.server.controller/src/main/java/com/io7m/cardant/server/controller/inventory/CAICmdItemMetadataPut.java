@@ -29,6 +29,8 @@ import java.util.Map;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
  * @see CAICommandItemMetadataPut
@@ -69,8 +71,8 @@ public final class CAICmdItemMetadataPut
       throw context.failFormatted(
         400,
         errorNonexistent(),
-        Map.of("Item ID", itemId.displayId()),
-        "notFound"
+        Map.of(ITEM_ID, itemId.displayId()),
+        ERROR_NONEXISTENT
       );
     }
 

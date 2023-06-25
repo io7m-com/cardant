@@ -18,6 +18,7 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemSummary;
@@ -25,8 +26,10 @@ import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemCreate;
@@ -57,8 +60,10 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame.BlameClient;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame.BlameServer;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseError;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFileGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFilePut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFileRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFileSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemCreate;
@@ -192,6 +197,12 @@ public final class CAI1ValidationResponses
     if (cmd instanceof final CAIResponseRolesGet c) {
       return convertToWireResponseCAIResponseRolesGet(c);
     }
+    if (cmd instanceof final CAIResponseFileSearch c) {
+      return convertToWireResponseCAIResponseFileSearch(c);
+    }
+    if (cmd instanceof final CAIResponseFileGet c) {
+      return convertToWireResponseCAIResponseFileGet(c);
+    }
 
     throw new ProtocolUncheckedException(errorProtocol(cmd));
   }
@@ -201,7 +212,7 @@ public final class CAI1ValidationResponses
   {
     return new CAI1ResponseRolesGet(
       new CBUUID(c.requestId()),
-      CBLists.ofCollection(c.roles(), x -> new CBString(x.value()))
+      CBLists.ofCollection(c.roles(), x -> new CBString(x.value().value()))
     );
   }
 
@@ -227,6 +238,15 @@ public final class CAI1ValidationResponses
     return new CAI1ResponseItemSearch(
       new CBUUID(c.requestId()),
       convertToWirePage(c.data(), CAI1ValidationResponses::convertToWireItemSummary)
+    );
+  }
+
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseFileSearch(
+    final CAIResponseFileSearch c)
+  {
+    return new CAI1ResponseFileSearch(
+      new CBUUID(c.requestId()),
+      convertToWirePage(c.data(), CAI1ValidationCommon::convertToWireFile)
     );
   }
 
@@ -418,6 +438,15 @@ public final class CAI1ValidationResponses
     );
   }
 
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseFileGet(
+    final CAIResponseFileGet c)
+  {
+    return new CAI1ResponseFileGet(
+      new CBUUID(c.requestId()),
+      convertToWireFile(c.data())
+    );
+  }
+
   private static ProtocolCAIv1Type convertToWireResponseCAIResponseItemCreate(
     final CAIResponseItemCreate c)
   {
@@ -589,6 +618,15 @@ public final class CAI1ValidationResponses
     );
   }
 
+  public static CAIMessageType convertFromWireCAI1ResponseFileGet(
+    final CAI1ResponseFileGet m)
+  {
+    return new CAIResponseFileGet(
+      m.fieldRequestId().value(),
+      convertFromWireFile(m.fieldFile()).withoutData()
+    );
+  }
+
   public static CAIMessageType convertFromWireCAI1ResponseItemCreate(
     final CAI1ResponseItemCreate m)
   {
@@ -676,6 +714,9 @@ public final class CAI1ValidationResponses
     if (msg instanceof final CAI1ResponseItemsRemove c) {
       return new CAI1Response.C1ResponseItemsRemove(c);
     }
+    if (msg instanceof final CAI1ResponseItemSearch c) {
+      return new CAI1Response.C1ResponseItemSearch(c);
+    }
     if (msg instanceof final CAI1ResponseLocationGet c) {
       return new CAI1Response.C1ResponseLocationGet(c);
     }
@@ -703,6 +744,9 @@ public final class CAI1ValidationResponses
     if (msg instanceof final CAI1ResponseRolesRevoke c) {
       return new CAI1Response.C1ResponseRolesRevoke(c);
     }
+    if (msg instanceof final CAI1ResponseFileSearch c) {
+      return new CAI1Response.C1ResponseFileSearch(c);
+    }
 
     throw new IllegalStateException();
   }
@@ -715,6 +759,19 @@ public final class CAI1ValidationResponses
       CAI1ValidationCommon.convertFromWirePage(
         c.fieldResults(),
         CAI1ValidationCommon::convertFromWireItemSummary)
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1ResponseFileSearch(
+    final CAI1ResponseFileSearch c)
+  {
+    return new CAIResponseFileSearch(
+      c.fieldRequestId().value(),
+      CAI1ValidationCommon.convertFromWirePage(
+        c.fieldResults(),
+        f -> {
+          return (CAFileWithoutData) convertFromWireFile(f).withoutData();
+        })
     );
   }
 
@@ -767,7 +824,7 @@ public final class CAI1ValidationResponses
   {
     return new CAIResponseRolesGet(
       m.fieldRequestId().value(),
-      CBSets.toSet(m.fieldRoles(), x -> new MRoleName(x.value()))
+      CBSets.toSet(m.fieldRoles(), x -> MRoleName.of(x.value()))
     );
   }
 }

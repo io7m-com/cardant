@@ -85,9 +85,9 @@ public final class CADatabaseUsersTest
         UUID.randomUUID(),
         new IdName("x"),
         new MSubject(Set.of(
-          new MRoleName("role0"),
-          new MRoleName("role1"),
-          new MRoleName("role2")
+          MRoleName.of("role0"),
+          MRoleName.of("role1"),
+          MRoleName.of("role2")
         ))
       );
 

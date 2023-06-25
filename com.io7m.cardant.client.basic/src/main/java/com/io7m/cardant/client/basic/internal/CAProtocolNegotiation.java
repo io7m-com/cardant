@@ -20,6 +20,7 @@ import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.genevan.core.GenProtocolException;
 import com.io7m.genevan.core.GenProtocolIdentifier;
 import com.io7m.genevan.core.GenProtocolServerEndpointType;
@@ -48,6 +49,9 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorHttpMethod;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNoSupportedProtocols;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_HTTP;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_SERVER_CONNECT;
+import static com.io7m.cardant.strings.CAStringConstants.URI;
 import static java.net.http.HttpResponse.BodyHandlers.ofByteArray;
 
 /**
@@ -84,12 +88,12 @@ public final class CAProtocolNegotiation
       throw new CAClientException(
         Objects.requireNonNullElse(
           e.getMessage(),
-          strings.format("Could not connect to server.")
+          strings.format(ERROR_SERVER_CONNECT)
         ),
         e,
         errorIo(),
         Map.ofEntries(
-          Map.entry("URI", base.toString())
+          Map.entry(strings.format(URI), base.toString())
         ),
         Optional.empty(),
         Optional.empty()
@@ -100,10 +104,10 @@ public final class CAProtocolNegotiation
 
     if (response.statusCode() >= 400) {
       throw new CAClientException(
-        strings.format("httpError", Integer.valueOf(response.statusCode())),
+        strings.format(ERROR_HTTP, Integer.valueOf(response.statusCode())),
         errorHttpMethod(),
         Map.ofEntries(
-          Map.entry("URI", base.toString())
+          Map.entry(strings.format(URI), base.toString())
         ),
         Optional.empty(),
         Optional.empty()
@@ -115,7 +119,7 @@ public final class CAProtocolNegotiation
 
     final VProtocols message;
     try {
-      final var body = decompressResponse(response, response.headers());
+      final var body = decompressResponse(response.body(), response.headers());
       message = protocols.parse(base, body);
     } catch (final VProtocolException e) {
       throw new CAClientException(
@@ -123,7 +127,7 @@ public final class CAProtocolNegotiation
         e,
         errorProtocol(),
         Map.ofEntries(
-          Map.entry("URI", base.toString())
+          Map.entry(strings.format(URI), base.toString())
         ),
         Optional.empty(),
         Optional.empty()
@@ -137,7 +141,7 @@ public final class CAProtocolNegotiation
         e,
         errorIo(),
         Map.ofEntries(
-          Map.entry("URI", base.toString())
+          Map.entry(strings.format(URI), base.toString())
         ),
         Optional.empty(),
         Optional.empty()
@@ -175,8 +179,8 @@ public final class CAProtocolNegotiation
   /**
    * Negotiate a protocol handler.
    *
-   * @param credentials   The credentials
    * @param configuration The configuration
+   * @param credentials   The credentials
    * @param httpClient    The HTTP client
    * @param strings       The string resources
    *

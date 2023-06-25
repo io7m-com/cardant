@@ -36,7 +36,6 @@ import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
@@ -80,11 +79,25 @@ import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS_
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TAGS;
 import static com.io7m.cardant.database.postgres.internal.Tables.TAGS;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
+import static com.io7m.cardant.strings.CAStringConstants.COUNT;
+import static com.io7m.cardant.strings.CAStringConstants.COUNT_EXPECTED;
+import static com.io7m.cardant.strings.CAStringConstants.COUNT_RECEIVED;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_ITEM_COUNT_STORE_INVARIANT;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_ITEM_COUNT_TOO_MANY_REMOVED;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
+import static com.io7m.cardant.strings.CAStringConstants.FILE_ID;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_LOCATION;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.METADATA_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.METADATA_VALUE;
+import static com.io7m.cardant.strings.CAStringConstants.RELATION;
+import static com.io7m.cardant.strings.CAStringConstants.TAG_ID;
+import static com.io7m.cardant.strings.CAStringConstants.TAG_NAME;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -146,15 +159,31 @@ final class CADatabaseQueriesItems
         }
       };
 
+    final var itemCount =
+      itemCount(context, id);
+
     return Optional.of(new CAItem(
       id,
       itemRec.getItemName(),
-      itemRec.getItemCount().longValue(),
+      itemCount,
       0L,
       itemMetadatas,
       itemAttachments,
       itemTags
     ));
+  }
+
+  private static long itemCount(
+    final DSLContext context,
+    final CAItemID id)
+  {
+    return context.select(ITEM_LOCATIONS_SUMMED.ITEM_COUNT)
+      .from(ITEM_LOCATIONS_SUMMED)
+      .where(ITEM_LOCATIONS_SUMMED.ITEM_ID.eq(id.id()))
+      .fetchOptional(ITEM_LOCATIONS_SUMMED.ITEM_COUNT)
+      .map(i -> Long.valueOf(i.longValue()))
+      .orElse(Long.valueOf(0L))
+      .longValue();
   }
 
   private static SortedSet<CATag> itemTagListInner(
@@ -392,22 +421,11 @@ final class CADatabaseQueriesItems
         "CADatabaseQueriesItems.itemCreate");
 
     final var errorAttributes = new TreeMap<String, String>();
-    errorAttributes.put("Item ID", id.displayId());
+    errorAttributes.put(this.local(ITEM_ID), id.displayId());
 
     try {
-      var itemRec = context.fetchOne(ITEMS, ITEMS.ITEM_ID.eq(id.id()));
-      if (itemRec != null) {
-        throw new CADatabaseException(
-          this.messages().format("errorDuplicate"),
-          errorDuplicate(),
-          errorAttributes,
-          Optional.empty()
-        );
-      }
-
-      itemRec = context.newRecord(ITEMS);
+      final var itemRec = context.newRecord(ITEMS);
       itemRec.setItemId(id.id());
-      itemRec.setItemCount(Long.valueOf(0L));
       itemRec.setItemDeleted(FALSE);
       itemRec.setItemName("");
       itemRec.store();
@@ -436,14 +454,14 @@ final class CADatabaseQueriesItems
         "CADatabaseQueriesItems.itemNameSet");
 
     final var errorAttributes = new TreeMap<String, String>();
-    errorAttributes.put("Item ID", id.displayId());
-    errorAttributes.put("Item Name", name);
+    errorAttributes.put(this.local(ITEM_ID), id.displayId());
+    errorAttributes.put(this.local(ITEM_NAME), name);
 
     try {
       final var itemRec = context.fetchOne(ITEMS, ITEMS.ITEM_ID.eq(id.id()));
       if (itemRec == null) {
         throw new CADatabaseException(
-          this.messages().format("errorNonexistent"),
+          this.local(ERROR_NONEXISTENT),
           errorNonexistent(),
           errorAttributes,
           Optional.empty()
@@ -457,31 +475,6 @@ final class CADatabaseQueriesItems
     } finally {
       querySpan.end();
     }
-  }
-
-  @Override
-  public Set<CAItem> itemList(
-    final CAListLocationBehaviourType locationBehaviour)
-    throws CADatabaseException
-  {
-    throw new CADatabaseException(
-      "Unimplemented code.",
-      errorIo(),
-      Map.of(),
-      Optional.empty()
-    );
-  }
-
-  @Override
-  public Set<CAItemID> itemListDeleted()
-    throws CADatabaseException
-  {
-    throw new CADatabaseException(
-      "Unimplemented code.",
-      errorIo(),
-      Map.of(),
-      Optional.empty()
-    );
   }
 
   @Override
@@ -590,9 +583,9 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId()),
-        Map.entry("Tag ID", tag.displayId()),
-        Map.entry("Tag Name", tag.name())
+        Map.entry(this.local(ITEM_ID), item.displayId()),
+        Map.entry(this.local(TAG_ID), tag.displayId()),
+        Map.entry(this.local(TAG_NAME), tag.name())
       );
     } finally {
       querySpan.end();
@@ -630,9 +623,9 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId()),
-        Map.entry("Tag ID", tag.displayId()),
-        Map.entry("Tag Name", tag.name())
+        Map.entry(this.local(ITEM_ID), item.displayId()),
+        Map.entry(this.local(TAG_ID), tag.displayId()),
+        Map.entry(this.local(TAG_NAME), tag.name())
       );
     } finally {
       querySpan.end();
@@ -676,7 +669,7 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId())
+        Map.entry(this.local(ITEM_ID), item.displayId())
       );
     } finally {
       querySpan.end();
@@ -705,7 +698,8 @@ final class CADatabaseQueriesItems
         .set(ITEM_METADATA.METADATA_ITEM_ID, item.id())
         .set(ITEM_METADATA.METADATA_NAME, metadata.name())
         .set(ITEM_METADATA.METADATA_VALUE, metadata.value())
-        .onDuplicateKeyUpdate()
+        .onConflict(ITEM_METADATA.METADATA_ITEM_ID, ITEM_METADATA.METADATA_NAME)
+        .doUpdate()
         .set(ITEM_METADATA.METADATA_VALUE, metadata.value())
         .execute();
     } catch (final DataAccessException e) {
@@ -713,9 +707,9 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId()),
-        Map.entry("Metadata Name", metadata.name()),
-        Map.entry("Metadata Value", metadata.value())
+        Map.entry(this.local(ITEM_ID), item.displayId()),
+        Map.entry(this.local(METADATA_NAME), metadata.name()),
+        Map.entry(this.local(METADATA_VALUE), metadata.value())
       );
     } finally {
       querySpan.end();
@@ -756,7 +750,7 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId())
+        Map.entry(this.local(ITEM_ID), item.displayId())
       );
     } finally {
       querySpan.end();
@@ -795,8 +789,8 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId()),
-        Map.entry("Metadata Name", name)
+        Map.entry(this.local(ITEM_ID), item.displayId()),
+        Map.entry(this.local(METADATA_NAME), name)
       );
     } finally {
       querySpan.end();
@@ -836,9 +830,9 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId()),
-        Map.entry("File ID", file.displayId()),
-        Map.entry("Relation", relation)
+        Map.entry(this.local(ITEM_ID), item.displayId()),
+        Map.entry(this.local(FILE_ID), file.displayId()),
+        Map.entry(this.local(RELATION), relation)
       );
     } finally {
       querySpan.end();
@@ -882,9 +876,9 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId()),
-        Map.entry("File ID", file.displayId()),
-        Map.entry("Relation", relation)
+        Map.entry(this.local(ITEM_ID), item.displayId()),
+        Map.entry(this.local(FILE_ID), file.displayId()),
+        Map.entry(this.local(RELATION), relation)
       );
     } finally {
       querySpan.end();
@@ -922,7 +916,7 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", item.displayId())
+        Map.entry(this.local(ITEM_ID), item.displayId())
       );
     } finally {
       querySpan.end();
@@ -945,22 +939,32 @@ final class CADatabaseQueriesItems
         "CADatabaseQueriesItems.itemReposit");
 
     try {
+      final var countInitial =
+        itemCount(context, reposit.item());
+
       if (reposit instanceof final CAItemRepositAdd add) {
-        final var c = itemRepositAdd(context, add);
-        updateItemCount(context, add.item(), c);
-        this.checkItemCountInvariant(context, add.item(), c);
+        final var countAdded = itemRepositAdd(context, add);
+        this.checkItemCountInvariant(
+          context,
+          add.item(),
+          countInitial + countAdded
+        );
         return;
       }
+
       if (reposit instanceof final CAItemRepositMove move) {
-        final var c = this.itemRepositMove(context, move);
-        updateItemCount(context, move.item(), c);
-        this.checkItemCountInvariant(context, move.item(), c);
+        this.itemRepositMove(context, move);
+        this.checkItemCountInvariant(context, move.item(), countInitial);
         return;
       }
+
       if (reposit instanceof final CAItemRepositRemove remove) {
-        final var c = this.itemRepositRemove(context, remove);
-        updateItemCount(context, remove.item(), c);
-        this.checkItemCountInvariant(context, remove.item(), c);
+        final var countRemoved = this.itemRepositRemove(context, remove);
+        this.checkItemCountInvariant(
+          context,
+          remove.item(),
+          countInitial - countRemoved
+        );
         return;
       }
     } catch (final DataAccessException e) {
@@ -968,22 +972,11 @@ final class CADatabaseQueriesItems
       throw handleDatabaseException(
         transaction,
         e,
-        Map.entry("Item ID", reposit.item().displayId())
+        Map.entry(this.local(ITEM_ID), reposit.item().displayId())
       );
     } finally {
       querySpan.end();
     }
-  }
-
-  private static void updateItemCount(
-    final DSLContext context,
-    final CAItemID itemID,
-    final long newCount)
-  {
-    context.update(ITEMS)
-      .set(ITEMS.ITEM_COUNT, Long.valueOf(newCount))
-      .where(ITEMS.ITEM_ID.eq(itemID.id()))
-      .execute();
   }
 
   private long itemRepositRemove(
@@ -1016,18 +1009,18 @@ final class CADatabaseQueriesItems
           .execute();
       }
 
-      return newCount;
+      return remove.count();
     } catch (final DataAccessException e) {
       if (e.sqlStateClass() == SQLStateClass.C23_INTEGRITY_CONSTRAINT_VIOLATION) {
         if (e.getMessage().contains("check_item_location_count")) {
           throw new CADatabaseException(
-            this.messages().format("errorItemCountTooManyRemoved"),
+            this.local(ERROR_ITEM_COUNT_TOO_MANY_REMOVED),
             e,
             errorRemoveTooManyItems(),
             Map.ofEntries(
-              Map.entry("Item ID", remove.item().displayId()),
-              Map.entry("Item Location", remove.location().displayId()),
-              Map.entry("Count", Long.toUnsignedString(remove.count()))
+              Map.entry(this.local(ITEM_ID), remove.item().displayId()),
+              Map.entry(this.local(ITEM_LOCATION), remove.location().displayId()),
+              Map.entry(this.local(COUNT), Long.toUnsignedString(remove.count()))
             ),
             Optional.empty()
           );
@@ -1040,24 +1033,25 @@ final class CADatabaseQueriesItems
   private void checkItemCountInvariant(
     final DSLContext context,
     final CAItemID item,
-    final long newCount)
+    final long countExpected)
     throws CADatabaseException
   {
-    final var count =
+    final var countReceived =
       context.select(ITEM_LOCATIONS_SUMMED.ITEM_COUNT)
         .from(ITEM_LOCATIONS_SUMMED)
         .where(ITEM_LOCATIONS_SUMMED.ITEM_ID.eq(item.id()))
         .fetchOptional(ITEM_LOCATIONS_SUMMED.ITEM_COUNT)
-        .orElse(BigInteger.ZERO);
+        .orElse(BigInteger.ZERO)
+        .longValueExact();
 
-    if (!Objects.equals(BigInteger.valueOf(newCount), count)) {
+    if (countExpected != countReceived) {
       throw new CADatabaseException(
-        this.messages().format("errorItemCountStoreInvariant"),
+        this.local(ERROR_ITEM_COUNT_STORE_INVARIANT),
         errorSql(),
         Map.ofEntries(
-          Map.entry("Item ID", item.displayId()),
-          Map.entry("Count Expected", Long.toUnsignedString(newCount)),
-          Map.entry("Count Received", count.toString())
+          Map.entry(this.local(ITEM_ID), item.displayId()),
+          Map.entry(this.local(COUNT_EXPECTED), Long.toUnsignedString(countExpected)),
+          Map.entry(this.local(COUNT_RECEIVED), Long.toUnsignedString(countReceived))
         ),
         Optional.empty()
       );
@@ -1090,7 +1084,7 @@ final class CADatabaseQueriesItems
     final DSLContext context,
     final CAItemRepositAdd add)
   {
-    return context.insertInto(
+    context.insertInto(
         ITEM_LOCATIONS,
         ITEM_LOCATIONS.ITEM_ID,
         ITEM_LOCATIONS.ITEM_LOCATION,
@@ -1104,10 +1098,9 @@ final class CADatabaseQueriesItems
       .set(
         ITEM_LOCATIONS.COUNT,
         ITEM_LOCATIONS.COUNT.add(Long.valueOf(add.count())))
-      .returning(ITEM_LOCATIONS.COUNT)
-      .fetchOptional(ITEM_LOCATIONS.COUNT)
-      .orElse(Long.valueOf(0L))
-      .longValue();
+      .execute();
+
+    return add.count();
   }
 
   @Override

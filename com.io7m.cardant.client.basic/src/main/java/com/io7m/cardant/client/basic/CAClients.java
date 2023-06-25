@@ -23,10 +23,9 @@ import com.io7m.cardant.client.api.CAClientFactoryType;
 import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.basic.internal.CAClientAsynchronous;
 import com.io7m.cardant.client.basic.internal.CAClientSynchronous;
-import com.io7m.cardant.client.basic.internal.CAStrings;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+import com.io7m.cardant.strings.CAStrings;
 
-import java.io.IOException;
 import java.net.CookieManager;
 import java.net.http.HttpClient;
 import java.util.Locale;
@@ -109,8 +108,8 @@ public final class CAClients
     throws CAClientException
   {
     try {
-      return new CAStrings(locale);
-    } catch (final IOException e) {
+      return CAStrings.create(locale);
+    } catch (final Exception e) {
       throw new CAClientException(
         e.getMessage(),
         e,

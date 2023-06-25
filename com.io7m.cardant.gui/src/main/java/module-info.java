@@ -23,11 +23,11 @@ module com.io7m.cardant.gui
   requires static org.osgi.annotation.versioning;
   requires static org.osgi.annotation.bundle;
 
+  requires com.io7m.cardant.client.api;
+  requires com.io7m.cardant.client.basic;
   requires com.io7m.cardant.client.preferences.api;
   requires com.io7m.cardant.client.preferences.vanilla;
-  requires com.io7m.cardant.client.transfer.api;
-  requires com.io7m.cardant.client.transfer.vanilla;
-  requires com.io7m.cardant.client.basic;
+  requires com.io7m.cardant.model;
 
   requires com.io7m.jade.api;
   requires com.io7m.jade.vanilla;
@@ -38,16 +38,14 @@ module com.io7m.cardant.gui
   requires com.io7m.jwheatsheaf.oxygen;
   requires com.io7m.jwheatsheaf.ui;
   requires com.io7m.jxtrand.vanilla;
+  requires com.io7m.lanark.core;
+  requires com.io7m.repetoir.core;
   requires javafx.controls;
   requires javafx.fxml;
   requires javafx.graphics;
   requires org.apache.commons.io;
   requires org.apache.commons.lang3;
   requires org.slf4j;
-
-  requires transitive com.io7m.cardant.client.api;
-  requires transitive com.io7m.cardant.model;
-  requires transitive com.io7m.repetoir.core;
 
   opens com.io7m.cardant.gui.internal
     to com.io7m.jxtrand.vanilla, javafx.fxml;

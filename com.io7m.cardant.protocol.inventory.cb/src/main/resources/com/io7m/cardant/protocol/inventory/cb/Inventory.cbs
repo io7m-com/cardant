@@ -209,6 +209,44 @@
   [field limit cb:IntegerUnsigned32]
 ]
 
+[documentation CAI1FileColumn "The item column by which to order results."]
+[variant CAI1FileColumn
+  [documentation CAI1ById "Order by file ID."]
+  [case CAI1ById]
+  [documentation CAI1ByDescription "Order by file description."]
+  [case CAI1ByDescription]
+]
+
+[documentation CAI1FileColumnOrdering "The file column by which to order results."]
+[record CAI1FileColumnOrdering
+  [documentation column "The file column."]
+  [field column CAI1FileColumn]
+  [documentation ascending "Whether results should be in ascending order."]
+  [field ascending cb:Boolean]
+]
+
+[documentation CAI1SizeRange "A size range."]
+[record CAI1SizeRange
+  [documentation sizeMinimum "The lower bound (inclusive)."]
+  [field sizeMinimum cb:IntegerUnsigned64]
+  [documentation sizeMaximum "The upper bound (inclusive)."]
+  [field sizeMaximum cb:IntegerUnsigned64]
+]
+
+[documentation CAI1FileSearchParameters "The item search parameters."]
+[record CAI1FileSearchParameters
+  [documentation search "The file description search query."]
+  [field search [cb:Option cb:String]]
+  [documentation mediaType "The file media type search query."]
+  [field mediaType [cb:Option cb:String]]
+  [documentation sizeRange "The file size range query."]
+  [field sizeRange [cb:Option CAI1SizeRange]]
+  [documentation order "The file result ordering."]
+  [field order CAI1FileColumnOrdering]
+  [documentation limit "The file limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
 [documentation CAI1Page "A page of search results."]
 [record CAI1Page
   [parameter T]
@@ -282,6 +320,12 @@
 [record CAI1CommandItemGet
   [documentation itemId "The item ID."]
   [field itemId cb:UUID]
+]
+
+[documentation CAI1CommandFileGet "Retrieve a file."]
+[record CAI1CommandFileGet
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
 ]
 
 [documentation CAI1CommandItemLocationsList "List all the locations an item is in, and how many times the item is in them."]
@@ -366,6 +410,18 @@
 [documentation CAI1CommandItemSearchPrevious "Return the next page of search results."]
 [record CAI1CommandItemSearchPrevious]
 
+[documentation CAI1CommandFileSearchBegin "Start searching for items."]
+[record CAI1CommandFileSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1FileSearchParameters]
+]
+
+[documentation CAI1CommandFileSearchNext "Return the next page of search results."]
+[record CAI1CommandFileSearchNext]
+
+[documentation CAI1CommandFileSearchPrevious "Return the next page of search results."]
+[record CAI1CommandFileSearchPrevious]
+
 [documentation CAI1CommandRolesAssign "Assign a set of roles to a user."]
 [record CAI1CommandRolesAssign
   [documentation user "The target user."]
@@ -389,8 +445,12 @@
 ]
 
 [variant CAI1Command
+  [case C1CommandFileGet               [field command CAI1CommandFileGet]]
   [case C1CommandFilePut               [field command CAI1CommandFilePut]]
   [case C1CommandFileRemove            [field command CAI1CommandFileRemove]]
+  [case C1CommandFileSearchBegin       [field command CAI1CommandFileSearchBegin]]
+  [case C1CommandFileSearchNext        [field command CAI1CommandFileSearchNext]]
+  [case C1CommandFileSearchPrevious    [field command CAI1CommandFileSearchPrevious]]
   [case C1CommandItemAttachmentAdd     [field command CAI1CommandItemAttachmentAdd]]
   [case C1CommandItemAttachmentRemove  [field command CAI1CommandItemAttachmentRemove]]
   [case C1CommandItemCreate            [field command CAI1CommandItemCreate]]
@@ -500,6 +560,14 @@
   [field item CAI1Item]
 ]
 
+[documentation CAI1ResponseFileGet "A response to CAI1CommandFileGet."]
+[record CAI1ResponseFileGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation file "The file."]
+  [field file CAI1File]
+]
+
 [documentation CAI1ResponseItemLocationsList "A response to CAI1CommandItemLocationsList."]
 [record CAI1ResponseItemLocationsList
   [documentation requestId "The ID of the request that yielded this response."]
@@ -604,6 +672,14 @@
   [field results [CAI1Page CAI1ItemSummary]]
 ]
 
+[documentation CAI1ResponseFileSearch "A response to CAI1CommandFileSearch."]
+[record CAI1ResponseFileSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1File]]
+]
+
 [documentation CAI1ResponseRolesAssign "A response to CAI1ResponseRolesAssign."]
 [record CAI1ResponseRolesAssign
   [documentation requestId "The ID of the request that yielded this response."]
@@ -626,8 +702,10 @@
 
 [variant CAI1Response
   [case C1ResponseError                 [field response CAI1ResponseError]]
+  [case C1ResponseFileGet               [field response CAI1ResponseFileGet]]
   [case C1ResponseFilePut               [field response CAI1ResponseFilePut]]
   [case C1ResponseFileRemove            [field response CAI1ResponseFileRemove]]
+  [case C1ResponseFileSearch            [field response CAI1ResponseFileSearch]]
   [case C1ResponseItemAttachmentAdd     [field response CAI1ResponseItemAttachmentAdd]]
   [case C1ResponseItemAttachmentRemove  [field response CAI1ResponseItemAttachmentRemove]]
   [case C1ResponseItemCreate            [field response CAI1ResponseItemCreate]]
@@ -686,8 +764,12 @@
 [protocol CAI
   [version 1
     [types-added
+      CAI1CommandFileGet
       CAI1CommandFilePut
       CAI1CommandFileRemove
+      CAI1CommandFileSearchBegin
+      CAI1CommandFileSearchNext
+      CAI1CommandFileSearchPrevious
       CAI1CommandItemAttachmentAdd
       CAI1CommandItemAttachmentRemove
       CAI1CommandItemCreate
@@ -713,8 +795,10 @@
       CAI1CommandTagsPut
       CAI1EventUpdated
       CAI1ResponseError
+      CAI1ResponseFileGet
       CAI1ResponseFilePut
       CAI1ResponseFileRemove
+      CAI1ResponseFileSearch
       CAI1ResponseItemAttachmentAdd
       CAI1ResponseItemAttachmentRemove
       CAI1ResponseItemCreate

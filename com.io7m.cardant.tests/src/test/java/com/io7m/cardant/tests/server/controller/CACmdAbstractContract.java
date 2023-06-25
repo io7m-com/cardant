@@ -18,13 +18,13 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.model.CAUser;
-import com.io7m.cardant.server.controller.CAServerStrings;
 import com.io7m.cardant.server.controller.inventory.CAICommandContext;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.sessions.CASession;
 import com.io7m.cardant.server.service.sessions.CASessionSecretIdentifier;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryNoOp;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CAFakeClock;
 import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MRoleName;
@@ -46,7 +46,7 @@ public abstract class CACmdAbstractContract
   private CADatabaseTransactionType transaction;
   private CAFakeClock clock;
   private CAServerClock serverClock;
-  private CAServerStrings strings;
+  private CAStrings strings;
   private OffsetDateTime timeStart;
   private CAUser user;
   private CAICommandContext context;
@@ -72,7 +72,7 @@ public abstract class CACmdAbstractContract
     this.timeStart =
       this.serverClock.now();
     this.strings =
-      new CAServerStrings(Locale.ROOT);
+      CAStrings.create(Locale.ROOT);
 
     this.user =
       new CAUser(
@@ -82,7 +82,7 @@ public abstract class CACmdAbstractContract
       );
 
     this.services.register(CAServerClock.class, this.serverClock);
-    this.services.register(CAServerStrings.class, this.strings);
+    this.services.register(CAStrings.class, this.strings);
     this.services.register(
       CAServerTelemetryServiceType.class,
       CAServerTelemetryNoOp.noop());

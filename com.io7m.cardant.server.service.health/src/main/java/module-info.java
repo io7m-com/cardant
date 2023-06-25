@@ -24,7 +24,10 @@ module com.io7m.cardant.server.service.health
   requires static org.osgi.annotation.versioning;
 
   requires com.io7m.cardant.database.api;
+  requires com.io7m.cardant.server.service.telemetry.api;
 
+  requires io.opentelemetry.api;
+  requires io.opentelemetry.context;
   requires com.io7m.repetoir.core;
 
   exports com.io7m.cardant.server.service.health;

@@ -16,8 +16,12 @@
 
 package com.io7m.cardant.server.controller.inventory;
 
+import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
@@ -126,8 +130,8 @@ public final class CAICommandExecutor
     if (command instanceof final CAICommandItemUpdate m) {
       return new CAICmdItemUpdate().execute(context, m);
     }
-    if (command instanceof CAICommandLocationGet) {
-      throw new IllegalStateException();
+    if (command instanceof final CAICommandLocationGet m) {
+      return new CAICmdLocationGet().execute(context, m);
     }
     if (command instanceof final CAICommandLocationList m) {
       return new CAICmdLocationsList().execute(context, m);
@@ -161,6 +165,18 @@ public final class CAICommandExecutor
     }
     if (command instanceof final CAICommandRolesGet m) {
       return new CAICmdRolesGet().execute(context, m);
+    }
+    if (command instanceof final CAICommandFileSearchBegin m) {
+      return new CAICmdFileSearchBegin().execute(context, m);
+    }
+    if (command instanceof final CAICommandFileSearchNext m) {
+      return new CAICmdFileSearchNext().execute(context, m);
+    }
+    if (command instanceof final CAICommandFileSearchPrevious m) {
+      return new CAICmdFileSearchPrevious().execute(context, m);
+    }
+    if (command instanceof final CAICommandFileGet m) {
+      return new CAICmdFileGet().execute(context, m);
     }
 
     throw new IllegalStateException();

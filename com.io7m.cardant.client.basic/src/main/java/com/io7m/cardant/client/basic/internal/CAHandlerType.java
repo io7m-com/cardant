@@ -19,6 +19,7 @@ package com.io7m.cardant.client.basic.internal;
 import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.client.api.CAClientTransferStatistics;
 import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
@@ -27,7 +28,8 @@ import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.hibiscus.api.HBResultType;
 import com.io7m.hibiscus.basic.HBClientHandlerType;
 
-import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * A versioned protocol handler.
@@ -44,16 +46,52 @@ public interface CAHandlerType
   CAClientCredentials>
 {
   /**
-   * Retrieve data for the given file.
+   * Download the data associated with the given file. The file will be
+   * downloaded to a temporary file and then, if everything succeeds and the
+   * hash value matches, the temporary file will atomically replace the
+   * output file.
    *
-   * @param fileID The file ID
+   * @param fileID        The file ID
+   * @param file          The output file
+   * @param fileTmp       The temporary output file
+   * @param size          The expected size
+   * @param hashAlgorithm The hash algorithm
+   * @param hashValue     The expected hash value
+   * @param statistics    A receiver of transfer statistics
    *
    * @return The result
    *
    * @throws InterruptedException On interruption
    */
 
-  HBResultType<InputStream, CAIResponseError> onExecuteFileData(CAFileID fileID)
+  HBResultType<Path, CAIResponseError> onExecuteFileDownload(
+    CAFileID fileID,
+    Path file,
+    Path fileTmp,
+    long size,
+    String hashAlgorithm,
+    String hashValue,
+    Consumer<CAClientTransferStatistics> statistics)
+    throws InterruptedException;
+
+  /**
+   * Upload the data associated with the given file.
+   *
+   * @param fileID      The file ID
+   * @param file        The input file
+   * @param contentType The content type
+   * @param statistics  A receiver of transfer statistics
+   *
+   * @return The result
+   *
+   * @throws InterruptedException On interruption
+   */
+
+  HBResultType<CAFileID, CAIResponseError> onExecuteFileUpload(
+    CAFileID fileID,
+    Path file,
+    String contentType,
+    Consumer<CAClientTransferStatistics> statistics)
     throws InterruptedException;
 
   /**

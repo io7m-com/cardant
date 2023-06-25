@@ -16,12 +16,17 @@
 
 package com.io7m.cardant.database.postgres;
 
-import com.io7m.anethum.common.ParseException;
+import com.io7m.anethum.api.ParsingException;
 import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseFactoryType;
+import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.postgres.internal.CADatabase;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+import com.io7m.jmulticlose.core.CloseableCollection;
+import com.io7m.trasco.api.TrArgumentString;
+import com.io7m.trasco.api.TrArguments;
 import com.io7m.trasco.api.TrEventExecutingSQL;
 import com.io7m.trasco.api.TrEventType;
 import com.io7m.trasco.api.TrEventUpgrading;
@@ -32,7 +37,9 @@ import com.io7m.trasco.vanilla.TrExecutors;
 import com.io7m.trasco.vanilla.TrSchemaRevisionSetParsers;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
+import org.apache.commons.text.StringEscapeUtils;
 import org.postgresql.util.PSQLState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,17 +49,15 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTrasco;
 import static com.io7m.trasco.api.TrExecutorUpgrade.FAIL_INSTEAD_OF_UPGRADING;
 import static com.io7m.trasco.api.TrExecutorUpgrade.PERFORM_UPGRADES;
 import static java.math.BigInteger.valueOf;
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * The default postgres server database implementation.
@@ -115,16 +120,16 @@ public final class CAPGDatabases implements CADatabaseFactoryType
           if (!result.next()) {
             throw new SQLException("schema_version table is empty!");
           }
-          final var applicationId =
+          final var applicationCA =
             result.getString(1);
           final var version =
             result.getLong(2);
 
-          if (!Objects.equals(applicationId, DATABASE_APPLICATION_ID)) {
+          if (!Objects.equals(applicationCA, DATABASE_APPLICATION_ID)) {
             throw new SQLException(
               String.format(
                 "Database application ID is %s but should be %s",
-                applicationId,
+                applicationCA,
                 DATABASE_APPLICATION_ID
               )
             );
@@ -156,88 +161,254 @@ public final class CAPGDatabases implements CADatabaseFactoryType
   @Override
   public CADatabaseType open(
     final CADatabaseConfiguration configuration,
-    final OpenTelemetry openTelemetry,
+    final CADatabaseTelemetry telemetry,
     final Consumer<String> startupMessages)
     throws CADatabaseException
   {
     Objects.requireNonNull(configuration, "configuration");
-    Objects.requireNonNull(openTelemetry, "openTelemetry");
+    Objects.requireNonNull(telemetry, "telemetry");
     Objects.requireNonNull(startupMessages, "startupMessages");
 
-    try {
-      final var url = new StringBuilder(128);
-      url.append("jdbc:postgresql://");
-      url.append(configuration.address());
-      url.append(':');
-      url.append(configuration.port());
-      url.append('/');
-      url.append(configuration.databaseName());
+    createOrUpgrade(telemetry, configuration, startupMessages);
+    return connect(telemetry, configuration);
+  }
 
-      final var config = new HikariConfig();
-      config.setJdbcUrl(url.toString());
-      config.setUsername(configuration.user());
-      config.setPassword(configuration.password());
-      config.setAutoCommit(false);
+  private static CADatabaseType connect(
+    final CADatabaseTelemetry telemetry,
+    final CADatabaseConfiguration configuration)
+  {
+    final var resources = CloseableCollection.create(() -> {
+      return new CADatabaseException(
+        "Closing a resource failed.",
+        CAStandardErrorCodes.errorSql(),
+        Map.of(),
+        Optional.empty()
+      );
+    });
 
-      final var dataSource = new HikariDataSource(config);
-      final var parsers = new TrSchemaRevisionSetParsers();
+    final var url = new StringBuilder(128);
+    url.append("jdbc:postgresql://");
+    url.append(configuration.address());
+    url.append(':');
+    url.append(configuration.port());
+    url.append('/');
+    url.append(configuration.databaseName());
 
-      final TrSchemaRevisionSet revisions;
-      try (var stream = CAPGDatabases.class.getResourceAsStream(
-        "/com/io7m/cardant/database/postgres/internal/database.xml")) {
-        revisions = parsers.parse(URI.create("urn:source"), stream);
+    final var config = new HikariConfig();
+    config.setJdbcUrl(url.toString());
+    config.setUsername(configuration.ownerRoleName());
+    config.setPassword(configuration.ownerRolePassword());
+    config.setAutoCommit(false);
+
+    final var dataSource =
+      resources.add(new HikariDataSource(config));
+
+    return new CADatabase(
+      telemetry,
+      configuration.strings(),
+      configuration.clock(),
+      dataSource,
+      resources
+    );
+  }
+
+  private static void createOrUpgrade(
+    final CADatabaseTelemetry telemetry,
+    final CADatabaseConfiguration configuration,
+    final Consumer<String> startupMessages)
+    throws CADatabaseException
+  {
+    final var resources = CloseableCollection.create(() -> {
+      return new CADatabaseException(
+        "Closing a resource failed.",
+        CAStandardErrorCodes.errorSql(),
+        Map.of(),
+        Optional.empty()
+      );
+    });
+
+    final var span =
+      telemetry.tracer()
+        .spanBuilder("DatabaseSetup")
+        .startSpan();
+
+    final var argSearchLanguage =
+      new TrArgumentString("search.language", configuration.language());
+
+    final var arguments =
+      new TrArguments(
+        Map.ofEntries(
+          Map.entry(argSearchLanguage.name(), argSearchLanguage)
+        )
+      );
+
+    try (var ignored0 = span.makeCurrent()) {
+      try (var ignored1 = resources) {
+        final var url = new StringBuilder(128);
+        url.append("jdbc:postgresql://");
+        url.append(configuration.address());
+        url.append(':');
+        url.append(configuration.port());
+        url.append('/');
+        url.append(configuration.databaseName());
+
+        final var config = new HikariConfig();
+        config.setJdbcUrl(url.toString());
+        config.setUsername(configuration.ownerRoleName());
+        config.setPassword(configuration.ownerRolePassword());
+        config.setAutoCommit(false);
+
+        final var dataSource =
+          resources.add(new HikariDataSource(config));
+
+        final var parsers = new TrSchemaRevisionSetParsers();
+        final TrSchemaRevisionSet revisions;
+        try (var stream = CAPGDatabases.class.getResourceAsStream(
+          "/com/io7m/cardant/database/postgres/internal/database.xml")) {
+          revisions = parsers.parse(URI.create("urn:source"), stream);
+        }
+
+        try (var connection = dataSource.getConnection()) {
+          connection.setAutoCommit(false);
+
+          new TrExecutors().create(
+            new TrExecutorConfiguration(
+              CAPGDatabases::schemaVersionGet,
+              CAPGDatabases::schemaVersionSet,
+              event -> publishTrEvent(startupMessages, event),
+              revisions,
+              switch (configuration.upgrade()) {
+                case UPGRADE_DATABASE -> PERFORM_UPGRADES;
+                case DO_NOT_UPGRADE_DATABASE -> FAIL_INSTEAD_OF_UPGRADING;
+              },
+              arguments,
+              connection
+            )
+          ).execute();
+
+          updateWorkerRolePassword(configuration, connection);
+          updateReadOnlyRolePassword(configuration, connection);
+          connection.commit();
+        }
+      } catch (final IOException e) {
+        failSpan(e);
+        throw new CADatabaseException(
+          requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
+          e,
+          CAStandardErrorCodes.errorIo(),
+          Map.of(),
+          Optional.empty()
+        );
+      } catch (final TrException e) {
+        failSpan(e);
+        throw new CADatabaseException(
+          requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
+          e,
+          CAStandardErrorCodes.errorTrasco(),
+          Map.of(),
+          Optional.empty()
+        );
+      } catch (final ParsingException e) {
+        failSpan(e);
+        throw new CADatabaseException(
+          requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
+          e,
+          CAStandardErrorCodes.errorSqlRevision(),
+          Map.of(),
+          Optional.empty()
+        );
+      } catch (final SQLException e) {
+        failSpan(e);
+        throw new CADatabaseException(
+          requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
+          e,
+          CAStandardErrorCodes.errorSql(),
+          Map.of(),
+          Optional.empty()
+        );
       }
-
-      try (var connection = dataSource.getConnection()) {
-        connection.setAutoCommit(false);
-
-        new TrExecutors().create(
-          new TrExecutorConfiguration(
-            CAPGDatabases::schemaVersionGet,
-            CAPGDatabases::schemaVersionSet,
-            event -> publishTrEvent(startupMessages, event),
-            revisions,
-            switch (configuration.upgrade()) {
-              case UPGRADE_DATABASE -> PERFORM_UPGRADES;
-              case DO_NOT_UPGRADE_DATABASE -> FAIL_INSTEAD_OF_UPGRADING;
-            },
-            connection
-          )
-        ).execute();
-        connection.commit();
-      }
-
-      return new CADatabase(
-        configuration.locale(),
-        openTelemetry,
-        configuration.clock(),
-        dataSource
-      );
-    } catch (final IOException e) {
-      throw new CADatabaseException(
-        e.getMessage(),
-        e,
-        errorIo(),
-        Collections.emptySortedMap(),
-        Optional.empty()
-      );
-    } catch (final TrException | ParseException e) {
-      throw new CADatabaseException(
-        e.getMessage(),
-        e,
-        errorTrasco(),
-        Collections.emptySortedMap(),
-        Optional.empty()
-      );
-    } catch (final SQLException e) {
-      throw new CADatabaseException(
-        e.getMessage(),
-        e,
-        errorSql(),
-        Collections.emptySortedMap(),
-        Optional.empty()
-      );
     }
+  }
+
+  /**
+   * Update the read-only role password. If no password is specified, then
+   * logging in is prevented.
+   */
+
+  private static void updateReadOnlyRolePassword(
+    final CADatabaseConfiguration configuration,
+    final Connection connection)
+    throws SQLException
+  {
+    final var passwordOpt = configuration.readerRolePassword();
+    if (passwordOpt.isPresent()) {
+      LOG.debug("updating cardant_read_only role to allow password logins");
+
+      /*
+       * Yes, this particular SQL statement really does need to be constructed
+       * with string concatenation. Parameters and a prepared statement will
+       * not work. Yes, this is dangerous.
+       */
+
+      final var text = new StringBuilder(64);
+      text.append("ALTER ROLE cardant_read_only WITH PASSWORD ");
+      text.append('\'');
+      text.append(StringEscapeUtils.unescapeJava(
+        configuration.workerRolePassword())
+      );
+      text.append('\'');
+
+      try (var st = connection.createStatement()) {
+        st.execute(text.toString());
+      }
+      try (var st = connection.createStatement()) {
+        st.execute("ALTER ROLE cardant_read_only LOGIN");
+      }
+    } else {
+      LOG.debug("updating cardant_read_only role to disallow logins");
+      try (var st = connection.createStatement()) {
+        st.execute("ALTER ROLE cardant_read_only NOLOGIN");
+      }
+    }
+  }
+
+  /**
+   * Update the worker role password. Might be a no-op.
+   */
+
+  private static void updateWorkerRolePassword(
+    final CADatabaseConfiguration configuration,
+    final Connection connection)
+    throws SQLException
+  {
+    /*
+     * Yes, this particular SQL statement really does need to be constructed
+     * with string concatenation. Parameters and a prepared statement will
+     * not work. Yes, this is dangerous.
+     */
+
+    final var text = new StringBuilder(64);
+    text.append("ALTER ROLE cardant WITH PASSWORD ");
+    text.append('\'');
+    text.append(StringEscapeUtils.unescapeJava(
+      configuration.workerRolePassword())
+    );
+    text.append('\'');
+
+    try (var st = connection.createStatement()) {
+      st.execute(text.toString());
+    }
+    try (var st = connection.createStatement()) {
+      st.execute("ALTER ROLE cardant LOGIN");
+    }
+  }
+
+  private static void failSpan(
+    final Exception e)
+  {
+    final Span span = Span.current();
+    span.recordException(e);
+    span.setStatus(StatusCode.ERROR);
   }
 
   private static void publishEvent(
@@ -247,6 +418,9 @@ public final class CAPGDatabases implements CADatabaseFactoryType
     try {
       LOG.trace("{}", message);
       startupMessages.accept(message);
+
+      final var span = Span.current();
+      span.addEvent(message);
     } catch (final Exception e) {
       LOG.error("ignored consumer exception: ", e);
     }
@@ -256,7 +430,7 @@ public final class CAPGDatabases implements CADatabaseFactoryType
     final Consumer<String> startupMessages,
     final TrEventType event)
   {
-    if (event instanceof TrEventExecutingSQL sql) {
+    if (event instanceof final TrEventExecutingSQL sql) {
       publishEvent(
         startupMessages,
         String.format("Executing SQL: %s", sql.statement())
@@ -264,7 +438,7 @@ public final class CAPGDatabases implements CADatabaseFactoryType
       return;
     }
 
-    if (event instanceof TrEventUpgrading upgrading) {
+    if (event instanceof final TrEventUpgrading upgrading) {
       publishEvent(
         startupMessages,
         String.format(

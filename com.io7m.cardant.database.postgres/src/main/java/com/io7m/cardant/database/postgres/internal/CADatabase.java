@@ -20,28 +20,30 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseRole;
+import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
-import com.io7m.cardant.model.CAVersion;
+import com.io7m.cardant.strings.CAStrings;
+import com.io7m.jmulticlose.core.CloseableCollectionType;
 import com.zaxxer.hikari.HikariDataSource;
-import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.Tracer;
 import org.jooq.conf.RenderNameCase;
 import org.jooq.conf.Settings;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.sql.SQLException;
 import java.time.Clock;
-import java.util.Collections;
-import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_SYSTEM;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DbSystemValues.POSTGRESQL;
+import static java.lang.Math.max;
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * The default postgres server database implementation.
@@ -53,40 +55,41 @@ public final class CADatabase implements CADatabaseType
   private final HikariDataSource dataSource;
   private final Settings settings;
   private final Tracer tracer;
+  private final CloseableCollectionType<CADatabaseException> resources;
   private final LongCounter transactions;
   private final LongCounter transactionCommits;
   private final LongCounter transactionRollbacks;
-  private final CADatabaseMessages messages;
+  private final ConcurrentLinkedQueue<Long> connectionTimes;
+  private final CADatabaseTelemetry telemetry;
+  private final CAStrings strings;
 
   /**
    * The default postgres server database implementation.
    *
-   * @param locale The locale
-   * @param inOpenTelemetry A telemetry interface
-   * @param inClock         The clock
-   * @param inDataSource    A pooled data source
+   * @param inStrings    The string resources
+   * @param inTelemetry  A telemetry
+   * @param inClock      The clock
+   * @param inDataSource A pooled data source
+   * @param inResources  The resources to be closed
    */
 
   public CADatabase(
-    final Locale locale,
-    final OpenTelemetry inOpenTelemetry,
+    final CADatabaseTelemetry inTelemetry,
+    final CAStrings inStrings,
     final Clock inClock,
-    final HikariDataSource inDataSource)
+    final HikariDataSource inDataSource,
+    final CloseableCollectionType<CADatabaseException> inResources)
   {
-    try {
-      this.messages = new CADatabaseMessages(locale);
-    } catch (final IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    this.telemetry =
+      Objects.requireNonNull(inTelemetry, "telemetry");
 
-    final var telemetry =
-      Objects.requireNonNull(inOpenTelemetry, "inOpenTelemetry");
+    this.strings =
+      Objects.requireNonNull(inStrings, "inStrings");
 
     this.tracer =
-      telemetry.getTracer(
-        "com.io7m.cardant.database.postgres",
-        CAVersion.MAIN_VERSION
-      );
+      this.telemetry.tracer();
+    this.resources =
+      Objects.requireNonNull(inResources, "resources");
 
     this.clock =
       Objects.requireNonNull(inClock, "clock");
@@ -95,20 +98,92 @@ public final class CADatabase implements CADatabaseType
     this.settings =
       new Settings().withRenderNameCase(RenderNameCase.LOWER);
 
-    final var meters =
-      telemetry.meterBuilder(
-        "com.io7m.cardant.database.postgres")
-        .build();
+    final var dataSourceBean =
+      this.dataSource.getHikariPoolMXBean();
+
+    final var meter =
+      this.telemetry.meter();
 
     this.transactions =
-      meters.counterBuilder("CADatabase.transactions")
+      meter.counterBuilder("cardant_db_transactions")
+        .setDescription("The number of completed transactions.")
         .build();
+
     this.transactionCommits =
-      meters.counterBuilder("CADatabase.commits")
+      meter.counterBuilder("cardant_db_commits")
+        .setDescription("The number of database transaction commits.")
         .build();
+
     this.transactionRollbacks =
-      meters.counterBuilder("CADatabase.commits")
+      meter.counterBuilder("cardant_db_rollbacks")
+        .setDescription("The number of database transaction rollbacks.")
         .build();
+
+    this.connectionTimes =
+      new ConcurrentLinkedQueue<>();
+
+    this.resources.add(
+      meter.gaugeBuilder("cardant_db_connection_time")
+        .setDescription("The amount of time a database connection is held.")
+        .ofLongs()
+        .buildWithCallback(measurement -> {
+          measurement.record(maxOf(this.connectionTimes));
+        })
+    );
+
+    this.resources.add(
+      meter.gaugeBuilder("cardant_db_connections_active")
+        .setDescription("Number of active database connections.")
+        .ofLongs()
+        .buildWithCallback(measurement -> {
+          measurement.record(
+            Integer.toUnsignedLong(dataSourceBean.getActiveConnections())
+          );
+        })
+    );
+
+    this.resources.add(
+      meter.gaugeBuilder("cardant_db_connections_idle")
+        .setDescription("Number of idle database connections.")
+        .ofLongs()
+        .buildWithCallback(measurement -> {
+          measurement.record(
+            Integer.toUnsignedLong(dataSourceBean.getIdleConnections())
+          );
+        })
+    );
+
+    this.resources.add(
+      meter.gaugeBuilder("cardant_db_connections_total")
+        .setDescription("Total number of database connections.")
+        .ofLongs()
+        .buildWithCallback(measurement -> {
+          measurement.record(
+            Integer.toUnsignedLong(dataSourceBean.getTotalConnections())
+          );
+        })
+    );
+
+    this.resources.add(
+      meter.gaugeBuilder("cardant_db_threads_waiting")
+        .setDescription("Number of threads waiting for connections.")
+        .ofLongs()
+        .buildWithCallback(measurement -> {
+          measurement.record(
+            Integer.toUnsignedLong(dataSourceBean.getThreadsAwaitingConnection())
+          );
+        })
+    );
+  }
+
+  private static long maxOf(
+    final ConcurrentLinkedQueue<Long> times)
+  {
+    var time = 0L;
+    while (!times.isEmpty()) {
+      time = max(time, times.poll().longValue());
+    }
+    return time;
   }
 
   LongCounter counterTransactions()
@@ -128,15 +203,16 @@ public final class CADatabase implements CADatabaseType
 
   @Override
   public void close()
+    throws CADatabaseException
   {
-    this.dataSource.close();
+    this.resources.close();
   }
 
   /**
    * @return The OpenTelemetry tracer
    */
 
-  Tracer tracer()
+  public Tracer tracer()
   {
     return this.tracer;
   }
@@ -154,17 +230,21 @@ public final class CADatabase implements CADatabaseType
         .startSpan();
 
     try {
+      span.addEvent("RequestConnection");
       final var conn = this.dataSource.getConnection();
+      span.addEvent("ObtainedConnection");
+      final var timeNow = OffsetDateTime.now();
       conn.setAutoCommit(false);
-      return new CADatabaseConnection(this, conn, role, span);
+      return new CADatabaseConnection(this, conn, timeNow, role, span);
     } catch (final SQLException e) {
       span.recordException(e);
       span.end();
+
       throw new CADatabaseException(
-        e.getMessage(),
+        requireNonNullElse(e.getMessage(), e.getClass().getSimpleName()),
         e,
         errorSql(),
-        Collections.emptySortedMap(),
+        Map.of(),
         Optional.empty()
       );
     }
@@ -201,8 +281,16 @@ public final class CADatabase implements CADatabaseType
       .formatted(Long.toUnsignedString(this.hashCode(), 16));
   }
 
-  CADatabaseMessages messages()
+  void setConnectionTimeNow(
+    final long nanos)
   {
-    return this.messages;
+    if (!this.telemetry.isNoOp()) {
+      this.connectionTimes.add(Long.valueOf(nanos));
+    }
+  }
+
+  CAStrings messages()
+  {
+    return this.strings;
   }
 }

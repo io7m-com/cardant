@@ -20,6 +20,7 @@ import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.client.api.CAClientTransferStatistics;
 import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAFileID;
@@ -27,16 +28,20 @@ import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.hibiscus.api.HBResultFailure;
 import com.io7m.hibiscus.api.HBResultType;
 import com.io7m.hibiscus.basic.HBClientNewHandler;
 
-import java.io.InputStream;
 import java.net.http.HttpClient;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NOT_LOGGED_IN;
 
 /**
  * The initial "disconnected" protocol handler.
@@ -58,7 +63,7 @@ public final class CAHandlerDisconnected
     return new HBResultFailure<>(
       new CAIResponseError(
         UUID.randomUUID(),
-        this.strings().format("notLoggedIn"),
+        this.strings().format(ERROR_NOT_LOGGED_IN),
         CAStandardErrorCodes.errorNotLoggedIn(),
         Map.of(),
         Optional.empty(),
@@ -134,11 +139,28 @@ public final class CAHandlerDisconnected
   }
 
   @Override
-  public HBResultType<InputStream, CAIResponseError> onExecuteFileData(
-    final CAFileID fileID)
+  public HBResultType<Path, CAIResponseError> onExecuteFileDownload(
+    final CAFileID fileID,
+    final Path file,
+    final Path fileTmp,
+    final long size,
+    final String hashAlgorithm,
+    final String hashValue,
+    final Consumer<CAClientTransferStatistics> statistics)
   {
     return this.notLoggedIn();
   }
+
+  @Override
+  public HBResultType<CAFileID, CAIResponseError> onExecuteFileUpload(
+    final CAFileID fileID,
+    final Path file,
+    final String contentType,
+    final Consumer<CAClientTransferStatistics> statisticsConsumer)
+  {
+    return this.notLoggedIn();
+  }
+
 
   @Override
   public HBResultType<CAClientUnit, CAIResponseError> onExecuteGarbage()

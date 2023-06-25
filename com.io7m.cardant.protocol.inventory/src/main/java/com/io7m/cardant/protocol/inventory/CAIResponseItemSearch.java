@@ -27,7 +27,7 @@ import java.util.UUID;
  * @param requestId The request ID
  * @param data      The returned items
  *
- * @see CAICommandItemList
+ * @see CAICommandItemSearchBegin
  */
 
 public record CAIResponseItemSearch(
@@ -36,7 +36,7 @@ public record CAIResponseItemSearch(
   implements CAIResponseType
 {
   /**
-   * @see CAICommandItemList
+   * @see CAICommandItemSearchBegin
    */
 
   public CAIResponseItemSearch

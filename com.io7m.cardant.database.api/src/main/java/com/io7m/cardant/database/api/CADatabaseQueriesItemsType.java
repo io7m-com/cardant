@@ -24,7 +24,6 @@ import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CATag;
 
 import java.util.Collection;
@@ -75,27 +74,6 @@ public non-sealed interface CADatabaseQueriesItemsType
   void itemNameSet(
     CAItemID id,
     String name)
-    throws CADatabaseException;
-
-  /**
-   * @param locationBehaviour The location behaviour
-   *
-   * @return The available items
-   *
-   * @throws CADatabaseException On database errors
-   */
-
-  Set<CAItem> itemList(
-    CAListLocationBehaviourType locationBehaviour)
-    throws CADatabaseException;
-
-  /**
-   * @return The deleted items
-   *
-   * @throws CADatabaseException On database errors
-   */
-
-  Set<CAItemID> itemListDeleted()
     throws CADatabaseException;
 
   /**

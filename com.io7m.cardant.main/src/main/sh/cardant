@@ -8,5 +8,5 @@ fi
 
 exec /usr/bin/env java \
 -p "${CARDANT_HOME}/lib" \
--m com.io7m.cardant.main/com.io7m.cardant.main.CAServerMain \
+-m com.io7m.cardant.main/com.io7m.cardant.main.CAMain \
 "$@"

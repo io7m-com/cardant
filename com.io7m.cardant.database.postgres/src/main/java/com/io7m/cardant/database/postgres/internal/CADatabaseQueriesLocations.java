@@ -34,6 +34,14 @@ import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.h
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorCyclic;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
+import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
+import static com.io7m.cardant.strings.CAStringConstants.LOCATION_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.NEW_LOCATION_ID;
+import static com.io7m.cardant.strings.CAStringConstants.NEW_LOCATION_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.NEW_LOCATION_PARENT_ID;
+import static com.io7m.cardant.strings.CAStringConstants.OLD_LOCATION_ID;
+import static com.io7m.cardant.strings.CAStringConstants.OLD_LOCATION_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.OLD_LOCATION_PARENT_ID;
 
 /**
  * Location related queries.
@@ -57,8 +65,8 @@ public final class CADatabaseQueriesLocations
     Objects.requireNonNull(location, "location");
 
     final var errorAttributes = new TreeMap<String, String>();
-    errorAttributes.put("Location ID", location.displayId());
-    errorAttributes.put("Location Name", location.name());
+    errorAttributes.put(this.local(LOCATION_ID), location.displayId());
+    errorAttributes.put(this.local(LOCATION_NAME), location.name());
 
     final var transaction =
       this.transaction();
@@ -69,7 +77,7 @@ public final class CADatabaseQueriesLocations
         "CADatabaseQueriesLocations.locationPut");
 
     try {
-      checkAcyclic(context, location);
+      this.checkAcyclic(context, location);
 
       final var id = location.id().id();
       var locRec = context.fetchOne(LOCATIONS, LOCATIONS.LOCATION_ID.eq(id));
@@ -105,7 +113,7 @@ public final class CADatabaseQueriesLocations
     }
   }
 
-  private static void checkAcyclic(
+  private void checkAcyclic(
     final DSLContext context,
     final CALocation newLocation)
     throws SQLException, CADatabaseException
@@ -181,13 +189,13 @@ public final class CADatabaseQueriesLocations
       graph.addEdge(newLocation.id(), newParent, newEdge);
     } catch (final IllegalArgumentException e) {
       final var errorAttributes = new TreeMap<String, String>();
-      errorAttributes.put("New Location ID", newLocation.displayId());
-      errorAttributes.put("New Location Name", newLocation.name());
-      errorAttributes.put("New Location Parent ID", newParent.displayId());
-      errorAttributes.put("Old Location ID", oldLocation.displayId());
-      errorAttributes.put("Old Location Name", oldLocation.name());
+      errorAttributes.put(this.local(NEW_LOCATION_ID), newLocation.displayId());
+      errorAttributes.put(this.local(NEW_LOCATION_NAME), newLocation.name());
+      errorAttributes.put(this.local(NEW_LOCATION_PARENT_ID), newParent.displayId());
+      errorAttributes.put(this.local(OLD_LOCATION_ID), oldLocation.displayId());
+      errorAttributes.put(this.local(OLD_LOCATION_NAME), oldLocation.name());
       oldParentOpt.ifPresent(oldParent -> {
-        errorAttributes.put("Old Location Parent ID", oldParent.displayId());
+        errorAttributes.put(this.local(OLD_LOCATION_PARENT_ID), oldParent.displayId());
       });
 
       throw new CADatabaseException(

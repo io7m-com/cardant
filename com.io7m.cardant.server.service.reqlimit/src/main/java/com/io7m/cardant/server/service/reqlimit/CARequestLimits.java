@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.server.service.reqlimit;
 
+import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
 import com.io7m.repetoir.core.RPServiceType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.input.BoundedInputStream;
@@ -32,16 +33,21 @@ import java.util.function.Function;
 public final class CARequestLimits implements RPServiceType
 {
   private final Function<Long, String> requestTooLargeMessage;
+  private final CAConfigurationServiceType configuration;
 
   /**
    * Methods to handle request size limits.
    *
+   * @param inConfiguration          The configuration service
    * @param inRequestTooLargeMessage A function that formats a message
    */
 
   public CARequestLimits(
+    final CAConfigurationServiceType inConfiguration,
     final Function<Long, String> inRequestTooLargeMessage)
   {
+    this.configuration =
+      Objects.requireNonNull(inConfiguration, "inConfiguration");
     this.requestTooLargeMessage =
       Objects.requireNonNull(
         inRequestTooLargeMessage, "requestTooLargeMessage");
@@ -60,30 +66,98 @@ public final class CARequestLimits implements RPServiceType
    * @throws CARequestLimitExceeded On errors
    */
 
-  public InputStream boundedMaximumInput(
+  private InputStream boundedMaximumInput(
     final HttpServletRequest request,
-    final int maximum)
+    final long maximum)
     throws IOException, CARequestLimitExceeded
   {
-    final int size;
-    final var specifiedLength = request.getContentLength();
-    if (specifiedLength == -1) {
+    final long size;
+    final var specifiedLength = request.getContentLengthLong();
+    if (specifiedLength == -1L) {
       size = maximum;
     } else {
-      if (Integer.compareUnsigned(specifiedLength, maximum) > 0) {
+      if (Long.compareUnsigned(specifiedLength, maximum) > 0) {
         throw new CARequestLimitExceeded(
           this.requestTooLargeMessage.apply(
-            Long.valueOf(Integer.toUnsignedLong(specifiedLength))
+            Long.valueOf(specifiedLength)
           ),
-          Integer.toUnsignedLong(maximum),
-          Integer.toUnsignedLong(specifiedLength)
+          maximum,
+          specifiedLength
         );
       }
       size = specifiedLength;
     }
 
     final var baseStream = request.getInputStream();
-    return new BoundedInputStream(baseStream, Integer.toUnsignedLong(size));
+    return new BoundedInputStream(baseStream, size);
+  }
+
+  /**
+   * Bound the given servlet request to the given maximum size for file
+   * uploads.
+   *
+   * @param request The request
+   *
+   * @return A bounded input stream
+   *
+   * @throws IOException            On errors
+   * @throws CARequestLimitExceeded On errors
+   */
+
+  public InputStream boundedMaximumInputForFileUpload(
+    final HttpServletRequest request)
+    throws IOException, CARequestLimitExceeded
+  {
+    return this.boundedMaximumInput(
+      request,
+      this.configuration.configuration()
+        .limitsConfiguration()
+        .maximumFileUploadSizeOctets()
+    );
+  }
+
+  /**
+   * Bound the given servlet request to the given maximum size for commands.
+   *
+   * @param request The request
+   *
+   * @return A bounded input stream
+   *
+   * @throws IOException            On errors
+   * @throws CARequestLimitExceeded On errors
+   */
+
+  public InputStream boundedMaximumInputForCommand(
+    final HttpServletRequest request)
+    throws IOException, CARequestLimitExceeded
+  {
+    return this.boundedMaximumInput(
+      request,
+      this.configuration.configuration()
+        .limitsConfiguration()
+        .maximumCommandSizeOctets()
+    );
+  }
+
+  /**
+   * Bound the given servlet request to the given maximum size for login commands.
+   *
+   * @param request The request
+   *
+   * @return A bounded input stream
+   *
+   * @throws IOException            On errors
+   * @throws CARequestLimitExceeded On errors
+   */
+
+  public InputStream boundedMaximumInputForLoginCommand(
+    final HttpServletRequest request)
+    throws IOException, CARequestLimitExceeded
+  {
+    return this.boundedMaximumInput(
+      request,
+      1024L
+    );
   }
 
   @Override

@@ -324,7 +324,7 @@ public final class CAViewControllerRolesTab implements Initializable
         {
           super.updateItem(t, x);
           if (t != null) {
-            this.setText(t.value());
+            this.setText(t.value().value());
           }
         }
       };

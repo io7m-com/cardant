@@ -18,6 +18,7 @@
 package com.io7m.cardant.server.http;
 
 
+import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.opentelemetry.api.trace.SpanKind;
@@ -43,6 +44,7 @@ public final class CAHTTPServletCoreInstrumented
 {
   private final CAHTTPServletFunctionalCoreType core;
   private final CAServerTelemetryServiceType telemetry;
+  private final CAMetricsServiceType metrics;
 
   private CAHTTPServletCoreInstrumented(
     final RPServiceDirectoryType inServices,
@@ -52,6 +54,8 @@ public final class CAHTTPServletCoreInstrumented
       inServices.requireService(CAServerTelemetryServiceType.class);
     this.core =
       Objects.requireNonNull(inCore, "core");
+    this.metrics =
+      inServices.requireService(CAMetricsServiceType.class);
   }
 
   /**
@@ -91,12 +95,28 @@ public final class CAHTTPServletCoreInstrumented
         .setAttribute("http.request_id", information.requestId().toString())
         .startSpan();
 
+    this.metrics.onHttpRequested();
+    this.metrics.onHttpRequestSize(request.getContentLengthLong());
+
     try (var ignored = span.makeCurrent()) {
       final var response =
         this.core.execute(request, information);
+
+      final var code = response.statusCode();
+      if (code >= 400) {
+        if (code >= 500) {
+          this.metrics.onHttp5xx();
+        } else {
+          this.metrics.onHttp4xx();
+        }
+      } else {
+        this.metrics.onHttp2xx();
+      }
+
       span.setAttribute(HTTP_STATUS_CODE, response.statusCode());
       response.contentLengthOptional().ifPresent(size -> {
         span.setAttribute(HTTP_RESPONSE_CONTENT_LENGTH, Long.valueOf(size));
+        this.metrics.onHttpResponseSize(size);
       });
       return response;
     } catch (final Throwable e) {

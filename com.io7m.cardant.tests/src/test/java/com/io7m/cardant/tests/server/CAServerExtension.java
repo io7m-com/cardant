@@ -24,8 +24,10 @@ import com.io7m.cardant.database.postgres.CAPGDatabases;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
+import com.io7m.cardant.server.api.CAServerLimitsConfiguration;
 import com.io7m.cardant.server.api.CAServerType;
 import com.io7m.cardant.server.basic.CAServers;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.idstore.tests.extensions.IdTestExtension;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
@@ -165,12 +167,16 @@ public final class CAServerExtension
         Locale.ROOT,
         "postgres",
         "12345678",
+        "12345678",
+        Optional.of("12345678"),
         CONTAINER.getHost(),
         CONTAINER.getFirstMappedPort().intValue(),
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
         CADatabaseUpgrade.UPGRADE_DATABASE,
-        Clock.systemUTC()
+        "english",
+        Clock.systemUTC(),
+        CAStrings.create(Locale.ROOT)
       );
 
     this.perTestResources =
@@ -206,14 +212,22 @@ public final class CAServerExtension
           .externalAddress()
       );
 
+    final var limitsConfiguration =
+      new CAServerLimitsConfiguration(
+        1000000L,
+        1000000L
+      );
+
     this.serverConfiguration =
       new CAServerConfiguration(
         Locale.ROOT,
         Clock.systemUTC(),
+        CAStrings.create(Locale.ROOT),
         DATABASES,
         this.databaseConfiguration,
         this.apiConfiguration,
         idstoreServerConfiguration,
+        limitsConfiguration,
         Optional.empty()
       );
 

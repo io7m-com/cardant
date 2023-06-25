@@ -27,6 +27,8 @@ import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure
 import java.util.Map;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
+import static com.io7m.cardant.strings.CAStringConstants.USER_ID;
 
 /**
  * @see CAICommandRolesGet
@@ -59,8 +61,8 @@ public final class CAICmdRolesGet extends CAICmdAbstract<CAICommandRolesGet>
           return context.failFormatted(
             400,
             errorNonexistent(),
-            Map.of("User ID", command.user().toString()),
-            "notFound"
+            Map.of(USER_ID, command.user().toString()),
+            ERROR_NONEXISTENT
           );
         });
 

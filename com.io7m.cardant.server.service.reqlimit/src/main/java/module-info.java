@@ -24,6 +24,9 @@ module com.io7m.cardant.server.service.reqlimit
   requires static org.osgi.annotation.versioning;
 
   requires com.io7m.cardant.error_codes;
+  requires com.io7m.cardant.server.api;
+  requires com.io7m.cardant.server.service.configuration;
+
   requires com.io7m.repetoir.core;
   requires jetty.servlet.api;
   requires org.apache.commons.io;

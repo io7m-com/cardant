@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.geometry.Insets?><?import javafx.scene.control.Button?><?import javafx.scene.control.TreeView?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.Region?><?import javafx.scene.layout.VBox?>
 <VBox prefHeight="600.0" prefWidth="800.0" stylesheets="@cardant.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.cardant.gui.internal.CAViewControllerLocationSetParent">
    <children>
       <TreeView fx:id="locationTreeView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />

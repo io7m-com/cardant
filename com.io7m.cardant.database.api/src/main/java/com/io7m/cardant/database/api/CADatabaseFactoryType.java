@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.database.api;
 
-import io.opentelemetry.api.OpenTelemetry;
-
 import java.util.function.Consumer;
 
 /**
@@ -36,7 +34,7 @@ public interface CADatabaseFactoryType
    * Open a database.
    *
    * @param configuration   The database configuration
-   * @param openTelemetry   The OpenTelemetry instance
+   * @param telemetry       The telemetry
    * @param startupMessages A function that will receive startup messages
    *
    * @return A database
@@ -46,7 +44,7 @@ public interface CADatabaseFactoryType
 
   CADatabaseType open(
     CADatabaseConfiguration configuration,
-    OpenTelemetry openTelemetry,
+    CADatabaseTelemetry telemetry,
     Consumer<String> startupMessages)
     throws CADatabaseException;
 }

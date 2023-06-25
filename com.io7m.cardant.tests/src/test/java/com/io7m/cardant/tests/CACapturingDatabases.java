@@ -20,8 +20,8 @@ package com.io7m.cardant.tests;
 import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseFactoryType;
+import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
-import io.opentelemetry.api.OpenTelemetry;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -48,12 +48,13 @@ final class CACapturingDatabases
   @Override
   public CADatabaseType open(
     final CADatabaseConfiguration configuration,
-    final OpenTelemetry openTelemetry,
+    final CADatabaseTelemetry telemetry,
     final Consumer<String> startupMessages)
     throws CADatabaseException
   {
     final var database =
-      this.delegate.open(configuration, openTelemetry, startupMessages);
+      this.delegate.open(configuration, telemetry, startupMessages);
+
     this.mostRecent = database;
     return database;
   }

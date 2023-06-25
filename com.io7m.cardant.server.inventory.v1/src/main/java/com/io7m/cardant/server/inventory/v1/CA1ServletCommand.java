@@ -25,7 +25,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
-import com.io7m.cardant.server.controller.CAServerStrings;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.inventory.CAICommandContext;
 import com.io7m.cardant.server.controller.inventory.CAICommandExecutor;
@@ -37,6 +36,7 @@ import com.io7m.cardant.server.http.CAHTTPServletResponseType;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimitExceeded;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimits;
 import com.io7m.cardant.server.service.sessions.CASession;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.opentelemetry.api.trace.Span;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +52,7 @@ import static com.io7m.cardant.server.http.CAHTTPServletCoreInstrumented.withIns
 import static com.io7m.cardant.server.inventory.v1.CA1Errors.errorResponseOf;
 import static com.io7m.cardant.server.inventory.v1.CA1ServletCoreAuthenticated.withAuthentication;
 import static com.io7m.cardant.server.inventory.v1.CA1ServletCoreTransactional.withTransaction;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_COMMAND_NOT_HERE;
 
 /**
  * The v1 command servlet.
@@ -79,7 +80,7 @@ public final class CA1ServletCommand extends CAHTTPServletFunctional
     final var messages =
       services.requireService(CAI1Messages.class);
     final var strings =
-      services.requireService(CAServerStrings.class);
+      services.requireService(CAStrings.class);
 
     return (request, information) -> {
       return withInstrumentation(
@@ -113,12 +114,11 @@ public final class CA1ServletCommand extends CAHTTPServletFunctional
     final CAHTTPServletRequestInformation information,
     final CAI1Messages messages,
     final CARequestLimits limits,
-    final CAServerStrings strings,
+    final CAStrings strings,
     final CASession session,
     final CADatabaseTransactionType transaction)
   {
-    try (var input =
-           limits.boundedMaximumInput(request, 1048576)) {
+    try (var input = limits.boundedMaximumInputForCommand(request)) {
       final var data =
         input.readAllBytes();
       final var message =
@@ -139,8 +139,8 @@ public final class CA1ServletCommand extends CAHTTPServletFunctional
         information,
         BLAME_CLIENT,
         new CAProtocolException(
-          strings.format("commandNotHere"),
-          CAStandardErrorCodes.errorProtocol(),
+          strings.format(ERROR_COMMAND_NOT_HERE),
+          CAStandardErrorCodes.errorApiMisuse(),
           Map.of(),
           Optional.empty()
         )

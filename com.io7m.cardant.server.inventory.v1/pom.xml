@@ -51,6 +51,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.server.service.telemetry.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.cardant.protocol.inventory.cb</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -62,6 +67,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.cardant.server.service.reqlimit</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.server.service.clock</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -99,6 +109,11 @@
       <artifactId>com.io7m.cardant.security</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.strings</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>com.io7m.hibiscus</groupId>
@@ -119,6 +134,10 @@
     <dependency>
       <groupId>com.io7m.idstore</groupId>
       <artifactId>com.io7m.idstore.model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.error_codes</artifactId>
     </dependency>
     <dependency>
       <groupId>com.io7m.idstore</groupId>
@@ -151,6 +170,14 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jvindicator</groupId>
+      <artifactId>com.io7m.jvindicator.core</artifactId>
     </dependency>
 
     <dependency>

@@ -15,7 +15,7 @@
   <artifactId>com.io7m.cardant.server.service.telemetry.otp</artifactId>
 
   <name>com.io7m.cardant.server.service.telemetry.otp</name>
-  <description>Identity server (Server telemetry service [OpenTelemetry])</description>
+  <description>Inventory server (Server telemetry service [OpenTelemetry])</description>
   <url>https://www.io7m.com/software/cardant</url>
 
   <dependencies>
@@ -42,6 +42,10 @@
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-sdk</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-sdk-logs</artifactId>
     </dependency>
     <dependency>
       <groupId>io.opentelemetry</groupId>

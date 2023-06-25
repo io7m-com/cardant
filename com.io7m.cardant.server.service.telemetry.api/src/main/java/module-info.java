@@ -27,5 +27,7 @@ module com.io7m.cardant.server.service.telemetry.api
   requires transitive io.opentelemetry.api;
   requires transitive com.io7m.cardant.server.api;
 
+  requires com.io7m.jmulticlose.core;
+
   exports com.io7m.cardant.server.service.telemetry.api;
 }

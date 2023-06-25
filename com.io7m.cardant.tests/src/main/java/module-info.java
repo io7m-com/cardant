@@ -24,13 +24,12 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.client.basic;
   requires com.io7m.cardant.client.preferences.api;
   requires com.io7m.cardant.client.preferences.vanilla;
-  requires com.io7m.cardant.client.transfer.api;
-  requires com.io7m.cardant.client.transfer.vanilla;
   requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.database.postgres;
   requires com.io7m.cardant.error_codes;
   requires com.io7m.cardant.gui.main;
   requires com.io7m.cardant.gui;
+  requires com.io7m.cardant.main;
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.protocol.api;
   requires com.io7m.cardant.protocol.inventory.cb;
@@ -41,7 +40,6 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.http;
   requires com.io7m.cardant.server.inventory.v1;
-  requires com.io7m.cardant.main;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
   requires com.io7m.cardant.server.service.idstore;
@@ -51,8 +49,12 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.telemetry.otp;
   requires com.io7m.cardant.server.service.verdant;
+  requires com.io7m.cardant.shell;
 
   requires com.io7m.jmulticlose.core;
+  requires com.io7m.quarrel.core;
+  requires com.io7m.quarrel.ext.logback;
+  requires com.io7m.quarrel.ext.xstructural;
   requires com.io7m.verdant.core.cb;
   requires com.io7m.verdant.core;
   requires jakarta.mail;

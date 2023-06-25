@@ -24,9 +24,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 
-import java.util.Objects;
-
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 
@@ -57,22 +54,9 @@ public final class CAICmdItemUpdate extends CAICmdAbstract<CAICommandItemUpdate>
       context.transaction()
         .queries(CADatabaseQueriesItemsType.class);
 
-    try {
-      final var itemId = command.id();
-      queries.itemNameSet(command.id(), command.name());
-      final var updated = queries.itemGet(itemId).orElseThrow();
-      return new CAIResponseItemUpdate(context.requestId(), updated);
-    } catch (final CADatabaseException e) {
-      if (Objects.equals(e.errorCode(), errorNonexistent())) {
-        throw context.failFormatted(
-          e,
-          400,
-          errorNonexistent(),
-          e.attributes(),
-          "notFound"
-        );
-      }
-      throw e;
-    }
+    final var itemId = command.id();
+    queries.itemNameSet(command.id(), command.name());
+    final var updated = queries.itemGet(itemId).orElseThrow();
+    return new CAIResponseItemUpdate(context.requestId(), updated);
   }
 }

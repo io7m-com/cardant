@@ -34,6 +34,9 @@ import java.util.Set;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNotPermitted;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ADMIN;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_OPERATION_NOT_PERMITTED;
+import static com.io7m.cardant.strings.CAStringConstants.USER_ID;
 
 /**
  * @see CAICommandRolesAssign
@@ -81,8 +84,8 @@ public final class CAICmdRolesAssign extends CAICmdAbstract<CAICommandRolesAssig
     throw context.failFormatted(
       400,
       errorOperationNotPermitted(),
-      Map.of("User ID", command.user().toString()),
-      "operationNotPermitted"
+      Map.of(USER_ID, command.user().toString()),
+      ERROR_OPERATION_NOT_PERMITTED
     );
   }
 
@@ -102,8 +105,8 @@ public final class CAICmdRolesAssign extends CAICmdAbstract<CAICommandRolesAssig
           return context.failFormatted(
             400,
             errorNonexistent(),
-            Map.of("User ID", command.user().toString()),
-            "notFound"
+            Map.of(USER_ID, command.user().toString()),
+            ERROR_NONEXISTENT
           );
         });
 

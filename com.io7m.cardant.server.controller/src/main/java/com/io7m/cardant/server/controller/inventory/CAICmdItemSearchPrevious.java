@@ -30,6 +30,7 @@ import java.util.Map;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_SEARCH_NOT_ACTIVE;
 
 /**
  * @see CAICommandItemSearchPrevious
@@ -67,7 +68,7 @@ public final class CAICmdItemSearchPrevious
             400,
             errorApiMisuse(),
             Map.of(),
-            "errorSearchNotActive"
+            ERROR_SEARCH_NOT_ACTIVE
           );
         });
 

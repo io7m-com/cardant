@@ -16,8 +16,8 @@
 
 package com.io7m.cardant.security;
 
-import com.io7m.anethum.common.ParseException;
-import com.io7m.anethum.common.ParseStatus;
+import com.io7m.anethum.api.ParseStatus;
+import com.io7m.anethum.api.ParsingException;
 import com.io7m.medrina.api.MActionName;
 import com.io7m.medrina.api.MObject;
 import com.io7m.medrina.api.MPolicy;
@@ -46,112 +46,112 @@ public final class CASecurityPolicy
    */
 
   public static final MObject INVENTORY_TAGS =
-    new MObject(new MTypeName("inventory.tags"), Map.of());
+    new MObject(MTypeName.of("inventory.tags"), Map.of());
 
   /**
    * The items section of the inventory.
    */
 
   public static final MObject INVENTORY_ITEMS =
-    new MObject(new MTypeName("inventory.items"), Map.of());
+    new MObject(MTypeName.of("inventory.items"), Map.of());
 
   /**
    * The files section of the inventory.
    */
 
   public static final MObject INVENTORY_FILES =
-    new MObject(new MTypeName("inventory.files"), Map.of());
+    new MObject(MTypeName.of("inventory.files"), Map.of());
 
   /**
    * The locations section of the inventory.
    */
 
   public static final MObject INVENTORY_LOCATIONS =
-    new MObject(new MTypeName("inventory.locations"), Map.of());
+    new MObject(MTypeName.of("inventory.locations"), Map.of());
 
   /**
    * A "read" action.
    */
 
   public static final MActionName READ =
-    new MActionName("read");
+    MActionName.of("read");
 
   /**
    * A "write" action.
    */
 
   public static final MActionName WRITE =
-    new MActionName("write");
+    MActionName.of("write");
 
   /**
    * A "delete" action.
    */
 
   public static final MActionName DELETE =
-    new MActionName("delete");
+    MActionName.of("delete");
 
   /**
    * A writer of inventory files.
    */
 
   public static final MRoleName ROLE_INVENTORY_FILES_WRITER =
-    new MRoleName("inventory.files.writer");
+    MRoleName.of("inventory.files.writer");
 
   /**
    * A reader of inventory files.
    */
 
   public static final MRoleName ROLE_INVENTORY_FILES_READER =
-    new MRoleName("inventory.files.reader");
+    MRoleName.of("inventory.files.reader");
 
   /**
    * A writer of inventory items.
    */
 
   public static final MRoleName ROLE_INVENTORY_ITEMS_WRITER =
-    new MRoleName("inventory.items.writer");
+    MRoleName.of("inventory.items.writer");
 
   /**
    * A reader of inventory items.
    */
 
   public static final MRoleName ROLE_INVENTORY_ITEMS_READER =
-    new MRoleName("inventory.items.reader");
+    MRoleName.of("inventory.items.reader");
 
   /**
    * A writer of inventory tags.
    */
 
   public static final MRoleName ROLE_INVENTORY_TAGS_WRITER =
-    new MRoleName("inventory.tags.writer");
+    MRoleName.of("inventory.tags.writer");
 
   /**
    * A reader of inventory tags.
    */
 
   public static final MRoleName ROLE_INVENTORY_TAGS_READER =
-    new MRoleName("inventory.tags.reader");
+    MRoleName.of("inventory.tags.reader");
 
   /**
    * A writer of inventory locations.
    */
 
   public static final MRoleName ROLE_INVENTORY_LOCATIONS_WRITER =
-    new MRoleName("inventory.locations.writer");
+    MRoleName.of("inventory.locations.writer");
 
   /**
    * A reader of inventory locations.
    */
 
   public static final MRoleName ROLE_INVENTORY_LOCATIONS_READER =
-    new MRoleName("inventory.locations.reader");
+    MRoleName.of("inventory.locations.reader");
 
   /**
    * An all-powerful administrator of inventories.
    */
 
   public static final MRoleName ROLE_INVENTORY_ADMIN =
-    new MRoleName("inventory.admin");
+    MRoleName.of("inventory.admin");
 
   /**
    * All roles.
@@ -194,7 +194,7 @@ public final class CASecurityPolicy
                stream,
                CASecurityPolicy::logStatus)) {
         return parser.execute();
-      } catch (final ParseException e) {
+      } catch (final ParsingException e) {
         LOG.error("One or more parse errors were encountered.");
         throw new IOException(e.getMessage(), e);
       }
@@ -213,6 +213,10 @@ public final class CASecurityPolicy
           status.errorCode(),
           status.message()
         );
+
+        for (final var entry : status.attributes().entrySet()) {
+          LOG.error("  {}: {}", entry.getKey(), entry.getValue());
+        }
       }
       case PARSE_WARNING -> {
         LOG.warn(
@@ -222,6 +226,10 @@ public final class CASecurityPolicy
           status.errorCode(),
           status.message()
         );
+
+        for (final var entry : status.attributes().entrySet()) {
+          LOG.warn("  {}: {}", entry.getKey(), entry.getValue());
+        }
       }
       case PARSE_INFO -> {
         LOG.info(
@@ -231,6 +239,10 @@ public final class CASecurityPolicy
           status.errorCode(),
           status.message()
         );
+
+        for (final var entry : status.attributes().entrySet()) {
+          LOG.info("  {}: {}", entry.getKey(), entry.getValue());
+        }
       }
     }
   }

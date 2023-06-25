@@ -17,7 +17,6 @@
 package com.io7m.cardant.gui.internal;
 
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
-import com.io7m.cardant.client.transfer.api.CATransferServiceType;
 import com.io7m.cardant.gui.internal.model.CAItemMutable;
 import com.io7m.cardant.gui.internal.model.CAMutableModelElementType;
 import com.io7m.cardant.model.CAFileID;
@@ -26,17 +25,16 @@ import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
+import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.jwheatsheaf.api.JWFileChooserAction;
 import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -65,7 +63,6 @@ public final class CAViewControllerItemEditorOverviewTab
   private final CAFileDialogs fileDialogs;
   private final CAPreferencesServiceType preferences;
   private final CAExternalImages externalImages;
-  private final CATransferServiceType transfers;
   private final CAMainClientService clientService;
   private final CAStatusServiceType statusService;
 
@@ -103,8 +100,6 @@ public final class CAViewControllerItemEditorOverviewTab
       mainServices.requireService(CAPreferencesServiceType.class);
     this.externalImages =
       mainServices.requireService(CAExternalImages.class);
-    this.transfers =
-      mainServices.requireService(CATransferServiceType.class);
     this.clientService =
       mainServices.requireService(CAMainClientService.class);
 
@@ -268,10 +263,12 @@ public final class CAViewControllerItemEditorOverviewTab
           "transfer.attachment.image",
           attachmentFile.id().displayId());
 
-      this.clientService.client()
+      throw new UnimplementedCodeException();
+
+/*      this.clientService.client()
         .fileDataAsyncOrElseThrow(attachmentFile.id())
         .thenCompose(stream -> {
-          return this.transfers.transfer(
+          return this.transfers.download(
             stream,
             title,
             attachmentFile.size(),
@@ -292,7 +289,7 @@ public final class CAViewControllerItemEditorOverviewTab
             this.itemImage.setImage(image);
             this.itemImageProgress.setVisible(false);
           });
-        });
+        });*/
     } else {
       this.itemImage.setImage(null);
       this.itemImageProgress.setVisible(false);

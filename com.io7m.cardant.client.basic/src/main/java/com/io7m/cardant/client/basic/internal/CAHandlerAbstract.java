@@ -17,6 +17,7 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.strings.CAStrings;
 
 import java.net.http.HttpClient;
 import java.util.Objects;

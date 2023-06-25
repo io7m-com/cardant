@@ -14,102 +14,115 @@
 # IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-[medrina 1 0]
+[Medrina 1 0]
 
 #------------------------------------------------------------------------
 # Admins
 #
 
-[allow-immediately
-  [subject [with-any-roles inventory.admin]]
-  [object   true]
-  [action   true]
+[Rule
+  [Conclusion    AllowImmediately]
+  [MatchSubject  [WithAnyRolesFrom inventory.admin]]
+  [MatchObject   True]
+  [MatchAction   True]
 ]
 
 #------------------------------------------------------------------------
 # Items
 #
 
-[allow
-  [subject [with-any-roles inventory.items.writer]]
-  [object  [with-type inventory.items]]
-  [action  [with-name write]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.items.writer]]
+  [MatchObject  [WithType inventory.items]]
+  [MatchAction  [WithName write]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.items.writer]]
-  [object  [with-type inventory.items]]
-  [action  [with-name delete]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.items.writer]]
+  [MatchObject  [WithType inventory.items]]
+  [MatchAction  [WithName delete]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.items.reader]]
-  [object  [with-type inventory.items]]
-  [action  [with-name read]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.items.reader]]
+  [MatchObject  [WithType inventory.items]]
+  [MatchAction  [WithName read]]
 ]
 
 #------------------------------------------------------------------------
 # Tags
 #
 
-[allow
-  [subject [with-any-roles inventory.tags.writer]]
-  [object  [with-type inventory.tags]]
-  [action  [with-name write]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.tags.writer]]
+  [MatchObject  [WithType inventory.tags]]
+  [MatchAction  [WithName write]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.tags.writer]]
-  [object  [with-type inventory.tags]]
-  [action  [with-name delete]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.tags.writer]]
+  [MatchObject  [WithType inventory.tags]]
+  [MatchAction  [WithName delete]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.tags.reader]]
-  [object  [with-type inventory.tags]]
-  [action  [with-name read]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.tags.reader]]
+  [MatchObject  [WithType inventory.tags]]
+  [MatchAction  [WithName read]]
 ]
 
 #------------------------------------------------------------------------
 # Files
 #
 
-[allow
-  [subject [with-any-roles inventory.files.writer]]
-  [object  [with-type inventory.files]]
-  [action  [with-name write]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.files.writer]]
+  [MatchObject  [WithType inventory.files]]
+  [MatchAction  [WithName write]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.files.writer]]
-  [object  [with-type inventory.files]]
-  [action  [with-name delete]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.files.writer]]
+  [MatchObject  [WithType inventory.files]]
+  [MatchAction  [WithName delete]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.files.reader]]
-  [object  [with-type inventory.files]]
-  [action  [with-name read]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.files.reader]]
+  [MatchObject  [WithType inventory.files]]
+  [MatchAction  [WithName read]]
 ]
 
 #------------------------------------------------------------------------
 # Locations
 #
 
-[allow
-  [subject [with-any-roles inventory.locations.writer]]
-  [object  [with-type inventory.locations]]
-  [action  [with-name write]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.locations.writer]]
+  [MatchObject  [WithType inventory.locations]]
+  [MatchAction  [WithName write]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.locations.writer]]
-  [object  [with-type inventory.locations]]
-  [action  [with-name delete]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.locations.writer]]
+  [MatchObject  [WithType inventory.locations]]
+  [MatchAction  [WithName delete]]
 ]
 
-[allow
-  [subject [with-any-roles inventory.locations.reader]]
-  [object  [with-type inventory.locations]]
-  [action  [with-name read]]
+[Rule
+  [Conclusion   Allow]
+  [MatchSubject [WithAnyRolesFrom inventory.locations.reader]]
+  [MatchObject  [WithType inventory.locations]]
+  [MatchAction  [WithName read]]
 ]

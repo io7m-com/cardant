@@ -73,7 +73,7 @@ public sealed interface CAFileType extends Comparable<CAFileType>,
    * @return The file without data
    */
 
-  CAFileType withoutData();
+  CAFileWithoutData withoutData();
 
   /**
    * A file without data.
@@ -92,8 +92,8 @@ public sealed interface CAFileType extends Comparable<CAFileType>,
     String mediaType,
     long size,
     String hashAlgorithm,
-    String hashValue
-  ) implements CAFileType
+    String hashValue)
+    implements CAFileType
   {
     /**
      * A file without data.
@@ -115,7 +115,7 @@ public sealed interface CAFileType extends Comparable<CAFileType>,
     }
 
     @Override
-    public CAFileType withoutData()
+    public CAFileWithoutData withoutData()
     {
       return this;
     }
@@ -140,8 +140,8 @@ public sealed interface CAFileType extends Comparable<CAFileType>,
     long size,
     String hashAlgorithm,
     String hashValue,
-    CAByteArray data
-  ) implements CAFileType
+    CAByteArray data)
+    implements CAFileType
   {
     /**
      * A file with data.
@@ -176,7 +176,7 @@ public sealed interface CAFileType extends Comparable<CAFileType>,
     }
 
     @Override
-    public CAFileType withoutData()
+    public CAFileWithoutData withoutData()
     {
       return new CAFileWithoutData(
         this.id,

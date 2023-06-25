@@ -116,7 +116,7 @@ final class CADatabaseQueriesUsers
     final var roles = new String[targetRoles.size()];
     var index = 0;
     for (final var role : targetRoles) {
-      roles[index] = role.value();
+      roles[index] = role.value().value();
       ++index;
     }
     Arrays.sort(roles);
@@ -147,7 +147,7 @@ final class CADatabaseQueriesUsers
           new IdName(userRec.get(USERS.NAME)),
           new MSubject(
             Stream.of(userRec.getRoles())
-              .map(MRoleName::new)
+              .map(MRoleName::of)
               .collect(Collectors.toUnmodifiableSet())
           )
         )

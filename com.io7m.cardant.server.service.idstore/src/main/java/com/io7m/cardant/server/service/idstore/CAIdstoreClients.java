@@ -17,6 +17,7 @@
 package com.io7m.cardant.server.service.idstore;
 
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
+import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.idstore.user_client.IdUClients;
 import com.io7m.idstore.user_client.api.IdUClientConfiguration;
 import com.io7m.idstore.user_client.api.IdUClientException;
@@ -35,18 +36,22 @@ public final class CAIdstoreClients
   implements CAIdstoreClientsType
 {
   private final CAServerIdstoreConfiguration idstore;
+  private final CAServerTelemetryServiceType telemetry;
   private final IdUClientFactoryType clients;
   private final Locale locale;
 
   private CAIdstoreClients(
     final Locale inLocale,
     final CAServerIdstoreConfiguration inIdstore,
+    final CAServerTelemetryServiceType inTelemetry,
     final IdUClientFactoryType inClients)
   {
     this.locale =
       Objects.requireNonNull(inLocale, "locale");
     this.idstore =
       Objects.requireNonNull(inIdstore, "idstore");
+    this.telemetry =
+      Objects.requireNonNull(inTelemetry, "telemetry");
     this.clients =
       Objects.requireNonNull(inClients, "clients");
   }
@@ -55,6 +60,7 @@ public final class CAIdstoreClients
    * Create an idstore client service.
    *
    * @param inLocale The locale
+   * @param telemetry The telemetry service
    * @param idstore  The idstore server configuration
    *
    * @return A client service
@@ -62,6 +68,7 @@ public final class CAIdstoreClients
 
   public static CAIdstoreClientsType create(
     final Locale inLocale,
+    final CAServerTelemetryServiceType telemetry,
     final CAServerIdstoreConfiguration idstore)
   {
     Objects.requireNonNull(inLocale, "inLocale");
@@ -70,6 +77,7 @@ public final class CAIdstoreClients
     return new CAIdstoreClients(
       inLocale,
       idstore,
+      telemetry,
       new IdUClients()
     );
   }
@@ -79,7 +87,9 @@ public final class CAIdstoreClients
     throws IdUClientException
   {
     return this.clients.openSynchronousClient(
-      new IdUClientConfiguration(this.locale)
+      new IdUClientConfiguration(
+        this.telemetry.openTelemetry(),
+        this.locale)
     );
   }
 

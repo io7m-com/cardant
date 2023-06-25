@@ -18,9 +18,12 @@ package com.io7m.cardant.server.inventory.v1;
 
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.security.CASecurityPolicy;
+import com.io7m.cardant.server.http.CAHTTPRequestTimeFilter;
 import com.io7m.cardant.server.http.CAPlainErrorHandler;
 import com.io7m.cardant.server.http.CAServletHolders;
+import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
+import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -30,12 +33,16 @@ import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.server.session.NullSessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.EnumSet;
 import java.util.Objects;
+
+import static jakarta.servlet.DispatcherType.REQUEST;
 
 /**
  * Inventory servers.
@@ -104,6 +111,7 @@ public final class CAI1Server
 
     final var servletHolders =
       new CAServletHolders(services);
+
     final var servlets =
       new ServletContextHandler();
 
@@ -121,6 +129,19 @@ public final class CAI1Server
     );
     servlets.addServlet(
       servletHolders.create(
+        CA1ServletFileDownload.class,
+        CA1ServletFileDownload::new),
+      "/inventory/1/0/file-download"
+    );
+    servlets.addServlet(
+      servletHolders.create(
+        CA1ServletFileUpload.class,
+        CA1ServletFileUpload::new),
+      "/inventory/1/0/file-upload"
+    );
+
+    servlets.addServlet(
+      servletHolders.create(
         CA1ServletHealth.class,
         CA1ServletHealth::new),
       "/health"
@@ -131,6 +152,20 @@ public final class CAI1Server
         CA1ServletVersion::new),
       "/version"
     );
+
+    /*
+     * Add a handler that tracks request/response time.
+     */
+
+    final var filterHolder =
+      new FilterHolder(
+        new CAHTTPRequestTimeFilter(
+          services.requireService(CAMetricsServiceType.class),
+          services.requireService(CAServerClock.class)
+        )
+      );
+
+    servlets.addFilter(filterHolder, "*", EnumSet.of(REQUEST));
 
     /*
      * Set up a session handler.

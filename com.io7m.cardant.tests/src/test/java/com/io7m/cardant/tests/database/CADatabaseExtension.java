@@ -21,10 +21,12 @@ import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseCreate;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseRole;
+import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.api.CADatabaseUpgrade;
 import com.io7m.cardant.database.postgres.CAPGDatabases;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
 import com.io7m.jmulticlose.core.ClosingResourceFailedException;
@@ -45,6 +47,7 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.time.OffsetDateTime.now;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -148,19 +151,27 @@ public final class CADatabaseExtension
         Locale.getDefault(),
         "postgres",
         "12345678",
+        "12345678",
+        Optional.of("12345678"),
         CONTAINER.getHost(),
         CONTAINER.getFirstMappedPort().intValue(),
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
         CADatabaseUpgrade.UPGRADE_DATABASE,
-        Clock.systemUTC()
+        "english",
+        Clock.systemUTC(),
+        CAStrings.create(Locale.ROOT)
       );
 
     this.perTestResources = CloseableCollection.create();
     this.database =
       this.perTestResources.add(DATABASES.open(
         this.databaseConfiguration,
-        OpenTelemetry.noop(),
+        new CADatabaseTelemetry(
+          true,
+          OpenTelemetry.noop().getMeter("x"),
+          OpenTelemetry.noop().getTracer("x")
+        ),
         message -> {
 
         }

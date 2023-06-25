@@ -25,10 +25,11 @@ import com.io7m.cardant.model.CAValidityException;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageType;
 import com.io7m.cardant.security.CASecurityException;
-import com.io7m.cardant.server.controller.CAServerStrings;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.sessions.CASession;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
+import com.io7m.cardant.strings.CAStringConstantType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.opentelemetry.api.trace.Tracer;
 
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * The context for execution of a command (or set of commands in a
@@ -51,7 +53,7 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   private final UUID requestId;
   private final CADatabaseTransactionType transaction;
   private final CAServerClock clock;
-  private final CAServerStrings strings;
+  private final CAStrings strings;
   private final CASession session;
   private final String remoteHost;
   private final String remoteUserAgent;
@@ -93,7 +95,7 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     this.clock =
       inServices.requireService(CAServerClock.class);
     this.strings =
-      inServices.requireService(CAServerStrings.class);
+      inServices.requireService(CAStrings.class);
     this.tracer =
       inServices.requireService(CAServerTelemetryServiceType.class)
         .tracer();
@@ -154,6 +156,22 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   }
 
   /**
+   * Localize the given string.
+   *
+   * @param constant The string
+   * @param objects  The object arguments
+   *
+   * @return The localized string
+   */
+
+  public final String local(
+    final CAStringConstantType constant,
+    final Object... objects)
+  {
+    return this.strings.format(constant, objects);
+  }
+
+  /**
    * @return The OpenTelemetry tracer
    */
 
@@ -186,8 +204,8 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   public final CACommandExecutionFailure failFormatted(
     final int statusCode,
     final CAErrorCode errorCode,
-    final Map<String, String> attributes,
-    final String messageId,
+    final Map<CAStringConstantType, String> attributes,
+    final CAStringConstantType messageId,
     final Object... args)
   {
     return this.fail(
@@ -215,19 +233,28 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final Exception exception,
     final int statusCode,
     final CAErrorCode errorCode,
-    final Map<String, String> attributes,
-    final String messageId,
+    final Map<CAStringConstantType, String> attributes,
+    final CAStringConstantType messageId,
     final Object... args)
   {
     return new CACommandExecutionFailure(
       this.strings.format(messageId, args),
       exception,
       errorCode,
-      attributes,
+      this.localMap(attributes),
       Optional.empty(),
       this.requestId,
       statusCode
     );
+  }
+
+  private Map<String, String> localMap(
+    final Map<CAStringConstantType, String> attributes)
+  {
+    return attributes.entrySet()
+      .stream()
+      .map(e -> Map.entry(this.local(e.getKey()), e.getValue()))
+      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /**
@@ -245,12 +272,12 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final int statusCode,
     final CAErrorCode errorCode,
     final String message,
-    final Map<String, String> attributes)
+    final Map<CAStringConstantType, String> attributes)
   {
     return new CACommandExecutionFailure(
       message,
       errorCode,
-      attributes,
+      this.localMap(attributes),
       Optional.empty(),
       this.requestId,
       statusCode

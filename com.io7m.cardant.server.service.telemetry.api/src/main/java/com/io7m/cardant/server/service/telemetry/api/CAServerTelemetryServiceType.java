@@ -16,8 +16,14 @@
 
 package com.io7m.cardant.server.service.telemetry.api;
 
+import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.error_codes.CAException;
 import com.io7m.repetoir.core.RPServiceType;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.logs.Logger;
+import io.opentelemetry.api.metrics.Meter;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 
 /**
@@ -33,7 +39,56 @@ public interface CAServerTelemetryServiceType extends RPServiceType
   Tracer tracer();
 
   /**
-   * @return The OpenTelemetry instance
+   * @return The main meter
+   */
+
+  Meter meter();
+
+  /**
+   * @return The main logger
+   */
+
+  Logger logger();
+
+  /**
+   * Set the error code for the current span.
+   *
+   * @param errorCode The error code
+   */
+
+  static void setSpanErrorCode(
+    final CAErrorCode errorCode)
+  {
+    final var span = Span.current();
+    span.setAttribute("cardant.errorCode", errorCode.id());
+    span.setStatus(StatusCode.ERROR);
+  }
+
+  /**
+   * Set the error code for the current span.
+   *
+   * @param e The error code
+   */
+
+  static void recordSpanException(
+    final Throwable e)
+  {
+    final var span = Span.current();
+    if (e instanceof final CAException ex) {
+      setSpanErrorCode(ex.errorCode());
+    }
+    span.recordException(e);
+    span.setStatus(StatusCode.ERROR);
+  }
+
+  /**
+   * @return {@code true} if this telemetry is in no-op mode
+   */
+
+  boolean isNoOp();
+
+  /**
+   * @return The underlying OpenTelemetry interface
    */
 
   OpenTelemetry openTelemetry();

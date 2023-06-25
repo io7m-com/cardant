@@ -19,8 +19,12 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
@@ -47,8 +51,12 @@ import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Command;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFilePut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileSearchBegin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileSearchNext;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemCreate;
@@ -167,6 +175,18 @@ public final class CAI1ValidationCommands
     if (cmd instanceof final CAICommandRolesGet c) {
       return convertToWireCommandCAICommandRolesGet(c);
     }
+    if (cmd instanceof final CAICommandFileSearchBegin c) {
+      return convertToWireCommandCAICommandFileSearchBegin(c);
+    }
+    if (cmd instanceof final CAICommandFileSearchNext c) {
+      return convertToWireCommandCAICommandFileSearchNext(c);
+    }
+    if (cmd instanceof final CAICommandFileSearchPrevious c) {
+      return convertToWireCommandCAICommandFileSearchPrevious(c);
+    }
+    if (cmd instanceof final CAICommandFileGet c) {
+      return convertToWireCommandCAICommandFileGet(c);
+    }
 
     throw new ProtocolUncheckedException(CAI1ValidationCommon.errorProtocol(cmd));
   }
@@ -184,7 +204,7 @@ public final class CAI1ValidationCommands
   {
     return new CAI1CommandRolesAssign(
       new CBUUID(c.user()),
-      CBLists.ofCollection(c.roles(), r -> new CBString(r.value()))
+      CBLists.ofCollection(c.roles(), r -> new CBString(r.value().value()))
     );
   }
 
@@ -193,7 +213,27 @@ public final class CAI1ValidationCommands
   {
     return new CAI1CommandRolesRevoke(
       new CBUUID(c.user()),
-      CBLists.ofCollection(c.roles(), r -> new CBString(r.value()))
+      CBLists.ofCollection(c.roles(), r -> new CBString(r.value().value()))
+    );
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandFileSearchPrevious(
+    final CAICommandFileSearchPrevious c)
+  {
+    return new CAI1CommandFileSearchPrevious();
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandFileSearchNext(
+    final CAICommandFileSearchNext c)
+  {
+    return new CAI1CommandFileSearchNext();
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandFileSearchBegin(
+    final CAICommandFileSearchBegin c)
+  {
+    return new CAI1CommandFileSearchBegin(
+      CAI1ValidationCommon.convertToWireFileSearchParameters(c.parameters())
     );
   }
 
@@ -332,6 +372,12 @@ public final class CAI1ValidationCommands
     final CAICommandItemGet c)
   {
     return new CAI1CommandItemGet(new CBUUID(c.id().id()));
+  }
+
+  private static ProtocolCAIv1Type convertToWireCommandCAICommandFileGet(
+    final CAICommandFileGet c)
+  {
+    return new CAI1CommandFileGet(new CBUUID(c.id().id()));
   }
 
   private static ProtocolCAIv1Type convertToWireCommandCAICommandItemCreate(
@@ -488,6 +534,14 @@ public final class CAI1ValidationCommands
     );
   }
 
+  public static CAIMessageType convertFromWireCAI1CommandFileGet(
+    final CAI1CommandFileGet m)
+  {
+    return new CAICommandFileGet(
+      new CAFileID(m.fieldFileId().value())
+    );
+  }
+
   public static CAIMessageType convertFromWireCAI1CommandItemCreate(
     final CAI1CommandItemCreate m)
   {
@@ -608,6 +662,9 @@ public final class CAI1ValidationCommands
     if (msg instanceof final CAI1CommandRolesRevoke c) {
       return new CAI1Command.C1CommandRolesRevoke(c);
     }
+    if (msg instanceof final CAI1CommandFileGet c) {
+      return new CAI1Command.C1CommandFileGet(c);
+    }
 
     throw new IllegalStateException();
   }
@@ -632,12 +689,32 @@ public final class CAI1ValidationCommands
     return new CAICommandItemSearchPrevious();
   }
 
+  public static CAIMessageType convertFromWireCAI1CommandFileSearchBegin(
+    final CAI1CommandFileSearchBegin m)
+  {
+    return new CAICommandFileSearchBegin(
+      CAI1ValidationCommon.convertFromWireFileSearchParameters(m.fieldParameters())
+    );
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandFileSearchNext(
+    final CAI1CommandFileSearchNext m)
+  {
+    return new CAICommandFileSearchNext();
+  }
+
+  public static CAIMessageType convertFromWireCAI1CommandFileSearchPrevious(
+    final CAI1CommandFileSearchPrevious m)
+  {
+    return new CAICommandFileSearchPrevious();
+  }
+
   public static CAIMessageType convertFromWireCAI1CommandRolesAssign(
     final CAI1CommandRolesAssign m)
   {
     return new CAICommandRolesAssign(
       m.fieldUser().value(),
-      CBSets.toSet(m.fieldRoles(), x -> new MRoleName(x.value()))
+      CBSets.toSet(m.fieldRoles(), x -> MRoleName.of(x.value()))
     );
   }
 
@@ -646,7 +723,7 @@ public final class CAI1ValidationCommands
   {
     return new CAICommandRolesRevoke(
       m.fieldUser().value(),
-      CBSets.toSet(m.fieldRoles(), x -> new MRoleName(x.value()))
+      CBSets.toSet(m.fieldRoles(), x -> MRoleName.of(x.value()))
     );
   }
 

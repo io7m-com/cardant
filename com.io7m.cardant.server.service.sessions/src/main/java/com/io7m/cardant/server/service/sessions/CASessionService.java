@@ -19,13 +19,13 @@ package com.io7m.cardant.server.service.sessions;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.Scheduler;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
 import com.io7m.idstore.model.IdName;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceType;
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.metrics.ObservableLongMeasurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +34,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
+
+import static java.lang.Long.toUnsignedString;
 
 /**
  * A service to create and manage sessions.
@@ -44,54 +47,66 @@ public final class CASessionService implements RPServiceType
   private static final Logger LOG =
     LoggerFactory.getLogger(CASessionService.class);
 
-  private final ObservableLongMeasurement sessionsGauge;
   private final Cache<CASessionSecretIdentifier, CASession> sessions;
   private final ConcurrentMap<CASessionSecretIdentifier, CASession> sessionsMap;
+  private final CAMetricsServiceType metrics;
 
   /**
    * A service to create and manage sessions.
    *
-   * @param inTelemetry  The telemetry service
+   * @param inMetrics    The metrics service
    * @param inExpiration The session expiration time
-   * @param type         The session type
    */
 
   public CASessionService(
-    final OpenTelemetry inTelemetry,
-    final Duration inExpiration,
-    final String type)
+    final CAMetricsServiceType inMetrics,
+    final Duration inExpiration)
   {
+    this.metrics =
+      Objects.requireNonNull(inMetrics, "inMetrics");
+
     this.sessions =
       Caffeine.newBuilder()
         .expireAfterAccess(inExpiration)
+        .scheduler(createScheduler())
         .<CASessionSecretIdentifier, CASession>evictionListener(
           (key, val, removalCause) -> this.onSessionRemoved(removalCause))
         .build();
 
     this.sessionsMap =
       this.sessions.asMap();
+  }
 
-    final var meter =
-      inTelemetry.meterBuilder(CASessionService.class.getCanonicalName())
-        .build();
-
-    this.sessionsGauge =
-      meter.gaugeBuilder("cardant.active%sSessions".formatted(type))
-        .setDescription("Active %s sessions.".formatted(type))
-        .ofLongs()
-        .buildObserver();
+  private static Scheduler createScheduler()
+  {
+    return Scheduler.forScheduledExecutorService(
+      Executors.newSingleThreadScheduledExecutor(r -> {
+        final var thread = new Thread(r);
+        thread.setDaemon(true);
+        thread.setName(
+          "com.io7m.cardant.server.service.sessions.CASessionService[%d]"
+            .formatted(thread.getId())
+        );
+        return thread;
+      })
+    );
   }
 
   private void onSessionRemoved(
     final RemovalCause removalCause)
   {
-    final var sizeNow = this.sessions.estimatedSize();
+    final var sizeNow =
+      this.sessions.estimatedSize();
+    final var sizeMinus =
+      Math.max(0L, sizeNow - 1L);
+
     LOG.debug(
       "delete session ({}) ({} now active)",
       removalCause,
-      Long.toUnsignedString(sizeNow)
+      toUnsignedString(sizeMinus)
     );
-    this.sessionsGauge.record(sizeNow);
+
+    this.metrics.onLoginClosed(sizeMinus);
   }
 
   /**
@@ -137,10 +152,16 @@ public final class CASessionService implements RPServiceType
       "Session ID cannot already have been used."
     );
 
-    LOG.debug("{} create session", id.value());
     final var session = new CASession(id, new CAUser(userId, name, subject));
     this.sessions.put(id, session);
-    this.sessionsGauge.record(this.sessions.estimatedSize());
+
+    final var sizeNow = this.sessions.estimatedSize();
+    this.metrics.onLogin(sizeNow);
+
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("create session ({} now active)", toUnsignedString(sizeNow));
+    }
+
     return session;
   }
 
@@ -156,7 +177,6 @@ public final class CASessionService implements RPServiceType
     Objects.requireNonNull(id, "id");
 
     this.sessions.invalidate(id);
-    this.sessionsGauge.record(this.sessions.estimatedSize());
   }
 
   @Override

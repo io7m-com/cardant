@@ -31,19 +31,22 @@ module com.io7m.cardant.server.inventory.v1
   requires com.io7m.cardant.server.api;
   requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.http;
+  requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
+  requires com.io7m.cardant.server.service.health;
   requires com.io7m.cardant.server.service.idstore;
   requires com.io7m.cardant.server.service.reqlimit;
   requires com.io7m.cardant.server.service.sessions;
+  requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.verdant;
 
   requires com.io7m.idstore.user_client.api;
+  requires com.io7m.jvindicator.core;
   requires io.opentelemetry.api;
   requires jetty.servlet.api;
   requires org.eclipse.jetty.http;
   requires org.eclipse.jetty.server;
   requires org.eclipse.jetty.servlet;
-  requires com.io7m.cardant.server.service.health;
 
   exports com.io7m.cardant.server.inventory.v1;
 }

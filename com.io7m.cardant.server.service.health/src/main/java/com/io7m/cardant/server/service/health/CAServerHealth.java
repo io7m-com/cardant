@@ -18,6 +18,7 @@ package com.io7m.cardant.server.service.health;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.repetoir.core.RPServiceType;
 
@@ -36,12 +37,16 @@ public final class CAServerHealth implements RPServiceType, AutoCloseable
 {
   private final CADatabaseType database;
   private final ScheduledExecutorService executor;
+  private final CAServerTelemetryServiceType telemetry;
   private volatile String status;
 
   private CAServerHealth(
+    final CAServerTelemetryServiceType inTelemetry,
     final CADatabaseType inDatabase,
     final ScheduledExecutorService inExecutor)
   {
+    this.telemetry =
+      Objects.requireNonNull(inTelemetry, "inTelemetry");
     this.database =
       Objects.requireNonNull(inDatabase, "database");
     this.executor =
@@ -64,10 +69,19 @@ public final class CAServerHealth implements RPServiceType, AutoCloseable
 
   private void updateHealthStatus()
   {
-    try (var ignored = this.database.openConnection(CARDANT)) {
-      this.status = statusOKText();
-    } catch (final CADatabaseException e) {
-      this.status = "UNHEALTHY DATABASE (%s)".formatted(e.getMessage());
+    final var span =
+      this.telemetry.tracer()
+        .spanBuilder("CAServerHealth")
+        .startSpan();
+
+    try (var ignored1 = span.makeCurrent()) {
+      try (var ignored2 = this.database.openConnection(CARDANT)) {
+        this.status = statusOKText();
+      } catch (final CADatabaseException e) {
+        this.status = "UNHEALTHY DATABASE (%s)".formatted(e.getMessage());
+      }
+    } finally {
+      span.end();
     }
   }
 
@@ -84,6 +98,8 @@ public final class CAServerHealth implements RPServiceType, AutoCloseable
   {
     final var database =
       services.requireService(CADatabaseType.class);
+    final var telemetry =
+      services.requireService(CAServerTelemetryServiceType.class);
 
     final var executor =
       Executors.newSingleThreadScheduledExecutor(r -> {
@@ -96,7 +112,7 @@ public final class CAServerHealth implements RPServiceType, AutoCloseable
         return thread;
       });
 
-    return new CAServerHealth(database, executor);
+    return new CAServerHealth(telemetry, database, executor);
   }
 
   /**

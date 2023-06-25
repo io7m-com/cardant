@@ -19,7 +19,7 @@ package com.io7m.cardant.server.controller.inventory;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -29,6 +29,8 @@ import java.util.Map;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
  * @see CAICommandItemMetadataRemove
@@ -69,12 +71,12 @@ public final class CAICmdItemMetadataRemove
       throw context.failFormatted(
         400,
         errorNonexistent(),
-        Map.of("Item ID", itemID.displayId()),
-        "notFound"
+        Map.of(ITEM_ID, itemID.displayId()),
+        ERROR_NONEXISTENT
       );
     }
 
-    return new CAIResponseItemMetadataPut(
+    return new CAIResponseItemMetadataRemove(
       context.requestId(),
       itemOpt.get()
     );

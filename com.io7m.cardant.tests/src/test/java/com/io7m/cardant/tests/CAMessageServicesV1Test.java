@@ -18,7 +18,10 @@ package com.io7m.cardant.tests;
 
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAFileColumn;
+import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItem;
@@ -32,15 +35,19 @@ import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItems;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocations;
+import com.io7m.cardant.model.CASizeRange;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
 import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
@@ -61,6 +68,7 @@ import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
@@ -97,7 +105,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
-import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
 import static com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -200,6 +207,15 @@ public final class CAMessageServicesV1Test
   {
     final var message =
       new CAICommandItemGet(CAItemID.random());
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandFileGet()
+    throws Exception
+  {
+    final var message =
+      new CAICommandFileGet(CAFileID.random());
     assertEquals(message, this.roundTrip(message));
   }
 
@@ -556,6 +572,15 @@ public final class CAMessageServicesV1Test
   }
 
   @Test
+  public void testResponseFileGet()
+    throws Exception
+  {
+    final var message =
+      new CAIResponseFileGet(UUID.randomUUID(), FILE_0.withoutData());
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
   public void testResponseItemRemove()
     throws Exception
   {
@@ -748,6 +773,42 @@ public final class CAMessageServicesV1Test
       );
     assertEquals(message, this.roundTrip(message));
   }
+
+  @Test
+  public void testCommandFileSearchBegin()
+    throws Exception
+  {
+    final var message =
+      new CAICommandFileSearchBegin(
+        new CAFileSearchParameters(
+          Optional.of("description"),
+          Optional.of("item"),
+          Optional.of(new CASizeRange(0L, Long.MAX_VALUE)),
+          new CAFileColumnOrdering(CAFileColumn.BY_ID, true),
+          100
+        )
+      );
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandFileSearchNext()
+    throws Exception
+  {
+    final var message =
+      new CAICommandFileSearchNext();
+    assertEquals(message, this.roundTrip(message));
+  }
+
+  @Test
+  public void testCommandFileSearchPrevious()
+    throws Exception
+  {
+    final var message =
+      new CAICommandFileSearchPrevious();
+    assertEquals(message, this.roundTrip(message));
+  }
+
 
   private CAIMessageType roundTrip(
     final CAIMessageType message)

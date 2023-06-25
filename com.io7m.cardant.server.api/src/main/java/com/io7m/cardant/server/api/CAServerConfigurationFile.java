@@ -25,6 +25,7 @@ import java.util.Optional;
  * @param httpConfiguration     The HTTP configuration
  * @param databaseConfiguration The database configuration
  * @param idstoreConfiguration  The idstore server configuration
+ * @param limitsConfiguration   The limits configuration
  * @param openTelemetry         The OpenTelemetry configuration
  */
 
@@ -32,6 +33,7 @@ public record CAServerConfigurationFile(
   CAServerHTTPConfiguration httpConfiguration,
   CAServerDatabaseConfiguration databaseConfiguration,
   CAServerIdstoreConfiguration idstoreConfiguration,
+  CAServerLimitsConfiguration limitsConfiguration,
   Optional<CAServerOpenTelemetryConfiguration> openTelemetry)
 {
   /**
@@ -40,6 +42,7 @@ public record CAServerConfigurationFile(
    * @param httpConfiguration     The HTTP configuration
    * @param databaseConfiguration The database configuration
    * @param idstoreConfiguration  The idstore server configuration
+   * @param limitsConfiguration   The limits configuration
    * @param openTelemetry         The OpenTelemetry configuration
    */
 
@@ -48,6 +51,7 @@ public record CAServerConfigurationFile(
     Objects.requireNonNull(httpConfiguration, "httpConfiguration");
     Objects.requireNonNull(databaseConfiguration, "databaseConfiguration");
     Objects.requireNonNull(idstoreConfiguration, "idstoreConfiguration");
+    Objects.requireNonNull(limitsConfiguration, "limitsConfiguration");
     Objects.requireNonNull(openTelemetry, "openTelemetry");
   }
 }

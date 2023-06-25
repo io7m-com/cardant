@@ -18,6 +18,7 @@ package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.genevan.core.GenProtocolIdentifier;
 import com.io7m.genevan.core.GenProtocolVersion;
 
@@ -59,6 +60,11 @@ public final class CAHandlers1
     final CAStrings inStrings,
     final URI inBaseURI)
   {
-    return new CAHandler1(configuration, inStrings, inHttpClient, inBaseURI);
+    return new CAHandler1(
+      configuration,
+      inStrings,
+      inHttpClient,
+      inBaseURI
+    );
   }
 }

@@ -28,17 +28,13 @@ module com.io7m.cardant.server.controller
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
+  requires com.io7m.cardant.strings;
 
-  requires com.io7m.jxtrand.vanilla;
   requires com.io7m.medrina.api;
   requires com.io7m.repetoir.core;
   requires io.opentelemetry.context;
   requires org.slf4j;
 
-  opens com.io7m.cardant.server.controller.internal
-    to com.io7m.jxtrand.vanilla;
-
-  exports com.io7m.cardant.server.controller;
   exports com.io7m.cardant.server.controller.command_exec;
   exports com.io7m.cardant.server.controller.inventory;
 }

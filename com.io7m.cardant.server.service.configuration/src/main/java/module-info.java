@@ -14,8 +14,6 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
-
 /**
  * Inventory server (Server configuration service)
  */

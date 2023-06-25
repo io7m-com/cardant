@@ -21,6 +21,7 @@
 open module com.io7m.cardant.main
 {
   uses com.io7m.cardant.server.api.CAServerFactoryType;
+  uses com.io7m.cardant.shell.CAShellFactoryType;
 
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
@@ -29,13 +30,13 @@ open module com.io7m.cardant.main
   requires com.io7m.cardant.database.postgres;
   requires com.io7m.cardant.error_codes;
   requires com.io7m.cardant.model;
-  requires com.io7m.cardant.protocol.inventory;
-  requires com.io7m.cardant.protocol.inventory.cb;
   requires com.io7m.cardant.protocol.api;
-  requires com.io7m.cardant.server.inventory.v1;
+  requires com.io7m.cardant.protocol.inventory.cb;
+  requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.server.api;
   requires com.io7m.cardant.server.controller;
   requires com.io7m.cardant.server.http;
+  requires com.io7m.cardant.server.inventory.v1;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
   requires com.io7m.cardant.server.service.reqlimit;
@@ -43,6 +44,7 @@ open module com.io7m.cardant.main
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.telemetry.otp;
   requires com.io7m.cardant.server.service.verdant;
+  requires com.io7m.cardant.shell;
 
   requires com.io7m.quarrel.core;
   requires com.io7m.quarrel.ext.logback;

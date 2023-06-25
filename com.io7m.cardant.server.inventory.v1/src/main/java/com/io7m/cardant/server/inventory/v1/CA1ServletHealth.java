@@ -53,12 +53,10 @@ public final class CA1ServletHealth
     final var health =
       services.requireService(CAServerHealth.class);
 
-    return (request, information) -> {
-      return withInstrumentation(
-        services,
-        (req0, info0) -> execute(health)
-      ).execute(request, information);
-    };
+    final CAHTTPServletFunctionalCoreType main =
+      (request, information) -> execute(health);
+
+    return withInstrumentation(services, main);
   }
 
   private static CAHTTPServletResponseType execute(
