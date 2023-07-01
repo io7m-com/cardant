@@ -16,24 +16,18 @@
 
 package com.io7m.cardant.tests.shell;
 
-import com.io7m.cardant.server.api.CAServerType;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShells;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.server.CAServerExtension;
-import com.io7m.idstore.admin_client.IdAClients;
-import com.io7m.idstore.admin_client.api.IdAClientConfiguration;
-import com.io7m.idstore.admin_client.api.IdAClientCredentials;
-import com.io7m.idstore.admin_client.api.IdAClientException;
-import com.io7m.idstore.model.IdEmail;
-import com.io7m.idstore.model.IdName;
-import com.io7m.idstore.model.IdPasswordAlgorithmPBKDF2HmacSHA256;
-import com.io7m.idstore.model.IdRealName;
-import com.io7m.idstore.protocol.admin.IdACommandUserCreate;
-import com.io7m.idstore.server.api.IdServerType;
-import com.io7m.idstore.tests.extensions.IdTestExtension;
-import org.junit.jupiter.api.AfterEach;
+import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.ervilla.api.EContainerSupervisorType;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaConfiguration;
+import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.zelador.test_extension.CloseableResourcesType;
+import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -46,7 +40,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -56,14 +49,21 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(IdTestExtension.class)
-@ExtendWith(CAServerExtension.class)
-@Timeout(value = 10L)
+@Timeout(value = 30L)
+@ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
+@ErvillaConfiguration(disabledIfUnsupported = true)
 public final class CAShellIT
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CAShellIT.class);
 
+  private static UUID USER_ADMIN;
+  private static UUID USER;
+  private static CATestContainers.CAIdstoreFixture IDSTORE;
+  private static CATestContainers.CADatabaseFixture DATABASE;
+  private static Path DIRECTORY;
+  
+  private CATestContainers.CAServerFixture server;
   private CAShells shells;
   private CAShellConfiguration configuration;
   private CAFakeTerminal terminal;
@@ -74,65 +74,41 @@ public final class CAShellIT
   private Path directory;
   private volatile CAShellType shellLeaked;
 
-  private static void configureAdminAndUser(
-    final IdServerType idServer,
-    final CAServerType caServer)
+  @BeforeAll
+  public static void setupOnce(
+    final @ErvillaCloseAfterAll EContainerSupervisorType supervisor,
+    final CloseableResourcesType closeables)
     throws Exception
   {
-    idServer.close();
-    idServer.setup(
-      Optional.empty(),
-      new IdName("admin"),
-      new IdEmail("someone@example.com"),
-      new IdRealName("AM"),
-      "1234"
+    DIRECTORY =
+      Files.createTempDirectory("cardant-");
+    DATABASE =
+      CATestContainers.createDatabase(supervisor, 15433);
+    IDSTORE =
+      CATestContainers.createIdstore(
+        supervisor,
+        DIRECTORY,
+        15432,
+        51000,
+        50000,
+        50001
+      );
+
+    USER_ADMIN = IDSTORE.createUser("someone-admin");
+    USER = IDSTORE.createUser("someone");
+
+    closeables.addPerTestClassResource(
+      () -> CATestDirectories.deleteDirectory(DIRECTORY)
     );
-    idServer.start();
-
-    final var clients =
-      new IdAClients();
-    final var client =
-      clients.openSynchronousClient(new IdAClientConfiguration(Locale.ROOT));
-
-    client.loginOrElseThrow(
-      new IdAClientCredentials(
-        "admin",
-        "1234",
-        idServer.adminAPI(),
-        Map.of()),
-      IdAClientException::ofError
-    );
-
-    final var userId =
-      UUID.fromString("80189d65-7a7a-44fd-afd9-c94a2a915a0b");
-
-    client.executeOrElseThrow(
-      new IdACommandUserCreate(
-        Optional.of(userId),
-        new IdName("user"),
-        new IdRealName("User"),
-        new IdEmail("user@example.com"),
-        IdPasswordAlgorithmPBKDF2HmacSHA256.create()
-          .createHashed("1234")
-      ),
-      IdAClientException::ofError
-    );
-
-    caServer.close();
-    caServer.setUserAsAdmin(userId, new IdName("user"));
-    caServer.start();
-  }
-
-  private void waitForShell()
-    throws InterruptedException
-  {
-    this.shutDownLatch.await(3L, TimeUnit.SECONDS);
   }
 
   @BeforeEach
-  public void setup()
+  public void setupEach(
+    final CloseableResourcesType closeables)
     throws Exception
   {
+    DATABASE.reset();
+
     this.directory =
       CATestDirectories.createTempDirectory();
 
@@ -152,21 +128,45 @@ public final class CAShellIT
     this.startupLatch = new CountDownLatch(1);
     this.shutDownLatch = new CountDownLatch(1);
     this.exitCode = 0;
-  }
 
-  @AfterEach
-  public void tearDown()
-    throws Exception
-  {
-    this.executor.shutdown();
-    this.executor.awaitTermination(3L, TimeUnit.SECONDS);
+    this.server =
+      closeables.addPerTestResource(
+        CATestContainers.createServer(
+          IDSTORE,
+          DATABASE,
+          30000
+        )
+      );
+
+    this.server.setUserAsAdmin(USER_ADMIN, "someone-admin");
+
+    closeables.addPerTestResource(
+      () -> CATestDirectories.deleteDirectory(this.directory)
+    );
+    closeables.addPerTestResource(
+      () -> {
+        this.executor.shutdown();
+        this.executor.awaitTermination(3L, TimeUnit.SECONDS);
+      }
+    );
 
     final var out =
       this.terminal.terminalProducedOutput();
 
     System.out.println(out.toString(StandardCharsets.UTF_8));
+  }
 
-    CATestDirectories.deleteDirectory(this.directory);
+  private void waitForShell()
+    throws InterruptedException
+  {
+    this.shutDownLatch.await(3L, TimeUnit.SECONDS);
+  }
+
+  private String uri()
+  {
+    return this.server.server()
+      .inventoryAPI()
+      .toString();
   }
 
   @Test
@@ -229,16 +229,13 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellLogin(
-    final IdServerType idServer,
-    final CAServerType caServer)
+  public void testShellLogin()
     throws Exception
   {
-    configureAdminAndUser(idServer, caServer);
     this.startShell();
 
     final var w = this.terminal.sendInputToTerminalWriter();
-    w.printf("login %s admin 1234%n", idServer.adminAPI());
+    w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println("self");
     w.println("logout");
     w.flush();
@@ -249,12 +246,9 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellSetFailure(
-    final IdServerType idServer,
-    final CAServerType caServer)
+  public void testShellSetFailure()
     throws Exception
   {
-    configureAdminAndUser(idServer, caServer);
     this.startShell();
 
     final var w = this.terminal.sendInputToTerminalWriter();
@@ -268,18 +262,14 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellLocations(
-    final IdServerType idServer,
-    final CAServerType caServer)
+  public void testShellLocations()
     throws Exception
   {
-    configureAdminAndUser(idServer, caServer);
-
     this.startShell();
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
-    w.printf("login %s user 1234%n", caServer.inventoryAPI());
+    w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
               "--name 'Location 0'");
     w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
@@ -295,18 +285,14 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellCreateLocationItemsWorkflow(
-    final IdServerType idServer,
-    final CAServerType caServer)
+  public void testShellCreateLocationItemsWorkflow()
     throws Exception
   {
-    configureAdminAndUser(idServer, caServer);
-
     this.startShell();
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
-    w.printf("login %s user 1234%n", caServer.inventoryAPI());
+    w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
               "--name 'Location 0'");
     w.println("location-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
@@ -350,13 +336,9 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellFileUploadDownload(
-    final IdServerType idServer,
-    final CAServerType caServer)
+  public void testShellFileUploadDownload()
     throws Exception
   {
-    configureAdminAndUser(idServer, caServer);
-
     this.startShell();
 
     final var fileNameUp =
@@ -368,7 +350,7 @@ public final class CAShellIT
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
-    w.printf("login %s user 1234%n", caServer.inventoryAPI());
+    w.printf("login %s someone-admin 12345678%n", this.uri());
 
     w.println(
       "file-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --file "
@@ -389,13 +371,9 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellFileSearch(
-    final IdServerType idServer,
-    final CAServerType caServer)
+  public void testShellFileSearch()
     throws Exception
   {
-    configureAdminAndUser(idServer, caServer);
-
     this.startShell();
 
     final var fileNameUp =
@@ -405,7 +383,7 @@ public final class CAShellIT
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
-    w.printf("login %s user 1234%n", caServer.inventoryAPI());
+    w.printf("login %s someone-admin 12345678%n", this.uri());
 
     w.println(
       "file-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --file "

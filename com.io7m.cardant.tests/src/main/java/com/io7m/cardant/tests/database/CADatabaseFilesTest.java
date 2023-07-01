@@ -16,48 +16,83 @@
 
 package com.io7m.cardant.tests.database;
 
-import com.github.dockerjava.zerodep.shaded.org.apache.commons.codec.binary.Hex;
+import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
+import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAFileColumn;
 import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileSearchParameters;
-import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CASizeRange;
-import org.jetbrains.annotations.NotNull;
+import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.ervilla.api.EContainerSupervisorType;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaConfiguration;
+import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.zelador.test_extension.CloseableResourcesType;
+import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Optional;
 
+import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers(disabledWithoutDocker = true)
-@ExtendWith(CADatabaseExtension.class)
+@ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
+@ErvillaConfiguration(disabledIfUnsupported = true)
 public final class CADatabaseFilesTest
 {
+  private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
+  private CADatabaseConnectionType connection;
+  private CADatabaseTransactionType transaction;
+  private CADatabaseType database;
+
+  @BeforeAll
+  public static void setupOnce(
+    final @ErvillaCloseAfterAll EContainerSupervisorType containers)
+    throws Exception
+  {
+    DATABASE_FIXTURE =
+      CATestContainers.createDatabase(containers, 15432);
+  }
+
+  @BeforeEach
+  public void setup(
+    final CloseableResourcesType closeables)
+    throws Exception
+  {
+    DATABASE_FIXTURE.reset();
+
+    this.database =
+      closeables.addPerTestResource(DATABASE_FIXTURE.createDatabase());
+    this.connection =
+      closeables.addPerTestResource(this.database.openConnection(CARDANT));
+    this.transaction =
+      closeables.addPerTestResource(this.connection.openTransaction());
+  }
+
   /**
    * Creating files works.
-   *
-   * @param transaction The transaction
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileCreate(
-    final CADatabaseTransactionType transaction)
+  public void testFileCreate()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file = createFile(0);
 
@@ -82,18 +117,15 @@ public final class CADatabaseFilesTest
   /**
    * Deleting files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileDelete(
-    final CADatabaseTransactionType transaction)
+  public void testFileDelete()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file = createFile(0);
 
@@ -113,18 +145,15 @@ public final class CADatabaseFilesTest
   /**
    * Searching for files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileSearch0(
-    final CADatabaseTransactionType transaction)
+  public void testFileSearch0()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
@@ -134,7 +163,7 @@ public final class CADatabaseFilesTest
     q.filePut(file1);
     q.filePut(file2);
 
-    transaction.commit();
+    this.transaction.commit();
 
     final var s =
       q.fileSearch(new CAFileSearchParameters(
@@ -157,18 +186,15 @@ public final class CADatabaseFilesTest
   /**
    * Searching for files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileSearch1(
-    final CADatabaseTransactionType transaction)
+  public void testFileSearch1()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
@@ -178,7 +204,7 @@ public final class CADatabaseFilesTest
     q.filePut(file1);
     q.filePut(file2);
 
-    transaction.commit();
+    this.transaction.commit();
 
     final var s =
       q.fileSearch(new CAFileSearchParameters(
@@ -201,18 +227,15 @@ public final class CADatabaseFilesTest
   /**
    * Searching for files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileSearch2(
-    final CADatabaseTransactionType transaction)
+  public void testFileSearch2()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
@@ -222,7 +245,7 @@ public final class CADatabaseFilesTest
     q.filePut(file1);
     q.filePut(file2);
 
-    transaction.commit();
+    this.transaction.commit();
 
     final var s =
       q.fileSearch(new CAFileSearchParameters(
@@ -243,18 +266,15 @@ public final class CADatabaseFilesTest
   /**
    * Searching for files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileSearch3(
-    final CADatabaseTransactionType transaction)
+  public void testFileSearch3()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
@@ -264,7 +284,7 @@ public final class CADatabaseFilesTest
     q.filePut(file1);
     q.filePut(file2);
 
-    transaction.commit();
+    this.transaction.commit();
 
     final var s =
       q.fileSearch(new CAFileSearchParameters(
@@ -285,18 +305,15 @@ public final class CADatabaseFilesTest
   /**
    * Searching for files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileSearch4(
-    final CADatabaseTransactionType transaction)
+  public void testFileSearch4()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
@@ -306,7 +323,7 @@ public final class CADatabaseFilesTest
     q.filePut(file1);
     q.filePut(file2);
 
-    transaction.commit();
+    this.transaction.commit();
 
     final var s =
       q.fileSearch(new CAFileSearchParameters(
@@ -326,18 +343,15 @@ public final class CADatabaseFilesTest
   /**
    * Searching for files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileSearch5(
-    final CADatabaseTransactionType transaction)
+  public void testFileSearch5()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
@@ -347,7 +361,7 @@ public final class CADatabaseFilesTest
     q.filePut(file1);
     q.filePut(file2);
 
-    transaction.commit();
+    this.transaction.commit();
 
     final var s =
       q.fileSearch(new CAFileSearchParameters(
@@ -368,18 +382,15 @@ public final class CADatabaseFilesTest
   /**
    * Searching for files works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileSearch6(
-    final CADatabaseTransactionType transaction)
+  public void testFileSearch6()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesFilesType.class);
+      this.transaction.queries(CADatabaseQueriesFilesType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
@@ -389,7 +400,7 @@ public final class CADatabaseFilesTest
     q.filePut(file1);
     q.filePut(file2);
 
-    transaction.commit();
+    this.transaction.commit();
 
     final var s =
       q.fileSearch(new CAFileSearchParameters(
@@ -420,7 +431,7 @@ public final class CADatabaseFilesTest
     final var hash =
       digest.digest(contentBytes);
     final var hashS =
-      Hex.encodeHexString(hash);
+      HexFormat.of().formatHex(hash);
 
     return new CAFileWithData(
       CAFileID.random(),

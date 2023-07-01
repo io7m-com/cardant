@@ -14,44 +14,69 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.tests.server.v1;
 
-import com.io7m.cardant.server.api.CAServerType;
-import com.io7m.cardant.tests.server.CAServerExtension;
-import com.io7m.idstore.tests.extensions.IdTestExtension;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+package com.io7m.cardant.tests.containers;
 
+import com.io7m.ervilla.api.EReadyCheckType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-/**
- * The health endpoint.
- */
-
-@ExtendWith({IdTestExtension.class, CAServerExtension.class})
-public final class CAI1ServerTest
+public final class CAIdstoreHealthcheck implements EReadyCheckType
 {
-  @Test
-  public void testHealth(
-    final CAServerType server)
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CAIdstoreHealthcheck.class);
+
+  private final String address;
+  private final int port;
+
+  public CAIdstoreHealthcheck(
+    final String inAddress,
+    final int inPort)
+  {
+    this.address = inAddress;
+    this.port = inPort;
+  }
+
+  @Override
+  public boolean isReady()
     throws Exception
   {
     final var client =
       HttpClient.newHttpClient();
 
+    final var endpoint =
+      URI.create(
+        String.format(
+          "http://%s:%d/health",
+          this.address,
+          Integer.valueOf(this.port)
+        )
+      );
+
+    LOG.debug("Checking {}", endpoint);
+
     final var request =
-      HttpRequest.newBuilder(server.inventoryAPI().resolve("/health"))
-        .GET()
+      HttpRequest.newBuilder(endpoint)
         .build();
 
     final var response =
       client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    assertEquals(200, response.statusCode());
-    assertEquals("OK", response.body());
+    final var body =
+      response.body()
+        .trim();
+
+    LOG.debug(
+      "Server said: {} {}",
+      Integer.valueOf(response.statusCode()),
+      body
+    );
+
+    return response.statusCode() == 200 && "OK".equals(body);
   }
 }

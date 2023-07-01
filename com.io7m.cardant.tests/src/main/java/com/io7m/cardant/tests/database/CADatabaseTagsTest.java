@@ -16,37 +16,74 @@
 
 package com.io7m.cardant.tests.database;
 
+import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTagsType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
+import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
+import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.ervilla.api.EContainerSupervisorType;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaConfiguration;
+import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.zelador.test_extension.CloseableResourcesType;
+import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.TreeSet;
 
+import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers(disabledWithoutDocker = true)
-@ExtendWith(CADatabaseExtension.class)
+@ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
+@ErvillaConfiguration(disabledIfUnsupported = true)
 public final class CADatabaseTagsTest
 {
+  private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
+  private CADatabaseConnectionType connection;
+  private CADatabaseTransactionType transaction;
+  private CADatabaseType database;
+
+  @BeforeAll
+  public static void setupOnce(
+    final @ErvillaCloseAfterAll EContainerSupervisorType containers)
+    throws Exception
+  {
+    DATABASE_FIXTURE =
+      CATestContainers.createDatabase(containers, 15432);
+  }
+
+  @BeforeEach
+  public void setup(
+    final CloseableResourcesType closeables)
+    throws Exception
+  {
+    DATABASE_FIXTURE.reset();
+
+    this.database =
+      closeables.addPerTestResource(DATABASE_FIXTURE.createDatabase());
+    this.connection =
+      closeables.addPerTestResource(this.database.openConnection(CARDANT));
+    this.transaction =
+      closeables.addPerTestResource(this.connection.openTransaction());
+  }
+
   /**
    * The tag list is empty.
-   *
-   * @param transaction The transaction
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testTagListEmpty(
-    final CADatabaseTransactionType transaction)
+  public void testTagListEmpty()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesTagsType.class);
+      this.transaction.queries(CADatabaseQueriesTagsType.class);
 
     assertEquals(new TreeSet<>(), q.tagList());
   }
@@ -54,18 +91,15 @@ public final class CADatabaseTagsTest
   /**
    * The tag list contains created tags.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testTagListCreate(
-    final CADatabaseTransactionType transaction)
+  public void testTagListCreate()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesTagsType.class);
+      this.transaction.queries(CADatabaseQueriesTagsType.class);
 
     final var ta = new CATag(CATagID.random(), "a");
     q.tagPut(ta);
@@ -88,18 +122,15 @@ public final class CADatabaseTagsTest
   /**
    * The tag list does not contain deleted tags.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testTagListDelete(
-    final CADatabaseTransactionType transaction)
+  public void testTagListDelete()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesTagsType.class);
+      this.transaction.queries(CADatabaseQueriesTagsType.class);
 
     final var ta = new CATag(CATagID.random(), "a");
     q.tagPut(ta);
@@ -120,18 +151,15 @@ public final class CADatabaseTagsTest
   /**
    * Updating tags works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testTagUpdate(
-    final CADatabaseTransactionType transaction)
+  public void testTagUpdate()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesTagsType.class);
+      this.transaction.queries(CADatabaseQueriesTagsType.class);
 
     final var id = CATagID.random();
 

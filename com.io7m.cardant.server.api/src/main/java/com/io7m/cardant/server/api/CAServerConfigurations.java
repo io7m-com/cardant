@@ -71,7 +71,6 @@ public final class CAServerConfigurations
 
     final var databaseConfiguration =
       new CADatabaseConfiguration(
-        locale,
         fileDbConfig.ownerRoleName(),
         fileDbConfig.ownerRolePassword(),
         fileDbConfig.workerRolePassword(),

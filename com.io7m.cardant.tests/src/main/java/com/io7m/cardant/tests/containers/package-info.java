@@ -18,4 +18,4 @@
  * Test suite.
  */
 
-package com.io7m.cardant.tests;
+package com.io7m.cardant.tests.containers;

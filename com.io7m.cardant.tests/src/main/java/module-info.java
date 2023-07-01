@@ -51,20 +51,30 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
 
-  requires com.io7m.jmulticlose.core;
-  requires com.io7m.quarrel.core;
-  requires com.io7m.quarrel.ext.logback;
+  requires com.io7m.ervilla.api;
+  requires com.io7m.ervilla.native_exec;
+  requires com.io7m.ervilla.postgres;
+  requires com.io7m.ervilla.test_extension;
+  requires com.io7m.idstore.admin_client.api;
+  requires com.io7m.idstore.admin_client;
+  requires com.io7m.junreachable.core;
   requires com.io7m.quarrel.ext.xstructural;
+  requires com.io7m.repetoir.core;
   requires com.io7m.verdant.core.cb;
   requires com.io7m.verdant.core;
+  requires com.io7m.zelador.test_extension;
+  requires io.opentelemetry.api;
   requires jakarta.mail;
   requires java.net.http;
   requires java.sql;
-  requires jul.to.slf4j;
-  requires org.apache.commons.io;
-  requires org.eclipse.jetty.server;
-  requires org.eclipse.jetty.servlet;
+  requires java.xml;
+  requires jetty.servlet.api;
+  requires net.bytebuddy.agent;
+  requires net.bytebuddy;
+  requires net.jqwik.api;
+  requires org.jline;
   requires org.mockito;
+  requires org.postgresql.jdbc;
   requires org.slf4j;
 
   requires transitive org.junit.jupiter.api;

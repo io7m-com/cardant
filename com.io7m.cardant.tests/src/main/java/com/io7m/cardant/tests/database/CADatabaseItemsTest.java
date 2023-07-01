@@ -16,10 +16,12 @@
 
 package com.io7m.cardant.tests.database;
 
+import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
+import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
@@ -33,9 +35,17 @@ import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDesc
 import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.ervilla.api.EContainerSupervisorType;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaConfiguration;
+import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.zelador.test_extension.CloseableResourcesType;
+import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +55,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
@@ -54,25 +65,51 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Testcontainers(disabledWithoutDocker = true)
-@ExtendWith(CADatabaseExtension.class)
+@ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
+@ErvillaConfiguration(disabledIfUnsupported = true)
 public final class CADatabaseItemsTest
 {
+  private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
+  private CADatabaseConnectionType connection;
+  private CADatabaseTransactionType transaction;
+  private CADatabaseType database;
+
+  @BeforeAll
+  public static void setupOnce(
+    final @ErvillaCloseAfterAll EContainerSupervisorType containers)
+    throws Exception
+  {
+    DATABASE_FIXTURE =
+      CATestContainers.createDatabase(containers, 15432);
+  }
+
+  @BeforeEach
+  public void setup(
+    final CloseableResourcesType closeables)
+    throws Exception
+  {
+    DATABASE_FIXTURE.reset();
+
+    this.database =
+      closeables.addPerTestResource(DATABASE_FIXTURE.createDatabase());
+    this.connection =
+      closeables.addPerTestResource(this.database.openConnection(CARDANT));
+    this.transaction =
+      closeables.addPerTestResource(this.connection.openTransaction());
+  }
+
   /**
    * Creating items works.
-   *
-   * @param transaction The transaction
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemCreate(
-    final CADatabaseTransactionType transaction)
+  public void testItemCreate()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
 
     final var id0 =
       CAItemID.random();
@@ -87,18 +124,15 @@ public final class CADatabaseItemsTest
   /**
    * Setting item names works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemSetName(
-    final CADatabaseTransactionType transaction)
+  public void testItemSetName()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
 
     final var id0 =
       CAItemID.random();
@@ -117,18 +151,15 @@ public final class CADatabaseItemsTest
   /**
    * Deleting items works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemDelete(
-    final CADatabaseTransactionType transaction)
+  public void testItemDelete()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
 
     final var id0 =
       CAItemID.random();
@@ -143,18 +174,15 @@ public final class CADatabaseItemsTest
   /**
    * Marking items as deleted works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemDeleteMarkOnly(
-    final CADatabaseTransactionType transaction)
+  public void testItemDeleteMarkOnly()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
 
     final var id0 =
       CAItemID.random();
@@ -169,20 +197,17 @@ public final class CADatabaseItemsTest
   /**
    * Listing items by descendants works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemSearchLocationDescendants(
-    final CADatabaseTransactionType transaction)
+  public void testItemSearchLocationDescendants()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var loc0 =
       new CALocation(
@@ -250,7 +275,7 @@ public final class CADatabaseItemsTest
       }
     }
 
-    transaction.commit();
+    this.transaction.commit();
 
     /*
      * Searching for location 0 will return everything.
@@ -394,20 +419,17 @@ public final class CADatabaseItemsTest
   /**
    * Listing items by exact location works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemSearchLocationExact(
-    final CADatabaseTransactionType transaction)
+  public void testItemSearchLocationExact()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var loc0 =
       new CALocation(
@@ -475,7 +497,7 @@ public final class CADatabaseItemsTest
       }
     }
 
-    transaction.commit();
+    this.transaction.commit();
 
     /*
      * Searching for location 0 will return 31 items.
@@ -619,20 +641,17 @@ public final class CADatabaseItemsTest
   /**
    * Listing items by all locations works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemSearchLocationAll(
-    final CADatabaseTransactionType transaction)
+  public void testItemSearchLocationAll()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var loc0 =
       new CALocation(
@@ -700,7 +719,7 @@ public final class CADatabaseItemsTest
       }
     }
 
-    transaction.commit();
+    this.transaction.commit();
 
     /*
      * Searching for location 0 will return 31 items.
@@ -752,18 +771,15 @@ public final class CADatabaseItemsTest
   /**
    * Listing items by all locations works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemSearchByName(
-    final CADatabaseTransactionType transaction)
+  public void testItemSearchByName()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
 
     final var items = new ArrayList<CAItemID>();
     for (int index = 0; index < 100; ++index) {
@@ -799,20 +815,17 @@ public final class CADatabaseItemsTest
   /**
    * Adding items work.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemRepositAdd(
-    final CADatabaseTransactionType transaction)
+  public void testItemRepositAdd()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var itemId = CAItemID.random();
     qi.itemCreate(itemId);
@@ -846,20 +859,17 @@ public final class CADatabaseItemsTest
   /**
    * Removing items work.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemRepositRemove(
-    final CADatabaseTransactionType transaction)
+  public void testItemRepositRemove()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var itemId = CAItemID.random();
     qi.itemCreate(itemId);
@@ -899,20 +909,17 @@ public final class CADatabaseItemsTest
   /**
    * It's not possible to remove too many items.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemRepositRemoveTooMany(
-    final CADatabaseTransactionType transaction)
+  public void testItemRepositRemoveTooMany()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var itemId = CAItemID.random();
     qi.itemCreate(itemId);
@@ -947,20 +954,17 @@ public final class CADatabaseItemsTest
   /**
    * Moving items works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemRepositMove(
-    final CADatabaseTransactionType transaction)
+  public void testItemRepositMove()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var itemId = CAItemID.random();
     qi.itemCreate(itemId);
@@ -991,20 +995,17 @@ public final class CADatabaseItemsTest
   /**
    * It's not possible to move more items than exist.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testItemRepositMoveTooMany(
-    final CADatabaseTransactionType transaction)
+  public void testItemRepositMoveTooMany()
     throws Exception
   {
     final var qi =
-      transaction.queries(CADatabaseQueriesItemsType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.class);
     final var ql =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var itemId = CAItemID.random();
     qi.itemCreate(itemId);
@@ -1028,7 +1029,11 @@ public final class CADatabaseItemsTest
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
-        qi.itemReposit(new CAItemRepositMove(itemId, loc0.id(), loc1.id(), 101L));
+        qi.itemReposit(new CAItemRepositMove(
+          itemId,
+          loc0.id(),
+          loc1.id(),
+          101L));
       });
 
     assertEquals(errorRemoveTooManyItems(), ex.errorCode());

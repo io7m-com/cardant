@@ -26,21 +26,16 @@ import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
-import com.io7m.cardant.server.api.CAServerType;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.server.CAServerExtension;
-import com.io7m.idstore.database.api.IdDatabaseException;
-import com.io7m.idstore.database.api.IdDatabaseRole;
-import com.io7m.idstore.database.api.IdDatabaseUsersQueriesType;
-import com.io7m.idstore.model.IdEmail;
+import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.ervilla.api.EContainerSupervisorType;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaConfiguration;
+import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
-import com.io7m.idstore.model.IdPasswordAlgorithmPBKDF2HmacSHA256;
-import com.io7m.idstore.model.IdPasswordException;
-import com.io7m.idstore.model.IdRealName;
-import com.io7m.idstore.server.api.IdServerException;
-import com.io7m.idstore.server.api.IdServerType;
-import com.io7m.idstore.tests.extensions.IdTestExtension;
-import org.junit.jupiter.api.AfterEach;
+import com.io7m.zelador.test_extension.CloseableResourcesType;
+import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -52,10 +47,8 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
-import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
@@ -67,65 +60,52 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("integration")
 @Tag("client")
-@ExtendWith({IdTestExtension.class, CAServerExtension.class})
+@ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
+@ErvillaConfiguration(disabledIfUnsupported = true)
 public final class CAClientIT
 {
-  private CAClients clients;
-  private CAClientSynchronousType client;
-  private Path directory;
-  private Path downloads;
+  private static UUID USER_ADMIN;
+  private static UUID USER;
+  private static CATestContainers.CAIdstoreFixture IDSTORE;
+  private static CATestContainers.CADatabaseFixture DATABASE;
+  private static Path DIRECTORY;
+  private CATestContainers.CAServerFixture server;
 
-  private static UUID createUser(
-    final IdServerType idstore,
-    final UUID adminId,
-    final String user)
-    throws IdDatabaseException, IdPasswordException
+  @BeforeAll
+  public static void setupOnce(
+    final @ErvillaCloseAfterAll EContainerSupervisorType supervisor,
+    final CloseableResourcesType closeables)
+    throws Exception
   {
-    try (var connection =
-           idstore.database()
-             .openConnection(IdDatabaseRole.IDSTORE)) {
-      try (var transaction = connection.openTransaction()) {
-        transaction.adminIdSet(adminId);
-        final var users =
-          transaction.queries(IdDatabaseUsersQueriesType.class);
-        final var userId = UUID.randomUUID();
-        users.userCreate(
-          userId,
-          new IdName(user),
-          new IdRealName("U"),
-          new IdEmail(user + "@example.com"),
-          OffsetDateTime.now(),
-          IdPasswordAlgorithmPBKDF2HmacSHA256.create()
-            .createHashed("12345678")
-        );
-        transaction.commit();
-        return userId;
-      }
-    }
-  }
+    DIRECTORY =
+      Files.createTempDirectory("cardant-");
+    DATABASE =
+      CATestContainers.createDatabase(supervisor, 15433);
+    IDSTORE =
+      CATestContainers.createIdstore(
+        supervisor,
+        DIRECTORY,
+        15432,
+        51000,
+        50000,
+        50001
+      );
 
-  private static UUID createAdmin(
-    final IdServerType idstore)
-    throws IdServerException
-  {
-    final var adminId = UUID.randomUUID();
+    USER_ADMIN = IDSTORE.createUser("someone-admin");
+    USER = IDSTORE.createUser("someone");
 
-    idstore.close();
-    idstore.setup(
-      Optional.of(adminId),
-      new IdName("admin"),
-      new IdEmail("someone@example.com"),
-      new IdRealName("AM"),
-      "12345678"
+    closeables.addPerTestClassResource(
+      () -> CATestDirectories.deleteDirectory(DIRECTORY)
     );
-    idstore.start();
-    return adminId;
   }
 
   @BeforeEach
-  public void setup()
+  public void setupEach(
+    final CloseableResourcesType closeables)
     throws Exception
   {
+    DATABASE.reset();
+
     this.directory =
       CATestDirectories.createTempDirectory();
     this.downloads =
@@ -134,42 +114,46 @@ public final class CAClientIT
     this.clients =
       new CAClients();
     this.client =
-      this.clients.openSynchronousClient(
-        new CAClientConfiguration(Locale.ROOT, Clock.systemUTC()));
+      closeables.addPerTestResource(
+        this.clients.openSynchronousClient(
+          new CAClientConfiguration(Locale.ROOT, Clock.systemUTC())
+        )
+      );
+
+    this.server =
+      closeables.addPerTestResource(
+        CATestContainers.createServer(
+          IDSTORE,
+          DATABASE,
+          30000
+        )
+      );
+
+    this.server.setUserAsAdmin(USER_ADMIN, "someone-admin");
+
+    closeables.addPerTestResource(
+      () -> CATestDirectories.deleteDirectory(this.directory)
+    );
   }
 
-  @AfterEach
-  public void tearDown()
-    throws Exception
-  {
-    this.client.close();
-    CATestDirectories.deleteDirectory(this.directory);
-  }
+  private CAClients clients;
+  private CAClientSynchronousType client;
+  private Path directory;
+  private Path downloads;
 
   /**
    * Logging in fails if the user does not exist.
-   *
-   * @param idstore The idstore server
-   * @param server  The server
    */
 
   @Test
-  public void testLoginNoSuchUser(
-    final IdServerType idstore,
-    final CAServerType server)
+  public void testLoginNoSuchUser()
   {
     final var ex =
       assertThrows(CAClientException.class, () -> {
         this.client.loginOrElseThrow(
           new CAClientCredentials(
-            server.configuration()
-              .inventoryApiAddress()
-              .externalAddress()
-              .getHost(),
-            server.configuration()
-              .inventoryApiAddress()
-              .externalAddress()
-              .getPort(),
+            "localhost",
+            51000,
             false,
             new IdName("nonexistent"),
             "12345678",
@@ -185,37 +169,24 @@ public final class CAClientIT
   /**
    * Logging in succeeds if the user exists.
    *
-   * @param idstore The idstore server
-   * @param server  The server
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testLoginOK(
-    final IdServerType idstore,
-    final CAServerType server)
+  public void testLoginOK()
     throws Exception
   {
-    final var adminId =
-      createAdmin(idstore);
-    final var userId =
-      createUser(idstore, adminId, "someone-else");
-
-    this.login(server, new IdName("someone-else"));
+    this.login(new IdName("someone"));
   }
 
   /**
    * The version endpoint returns something sensible.
    *
-   * @param server The server
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testServerVersionEndpoint(
-    final CAServerType server)
+  public void testServerVersionEndpoint()
     throws Exception
   {
     final var httpClient =
@@ -223,9 +194,8 @@ public final class CAClientIT
 
     final var request =
       HttpRequest.newBuilder(
-          server.configuration()
-            .inventoryApiAddress()
-            .externalAddress()
+          this.server.server()
+            .inventoryAPI()
             .resolve("/version")
             .normalize()
         ).GET()
@@ -246,30 +216,14 @@ public final class CAClientIT
   /**
    * Uploading a file works.
    *
-   * @param idstore The idstore server
-   * @param server  The server
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileUploadOK(
-    final IdServerType idstore,
-    final CAServerType server)
+  public void testFileUploadOK()
     throws Exception
   {
-    final var adminId =
-      createAdmin(idstore);
-    final var userName =
-      new IdName("someone-else");
-    final var userId =
-      createUser(idstore, adminId, userName.value());
-
-    server.close();
-    server.setUserAsAdmin(userId, userName);
-    server.start();
-
-    this.login(server, userName);
+    this.login(new IdName("someone-admin"));
 
     final var file = this.directory.resolve("data.txt");
     Files.writeString(file, "HELLO!");
@@ -320,26 +274,14 @@ public final class CAClientIT
   /**
    * Uploading a file fails without permissions.
    *
-   * @param idstore The idstore server
-   * @param server  The server
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileUploadNotPermitted(
-    final IdServerType idstore,
-    final CAServerType server)
+  public void testFileUploadNotPermitted()
     throws Exception
   {
-    final var adminId =
-      createAdmin(idstore);
-    final var userName =
-      new IdName("someone-else");
-    final var userId =
-      createUser(idstore, adminId, userName.value());
-
-    this.login(server, userName);
+    this.login(new IdName("someone"));
 
     final var file = this.directory.resolve("data.txt");
     Files.writeString(file, "HELLO!");
@@ -364,36 +306,14 @@ public final class CAClientIT
   /**
    * Downloading a file fails without permissions.
    *
-   * @param idstore The idstore server
-   * @param server  The server
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testFileDownloadNotPermitted(
-    final IdServerType idstore,
-    final CAServerType server)
+  public void testFileDownloadNotPermitted()
     throws Exception
   {
-    final var adminId =
-      createAdmin(idstore);
-
-    final var userName0 =
-      new IdName("someone-else0");
-    final var userId0 =
-      createUser(idstore, adminId, userName0.value());
-
-    final var userName1 =
-      new IdName("someone-else1");
-    final var userId1 =
-      createUser(idstore, adminId, userName1.value());
-
-    server.close();
-    server.setUserAsAdmin(userId0, userName0);
-    server.start();
-
-    this.login(server, userName0);
+    this.login(new IdName("someone-admin"));
 
     final var file = this.directory.resolve("data.txt");
     final var fileTmp = this.directory.resolve("data.txt");
@@ -409,7 +329,7 @@ public final class CAClientIT
       }
     );
 
-    this.login(server, userName1);
+    this.login(new IdName("someone"));
 
     {
       final var ex =
@@ -443,26 +363,14 @@ public final class CAClientIT
   /**
    * Sending garbage results in errors.
    *
-   * @param idstore The idstore server
-   * @param server  The server
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testGarbage(
-    final IdServerType idstore,
-    final CAServerType server)
+  public void testGarbage()
     throws Exception
   {
-    final var adminId =
-      createAdmin(idstore);
-    final var userName =
-      new IdName("someone-else");
-    final var userId =
-      createUser(idstore, adminId, userName.value());
-
-    this.login(server, userName);
+    this.login(new IdName("someone-admin"));
 
     final var ex =
       assertThrows(CAClientException.class, () -> {
@@ -475,26 +383,14 @@ public final class CAClientIT
   /**
    * Sending invalid messages results in errors.
    *
-   * @param idstore The idstore server
-   * @param server  The server
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testInvalid(
-    final IdServerType idstore,
-    final CAServerType server)
+  public void testInvalid()
     throws Exception
   {
-    final var adminId =
-      createAdmin(idstore);
-    final var userName =
-      new IdName("someone-else");
-    final var userId =
-      createUser(idstore, adminId, userName.value());
-
-    this.login(server, userName);
+    this.login(new IdName("someone-admin"));
 
     final var ex =
       assertThrows(CAClientException.class, () -> {
@@ -505,19 +401,16 @@ public final class CAClientIT
   }
 
   private void login(
-    final CAServerType server,
     final IdName userName)
     throws CAClientException, InterruptedException
   {
     this.client.loginOrElseThrow(
       new CAClientCredentials(
-        server.configuration()
-          .inventoryApiAddress()
-          .externalAddress()
+        this.server.server()
+          .inventoryAPI()
           .getHost(),
-        server.configuration()
-          .inventoryApiAddress()
-          .externalAddress()
+        this.server.server()
+          .inventoryAPI()
           .getPort(),
         false,
         userName,

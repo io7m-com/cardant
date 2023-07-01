@@ -16,7 +16,7 @@
   <packaging>jar</packaging>
   <name>com.io7m.cardant.client.api</name>
   <description>Inventory system (Client API)</description>
-  <url>https://www.github.com/io7m/cardant</url>
+  <url>https://www.io7m.com/software/cardant</url>
 
   <dependencies>
     <dependency>

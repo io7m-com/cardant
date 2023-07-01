@@ -16,16 +16,14 @@
 
 package com.io7m.cardant.server.basic.internal;
 
-import com.io7m.cardant.database.api.CADatabaseConfiguration;
-import com.io7m.cardant.database.api.CADatabaseCreate;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
-import com.io7m.cardant.database.api.CADatabaseUpgrade;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerException;
 import com.io7m.cardant.server.api.CAServerType;
@@ -54,6 +52,7 @@ import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceDirectory;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.StatusCode;
 import org.eclipse.jetty.server.Server;
 
 import java.time.Duration;
@@ -65,7 +64,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
-import static com.io7m.cardant.security.CASecurityPolicy.ROLES_ALL;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_REQUEST_TOO_LARGE;
 import static java.lang.Integer.toUnsignedString;
 
@@ -297,76 +295,82 @@ public final class CAServer implements CAServerType
     Objects.requireNonNull(adminId, "adminId");
     Objects.requireNonNull(adminName, "adminName");
 
-    if (this.stopped.compareAndSet(true, false)) {
-      try {
-        this.resources = createResourceCollection();
-        this.telemetry = this.createTelemetry();
+    final var newTelemetry =
+      this.createTelemetry();
 
-        final var baseConfiguration =
-          this.configuration.databaseConfiguration();
+    final var dbTelemetry =
+      new CADatabaseTelemetry(
+        newTelemetry.isNoOp(),
+        newTelemetry.meter(),
+        newTelemetry.tracer()
+      );
 
-        final var setupConfiguration =
-          new CADatabaseConfiguration(
-            baseConfiguration.locale(),
-            baseConfiguration.ownerRoleName(),
-            baseConfiguration.ownerRolePassword(),
-            baseConfiguration.workerRolePassword(),
-            baseConfiguration.readerRolePassword(),
-            baseConfiguration.address(),
-            baseConfiguration.port(),
-            baseConfiguration.databaseName(),
-            CADatabaseCreate.CREATE_DATABASE,
-            CADatabaseUpgrade.UPGRADE_DATABASE,
-            baseConfiguration.language(),
-            baseConfiguration.clock(),
-            baseConfiguration.strings()
-          );
+    final var dbConfiguration =
+      this.configuration.databaseConfiguration()
+        .withoutUpgradeOrCreate();
 
-        final var db =
-          this.resources.add(
-            this.configuration.databases()
-              .open(
-                setupConfiguration,
-                new CADatabaseTelemetry(
-                  this.telemetry.isNoOp(),
-                  this.telemetry.meter(),
-                  this.telemetry.tracer()
-                ),
-                event -> {
+    try (var newDatabase =
+           this.configuration.databases()
+             .open(dbConfiguration, dbTelemetry, event -> {
 
-                }));
+             })) {
 
-        try (var connection = db.openConnection(CARDANT)) {
-          try (var transaction = connection.openTransaction()) {
-            final var users =
-              transaction.queries(CADatabaseQueriesUsersType.class);
+      final var span =
+        newTelemetry.tracer()
+          .spanBuilder("SetUserAsAdmin")
+          .startSpan();
 
-            transaction.setUserId(adminId);
-            users.userPut(
-              new CAUser(
-                adminId,
-                adminName,
-                new MSubject(ROLES_ALL))
-            );
-            transaction.commit();
-          }
-        }
-      } catch (final CADatabaseException e) {
-        throw new CAServerException(
-          e.getMessage(),
-          e.errorCode(),
-          e.attributes(),
-          e.remediatingAction()
-        );
+      try (var ignored = span.makeCurrent()) {
+        setUserAsAdminSpan(newDatabase, adminId, adminName);
+      } catch (final Exception e) {
+        span.recordException(e);
+        span.setStatus(StatusCode.ERROR);
+        throw e;
       } finally {
-        this.close();
+        span.end();
       }
-    } else {
+    } catch (final CADatabaseException e) {
       throw new CAServerException(
-        "Server must be closed before setup.",
-        new CAErrorCode("server-misuse"),
-        Map.of(),
-        Optional.empty()
+        e.getMessage(),
+        e,
+        e.errorCode(),
+        e.attributes(),
+        e.remediatingAction()
+      );
+    }
+  }
+
+  private static void setUserAsAdminSpan(
+    final CADatabaseType database,
+    final UUID adminId,
+    final IdName adminName)
+    throws CAServerException
+  {
+    try (var connection =
+           database.openConnection(CARDANT)) {
+      try (var transaction =
+             connection.openTransaction()) {
+        final var users =
+          transaction.queries(CADatabaseQueriesUsersType.class);
+
+        transaction.setUserId(adminId);
+        users.userPut(
+          new CAUser(
+            adminId,
+            adminName,
+            new MSubject(CASecurityPolicy.ROLES_ALL)
+          )
+        );
+
+        transaction.commit();
+      }
+    } catch (final CADatabaseException e) {
+      throw new CAServerException(
+        e.getMessage(),
+        e,
+        e.errorCode(),
+        e.attributes(),
+        e.remediatingAction()
       );
     }
   }

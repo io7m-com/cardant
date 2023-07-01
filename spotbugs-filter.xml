@@ -463,6 +463,17 @@
     </Or>
   </Match>
 
+  <!--                               -->
+  <!-- com.io7m.cardant.server.basic -->
+  <!--                               -->
+
+  <!-- A general catch to record telemetry. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.basic.internal.CAServer"/>
+    <Method name="setUserAsAdmin"/>
+    <Bug pattern="REC_CATCH_EXCEPTION"/>
+  </Match>
+
   <!--                                          -->
   <!-- com.io7m.cardant.server.service.sessions -->
   <!--                                          -->

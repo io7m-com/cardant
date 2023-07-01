@@ -16,7 +16,7 @@
   <packaging>jar</packaging>
   <name>com.io7m.cardant.gui.main</name>
   <description>Inventory system (GUI Main)</description>
-  <url>https://www.github.com/io7m/cardant</url>
+  <url>https://www.io7m.com/software/cardant</url>
 
   <properties>
     <spotbugs.skip>true</spotbugs.skip>

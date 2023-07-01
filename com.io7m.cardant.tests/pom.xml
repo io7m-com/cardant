@@ -16,11 +16,12 @@
   <packaging>jar</packaging>
   <name>com.io7m.cardant.tests</name>
   <description>Inventory system (Test suite)</description>
-  <url>https://www.github.com/io7m/cardant</url>
+  <url>https://www.io7m.com/software/cardant</url>
 
   <properties>
     <mdep.analyze.skip>true</mdep.analyze.skip>
     <spotbugs.skip>true</spotbugs.skip>
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>
@@ -140,20 +141,16 @@
       <artifactId>com.io7m.quarrel.ext.xstructural</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.idstore</groupId>
-      <artifactId>com.io7m.idstore.tests.extensions</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.io7m.idstore</groupId>
       <artifactId>com.io7m.idstore.admin_client</artifactId>
     </dependency>
     <dependency>
       <groupId>com.io7m.idstore</groupId>
       <artifactId>com.io7m.idstore.admin_client.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.server.api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -187,53 +184,67 @@
     </dependency>
 
     <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers</artifactId>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>postgresql</artifactId>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.io7m.ervilla</groupId>
+      <artifactId>com.io7m.ervilla.test_extension</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.ervilla</groupId>
+      <artifactId>com.io7m.ervilla.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.ervilla</groupId>
+      <artifactId>com.io7m.ervilla.native_exec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.ervilla</groupId>
+      <artifactId>com.io7m.ervilla.postgres</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.zelador</groupId>
+      <artifactId>com.io7m.zelador.test_extension</artifactId>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <!-- Generate version strings used in tests. -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <argLine>
-            ${argLine}
-            --add-opens
-            org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
-            --add-opens
-            org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-          </argLine>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
+        <groupId>com.io7m.stmp</groupId>
+        <artifactId>string-template-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>run-it</id>
-            <phase>integration-test</phase>
+            <id>generate-version</id>
+            <phase>generate-sources</phase>
             <goals>
-              <goal>integration-test</goal>
+              <goal>render</goal>
             </goals>
             <configuration>
-              <argLine>
-                ${argLine}
-                --add-opens
-                org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
-                --add-opens
-                org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-              </argLine>
+              <templates>
+                <template>
+                  <directory>src/main/string-template</directory>
+                  <name>CATestProperties</name>
+                  <target>
+                    ${project.build.directory}/generated-sources/string-template/com/io7m/cardant/tests/CATestProperties.java
+                  </target>
+                  <properties>
+                    <IDSTORE_VERSION>${containers.idstore.version}</IDSTORE_VERSION>
+                    <POSTGRESQL_VERSION>${containers.postgresql.version}</POSTGRESQL_VERSION>
+                  </properties>
+                </template>
+              </templates>
             </configuration>
           </execution>
         </executions>

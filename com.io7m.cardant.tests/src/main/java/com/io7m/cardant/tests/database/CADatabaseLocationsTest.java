@@ -16,41 +16,78 @@
 
 package com.io7m.cardant.tests.database;
 
+import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
+import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.ervilla.api.EContainerSupervisorType;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaConfiguration;
+import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.zelador.test_extension.CloseableResourcesType;
+import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 import java.util.TreeMap;
 
+import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Testcontainers(disabledWithoutDocker = true)
-@ExtendWith(CADatabaseExtension.class)
+@ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
+@ErvillaConfiguration(disabledIfUnsupported = true)
 public final class CADatabaseLocationsTest
 {
+  private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
+  private CADatabaseConnectionType connection;
+  private CADatabaseTransactionType transaction;
+  private CADatabaseType database;
+
+  @BeforeAll
+  public static void setupOnce(
+    final @ErvillaCloseAfterAll EContainerSupervisorType containers)
+    throws Exception
+  {
+    DATABASE_FIXTURE =
+      CATestContainers.createDatabase(containers, 15432);
+  }
+
+  @BeforeEach
+  public void setup(
+    final CloseableResourcesType closeables)
+    throws Exception
+  {
+    DATABASE_FIXTURE.reset();
+
+    this.database =
+      closeables.addPerTestResource(DATABASE_FIXTURE.createDatabase());
+    this.connection =
+      closeables.addPerTestResource(this.database.openConnection(CARDANT));
+    this.transaction =
+      closeables.addPerTestResource(this.connection.openTransaction());
+  }
+
   /**
    * Creating locations works.
-   *
-   * @param transaction The transaction
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testLocationCreate(
-    final CADatabaseTransactionType transaction)
+  public void testLocationCreate()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var loc0 =
       new CALocation(
@@ -97,18 +134,15 @@ public final class CADatabaseLocationsTest
   /**
    * Removing a location parent works.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testLocationRemoveParent(
-    final CADatabaseTransactionType transaction)
+  public void testLocationRemoveParent()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var loc0 =
       new CALocation(
@@ -147,18 +181,15 @@ public final class CADatabaseLocationsTest
   /**
    * Creating a location cycle fails.
    *
-   * @param transaction The transaction
-   *
    * @throws Exception On errors
    */
 
   @Test
-  public void testLocationCyclic0(
-    final CADatabaseTransactionType transaction)
+  public void testLocationCyclic0()
     throws Exception
   {
     final var q =
-      transaction.queries(CADatabaseQueriesLocationsType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.class);
 
     final var loc0 =
       new CALocation(

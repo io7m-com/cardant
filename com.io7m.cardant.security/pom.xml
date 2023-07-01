@@ -16,7 +16,7 @@
   <packaging>jar</packaging>
   <name>com.io7m.cardant.security</name>
   <description>Inventory system (Security)</description>
-  <url>https://www.github.com/io7m/cardant</url>
+  <url>https://www.io7m.com/software/cardant</url>
 
   <dependencies>
     <dependency>
@@ -25,6 +25,10 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.io7m.lanark</groupId>
+      <artifactId>com.io7m.lanark.core</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

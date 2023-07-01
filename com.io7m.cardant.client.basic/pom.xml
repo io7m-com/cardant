@@ -16,7 +16,7 @@
   <packaging>jar</packaging>
   <name>com.io7m.cardant.client.basic</name>
   <description>Inventory system (Client basic implementation)</description>
-  <url>https://www.github.com/io7m/cardant</url>
+  <url>https://www.io7m.com/software/cardant</url>
 
   <dependencies>
     <dependency>
@@ -55,6 +55,14 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.io7m.jxtrand</groupId>
+      <artifactId>com.io7m.jxtrand.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.idstore</groupId>
+      <artifactId>com.io7m.idstore.model</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.io7m.hibiscus</groupId>
       <artifactId>com.io7m.hibiscus.api</artifactId>
