@@ -188,6 +188,49 @@ public final class CATestContainers
     );
   }
 
+  public static CADatabaseFixture createDatabaseWithHostilePasswords(
+    final EContainerSupervisorType supervisor,
+    final int port)
+    throws IOException, InterruptedException
+  {
+    final var ownerRolePassword = "''\\'1";
+    final var workerRolePassword = "''\\'2";
+    final var readerRolePassword = "''\\'3";
+
+    final var container =
+      supervisor.start(
+        EPgSpecs.builderFromDockerIO(
+          CATestProperties.POSTGRESQL_VERSION,
+          Optional.empty(),
+          port,
+          "cardant",
+          "cardant_install",
+          ownerRolePassword
+        ).build()
+      );
+
+    final var configuration =
+      new CADatabaseConfiguration(
+        "cardant_install",
+        ownerRolePassword,
+        workerRolePassword,
+        Optional.of(readerRolePassword),
+        "localhost",
+        port,
+        "cardant",
+        CADatabaseCreate.CREATE_DATABASE,
+        CADatabaseUpgrade.UPGRADE_DATABASE,
+        "english",
+        Clock.systemUTC(),
+        CAStrings.create(Locale.ROOT)
+      );
+
+    return new CADatabaseFixture(
+      container,
+      configuration
+    );
+  }
+
   public record CAIdstoreFixture(
     EContainerType serverContainer,
     EContainerType databaseContainer,

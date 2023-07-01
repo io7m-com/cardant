@@ -43,7 +43,6 @@ module com.io7m.cardant.database.postgres
   requires io.opentelemetry.context;
   requires io.opentelemetry.semconv;
   requires java.sql;
-  requires org.apache.commons.text;
   requires org.jgrapht.core;
   requires org.jooq;
   requires org.postgresql.jdbc;
