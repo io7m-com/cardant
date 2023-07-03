@@ -90,7 +90,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
   private int getWidth()
   {
-    var width = this.terminal.getWidth();
+    var width = Math.max(0, this.terminal.getWidth() - 8);
     if (width == 0) {
       width = 100;
     }
