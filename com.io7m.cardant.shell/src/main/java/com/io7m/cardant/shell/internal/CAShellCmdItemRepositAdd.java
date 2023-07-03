@@ -85,8 +85,7 @@ public final class CAShellCmdItemRepositAdd
         new QConstant("Add instances of items to locations."),
         Optional.empty()
       ),
-      CAICommandItemReposit.class,
-      CAIResponseItemReposit.class
+      CAICommandItemReposit.class
     );
   }
 

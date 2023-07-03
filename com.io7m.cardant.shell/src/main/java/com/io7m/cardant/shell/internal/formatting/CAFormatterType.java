@@ -16,11 +16,14 @@
 
 package com.io7m.cardant.shell.internal.formatting;
 
+import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+
+import java.util.List;
 
 /**
  * A shell formatter for data.
@@ -74,5 +77,17 @@ public interface CAFormatterType
 
   void formatItemsPage(
     CAPage<CAItemSummary> items)
+    throws Exception;
+
+  /**
+   * Format a list of bookmarks.
+   *
+   * @param bookmarks The bookmarks
+   *
+   * @throws Exception On errors
+   */
+
+  void formatBookmarks(
+    List<CAPreferenceServerBookmark> bookmarks)
     throws Exception;
 }

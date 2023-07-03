@@ -66,8 +66,7 @@ public final class CAShellCmdLocationGet
         new QConstant("Retrieve a location."),
         Optional.empty()
       ),
-      CAICommandLocationGet.class,
-      CAIResponseLocationGet.class
+      CAICommandLocationGet.class
     );
   }
 

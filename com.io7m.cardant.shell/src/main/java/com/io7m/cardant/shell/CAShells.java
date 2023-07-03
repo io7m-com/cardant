@@ -34,6 +34,7 @@ import com.io7m.cardant.shell.internal.CAShellCmdFileSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdFilesRecent;
 import com.io7m.cardant.shell.internal.CAShellCmdHelp;
 import com.io7m.cardant.shell.internal.CAShellCmdItemAttachmentAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdItemAttachmentRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemCreate;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
@@ -135,6 +136,7 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdFilesRecent(context),
         new CAShellCmdHelp(context),
         new CAShellCmdItemAttachmentAdd(context),
+        new CAShellCmdItemAttachmentRemove(context),
         new CAShellCmdItemCreate(context),
         new CAShellCmdItemGet(context),
         new CAShellCmdItemMetadataPut(context),

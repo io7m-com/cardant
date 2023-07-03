@@ -65,8 +65,7 @@ public final class CAShellCmdItemGet
         new QConstant("Retrieve an item."),
         Optional.empty()
       ),
-      CAICommandItemGet.class,
-      CAIResponseItemGet.class
+      CAICommandItemGet.class
     );
   }
 

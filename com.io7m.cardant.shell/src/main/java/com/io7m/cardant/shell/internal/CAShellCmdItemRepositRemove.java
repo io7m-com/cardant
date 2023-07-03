@@ -85,8 +85,7 @@ public final class CAShellCmdItemRepositRemove
         new QConstant("Remove instances of items from locations."),
         Optional.empty()
       ),
-      CAICommandItemReposit.class,
-      CAIResponseItemReposit.class
+      CAICommandItemReposit.class
     );
   }
 

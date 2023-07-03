@@ -55,8 +55,7 @@ public final class CAShellCmdFileSearchPrevious
         new QConstant("Go to the previous page of files."),
         Optional.empty()
       ),
-      CAICommandFileSearchBegin.class,
-      CAIResponseFileSearch.class
+      CAICommandFileSearchBegin.class
     );
   }
 

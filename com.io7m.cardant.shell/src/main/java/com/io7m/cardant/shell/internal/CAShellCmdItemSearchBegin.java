@@ -90,8 +90,7 @@ public final class CAShellCmdItemSearchBegin
         new QConstant("Start searching for items."),
         Optional.empty()
       ),
-      CAICommandItemSearchBegin.class,
-      CAIResponseItemSearch.class
+      CAICommandItemSearchBegin.class
     );
   }
 

@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.shell.internal.formatting;
 
+import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
@@ -26,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.jline.terminal.Terminal;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -179,6 +181,22 @@ public final class CAFormatterRaw implements CAFormatterType
 
     for (final var item : items.items()) {
       w.printf("%s : %s%n", item.id().displayId(), item.name());
+    }
+  }
+
+  @Override
+  public void formatBookmarks(
+    final List<CAPreferenceServerBookmark> bookmarks)
+  {
+    final PrintWriter w = this.terminal.writer();
+
+    for (final var bookmark : bookmarks) {
+      w.printf(
+        "%-32s %s:%s%n",
+        bookmark.name(),
+        bookmark.host(),
+        Integer.valueOf(bookmark.port())
+      );
     }
   }
 

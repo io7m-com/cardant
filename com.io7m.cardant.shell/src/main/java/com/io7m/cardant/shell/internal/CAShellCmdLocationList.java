@@ -58,8 +58,7 @@ public final class CAShellCmdLocationList
         new QConstant("List locations."),
         Optional.empty()
       ),
-      CAICommandLocationList.class,
-      CAIResponseLocationList.class
+      CAICommandLocationList.class
     );
   }
 

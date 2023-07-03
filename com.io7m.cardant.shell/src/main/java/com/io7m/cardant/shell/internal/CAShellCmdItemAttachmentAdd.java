@@ -84,8 +84,7 @@ public final class CAShellCmdItemAttachmentAdd
         new QConstant("Add or update an attachment on an item."),
         Optional.empty()
       ),
-      CAICommandItemAttachmentAdd.class,
-      CAIResponseItemAttachmentAdd.class
+      CAICommandItemAttachmentAdd.class
     );
   }
 

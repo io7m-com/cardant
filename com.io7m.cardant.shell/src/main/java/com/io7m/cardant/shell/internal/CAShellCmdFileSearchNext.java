@@ -55,8 +55,7 @@ public final class CAShellCmdFileSearchNext
         new QConstant("Go to the next page of files."),
         Optional.empty()
       ),
-      CAICommandFileSearchBegin.class,
-      CAIResponseFileSearch.class
+      CAICommandFileSearchBegin.class
     );
   }
 

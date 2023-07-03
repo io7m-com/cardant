@@ -18,29 +18,30 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamed1;
-import com.io7m.quarrel.core.QParameterNamed1N;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "item-get"
+ * "item-attachment-add"
  */
 
-public final class CAShellCmdItemMetadataRemove
-  extends CAShellCmdAbstractCR<CAICommandItemMetadataRemove, CAIResponseItemMetadataRemove>
+public final class CAShellCmdItemAttachmentRemove
+  extends CAShellCmdAbstractCR<CAICommandItemAttachmentAdd, CAIResponseItemAttachmentAdd>
 {
   private static final QParameterNamed1<CAItemID> ID =
     new QParameterNamed1<>(
@@ -51,11 +52,20 @@ public final class CAShellCmdItemMetadataRemove
       CAItemID.class
     );
 
-  private static final QParameterNamed1N<String> KEY =
-    new QParameterNamed1N<>(
-      "--key",
+  private static final QParameterNamed1<CAFileID> FILE =
+    new QParameterNamed1<>(
+      "--file-id",
       List.of(),
-      new QConstant("The metadata key."),
+      new QConstant("The file ID."),
+      Optional.empty(),
+      CAFileID.class
+    );
+
+  private static final QParameterNamed1<String> RELATION =
+    new QParameterNamed1<>(
+      "--relation",
+      List.of(),
+      new QConstant("The attachment relation."),
       Optional.empty(),
       String.class
     );
@@ -66,24 +76,24 @@ public final class CAShellCmdItemMetadataRemove
    * @param inContext The context
    */
 
-  public CAShellCmdItemMetadataRemove(
+  public CAShellCmdItemAttachmentRemove(
     final CAShellContextType inContext)
   {
     super(
       inContext,
       new QCommandMetadata(
-        "item-metadata-remove",
-        new QConstant("Remove metadata from an item."),
+        "item-attachment-remove",
+        new QConstant("Remove an attachment from an item."),
         Optional.empty()
       ),
-      CAICommandItemMetadataRemove.class
+      CAICommandItemAttachmentAdd.class
     );
   }
 
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ID, KEY);
+    return List.of(ID, FILE, RELATION);
   }
 
   @Override
@@ -96,12 +106,14 @@ public final class CAShellCmdItemMetadataRemove
 
     final var itemID =
       context.parameterValue(ID);
-    final var keys =
-      context.parameterValues(KEY);
+    final var fileID =
+      context.parameterValue(FILE);
+    final var relation =
+      context.parameterValue(RELATION);
 
     final var item =
-      ((CAIResponseItemMetadataRemove) client.executeOrElseThrow(
-        new CAICommandItemMetadataRemove(itemID, Set.copyOf(keys)),
+      ((CAIResponseItemAttachmentRemove) client.executeOrElseThrow(
+        new CAICommandItemAttachmentRemove(itemID, fileID, relation),
         CAClientException::ofError
       )).data();
 

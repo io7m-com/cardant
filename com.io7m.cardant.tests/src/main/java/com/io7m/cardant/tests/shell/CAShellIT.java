@@ -17,6 +17,7 @@
 package com.io7m.cardant.tests.shell;
 
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
+import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShells;
@@ -28,12 +29,12 @@ import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public final class CAShellIT
   private static CATestContainers.CAIdstoreFixture IDSTORE;
   private static CATestContainers.CADatabaseFixture DATABASE;
   private static Path DIRECTORY;
-  
+
   private CATestContainers.CAServerFixture server;
   private CAShells shells;
   private CAShellConfiguration configuration;
@@ -116,7 +117,8 @@ public final class CAShellIT
       CATestDirectories.createTempDirectory();
 
     this.preferences =
-      Mockito.mock(CAPreferencesServiceType.class);
+      CAPreferencesService.openOrDefault(
+        this.directory.resolve("preferences.xml"));
 
     this.terminal =
       new CAFakeTerminal();
@@ -156,11 +158,17 @@ public final class CAShellIT
         this.executor.awaitTermination(3L, TimeUnit.SECONDS);
       }
     );
+  }
 
+  @AfterEach
+  public void tearDown()
+  {
     final var out =
       this.terminal.terminalProducedOutput();
+    final var outText =
+      out.toString(StandardCharsets.UTF_8);
 
-    System.out.println(out.toString(StandardCharsets.UTF_8));
+    System.out.println(outText);
   }
 
   private void waitForShell()
@@ -174,6 +182,22 @@ public final class CAShellIT
     return this.server.server()
       .inventoryAPI()
       .toString();
+  }
+
+  private String host()
+  {
+    return this.server.server()
+      .inventoryAPI()
+      .getHost();
+  }
+
+  private String port()
+  {
+    return Integer.toString(
+      this.server.server()
+        .inventoryAPI()
+        .getPort()
+    );
   }
 
   @Test
@@ -278,9 +302,9 @@ public final class CAShellIT
     w.println("set --terminate-on-errors true");
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-              "--name 'Location 0'");
+                "--name 'Location 0'");
     w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-              "--name 'Location 0 (A)'");
+                "--name 'Location 0 (A)'");
     w.println("location-list");
     w.println("location-get --id 9f87685b-121e-4209-b864-80b0752132b5 ");
     w.println("logout");
@@ -301,39 +325,86 @@ public final class CAShellIT
     w.println("set --terminate-on-errors true");
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-              "--name 'Location 0'");
+                "--name 'Location 0'");
     w.println("location-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-              "--name 'Location 1'");
+                "--name 'Location 1'");
     w.println("item-create --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--name 'Battery'");
+                "--name 'Battery'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--key Voltage " +
-              "--value 9");
+                "--key Voltage " +
+                "--value 9");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--key Size " +
-              "--value 23");
+                "--key Size " +
+                "--value 23");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--key Gauge " +
-              "--value 20");
+                "--key Gauge " +
+                "--value 20");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--key Gauge");
+                "--key Gauge");
     w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
-              "--count 100");
+                "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
+                "--count 100");
     w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-              "--count 50");
+                "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+                "--count 50");
     w.println("item-reposit-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
-              "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-              "--count 15");
+                "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
+                "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+                "--count 15");
     w.println("item-reposit-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-              "--count 2");
+                "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+                "--count 2");
     w.println("item-get --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4");
     w.println("item-search-begin");
     w.println("item-search-next");
     w.println("item-search-previous");
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellItemAttachmentWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var fileNameUp =
+      this.directory.resolve("fileUp.txt");
+
+    Files.writeString(fileNameUp, "HELLO!");
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var fileId =
+      "544c6447-b5dd-4df9-a5c5-78e70b486fcf";
+    final var itemId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "file-put --id %s --file %s%n",
+      fileId,
+      fileNameUp.toAbsolutePath()
+    );
+    w.printf(
+      "item-create --id %s --name Battery%n",
+      itemId
+    );
+    w.printf(
+      "item-attachment-add --id %s --relation icon --file-id %s%n",
+      itemId,
+      fileId
+    );
+    w.printf(
+      "item-attachment-remove --id %s --relation icon --file-id %s%n",
+      itemId,
+      fileId
+    );
     w.println("logout");
     w.flush();
     w.close();
@@ -361,11 +432,11 @@ public final class CAShellIT
 
     w.println(
       "file-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --file "
-      + fileNameUp.toAbsolutePath());
+        + fileNameUp.toAbsolutePath());
 
     w.println(
       "file-get --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --download-to "
-      + fileNameDown.toAbsolutePath());
+        + fileNameDown.toAbsolutePath());
 
     w.println("logout");
     w.flush();
@@ -394,11 +465,43 @@ public final class CAShellIT
 
     w.println(
       "file-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --file "
-      + fileNameUp.toAbsolutePath());
+        + fileNameUp.toAbsolutePath());
 
     w.println("file-search-begin");
     w.println("file-search-next");
     w.println("file-search-previous");
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellBookmarksWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+
+    w.printf(
+      "bookmark-put --name b1 " +
+        "--hostname %s " +
+        "--port %s " +
+        "--user %s " +
+        "--password %s%n",
+      this.host(),
+      this.port(),
+      "someone-admin",
+      "12345678"
+    );
+    w.printf("bookmark-list%n");
+    w.printf("bookmark-login --name b1%n");
+    w.printf("bookmark-remove --name b1%n");
+    w.printf("bookmark-list%n");
     w.println("logout");
     w.flush();
     w.close();

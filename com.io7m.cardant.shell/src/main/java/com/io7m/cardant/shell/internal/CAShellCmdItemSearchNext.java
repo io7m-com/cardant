@@ -55,8 +55,7 @@ public final class CAShellCmdItemSearchNext
         new QConstant("Go to the next page of items."),
         Optional.empty()
       ),
-      CAICommandItemSearchBegin.class,
-      CAIResponseItemSearch.class
+      CAICommandItemSearchBegin.class
     );
   }
 

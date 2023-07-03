@@ -96,8 +96,7 @@ public final class CAShellCmdFileSearchBegin
         new QConstant("Start searching for files."),
         Optional.empty()
       ),
-      CAICommandFileSearchBegin.class,
-      CAIResponseFileSearch.class
+      CAICommandFileSearchBegin.class
     );
   }
 

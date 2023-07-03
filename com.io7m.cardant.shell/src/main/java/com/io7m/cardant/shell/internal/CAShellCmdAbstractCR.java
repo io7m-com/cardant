@@ -38,33 +38,22 @@ public abstract class CAShellCmdAbstractCR<
   R extends CAIResponseType>
   extends CAShellCmdAbstract
 {
-  private final Class<R> responseClass;
-
   /**
    * Construct a command.
    *
    * @param inContext       The shell context
    * @param inMetadata      The metadata
    * @param inCommandClass  The command class
-   * @param inResponseClass The response class
    */
 
   protected CAShellCmdAbstractCR(
     final CAShellContextType inContext,
     final QCommandMetadata inMetadata,
-    final Class<C> inCommandClass,
-    final Class<R> inResponseClass)
+    final Class<C> inCommandClass)
   {
     super(inContext, inMetadata);
 
     Objects.requireNonNull(inCommandClass, "commandClass");
-    this.responseClass =
-      Objects.requireNonNull(inResponseClass, "responseClass");
-  }
-
-  protected final Class<R> responseClass()
-  {
-    return this.responseClass;
   }
 
   @Override

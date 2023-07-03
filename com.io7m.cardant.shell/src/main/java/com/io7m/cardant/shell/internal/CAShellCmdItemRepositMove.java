@@ -94,8 +94,7 @@ public final class CAShellCmdItemRepositMove
         new QConstant("Move instances of items between locations."),
         Optional.empty()
       ),
-      CAICommandItemReposit.class,
-      CAIResponseItemReposit.class
+      CAICommandItemReposit.class
     );
   }
 

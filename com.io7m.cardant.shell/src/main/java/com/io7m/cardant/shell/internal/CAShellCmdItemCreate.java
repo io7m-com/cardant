@@ -75,8 +75,7 @@ public final class CAShellCmdItemCreate
         new QConstant("Create an item."),
         Optional.empty()
       ),
-      CAICommandItemCreate.class,
-      CAIResponseItemCreate.class
+      CAICommandItemCreate.class
     );
   }
 

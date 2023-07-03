@@ -72,17 +72,7 @@ public final class CAShellCmdBookmarkList extends CAShellCmdAbstract
       this.preferences().preferences()
         .serverBookmarks();
 
-    for (int index = 0; index < bookmarks.size(); ++index) {
-      final var bookmark = bookmarks.get(index);
-      output.printf(
-        "%-4d %-32s %s:%s%n",
-        Integer.valueOf(index),
-        bookmark.name(),
-        bookmark.host(),
-        Integer.valueOf(bookmark.port())
-      );
-    }
-
+    this.formatter().formatBookmarks(bookmarks);
     output.flush();
     return SUCCESS;
   }

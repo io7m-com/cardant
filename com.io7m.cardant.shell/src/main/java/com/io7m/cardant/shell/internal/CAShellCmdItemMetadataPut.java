@@ -85,8 +85,7 @@ public final class CAShellCmdItemMetadataPut
         new QConstant("Add or update metadata on an item."),
         Optional.empty()
       ),
-      CAICommandItemMetadataPut.class,
-      CAIResponseItemMetadataPut.class
+      CAICommandItemMetadataPut.class
     );
   }
 

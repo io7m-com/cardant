@@ -108,8 +108,7 @@ public final class CAShellCmdLocationPut
         new QConstant("Create or update a location."),
         Optional.empty()
       ),
-      CAICommandLocationPut.class,
-      CAIResponseLocationPut.class
+      CAICommandLocationPut.class
     );
   }
 

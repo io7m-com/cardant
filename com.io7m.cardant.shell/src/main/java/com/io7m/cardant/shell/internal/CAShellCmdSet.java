@@ -91,7 +91,7 @@ public final class CAShellCmdSet extends CAShellCmdAbstract
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(TERMINATE_ON_ERRORS);
+    return List.of(TERMINATE_ON_ERRORS, FORMATTER);
   }
 
   @Override

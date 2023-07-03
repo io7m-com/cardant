@@ -17,6 +17,9 @@
 
 package com.io7m.cardant.shell.internal.formatting;
 
+import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
+import com.io7m.cardant.client.preferences.api.CAPreferenceServerCredentialsType;
+import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
@@ -30,6 +33,7 @@ import com.io7m.tabla.core.TTableType;
 import com.io7m.tabla.core.Tabla;
 import org.jline.terminal.Terminal;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.io7m.cardant.shell.internal.formatting.CAFormatterRaw.formatSize;
@@ -304,6 +308,47 @@ public final class CAFormatterPretty implements CAFormatterType
     }
 
     this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatBookmarks(
+    final List<CAPreferenceServerBookmark> bookmarks)
+    throws Exception
+  {
+    if (bookmarks.isEmpty()) {
+      return;
+    }
+
+    final var width = this.getWidth();
+
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(tableWidthExact(width))
+        .declareColumn("Name", atLeastContentOrHeader())
+        .declareColumn("Host", atLeastContentOrHeader())
+        .declareColumn("Port", atLeastContentOrHeader())
+        .declareColumn("TLS", atLeastContentOrHeader())
+        .declareColumn("User", atLeastContentOrHeader());
+
+    for (final var bookmark : bookmarks) {
+      tableBuilder.addRow()
+        .addCell(bookmark.name())
+        .addCell(bookmark.host())
+        .addCell(Integer.toString(bookmark.port()))
+        .addCell(Boolean.toString(bookmark.isHTTPs()))
+        .addCell(userOf(bookmark.credentials()));
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
+  private static String userOf(
+    final CAPreferenceServerCredentialsType credentials)
+  {
+    if (credentials instanceof final CAPreferenceServerUsernamePassword c) {
+      return c.username();
+    }
+    throw new IllegalStateException();
   }
 
   @Override
