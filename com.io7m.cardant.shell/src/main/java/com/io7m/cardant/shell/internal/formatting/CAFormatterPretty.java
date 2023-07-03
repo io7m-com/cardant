@@ -30,6 +30,7 @@ import com.io7m.tabla.core.TColumnWidthConstraintMinimumAny;
 import com.io7m.tabla.core.TException;
 import com.io7m.tabla.core.TTableRendererType;
 import com.io7m.tabla.core.TTableType;
+import com.io7m.tabla.core.TTableWidthConstraintRange;
 import com.io7m.tabla.core.Tabla;
 import org.jline.terminal.Terminal;
 
@@ -55,11 +56,6 @@ public final class CAFormatterPretty implements CAFormatterType
       TColumnWidthConstraintMinimumAny.any(),
       TColumnWidthConstraintMaximumAtMost.atMost(13)
     );
-  private static final TColumnWidthConstraint ITEM_METADATA_CONSTRAINT =
-    new TColumnWidthConstraint(
-      TColumnWidthConstraintMinimumAny.any(),
-      TColumnWidthConstraintMaximumAtMost.atMost(6)
-    );
   private static final TColumnWidthConstraint FILE_ATTRIBUTE_CONSTRAINT =
     new TColumnWidthConstraint(
       TColumnWidthConstraintMinimumAny.any(),
@@ -84,32 +80,47 @@ public final class CAFormatterPretty implements CAFormatterType
       Tabla.framedUnicodeRenderer();
   }
 
+  private static String userOf(
+    final CAPreferenceServerCredentialsType credentials)
+  {
+    if (credentials instanceof final CAPreferenceServerUsernamePassword c) {
+      return c.username();
+    }
+    throw new IllegalStateException();
+  }
+
   @Override
   public void formatFile(
     final CAFileType file)
     throws TException
   {
-    final int width = this.getWidth();
-    this.formatFileAttributes(file, width);
+    this.formatFileAttributes(file);
   }
 
-  private int getWidth()
+  private int width()
   {
-    var width = Math.max(0, this.terminal.getWidth() - 8);
+    var width = Math.max(0, this.terminal.getWidth());
     if (width == 0) {
-      width = 100;
+      width = 80;
     }
     return width;
   }
 
+  private int widthFor(
+    final int columns)
+  {
+    final var columnPad = 2;
+    final var columnEdge = 1;
+    return this.width() - (2 + (columns * (columnEdge + columnPad)));
+  }
+
   private void formatFileAttributes(
-    final CAFileType file,
-    final int width)
+    final CAFileType file)
     throws TException
   {
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
+        .setWidthConstraint(this.softTableWidth(2))
         .declareColumn("Attribute", FILE_ATTRIBUTE_CONSTRAINT)
         .declareColumn("Value", atLeastContent());
 
@@ -140,6 +151,12 @@ public final class CAFormatterPretty implements CAFormatterType
     this.renderTable(tableBuilder.build());
   }
 
+  private TTableWidthConstraintRange softTableWidth(
+    final int columns)
+  {
+    return tableWidthExact(this.widthFor(columns), SOFT_CONSTRAINT);
+  }
+
   private void renderTable(
     final TTableType table)
   {
@@ -157,8 +174,6 @@ public final class CAFormatterPretty implements CAFormatterType
     final CAPage<CAFileType.CAFileWithoutData> files)
     throws TException
   {
-    final var width = this.getWidth();
-
     this.terminal.writer()
       .printf(
         "Search results: Page %d of %d%n",
@@ -168,7 +183,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
+        .setWidthConstraint(this.softTableWidth(2))
         .declareColumn("File ID", UUID_CONSTRAINT)
         .declareColumn("Description", atLeastContent());
 
@@ -186,15 +201,13 @@ public final class CAFormatterPretty implements CAFormatterType
     final CAItem item)
     throws TException
   {
-    final var width = this.getWidth();
-    this.formatItemAttributes(item, width);
-    this.formatItemMetadata(item, width);
-    this.formatItemAttachments(item, width);
+    this.formatItemAttributes(item);
+    this.formatItemMetadata(item);
+    this.formatItemAttachments(item);
   }
 
   private void formatItemMetadata(
-    final CAItem item,
-    final int width)
+    final CAItem item)
     throws TException
   {
     final var metadata =
@@ -206,7 +219,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
       final var tableBuilder =
         Tabla.builder()
-          .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
+          .setWidthConstraint(this.softTableWidth(2))
           .declareColumn("Name", atLeastContentOrHeader())
           .declareColumn("Value", atLeastContentOrHeader());
 
@@ -221,8 +234,7 @@ public final class CAFormatterPretty implements CAFormatterType
   }
 
   private void formatItemAttachments(
-    final CAItem item,
-    final int width)
+    final CAItem item)
     throws TException
   {
     final var attachments =
@@ -234,7 +246,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
       final var tableBuilder =
         Tabla.builder()
-          .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
+          .setWidthConstraint(this.softTableWidth(2))
           .declareColumn("File ID", UUID_CONSTRAINT)
           .declareColumn("Relation", atLeastContentOrHeader());
 
@@ -249,13 +261,12 @@ public final class CAFormatterPretty implements CAFormatterType
   }
 
   private void formatItemAttributes(
-    final CAItem item,
-    final int width)
+    final CAItem item)
     throws TException
   {
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
+        .setWidthConstraint(this.softTableWidth(2))
         .declareColumn("Attribute", ITEM_ATTRIBUTE_CONSTRAINT)
         .declareColumn("Value", atLeastContent());
 
@@ -287,8 +298,6 @@ public final class CAFormatterPretty implements CAFormatterType
     final CAPage<CAItemSummary> items)
     throws TException
   {
-    final var width = this.getWidth();
-
     this.terminal.writer()
       .printf(
         "Search results: Page %d of %d%n",
@@ -298,7 +307,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
+        .setWidthConstraint(this.softTableWidth(2))
         .declareColumn("Item ID", UUID_CONSTRAINT)
         .declareColumn("Description", atLeastContentOrHeader());
 
@@ -320,11 +329,9 @@ public final class CAFormatterPretty implements CAFormatterType
       return;
     }
 
-    final var width = this.getWidth();
-
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
+        .setWidthConstraint(this.softTableWidth(5))
         .declareColumn("Name", atLeastContentOrHeader())
         .declareColumn("Host", atLeastContentOrHeader())
         .declareColumn("Port", atLeastContentOrHeader())
@@ -341,15 +348,6 @@ public final class CAFormatterPretty implements CAFormatterType
     }
 
     this.renderTable(tableBuilder.build());
-  }
-
-  private static String userOf(
-    final CAPreferenceServerCredentialsType credentials)
-  {
-    if (credentials instanceof final CAPreferenceServerUsernamePassword c) {
-      return c.username();
-    }
-    throw new IllegalStateException();
   }
 
   @Override

@@ -31,6 +31,7 @@ import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamed01;
+import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 
@@ -74,6 +75,15 @@ public final class CAShellCmdItemSearchBegin
       CALocationID.class
     );
 
+  private static final QParameterNamed1<Integer> LIMIT =
+    new QParameterNamed1<>(
+      "--limit",
+      List.of(),
+      new QConstant("The maximum number of results per page."),
+      Optional.of(Integer.valueOf(100)),
+      Integer.class
+    );
+
   /**
    * Construct a command.
    *
@@ -97,7 +107,7 @@ public final class CAShellCmdItemSearchBegin
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(SEARCH, LOCATIONS_EXACT, LOCATIONS_DESCENDANTS);
+    return List.of(SEARCH, LIMIT, LOCATIONS_EXACT, LOCATIONS_DESCENDANTS);
   }
 
   @Override
@@ -130,7 +140,7 @@ public final class CAShellCmdItemSearchBegin
         locationBehaviour,
         context.parameterValue(SEARCH),
         new CAItemColumnOrdering(BY_NAME, true),
-        100
+        context.parameterValue(LIMIT).intValue()
       );
 
     final var items =

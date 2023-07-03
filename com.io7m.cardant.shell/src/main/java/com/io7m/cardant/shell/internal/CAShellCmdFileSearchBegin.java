@@ -80,6 +80,15 @@ public final class CAShellCmdFileSearchBegin
       Long.class
     );
 
+  private static final QParameterNamed1<Integer> LIMIT =
+    new QParameterNamed1<>(
+      "--limit",
+      List.of(),
+      new QConstant("The maximum number of results per page."),
+      Optional.of(Integer.valueOf(100)),
+      Integer.class
+    );
+
   /**
    * Construct a command.
    *
@@ -103,7 +112,7 @@ public final class CAShellCmdFileSearchBegin
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(DESCRIPTION, MEDIA_TYPE, SIZE_MINIMUM, SIZE_MAXIMUM);
+    return List.of(DESCRIPTION, LIMIT, MEDIA_TYPE, SIZE_MINIMUM, SIZE_MAXIMUM);
   }
 
   @Override
@@ -125,7 +134,7 @@ public final class CAShellCmdFileSearchBegin
           )
         ),
         new CAFileColumnOrdering(BY_DESCRIPTION, true),
-        100
+        context.parameterValue(LIMIT).intValue()
       );
 
     final var files =
