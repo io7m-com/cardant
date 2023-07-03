@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
@@ -41,7 +40,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemMetadataRemove
-  extends CAShellCmdAbstract<CAICommandItemMetadataRemove, CAIResponseItemMetadataRemove>
+  extends CAShellCmdAbstractCR<CAICommandItemMetadataRemove, CAIResponseItemMetadataRemove>
 {
   private static final QParameterNamed1<CAItemID> ID =
     new QParameterNamed1<>(
@@ -64,14 +63,14 @@ public final class CAShellCmdItemMetadataRemove
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdItemMetadataRemove(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "item-metadata-remove",
         new QConstant("Remove metadata from an item."),
@@ -107,7 +106,7 @@ public final class CAShellCmdItemMetadataRemove
         CAClientException::ofError
       )).data();
 
-    CAItemFormatting.formatItem(context.output(), item);
+    this.formatter().formatItem(item);
     return SUCCESS;
   }
 }

@@ -156,6 +156,7 @@ public final class CAHandlerDisconnected
     final CAFileID fileID,
     final Path file,
     final String contentType,
+    final String description,
     final Consumer<CAClientTransferStatistics> statisticsConsumer)
   {
     return this.notLoggedIn();

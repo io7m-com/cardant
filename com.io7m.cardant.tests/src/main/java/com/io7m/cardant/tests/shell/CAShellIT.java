@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.tests.shell;
 
+import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShells;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +75,7 @@ public final class CAShellIT
   private CountDownLatch shutDownLatch;
   private Path directory;
   private volatile CAShellType shellLeaked;
+  private CAPreferencesServiceType preferences;
 
   @BeforeAll
   public static void setupOnce(
@@ -112,12 +115,16 @@ public final class CAShellIT
     this.directory =
       CATestDirectories.createTempDirectory();
 
+    this.preferences =
+      Mockito.mock(CAPreferencesServiceType.class);
+
     this.terminal =
       new CAFakeTerminal();
     this.shells =
       new CAShells();
     this.configuration =
       new CAShellConfiguration(
+        this.preferences,
         Locale.ROOT,
         Clock.systemUTC(),
         Optional.of(this.terminal)

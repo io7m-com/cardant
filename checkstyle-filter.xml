@@ -78,4 +78,7 @@
   <suppress files="CAI1ValidationCommands.java"
             checks="NPathComplexity"/>
 
+  <suppress files="CAShells.java"
+            checks="ClassDataAbstractionCoupling"/>
+
 </suppressions>

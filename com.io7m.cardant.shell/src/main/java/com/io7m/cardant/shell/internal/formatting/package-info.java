@@ -14,33 +14,11 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.cardant.shell.CAShellFactoryType;
-import com.io7m.cardant.shell.CAShells;
-
 /**
- * Inventory server (Shell)
+ * Inventory server (Shell [internals])
  */
 
-module com.io7m.cardant.shell
-{
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+@Version("1.0.0")
+package com.io7m.cardant.shell.internal.formatting;
 
-  requires com.io7m.cardant.client.api;
-  requires com.io7m.cardant.client.basic;
-  requires com.io7m.cardant.client.preferences.api;
-
-  requires com.io7m.jmulticlose.core;
-  requires com.io7m.junreachable.core;
-  requires com.io7m.quarrel.core;
-  requires com.io7m.tabla.core;
-  requires hu.webarticum.treeprinter;
-  requires org.apache.commons.io;
-  requires org.apache.tika.core;
-  requires org.jline;
-
-  provides CAShellFactoryType
-    with CAShells;
-
-  exports com.io7m.cardant.shell;
-}
+import org.osgi.annotation.versioning.Version;

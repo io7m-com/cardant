@@ -233,6 +233,7 @@ public final class CAClientIT
       fileId,
       file,
       "text/plain",
+      "A text file.",
       statistics -> {
 
       }
@@ -294,6 +295,7 @@ public final class CAClientIT
           fileId,
           file,
           "text/plain",
+          "A text file.",
           statistics -> {
 
           }
@@ -324,6 +326,7 @@ public final class CAClientIT
       fileId,
       file,
       "text/plain",
+      "A text file.",
       statistics -> {
 
       }

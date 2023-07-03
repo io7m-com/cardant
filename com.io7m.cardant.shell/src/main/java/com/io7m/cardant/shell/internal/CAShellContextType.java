@@ -14,33 +14,40 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.cardant.shell.CAShellFactoryType;
-import com.io7m.cardant.shell.CAShells;
+
+package com.io7m.cardant.shell.internal;
+
+import com.io7m.cardant.client.api.CAClientSynchronousType;
+import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
+import org.jline.terminal.Terminal;
 
 /**
- * Inventory server (Shell)
+ * The services available to running shell commands.
  */
 
-module com.io7m.cardant.shell
+public interface CAShellContextType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * @return The client
+   */
 
-  requires com.io7m.cardant.client.api;
-  requires com.io7m.cardant.client.basic;
-  requires com.io7m.cardant.client.preferences.api;
+  CAClientSynchronousType client();
 
-  requires com.io7m.jmulticlose.core;
-  requires com.io7m.junreachable.core;
-  requires com.io7m.quarrel.core;
-  requires com.io7m.tabla.core;
-  requires hu.webarticum.treeprinter;
-  requires org.apache.commons.io;
-  requires org.apache.tika.core;
-  requires org.jline;
+  /**
+   * @return The shell options
+   */
 
-  provides CAShellFactoryType
-    with CAShells;
+  CAShellOptions options();
 
-  exports com.io7m.cardant.shell;
+  /**
+   * @return The preferences service
+   */
+
+  CAPreferencesServiceType preferences();
+
+  /**
+   * @return The connected terminal
+   */
+
+  Terminal terminal();
 }

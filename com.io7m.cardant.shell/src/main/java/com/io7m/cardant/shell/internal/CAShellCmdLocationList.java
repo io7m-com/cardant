@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
@@ -41,19 +40,19 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdLocationList
-  extends CAShellCmdAbstract<CAICommandLocationList, CAIResponseLocationList>
+  extends CAShellCmdAbstractCR<CAICommandLocationList, CAIResponseLocationList>
 {
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdLocationList(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "location-list",
         new QConstant("List locations."),

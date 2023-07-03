@@ -45,14 +45,14 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdLocationPut
-  extends CAShellCmdAbstract<CAICommandLocationPut, CAIResponseLocationPut>
+  extends CAShellCmdAbstractCR<CAICommandLocationPut, CAIResponseLocationPut>
 {
   private static final QParameterNamed1<CALocationID> ID =
     new QParameterNamed1<>(
       "--id",
       List.of(),
       new QConstant("The location ID."),
-      Optional.empty(),
+      Optional.of(CALocationID.random()),
       CALocationID.class
     );
 
@@ -95,14 +95,14 @@ public final class CAShellCmdLocationPut
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdLocationPut(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "location-put",
         new QConstant("Create or update a location."),

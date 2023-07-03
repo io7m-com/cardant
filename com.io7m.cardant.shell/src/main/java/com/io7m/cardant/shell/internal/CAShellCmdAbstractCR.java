@@ -14,49 +14,61 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.model.CAVersion;
-import com.io7m.quarrel.core.QCommandContextType;
+import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.quarrel.core.QCommandMetadata;
-import com.io7m.quarrel.core.QCommandStatus;
-import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParameterType;
-import com.io7m.quarrel.core.QStringType.QConstant;
 import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
-import java.util.List;
-import java.util.Optional;
-
-import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
+import java.util.Objects;
 
 /**
- * "version"
+ * The abstract command implementation.
+ *
+ * @param <C> The command type
+ * @param <R> The response type
  */
 
-public final class CAShellCmdVersion extends CAShellCmdAbstract
+public abstract class CAShellCmdAbstractCR<
+  C extends CAICommandType<R>,
+  R extends CAIResponseType>
+  extends CAShellCmdAbstract
 {
+  private final Class<R> responseClass;
+
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inContext       The shell context
+   * @param inMetadata      The metadata
+   * @param inCommandClass  The command class
+   * @param inResponseClass The response class
    */
 
-  public CAShellCmdVersion(
-    final CAShellContextType inContext)
+  protected CAShellCmdAbstractCR(
+    final CAShellContextType inContext,
+    final QCommandMetadata inMetadata,
+    final Class<C> inCommandClass,
+    final Class<R> inResponseClass)
   {
-    super(
-      inContext,
-      new QCommandMetadata(
-        "version",
-        new QConstant("Display the shell version."),
-        Optional.empty()
-      ));
+    super(inContext, inMetadata);
+
+    Objects.requireNonNull(inCommandClass, "commandClass");
+    this.responseClass =
+      Objects.requireNonNull(inResponseClass, "responseClass");
+  }
+
+  protected final Class<R> responseClass()
+  {
+    return this.responseClass;
   }
 
   @Override
-  public Completer completer()
+  public final Completer completer()
   {
     return new StringsCompleter(
       this.onListNamedParameters()
@@ -64,24 +76,5 @@ public final class CAShellCmdVersion extends CAShellCmdAbstract
         .map(QParameterType::name)
         .toList()
     );
-  }
-
-  @Override
-  public List<QParameterNamedType<?>> onListNamedParameters()
-  {
-    return List.of();
-  }
-
-  @Override
-  public QCommandStatus onExecute(
-    final QCommandContextType context)
-  {
-    final var w = context.output();
-    w.append("com.io7m.cardant ");
-    w.append(CAVersion.MAIN_VERSION);
-    w.append(" ");
-    w.append(CAVersion.MAIN_BUILD);
-    w.println();
-    return SUCCESS;
   }
 }

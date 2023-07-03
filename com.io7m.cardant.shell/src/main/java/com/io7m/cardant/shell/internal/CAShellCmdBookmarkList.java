@@ -17,15 +17,13 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
-import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import org.jline.builtins.Completers;
+import org.jline.reader.Completer;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,31 +31,27 @@ import java.util.Optional;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "file-search-previous"
+ * "bookmark-list"
  */
 
-public final class CAShellCmdFileSearchPrevious
-  extends CAShellCmdAbstractCR<CAICommandFileSearchBegin, CAIResponseFileSearch>
+public final class CAShellCmdBookmarkList extends CAShellCmdAbstract
 {
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inContext The shell context
    */
 
-  public CAShellCmdFileSearchPrevious(
+  public CAShellCmdBookmarkList(
     final CAShellContextType inContext)
   {
     super(
       inContext,
       new QCommandMetadata(
-        "file-search-previous",
-        new QConstant("Go to the previous page of files."),
+        "bookmark-list",
+        new QConstant("List server bookmarks."),
         Optional.empty()
-      ),
-      CAICommandFileSearchBegin.class,
-      CAIResponseFileSearch.class
-    );
+      ));
   }
 
   @Override
@@ -71,16 +65,31 @@ public final class CAShellCmdFileSearchPrevious
     final QCommandContextType context)
     throws Exception
   {
-    final var client =
-      this.client();
+    final var output =
+      context.output();
 
-    final var files =
-      ((CAIResponseFileSearch) client.executeOrElseThrow(
-        new CAICommandFileSearchPrevious(),
-        CAClientException::ofError
-      )).data();
+    final var bookmarks =
+      this.preferences().preferences()
+        .serverBookmarks();
 
-    this.formatter().formatFilesPage(files);
+    for (int index = 0; index < bookmarks.size(); ++index) {
+      final var bookmark = bookmarks.get(index);
+      output.printf(
+        "%-4d %-32s %s:%s%n",
+        Integer.valueOf(index),
+        bookmark.name(),
+        bookmark.host(),
+        Integer.valueOf(bookmark.port())
+      );
+    }
+
+    output.flush();
     return SUCCESS;
+  }
+
+  @Override
+  public Completer completer()
+  {
+    return new Completers.OptionCompleter(List.of(), 1);
   }
 }

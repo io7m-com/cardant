@@ -14,109 +14,111 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.shell.internal.formatting.CAFormatterPretty;
-import com.io7m.cardant.shell.internal.formatting.CAFormatterRaw;
+import com.io7m.cardant.client.preferences.api.CAPreferences;
+import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
-import com.io7m.quarrel.core.QParameterNamed01;
+import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "set"
+ * "bookmark-remove"
  */
 
-public final class CAShellCmdSet extends CAShellCmdAbstract
+public final class CAShellCmdBookmarkRemove
+  extends CAShellCmdAbstract
 {
-  enum Formatter
-  {
-    RAW,
-    PRETTY
-  }
-
-  private static final QParameterNamed01<Boolean> TERMINATE_ON_ERRORS =
-    new QParameterNamed01<>(
-      "--terminate-on-errors",
+  private static final QParameterNamed1<String> NAME =
+    new QParameterNamed1<>(
+      "--name",
       List.of(),
-      new QConstant(
-        "Terminate execution on the first command that returns an error."),
+      new QConstant("The name of the bookmark."),
       Optional.empty(),
-      Boolean.class
-    );
-
-  private static final QParameterNamed01<Formatter> FORMATTER =
-    new QParameterNamed01<>(
-      "--formatter",
-      List.of(),
-      new QConstant(
-        "Set the shell formatter."),
-      Optional.empty(),
-      Formatter.class
+      String.class
     );
 
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inContext The shell context
    */
 
-  public CAShellCmdSet(
+  public CAShellCmdBookmarkRemove(
     final CAShellContextType inContext)
   {
     super(
       inContext,
       new QCommandMetadata(
-        "set",
-        new QConstant("Set shell options."),
+        "bookmark-remove",
+        new QConstant("Remove a server bookmark."),
         Optional.empty()
       ));
+  }
+
+  @Override
+  public List<QParameterNamedType<?>> onListNamedParameters()
+  {
+    return List.of(
+      NAME
+    );
+  }
+
+  @Override
+  public QCommandStatus onExecute(
+    final QCommandContextType context)
+    throws Exception
+  {
+    final var name =
+      context.parameterValue(NAME);
+
+    this.preferences().preferences()
+      .serverBookmarks()
+      .stream()
+      .filter(b -> Objects.equals(b.name(), name))
+      .findFirst()
+      .orElseThrow(() -> {
+        return new CAException(
+          "No such bookmark.",
+          CAStandardErrorCodes.errorNonexistent(),
+          Map.of(),
+          Optional.empty()
+        );
+      });
+
+    final var bookmarksMutable =
+      new ArrayList<>(this.preferences().preferences().serverBookmarks());
+
+    bookmarksMutable.removeIf(b -> Objects.equals(b.name(), name));
+
+    this.preferences().update(oldPreferences -> {
+      return new CAPreferences(
+        oldPreferences.debuggingEnabled(),
+        List.copyOf(bookmarksMutable),
+        oldPreferences.recentFiles()
+      );
+    });
+    return SUCCESS;
   }
 
   @Override
   public Completer completer()
   {
     return new Completers.OptionCompleter(List.of(), 1);
-  }
-
-  @Override
-  public List<QParameterNamedType<?>> onListNamedParameters()
-  {
-    return List.of(TERMINATE_ON_ERRORS);
-  }
-
-  @Override
-  public QCommandStatus onExecute(
-    final QCommandContextType context)
-  {
-    context.parameterValue(FORMATTER)
-      .ifPresent(r -> {
-        switch (r) {
-          case RAW -> {
-            this.options()
-              .setFormatter(new CAFormatterRaw(this.terminal()));
-          }
-          case PRETTY -> {
-            this.options()
-              .setFormatter(new CAFormatterPretty(this.terminal()));
-          }
-        }
-      });
-
-    context.parameterValue(TERMINATE_ON_ERRORS)
-      .ifPresent(x -> {
-        this.options().terminateOnErrors()
-          .set(x.booleanValue());
-      });
-    return SUCCESS;
   }
 }

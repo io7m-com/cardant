@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
@@ -40,7 +39,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdLocationGet
-  extends CAShellCmdAbstract<CAICommandLocationGet, CAIResponseLocationGet>
+  extends CAShellCmdAbstractCR<CAICommandLocationGet, CAIResponseLocationGet>
 {
   private static final QParameterNamed1<CALocationID> ID =
     new QParameterNamed1<>(
@@ -54,14 +53,14 @@ public final class CAShellCmdLocationGet
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdLocationGet(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "location-get",
         new QConstant("Retrieve a location."),

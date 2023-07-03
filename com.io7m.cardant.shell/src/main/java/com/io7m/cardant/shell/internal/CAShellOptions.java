@@ -17,26 +17,71 @@
 
 package com.io7m.cardant.shell.internal;
 
+import com.io7m.cardant.shell.internal.formatting.CAFormatterPretty;
+import com.io7m.cardant.shell.internal.formatting.CAFormatterType;
+import org.jline.terminal.Terminal;
+
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Shell options.
- *
- * @param terminateOnErrors Terminate execution on errors
  */
 
-public record CAShellOptions(
-  AtomicBoolean terminateOnErrors)
+public final class CAShellOptions
 {
+  private final AtomicBoolean terminateOnErrors;
+  private CAFormatterType formatter;
+
   /**
    * Shell options.
    *
-   * @param terminateOnErrors Terminate execution on errors
+   * @param inTerminal The terminal
    */
 
-  public CAShellOptions
+  public CAShellOptions(
+    final Terminal inTerminal)
   {
-    Objects.requireNonNull(terminateOnErrors, "terminateOnErrors");
+    this.terminateOnErrors =
+      new AtomicBoolean(false);
+    this.formatter =
+      new CAFormatterPretty(inTerminal);
+  }
+
+  /**
+   * @return A flag indicating if the shell should exit on errors
+   */
+
+  public AtomicBoolean terminateOnErrors()
+  {
+    return this.terminateOnErrors;
+  }
+
+  /**
+   * Set the formatter.
+   *
+   * @param inFormatter The formatter
+   */
+
+  public void setFormatter(
+    final CAFormatterType inFormatter)
+  {
+    this.formatter =
+      Objects.requireNonNull(inFormatter, "formatter");
+  }
+
+  /**
+   * @return The shell formatter
+   */
+
+  public CAFormatterType formatter()
+  {
+    return this.formatter;
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[%s]".formatted(this.getClass().getSimpleName());
   }
 }

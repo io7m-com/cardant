@@ -18,12 +18,14 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
-import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
+import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 
@@ -33,37 +35,64 @@ import java.util.Optional;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "file-search-previous"
+ * "item-attachment-add"
  */
 
-public final class CAShellCmdFileSearchPrevious
-  extends CAShellCmdAbstractCR<CAICommandFileSearchBegin, CAIResponseFileSearch>
+public final class CAShellCmdItemAttachmentAdd
+  extends CAShellCmdAbstractCR<CAICommandItemAttachmentAdd, CAIResponseItemAttachmentAdd>
 {
+  private static final QParameterNamed1<CAItemID> ID =
+    new QParameterNamed1<>(
+      "--id",
+      List.of(),
+      new QConstant("The item ID."),
+      Optional.empty(),
+      CAItemID.class
+    );
+
+  private static final QParameterNamed1<CAFileID> FILE =
+    new QParameterNamed1<>(
+      "--file-id",
+      List.of(),
+      new QConstant("The file ID."),
+      Optional.empty(),
+      CAFileID.class
+    );
+
+  private static final QParameterNamed1<String> RELATION =
+    new QParameterNamed1<>(
+      "--relation",
+      List.of(),
+      new QConstant("The attachment relation."),
+      Optional.empty(),
+      String.class
+    );
+
   /**
    * Construct a command.
    *
    * @param inContext The context
    */
 
-  public CAShellCmdFileSearchPrevious(
+  public CAShellCmdItemAttachmentAdd(
     final CAShellContextType inContext)
   {
     super(
       inContext,
       new QCommandMetadata(
-        "file-search-previous",
-        new QConstant("Go to the previous page of files."),
+        "item-attachment-add",
+        new QConstant("Add or update an attachment on an item."),
         Optional.empty()
       ),
-      CAICommandFileSearchBegin.class,
-      CAIResponseFileSearch.class
+      CAICommandItemAttachmentAdd.class,
+      CAIResponseItemAttachmentAdd.class
     );
   }
 
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of();
+    return List.of(ID, FILE, RELATION);
   }
 
   @Override
@@ -74,13 +103,20 @@ public final class CAShellCmdFileSearchPrevious
     final var client =
       this.client();
 
-    final var files =
-      ((CAIResponseFileSearch) client.executeOrElseThrow(
-        new CAICommandFileSearchPrevious(),
+    final var itemID =
+      context.parameterValue(ID);
+    final var fileID =
+      context.parameterValue(FILE);
+    final var relation =
+      context.parameterValue(RELATION);
+
+    final var item =
+      ((CAIResponseItemAttachmentAdd) client.executeOrElseThrow(
+        new CAICommandItemAttachmentAdd(itemID, fileID, relation),
         CAClientException::ofError
       )).data();
 
-    this.formatter().formatFilesPage(files);
+    this.formatter().formatItem(item);
     return SUCCESS;
   }
 }

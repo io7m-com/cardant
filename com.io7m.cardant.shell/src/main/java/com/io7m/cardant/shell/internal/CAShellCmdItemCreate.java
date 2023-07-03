@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemCreate;
@@ -40,7 +39,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemCreate
-  extends CAShellCmdAbstract<CAICommandItemCreate, CAIResponseItemCreate>
+  extends CAShellCmdAbstractCR<CAICommandItemCreate, CAIResponseItemCreate>
 {
   private static final QParameterNamed01<CAItemID> ID =
     new QParameterNamed01<>(
@@ -63,14 +62,14 @@ public final class CAShellCmdItemCreate
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdItemCreate(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "item-create",
         new QConstant("Create an item."),
@@ -107,7 +106,7 @@ public final class CAShellCmdItemCreate
         CAClientException::ofError
       )).data();
 
-    CAItemFormatting.formatItem(context.output(), item);
+    this.formatter().formatItem(item);
     return SUCCESS;
   }
 }

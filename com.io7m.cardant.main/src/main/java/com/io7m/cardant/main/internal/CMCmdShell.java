@@ -17,9 +17,12 @@
 
 package com.io7m.cardant.main.internal;
 
+import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.server.api.CAServerFactoryType;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellFactoryType;
+import com.io7m.jade.api.ApplicationDirectories;
+import com.io7m.jade.api.ApplicationDirectoryConfiguration;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -84,13 +87,30 @@ public final class CMCmdShell implements QCommandType
 
     QLogback.configure(context);
 
+    final var directoryConfiguration =
+      ApplicationDirectoryConfiguration.builder()
+        .setApplicationName("com.io7m.cardant")
+        .setPortablePropertyName("com.io7m.cardant.portable")
+        .setOverridePropertyName("com.io7m.cardant.override")
+        .build();
+
+    final var directories =
+      ApplicationDirectories.get(directoryConfiguration);
+
+    final var preferences =
+      CAPreferencesService.openOrDefault(
+        directories.configurationDirectory()
+          .resolve("preferences.xml")
+      );
+
     final var shells =
-      ServiceLoader.load(CAShellFactoryType .class)
+      ServiceLoader.load(CAShellFactoryType.class)
         .findFirst()
         .orElseThrow(CMCmdShell::noService);
 
     final var configuration =
       new CAShellConfiguration(
+        preferences,
         Locale.getDefault(),
         Clock.systemUTC(),
         Optional.empty()

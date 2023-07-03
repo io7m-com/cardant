@@ -148,11 +148,18 @@ public final class CAClientSynchronous
     final CAFileID fileID,
     final Path file,
     final String contentType,
+    final String description,
     final Consumer<CAClientTransferStatistics> statistics)
     throws InterruptedException
   {
     final var handler = (CAHandlerType) this.currentHandler();
-    return handler.onExecuteFileUpload(fileID, file, contentType, statistics);
+    return handler.onExecuteFileUpload(
+      fileID,
+      file,
+      contentType,
+      description,
+      statistics
+    );
   }
 
   @Override

@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.api.CAClientTransferStatistics;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
@@ -35,7 +34,6 @@ import org.jline.reader.impl.completer.StringsCompleter;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.io7m.quarrel.core.QCommandStatus.FAILURE;
@@ -45,7 +43,8 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  * "file-get"
  */
 
-public final class CAShellCmdFileGet implements CAShellCmdType
+public final class CAShellCmdFileGet
+  extends CAShellCmdAbstract
 {
   private static final QParameterNamed1<CAFileID> FILE_ID =
     new QParameterNamed1<>(
@@ -65,27 +64,22 @@ public final class CAShellCmdFileGet implements CAShellCmdType
       Path.class
     );
 
-  private final CAClientSynchronousType client;
-  private final QCommandMetadata metadata;
-
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The shell context
    */
 
   public CAShellCmdFileGet(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
-    this.client =
-      Objects.requireNonNull(inClient, "client");
-
-    this.metadata =
+    super(
+      inContext,
       new QCommandMetadata(
         "file-get",
         new QConstant("Download a file."),
         Optional.empty()
-      );
+      ));
   }
 
   @Override
@@ -106,10 +100,10 @@ public final class CAShellCmdFileGet implements CAShellCmdType
 
     final var fileDefinition =
       (CAIResponseFileGet)
-        this.client.executeOrElseThrow(new CAICommandFileGet(fileId));
+        this.client().executeOrElseThrow(new CAICommandFileGet(fileId));
 
     final var fileInfo = fileDefinition.data();
-    CAFileFormatting.formatItem(context.output(), fileInfo);
+    this.formatter().formatFile(fileInfo);
 
     if (fileOpt.isEmpty()) {
       return SUCCESS;
@@ -122,7 +116,7 @@ public final class CAShellCmdFileGet implements CAShellCmdType
     }
 
     final var newFileName = outFileName + ".tmp";
-    this.client.fileDownloadOrThrow(
+    this.client().fileDownloadOrThrow(
       fileId,
       file,
       file.resolveSibling(newFileName),
@@ -154,17 +148,5 @@ public final class CAShellCmdFileGet implements CAShellCmdType
         .map(QParameterType::name)
         .toList()
     );
-  }
-
-  @Override
-  public QCommandMetadata metadata()
-  {
-    return this.metadata;
-  }
-
-  @Override
-  public String toString()
-  {
-    return "[%s]".formatted(this.getClass().getSimpleName());
   }
 }

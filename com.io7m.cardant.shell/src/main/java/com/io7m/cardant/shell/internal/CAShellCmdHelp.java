@@ -40,22 +40,24 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  * "help"
  */
 
-public final class CAShellCmdHelp implements CAShellCmdType
+public final class CAShellCmdHelp extends CAShellCmdAbstract
 {
-  private final QCommandMetadata metadata;
-
   /**
    * Construct a command.
+   *
+   * @param inContext The context
    */
 
-  public CAShellCmdHelp()
+  public CAShellCmdHelp(
+    final CAShellContextType inContext)
   {
-    this.metadata =
+    super(
+      inContext,
       new QCommandMetadata(
         "help",
         new QConstant("Display help for a given command."),
         Optional.empty()
-      );
+      ));
   }
 
   @Override
@@ -121,17 +123,5 @@ public final class CAShellCmdHelp implements CAShellCmdType
     }
 
     return SUCCESS;
-  }
-
-  @Override
-  public QCommandMetadata metadata()
-  {
-    return this.metadata;
-  }
-
-  @Override
-  public String toString()
-  {
-    return "[%s]".formatted(this.getClass().getSimpleName());
   }
 }

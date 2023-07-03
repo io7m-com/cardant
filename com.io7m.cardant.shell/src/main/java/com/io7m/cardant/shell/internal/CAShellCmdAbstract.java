@@ -18,74 +18,53 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientSynchronousType;
-import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
+import com.io7m.cardant.shell.internal.formatting.CAFormatterType;
 import com.io7m.quarrel.core.QCommandMetadata;
-import com.io7m.quarrel.core.QParameterType;
-import org.jline.reader.Completer;
-import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.terminal.Terminal;
 
 import java.util.Objects;
 
 /**
  * The abstract command implementation.
- *
- * @param <C> The command type
- * @param <R> The response type
  */
 
-public abstract class CAShellCmdAbstract<
-  C extends CAICommandType<R>,
-  R extends CAIResponseType>
+public abstract class CAShellCmdAbstract
   implements CAShellCmdType
 {
-  private final CAClientSynchronousType client;
-  private final Class<R> responseClass;
   private final QCommandMetadata metadata;
+  private final CAShellContextType context;
 
   /**
    * Construct a command.
    *
-   * @param inMetadata      The metadata
-   * @param inCommandClass  The command class
-   * @param inResponseClass The response class
-   * @param inClient        The client
+   * @param inMetadata The metadata
+   * @param inContext  The context
    */
 
   protected CAShellCmdAbstract(
-    final CAClientSynchronousType inClient,
-    final QCommandMetadata inMetadata,
-    final Class<C> inCommandClass,
-    final Class<R> inResponseClass)
+    final CAShellContextType inContext,
+    final QCommandMetadata inMetadata)
   {
-    this.client =
-      Objects.requireNonNull(inClient, "client");
+    this.context =
+      Objects.requireNonNull(inContext, "context");
     this.metadata =
       Objects.requireNonNull(inMetadata, "metadata");
-    Objects.requireNonNull(inCommandClass, "commandClass");
-    this.responseClass =
-      Objects.requireNonNull(inResponseClass, "responseClass");
   }
 
   protected final CAClientSynchronousType client()
   {
-    return this.client;
+    return this.context.client();
   }
 
-  protected final Class<R> responseClass()
+  protected final CAPreferencesServiceType preferences()
   {
-    return this.responseClass;
+    return this.context.preferences();
   }
 
-  @Override
-  public final Completer completer()
+  protected final CAShellOptions options()
   {
-    return new StringsCompleter(
-      this.onListNamedParameters()
-        .stream()
-        .map(QParameterType::name)
-        .toList()
-    );
+    return this.context.options();
   }
 
   @Override
@@ -98,5 +77,15 @@ public abstract class CAShellCmdAbstract<
   public final QCommandMetadata metadata()
   {
     return this.metadata;
+  }
+
+  protected final Terminal terminal()
+  {
+    return this.context.terminal();
+  }
+
+  protected final CAFormatterType formatter()
+  {
+    return this.context.options().formatter();
   }
 }

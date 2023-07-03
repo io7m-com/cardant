@@ -123,6 +123,7 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
    * @param fileID      The file ID
    * @param file        The input file
    * @param contentType The content type
+   * @param description The file description
    * @param statistics  A receiver of transfer statistics
    *
    * @return The result
@@ -134,6 +135,7 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
     CAFileID fileID,
     Path file,
     String contentType,
+    String description,
     Consumer<CAClientTransferStatistics> statistics)
     throws InterruptedException;
 
@@ -143,6 +145,7 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
    * @param fileID      The file ID
    * @param file        The input file
    * @param contentType The content type
+   * @param description The file description
    * @param statistics  A receiver of transfer statistics
    *
    * @return The result
@@ -155,10 +158,11 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
     final CAFileID fileID,
     final Path file,
     final String contentType,
+    final String description,
     final Consumer<CAClientTransferStatistics> statistics)
     throws InterruptedException, CAClientException
   {
-    return this.fileUpload(fileID, file, contentType, statistics)
+    return this.fileUpload(fileID, file, contentType, description, statistics)
       .orElseThrow(CAClientException::ofError);
   }
 

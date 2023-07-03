@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CASizeRange;
@@ -43,7 +42,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdFileSearchBegin
-  extends CAShellCmdAbstract<CAICommandFileSearchBegin, CAIResponseFileSearch>
+  extends CAShellCmdAbstractCR<CAICommandFileSearchBegin, CAIResponseFileSearch>
 {
   private static final QParameterNamed01<String> DESCRIPTION =
     new QParameterNamed01<>(
@@ -84,14 +83,14 @@ public final class CAShellCmdFileSearchBegin
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdFileSearchBegin(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "file-search-begin",
         new QConstant("Start searching for files."),
@@ -136,7 +135,7 @@ public final class CAShellCmdFileSearchBegin
         CAClientException::ofError
       )).data();
 
-    CAFileFormatting.formatFiles(context.output(), files);
+    this.formatter().formatFilesPage(files);
     return SUCCESS;
   }
 }

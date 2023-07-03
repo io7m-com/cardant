@@ -739,6 +739,7 @@ public final class CAHandler1 extends CAHandlerAbstract
           );
         }
 
+        tracker.completed();
         Files.move(fileTmp, file, REPLACE_EXISTING, ATOMIC_MOVE);
       }
     }
@@ -749,6 +750,7 @@ public final class CAHandler1 extends CAHandlerAbstract
     final CAFileID fileID,
     final Path file,
     final String contentType,
+    final String description,
     final Consumer<CAClientTransferStatistics> statistics)
     throws InterruptedException
   {
@@ -768,13 +770,13 @@ public final class CAHandler1 extends CAHandlerAbstract
             .append("&FileID=")
             .append(URLEncoder.encode(fileID.displayId(), UTF_8))
             .append("&FileDescription=")
+            .append(URLEncoder.encode(description, UTF_8))
             .append("&HashAlgorithm=SHA-256")
             .append("&HashValue=")
             .append(URLEncoder.encode(hash, UTF_8))
             .toString()
         );
 
-      final HttpResponse<byte[]> response;
       final var clock = this.configuration().clock();
       try (var tracker =
              new CATransferStatisticsTracker(clock, size, statistics)) {
@@ -790,15 +792,18 @@ public final class CAHandler1 extends CAHandlerAbstract
             .build();
 
         mainPublisher.subscribe(statisticsSubscriber);
-        response = this.httpClient().send(request, ofByteArray());
-      }
+        final HttpResponse<byte[]> response =
+          this.httpClient().send(request, ofByteArray());
 
-      final var responseActual = this.readResponseAsByteArray(response);
-      if (responseActual instanceof final CAIResponseError error) {
-        return new HBResultFailure<>(error);
-      }
+        final var responseActual =
+          this.readResponseAsByteArray(response);
+        if (responseActual instanceof final CAIResponseError error) {
+          return new HBResultFailure<>(error);
+        }
 
-      return new HBResultSuccess<>(fileID);
+        tracker.completed();
+        return new HBResultSuccess<>(fileID);
+      }
     } catch (final CAKnownErrorException e) {
       return new HBResultFailure<>(e.error);
     } catch (final Exception e) {

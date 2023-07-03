@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
@@ -41,7 +40,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemMetadataPut
-  extends CAShellCmdAbstract<CAICommandItemMetadataPut, CAIResponseItemMetadataPut>
+  extends CAShellCmdAbstractCR<CAICommandItemMetadataPut, CAIResponseItemMetadataPut>
 {
   private static final QParameterNamed1<CAItemID> ID =
     new QParameterNamed1<>(
@@ -73,14 +72,14 @@ public final class CAShellCmdItemMetadataPut
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdItemMetadataPut(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "item-metadata-put",
         new QConstant("Add or update metadata on an item."),
@@ -121,7 +120,7 @@ public final class CAShellCmdItemMetadataPut
         CAClientException::ofError
       )).data();
 
-    CAItemFormatting.formatItem(context.output(), item);
+    this.formatter().formatItem(item);
     return SUCCESS;
   }
 }

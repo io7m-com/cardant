@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAListLocationBehaviourType;
@@ -46,7 +45,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemSearchBegin
-  extends CAShellCmdAbstract<CAICommandItemSearchBegin, CAIResponseItemSearch>
+  extends CAShellCmdAbstractCR<CAICommandItemSearchBegin, CAIResponseItemSearch>
 {
   private static final QParameterNamed01<String> SEARCH =
     new QParameterNamed01<>(
@@ -78,14 +77,14 @@ public final class CAShellCmdItemSearchBegin
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdItemSearchBegin(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "item-search-begin",
         new QConstant("Start searching for items."),
@@ -141,7 +140,7 @@ public final class CAShellCmdItemSearchBegin
         CAClientException::ofError
       )).data();
 
-    CAItemFormatting.formatItemSummaries(context.output(), items);
+    this.formatter().formatItemsPage(items);
     return SUCCESS;
   }
 }

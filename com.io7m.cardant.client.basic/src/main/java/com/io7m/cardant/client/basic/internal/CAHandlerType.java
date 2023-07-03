@@ -80,6 +80,7 @@ public interface CAHandlerType
    * @param fileID      The file ID
    * @param file        The input file
    * @param contentType The content type
+   * @param description The file description
    * @param statistics  A receiver of transfer statistics
    *
    * @return The result
@@ -91,6 +92,7 @@ public interface CAHandlerType
     CAFileID fileID,
     Path file,
     String contentType,
+    String description,
     Consumer<CAClientTransferStatistics> statistics)
     throws InterruptedException;
 

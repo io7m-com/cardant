@@ -18,6 +18,7 @@
 package com.io7m.cardant.tests.shell;
 
 
+import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellValueConverters;
 import com.io7m.cardant.shell.CAShells;
@@ -54,6 +55,9 @@ public final class CAShellCommandsDocumentation
       new CAShells();
     final var configuration =
       new CAShellConfiguration(
+        CAPreferencesService.openOrDefault(
+          Files.createTempFile("cardant-", ".txt")
+        ),
         Locale.ROOT,
         Clock.systemUTC(),
         Optional.empty()

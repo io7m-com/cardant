@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CALocationID;
@@ -41,7 +40,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemRepositAdd
-  extends CAShellCmdAbstract<CAICommandItemReposit, CAIResponseItemReposit>
+  extends CAShellCmdAbstractCR<CAICommandItemReposit, CAIResponseItemReposit>
 {
   private static final QParameterNamed1<CAItemID> ITEM =
     new QParameterNamed1<>(
@@ -73,14 +72,14 @@ public final class CAShellCmdItemRepositAdd
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdItemRepositAdd(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "item-reposit-add",
         new QConstant("Add instances of items to locations."),
@@ -120,7 +119,7 @@ public final class CAShellCmdItemRepositAdd
         CAClientException::ofError
       )).data();
 
-    CAItemFormatting.formatItem(context.output(), item);
+    this.formatter().formatItem(item);
     return SUCCESS;
   }
 }

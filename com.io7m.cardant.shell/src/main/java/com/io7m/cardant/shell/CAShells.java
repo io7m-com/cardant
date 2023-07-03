@@ -17,15 +17,23 @@
 package com.io7m.cardant.shell;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.basic.CAClients;
+import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.shell.internal.CAShell;
+import com.io7m.cardant.shell.internal.CAShellCmdBookmarkList;
+import com.io7m.cardant.shell.internal.CAShellCmdBookmarkLogin;
+import com.io7m.cardant.shell.internal.CAShellCmdBookmarkPut;
+import com.io7m.cardant.shell.internal.CAShellCmdBookmarkRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdFileGet;
 import com.io7m.cardant.shell.internal.CAShellCmdFilePut;
 import com.io7m.cardant.shell.internal.CAShellCmdFileSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdFileSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdFileSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdFilesRecent;
 import com.io7m.cardant.shell.internal.CAShellCmdHelp;
+import com.io7m.cardant.shell.internal.CAShellCmdItemAttachmentAdd;
 import com.io7m.cardant.shell.internal.CAShellCmdItemCreate;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
@@ -44,6 +52,7 @@ import com.io7m.cardant.shell.internal.CAShellCmdLogout;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
 import com.io7m.cardant.shell.internal.CAShellCmdType;
 import com.io7m.cardant.shell.internal.CAShellCmdVersion;
+import com.io7m.cardant.shell.internal.CAShellContextType;
 import com.io7m.cardant.shell.internal.CAShellOptions;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.DefaultParser;
@@ -51,12 +60,13 @@ import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.completer.ArgumentCompleter;
 import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.reader.impl.history.DefaultHistory;
+import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -101,35 +111,47 @@ public final class CAShells implements CAShellFactoryType
       terminal.writer();
 
     final var options =
-      new CAShellOptions(
-        new AtomicBoolean(false)
+      new CAShellOptions(terminal);
+
+    final var context =
+      new CAShellContext(
+        client,
+        options,
+        configuration.preferences(),
+        terminal
       );
 
     final List<CAShellCmdType> commands =
       List.of(
-        new CAShellCmdFileGet(client),
-        new CAShellCmdFilePut(client),
-        new CAShellCmdFileSearchBegin(client),
-        new CAShellCmdFileSearchNext(client),
-        new CAShellCmdFileSearchPrevious(client),
-        new CAShellCmdHelp(),
-        new CAShellCmdItemCreate(client),
-        new CAShellCmdItemGet(client),
-        new CAShellCmdItemMetadataPut(client),
-        new CAShellCmdItemMetadataRemove(client),
-        new CAShellCmdItemRepositAdd(client),
-        new CAShellCmdItemRepositMove(client),
-        new CAShellCmdItemRepositRemove(client),
-        new CAShellCmdItemSearchBegin(client),
-        new CAShellCmdItemSearchNext(client),
-        new CAShellCmdItemSearchPrevious(client),
-        new CAShellCmdLocationGet(client),
-        new CAShellCmdLocationList(client),
-        new CAShellCmdLocationPut(client),
-        new CAShellCmdLogin(client),
-        new CAShellCmdLogout(client),
-        new CAShellCmdSet(options),
-        new CAShellCmdVersion()
+        new CAShellCmdBookmarkList(context),
+        new CAShellCmdBookmarkLogin(context),
+        new CAShellCmdBookmarkPut(context),
+        new CAShellCmdBookmarkRemove(context),
+        new CAShellCmdFileGet(context),
+        new CAShellCmdFilePut(context),
+        new CAShellCmdFileSearchBegin(context),
+        new CAShellCmdFileSearchNext(context),
+        new CAShellCmdFileSearchPrevious(context),
+        new CAShellCmdFilesRecent(context),
+        new CAShellCmdHelp(context),
+        new CAShellCmdItemAttachmentAdd(context),
+        new CAShellCmdItemCreate(context),
+        new CAShellCmdItemGet(context),
+        new CAShellCmdItemMetadataPut(context),
+        new CAShellCmdItemMetadataRemove(context),
+        new CAShellCmdItemRepositAdd(context),
+        new CAShellCmdItemRepositMove(context),
+        new CAShellCmdItemRepositRemove(context),
+        new CAShellCmdItemSearchBegin(context),
+        new CAShellCmdItemSearchNext(context),
+        new CAShellCmdItemSearchPrevious(context),
+        new CAShellCmdLocationGet(context),
+        new CAShellCmdLocationList(context),
+        new CAShellCmdLocationPut(context),
+        new CAShellCmdLogin(context),
+        new CAShellCmdLogout(context),
+        new CAShellCmdSet(context),
+        new CAShellCmdVersion(context)
       );
 
     final var commandsNamed =
@@ -173,5 +195,54 @@ public final class CAShells implements CAShellFactoryType
       commandsNamed,
       reader
     );
+  }
+
+  private static final class CAShellContext
+    implements CAShellContextType
+  {
+    private final CAClientSynchronousType client;
+    private final CAShellOptions options;
+    private final CAPreferencesServiceType preferences;
+    private final Terminal terminal;
+
+    private CAShellContext(
+      final CAClientSynchronousType inClient,
+      final CAShellOptions inOptions,
+      final CAPreferencesServiceType inPreferences,
+      final Terminal inTerminal)
+    {
+      this.client =
+        Objects.requireNonNull(inClient, "client");
+      this.options =
+        Objects.requireNonNull(inOptions, "options");
+      this.preferences =
+        Objects.requireNonNull(inPreferences, "preferences");
+      this.terminal =
+        Objects.requireNonNull(inTerminal, "terminal");
+    }
+
+    @Override
+    public CAClientSynchronousType client()
+    {
+      return this.client;
+    }
+
+    @Override
+    public CAShellOptions options()
+    {
+      return this.options;
+    }
+
+    @Override
+    public CAPreferencesServiceType preferences()
+    {
+      return this.preferences;
+    }
+
+    @Override
+    public Terminal terminal()
+    {
+      return this.terminal;
+    }
   }
 }

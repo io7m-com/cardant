@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -27,7 +26,6 @@ import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
@@ -36,29 +34,24 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  * "logout"
  */
 
-public final class CAShellCmdLogout implements CAShellCmdType
+public final class CAShellCmdLogout extends CAShellCmdAbstract
 {
-  private final CAClientSynchronousType client;
-  private final QCommandMetadata metadata;
-
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdLogout(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
-    this.client =
-      Objects.requireNonNull(inClient, "client");
-
-    this.metadata =
+    super(
+      inContext,
       new QCommandMetadata(
         "logout",
         new QStringType.QConstant("Log out."),
         Optional.empty()
-      );
+      ));
   }
 
   @Override
@@ -83,19 +76,7 @@ public final class CAShellCmdLogout implements CAShellCmdType
     final QCommandContextType context)
     throws Exception
   {
-    this.client.disconnect();
+    this.client().disconnect();
     return SUCCESS;
-  }
-
-  @Override
-  public QCommandMetadata metadata()
-  {
-    return this.metadata;
-  }
-
-  @Override
-  public String toString()
-  {
-    return "[%s]".formatted(this.getClass().getSimpleName());
   }
 }

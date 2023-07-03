@@ -26,6 +26,8 @@ open module com.io7m.cardant.main
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires com.io7m.cardant.client.preferences.api;
+  requires com.io7m.cardant.client.preferences.vanilla;
   requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.database.postgres;
   requires com.io7m.cardant.error_codes;
@@ -51,6 +53,8 @@ open module com.io7m.cardant.main
   requires com.io7m.repetoir.core;
   requires jul.to.slf4j;
   requires org.slf4j;
+  requires com.io7m.jade.api;
+  requires com.io7m.jade.vanilla;
 
   exports com.io7m.cardant.main.internal
     to com.io7m.cardant.documentation;

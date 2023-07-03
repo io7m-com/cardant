@@ -17,15 +17,13 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
-import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import org.jline.builtins.Completers;
+import org.jline.reader.Completer;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,11 +31,10 @@ import java.util.Optional;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "file-search-previous"
+ * "files-recent"
  */
 
-public final class CAShellCmdFileSearchPrevious
-  extends CAShellCmdAbstractCR<CAICommandFileSearchBegin, CAIResponseFileSearch>
+public final class CAShellCmdFilesRecent extends CAShellCmdAbstract
 {
   /**
    * Construct a command.
@@ -45,19 +42,16 @@ public final class CAShellCmdFileSearchPrevious
    * @param inContext The context
    */
 
-  public CAShellCmdFileSearchPrevious(
+  public CAShellCmdFilesRecent(
     final CAShellContextType inContext)
   {
     super(
       inContext,
       new QCommandMetadata(
-        "file-search-previous",
-        new QConstant("Go to the previous page of files."),
+        "files-recent",
+        new QConstant("List the recent files."),
         Optional.empty()
-      ),
-      CAICommandFileSearchBegin.class,
-      CAIResponseFileSearch.class
-    );
+      ));
   }
 
   @Override
@@ -71,16 +65,24 @@ public final class CAShellCmdFileSearchPrevious
     final QCommandContextType context)
     throws Exception
   {
-    final var client =
-      this.client();
+    final var output =
+      context.output();
 
     final var files =
-      ((CAIResponseFileSearch) client.executeOrElseThrow(
-        new CAICommandFileSearchPrevious(),
-        CAClientException::ofError
-      )).data();
+      this.preferences().preferences()
+        .recentFiles();
 
-    this.formatter().formatFilesPage(files);
+    for (final var file : files) {
+      output.println(file.toString());
+    }
+
+    output.flush();
     return SUCCESS;
+  }
+
+  @Override
+  public Completer completer()
+  {
+    return new Completers.OptionCompleter(List.of(), 1);
   }
 }

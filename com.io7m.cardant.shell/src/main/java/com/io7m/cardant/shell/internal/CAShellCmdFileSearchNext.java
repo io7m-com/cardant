@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchNext;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
@@ -38,19 +37,19 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdFileSearchNext
-  extends CAShellCmdAbstract<CAICommandFileSearchBegin, CAIResponseFileSearch>
+  extends CAShellCmdAbstractCR<CAICommandFileSearchBegin, CAIResponseFileSearch>
 {
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdFileSearchNext(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "file-search-next",
         new QConstant("Go to the next page of files."),
@@ -81,7 +80,7 @@ public final class CAShellCmdFileSearchNext
         CAClientException::ofError
       )).data();
 
-    CAFileFormatting.formatFiles(context.output(), files);
+    this.formatter().formatFilesPage(files);
     return SUCCESS;
   }
 }

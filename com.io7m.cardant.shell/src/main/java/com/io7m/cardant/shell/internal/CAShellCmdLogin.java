@@ -19,7 +19,6 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.idstore.model.IdName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
@@ -45,7 +44,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  * The shell login command.
  */
 
-public final class CAShellCmdLogin implements CAShellCmdType
+public final class CAShellCmdLogin extends CAShellCmdAbstract
 {
   private static final QParameterPositional<URI> SERVER =
     new QParameterPositional<>(
@@ -68,27 +67,21 @@ public final class CAShellCmdLogin implements CAShellCmdType
       String.class
     );
 
-  private final CAClientSynchronousType client;
-  private final QCommandMetadata metadata;
-
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
-
   public CAShellCmdLogin(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
-    this.client =
-      Objects.requireNonNull(inClient, "client");
-
-    this.metadata =
+    super(
+      inContext,
       new QCommandMetadata(
         "login",
         new QConstant("Log in."),
         Optional.empty()
-      );
+      ));
   }
 
   @Override
@@ -140,19 +133,7 @@ public final class CAShellCmdLogin implements CAShellCmdType
         Map.of()
       );
 
-    this.client.loginOrElseThrow(credentials, CAClientException::ofError);
+    this.client().loginOrElseThrow(credentials, CAClientException::ofError);
     return SUCCESS;
-  }
-
-  @Override
-  public QCommandMetadata metadata()
-  {
-    return this.metadata;
-  }
-
-  @Override
-  public String toString()
-  {
-    return "[%s]".formatted(this.getClass().getSimpleName());
   }
 }

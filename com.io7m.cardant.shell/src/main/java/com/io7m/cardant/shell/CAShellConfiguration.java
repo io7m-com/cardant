@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.shell;
 
+import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import org.jline.terminal.Terminal;
 
 import java.time.Clock;
@@ -26,12 +27,14 @@ import java.util.Optional;
 /**
  * The shell configuration.
  *
- * @param locale   The locale
- * @param clock    The clock service
- * @param terminal The terminal
+ * @param locale      The locale
+ * @param clock       The clock service
+ * @param terminal    The terminal
+ * @param preferences The preferences service
  */
 
 public record CAShellConfiguration(
+  CAPreferencesServiceType preferences,
   Locale locale,
   Clock clock,
   Optional<Terminal> terminal)
@@ -39,13 +42,15 @@ public record CAShellConfiguration(
   /**
    * The shell configuration.
    *
-   * @param locale   The locale
-   * @param clock    The clock service
-   * @param terminal The terminal
+   * @param locale      The locale
+   * @param clock       The clock service
+   * @param terminal    The terminal
+   * @param preferences The preferences service
    */
 
   public CAShellConfiguration
   {
+    Objects.requireNonNull(preferences, "preferences");
     Objects.requireNonNull(locale, "locale");
     Objects.requireNonNull(clock, "clock");
     Objects.requireNonNull(terminal, "terminal");

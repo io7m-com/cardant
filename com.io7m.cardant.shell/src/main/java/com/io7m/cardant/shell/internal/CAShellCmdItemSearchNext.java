@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
@@ -38,19 +37,19 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemSearchNext
-  extends CAShellCmdAbstract<CAICommandItemSearchBegin, CAIResponseItemSearch>
+  extends CAShellCmdAbstractCR<CAICommandItemSearchBegin, CAIResponseItemSearch>
 {
   /**
    * Construct a command.
    *
-   * @param inClient The client
+   * @param inContext The context
    */
 
   public CAShellCmdItemSearchNext(
-    final CAClientSynchronousType inClient)
+    final CAShellContextType inContext)
   {
     super(
-      inClient,
+      inContext,
       new QCommandMetadata(
         "item-search-next",
         new QConstant("Go to the next page of items."),
@@ -81,7 +80,7 @@ public final class CAShellCmdItemSearchNext
         CAClientException::ofError
       )).data();
 
-    CAItemFormatting.formatItemSummaries(context.output(), items);
+    this.formatter().formatItemsPage(items);
     return SUCCESS;
   }
 }

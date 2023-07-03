@@ -121,4 +121,14 @@ final class CATransferStatisticsTracker implements AutoCloseable
     return "[CATransferStatisticsTracker 0x%s]"
       .formatted(toUnsignedString(this.hashCode(), 16));
   }
+
+  /**
+   * The transfer is completed.
+   */
+
+  public void completed()
+  {
+    this.transferred = this.expected;
+    this.broadcast();
+  }
 }
