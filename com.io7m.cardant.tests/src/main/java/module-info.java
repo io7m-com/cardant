@@ -27,8 +27,6 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.database.postgres;
   requires com.io7m.cardant.error_codes;
-  requires com.io7m.cardant.gui.main;
-  requires com.io7m.cardant.gui;
   requires com.io7m.cardant.main;
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.protocol.api;

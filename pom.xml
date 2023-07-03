@@ -28,8 +28,6 @@
     <module>com.io7m.cardant.database.api</module>
     <module>com.io7m.cardant.database.postgres</module>
     <module>com.io7m.cardant.error_codes</module>
-    <module>com.io7m.cardant.gui.main</module>
-    <module>com.io7m.cardant.gui</module>
     <module>com.io7m.cardant.main</module>
     <module>com.io7m.cardant.model</module>
     <module>com.io7m.cardant.oci</module>
@@ -323,76 +321,6 @@
         <groupId>com.io7m.jxtrand</groupId>
         <artifactId>com.io7m.jxtrand.api</artifactId>
         <version>${com.io7m.jxtrand.version}</version>
-      </dependency>
-
-      <!-- JavaFX -->
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-base</artifactId>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-base</artifactId>
-        <classifier>linux</classifier>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-base</artifactId>
-        <classifier>windows</classifier>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <classifier>linux</classifier>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <classifier>windows</classifier>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-graphics</artifactId>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-graphics</artifactId>
-        <classifier>linux</classifier>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-graphics</artifactId>
-        <classifier>windows</classifier>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-fxml</artifactId>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-fxml</artifactId>
-        <classifier>linux</classifier>
-        <version>${javafx.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-fxml</artifactId>
-        <classifier>windows</classifier>
-        <version>${javafx.version}</version>
       </dependency>
 
       <!-- GUI -->
