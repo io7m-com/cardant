@@ -39,6 +39,7 @@ import java.util.Objects;
 import static com.io7m.cardant.shell.internal.formatting.CAFormatterRaw.formatSize;
 import static com.io7m.tabla.core.TColumnWidthConstraint.atLeastContent;
 import static com.io7m.tabla.core.TColumnWidthConstraint.atLeastContentOrHeader;
+import static com.io7m.tabla.core.TConstraintHardness.SOFT_CONSTRAINT;
 import static com.io7m.tabla.core.TTableWidthConstraintType.tableWidthExact;
 
 /**
@@ -108,7 +109,7 @@ public final class CAFormatterPretty implements CAFormatterType
   {
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width))
+        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
         .declareColumn("Attribute", FILE_ATTRIBUTE_CONSTRAINT)
         .declareColumn("Value", atLeastContent());
 
@@ -167,7 +168,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width))
+        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
         .declareColumn("File ID", UUID_CONSTRAINT)
         .declareColumn("Description", atLeastContent());
 
@@ -205,7 +206,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
       final var tableBuilder =
         Tabla.builder()
-          .setWidthConstraint(tableWidthExact(width))
+          .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
           .declareColumn("Name", atLeastContentOrHeader())
           .declareColumn("Value", atLeastContentOrHeader());
 
@@ -233,7 +234,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
       final var tableBuilder =
         Tabla.builder()
-          .setWidthConstraint(tableWidthExact(width))
+          .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
           .declareColumn("File ID", UUID_CONSTRAINT)
           .declareColumn("Relation", atLeastContentOrHeader());
 
@@ -254,7 +255,7 @@ public final class CAFormatterPretty implements CAFormatterType
   {
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width))
+        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
         .declareColumn("Attribute", ITEM_ATTRIBUTE_CONSTRAINT)
         .declareColumn("Value", atLeastContent());
 
@@ -297,7 +298,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width))
+        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
         .declareColumn("Item ID", UUID_CONSTRAINT)
         .declareColumn("Description", atLeastContentOrHeader());
 
@@ -323,7 +324,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(tableWidthExact(width))
+        .setWidthConstraint(tableWidthExact(width, SOFT_CONSTRAINT))
         .declareColumn("Name", atLeastContentOrHeader())
         .declareColumn("Host", atLeastContentOrHeader())
         .declareColumn("Port", atLeastContentOrHeader())
