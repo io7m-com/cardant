@@ -690,6 +690,7 @@
     <Or>
       <Class name="com.io7m.cardant.shell.CAShellConfiguration"/>
       <Class name="com.io7m.cardant.shell.internal.CAShellOptions"/>
+      <Class name="com.io7m.cardant.shell.internal.CAShellTerminalHolder"/>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>

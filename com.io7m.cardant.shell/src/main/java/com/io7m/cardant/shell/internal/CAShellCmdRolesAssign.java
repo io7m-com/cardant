@@ -18,7 +18,6 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
-import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.quarrel.core.QCommandContextType;

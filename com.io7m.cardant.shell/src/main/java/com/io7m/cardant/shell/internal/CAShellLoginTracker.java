@@ -75,4 +75,10 @@ public final class CAShellLoginTracker
   {
     return "The user ID login tracker service.";
   }
+
+  @Override
+  public String toString()
+  {
+    return "[%s]".formatted(this.getClass().getSimpleName());
+  }
 }

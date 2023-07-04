@@ -51,6 +51,18 @@
     </dependency>
 
     <dependency>
+      <groupId>com.io7m.medrina</groupId>
+      <artifactId>com.io7m.medrina.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.lanark</groupId>
+      <artifactId>com.io7m.lanark.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.repetoir</groupId>
+      <artifactId>com.io7m.repetoir.core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.io7m.junreachable</groupId>
       <artifactId>com.io7m.junreachable.core</artifactId>
     </dependency>
