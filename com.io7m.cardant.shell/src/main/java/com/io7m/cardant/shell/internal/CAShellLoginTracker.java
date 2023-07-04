@@ -14,41 +14,65 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.client.api;
 
-import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIResponseError;
-import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.hibiscus.api.HBClientAsynchronousType;
+package com.io7m.cardant.shell.internal;
+
 import com.io7m.repetoir.core.RPServiceType;
 
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * The type of client instances.
+ * A tracker for login details.
  */
 
-public interface CAClientAsynchronousType
-  extends HBClientAsynchronousType<
-  CAClientException,
-  CAICommandType<?>,
-  CAIResponseType,
-  CAIResponseType,
-  CAIResponseError,
-  CAClientEventType,
-  CAClientCredentials>,
-  RPServiceType
+public final class CAShellLoginTracker
+  implements RPServiceType
 {
-  @Override
-  default String description()
+  private Optional<UUID> userId;
+
+  /**
+   * A tracker for login details.
+   */
+
+  public CAShellLoginTracker()
   {
-    return "An asynchronous inventory client.";
+    this.userId = Optional.empty();
   }
 
   /**
-   * @return The current logged-in user
+   * Set the current user ID.
+   *
+   * @param newUserId The new user ID
    */
 
-  Optional<UUID> userId();
+  public void setUserId(
+    final UUID newUserId)
+  {
+    this.userId = Optional.of(newUserId);
+  }
+
+  /**
+   * Clear the current user ID.
+   */
+
+  public void clearUserId()
+  {
+    this.userId = Optional.empty();
+  }
+
+  /**
+   * @return The current user ID
+   */
+
+  public Optional<UUID> userId()
+  {
+    return this.userId;
+  }
+
+  @Override
+  public String description()
+  {
+    return "The user ID login tracker service.";
+  }
 }

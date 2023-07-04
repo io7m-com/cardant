@@ -24,6 +24,7 @@ import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 
@@ -67,14 +68,14 @@ public final class CAShellCmdSet extends CAShellCmdAbstract
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inServices The context
    */
 
   public CAShellCmdSet(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "set",
         new QConstant("Set shell options."),

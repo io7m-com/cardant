@@ -22,8 +22,10 @@ import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.medrina.api.MRoleName;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * A shell formatter for data.
@@ -89,5 +91,17 @@ public interface CAFormatterType
 
   void formatBookmarks(
     List<CAPreferenceServerBookmark> bookmarks)
+    throws Exception;
+
+  /**
+   * Format a list of roles.
+   *
+   * @param roles The roles
+   *
+   * @throws Exception On errors
+   */
+
+  void formatRoles(
+    Set<MRoleName> roles)
     throws Exception;
 }

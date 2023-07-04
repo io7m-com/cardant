@@ -22,6 +22,7 @@ import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParameterType;
 import com.io7m.quarrel.core.QStringType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
@@ -39,14 +40,14 @@ public final class CAShellCmdLogout extends CAShellCmdAbstract
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inServices The context
    */
 
   public CAShellCmdLogout(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "logout",
         new QStringType.QConstant("Log out."),
@@ -77,6 +78,7 @@ public final class CAShellCmdLogout extends CAShellCmdAbstract
     throws Exception
   {
     this.client().disconnect();
+    this.loginTracker().clearUserId();
     return SUCCESS;
   }
 }

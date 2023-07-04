@@ -32,6 +32,7 @@ import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 
 import java.util.List;
 import java.util.Objects;
@@ -95,14 +96,14 @@ public final class CAShellCmdLocationPut
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inServices The context
    */
 
   public CAShellCmdLocationPut(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "location-put",
         new QConstant("Create or update a location."),

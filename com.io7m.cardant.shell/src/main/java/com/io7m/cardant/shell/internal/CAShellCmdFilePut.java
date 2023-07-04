@@ -28,6 +28,7 @@ import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParameterType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.apache.tika.Tika;
 import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
@@ -90,14 +91,14 @@ public final class CAShellCmdFilePut extends CAShellCmdAbstract
   /**
    * Construct a command.
    *
-   * @param inContext The shell context
+   * @param inServices The shell context
    */
 
   public CAShellCmdFilePut(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "file-put",
         new QConstant("Upload a file."),

@@ -23,6 +23,7 @@ import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParameterType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
@@ -40,14 +41,14 @@ public final class CAShellCmdVersion extends CAShellCmdAbstract
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inServices The context
    */
 
   public CAShellCmdVersion(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "version",
         new QConstant("Display the shell version."),

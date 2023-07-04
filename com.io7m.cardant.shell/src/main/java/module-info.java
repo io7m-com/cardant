@@ -32,6 +32,7 @@ module com.io7m.cardant.shell
 
   requires com.io7m.jmulticlose.core;
   requires com.io7m.junreachable.core;
+  requires com.io7m.lanark.core;
   requires com.io7m.quarrel.core;
   requires com.io7m.tabla.core;
   requires hu.webarticum.treeprinter;

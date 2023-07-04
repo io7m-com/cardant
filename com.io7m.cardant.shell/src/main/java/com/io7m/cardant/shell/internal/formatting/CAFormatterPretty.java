@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
 import com.io7m.tabla.core.TColumnWidthConstraintMaximumAtMost;
 import com.io7m.tabla.core.TColumnWidthConstraintMinimumAny;
@@ -34,8 +35,11 @@ import com.io7m.tabla.core.TTableWidthConstraintRange;
 import com.io7m.tabla.core.Tabla;
 import org.jline.terminal.Terminal;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.io7m.cardant.shell.internal.formatting.CAFormatterRaw.formatSize;
 import static com.io7m.tabla.core.TColumnWidthConstraint.atLeastContent;
@@ -345,6 +349,30 @@ public final class CAFormatterPretty implements CAFormatterType
         .addCell(Integer.toString(bookmark.port()))
         .addCell(Boolean.toString(bookmark.isHTTPs()))
         .addCell(userOf(bookmark.credentials()));
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatRoles(
+    final Set<MRoleName> roles)
+    throws Exception
+  {
+    if (roles.isEmpty()) {
+      return;
+    }
+
+    final var roleSorted = new ArrayList<>(roles);
+    Collections.sort(roleSorted);
+
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(1))
+        .declareColumn("Role", atLeastContentOrHeader());
+
+    for (final var role : roleSorted) {
+      tableBuilder.addRow().addCell(role.value().value());
     }
 
     this.renderTable(tableBuilder.build());

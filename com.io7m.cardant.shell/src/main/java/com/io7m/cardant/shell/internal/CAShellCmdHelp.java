@@ -28,6 +28,7 @@ import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParametersPositionalAny;
 import com.io7m.quarrel.core.QParametersPositionalType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 
@@ -45,14 +46,14 @@ public final class CAShellCmdHelp extends CAShellCmdAbstract
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inServices The context
    */
 
   public CAShellCmdHelp(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "help",
         new QConstant("Display help for a given command."),

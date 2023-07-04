@@ -17,11 +17,8 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -29,44 +26,28 @@ import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
+import org.jline.builtins.Completers;
+import org.jline.reader.Completer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "item-attachment-add"
+ * "roles-get"
  */
 
-public final class CAShellCmdItemAttachmentAdd
-  extends CAShellCmdAbstractCR<CAICommandItemAttachmentAdd, CAIResponseItemAttachmentAdd>
+public final class CAShellCmdRolesGet extends CAShellCmdAbstract
 {
-  private static final QParameterNamed1<CAItemID> ID =
+  private static final QParameterNamed1<UUID> USER_ID =
     new QParameterNamed1<>(
-      "--id",
+      "--user",
       List.of(),
-      new QConstant("The item ID."),
+      new QConstant("The user ID."),
       Optional.empty(),
-      CAItemID.class
-    );
-
-  private static final QParameterNamed1<CAFileID> FILE =
-    new QParameterNamed1<>(
-      "--file-id",
-      List.of(),
-      new QConstant("The file ID."),
-      Optional.empty(),
-      CAFileID.class
-    );
-
-  private static final QParameterNamed1<String> RELATION =
-    new QParameterNamed1<>(
-      "--relation",
-      List.of(),
-      new QConstant("The attachment relation."),
-      Optional.empty(),
-      String.class
+      UUID.class
     );
 
   /**
@@ -75,24 +56,29 @@ public final class CAShellCmdItemAttachmentAdd
    * @param inServices The context
    */
 
-  public CAShellCmdItemAttachmentAdd(
+  public CAShellCmdRolesGet(
     final RPServiceDirectoryType inServices)
   {
     super(
       inServices,
       new QCommandMetadata(
-        "item-attachment-add",
-        new QConstant("Add or update an attachment on an item."),
+        "roles-get",
+        new QConstant("Return the set of roles held by the given user."),
         Optional.empty()
-      ),
-      CAICommandItemAttachmentAdd.class
+      )
     );
   }
 
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ID, FILE, RELATION);
+    return List.of(USER_ID);
+  }
+
+  @Override
+  public Completer completer()
+  {
+    return new Completers.OptionCompleter(List.of(), 1);
   }
 
   @Override
@@ -100,23 +86,13 @@ public final class CAShellCmdItemAttachmentAdd
     final QCommandContextType context)
     throws Exception
   {
-    final var client =
-      this.client();
+    final var response =
+      (CAIResponseRolesGet)
+        this.client().executeOrElseThrow(
+          new CAICommandRolesGet(context.parameterValue(USER_ID))
+        );
 
-    final var itemID =
-      context.parameterValue(ID);
-    final var fileID =
-      context.parameterValue(FILE);
-    final var relation =
-      context.parameterValue(RELATION);
-
-    final var item =
-      ((CAIResponseItemAttachmentAdd) client.executeOrElseThrow(
-        new CAICommandItemAttachmentAdd(itemID, fileID, relation),
-        CAClientException::ofError
-      )).data();
-
-    this.formatter().formatItem(item);
+    this.formatter().formatRoles(response.roles());
     return SUCCESS;
   }
 }

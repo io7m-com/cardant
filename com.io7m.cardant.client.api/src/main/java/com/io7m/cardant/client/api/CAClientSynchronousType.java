@@ -22,6 +22,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.hibiscus.api.HBClientSynchronousType;
 import com.io7m.hibiscus.api.HBResultType;
+import com.io7m.repetoir.core.RPServiceType;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -39,8 +40,15 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
   CAIResponseType,
   CAIResponseError,
   CAClientEventType,
-  CAClientCredentials>
+  CAClientCredentials>,
+  RPServiceType
 {
+  @Override
+  default String description()
+  {
+    return "A synchronous inventory client.";
+  }
+
   /**
    * @return The current logged-in user
    */

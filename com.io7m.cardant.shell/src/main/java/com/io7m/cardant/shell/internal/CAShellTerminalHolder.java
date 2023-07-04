@@ -17,37 +17,21 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientSynchronousType;
-import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
+import com.io7m.repetoir.core.RPServiceType;
 import org.jline.terminal.Terminal;
 
 /**
- * The services available to running shell commands.
+ * A terminal holder.
+ * @param terminal The terminal
  */
 
-public interface CAShellContextType
+public record CAShellTerminalHolder(
+  Terminal terminal)
+  implements RPServiceType
 {
-  /**
-   * @return The client
-   */
-
-  CAClientSynchronousType client();
-
-  /**
-   * @return The shell options
-   */
-
-  CAShellOptions options();
-
-  /**
-   * @return The preferences service
-   */
-
-  CAPreferencesServiceType preferences();
-
-  /**
-   * @return The connected terminal
-   */
-
-  Terminal terminal();
+  @Override
+  public String description()
+  {
+    return "Shell terminal holder service.";
+  }
 }

@@ -19,6 +19,7 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.idstore.model.IdName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
@@ -29,6 +30,7 @@ import com.io7m.quarrel.core.QParameterType;
 import com.io7m.quarrel.core.QParametersPositionalType;
 import com.io7m.quarrel.core.QParametersPositionalTyped;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
@@ -70,13 +72,13 @@ public final class CAShellCmdLogin extends CAShellCmdAbstract
   /**
    * Construct a command.
    *
-   * @param inContext The context
+   * @param inServices The context
    */
   public CAShellCmdLogin(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "login",
         new QConstant("Log in."),
@@ -133,7 +135,11 @@ public final class CAShellCmdLogin extends CAShellCmdAbstract
         Map.of()
       );
 
-    this.client().loginOrElseThrow(credentials, CAClientException::ofError);
+    final var response =
+      (CAIResponseLogin)
+        this.client().loginOrElseThrow(credentials, CAClientException::ofError);
+
+    this.loginTracker().setUserId(response.userId());
     return SUCCESS;
   }
 }

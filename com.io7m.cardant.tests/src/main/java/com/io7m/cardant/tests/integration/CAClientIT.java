@@ -25,7 +25,11 @@ import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
+import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -33,6 +37,7 @@ import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
+import com.io7m.medrina.api.MRoleName;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,12 +54,14 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -91,8 +98,10 @@ public final class CAClientIT
         50001
       );
 
-    USER_ADMIN = IDSTORE.createUser("someone-admin");
-    USER = IDSTORE.createUser("someone");
+    USER_ADMIN =
+      IDSTORE.createUser("someone-admin");
+    USER =
+      IDSTORE.createUser("someone");
 
     closeables.addPerTestClassResource(
       () -> CATestDirectories.deleteDirectory(DIRECTORY)
@@ -228,7 +237,7 @@ public final class CAClientIT
     final var file = this.directory.resolve("data.txt");
     Files.writeString(file, "HELLO!");
 
-    final CAFileID fileId = CAFileID.random();
+    final var fileId = CAFileID.random();
     this.client.fileUploadOrThrow(
       fileId,
       file,
@@ -287,7 +296,7 @@ public final class CAClientIT
     final var file = this.directory.resolve("data.txt");
     Files.writeString(file, "HELLO!");
 
-    final CAFileID fileId = CAFileID.random();
+    final var fileId = CAFileID.random();
 
     final var ex =
       assertThrows(CAClientException.class, () -> {
@@ -321,7 +330,7 @@ public final class CAClientIT
     final var fileTmp = this.directory.resolve("data.txt");
     Files.writeString(file, "HELLO!");
 
-    final CAFileID fileId = CAFileID.random();
+    final var fileId = CAFileID.random();
     this.client.fileUploadOrThrow(
       fileId,
       file,
@@ -401,6 +410,79 @@ public final class CAClientIT
       });
 
     assertEquals(errorApiMisuse(), ex.errorCode());
+  }
+
+  /**
+   * Assigning roles works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testRolesAssign()
+    throws Exception
+  {
+    this.login(new IdName("someone"));
+    this.login(new IdName("someone-admin"));
+
+    final var role =
+      MRoleName.of("inventory.files.writer");
+
+    {
+      final var r = (CAIResponseRolesGet)
+        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+      assertFalse(r.roles().contains(role));
+    }
+
+    this.client.executeOrElseThrow(
+      new CAICommandRolesAssign(USER, Set.of(role)));
+
+    {
+      final var r = (CAIResponseRolesGet)
+        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+      assertTrue(r.roles().contains(role));
+    }
+  }
+
+  /**
+   * Revoking roles works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testRolesRevoke()
+    throws Exception
+  {
+    this.login(new IdName("someone"));
+    this.login(new IdName("someone-admin"));
+
+    final var role =
+      MRoleName.of("inventory.files.writer");
+
+    {
+      final var r = (CAIResponseRolesGet)
+        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+      assertFalse(r.roles().contains(role));
+    }
+
+    this.client.executeOrElseThrow(
+      new CAICommandRolesAssign(USER, Set.of(role)));
+
+    {
+      final var r = (CAIResponseRolesGet)
+        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+      assertTrue(r.roles().contains(role));
+    }
+
+    this.client.executeOrElseThrow(
+      new CAICommandRolesRevoke(USER, Set.of(role)));
+
+    {
+      final var r = (CAIResponseRolesGet)
+        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+      assertFalse(r.roles().contains(role));
+    }
   }
 
   private void login(

@@ -19,6 +19,7 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.shell.internal.formatting.CAFormatterPretty;
 import com.io7m.cardant.shell.internal.formatting.CAFormatterType;
+import com.io7m.repetoir.core.RPServiceType;
 import org.jline.terminal.Terminal;
 
 import java.util.Objects;
@@ -28,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Shell options.
  */
 
-public final class CAShellOptions
+public final class CAShellOptions implements RPServiceType
 {
   private final AtomicBoolean terminateOnErrors;
   private CAFormatterType formatter;
@@ -83,5 +84,11 @@ public final class CAShellOptions
   public String toString()
   {
     return "[%s]".formatted(this.getClass().getSimpleName());
+  }
+
+  @Override
+  public String description()
+  {
+    return "The shell option service.";
   }
 }

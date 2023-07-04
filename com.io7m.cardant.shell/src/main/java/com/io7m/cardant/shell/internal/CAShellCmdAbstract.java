@@ -21,6 +21,7 @@ import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.shell.internal.formatting.CAFormatterType;
 import com.io7m.quarrel.core.QCommandMetadata;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.terminal.Terminal;
 
 import java.util.Objects;
@@ -33,38 +34,43 @@ public abstract class CAShellCmdAbstract
   implements CAShellCmdType
 {
   private final QCommandMetadata metadata;
-  private final CAShellContextType context;
+  private final RPServiceDirectoryType services;
 
   /**
    * Construct a command.
    *
    * @param inMetadata The metadata
-   * @param inContext  The context
+   * @param inServices The service directory
    */
 
   protected CAShellCmdAbstract(
-    final CAShellContextType inContext,
+    final RPServiceDirectoryType inServices,
     final QCommandMetadata inMetadata)
   {
-    this.context =
-      Objects.requireNonNull(inContext, "context");
+    this.services =
+      Objects.requireNonNull(inServices, "services");
     this.metadata =
       Objects.requireNonNull(inMetadata, "metadata");
   }
 
   protected final CAClientSynchronousType client()
   {
-    return this.context.client();
+    return this.services.requireService(CAClientSynchronousType.class);
   }
 
   protected final CAPreferencesServiceType preferences()
   {
-    return this.context.preferences();
+    return this.services.requireService(CAPreferencesServiceType.class);
   }
 
   protected final CAShellOptions options()
   {
-    return this.context.options();
+    return this.services.requireService(CAShellOptions.class);
+  }
+
+  protected final CAShellLoginTracker loginTracker()
+  {
+    return this.services.requireService(CAShellLoginTracker.class);
   }
 
   @Override
@@ -81,11 +87,12 @@ public abstract class CAShellCmdAbstract
 
   protected final Terminal terminal()
   {
-    return this.context.terminal();
+    return this.services.requireService(CAShellTerminalHolder.class)
+      .terminal();
   }
 
   protected final CAFormatterType formatter()
   {
-    return this.context.options().formatter();
+    return this.options().formatter();
   }
 }

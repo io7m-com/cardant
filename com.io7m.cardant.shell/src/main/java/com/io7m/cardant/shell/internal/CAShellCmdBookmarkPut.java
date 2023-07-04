@@ -26,6 +26,7 @@ import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 
@@ -101,14 +102,14 @@ public final class CAShellCmdBookmarkPut
   /**
    * Construct a command.
    *
-   * @param inContext The shell context
+   * @param inServices The shell context
    */
 
   public CAShellCmdBookmarkPut(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "bookmark-put",
         new QConstant("Create or update a server bookmark."),

@@ -95,9 +95,13 @@ public final class CAICmdRolesAssign extends CAICmdAbstract<CAICommandRolesAssig
     final Set<MRoleName> rolesGiven)
     throws CADatabaseException, CACommandExecutionFailure
   {
+    final var transaction =
+      context.transaction();
     final var queries =
-      context.transaction()
+      transaction
         .queries(CADatabaseQueriesUsersType.class);
+
+    transaction.setUserId(context.session().userId());
 
     final var targetUser =
       queries.userGet(command.user())

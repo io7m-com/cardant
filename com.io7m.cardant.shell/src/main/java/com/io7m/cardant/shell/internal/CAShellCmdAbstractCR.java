@@ -21,6 +21,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QParameterType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
@@ -41,17 +42,17 @@ public abstract class CAShellCmdAbstractCR<
   /**
    * Construct a command.
    *
-   * @param inContext       The shell context
+   * @param inServices       The shell services
    * @param inMetadata      The metadata
    * @param inCommandClass  The command class
    */
 
   protected CAShellCmdAbstractCR(
-    final CAShellContextType inContext,
+    final RPServiceDirectoryType inServices,
     final QCommandMetadata inMetadata,
     final Class<C> inCommandClass)
   {
-    super(inContext, inMetadata);
+    super(inServices, inMetadata);
 
     Objects.requireNonNull(inCommandClass, "commandClass");
   }

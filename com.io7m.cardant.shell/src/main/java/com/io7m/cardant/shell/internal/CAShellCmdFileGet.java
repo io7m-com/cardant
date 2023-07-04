@@ -29,6 +29,7 @@ import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParameterType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
@@ -67,14 +68,14 @@ public final class CAShellCmdFileGet
   /**
    * Construct a command.
    *
-   * @param inContext The shell context
+   * @param inServices The shell context
    */
 
   public CAShellCmdFileGet(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "file-get",
         new QConstant("Download a file."),

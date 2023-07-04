@@ -36,6 +36,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ADMIN;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_TAGS_WRITER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -180,6 +181,8 @@ public final class CAICmdRolesAssignTest
     /* Assert. */
 
     verify(transaction)
+      .setUserId(any());
+    verify(transaction)
       .queries(CADatabaseQueriesUsersType.class);
 
     verify(users)
@@ -239,6 +242,8 @@ public final class CAICmdRolesAssignTest
 
     /* Assert. */
 
+    verify(transaction)
+      .setUserId(any());
     verify(transaction)
       .queries(CADatabaseQueriesUsersType.class);
 

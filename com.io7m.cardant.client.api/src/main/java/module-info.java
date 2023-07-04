@@ -26,8 +26,8 @@ module com.io7m.cardant.client.api
   requires transitive com.io7m.cardant.model;
   requires transitive com.io7m.cardant.error_codes;
   requires transitive com.io7m.cardant.protocol.inventory;
-  requires transitive com.io7m.hibiscus.api;
 
+  requires transitive com.io7m.hibiscus.api;
   requires transitive com.io7m.repetoir.core;
 
   exports com.io7m.cardant.client.api;

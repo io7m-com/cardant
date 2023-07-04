@@ -23,6 +23,8 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.shell.internal.CAFileIdConverter;
 import com.io7m.cardant.shell.internal.CAItemIdConverter;
 import com.io7m.cardant.shell.internal.CALocationIdConverter;
+import com.io7m.cardant.shell.internal.CARoleNameConverter;
+import com.io7m.medrina.api.MRoleName;
 import com.io7m.quarrel.core.QValueConverterDirectory;
 import com.io7m.quarrel.core.QValueConverterDirectoryType;
 
@@ -36,7 +38,8 @@ public final class CAShellValueConverters
     QValueConverterDirectory.core()
       .with(CALocationID.class, new CALocationIdConverter())
       .with(CAItemID.class, new CAItemIdConverter())
-      .with(CAFileID.class, new CAFileIdConverter());
+      .with(CAFileID.class, new CAFileIdConverter())
+      .with(MRoleName.class, new CARoleNameConverter());
 
   private CAShellValueConverters()
   {

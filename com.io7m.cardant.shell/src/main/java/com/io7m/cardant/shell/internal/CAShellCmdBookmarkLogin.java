@@ -18,11 +18,11 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientCredentials;
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.idstore.model.IdName;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -31,6 +31,7 @@ import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 
@@ -60,14 +61,14 @@ public final class CAShellCmdBookmarkLogin
   /**
    * Construct a command.
    *
-   * @param inContext The shell context
+   * @param inServices The shell context
    */
 
   public CAShellCmdBookmarkLogin(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "bookmark-login",
         new QConstant("Log in using a bookmark."),
@@ -116,7 +117,11 @@ public final class CAShellCmdBookmarkLogin
         Map.of()
       );
 
-    this.client().loginOrElseThrow(credentials, CAClientException::ofError);
+    final var response =
+      (CAIResponseLogin)
+        this.client().loginOrElseThrow(credentials);
+
+    this.loginTracker().setUserId(response.userId());
     return SUCCESS;
   }
 

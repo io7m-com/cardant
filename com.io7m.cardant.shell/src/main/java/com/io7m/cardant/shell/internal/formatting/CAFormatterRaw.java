@@ -23,13 +23,17 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATag;
+import com.io7m.medrina.api.MRoleName;
 import org.apache.commons.io.FileUtils;
 import org.jline.terminal.Terminal;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -197,6 +201,23 @@ public final class CAFormatterRaw implements CAFormatterType
         bookmark.host(),
         Integer.valueOf(bookmark.port())
       );
+    }
+  }
+
+  @Override
+  public void formatRoles(
+    final Set<MRoleName> roles)
+  {
+    if (roles.isEmpty()) {
+      return;
+    }
+
+    final var roleSorted = new ArrayList<>(roles);
+    Collections.sort(roleSorted);
+
+    final PrintWriter w = this.terminal.writer();
+    for (final var role : roles) {
+      w.printf("Role: %s%n", role.value().value());
     }
   }
 

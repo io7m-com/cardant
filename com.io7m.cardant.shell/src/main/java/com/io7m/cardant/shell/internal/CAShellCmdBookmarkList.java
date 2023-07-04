@@ -22,6 +22,7 @@ import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 
@@ -39,14 +40,14 @@ public final class CAShellCmdBookmarkList extends CAShellCmdAbstract
   /**
    * Construct a command.
    *
-   * @param inContext The shell context
+   * @param inServices The shell context
    */
 
   public CAShellCmdBookmarkList(
-    final CAShellContextType inContext)
+    final RPServiceDirectoryType inServices)
   {
     super(
-      inContext,
+      inServices,
       new QCommandMetadata(
         "bookmark-list",
         new QConstant("List server bookmarks."),
