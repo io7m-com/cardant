@@ -29,6 +29,12 @@ public enum CADatabaseRole
   CARDANT,
 
   /**
+   * The read-only cardant role.
+   */
+
+  CARDANT_READ_ONLY,
+
+  /**
    * The null role; has no privileges and cannot do anything.
    */
 

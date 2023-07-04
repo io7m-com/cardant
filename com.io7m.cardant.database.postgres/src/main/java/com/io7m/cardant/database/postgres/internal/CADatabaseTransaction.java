@@ -104,9 +104,12 @@ final class CADatabaseTransaction
   {
     switch (role) {
       case CARDANT -> {
+        // Transactions already start in this role.
+      }
+      case CARDANT_READ_ONLY -> {
         try (var st =
                this.connection.connection()
-                 .prepareStatement("set role cardant")) {
+                 .prepareStatement("set role cardant_read_only")) {
           st.execute();
         }
       }
