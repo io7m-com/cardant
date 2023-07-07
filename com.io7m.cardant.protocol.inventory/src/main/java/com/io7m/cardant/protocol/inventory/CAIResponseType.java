@@ -33,7 +33,10 @@ public sealed interface CAIResponseType
   CAIResponseRolesAssign,
   CAIResponseRolesGet,
   CAIResponseRolesRevoke,
+  CAIResponseTypeScalarGet,
   CAIResponseTypeScalarPut,
+  CAIResponseTypeScalarRemove,
+  CAIResponseTypeScalarSearch,
   CAIResponseWithElementType
 {
   /**

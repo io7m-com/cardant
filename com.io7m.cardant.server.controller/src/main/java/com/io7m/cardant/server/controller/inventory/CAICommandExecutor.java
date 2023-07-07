@@ -45,6 +45,12 @@ import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutorType;
@@ -177,6 +183,24 @@ public final class CAICommandExecutor
     }
     if (command instanceof final CAICommandFileGet m) {
       return new CAICmdFileGet().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeScalarSearchNext m) {
+      return new CAICmdTypeScalarSearchNext().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeScalarSearchPrevious m) {
+      return new CAICmdTypeScalarSearchPrevious().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeScalarSearchBegin m) {
+      return new CAICmdTypeScalarSearchBegin().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeScalarPut m) {
+      return new CAICmdTypeScalarPut().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeScalarGet m) {
+      return new CAICmdTypeScalarGet().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeScalarRemove m) {
+      return new CAICmdTypeScalarRemove().execute(context, m);
     }
 
     throw new IllegalStateException();

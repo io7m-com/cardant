@@ -14,18 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
- * The type of messages in the Inventory protocol.
+ * @param requestId The request ID
+ *
+ * @see CAICommandTypeScalarRemove
  */
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public record CAIResponseTypeScalarRemove(
+  UUID requestId)
+  implements CAIResponseType
 {
+  /**
+   * @see CAICommandTypeScalarRemove
+   */
 
+  public CAIResponseTypeScalarRemove
+  {
+    Objects.requireNonNull(requestId, "requestId");
+  }
 }

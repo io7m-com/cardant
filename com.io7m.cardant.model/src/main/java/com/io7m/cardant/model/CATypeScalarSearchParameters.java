@@ -14,18 +14,41 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory;
+package com.io7m.cardant.model;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
- * The type of messages in the Inventory protocol.
+ * The immutable parameters required to search scalar types.
+ *
+ * @param search The search query
+ * @param limit  The limit on the number of returned users
  */
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public record CATypeScalarSearchParameters(
+  Optional<String> search,
+  int limit)
 {
+  /**
+   * The immutable parameters required to search scalar types.
+   *
+   * @param search The search query
+   * @param limit  The limit on the number of returned users
+   */
 
+  public CATypeScalarSearchParameters
+  {
+    Objects.requireNonNull(search, "search");
+  }
+
+  /**
+   * @return The limit on the number of returned items
+   */
+
+  @Override
+  public int limit()
+  {
+    return Math.max(1, this.limit);
+  }
 }

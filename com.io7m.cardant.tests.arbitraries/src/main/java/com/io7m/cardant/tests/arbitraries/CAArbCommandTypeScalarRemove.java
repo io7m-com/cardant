@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,32 +13,21 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package com.io7m.cardant.tests.arbitraries;
 
-package com.io7m.cardant.protocol.inventory;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
+import com.io7m.lanark.core.RDottedName;
+import net.jqwik.api.Arbitraries;
 
-import java.util.List;
-import java.util.Objects;
-
-/**
- * A transaction.
- *
- * @param commands The sequence of commands
- */
-
-public record CAITransaction(
-  List<? extends CAICommandType<?>> commands)
-  implements CAIMessageType
+public final class CAArbCommandTypeScalarRemove extends CAArbAbstract<CAICommandTypeScalarRemove>
 {
-  /**
-   * A transaction.
-   */
-
-  public CAITransaction
+  public CAArbCommandTypeScalarRemove()
   {
-    Objects.requireNonNull(commands, "commands");
-
-    if (commands.isEmpty()) {
-      throw new IllegalArgumentException("Must provide at least one command.");
-    }
+    super(
+      CAICommandTypeScalarRemove.class,
+      () -> Arbitraries.defaultFor(RDottedName.class)
+        .set()
+        .map(CAICommandTypeScalarRemove::new)
+    );
   }
 }

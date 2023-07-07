@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
 import com.io7m.tabla.core.TColumnWidthConstraintMaximumAtMost;
@@ -36,7 +37,9 @@ import com.io7m.tabla.core.Tabla;
 import org.jline.terminal.Terminal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -372,6 +375,56 @@ public final class CAFormatterPretty implements CAFormatterType
     }
 
     this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatTypesScalar(
+    final Set<CATypeScalar> types)
+    throws Exception
+  {
+    if (types.isEmpty()) {
+      return;
+    }
+
+    final var typesSorted = new ArrayList<>(types);
+    Collections.sort(typesSorted, Comparator.comparing(CATypeScalar::name));
+    this.formatTypesScalarCollection(typesSorted);
+  }
+
+  private void formatTypesScalarCollection(
+    final Collection<CATypeScalar> types)
+    throws TException
+  {
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(1))
+        .declareColumn("Type", atLeastContentOrHeader())
+        .declareColumn("Description", atLeastContent())
+        .declareColumn("Pattern", atLeastContentOrHeader());
+
+    for (final var type : types) {
+      tableBuilder.addRow()
+        .addCell(type.name().value())
+        .addCell(type.description())
+        .addCell(type.pattern());
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatTypesScalarPage(
+    final CAPage<CATypeScalar> types)
+    throws Exception
+  {
+    this.terminal.writer()
+      .printf(
+        "Search results: Page %d of %d%n",
+        Integer.valueOf(types.pageIndex()),
+        Integer.valueOf(types.pageCount())
+      );
+
+    this.formatTypesScalarCollection(types.items());
   }
 
   @Override

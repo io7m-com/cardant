@@ -14,18 +14,32 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+import com.io7m.cardant.model.CATypeScalar;
+
+import java.util.Objects;
+import java.util.UUID;
 
 /**
- * The type of messages in the Inventory protocol.
+ * @param requestId The request ID
+ * @param type      The type
+ *
+ * @see CAICommandTypeScalarGet
  */
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public record CAIResponseTypeScalarGet(
+  UUID requestId,
+  CATypeScalar type)
+  implements CAIResponseType
 {
+  /**
+   * @see CAICommandTypeScalarGet
+   */
 
+  public CAIResponseTypeScalarGet
+  {
+    Objects.requireNonNull(requestId, "requestId");
+  }
 }

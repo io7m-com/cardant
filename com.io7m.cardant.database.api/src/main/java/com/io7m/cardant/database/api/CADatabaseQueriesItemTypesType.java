@@ -119,7 +119,7 @@ public sealed interface CADatabaseQueriesItemTypesType
    */
 
   non-sealed interface TypeScalarSearchType
-    extends CADatabaseQueryType<String, CADatabasePagedQueryType<CATypeScalar>>,
+    extends CADatabaseQueryType<String, CADatabaseTypeScalarSearchType>,
     CADatabaseQueriesItemTypesType
   {
 

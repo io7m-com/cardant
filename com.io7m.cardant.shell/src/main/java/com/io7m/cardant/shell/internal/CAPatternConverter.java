@@ -14,18 +14,58 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+package com.io7m.cardant.shell.internal;
+
+import com.io7m.quarrel.core.QValueConverterType;
+
+import java.util.regex.Pattern;
 
 /**
- * The type of messages in the Inventory protocol.
+ * A value converter for patterns.
  */
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public final class CAPatternConverter
+  implements QValueConverterType<Pattern>
 {
+  /**
+   * Construct a converter.
+   */
 
+  public CAPatternConverter()
+  {
+
+  }
+
+  @Override
+  public Pattern convertFromString(
+    final String text)
+  {
+    return Pattern.compile(text);
+  }
+
+  @Override
+  public String convertToString(
+    final Pattern value)
+  {
+    return value.pattern();
+  }
+
+  @Override
+  public Pattern exampleValue()
+  {
+    return Pattern.compile(".*");
+  }
+
+  @Override
+  public String syntax()
+  {
+    return "java.util.Pattern regular expression";
+  }
+
+  @Override
+  public Class<Pattern> convertedClass()
+  {
+    return Pattern.class;
+  }
 }

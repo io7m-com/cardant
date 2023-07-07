@@ -57,7 +57,12 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   CAICommandTagList,
   CAICommandTagsDelete,
   CAICommandTagsPut,
-  CAICommandTypeScalarPut
+  CAICommandTypeScalarGet,
+  CAICommandTypeScalarPut,
+  CAICommandTypeScalarRemove,
+  CAICommandTypeScalarSearchBegin,
+  CAICommandTypeScalarSearchNext,
+  CAICommandTypeScalarSearchPrevious
 {
   /**
    * @return The response class associated with this command (excluding the

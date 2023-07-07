@@ -14,18 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+import com.io7m.lanark.core.RDottedName;
+
+import java.util.Objects;
 
 /**
- * The type of messages in the Inventory protocol.
+ * Get a scalar type.
+ *
+ * @param name The name
  */
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public record CAICommandTypeScalarGet(
+  RDottedName name)
+  implements CAICommandType<CAIResponseTypeScalarGet>
 {
+  /**
+   * Create or update scalar types.
+   *
+   * @param name The name
+   */
 
+  public CAICommandTypeScalarGet
+  {
+    Objects.requireNonNull(name, "name");
+  }
+
+  @Override
+  public Class<CAIResponseTypeScalarGet> responseClass()
+  {
+    return CAIResponseTypeScalarGet.class;
+  }
 }

@@ -209,7 +209,7 @@
 
   <!-- Guaranteed by types. -->
   <Match>
-    <Class name="com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon$ProtocolUncheckedException"/>
+    <Class name="com.io7m.cardant.protocol.inventory.cb.internal.ProtocolUncheckedException"/>
     <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"/>
   </Match>
 

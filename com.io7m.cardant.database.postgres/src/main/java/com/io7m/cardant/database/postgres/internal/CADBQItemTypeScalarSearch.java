@@ -17,10 +17,9 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabasePagedQueryType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeScalarSearchType;
+import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQOrder;
@@ -38,10 +37,10 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
  */
 
 public final class CADBQItemTypeScalarSearch
-  extends CADBQAbstract<String, CADatabasePagedQueryType<CATypeScalar>>
+  extends CADBQAbstract<String, CADatabaseTypeScalarSearchType>
   implements TypeScalarSearchType
 {
-  private static final Service<String, CADatabasePagedQueryType<CATypeScalar>, TypeScalarSearchType> SERVICE =
+  private static final Service<String, CADatabaseTypeScalarSearchType, TypeScalarSearchType> SERVICE =
     new Service<>(TypeScalarSearchType.class, CADBQItemTypeScalarSearch::new);
 
   /**
@@ -66,7 +65,7 @@ public final class CADBQItemTypeScalarSearch
   }
 
   @Override
-  protected CADatabasePagedQueryType<CATypeScalar> onExecute(
+  protected CADatabaseTypeScalarSearchType onExecute(
     final DSLContext context,
     final String query)
   {

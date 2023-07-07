@@ -13,19 +13,21 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package com.io7m.cardant.tests.arbitraries;
 
-package com.io7m.cardant.protocol.inventory;
+import com.io7m.cardant.model.CATypeScalarSearchParameters;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchNext;
+import net.jqwik.api.Arbitraries;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
-
-/**
- * The type of messages in the Inventory protocol.
- */
-
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public final class CAArbCommandTypeScalarSearchNext
+  extends CAArbAbstract<CAICommandTypeScalarSearchNext>
 {
-
+  public CAArbCommandTypeScalarSearchNext()
+  {
+    super(
+      CAICommandTypeScalarSearchNext.class,
+      () -> Arbitraries.create(CAICommandTypeScalarSearchNext::new)
+    );
+  }
 }

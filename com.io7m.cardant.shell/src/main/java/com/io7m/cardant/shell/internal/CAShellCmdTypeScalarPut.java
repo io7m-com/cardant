@@ -1,0 +1,133 @@
+/*
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+package com.io7m.cardant.shell.internal;
+
+import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
+import com.io7m.lanark.core.RDottedName;
+import com.io7m.quarrel.core.QCommandContextType;
+import com.io7m.quarrel.core.QCommandMetadata;
+import com.io7m.quarrel.core.QCommandStatus;
+import com.io7m.quarrel.core.QParameterNamed1;
+import com.io7m.quarrel.core.QParameterNamedType;
+import com.io7m.quarrel.core.QStringType.QConstant;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
+
+/**
+ * "type-scalar-put"
+ */
+
+public final class CAShellCmdTypeScalarPut
+  extends CAShellCmdAbstractCR<CAICommandTypeScalarPut, CAIResponseTypeScalarPut>
+{
+  private static final QParameterNamed1<RDottedName> TYPE_NAME =
+    new QParameterNamed1<>(
+      "--name",
+      List.of(),
+      new QConstant("The type name."),
+      Optional.empty(),
+      RDottedName.class
+    );
+
+  private static final QParameterNamed1<String> DESCRIPTION =
+    new QParameterNamed1<>(
+      "--description",
+      List.of(),
+      new QConstant("The type description."),
+      Optional.of(""),
+      String.class
+    );
+
+  private static final QParameterNamed1<Pattern> PATTERN =
+    new QParameterNamed1<>(
+      "--pattern",
+      List.of(),
+      new QConstant("The pattern that defines valid values of the type."),
+      Optional.empty(),
+      Pattern.class
+    );
+
+  /**
+   * Construct a command.
+   *
+   * @param inServices The shell context
+   */
+
+  public CAShellCmdTypeScalarPut(
+    final RPServiceDirectoryType inServices)
+  {
+    super(
+      inServices,
+      new QCommandMetadata(
+        "type-scalar-put",
+        new QConstant("Create or update a scalar type."),
+        Optional.empty()
+      ),
+      CAICommandTypeScalarPut.class
+    );
+  }
+
+
+  @Override
+  public List<QParameterNamedType<?>> onListNamedParameters()
+  {
+    return List.of(TYPE_NAME, DESCRIPTION, PATTERN);
+  }
+
+  @Override
+  public QCommandStatus onExecute(
+    final QCommandContextType context)
+    throws Exception
+  {
+    final var client =
+      this.client();
+
+    final var typeName =
+      context.parameterValue(TYPE_NAME);
+    final var description =
+      context.parameterValue(DESCRIPTION);
+    final var pattern =
+      context.parameterValue(PATTERN);
+
+    final var types =
+      ((CAIResponseTypeScalarPut) client.executeOrElseThrow(
+        new CAICommandTypeScalarPut(
+          Set.of(
+            new CATypeScalar(
+              typeName,
+              description,
+              pattern.pattern()
+            )
+          )
+        ),
+        CAClientException::ofError
+      )).types();
+
+    this.formatter().formatTypesScalar(types);
+    return SUCCESS;
+  }
+}

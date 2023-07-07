@@ -25,6 +25,8 @@ import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
 import com.io7m.cedarbridge.runtime.convenience.CBLists;
 import com.io7m.cedarbridge.runtime.convenience.CBSets;
 
+// CHECKSTYLE:OFF
+
 public final class CAI1ValidationEvents
 {
   private CAI1ValidationEvents()
@@ -47,8 +49,8 @@ public final class CAI1ValidationEvents
     final CAIEventUpdated u)
   {
     return new CAI1EventUpdated(
-      CBLists.ofCollection(u.updated(), CAI1ValidationCommon::convertToWireID),
-      CBLists.ofCollection(u.removed(), CAI1ValidationCommon::convertToWireID)
+      CBLists.ofCollection(u.updated(), ToWireModel::iD),
+      CBLists.ofCollection(u.removed(), ToWireModel::iD)
     );
   }
 
@@ -56,8 +58,8 @@ public final class CAI1ValidationEvents
     final CAI1EventUpdated m)
   {
     return new CAIEventUpdated(
-      CBSets.toSet(m.fieldUpdated(), CAI1ValidationCommon::convertFromWireId),
-      CBSets.toSet(m.fieldRemoved(), CAI1ValidationCommon::convertFromWireId)
+      CBSets.toSet(m.fieldUpdated(), FromWireModel::id),
+      CBSets.toSet(m.fieldRemoved(), FromWireModel::id)
     );
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,33 +14,38 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory;
 
-import java.util.List;
+import com.io7m.lanark.core.RDottedName;
+
 import java.util.Objects;
+import java.util.Set;
 
 /**
- * A transaction response.
+ * Remove scalar types.
  *
- * @param responses The sequence of responses
- * @param failed    {@code true} if the transaction failed
+ * @param types The types
  */
 
-public record CAITransactionResponse(
-  boolean failed,
-  List<CAIResponseType> responses)
-  implements CAIMessageType
+public record CAICommandTypeScalarRemove(
+  Set<RDottedName> types)
+  implements CAICommandType<CAIResponseTypeScalarRemove>
 {
   /**
-   * A transaction response.
+   * Create or update scalar types.
+   *
+   * @param types The types
    */
 
-  public CAITransactionResponse
+  public CAICommandTypeScalarRemove
   {
-    Objects.requireNonNull(responses, "responses");
+    Objects.requireNonNull(types, "types");
+  }
 
-    if (responses.isEmpty()) {
-      throw new IllegalArgumentException("Must provide at least one response.");
-    }
+  @Override
+  public Class<CAIResponseTypeScalarRemove> responseClass()
+  {
+    return CAIResponseTypeScalarRemove.class;
   }
 }

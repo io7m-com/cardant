@@ -14,18 +14,25 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+package com.io7m.cardant.tests.arbitraries.model;
 
-/**
- * The type of messages in the Inventory protocol.
- */
+import com.io7m.cardant.model.CATypeScalarSearchParameters;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public final class CAArbTypeScalarSearchParameters
+  extends CAArbAbstract<CATypeScalarSearchParameters>
 {
-
+  public CAArbTypeScalarSearchParameters()
+  {
+    super(
+      CATypeScalarSearchParameters.class,
+      () -> Combinators.combine(
+        Arbitraries.strings().optional(),
+        Arbitraries.integers().between(1, 1000)
+      ).as(CATypeScalarSearchParameters::new)
+    );
+  }
 }

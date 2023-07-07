@@ -22,6 +22,7 @@ import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.medrina.api.MRoleName;
 
 import java.util.List;
@@ -103,5 +104,27 @@ public interface CAFormatterType
 
   void formatRoles(
     Set<MRoleName> roles)
+    throws Exception;
+
+  /**
+   * Format a set  of scalar types.
+   *
+   * @param types The types
+   *
+   * @throws Exception On errors
+   */
+
+  void formatTypesScalar(Set<CATypeScalar> types)
+    throws Exception;
+
+  /**
+   * Format a page of scalar types.
+   *
+   * @param types The types
+   *
+   * @throws Exception On errors
+   */
+
+  void formatTypesScalarPage(CAPage<CATypeScalar> types)
     throws Exception;
 }

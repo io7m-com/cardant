@@ -510,6 +510,35 @@ public final class CAShellIT
     assertEquals(0, this.exitCode);
   }
 
+  @Test
+  public void testShellTypeScalarsWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+    w.println(
+      "type-scalar-put --name com.x --description 'A description of things.' --pattern '.*'"
+    );
+    w.println("type-scalar-get --name com.x");
+    w.println("type-scalar-search-begin --query things");
+    w.println("type-scalar-search-next");
+    w.println("type-scalar-search-previous");
+    w.println("type-scalar-remove --name com.x");
+    w.println("type-scalar-search-begin --query things");
+    w.println("type-scalar-search-next");
+    w.println("type-scalar-search-previous");
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
   private void startShell()
   {
     this.executor.execute(() -> {

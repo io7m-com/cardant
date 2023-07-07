@@ -23,6 +23,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.medrina.api.MRoleName;
 import org.apache.commons.io.FileUtils;
 import org.jline.terminal.Terminal;
@@ -30,6 +31,7 @@ import org.jline.terminal.Terminal;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -217,6 +219,42 @@ public final class CAFormatterRaw implements CAFormatterType
     final PrintWriter w = this.terminal.writer();
     for (final var role : roles) {
       w.printf("Role: %s%n", role.value().value());
+    }
+  }
+
+  @Override
+  public void formatTypesScalar(
+    final Set<CATypeScalar> types)
+  {
+    if (types.isEmpty()) {
+      return;
+    }
+
+    final var typesSorted = new ArrayList<>(types);
+    Collections.sort(typesSorted, Comparator.comparing(CATypeScalar::name));
+
+    final PrintWriter w = this.terminal.writer();
+    for (final var type : typesSorted) {
+      w.printf("%s: %s%n", type.name().value(), type.description());
+    }
+  }
+
+  @Override
+  public void formatTypesScalarPage(
+    final CAPage<CATypeScalar> types)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.printf(
+      "# Search results: Page %d of %d%n",
+      Integer.valueOf(types.pageIndex()),
+      Integer.valueOf(types.pageCount())
+    );
+    w.println(
+      "#--------------------------------"
+    );
+
+    for (final var item : types.items()) {
+      w.printf("%s : %s%n", item.name().value(), item.description());
     }
   }
 

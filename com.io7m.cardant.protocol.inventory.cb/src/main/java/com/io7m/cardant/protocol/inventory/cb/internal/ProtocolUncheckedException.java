@@ -14,18 +14,25 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+package com.io7m.cardant.protocol.inventory.cb.internal;
 
-/**
- * The type of messages in the Inventory protocol.
- */
+import com.io7m.cardant.protocol.api.CAProtocolException;
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+// CHECKSTYLE:OFF
+
+public final class ProtocolUncheckedException
+  extends RuntimeException
 {
+  public ProtocolUncheckedException(
+    final CAProtocolException cause)
+  {
+    super(cause);
+  }
 
+  @Override
+  public CAProtocolException getCause()
+  {
+    return (CAProtocolException) super.getCause();
+  }
 }

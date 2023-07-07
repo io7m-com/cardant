@@ -56,6 +56,12 @@ import com.io7m.cardant.shell.internal.CAShellCmdRolesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdSelf;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
 import com.io7m.cardant.shell.internal.CAShellCmdType;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarGet;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarPut;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchBegin;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchNext;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdVersion;
 import com.io7m.cardant.shell.internal.CAShellLoginTracker;
 import com.io7m.cardant.shell.internal.CAShellOptions;
@@ -160,6 +166,12 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdRolesRevoke(services),
         new CAShellCmdSelf(services),
         new CAShellCmdSet(services),
+        new CAShellCmdTypeScalarGet(services),
+        new CAShellCmdTypeScalarPut(services),
+        new CAShellCmdTypeScalarRemove(services),
+        new CAShellCmdTypeScalarSearchBegin(services),
+        new CAShellCmdTypeScalarSearchNext(services),
+        new CAShellCmdTypeScalarSearchPrevious(services),
         new CAShellCmdVersion(services)
       );
 

@@ -14,18 +14,19 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
-
 /**
- * The type of messages in the Inventory protocol.
+ * Search for scalar types.
  */
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
-  CAIEventType,
-  CAIResponseType
+public record CAICommandTypeScalarSearchNext()
+  implements CAICommandType<CAIResponseTypeScalarSearch>
 {
-
+  @Override
+  public Class<CAIResponseTypeScalarSearch> responseClass()
+  {
+    return CAIResponseTypeScalarSearch.class;
+  }
 }
