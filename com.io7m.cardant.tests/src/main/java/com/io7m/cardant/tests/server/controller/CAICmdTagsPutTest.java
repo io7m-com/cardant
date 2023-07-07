@@ -107,13 +107,13 @@ public final class CAICmdTagsPutTest
   {
     /* Arrange. */
 
-    final var tags =
-      mock(CADatabaseQueriesTagsType.class);
+    final var tagPut =
+      mock(CADatabaseQueriesTagsType.PutType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesTagsType.class))
-      .thenReturn(tags);
+    when(transaction.queries(CADatabaseQueriesTagsType.PutType.class))
+      .thenReturn(tagPut);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -143,15 +143,15 @@ public final class CAICmdTagsPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesTagsType.class);
-    verify(tags)
-      .tagPut(TAG_0);
-    verify(tags)
-      .tagPut(TAG_1);
-    verify(tags)
-      .tagPut(TAG_2);
+      .queries(CADatabaseQueriesTagsType.PutType.class);
+    verify(tagPut)
+      .execute(TAG_0);
+    verify(tagPut)
+      .execute(TAG_1);
+    verify(tagPut)
+      .execute(TAG_2);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(tags);
+    verifyNoMoreInteractions(tagPut);
   }
 }

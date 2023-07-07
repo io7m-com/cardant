@@ -24,7 +24,7 @@ import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
  */
 
 public interface CADatabaseFileSearchType
-  extends CADatabasePagedQueryType<CADatabaseQueriesFilesType, CAFileWithoutData>
+  extends CADatabasePagedQueryType<CAFileWithoutData>
 {
 
 }

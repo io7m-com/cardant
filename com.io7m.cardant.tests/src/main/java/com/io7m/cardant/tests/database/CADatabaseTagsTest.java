@@ -37,6 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.TreeSet;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
+import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
@@ -82,10 +83,10 @@ public final class CADatabaseTagsTest
   public void testTagListEmpty()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesTagsType.class);
-
-    assertEquals(new TreeSet<>(), q.tagList());
+    final var list =
+      this.transaction.queries(CADatabaseQueriesTagsType.ListType.class);
+    
+    assertEquals(new TreeSet<>(), list.execute(UNIT));
   }
 
   /**
@@ -98,25 +99,29 @@ public final class CADatabaseTagsTest
   public void testTagListCreate()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesTagsType.class);
+    final var list =
+      this.transaction.queries(CADatabaseQueriesTagsType.ListType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesTagsType.PutType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesTagsType.GetType.class);
 
     final var ta = new CATag(CATagID.random(), "a");
-    q.tagPut(ta);
+    put.execute(ta);
     final var tb = new CATag(CATagID.random(), "b");
-    q.tagPut(tb);
+    put.execute(tb);
     final var tc = new CATag(CATagID.random(), "c");
-    q.tagPut(tc);
+    put.execute(tc);
 
     final var expected = new TreeSet<CATag>();
     expected.add(ta);
     expected.add(tb);
     expected.add(tc);
 
-    assertEquals(expected, q.tagList());
-    assertEquals(ta, q.tagGet(ta.id()).orElseThrow());
-    assertEquals(tb, q.tagGet(tb.id()).orElseThrow());
-    assertEquals(tc, q.tagGet(tc.id()).orElseThrow());
+    assertEquals(expected, list.execute(UNIT));
+    assertEquals(ta, get.execute(ta.id()).orElseThrow());
+    assertEquals(tb, get.execute(tb.id()).orElseThrow());
+    assertEquals(tc, get.execute(tc.id()).orElseThrow());
   }
 
   /**
@@ -129,23 +134,27 @@ public final class CADatabaseTagsTest
   public void testTagListDelete()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesTagsType.class);
+    final var list =
+      this.transaction.queries(CADatabaseQueriesTagsType.ListType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesTagsType.PutType.class);
+    final var delete =
+      this.transaction.queries(CADatabaseQueriesTagsType.DeleteType.class);
 
     final var ta = new CATag(CATagID.random(), "a");
-    q.tagPut(ta);
+    put.execute(ta);
     final var tb = new CATag(CATagID.random(), "b");
-    q.tagPut(tb);
+    put.execute(tb);
     final var tc = new CATag(CATagID.random(), "c");
-    q.tagPut(tc);
+    put.execute(tc);
 
     final var expected = new TreeSet<CATag>();
     expected.add(ta);
     expected.add(tc);
 
-    q.tagDelete(tb);
+    delete.execute(tb);
 
-    assertEquals(expected, q.tagList());
+    assertEquals(expected, list.execute(UNIT));
   }
 
   /**
@@ -158,22 +167,26 @@ public final class CADatabaseTagsTest
   public void testTagUpdate()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesTagsType.class);
+    final var list =
+      this.transaction.queries(CADatabaseQueriesTagsType.ListType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesTagsType.PutType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesTagsType.GetType.class);
 
     final var id = CATagID.random();
 
     final var ta = new CATag(id, "a");
-    q.tagPut(ta);
+    put.execute(ta);
     final var tb = new CATag(id, "b");
-    q.tagPut(tb);
+    put.execute(tb);
     final var tc = new CATag(id, "c");
-    q.tagPut(tc);
+    put.execute(tc);
 
     final var expected = new TreeSet<CATag>();
     expected.add(tc);
 
-    assertEquals(expected, q.tagList());
-    assertEquals(tc, q.tagGet(id).orElseThrow());
+    assertEquals(expected, list.execute(UNIT));
+    assertEquals(tc, get.execute(id).orElseThrow());
   }
 }

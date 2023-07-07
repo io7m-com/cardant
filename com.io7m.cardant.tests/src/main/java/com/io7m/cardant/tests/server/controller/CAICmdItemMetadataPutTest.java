@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.Parameters;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
@@ -26,6 +27,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.inventory.CAICmdItemMetadataPut;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MMatchActionType.MMatchActionWithName;
 import com.io7m.medrina.api.MMatchObjectType.MMatchObjectWithType;
 import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
@@ -81,6 +83,9 @@ public final class CAICmdItemMetadataPutTest
 
     /* Act. */
 
+    final var name0 =
+      new RDottedName("com.io7m.name0");
+
     final var handler =
       new CAICmdItemMetadataPut();
     final var ex =
@@ -89,7 +94,7 @@ public final class CAICmdItemMetadataPutTest
           context,
           new CAICommandItemMetadataPut(
             ITEM_ID,
-            Set.of(new CAItemMetadata("x", "y"))));
+            Set.of(new CAItemMetadata(name0, "y"))));
       });
 
     /* Assert. */
@@ -109,14 +114,20 @@ public final class CAICmdItemMetadataPutTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemMetaPut =
+      mock(CADatabaseQueriesItemsType.MetadataPutType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class))
+      .thenReturn(itemMetaPut);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
@@ -124,6 +135,7 @@ public final class CAICmdItemMetadataPutTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
+        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 
@@ -145,33 +157,42 @@ public final class CAICmdItemMetadataPutTest
 
     /* Act. */
 
+    final var name0 =
+      new RDottedName("com.io7m.name0");
+    final var name1 =
+      new RDottedName("com.io7m.name1");
+    final var name2 =
+      new RDottedName("com.io7m.name2");
+
     final var handler = new CAICmdItemMetadataPut();
     handler.execute(
       context,
       new CAICommandItemMetadataPut(
         ITEM_ID,
         Set.of(
-          new CAItemMetadata("a", "x"),
-          new CAItemMetadata("b", "y"),
-          new CAItemMetadata("c", "z")
+          new CAItemMetadata(name0, "x"),
+          new CAItemMetadata(name1, "y"),
+          new CAItemMetadata(name2, "z")
         )
       ));
 
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
-    verify(items)
-      .itemMetadataPut(ITEM_ID, new CAItemMetadata("a", "x"));
-    verify(items)
-      .itemMetadataPut(ITEM_ID, new CAItemMetadata("b", "y"));
-    verify(items)
-      .itemMetadataPut(ITEM_ID, new CAItemMetadata("c", "z"));
-    verify(items)
-      .itemGet(ITEM_ID);
+      .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
+    verify(itemMetaPut)
+      .execute(new Parameters(ITEM_ID, new CAItemMetadata(name0, "x")));
+    verify(itemMetaPut)
+      .execute(new Parameters(ITEM_ID, new CAItemMetadata(name1, "y")));
+    verify(itemMetaPut)
+      .execute(new Parameters(ITEM_ID, new CAItemMetadata(name2, "z")));
+    verify(itemGet)
+      .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(items);
+    verifyNoMoreInteractions(itemGet);
   }
 
   /**
@@ -186,21 +207,39 @@ public final class CAICmdItemMetadataPutTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemMetaPut =
+      mock(CADatabaseQueriesItemsType.MetadataPutType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class))
+      .thenReturn(itemMetaPut);
+
+    when(itemGet.execute(any()))
+      .thenReturn(Optional.of(
+        new CAItem(
+          ITEM_ID,
+          "x",
+          0L,
+          0L,
+          Collections.emptySortedMap(),
+          Collections.emptySortedMap(),
+          Collections.emptySortedSet(),
+          Collections.emptySortedSet())
+      ));
 
     doThrow(new CADatabaseException(
       "X",
       errorNonexistent(),
       Map.of(),
       Optional.empty()))
-      .when(items)
-      .itemMetadataPut(any(), any());
+      .when(itemMetaPut)
+      .execute(any());
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -222,6 +261,13 @@ public final class CAICmdItemMetadataPutTest
 
     final var handler = new CAICmdItemMetadataPut();
 
+    final var name0 =
+      new RDottedName("com.io7m.name0");
+    final var name1 =
+      new RDottedName("com.io7m.name1");
+    final var name2 =
+      new RDottedName("com.io7m.name2");
+
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
@@ -229,9 +275,9 @@ public final class CAICmdItemMetadataPutTest
           new CAICommandItemMetadataPut(
             ITEM_ID,
             Set.of(
-              new CAItemMetadata("a", "x"),
-              new CAItemMetadata("b", "y"),
-              new CAItemMetadata("c", "z")
+              new CAItemMetadata(name0, "x"),
+              new CAItemMetadata(name1, "y"),
+              new CAItemMetadata(name2, "z")
             )
           ));
       });
@@ -253,14 +299,20 @@ public final class CAICmdItemMetadataPutTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemMetaPut =
+      mock(CADatabaseQueriesItemsType.MetadataPutType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class))
+      .thenReturn(itemMetaPut);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.empty());
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -283,6 +335,13 @@ public final class CAICmdItemMetadataPutTest
 
     final var handler = new CAICmdItemMetadataPut();
 
+    final var name0 =
+      new RDottedName("com.io7m.name0");
+    final var name1 =
+      new RDottedName("com.io7m.name1");
+    final var name2 =
+      new RDottedName("com.io7m.name2");
+
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
@@ -290,9 +349,9 @@ public final class CAICmdItemMetadataPutTest
           new CAICommandItemMetadataPut(
             ITEM_ID,
             Set.of(
-              new CAItemMetadata("a", "x"),
-              new CAItemMetadata("b", "y"),
-              new CAItemMetadata("c", "z")
+              new CAItemMetadata(name0, "x"),
+              new CAItemMetadata(name1, "y"),
+              new CAItemMetadata(name2, "z")
             )
           ));
       });
@@ -300,5 +359,16 @@ public final class CAICmdItemMetadataPutTest
     /* Assert. */
 
     assertEquals(errorNonexistent(), ex.errorCode());
+
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
+    verify(itemGet)
+      .execute(any());
+
+    verifyNoMoreInteractions(itemGet);
+    verifyNoMoreInteractions(itemMetaPut);
+    verifyNoMoreInteractions(transaction);
   }
 }

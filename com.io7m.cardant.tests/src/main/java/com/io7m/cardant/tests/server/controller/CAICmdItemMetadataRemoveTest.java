@@ -19,12 +19,14 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.inventory.CAICmdItemMetadataRemove;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MMatchActionType.MMatchActionWithName;
 import com.io7m.medrina.api.MMatchObjectType.MMatchObjectWithType;
 import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
@@ -88,7 +90,7 @@ public final class CAICmdItemMetadataRemoveTest
           context,
           new CAICommandItemMetadataRemove(
             ITEM_ID,
-            Set.of("x")));
+            Set.of(new RDottedName("x"))));
       });
 
     /* Assert. */
@@ -108,14 +110,20 @@ public final class CAICmdItemMetadataRemoveTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemMetaRemove =
+      mock(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class))
+      .thenReturn(itemMetaRemove);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
@@ -123,6 +131,7 @@ public final class CAICmdItemMetadataRemoveTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
+        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 
@@ -149,24 +158,27 @@ public final class CAICmdItemMetadataRemoveTest
       context,
       new CAICommandItemMetadataRemove(
         ITEM_ID,
-        Set.of("a", "b", "c")
+        Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
       ));
 
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
-    verify(items)
-      .itemMetadataRemove(ITEM_ID, "a");
-    verify(items)
-      .itemMetadataRemove(ITEM_ID, "b");
-    verify(items)
-      .itemMetadataRemove(ITEM_ID, "c");
-    verify(items)
-      .itemGet(ITEM_ID);
+      .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+    verify(itemMetaRemove)
+      .execute(new Parameters(ITEM_ID, new RDottedName("a")));
+    verify(itemMetaRemove)
+      .execute(new Parameters(ITEM_ID, new RDottedName("b")));
+    verify(itemMetaRemove)
+      .execute(new Parameters(ITEM_ID, new RDottedName("c")));
+    verify(itemGet)
+      .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(items);
+    verifyNoMoreInteractions(itemGet);
+    verifyNoMoreInteractions(itemMetaRemove);
   }
 
   /**
@@ -181,21 +193,26 @@ public final class CAICmdItemMetadataRemoveTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemMetaRemove =
+      mock(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class))
+      .thenReturn(itemMetaRemove);
 
     doThrow(new CADatabaseException(
       "X",
       errorNonexistent(),
       Map.of(),
       Optional.empty()))
-      .when(items)
-      .itemMetadataRemove(any(), any());
+      .when(itemMetaRemove)
+      .execute(any());
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -223,7 +240,7 @@ public final class CAICmdItemMetadataRemoveTest
           context,
           new CAICommandItemMetadataRemove(
             ITEM_ID,
-            Set.of("a", "b", "c")
+            Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
           ));
       });
 
@@ -244,14 +261,20 @@ public final class CAICmdItemMetadataRemoveTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemMetaRemove =
+      mock(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class))
+      .thenReturn(itemMetaRemove);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.empty());
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -280,7 +303,7 @@ public final class CAICmdItemMetadataRemoveTest
           context,
           new CAICommandItemMetadataRemove(
             ITEM_ID,
-            Set.of("a", "b", "c")
+            Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
           ));
       });
 

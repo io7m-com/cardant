@@ -100,13 +100,13 @@ public final class CAICmdItemsRemoveTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var delete =
+      mock(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
+    when(transaction.queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class))
+      .thenReturn(delete);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -132,11 +132,11 @@ public final class CAICmdItemsRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
-    verify(items)
-      .itemsDeleteMarkOnly(Set.of(ITEM_ID));
+      .queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
+    verify(delete)
+      .execute(Set.of(ITEM_ID));
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(items);
+    verifyNoMoreInteractions(delete);
   }
 }

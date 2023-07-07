@@ -45,7 +45,7 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   CAICommandItemSearchBegin,
   CAICommandItemSearchNext,
   CAICommandItemSearchPrevious,
-  CAICommandItemUpdate,
+  CAICommandItemSetName,
   CAICommandItemsRemove,
   CAICommandLocationGet,
   CAICommandLocationList,
@@ -56,7 +56,8 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   CAICommandRolesRevoke,
   CAICommandTagList,
   CAICommandTagsDelete,
-  CAICommandTagsPut
+  CAICommandTagsPut,
+  CAICommandTypeScalarPut
 {
   /**
    * @return The response class associated with this command (excluding the

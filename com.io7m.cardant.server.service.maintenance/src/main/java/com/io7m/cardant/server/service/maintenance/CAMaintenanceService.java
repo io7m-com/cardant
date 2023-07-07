@@ -19,6 +19,7 @@ package com.io7m.cardant.server.service.maintenance;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesMaintenanceType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.repetoir.core.RPServiceType;
@@ -144,9 +145,9 @@ public final class CAMaintenanceService
              this.database.openConnection(CARDANT)) {
         try (var transaction =
                connection.openTransaction()) {
-          final var queries =
-            transaction.queries(CADatabaseQueriesMaintenanceType.class);
-          queries.runMaintenance();
+          final var maintenance =
+            transaction.queries(CADatabaseQueriesMaintenanceType.ExecuteType.class);
+          maintenance.execute(CADatabaseUnit.UNIT);
           transaction.commit();
           LOG.info("maintenance task completed successfully");
         }

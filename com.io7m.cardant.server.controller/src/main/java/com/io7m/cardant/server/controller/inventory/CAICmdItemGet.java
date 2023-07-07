@@ -55,12 +55,12 @@ public final class CAICmdItemGet extends CAICmdAbstract<CAICommandItemGet>
   {
     context.securityCheck(INVENTORY_ITEMS, READ);
 
-    final var queries =
+    final var get =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+        .queries(CADatabaseQueriesItemsType.GetType.class);
 
     final var itemID = command.id();
-    final var itemOpt = queries.itemGet(itemID);
+    final var itemOpt = get.execute(itemID);
     if (itemOpt.isEmpty()) {
       throw context.failFormatted(
         400,

@@ -26,60 +26,62 @@ import java.util.Optional;
  * Model database queries (Files).
  */
 
-public non-sealed interface CADatabaseQueriesFilesType
+public sealed interface CADatabaseQueriesFilesType
   extends CADatabaseQueriesType
 {
   /**
    * Create or update the given file.
-   *
-   * @param file The file
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void filePut(
-    CAFileType file)
-    throws CADatabaseException;
+  non-sealed interface PutType
+    extends CADatabaseQueryType<CAFileType, CADatabaseUnit>,
+    CADatabaseQueriesFilesType
+  {
+
+  }
 
   /**
    * Get the given file.
-   *
-   * @param file     The file
-   * @param withData {@code true} if the file data should be retrieved
-   *
-   * @return The file, if one exists
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  Optional<CAFileType> fileGet(
-    CAFileID file,
-    boolean withData)
-    throws CADatabaseException;
+  non-sealed interface GetType
+    extends CADatabaseQueryType<GetType.Parameters, Optional<CAFileType>>,
+    CADatabaseQueriesFilesType
+  {
+    /**
+     * Parameters for retrieving a file.
+     *
+     * @param file     The file ID
+     * @param withData {@code true} if file data should be included
+     */
+
+    record Parameters(
+      CAFileID file,
+      boolean withData)
+    {
+
+    }
+  }
 
   /**
    * Remove the given file.
-   *
-   * @param file The file
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void fileRemove(
-    CAFileID file)
-    throws CADatabaseException;
+  non-sealed interface RemoveType
+    extends CADatabaseQueryType<CAFileID, CADatabaseUnit>,
+    CADatabaseQueriesFilesType
+  {
+
+  }
 
   /**
    * Search for files.
-   *
-   * @param parameters The search parameters
-   *
-   * @return The file search
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  CADatabaseFileSearchType fileSearch(
-    CAFileSearchParameters parameters)
-    throws CADatabaseException;
+  non-sealed interface SearchType
+    extends CADatabaseQueryType<CAFileSearchParameters, CADatabaseFileSearchType>,
+    CADatabaseQueriesFilesType
+  {
+
+  }
 }

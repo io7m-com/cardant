@@ -107,13 +107,13 @@ public final class CAICmdTagsDeleteTest
   {
     /* Arrange. */
 
-    final var tags =
-      mock(CADatabaseQueriesTagsType.class);
+    final var tagDelete =
+      mock(CADatabaseQueriesTagsType.DeleteType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesTagsType.class))
-      .thenReturn(tags);
+    when(transaction.queries(CADatabaseQueriesTagsType.DeleteType.class))
+      .thenReturn(tagDelete);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -143,15 +143,15 @@ public final class CAICmdTagsDeleteTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesTagsType.class);
-    verify(tags)
-      .tagDelete(TAG_0);
-    verify(tags)
-      .tagDelete(TAG_1);
-    verify(tags)
-      .tagDelete(TAG_2);
+      .queries(CADatabaseQueriesTagsType.DeleteType.class);
+    verify(tagDelete)
+      .execute(TAG_0);
+    verify(tagDelete)
+      .execute(TAG_1);
+    verify(tagDelete)
+      .execute(TAG_2);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(tags);
+    verifyNoMoreInteractions(tagDelete);
   }
 }

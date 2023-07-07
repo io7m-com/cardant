@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
@@ -124,15 +125,19 @@ public final class CAICmdLocationsListTest
   {
     /* Arrange. */
 
-    final var locations =
-      mock(CADatabaseQueriesLocationsType.class);
+    final var locPut =
+      mock(CADatabaseQueriesLocationsType.PutType.class);
+    final var locList =
+      mock(CADatabaseQueriesLocationsType.ListType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.class))
-      .thenReturn(locations);
+    when(transaction.queries(CADatabaseQueriesLocationsType.PutType.class))
+      .thenReturn(locPut);
+    when(transaction.queries(CADatabaseQueriesLocationsType.ListType.class))
+      .thenReturn(locList);
 
-    when(locations.locationList())
+    when(locList.execute(UNIT))
       .thenReturn(new TreeMap<>(
         Map.ofEntries(
           Map.entry(LOCATION_0.id(), LOCATION_0),
@@ -167,11 +172,11 @@ public final class CAICmdLocationsListTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.class);
-    verify(locations)
-      .locationList();
+      .queries(CADatabaseQueriesLocationsType.ListType.class);
+    verify(locList)
+      .execute(UNIT);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(locations);
+    verifyNoMoreInteractions(locList);
   }
 }

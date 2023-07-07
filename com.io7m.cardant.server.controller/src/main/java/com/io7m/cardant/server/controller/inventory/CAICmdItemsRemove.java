@@ -52,11 +52,11 @@ public final class CAICmdItemsRemove extends CAICmdAbstract<CAICommandItemsRemov
   {
     context.securityCheck(INVENTORY_ITEMS, DELETE);
 
-    final var queries =
+    final var delete =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+        .queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
 
-    queries.itemsDeleteMarkOnly(command.ids());
+    delete.execute(command.ids());
     return new CAIResponseItemsRemove(
       context.requestId(),
       new CAIds(Set.copyOf(command.ids()))

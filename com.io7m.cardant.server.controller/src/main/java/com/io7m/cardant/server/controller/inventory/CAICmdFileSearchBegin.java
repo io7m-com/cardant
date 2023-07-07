@@ -51,17 +51,20 @@ public final class CAICmdFileSearchBegin extends CAICmdAbstract<CAICommandFileSe
   {
     context.securityCheck(INVENTORY_FILES, READ);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesFilesType.class);
+    final var transaction =
+      context.transaction();
+    final var searchQuery =
+      transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var search =
-      queries.fileSearch(command.parameters());
+      searchQuery.execute(command.parameters());
 
     context.session()
       .setProperty(CADatabaseFileSearchType.class, search);
 
-    final var page = search.pageCurrent(queries);
-    return new CAIResponseFileSearch(context.requestId(), page);
+    return new CAIResponseFileSearch(
+      context.requestId(),
+      search.pageCurrent(transaction)
+    );
   }
 }

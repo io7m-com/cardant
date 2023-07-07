@@ -115,14 +115,19 @@ public final class CAICmdItemRepositTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemReposit =
+      mock(CADatabaseQueriesItemsType.RepositType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.RepositType.class))
+      .thenReturn(itemReposit);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
@@ -130,6 +135,7 @@ public final class CAICmdItemRepositTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
+        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 
@@ -161,13 +167,16 @@ public final class CAICmdItemRepositTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
-    verify(items)
-      .itemReposit(new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L));
-    verify(items)
-      .itemGet(ITEM_ID);
+      .queries(CADatabaseQueriesItemsType.RepositType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(itemReposit)
+      .execute(new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L));
+    verify(itemGet)
+      .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(items);
+    verifyNoMoreInteractions(itemReposit);
+    verifyNoMoreInteractions(itemGet);
   }
 }

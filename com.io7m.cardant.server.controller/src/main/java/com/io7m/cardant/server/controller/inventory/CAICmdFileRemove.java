@@ -50,11 +50,11 @@ public final class CAICmdFileRemove extends CAICmdAbstract<CAICommandFileRemove>
   {
     context.securityCheck(INVENTORY_FILES, DELETE);
 
-    final var queries =
+    final var remove =
       context.transaction()
-        .queries(CADatabaseQueriesFilesType.class);
+        .queries(CADatabaseQueriesFilesType.RemoveType.class);
 
-    queries.fileRemove(command.data());
+    remove.execute(command.data());
     return new CAIResponseFileRemove(context.requestId(), command.data());
   }
 }

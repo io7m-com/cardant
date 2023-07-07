@@ -108,11 +108,11 @@ public final class CAICmdFilePutTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesFilesType.class);
+      mock(CADatabaseQueriesFilesType.PutType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesFilesType.class))
+    when(transaction.queries(CADatabaseQueriesFilesType.PutType.class))
       .thenReturn(files);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -139,10 +139,10 @@ public final class CAICmdFilePutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesFilesType.class);
+      .queries(CADatabaseQueriesFilesType.PutType.class);
 
     verify(files)
-      .filePut(FILE);
+      .execute(FILE);
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(files);

@@ -26,37 +26,39 @@ import java.util.SortedMap;
  * Model database queries (Locations).
  */
 
-public non-sealed interface CADatabaseQueriesLocationsType
+public sealed interface CADatabaseQueriesLocationsType
   extends CADatabaseQueriesType
 {
   /**
    * Create or update the given location.
-   *
-   * @param location The location
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void locationPut(CALocation location)
-    throws CADatabaseException;
+  non-sealed interface PutType
+    extends CADatabaseQueryType<CALocation, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+
+  }
 
   /**
-   * @param id The location id
-   *
-   * @return The location with the given ID
-   *
-   * @throws CADatabaseException On database errors
+   * Retrieve a location.
    */
 
-  Optional<CALocation> locationGet(CALocationID id)
-    throws CADatabaseException;
+  non-sealed interface GetType
+    extends CADatabaseQueryType<CALocationID, Optional<CALocation>>,
+    CADatabaseQueriesLocationsType
+  {
+
+  }
 
   /**
-   * @return The list of locations in the database
-   *
-   * @throws CADatabaseException On database errors
+   * List locations.
    */
 
-  SortedMap<CALocationID, CALocation> locationList()
-    throws CADatabaseException;
+  non-sealed interface ListType
+    extends CADatabaseQueryType<CADatabaseUnit, SortedMap<CALocationID, CALocation>>,
+    CADatabaseQueriesLocationsType
+  {
+
+  }
 }

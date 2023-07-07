@@ -18,6 +18,7 @@ package com.io7m.cardant.tests.database;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesFilesType.GetType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
@@ -91,24 +92,26 @@ public final class CADatabaseFilesTest
   public void testFileCreate()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
-
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesFilesType.GetType.class);
+    
     final var file = createFile(0);
 
-    q.filePut(file);
+    put.execute(file);
 
     final var fileWithout =
       file.withoutData();
 
     final var resultWithout =
-      q.fileGet(file.id(), false)
+      get.execute(new Parameters(file.id(), false))
         .orElseThrow();
 
     assertEquals(fileWithout, resultWithout);
 
     final var resultWith =
-      q.fileGet(file.id(), true)
+      get.execute(new Parameters(file.id(), true))
         .orElseThrow();
 
     assertEquals(file, resultWith);
@@ -124,21 +127,25 @@ public final class CADatabaseFilesTest
   public void testFileDelete()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesFilesType.GetType.class);
+    final var remove =
+      this.transaction.queries(CADatabaseQueriesFilesType.RemoveType.class);
 
     final var file = createFile(0);
 
-    q.filePut(file);
-    q.fileRemove(file.id());
+    put.execute(file);
+    remove.execute(file.id());
 
     assertEquals(
       Optional.empty(),
-      q.fileGet(file.id(), false)
+      get.execute(new Parameters(file.id(), false))
     );
     assertEquals(
       Optional.empty(),
-      q.fileGet(file.id(), true)
+      get.execute(new Parameters(file.id(), true))
     );
   }
 
@@ -152,21 +159,23 @@ public final class CADatabaseFilesTest
   public void testFileSearch0()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var search =
+      this.transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
     final var file2 = createFile(2);
 
-    q.filePut(file0);
-    q.filePut(file1);
-    q.filePut(file2);
+    put.execute(file0);
+    put.execute(file1);
+    put.execute(file2);
 
     this.transaction.commit();
 
     final var s =
-      q.fileSearch(new CAFileSearchParameters(
+      search.execute(new CAFileSearchParameters(
         Optional.empty(),
         Optional.empty(),
         Optional.empty(),
@@ -175,7 +184,7 @@ public final class CADatabaseFilesTest
       ));
 
     {
-      final var p = s.pageCurrent(q);
+      final var p = s.pageCurrent(this.transaction);
       assertEquals("File 0", p.items().get(0).description());
       assertEquals("File 1", p.items().get(1).description());
       assertEquals("File 2", p.items().get(2).description());
@@ -193,21 +202,23 @@ public final class CADatabaseFilesTest
   public void testFileSearch1()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var search =
+      this.transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
     final var file2 = createFile(2);
 
-    q.filePut(file0);
-    q.filePut(file1);
-    q.filePut(file2);
+    put.execute(file0);
+    put.execute(file1);
+    put.execute(file2);
 
     this.transaction.commit();
 
     final var s =
-      q.fileSearch(new CAFileSearchParameters(
+      search.execute(new CAFileSearchParameters(
         Optional.empty(),
         Optional.empty(),
         Optional.empty(),
@@ -216,7 +227,7 @@ public final class CADatabaseFilesTest
       ));
 
     {
-      final var p = s.pageCurrent(q);
+      final var p = s.pageCurrent(this.transaction);
       assertEquals("File 2", p.items().get(0).description());
       assertEquals("File 1", p.items().get(1).description());
       assertEquals("File 0", p.items().get(2).description());
@@ -234,21 +245,23 @@ public final class CADatabaseFilesTest
   public void testFileSearch2()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var search =
+      this.transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
     final var file2 = createFile(2);
 
-    q.filePut(file0);
-    q.filePut(file1);
-    q.filePut(file2);
+    put.execute(file0);
+    put.execute(file1);
+    put.execute(file2);
 
     this.transaction.commit();
 
     final var s =
-      q.fileSearch(new CAFileSearchParameters(
+      search.execute(new CAFileSearchParameters(
         Optional.of("File 1"),
         Optional.empty(),
         Optional.empty(),
@@ -257,7 +270,7 @@ public final class CADatabaseFilesTest
       ));
 
     {
-      final var p = s.pageCurrent(q);
+      final var p = s.pageCurrent(this.transaction);
       assertEquals("File 1", p.items().get(0).description());
       assertEquals(1, p.items().size());
     }
@@ -273,21 +286,23 @@ public final class CADatabaseFilesTest
   public void testFileSearch3()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var search =
+      this.transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
     final var file2 = createFile(2);
 
-    q.filePut(file0);
-    q.filePut(file1);
-    q.filePut(file2);
+    put.execute(file0);
+    put.execute(file1);
+    put.execute(file2);
 
     this.transaction.commit();
 
     final var s =
-      q.fileSearch(new CAFileSearchParameters(
+      search.execute(new CAFileSearchParameters(
         Optional.empty(),
         Optional.of("text/plain+1"),
         Optional.empty(),
@@ -296,7 +311,7 @@ public final class CADatabaseFilesTest
       ));
 
     {
-      final var p = s.pageCurrent(q);
+      final var p = s.pageCurrent(this.transaction);
       assertEquals("File 1", p.items().get(0).description());
       assertEquals(1, p.items().size());
     }
@@ -312,21 +327,23 @@ public final class CADatabaseFilesTest
   public void testFileSearch4()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var search =
+      this.transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
     final var file2 = createFile(2);
 
-    q.filePut(file0);
-    q.filePut(file1);
-    q.filePut(file2);
+    put.execute(file0);
+    put.execute(file1);
+    put.execute(file2);
 
     this.transaction.commit();
 
     final var s =
-      q.fileSearch(new CAFileSearchParameters(
+      search.execute(new CAFileSearchParameters(
         Optional.empty(),
         Optional.empty(),
         Optional.of(new CASizeRange(0L, 3L)),
@@ -335,7 +352,7 @@ public final class CADatabaseFilesTest
       ));
 
     {
-      final var p = s.pageCurrent(q);
+      final var p = s.pageCurrent(this.transaction);
       assertEquals(0, p.items().size());
     }
   }
@@ -350,21 +367,23 @@ public final class CADatabaseFilesTest
   public void testFileSearch5()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var search =
+      this.transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
     final var file2 = createFile(2);
 
-    q.filePut(file0);
-    q.filePut(file1);
-    q.filePut(file2);
+    put.execute(file0);
+    put.execute(file1);
+    put.execute(file2);
 
     this.transaction.commit();
 
     final var s =
-      q.fileSearch(new CAFileSearchParameters(
+      search.execute(new CAFileSearchParameters(
         Optional.empty(),
         Optional.of("text/plain+1"),
         Optional.empty(),
@@ -373,7 +392,7 @@ public final class CADatabaseFilesTest
       ));
 
     {
-      final var p = s.pageCurrent(q);
+      final var p = s.pageCurrent(this.transaction);
       assertEquals("File 1", p.items().get(0).description());
       assertEquals(1, p.items().size());
     }
@@ -389,21 +408,23 @@ public final class CADatabaseFilesTest
   public void testFileSearch6()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesFilesType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+    final var search =
+      this.transaction.queries(CADatabaseQueriesFilesType.SearchType.class);
 
     final var file0 = createFile(0);
     final var file1 = createFile(1);
     final var file2 = createFile(2);
 
-    q.filePut(file0);
-    q.filePut(file1);
-    q.filePut(file2);
+    put.execute(file0);
+    put.execute(file1);
+    put.execute(file2);
 
     this.transaction.commit();
 
     final var s =
-      q.fileSearch(new CAFileSearchParameters(
+      search.execute(new CAFileSearchParameters(
         Optional.empty(),
         Optional.empty(),
         Optional.of(new CASizeRange(9L, Long.MAX_VALUE)),
@@ -412,7 +433,7 @@ public final class CADatabaseFilesTest
       ));
 
     {
-      final var p = s.pageCurrent(q);
+      final var p = s.pageCurrent(this.transaction);
       assertEquals("File 2", p.items().get(0).description());
       assertEquals(1, p.items().size());
     }

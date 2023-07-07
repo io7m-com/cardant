@@ -50,15 +50,18 @@ public final class CAICmdItemReposit
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+    final var transaction =
+      context.transaction();
+    final var repositQuery =
+      transaction.queries(CADatabaseQueriesItemsType.RepositType.class);
+    final var get =
+      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
 
     final var reposit = command.reposit();
-    queries.itemReposit(reposit);
+    repositQuery.execute(reposit);
 
     final var item =
-      queries.itemGet(reposit.item())
+      get.execute(reposit.item())
         .orElseThrow();
 
     return new CAIResponseItemReposit(context.requestId(), item);

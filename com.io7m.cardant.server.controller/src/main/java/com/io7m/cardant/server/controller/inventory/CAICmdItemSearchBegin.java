@@ -51,17 +51,20 @@ public final class CAICmdItemSearchBegin extends CAICmdAbstract<CAICommandItemSe
   {
     context.securityCheck(INVENTORY_ITEMS, READ);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+    final var transaction =
+      context.transaction();
+    final var searchQuery =
+      transaction.queries(CADatabaseQueriesItemsType.SearchType.class);
 
     final var search =
-      queries.itemSearch(command.parameters());
+      searchQuery.execute(command.parameters());
 
     context.session()
       .setProperty(CADatabaseItemSearchType.class, search);
 
-    final var page = search.pageCurrent(queries);
-    return new CAIResponseItemSearch(context.requestId(), page);
+    return new CAIResponseItemSearch(
+      context.requestId(),
+      search.pageCurrent(transaction)
+    );
   }
 }

@@ -18,6 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesFilesType.GetType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -55,12 +56,14 @@ public final class CAICmdFileGet extends CAICmdAbstract<CAICommandFileGet>
   {
     context.securityCheck(INVENTORY_FILES, READ);
 
-    final var queries =
+    final var get =
       context.transaction()
-        .queries(CADatabaseQueriesFilesType.class);
+        .queries(CADatabaseQueriesFilesType.GetType.class);
 
     final var fileID = command.id();
-    final var fileOpt = queries.fileGet(fileID, false);
+    final var fileOpt =
+      get.execute(new Parameters(fileID, false));
+
     if (fileOpt.isEmpty()) {
       throw context.failFormatted(
         400,

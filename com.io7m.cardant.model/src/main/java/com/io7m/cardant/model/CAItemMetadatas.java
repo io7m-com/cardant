@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.lanark.core.RDottedName;
+
 import java.util.Objects;
 import java.util.SortedMap;
 
@@ -25,7 +27,7 @@ import java.util.SortedMap;
  * @param metadatas The metadata values
  */
 
-public record CAItemMetadatas(SortedMap<String, CAItemMetadata> metadatas)
+public record CAItemMetadatas(SortedMap<RDottedName, CAItemMetadata> metadatas)
   implements CAInventoryElementType
 {
   /**

@@ -350,11 +350,11 @@ public final class CAServer implements CAServerType
            database.openConnection(CARDANT)) {
       try (var transaction =
              connection.openTransaction()) {
-        final var users =
-          transaction.queries(CADatabaseQueriesUsersType.class);
+        final var put =
+          transaction.queries(CADatabaseQueriesUsersType.PutType.class);
 
         transaction.setUserId(adminId);
-        users.userPut(
+        put.execute(
           new CAUser(
             adminId,
             adminName,

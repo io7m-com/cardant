@@ -159,7 +159,7 @@ public final class CA1ServletFileUpload
 
         try (var connection = database.openConnection(CADatabaseRole.CARDANT)) {
           try (var transaction = connection.openTransaction()) {
-            final var q = transaction.queries(CADatabaseQueriesFilesType.class);
+            final var q = transaction.queries(CADatabaseQueriesFilesType.PutType.class);
             final var file = new CAFileType.CAFileWithData(
               new CAFileID(vFileId.get()),
               vDescription.get(),
@@ -170,7 +170,7 @@ public final class CA1ServletFileUpload
               new CAByteArray(data)
             );
 
-            q.filePut(file);
+            q.execute(file);
             transaction.commit();
 
             return new CAHTTPServletResponseFixedSize(

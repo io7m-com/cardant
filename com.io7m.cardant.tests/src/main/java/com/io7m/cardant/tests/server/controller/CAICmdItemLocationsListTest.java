@@ -134,14 +134,14 @@ public final class CAICmdItemLocationsListTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemsType.class);
+      mock(CADatabaseQueriesItemsType.LocationsType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.LocationsType.class))
       .thenReturn(items);
 
-    when(items.itemLocations(any()))
+    when(items.execute(any()))
       .thenReturn(
         new CAItemLocations(
           new TreeMap<>(
@@ -191,9 +191,9 @@ public final class CAICmdItemLocationsListTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
+      .queries(CADatabaseQueriesItemsType.LocationsType.class);
     verify(items)
-      .itemLocations(ITEM_ID);
+      .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(items);

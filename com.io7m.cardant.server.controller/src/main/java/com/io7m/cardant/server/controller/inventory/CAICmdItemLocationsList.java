@@ -52,13 +52,13 @@ public final class CAICmdItemLocationsList
     context.securityCheck(INVENTORY_ITEMS, READ);
     context.securityCheck(INVENTORY_LOCATIONS, READ);
 
-    final var queries =
+    final var locationsQuery =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+        .queries(CADatabaseQueriesItemsType.LocationsType.class);
 
-    final var locations = queries.itemLocations(command.item());
     return new CAIResponseItemLocationsList(
-      context.requestId(), locations
+      context.requestId(),
+      locationsQuery.execute(command.item())
     );
   }
 }

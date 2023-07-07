@@ -117,7 +117,7 @@ public final class CAICmdFileSearchPreviousTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesFilesType.class);
+      mock(CADatabaseQueriesFilesType.SearchType.class);
     final var fileSearch =
       mock(CADatabaseFileSearchType.class);
 
@@ -138,9 +138,9 @@ public final class CAICmdFileSearchPreviousTest
         0L
       );
 
-    when(transaction.queries(CADatabaseQueriesFilesType.class))
+    when(transaction.queries(CADatabaseQueriesFilesType.SearchType.class))
       .thenReturn(files);
-    when(files.fileSearch(any()))
+    when(files.execute(any()))
       .thenReturn(fileSearch);
     when(fileSearch.pagePrevious(any()))
       .thenReturn(page);
@@ -172,10 +172,8 @@ public final class CAICmdFileSearchPreviousTest
 
     /* Assert. */
 
-    verify(transaction)
-      .queries(CADatabaseQueriesFilesType.class);
     verify(fileSearch)
-      .pagePrevious(files);
+      .pagePrevious(transaction);
 
     verifyNoMoreInteractions(fileSearch);
     verifyNoMoreInteractions(transaction);
@@ -195,16 +193,16 @@ public final class CAICmdFileSearchPreviousTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesFilesType.class);
+      mock(CADatabaseQueriesFilesType.SearchType.class);
     final var fileSearch =
       mock(CADatabaseFileSearchType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesFilesType.class))
+    when(transaction.queries(CADatabaseQueriesFilesType.SearchType.class))
       .thenReturn(files);
-    when(files.fileSearch(any()))
+    when(files.execute(any()))
       .thenReturn(fileSearch);
 
     CASecurity.setPolicy(new MPolicy(List.of(

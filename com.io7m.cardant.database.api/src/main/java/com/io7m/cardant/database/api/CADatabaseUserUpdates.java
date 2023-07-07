@@ -95,10 +95,13 @@ public final class CADatabaseUserUpdates
     final CAUser user)
     throws CADatabaseException
   {
-    final var users =
-      transaction.queries(CADatabaseQueriesUsersType.class);
+    final var get =
+      transaction.queries(CADatabaseQueriesUsersType.GetType.class);
+    final var put =
+      transaction.queries(CADatabaseQueriesUsersType.PutType.class);
+
     final var existingOpt =
-      users.userGet(user.userId());
+      get.execute(user.userId());
 
     if (existingOpt.isPresent()) {
       final var existing = existingOpt.get();
@@ -108,7 +111,7 @@ public final class CADatabaseUserUpdates
           user.name(),
           existing.subject()
         );
-      users.userPut(merged);
+      put.execute(merged);
       return merged;
     }
 
@@ -118,7 +121,7 @@ public final class CADatabaseUserUpdates
         user.name(),
         new MSubject(Set.of())
       );
-    users.userPut(merged);
+    put.execute(merged);
     return merged;
   }
 }

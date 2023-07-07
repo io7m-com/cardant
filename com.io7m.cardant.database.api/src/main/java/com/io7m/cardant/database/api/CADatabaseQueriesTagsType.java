@@ -26,50 +26,50 @@ import java.util.SortedSet;
  * Model database queries (Tags).
  */
 
-public non-sealed interface CADatabaseQueriesTagsType
+public sealed interface CADatabaseQueriesTagsType
   extends CADatabaseQueriesType
 {
   /**
    * Retrieve the tag with the given ID, if one exists.
-   *
-   * @param id The ID
-   *
-   * @return The tag, if any
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  Optional<CATag> tagGet(CATagID id)
-    throws CADatabaseException;
+  non-sealed interface GetType
+    extends CADatabaseQueryType<CATagID, Optional<CATag>>,
+    CADatabaseQueriesTagsType
+  {
+
+  }
 
   /**
    * Create or update the given tag.
-   *
-   * @param tag The tag
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void tagPut(CATag tag)
-    throws CADatabaseException;
+  non-sealed interface PutType
+    extends CADatabaseQueryType<CATag, CADatabaseUnit>,
+    CADatabaseQueriesTagsType
+  {
+
+  }
 
   /**
    * Delete the given tag. The tag will be removed from any items it is associated with.
-   *
-   * @param tag The tag
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void tagDelete(CATag tag)
-    throws CADatabaseException;
+  non-sealed interface DeleteType
+    extends CADatabaseQueryType<CATag, CADatabaseUnit>,
+    CADatabaseQueriesTagsType
+  {
+
+  }
 
   /**
-   * @return The available tags
-   *
-   * @throws CADatabaseException On database errors
+   * List tags.
    */
 
-  SortedSet<CATag> tagList()
-    throws CADatabaseException;
+  non-sealed interface ListType
+    extends CADatabaseQueryType<CADatabaseUnit, SortedSet<CATag>>,
+    CADatabaseQueriesTagsType
+  {
+
+  }
 }

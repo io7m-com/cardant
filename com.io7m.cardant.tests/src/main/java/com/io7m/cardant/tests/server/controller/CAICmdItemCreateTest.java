@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
@@ -106,14 +107,23 @@ public final class CAICmdItemCreateTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemCreate =
+      mock(CADatabaseQueriesItemsType.CreateType.class);
+    final var itemNameSet =
+      mock(CADatabaseQueriesItemsType.SetNameType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.CreateType.class))
+      .thenReturn(itemCreate);
+    when(transaction.queries(CADatabaseQueriesItemsType.SetNameType.class))
+      .thenReturn(itemNameSet);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
@@ -121,6 +131,7 @@ public final class CAICmdItemCreateTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
+        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 
@@ -148,16 +159,20 @@ public final class CAICmdItemCreateTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
-    verify(items)
-      .itemCreate(ITEM_ID);
-    verify(items)
-      .itemNameSet(ITEM_ID, "Item");
-    verify(items)
-      .itemGet(ITEM_ID);
+      .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.CreateType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.SetNameType.class);
+    verify(itemCreate)
+      .execute(ITEM_ID);
+    verify(itemNameSet)
+      .execute(new Parameters(ITEM_ID, "Item"));
+    verify(itemGet)
+      .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(items);
+    verifyNoMoreInteractions(itemGet);
   }
 
   /**
@@ -172,17 +187,17 @@ public final class CAICmdItemCreateTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemCreate =
+      mock(CADatabaseQueriesItemsType.CreateType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
+    when(transaction.queries(CADatabaseQueriesItemsType.CreateType.class))
+      .thenReturn(itemCreate);
 
     doThrow(new CADatabaseException("X", errorDuplicate(), Map.of(), Optional.empty()))
-      .when(items)
-        .itemCreate(ITEM_ID);
+      .when(itemCreate)
+        .execute(ITEM_ID);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(

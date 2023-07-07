@@ -17,6 +17,48 @@
 
 import com.io7m.cardant.database.api.CADatabaseFactoryType;
 import com.io7m.cardant.database.postgres.CAPGDatabases;
+import com.io7m.cardant.database.postgres.internal.CADBQFileGet;
+import com.io7m.cardant.database.postgres.internal.CADBQFilePut;
+import com.io7m.cardant.database.postgres.internal.CADBQFileRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQFileSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQItemAttachmentAdd;
+import com.io7m.cardant.database.postgres.internal.CADBQItemAttachmentRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQItemAttachmentsGet;
+import com.io7m.cardant.database.postgres.internal.CADBQItemCreate;
+import com.io7m.cardant.database.postgres.internal.CADBQItemDelete;
+import com.io7m.cardant.database.postgres.internal.CADBQItemDeleteMarkOnly;
+import com.io7m.cardant.database.postgres.internal.CADBQItemGet;
+import com.io7m.cardant.database.postgres.internal.CADBQItemLocations;
+import com.io7m.cardant.database.postgres.internal.CADBQItemMetadataGet;
+import com.io7m.cardant.database.postgres.internal.CADBQItemMetadataPut;
+import com.io7m.cardant.database.postgres.internal.CADBQItemMetadataRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQItemReposit;
+import com.io7m.cardant.database.postgres.internal.CADBQItemSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQItemSetName;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTagAdd;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTagList;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTagRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclGet;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclGetMultiple;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclPut;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclsReferencingScalar;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclsSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarGet;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarPut;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationGet;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationList;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationPut;
+import com.io7m.cardant.database.postgres.internal.CADBQMaintenance;
+import com.io7m.cardant.database.postgres.internal.CADBQTagDelete;
+import com.io7m.cardant.database.postgres.internal.CADBQTagGet;
+import com.io7m.cardant.database.postgres.internal.CADBQTagList;
+import com.io7m.cardant.database.postgres.internal.CADBQTagPut;
+import com.io7m.cardant.database.postgres.internal.CADBQUserGet;
+import com.io7m.cardant.database.postgres.internal.CADBQUserPut;
+import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType;
 
 /**
  * Inventory system (Postgres database)
@@ -32,7 +74,6 @@ module com.io7m.cardant.database.postgres
   requires com.io7m.cardant.strings;
 
   requires com.io7m.anethum.api;
-  requires com.io7m.jdeferthrow.core;
   requires com.io7m.jmulticlose.core;
   requires com.io7m.jqpage.core;
   requires com.io7m.lanark.core;
@@ -57,6 +98,51 @@ module com.io7m.cardant.database.postgres
 
   provides CADatabaseFactoryType
     with CAPGDatabases;
+
+  uses CADBQueryProviderType;
+
+  provides CADBQueryProviderType with
+    CADBQFileGet,
+    CADBQFilePut,
+    CADBQFileRemove,
+    CADBQFileSearch,
+    CADBQItemAttachmentAdd,
+    CADBQItemAttachmentRemove,
+    CADBQItemAttachmentsGet,
+    CADBQItemCreate,
+    CADBQItemDelete,
+    CADBQItemDeleteMarkOnly,
+    CADBQItemGet,
+    CADBQItemLocations,
+    CADBQItemMetadataGet,
+    CADBQItemMetadataPut,
+    CADBQItemMetadataRemove,
+    CADBQItemReposit,
+    CADBQItemSearch,
+    CADBQItemSetName,
+    CADBQItemTagAdd,
+    CADBQItemTagList,
+    CADBQItemTagRemove,
+    CADBQItemTypeDeclGet,
+    CADBQItemTypeDeclGetMultiple,
+    CADBQItemTypeDeclPut,
+    CADBQItemTypeDeclRemove,
+    CADBQItemTypeDeclsReferencingScalar,
+    CADBQItemTypeDeclsSearch,
+    CADBQItemTypeScalarGet,
+    CADBQItemTypeScalarPut,
+    CADBQItemTypeScalarRemove,
+    CADBQItemTypeScalarSearch,
+    CADBQLocationGet,
+    CADBQLocationList,
+    CADBQLocationPut,
+    CADBQMaintenance,
+    CADBQTagDelete,
+    CADBQTagGet,
+    CADBQTagList,
+    CADBQTagPut,
+    CADBQUserGet,
+    CADBQUserPut;
 
   exports com.io7m.cardant.database.postgres;
 }

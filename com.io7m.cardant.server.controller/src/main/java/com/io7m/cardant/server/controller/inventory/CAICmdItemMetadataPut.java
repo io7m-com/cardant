@@ -18,6 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -56,17 +57,15 @@ public final class CAICmdItemMetadataPut
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+    final var transaction =
+      context.transaction();
+    final var metaPut =
+      transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class);
+    final var get =
+      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
 
-    final var metadatas = command.metadatas();
     final var itemId = command.item();
-    for (final var metadata : metadatas) {
-      queries.itemMetadataPut(itemId, metadata);
-    }
-
-    final var itemOpt = queries.itemGet(itemId);
+    final var itemOpt = get.execute(itemId);
     if (itemOpt.isEmpty()) {
       throw context.failFormatted(
         400,
@@ -74,6 +73,11 @@ public final class CAICmdItemMetadataPut
         Map.of(ITEM_ID, itemId.displayId()),
         ERROR_NONEXISTENT
       );
+    }
+
+    final var metadatas = command.metadatas();
+    for (final var metadata : metadatas) {
+      metaPut.execute(new Parameters(itemId, metadata));
     }
 
     return new CAIResponseItemMetadataPut(

@@ -18,7 +18,6 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import org.jooq.exception.DataAccessException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
@@ -33,6 +32,10 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNotPermitted;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeFieldTypeNonexistent;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeScalarReferenced;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_SCALAR_STILL_REFERENCED;
 
 /**
  * Functions to handle database exceptions.
@@ -57,7 +60,7 @@ public final class CADatabaseExceptions
 
   @SafeVarargs
   public static CADatabaseException handleDatabaseException(
-    final CADatabaseTransactionType transaction,
+    final CADatabaseTransaction transaction,
     final DataAccessException e,
     final Map.Entry<String, String>... attributes)
   {
@@ -79,81 +82,67 @@ public final class CADatabaseExceptions
    */
 
   public static CADatabaseException handleDatabaseException(
-    final CADatabaseTransactionType transaction,
+    final CADatabaseTransaction transaction,
     final DataAccessException e,
     final SortedMap<String, String> attributes)
   {
     final var m = e.getMessage();
 
-    CADatabaseException result =
-      new CADatabaseException(
-        m,
-        e,
-        errorSql(),
-        attributes,
-        Optional.empty()
-      );
+    /*
+     * See https://www.postgresql.org/docs/current/errcodes-appendix.html
+     * for all of these numeric codes.
+     */
 
-    if (e.getCause() instanceof final PSQLException psqlException) {
-      final var serverError =
-        Objects.requireNonNullElse(
-          psqlException.getServerErrorMessage(),
-          new ServerErrorMessage("")
-        );
+    final CADatabaseException result = switch (e.sqlState()) {
 
       /*
-       * See https://www.postgresql.org/docs/current/errcodes-appendix.html
-       * for all of these numeric codes.
+       * foreign_key_violation
        */
 
-      result = switch (psqlException.getSQLState()) {
+      case "23502" -> integrityViolation(transaction, e, attributes, m);
 
-        /*
-         * foreign_key_violation
-         */
+      /*
+       * foreign_key_violation
+       */
 
-        case "23503" ->
-          handleForeignKeyViolation(e, attributes, m);
+      case "23503" -> handleForeignKeyViolation(transaction, e, attributes, m);
 
-        /*
-         * unique_violation
-         */
+      /*
+       * unique_violation
+       */
 
-        case "23505" ->
-          handleUniqueViolation(e, attributes, m, serverError);
+      case "23505" -> handleUniqueViolation(e, attributes, m);
 
-        /*
-         * PostgreSQL: character_not_in_repertoire
-         */
+      /*
+       * PostgreSQL: character_not_in_repertoire
+       */
 
-        case "22021" ->
-          handleCharacterEncoding(e, attributes, serverError);
+      case "22021" -> handleCharacterEncoding(e, attributes);
 
-        /*
-         * insufficient_privilege
-         */
+      /*
+       * insufficient_privilege
+       */
 
-        case "42501" -> {
-          yield new CADatabaseException(
-            m,
-            e,
-            errorOperationNotPermitted(),
-            attributes,
-            Optional.empty()
-          );
-        }
+      case "42501" -> {
+        yield new CADatabaseException(
+          m,
+          e,
+          errorOperationNotPermitted(),
+          attributes,
+          Optional.empty()
+        );
+      }
 
-        default -> {
-          yield new CADatabaseException(
-            m,
-            e,
-            errorSql(),
-            attributes,
-            Optional.empty()
-          );
-        }
-      };
-    }
+      default -> {
+        yield new CADatabaseException(
+          m,
+          e,
+          errorSql(),
+          attributes,
+          Optional.empty()
+        );
+      }
+    };
 
     try {
       transaction.rollback();
@@ -163,15 +152,53 @@ public final class CADatabaseExceptions
     return result;
   }
 
-  private static CADatabaseException handleCharacterEncoding(
+  private static CADatabaseException integrityViolation(
+    final CADatabaseTransaction transaction,
     final DataAccessException e,
     final SortedMap<String, String> attributes,
-    final ServerErrorMessage serverError)
+    final String m)
   {
+    final String column =
+      findPSQLException(e)
+        .flatMap(z -> Optional.ofNullable(z.getServerErrorMessage()))
+        .map(ServerErrorMessage::getColumn)
+        .orElse("");
+
+    return switch (column) {
+      case "field_type" -> {
+        yield new CADatabaseException(
+          transaction.localize(ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE),
+          e,
+          errorTypeFieldTypeNonexistent(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      default -> {
+        yield new CADatabaseException(
+          m,
+          e,
+          errorSql(),
+          attributes,
+          Optional.empty()
+        );
+      }
+    };
+  }
+
+  private static CADatabaseException handleCharacterEncoding(
+    final DataAccessException e,
+    final SortedMap<String, String> attributes)
+  {
+    final String message =
+      findPSQLException(e)
+        .flatMap(z -> Optional.ofNullable(z.getServerErrorMessage()))
+        .map(ServerErrorMessage::getMessage)
+        .orElseGet(e::getMessage);
+
     return new CADatabaseException(
-      Objects.requireNonNullElse(
-        serverError.getMessage(),
-        e.getMessage()),
+      message,
       e,
       errorProtocol(),
       attributes,
@@ -182,11 +209,13 @@ public final class CADatabaseExceptions
   private static CADatabaseException handleUniqueViolation(
     final DataAccessException e,
     final SortedMap<String, String> attributes,
-    final String m,
-    final ServerErrorMessage serverError)
+    final String m)
   {
-    final var constraint =
-      Objects.requireNonNullElse(serverError.getConstraint(), "");
+    final String constraint =
+      findPSQLException(e)
+        .flatMap(z -> Optional.ofNullable(z.getServerErrorMessage()))
+        .map(ServerErrorMessage::getConstraint)
+        .orElse("");
 
     return switch (constraint) {
       case "files_pkey" -> {
@@ -264,11 +293,42 @@ public final class CADatabaseExceptions
     };
   }
 
+  private static Optional<PSQLException> findPSQLException(
+    final DataAccessException e)
+  {
+    var x = e.getCause();
+    while (x != null) {
+      if (x instanceof final PSQLException xx) {
+        return Optional.of(xx);
+      }
+      x = x.getCause();
+    }
+    return Optional.empty();
+  }
+
   private static CADatabaseException handleForeignKeyViolation(
+    final CADatabaseTransaction transaction,
     final DataAccessException e,
     final SortedMap<String, String> attributes,
     final String m)
   {
+    if (e.getCause() instanceof final PSQLException actual) {
+      final var constraint =
+        Optional.ofNullable(actual.getServerErrorMessage())
+          .flatMap(x -> Optional.ofNullable(x.getConstraint()))
+          .orElse("");
+
+      if (Objects.equals(constraint, "field_type_exists")) {
+        return new CADatabaseException(
+          transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
+          e,
+          errorTypeScalarReferenced(),
+          attributes,
+          Optional.empty()
+        );
+      }
+    }
+
     return new CADatabaseException(
       m,
       e,

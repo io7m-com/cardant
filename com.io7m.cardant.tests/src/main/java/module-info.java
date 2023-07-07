@@ -14,6 +14,8 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import net.jqwik.api.providers.ArbitraryProvider;
+
 /**
  * Test suite.
  */
@@ -48,6 +50,8 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.service.telemetry.otp;
   requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
+
+  uses ArbitraryProvider;
 
   requires com.io7m.ervilla.api;
   requires com.io7m.ervilla.native_exec;

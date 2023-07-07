@@ -97,14 +97,15 @@ public final class CAICmdRolesRevoke extends CAICmdAbstract<CAICommandRolesRevok
   {
     final var transaction =
       context.transaction();
-    final var queries =
-      transaction
-        .queries(CADatabaseQueriesUsersType.class);
+    final var get =
+      transaction.queries(CADatabaseQueriesUsersType.GetType.class);
+    final var put =
+      transaction.queries(CADatabaseQueriesUsersType.PutType.class);
 
     transaction.setUserId(context.session().userId());
 
     final var targetUser =
-      queries.userGet(command.user())
+      get.execute(command.user())
         .orElseThrow(() -> {
           return context.failFormatted(
             400,
@@ -116,7 +117,7 @@ public final class CAICmdRolesRevoke extends CAICmdAbstract<CAICommandRolesRevok
 
     final var newRoles = new HashSet<>(targetUser.subject().roles());
     newRoles.removeAll(rolesTaken);
-    queries.userPut(
+    put.execute(
       new CAUser(
         targetUser.userId(),
         targetUser.name(),

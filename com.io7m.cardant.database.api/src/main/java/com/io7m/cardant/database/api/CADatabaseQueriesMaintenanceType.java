@@ -20,15 +20,17 @@ package com.io7m.cardant.database.api;
  * The database queries involving maintenance.
  */
 
-public non-sealed interface CADatabaseQueriesMaintenanceType
+public sealed interface CADatabaseQueriesMaintenanceType
   extends CADatabaseQueriesType
 {
   /**
-   * Run maintenance tasks.
-   *
-   * @throws CADatabaseException On errors
+   * Execute maintenance queries.
    */
 
-  void runMaintenance()
-    throws CADatabaseException;
+  non-sealed interface ExecuteType
+    extends CADatabaseQueryType<CADatabaseUnit, CADatabaseUnit>,
+    CADatabaseQueriesMaintenanceType
+  {
+
+  }
 }

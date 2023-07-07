@@ -18,15 +18,10 @@ package com.io7m.cardant.database.postgres.internal;
 
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesMaintenanceType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTagsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesType;
-import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
+import com.io7m.cardant.strings.CAStringConstantType;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
@@ -128,23 +123,12 @@ final class CADatabaseTransaction
     final Class<T> qClass)
     throws CADatabaseException
   {
-    if (Objects.equals(qClass, CADatabaseQueriesUsersType.class)) {
-      return qClass.cast(new CADatabaseQueriesUsers(this));
-    }
-    if (Objects.equals(qClass, CADatabaseQueriesTagsType.class)) {
-      return qClass.cast(new CADatabaseQueriesTags(this));
-    }
-    if (Objects.equals(qClass, CADatabaseQueriesFilesType.class)) {
-      return qClass.cast(new CADatabaseQueriesFiles(this));
-    }
-    if (Objects.equals(qClass, CADatabaseQueriesLocationsType.class)) {
-      return qClass.cast(new CADatabaseQueriesLocations(this));
-    }
-    if (Objects.equals(qClass, CADatabaseQueriesItemsType.class)) {
-      return qClass.cast(new CADatabaseQueriesItems(this));
-    }
-    if (Objects.equals(qClass, CADatabaseQueriesMaintenanceType.class)) {
-      return qClass.cast(new CADatabaseQueriesMaintenance(this));
+    final var constructor =
+      this.connection.database()
+        .queries(qClass);
+
+    if (constructor != null) {
+      return (T) constructor.apply(this);
     }
 
     throw new CADatabaseException(
@@ -253,5 +237,19 @@ final class CADatabaseTransaction
   {
     return "[CADatabaseTransaction 0x%s]"
       .formatted(Long.toUnsignedString(this.hashCode(), 16));
+  }
+
+  public CADatabaseConnection getConnection()
+  {
+    return this.connection;
+  }
+
+  String localize(
+    final CAStringConstantType c,
+    final Object... args)
+  {
+    return this.connection.database()
+      .messages()
+      .format(c, args);
   }
 }

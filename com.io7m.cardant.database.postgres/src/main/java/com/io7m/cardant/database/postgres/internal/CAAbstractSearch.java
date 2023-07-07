@@ -18,7 +18,7 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabasePagedQueryType;
-import com.io7m.cardant.database.api.CADatabaseQueriesType;
+import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
 
@@ -29,12 +29,10 @@ import java.util.Objects;
  * A convenient abstract class for performing paginated searches.
  *
  * @param <T> The type of returned values
- * @param <Q> The type of queries
- * @param <R> The (internal) type of queries
  */
 
-public abstract class CAAbstractSearch<R extends Q, Q extends CADatabaseQueriesType, T>
-  implements CADatabasePagedQueryType<Q, T>
+public abstract class CAAbstractSearch<T>
+  implements CADatabasePagedQueryType<T>
 {
   private final List<JQKeysetRandomAccessPageDefinition> pages;
   private int pageIndex;
@@ -53,39 +51,39 @@ public abstract class CAAbstractSearch<R extends Q, Q extends CADatabaseQueriesT
   }
 
   protected abstract CAPage<T> page(
-    R queries,
+    CADatabaseTransaction transaction,
     JQKeysetRandomAccessPageDefinition page)
     throws CADatabaseException;
 
   @Override
   public final CAPage<T> pageCurrent(
-    final Q queries)
+    final CADatabaseTransactionType transaction)
     throws CADatabaseException
   {
     return this.page(
-      (R) queries,
+      (CADatabaseTransaction) transaction,
       this.pages.get(this.pageIndex)
     );
   }
 
   @Override
   public final CAPage<T> pageNext(
-    final Q queries)
+    final CADatabaseTransactionType transaction)
     throws CADatabaseException
   {
     final var nextIndex = this.pageIndex + 1;
     final var maxIndex = Math.max(0, this.pages.size() - 1);
     this.pageIndex = Math.min(nextIndex, maxIndex);
-    return this.pageCurrent(queries);
+    return this.pageCurrent(transaction);
   }
 
   @Override
   public final CAPage<T> pagePrevious(
-    final Q queries)
+    final CADatabaseTransactionType transaction)
     throws CADatabaseException
   {
     final var prevIndex = this.pageIndex - 1;
     this.pageIndex = Math.max(0, prevIndex);
-    return this.pageCurrent(queries);
+    return this.pageCurrent(transaction);
   }
 }

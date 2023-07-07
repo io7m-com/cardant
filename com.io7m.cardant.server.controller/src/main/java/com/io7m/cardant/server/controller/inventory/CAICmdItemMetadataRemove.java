@@ -18,6 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -56,17 +57,20 @@ public final class CAICmdItemMetadataRemove
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+    final var transaction =
+      context.transaction();
+    final var metaRemove =
+      transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+    final var get =
+      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
 
     final var metadatas = command.metadataNames();
     final var itemID = command.item();
     for (final var metadata : metadatas) {
-      queries.itemMetadataRemove(itemID, metadata);
+      metaRemove.execute(new Parameters(itemID, metadata));
     }
 
-    final var itemOpt = queries.itemGet(itemID);
+    final var itemOpt = get.execute(itemID);
     if (itemOpt.isEmpty()) {
       throw context.failFormatted(
         400,

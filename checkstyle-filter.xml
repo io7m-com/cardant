@@ -81,4 +81,7 @@
   <suppress files="CAShells.java"
             checks="ClassDataAbstractionCoupling"/>
 
+  <suppress files="CADatabaseQueriesItems.java"
+            checks="FileLength"/>
+  
 </suppressions>

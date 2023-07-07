@@ -38,6 +38,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_TAGS_WRI
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -62,13 +63,16 @@ public final class CAICmdRolesGetTest
   {
     /* Arrange. */
 
-    final var users =
-      mock(CADatabaseQueriesUsersType.class);
+    final var userGet =
+      mock(CADatabaseQueriesUsersType.GetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesUsersType.class))
-      .thenReturn(users);
+    when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
+      .thenReturn(userGet);
+
+    when(userGet.execute(any()))
+      .thenReturn(Optional.empty());
 
     final var context =
       this.createContext();
@@ -101,17 +105,18 @@ public final class CAICmdRolesGetTest
   {
     /* Arrange. */
 
-    final var users =
-      mock(CADatabaseQueriesUsersType.class);
+    final var userGet =
+      mock(CADatabaseQueriesUsersType.GetType.class);
     final var transaction =
       this.transaction();
 
     final var targetUser =
       UUID.randomUUID();
 
-    when(transaction.queries(CADatabaseQueriesUsersType.class))
-      .thenReturn(users);
-    when(users.userGet(targetUser))
+    when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
+      .thenReturn(userGet);
+
+    when(userGet.execute(targetUser))
       .thenReturn(Optional.of(
         new CAUser(
           targetUser,
@@ -148,11 +153,11 @@ public final class CAICmdRolesGetTest
     );
 
     verify(transaction)
-      .queries(CADatabaseQueriesUsersType.class);
-    verify(users)
-      .userGet(targetUser);
+      .queries(CADatabaseQueriesUsersType.GetType.class);
+    verify(userGet)
+      .execute(targetUser);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(users);
+    verifyNoMoreInteractions(userGet);
   }
 }

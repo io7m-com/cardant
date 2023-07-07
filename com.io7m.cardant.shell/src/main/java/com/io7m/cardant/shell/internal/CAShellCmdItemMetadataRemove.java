@@ -21,6 +21,7 @@ import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -52,13 +53,13 @@ public final class CAShellCmdItemMetadataRemove
       CAItemID.class
     );
 
-  private static final QParameterNamed1N<String> KEY =
+  private static final QParameterNamed1N<RDottedName> KEY =
     new QParameterNamed1N<>(
       "--key",
       List.of(),
       new QConstant("The metadata key."),
       Optional.empty(),
-      String.class
+      RDottedName.class
     );
 
   /**

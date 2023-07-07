@@ -50,7 +50,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationComm
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchBegin;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchNext;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemSearchPrevious;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemUpdate;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemSetName;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandItemsRemove;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandLocationGet;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandLocationList;
@@ -62,6 +62,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationComm
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandTagList;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandTagsDelete;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCAI1CommandTagsPut;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertFromWireCommandTypeScalarPut;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommands.convertToWireCommand;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseError;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseFileGet;
@@ -77,7 +78,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResp
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseItemMetadataRemove;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseItemReposit;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseItemSearch;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseItemUpdate;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseItemSetName;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseItemsRemove;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseLocationGet;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseLocationList;
@@ -89,6 +90,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResp
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseTagList;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseTagsDelete;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseTagsPut;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertFromWireCAI1ResponseTypeScalarPut;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationResponses.convertToWireResponse;
 
 /**
@@ -189,8 +191,8 @@ public final class CAI1Validation
         out.add(convertFromWireCAI1CommandItemsRemove(k.fieldCommand()));
         continue;
       }
-      if (c instanceof final CAI1Command.C1CommandItemUpdate k) {
-        out.add(convertFromWireCAI1CommandItemUpdate(k.fieldCommand()));
+      if (c instanceof final CAI1Command.C1CommandItemSetName k) {
+        out.add(convertFromWireCAI1CommandItemSetName(k.fieldCommand()));
         continue;
       }
       if (c instanceof final CAI1Command.C1CommandLocationGet k) {
@@ -301,8 +303,8 @@ public final class CAI1Validation
         out.add(convertFromWireCAI1ResponseItemsRemove(k.fieldResponse()));
         continue;
       }
-      if (c instanceof final CAI1Response.C1ResponseItemUpdate k) {
-        out.add(convertFromWireCAI1ResponseItemUpdate(k.fieldResponse()));
+      if (c instanceof final CAI1Response.C1ResponseItemSetName k) {
+        out.add(convertFromWireCAI1ResponseItemSetName(k.fieldResponse()));
         continue;
       }
       if (c instanceof final CAI1Response.C1ResponseLocationGet k) {
@@ -437,8 +439,8 @@ public final class CAI1Validation
       if (message instanceof final CAI1CommandItemsRemove m) {
         return convertFromWireCAI1CommandItemsRemove(m);
       }
-      if (message instanceof final CAI1CommandItemUpdate m) {
-        return convertFromWireCAI1CommandItemUpdate(m);
+      if (message instanceof final CAI1CommandItemSetName m) {
+        return convertFromWireCAI1CommandItemSetName(m);
       }
       if (message instanceof final CAI1CommandLocationGet m) {
         return convertFromWireCAI1CommandLocationGet(m);
@@ -491,6 +493,9 @@ public final class CAI1Validation
       if (message instanceof final CAI1CommandFileGet m) {
         return convertFromWireCAI1CommandFileGet(m);
       }
+      if (message instanceof final CAI1CommandTypeScalarPut c) {
+        return convertFromWireCommandTypeScalarPut(c);
+      }
 
       /*
        * Response.
@@ -535,8 +540,8 @@ public final class CAI1Validation
       if (message instanceof final CAI1ResponseItemsRemove m) {
         return convertFromWireCAI1ResponseItemsRemove(m);
       }
-      if (message instanceof final CAI1ResponseItemUpdate m) {
-        return convertFromWireCAI1ResponseItemUpdate(m);
+      if (message instanceof final CAI1ResponseItemSetName m) {
+        return convertFromWireCAI1ResponseItemSetName(m);
       }
       if (message instanceof final CAI1ResponseLocationGet m) {
         return convertFromWireCAI1ResponseLocationGet(m);
@@ -573,6 +578,9 @@ public final class CAI1Validation
       }
       if (message instanceof final CAI1ResponseFileGet m) {
         return convertFromWireCAI1ResponseFileGet(m);
+      }
+      if (message instanceof final CAI1ResponseTypeScalarPut m) {
+        return convertFromWireCAI1ResponseTypeScalarPut(m);
       }
 
       /*

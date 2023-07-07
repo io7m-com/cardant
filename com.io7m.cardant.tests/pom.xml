@@ -125,6 +125,11 @@
       <artifactId>com.io7m.cardant.server.service.maintenance</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.tests.arbitraries</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>com.io7m.quarrel</groupId>

@@ -18,6 +18,7 @@
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.lanark.core.RDottedName;
 
 import java.util.Objects;
 import java.util.Set;
@@ -31,7 +32,7 @@ import java.util.Set;
 
 public record CAICommandItemMetadataRemove(
   CAItemID item,
-  Set<String> metadataNames)
+  Set<RDottedName> metadataNames)
   implements CAICommandType<CAIResponseItemMetadataRemove>
 {
   /**

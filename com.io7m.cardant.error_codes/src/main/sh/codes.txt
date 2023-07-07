@@ -19,3 +19,8 @@ SQL_UNSUPPORTED_QUERY_CLASS|sql-unsupported-query-class|An attempt was made to u
 SQL|sql|An internal SQL database error.
 TRASCO|trasco|An error raised by the Trasco database versioning library.
 USER_NONEXISTENT|user-nonexistent|An attempt was made to reference a user that does not exist.
+TYPE_SCALAR_REFERENCED|type-scalar-referenced|The scalar type is referenced by one or more existing types/fields.
+TYPE_FIELD_TYPE_NONEXISTENT|type-field-type-nonexistent|A field in the type declaration refers to a nonexistent type.
+TYPE_CHECK_FIELD_REQUIRED_MISSING|type-field-required-missing|A field was required but is missing.
+TYPE_CHECK_FIELD_PATTERN_FAILURE|type-field-pattern-invalid|A field pattern was invalid.
+TYPE_CHECK_FIELD_INVALID|type-field-invalid|A field value did not match the provided pattern.

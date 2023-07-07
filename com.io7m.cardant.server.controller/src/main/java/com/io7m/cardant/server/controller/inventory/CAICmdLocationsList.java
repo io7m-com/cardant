@@ -24,6 +24,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 
+import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
 
@@ -50,11 +51,11 @@ public final class CAICmdLocationsList extends CAICmdAbstract<CAICommandLocation
   {
     context.securityCheck(INVENTORY_LOCATIONS, READ);
 
-    final var queries =
+    final var list =
       context.transaction()
-        .queries(CADatabaseQueriesLocationsType.class);
+        .queries(CADatabaseQueriesLocationsType.ListType.class);
 
-    final var locations = queries.locationList();
+    final var locations = list.execute(UNIT);
     return new CAIResponseLocationList(
       context.requestId(),
       new CALocations(locations)

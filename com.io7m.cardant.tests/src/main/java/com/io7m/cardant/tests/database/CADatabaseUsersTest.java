@@ -86,8 +86,10 @@ public final class CADatabaseUsersTest
   public void testUserCreate0()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesUsersType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesUsersType.GetType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesUsersType.PutType.class);
 
     final var user =
       new CAUser(
@@ -97,8 +99,8 @@ public final class CADatabaseUsersTest
       );
 
     this.transaction.setUserId(user.userId());
-    q.userPut(user);
-    assertEquals(user, q.userGet(user.userId()).orElseThrow());
+    put.execute(user);
+    assertEquals(user, get.execute(user.userId()).orElseThrow());
   }
 
   /**
@@ -111,8 +113,10 @@ public final class CADatabaseUsersTest
   public void testUserCreate1()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesUsersType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesUsersType.GetType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesUsersType.PutType.class);
 
     final var user =
       new CAUser(
@@ -126,8 +130,8 @@ public final class CADatabaseUsersTest
       );
 
     this.transaction.setUserId(user.userId());
-    q.userPut(user);
-    assertEquals(user, q.userGet(user.userId()).orElseThrow());
+    put.execute(user);
+    assertEquals(user, get.execute(user.userId()).orElseThrow());
   }
 
 
@@ -141,9 +145,9 @@ public final class CADatabaseUsersTest
   public void testUserGet0()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesUsersType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesUsersType.GetType.class);
 
-    assertEquals(Optional.empty(), q.userGet(UUID.randomUUID()));
+    assertEquals(Optional.empty(), get.execute(UUID.randomUUID()));
   }
 }

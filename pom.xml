@@ -53,6 +53,7 @@
     <module>com.io7m.cardant.shell</module>
     <module>com.io7m.cardant.strings</module>
     <module>com.io7m.cardant.tests</module>
+    <module>com.io7m.cardant.tests.arbitraries</module>
   </modules>
 
   <properties>

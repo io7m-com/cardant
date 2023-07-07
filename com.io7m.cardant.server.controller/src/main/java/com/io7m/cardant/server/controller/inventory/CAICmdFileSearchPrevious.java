@@ -18,7 +18,6 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseFileSearchType;
-import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -56,10 +55,6 @@ public final class CAICmdFileSearchPrevious
   {
     context.securityCheck(INVENTORY_FILES, READ);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesFilesType.class);
-
     final var search =
       context.session()
         .property(CADatabaseFileSearchType.class)
@@ -72,7 +67,9 @@ public final class CAICmdFileSearchPrevious
           );
         });
 
-    final var page = search.pagePrevious(queries);
-    return new CAIResponseFileSearch(context.requestId(), page);
+    return new CAIResponseFileSearch(
+      context.requestId(),
+      search.pagePrevious(context.transaction())
+    );
   }
 }

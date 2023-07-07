@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.lanark.core.RDottedName;
+
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,6 +35,7 @@ import java.util.stream.Stream;
  * @param metadata    The item metadata
  * @param attachments The item attachments
  * @param tags        The item tags
+ * @param types       The item types
  */
 
 public record CAItem(
@@ -40,10 +43,11 @@ public record CAItem(
   String name,
   long countTotal,
   long countHere,
-  SortedMap<String, CAItemMetadata> metadata,
+  SortedMap<RDottedName, CAItemMetadata> metadata,
   SortedMap<CAItemAttachmentKey, CAItemAttachment> attachments,
-  SortedSet<CATag> tags
-) implements CAInventoryElementType
+  SortedSet<CATag> tags,
+  SortedSet<RDottedName> types)
+  implements CAInventoryElementType
 {
   /**
    * Construct an item.
@@ -55,6 +59,7 @@ public record CAItem(
    * @param metadata    The item metadata
    * @param attachments The item attachments
    * @param tags        The item tags
+   * @param types       The types assigned to the item
    */
 
   public CAItem
@@ -64,6 +69,7 @@ public record CAItem(
     Objects.requireNonNull(metadata, "metadata");
     Objects.requireNonNull(attachments, "attachments");
     Objects.requireNonNull(tags, "tags");
+    Objects.requireNonNull(types, "types");
   }
 
   /**
@@ -81,28 +87,9 @@ public record CAItem(
       0L,
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
+      Collections.emptySortedSet(),
       Collections.emptySortedSet()
     );
-  }
-
-  /**
-   * @return The value of the description metadata, if present
-   */
-
-  public Optional<String> description()
-  {
-    return Optional.ofNullable(this.metadata.get("Description"))
-      .map(CAItemMetadata::value);
-  }
-
-  /**
-   * @return The value of the description metadata, or an empty string
-   */
-
-  public String descriptionOrEmpty()
-  {
-    return this.description()
-      .orElse("");
   }
 
   /**
@@ -165,7 +152,8 @@ public record CAItem(
       newCountHere,
       this.metadata,
       this.attachments,
-      this.tags
+      this.tags,
+      this.types
     );
   }
 }

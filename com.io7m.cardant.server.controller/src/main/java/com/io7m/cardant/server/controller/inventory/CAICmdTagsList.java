@@ -25,6 +25,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 
+import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_TAGS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
 
@@ -51,13 +52,13 @@ public final class CAICmdTagsList extends CAICmdAbstract<CAICommandTagList>
   {
     context.securityCheck(INVENTORY_TAGS, READ);
 
-    final var queries =
+    final var list =
       context.transaction()
-        .queries(CADatabaseQueriesTagsType.class);
+        .queries(CADatabaseQueriesTagsType.ListType.class);
 
     return new CAIResponseTagList(
       context.requestId(),
-      new CATags(queries.tagList())
+      new CATags(list.execute(UNIT))
     );
   }
 }

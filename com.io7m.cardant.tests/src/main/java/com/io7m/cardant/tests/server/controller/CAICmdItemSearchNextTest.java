@@ -116,8 +116,6 @@ public final class CAICmdItemSearchNextTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
     final var itemSearch =
       mock(CADatabaseItemSearchType.class);
 
@@ -132,10 +130,6 @@ public final class CAICmdItemSearchNextTest
         0L
       );
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemSearch(any()))
-      .thenReturn(itemSearch);
     when(itemSearch.pageNext(any()))
       .thenReturn(page);
 
@@ -166,14 +160,11 @@ public final class CAICmdItemSearchNextTest
 
     /* Assert. */
 
-    verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
     verify(itemSearch)
-      .pageNext(items);
+      .pageNext(transaction);
 
     verifyNoMoreInteractions(itemSearch);
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(items);
   }
 
   /**
@@ -189,16 +180,17 @@ public final class CAICmdItemSearchNextTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemsType.class);
+      mock(CADatabaseQueriesItemsType.SearchType.class);
     final var itemSearch =
       mock(CADatabaseItemSearchType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.SearchType.class))
       .thenReturn(items);
-    when(items.itemSearch(any()))
+
+    when(items.execute(any()))
       .thenReturn(itemSearch);
 
     CASecurity.setPolicy(new MPolicy(List.of(

@@ -229,7 +229,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
       for (final var entry : metadata.entrySet()) {
         tableBuilder.addRow()
-          .addCell(entry.getKey())
+          .addCell(entry.getKey().value())
           .addCell(entry.getValue().value());
       }
 
@@ -281,10 +281,6 @@ public final class CAFormatterPretty implements CAFormatterType
     tableBuilder.addRow()
       .addCell("Name")
       .addCell(item.name());
-
-    tableBuilder.addRow()
-      .addCell("Description")
-      .addCell(item.descriptionOrEmpty());
 
     tableBuilder.addRow()
       .addCell("Count (Total)")

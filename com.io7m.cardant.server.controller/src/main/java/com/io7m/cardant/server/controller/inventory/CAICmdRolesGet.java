@@ -51,12 +51,12 @@ public final class CAICmdRolesGet extends CAICmdAbstract<CAICommandRolesGet>
     final CAICommandRolesGet command)
     throws CASecurityException, CADatabaseException, CACommandExecutionFailure
   {
-    final var queries =
+    final var get =
       context.transaction()
-        .queries(CADatabaseQueriesUsersType.class);
+        .queries(CADatabaseQueriesUsersType.GetType.class);
 
     final var targetUser =
-      queries.userGet(command.user())
+      get.execute(command.user())
         .orElseThrow(() -> {
           return context.failFormatted(
             400,

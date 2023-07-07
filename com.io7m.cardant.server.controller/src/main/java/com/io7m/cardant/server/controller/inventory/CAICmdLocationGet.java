@@ -55,14 +55,14 @@ public final class CAICmdLocationGet extends CAICmdAbstract<CAICommandLocationGe
   {
     context.securityCheck(INVENTORY_LOCATIONS, READ);
 
-    final var queries =
+    final var get =
       context.transaction()
-        .queries(CADatabaseQueriesLocationsType.class);
+        .queries(CADatabaseQueriesLocationsType.GetType.class);
 
     final var locationID =
       command.id();
     final var existing =
-      queries.locationGet(locationID);
+      get.execute(locationID);
 
     if (existing.isPresent()) {
       return new CAIResponseLocationGet(context.requestId(), existing.get());

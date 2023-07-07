@@ -18,7 +18,6 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseItemSearchType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -56,10 +55,6 @@ public final class CAICmdItemSearchPrevious
   {
     context.securityCheck(INVENTORY_ITEMS, READ);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
-
     final var search =
       context.session()
         .property(CADatabaseItemSearchType.class)
@@ -72,7 +67,7 @@ public final class CAICmdItemSearchPrevious
           );
         });
 
-    final var page = search.pagePrevious(queries);
+    final var page = search.pagePrevious(context.transaction());
     return new CAIResponseItemSearch(context.requestId(), page);
   }
 }

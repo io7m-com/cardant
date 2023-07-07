@@ -22,6 +22,7 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -52,13 +53,13 @@ public final class CAShellCmdItemMetadataPut
       CAItemID.class
     );
 
-  private static final QParameterNamed1<String> KEY =
+  private static final QParameterNamed1<RDottedName> KEY =
     new QParameterNamed1<>(
       "--key",
       List.of(),
       new QConstant("The metadata key."),
       Optional.empty(),
-      String.class
+      RDottedName.class
     );
 
   private static final QParameterNamed1<String> VALUE =

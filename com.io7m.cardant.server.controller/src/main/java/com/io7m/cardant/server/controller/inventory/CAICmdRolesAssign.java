@@ -97,14 +97,15 @@ public final class CAICmdRolesAssign extends CAICmdAbstract<CAICommandRolesAssig
   {
     final var transaction =
       context.transaction();
-    final var queries =
-      transaction
-        .queries(CADatabaseQueriesUsersType.class);
+    final var put =
+      transaction.queries(CADatabaseQueriesUsersType.PutType.class);
+    final var get =
+      transaction.queries(CADatabaseQueriesUsersType.GetType.class);
 
     transaction.setUserId(context.session().userId());
 
     final var targetUser =
-      queries.userGet(command.user())
+      get.execute(command.user())
         .orElseThrow(() -> {
           return context.failFormatted(
             400,
@@ -116,7 +117,7 @@ public final class CAICmdRolesAssign extends CAICmdAbstract<CAICommandRolesAssig
 
     final var newRoles = new HashSet<>(targetUser.subject().roles());
     newRoles.addAll(rolesGiven);
-    queries.userPut(
+    put.execute(
       new CAUser(
         targetUser.userId(),
         targetUser.name(),

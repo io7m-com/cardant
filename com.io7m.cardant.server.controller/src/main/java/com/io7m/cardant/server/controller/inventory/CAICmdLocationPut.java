@@ -49,11 +49,11 @@ public final class CAICmdLocationPut extends CAICmdAbstract<CAICommandLocationPu
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
-    final var queries =
+    final var put =
       context.transaction()
-        .queries(CADatabaseQueriesLocationsType.class);
+        .queries(CADatabaseQueriesLocationsType.PutType.class);
 
-    queries.locationPut(command.location());
+    put.execute(command.location());
     return new CAIResponseLocationPut(context.requestId(), command.location());
   }
 }

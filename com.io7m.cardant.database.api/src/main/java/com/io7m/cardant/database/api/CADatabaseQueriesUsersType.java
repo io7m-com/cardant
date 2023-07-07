@@ -25,28 +25,28 @@ import java.util.UUID;
  * The database queries involving users.
  */
 
-public non-sealed interface CADatabaseQueriesUsersType
+public sealed interface CADatabaseQueriesUsersType
   extends CADatabaseQueriesType
 {
   /**
    * Update the given user.
-   *
-   * @param user The user
-   *
-   * @throws CADatabaseException On errors
    */
 
-  void userPut(CAUser user)
-    throws CADatabaseException;
+  non-sealed interface PutType
+    extends CADatabaseQueryType<CAUser, CADatabaseUnit>,
+    CADatabaseQueriesUsersType
+  {
+
+  }
 
   /**
-   * @param id The user ID
-   *
-   * @return The user
-   *
-   * @throws CADatabaseException On errors
+   * Retrieve a user.
    */
 
-  Optional<CAUser> userGet(UUID id)
-    throws CADatabaseException;
+  non-sealed interface GetType
+    extends CADatabaseQueryType<UUID, Optional<CAUser>>,
+    CADatabaseQueriesUsersType
+  {
+
+  }
 }

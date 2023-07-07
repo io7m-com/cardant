@@ -13,13 +13,11 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
 package com.io7m.cardant.error_codes;
 
 /**
  * <p>The standard error codes.</p>
- * <p>Note: This file is generated from codes.txt and should not be
- * hand-edited.</p>
+ * <p>Note: This file is generated from codes.txt and should not be hand-edited.</p>
  */
 public final class CAStandardErrorCodes
 {
@@ -298,6 +296,71 @@ public final class CAStandardErrorCodes
   public static CAErrorCode errorUserNonexistent()
   {
     return ERROR_USER_NONEXISTENT;
+  }
+
+  private static final CAErrorCode ERROR_TYPE_SCALAR_REFERENCED =
+    new CAErrorCode("error-type-scalar-referenced");
+
+  /**
+   * The scalar type is referenced by one or more existing types/fields.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeScalarReferenced()
+  {
+    return ERROR_TYPE_SCALAR_REFERENCED;
+  }
+
+  private static final CAErrorCode ERROR_TYPE_FIELD_TYPE_NONEXISTENT =
+    new CAErrorCode("error-type-field-type-nonexistent");
+
+  /**
+   * A field in the type declaration refers to a nonexistent type.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeFieldTypeNonexistent()
+  {
+    return ERROR_TYPE_FIELD_TYPE_NONEXISTENT;
+  }
+
+  private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_REQUIRED_MISSING =
+    new CAErrorCode("error-type-field-required-missing");
+
+  /**
+   * A field was required but is missing.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeCheckFieldRequiredMissing()
+  {
+    return ERROR_TYPE_CHECK_FIELD_REQUIRED_MISSING;
+  }
+
+  private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_PATTERN_FAILURE =
+    new CAErrorCode("error-type-field-pattern-invalid");
+
+  /**
+   * A field pattern was invalid.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeCheckFieldPatternFailure()
+  {
+    return ERROR_TYPE_CHECK_FIELD_PATTERN_FAILURE;
+  }
+
+  private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_INVALID =
+    new CAErrorCode("error-type-field-invalid");
+
+  /**
+   * A field value did not match the provided pattern.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeCheckFieldInvalid()
+  {
+    return ERROR_TYPE_CHECK_FIELD_INVALID;
   }
 }
 

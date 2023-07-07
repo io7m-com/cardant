@@ -16,25 +16,27 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.lanark.core.RDottedName;
+
 import java.util.Objects;
 
 /**
  * Item metadata.
  *
- * @param name   The metadata name
- * @param value  The metadata value
+ * @param name  The metadata name
+ * @param value The metadata value
  */
 
 public record CAItemMetadata(
-  String name,
-  String value
-) implements CAInventoryElementType
+  RDottedName name,
+  String value)
+  implements CAInventoryElementType
 {
   /**
    * Construct metadata.
    *
-   * @param name   The metadata name
-   * @param value  The metadata value
+   * @param name  The metadata name
+   * @param value The metadata value
    */
 
   public CAItemMetadata
@@ -42,16 +44,29 @@ public record CAItemMetadata(
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(value, "value");
 
-    if (name.length() >= 128) {
-      throw new CAValidityException(
-        String.format("Metadata name too long: %s", name)
-      );
-    }
-
     if (value.length() >= 1024) {
       throw new CAValidityException(
         String.format("Metadata value too long: %s", name)
       );
     }
+  }
+
+  /**
+   * Construct item metadata.
+   *
+   * @param key   The field name
+   * @param value The field value
+   *
+   * @return A metadata value
+   */
+
+  public static CAItemMetadata of(
+    final String key,
+    final String value)
+  {
+    return new CAItemMetadata(
+      new RDottedName(key),
+      value
+    );
   }
 }

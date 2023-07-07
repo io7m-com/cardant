@@ -33,7 +33,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
-import com.io7m.cardant.protocol.inventory.CAICommandItemUpdate;
+import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
@@ -127,8 +127,8 @@ public final class CAICommandExecutor
     if (command instanceof final CAICommandItemsRemove m) {
       return new CAICmdItemsRemove().execute(context, m);
     }
-    if (command instanceof final CAICommandItemUpdate m) {
-      return new CAICmdItemUpdate().execute(context, m);
+    if (command instanceof final CAICommandItemSetName m) {
+      return new CAICmdItemSetName().execute(context, m);
     }
     if (command instanceof final CAICommandLocationGet m) {
       return new CAICmdLocationGet().execute(context, m);

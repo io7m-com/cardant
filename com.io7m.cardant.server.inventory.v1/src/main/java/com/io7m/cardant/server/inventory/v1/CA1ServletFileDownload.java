@@ -19,6 +19,7 @@ package com.io7m.cardant.server.inventory.v1;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesFilesType.GetType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.error_codes.CAException;
@@ -139,12 +140,9 @@ public final class CA1ServletFileDownload
     try (var connection = database.openConnection(CADatabaseRole.CARDANT)) {
       try (var transaction = connection.openTransaction()) {
         final var q =
-          transaction.queries(CADatabaseQueriesFilesType.class);
+          transaction.queries(CADatabaseQueriesFilesType.GetType.class);
         final var fileOpt =
-          q.fileGet(
-            new CAFileID(vFileId.get()),
-            true
-          );
+          q.execute(new Parameters(new CAFileID(vFileId.get()), true));
 
         if (fileOpt.isEmpty()) {
           throw new CACommandExecutionFailure(

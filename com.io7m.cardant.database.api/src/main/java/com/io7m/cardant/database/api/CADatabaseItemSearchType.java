@@ -24,7 +24,7 @@ import com.io7m.cardant.model.CAItemSummary;
  */
 
 public interface CADatabaseItemSearchType
-  extends CADatabasePagedQueryType<CADatabaseQueriesItemsType, CAItemSummary>
+  extends CADatabasePagedQueryType<CAItemSummary>
 {
 
 }

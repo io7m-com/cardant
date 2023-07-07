@@ -49,13 +49,13 @@ public final class CAICmdTagsPut extends CAICmdAbstract<CAICommandTagsPut>
   {
     context.securityCheck(INVENTORY_TAGS, WRITE);
 
-    final var queries =
+    final var put =
       context.transaction()
-        .queries(CADatabaseQueriesTagsType.class);
+        .queries(CADatabaseQueriesTagsType.PutType.class);
 
     final var tags = command.tags();
     for (final var tag : tags.tags()) {
-      queries.tagPut(tag);
+      put.execute(tag);
     }
 
     return new CAIResponseTagsPut(context.requestId(), tags);

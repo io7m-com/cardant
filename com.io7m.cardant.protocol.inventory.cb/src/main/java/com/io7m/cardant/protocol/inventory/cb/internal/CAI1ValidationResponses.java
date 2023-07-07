@@ -39,7 +39,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemUpdate;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
@@ -52,6 +52,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
@@ -73,7 +74,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSearch;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemUpdate;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationList;
@@ -85,6 +86,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
 import com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.ProtocolUncheckedException;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned32;
@@ -158,8 +160,8 @@ public final class CAI1ValidationResponses
     if (cmd instanceof final CAIResponseItemsRemove c) {
       return convertToWireResponseCAIResponseItemsRemove(c);
     }
-    if (cmd instanceof final CAIResponseItemUpdate c) {
-      return convertToWireResponseCAIResponseItemUpdate(c);
+    if (cmd instanceof final CAIResponseItemSetName c) {
+      return convertToWireResponseCAIResponseItemSetName(c);
     }
     if (cmd instanceof final CAIResponseLocationGet c) {
       return convertToWireResponseCAIResponseLocationGet(c);
@@ -203,8 +205,19 @@ public final class CAI1ValidationResponses
     if (cmd instanceof final CAIResponseFileGet c) {
       return convertToWireResponseCAIResponseFileGet(c);
     }
+    if (cmd instanceof final CAIResponseTypeScalarPut c) {
+      return convertToWireResponseCAIResponseTypeScalarPut(c);
+    }
 
     throw new ProtocolUncheckedException(errorProtocol(cmd));
+  }
+
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseTypeScalarPut(final CAIResponseTypeScalarPut c)
+  {
+    return new CAI1ResponseTypeScalarPut(
+      new CBUUID(c.requestId()),
+      CBLists.ofCollection(c.types(), CAI1ValidationCommon::convertToWireTypeScalar)
+    );
   }
 
   private static ProtocolCAIv1Type convertToWireResponseCAIResponseRolesGet(
@@ -311,10 +324,10 @@ public final class CAI1ValidationResponses
     );
   }
 
-  private static ProtocolCAIv1Type convertToWireResponseCAIResponseItemUpdate(
-    final CAIResponseItemUpdate c)
+  private static ProtocolCAIv1Type convertToWireResponseCAIResponseItemSetName(
+    final CAIResponseItemSetName c)
   {
-    return new CAI1ResponseItemUpdate(
+    return new CAI1ResponseItemSetName(
       new CBUUID(c.requestId()),
       convertToWireItem(c.data())
     );
@@ -501,10 +514,10 @@ public final class CAI1ValidationResponses
     );
   }
 
-  public static CAIMessageType convertFromWireCAI1ResponseItemUpdate(
-    final CAI1ResponseItemUpdate m)
+  public static CAIMessageType convertFromWireCAI1ResponseItemSetName(
+    final CAI1ResponseItemSetName m)
   {
-    return new CAIResponseItemUpdate(
+    return new CAIResponseItemSetName(
       m.fieldRequestId().value(),
       convertFromWireItem(m.fieldItem())
     );
@@ -627,6 +640,15 @@ public final class CAI1ValidationResponses
     );
   }
 
+  public static CAIMessageType convertFromWireCAI1ResponseTypeScalarPut(
+    final CAI1ResponseTypeScalarPut m)
+  {
+    return new CAIResponseTypeScalarPut(
+      m.fieldRequestId().value(),
+      CBSets.toSet(m.fieldTypes(), CAI1ValidationCommon::convertFromWireTypeScalar)
+    );
+  }
+
   public static CAIMessageType convertFromWireCAI1ResponseItemCreate(
     final CAI1ResponseItemCreate m)
   {
@@ -708,8 +730,8 @@ public final class CAI1ValidationResponses
     if (msg instanceof final CAI1ResponseItemReposit c) {
       return new CAI1Response.C1ResponseItemReposit(c);
     }
-    if (msg instanceof final CAI1ResponseItemUpdate c) {
-      return new CAI1Response.C1ResponseItemUpdate(c);
+    if (msg instanceof final CAI1ResponseItemSetName c) {
+      return new CAI1Response.C1ResponseItemSetName(c);
     }
     if (msg instanceof final CAI1ResponseItemsRemove c) {
       return new CAI1Response.C1ResponseItemsRemove(c);

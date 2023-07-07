@@ -18,6 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentAddType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -56,18 +57,19 @@ public final class CAICmdItemAttachmentAdd
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var queries =
-      context.transaction()
-        .queries(CADatabaseQueriesItemsType.class);
+    final var transaction =
+      context.transaction();
+    final var attachmentAdd =
+      transaction.queries(CADatabaseQueriesItemsType.AttachmentAddType.class);
+    final var get =
+      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
 
     final var itemID = command.item();
-    queries.itemAttachmentAdd(
-      itemID,
-      command.file(),
-      command.relation()
+    attachmentAdd.execute(
+      new Parameters(itemID, command.file(), command.relation())
     );
 
-    final var itemOpt = queries.itemGet(itemID);
+    final var itemOpt = get.execute(itemID);
     if (itemOpt.isEmpty()) {
       throw context.failFormatted(
         400,

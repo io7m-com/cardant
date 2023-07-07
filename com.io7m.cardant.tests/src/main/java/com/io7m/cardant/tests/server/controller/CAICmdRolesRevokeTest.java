@@ -61,13 +61,13 @@ public final class CAICmdRolesRevokeTest
   {
     /* Arrange. */
 
-    final var users =
-      mock(CADatabaseQueriesUsersType.class);
+    final var userGet =
+      mock(CADatabaseQueriesUsersType.GetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesUsersType.class))
-      .thenReturn(users);
+    when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
+      .thenReturn(userGet);
 
     final var context =
       this.createContext();
@@ -103,13 +103,16 @@ public final class CAICmdRolesRevokeTest
   {
     /* Arrange. */
 
-    final var users =
-      mock(CADatabaseQueriesUsersType.class);
+    final var userGet =
+      mock(CADatabaseQueriesUsersType.GetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesUsersType.class))
-      .thenReturn(users);
+    when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
+      .thenReturn(userGet);
+
+    when(userGet.execute(any()))
+      .thenReturn(Optional.empty());
 
     this.setRoles(ROLE_INVENTORY_TAGS_WRITER);
 
@@ -146,17 +149,22 @@ public final class CAICmdRolesRevokeTest
   {
     /* Arrange. */
 
-    final var users =
-      mock(CADatabaseQueriesUsersType.class);
+    final var userGet =
+      mock(CADatabaseQueriesUsersType.GetType.class);
+    final var userPut =
+      mock(CADatabaseQueriesUsersType.PutType.class);
     final var transaction =
       this.transaction();
 
     final var targetUser =
       UUID.randomUUID();
 
-    when(transaction.queries(CADatabaseQueriesUsersType.class))
-      .thenReturn(users);
-    when(users.userGet(targetUser))
+    when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
+      .thenReturn(userGet);
+    when(transaction.queries(CADatabaseQueriesUsersType.PutType.class))
+      .thenReturn(userPut);
+
+    when(userGet.execute(targetUser))
       .thenReturn(Optional.of(
         new CAUser(
           targetUser,
@@ -183,17 +191,20 @@ public final class CAICmdRolesRevokeTest
     verify(transaction)
       .setUserId(any());
     verify(transaction)
-      .queries(CADatabaseQueriesUsersType.class);
+      .queries(CADatabaseQueriesUsersType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesUsersType.PutType.class);
 
-    verify(users)
-      .userGet(targetUser);
-    verify(users)
-      .userPut(
+    verify(userGet)
+      .execute(targetUser);
+    verify(userPut)
+      .execute(
         new CAUser(targetUser, new IdName("x"), new MSubject(Set.of()))
       );
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(users);
+    verifyNoMoreInteractions(userGet);
+    verifyNoMoreInteractions(userPut);
   }
 
   /**
@@ -208,17 +219,22 @@ public final class CAICmdRolesRevokeTest
   {
     /* Arrange. */
 
-    final var users =
-      mock(CADatabaseQueriesUsersType.class);
+    final var userGet =
+      mock(CADatabaseQueriesUsersType.GetType.class);
+    final var userPut =
+      mock(CADatabaseQueriesUsersType.PutType.class);
     final var transaction =
       this.transaction();
 
     final var targetUser =
       UUID.randomUUID();
 
-    when(transaction.queries(CADatabaseQueriesUsersType.class))
-      .thenReturn(users);
-    when(users.userGet(targetUser))
+    when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
+      .thenReturn(userGet);
+    when(transaction.queries(CADatabaseQueriesUsersType.PutType.class))
+      .thenReturn(userPut);
+
+    when(userGet.execute(targetUser))
       .thenReturn(Optional.of(
         new CAUser(
           targetUser,
@@ -245,16 +261,19 @@ public final class CAICmdRolesRevokeTest
     verify(transaction)
       .setUserId(any());
     verify(transaction)
-      .queries(CADatabaseQueriesUsersType.class);
+      .queries(CADatabaseQueriesUsersType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesUsersType.PutType.class);
 
-    verify(users)
-      .userGet(targetUser);
-    verify(users)
-      .userPut(
+    verify(userGet)
+      .execute(targetUser);
+    verify(userPut)
+      .execute(
         new CAUser(targetUser, new IdName("x"), new MSubject(Set.of()))
       );
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(users);
+    verifyNoMoreInteractions(userGet);
+    verifyNoMoreInteractions(userPut);
   }
 }

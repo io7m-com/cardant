@@ -108,11 +108,11 @@ public final class CAICmdFileRemoveTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesFilesType.class);
+      mock(CADatabaseQueriesFilesType.RemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesFilesType.class))
+    when(transaction.queries(CADatabaseQueriesFilesType.RemoveType.class))
       .thenReturn(files);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -139,10 +139,10 @@ public final class CAICmdFileRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesFilesType.class);
+      .queries(CADatabaseQueriesFilesType.RemoveType.class);
 
     verify(files)
-      .fileRemove(FILE.id());
+      .execute(FILE.id());
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(files);

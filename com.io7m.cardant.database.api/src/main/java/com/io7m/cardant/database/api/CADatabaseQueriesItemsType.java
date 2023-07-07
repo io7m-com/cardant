@@ -25,6 +25,7 @@ import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CATag;
+import com.io7m.lanark.core.RDottedName;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,232 +36,293 @@ import java.util.SortedMap;
  * Model database queries (Items).
  */
 
-public non-sealed interface CADatabaseQueriesItemsType
+public sealed interface CADatabaseQueriesItemsType
   extends CADatabaseQueriesType
 {
   /**
    * Retrieve the item with the given ID, if one exists.
-   *
-   * @param id The ID
-   *
-   * @return The item, if any
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  Optional<CAItem> itemGet(CAItemID id)
-    throws CADatabaseException;
+  non-sealed interface GetType
+    extends CADatabaseQueryType<CAItemID, Optional<CAItem>>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
-   * Create an item with the given ID.
-   *
-   * @param id The ID
-   *
-   * @throws CADatabaseException On database errors
+   *  Create an item with the given ID.
    */
 
-  void itemCreate(CAItemID id)
-    throws CADatabaseException;
+  non-sealed interface CreateType
+    extends CADatabaseQueryType<CAItemID, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
    * Set the name for the given item.
-   *
-   * @param id   The item
-   * @param name The count
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void itemNameSet(
-    CAItemID id,
-    String name)
-    throws CADatabaseException;
+  non-sealed interface SetNameType
+    extends CADatabaseQueryType<SetNameType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param name The new name
+     */
+
+    record Parameters(
+      CAItemID item,
+      String name)
+    {
+
+    }
+  }
 
   /**
-   * Delete the given items.
-   *
-   * @param item The items
-   *
-   * @throws CADatabaseException On database errors
+   *  Delete the given items.
    */
 
-  void itemsDelete(Collection<CAItemID> item)
-    throws CADatabaseException;
+  non-sealed interface DeleteType
+    extends CADatabaseQueryType<Collection<CAItemID>, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
-   * Mark the given item as deleted.
-   *
-   * @param item The item
-   *
-   * @throws CADatabaseException On database errors
+   * Mark the given items as deleted.
    */
 
-  void itemsDeleteMarkOnly(Collection<CAItemID> item)
-    throws CADatabaseException;
+  non-sealed interface DeleteMarkOnlyType
+    extends CADatabaseQueryType<Collection<CAItemID>, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
    * Add the given tag to the given item.
-   *
-   * @param item The item
-   * @param tag  The tag
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void itemTagAdd(
-    CAItemID item,
-    CATag tag)
-    throws CADatabaseException;
+  non-sealed interface TagAddType
+    extends CADatabaseQueryType<TagAddType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param tag The tag
+     */
+
+    record Parameters(
+      CAItemID item,
+      CATag tag)
+    {
+
+    }
+  }
 
   /**
    * Remove the given tag from the given item.
-   *
-   * @param item The item
-   * @param tag  The tag
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void itemTagRemove(
-    CAItemID item,
-    CATag tag)
-    throws CADatabaseException;
+  non-sealed interface TagRemoveType
+    extends CADatabaseQueryType<TagRemoveType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param tag The tag
+     */
+
+    record Parameters(
+      CAItemID item,
+      CATag tag)
+    {
+
+    }
+  }
 
   /**
-   * List the tags associated with the given item.
-   *
-   * @param item The item
-   *
-   * @return The list of tags
-   *
-   * @throws CADatabaseException On database errors
+   * List tags on an item.
    */
 
-  Set<CATag> itemTagList(
-    CAItemID item)
-    throws CADatabaseException;
+  non-sealed interface TagListType
+    extends CADatabaseQueryType<CAItemID, Set<CATag>>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
-   * Create or update the given item metadata.
-   *
-   * @param item     The item
-   * @param metadata The metadata
-   *
-   * @throws CADatabaseException On database errors
+   * Add or update metadata on an item.
    */
 
-  void itemMetadataPut(
-    CAItemID item,
-    CAItemMetadata metadata)
-    throws CADatabaseException;
+  non-sealed interface MetadataPutType
+    extends CADatabaseQueryType<MetadataPutType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param metadata The metadata
+     */
+
+    record Parameters(
+      CAItemID item,
+      CAItemMetadata metadata)
+    {
+
+    }
+  }
 
   /**
-   * @param item The item
-   *
-   * @return All metadata associated with the item
-   *
-   * @throws CADatabaseException On database errors
+   * Remove metadata from an item.
    */
 
-  SortedMap<String, CAItemMetadata> itemMetadata(
-    CAItemID item)
-    throws CADatabaseException;
+  non-sealed interface MetadataRemoveType
+    extends CADatabaseQueryType<MetadataRemoveType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param name The metadata name
+     */
+
+    record Parameters(
+      CAItemID item,
+      RDottedName name)
+    {
+
+    }
+  }
 
   /**
-   * Remove the given metadata from the associated item.
-   *
-   * @param item The item
-   * @param name The metadata name
-   *
-   * @throws CADatabaseException On database errors
+   * Retrieve metadata for an item.
    */
 
-  void itemMetadataRemove(
-    CAItemID item,
-    String name)
-    throws CADatabaseException;
+  non-sealed interface MetadataGetType
+    extends CADatabaseQueryType<CAItemID, SortedMap<RDottedName, CAItemMetadata>>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
    * Add an attachment to the given item.
-   *
-   * @param item     The item
-   * @param file     The file
-   * @param relation The attachment relation
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void itemAttachmentAdd(
-    CAItemID item,
-    CAFileID file,
-    String relation)
-    throws CADatabaseException;
+  non-sealed interface AttachmentAddType
+    extends CADatabaseQueryType<AttachmentAddType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param file The file
+     * @param relation The relation
+     */
+
+    record Parameters(
+      CAItemID item,
+      CAFileID file,
+      String relation)
+    {
+
+    }
+  }
 
   /**
    * Remove an attachment from the given item.
-   *
-   * @param item     The item
-   * @param file     The file
-   * @param relation The attachment relation
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  void itemAttachmentRemove(
-    CAItemID item,
-    CAFileID file,
-    String relation)
-    throws CADatabaseException;
+  non-sealed interface AttachmentRemoveType
+    extends CADatabaseQueryType<AttachmentRemoveType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param file The file
+     * @param relation The relation
+     */
+
+    record Parameters(
+      CAItemID item,
+      CAFileID file,
+      String relation)
+    {
+
+    }
+  }
 
   /**
    * Retrieve all the attachments associated with an item.
-   *
-   * @param item     The item
-   * @param withData {@code true} if the attachment data should be retrieved
-   *
-   * @return The attachments
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  Set<CAItemAttachment> itemAttachments(
-    CAItemID item,
-    boolean withData)
-    throws CADatabaseException;
+  non-sealed interface AttachmentsGetType
+    extends CADatabaseQueryType<AttachmentsGetType.Parameters, Set<CAItemAttachment>>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item     The item ID
+     * @param withData {@code true} if the data should be returned
+     */
+
+    record Parameters(
+      CAItemID item,
+      boolean withData)
+    {
+
+    }
+  }
 
   /**
-   * Reposit items.
-   *
-   * @param reposit The reposit operation
-   *
-   * @throws CADatabaseException On database errors
+   *  Reposit items.
    */
 
-  void itemReposit(CAItemRepositType reposit)
-    throws CADatabaseException;
+  non-sealed interface RepositType
+    extends CADatabaseQueryType<CAItemRepositType, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
-   * @param item The item
-   *
-   * @return The locations of the given item
-   *
-   * @throws CADatabaseException On database errors
+   * Retrieve the locations of the given item.
    */
 
-  CAItemLocations itemLocations(CAItemID item)
-    throws CADatabaseException;
+  non-sealed interface LocationsType
+    extends CADatabaseQueryType<CAItemID, CAItemLocations>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 
   /**
    * Start searching for items.
-   *
-   * @param parameters The search parameters
-   *
-   * @return A paged search
-   *
-   * @throws CADatabaseException On database errors
    */
 
-  CADatabaseItemSearchType itemSearch(
-    CAItemSearchParameters parameters)
-    throws CADatabaseException;
+  non-sealed interface SearchType
+    extends CADatabaseQueryType<CAItemSearchParameters, CADatabaseItemSearchType>,
+    CADatabaseQueriesItemsType
+  {
+
+  }
 }

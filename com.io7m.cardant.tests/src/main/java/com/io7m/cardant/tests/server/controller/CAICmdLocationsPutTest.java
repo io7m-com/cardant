@@ -105,13 +105,13 @@ public final class CAICmdLocationsPutTest
   {
     /* Arrange. */
 
-    final var locations =
-      mock(CADatabaseQueriesLocationsType.class);
+    final var locPut =
+      mock(CADatabaseQueriesLocationsType.PutType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.class))
-      .thenReturn(locations);
+    when(transaction.queries(CADatabaseQueriesLocationsType.PutType.class))
+      .thenReturn(locPut);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -141,11 +141,11 @@ public final class CAICmdLocationsPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.class);
-    verify(locations)
-      .locationPut(LOCATION_0);
+      .queries(CADatabaseQueriesLocationsType.PutType.class);
+    verify(locPut)
+      .execute(LOCATION_0);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(locations);
+    verifyNoMoreInteractions(locPut);
   }
 }

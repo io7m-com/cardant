@@ -50,11 +50,11 @@ public final class CAICmdFilePut extends CAICmdAbstract<CAICommandFilePut>
   {
     context.securityCheck(INVENTORY_FILES, WRITE);
 
-    final var queries =
+    final var put =
       context.transaction()
-        .queries(CADatabaseQueriesFilesType.class);
+        .queries(CADatabaseQueriesFilesType.PutType.class);
 
-    queries.filePut(command.data());
+    put.execute(command.data());
     return new CAIResponseFilePut(
       context.requestId(),
       command.data().withoutData()

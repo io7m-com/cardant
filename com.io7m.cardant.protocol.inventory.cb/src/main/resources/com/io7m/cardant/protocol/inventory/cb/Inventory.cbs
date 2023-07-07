@@ -109,6 +109,8 @@
   [field attachments [cb:Map CAI1ItemAttachmentKey CAI1ItemAttachment]]
   [documentation tags "The item tags."]
   [field tags [cb:List CAI1Tag]]
+  [documentation types "The item types."]
+  [field types [cb:List cb:String]]
 ]
 
 [documentation CAI1ListLocationBehaviour "The behaviour requested for listing items in locations."]
@@ -262,6 +264,16 @@
   [field name cb:String]
 ]
 
+[documentation CAI1TypeScalar "A scalar type."]
+[record CAI1TypeScalar
+  [documentation name "The type name."]
+  [field name cb:String]
+  [documentation description "The type description."]
+  [field description cb:String]
+  [documentation pattern "The type pattern."]
+  [field pattern cb:String]
+]
+
 ;
 ; Commands.
 ;
@@ -362,8 +374,8 @@
   [field items [cb:List cb:UUID]]
 ]
 
-[documentation CAI1CommandItemUpdate "Update items."]
-[record CAI1CommandItemUpdate
+[documentation CAI1CommandItemSetName "Update the names of items."]
+[record CAI1CommandItemSetName
   [documentation item "The item ID."]
   [field item cb:UUID]
   [documentation name "The item name."]
@@ -444,6 +456,12 @@
   [field user cb:UUID]
 ]
 
+[documentation CAI1CommandTypeScalarPut "Create or update scalar types."]
+[record CAI1CommandTypeScalarPut
+  [documentation types "The types."]
+  [field types [cb:List CAI1TypeScalar]]
+]
+
 [variant CAI1Command
   [case C1CommandFileGet               [field command CAI1CommandFileGet]]
   [case C1CommandFilePut               [field command CAI1CommandFilePut]]
@@ -462,7 +480,7 @@
   [case C1CommandItemSearchBegin       [field command CAI1CommandItemSearchBegin]]
   [case C1CommandItemSearchNext        [field command CAI1CommandItemSearchNext]]
   [case C1CommandItemSearchPrevious    [field command CAI1CommandItemSearchPrevious]]
-  [case C1CommandItemUpdate            [field command CAI1CommandItemUpdate]]
+  [case C1CommandItemSetName           [field command CAI1CommandItemSetName]]
   [case C1CommandItemsRemove           [field command CAI1CommandItemsRemove]]
   [case C1CommandLocationGet           [field command CAI1CommandLocationGet]]
   [case C1CommandLocationList          [field command CAI1CommandLocationList]]
@@ -474,6 +492,7 @@
   [case C1CommandTagList               [field command CAI1CommandTagList]]
   [case C1CommandTagsDelete            [field command CAI1CommandTagsDelete]]
   [case C1CommandTagsPut               [field command CAI1CommandTagsPut]]
+  [case C1CommandTypeScalarPut         [field command CAI1CommandTypeScalarPut]]
 ]
 
 ;
@@ -608,8 +627,8 @@
   [field items [cb:List cb:UUID]]
 ]
 
-[documentation CAI1ResponseItemUpdate "A response to CAI1CommandItemUpdate."]
-[record CAI1ResponseItemUpdate
+[documentation CAI1ResponseItemSetName "A response to CAI1CommandItemSetName."]
+[record CAI1ResponseItemSetName
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation item "The item."]
@@ -700,6 +719,14 @@
   [field roles [cb:List cb:String]]
 ]
 
+[documentation CAI1ResponseTypeScalarPut "A response to CAI1CommandTypeScalarPut."]
+[record CAI1ResponseTypeScalarPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation types "The scalar types."]
+  [field types [cb:List CAI1TypeScalar]]
+]
+
 [variant CAI1Response
   [case C1ResponseError                 [field response CAI1ResponseError]]
   [case C1ResponseFileGet               [field response CAI1ResponseFileGet]]
@@ -715,7 +742,7 @@
   [case C1ResponseItemMetadataRemove    [field response CAI1ResponseItemMetadataRemove]]
   [case C1ResponseItemReposit           [field response CAI1ResponseItemReposit]]
   [case C1ResponseItemSearch            [field response CAI1ResponseItemSearch]]
-  [case C1ResponseItemUpdate            [field response CAI1ResponseItemUpdate]]
+  [case C1ResponseItemSetName           [field response CAI1ResponseItemSetName]]
   [case C1ResponseItemsRemove           [field response CAI1ResponseItemsRemove]]
   [case C1ResponseLocationGet           [field response CAI1ResponseLocationGet]]
   [case C1ResponseLocationList          [field response CAI1ResponseLocationList]]
@@ -727,6 +754,7 @@
   [case C1ResponseTagList               [field response CAI1ResponseTagList]]
   [case C1ResponseTagsDelete            [field response CAI1ResponseTagsDelete]]
   [case C1ResponseTagsPut               [field response CAI1ResponseTagsPut]]
+  [case C1ResponseTypeScalarPut         [field response CAI1ResponseTypeScalarPut]]
 ]
 
 ;
@@ -781,7 +809,7 @@
       CAI1CommandItemSearchBegin
       CAI1CommandItemSearchNext
       CAI1CommandItemSearchPrevious
-      CAI1CommandItemUpdate
+      CAI1CommandItemSetName
       CAI1CommandItemsRemove
       CAI1CommandLocationGet
       CAI1CommandLocationList
@@ -793,6 +821,7 @@
       CAI1CommandTagList
       CAI1CommandTagsDelete
       CAI1CommandTagsPut
+      CAI1CommandTypeScalarPut
       CAI1EventUpdated
       CAI1ResponseError
       CAI1ResponseFileGet
@@ -808,7 +837,7 @@
       CAI1ResponseItemMetadataRemove
       CAI1ResponseItemReposit
       CAI1ResponseItemSearch
-      CAI1ResponseItemUpdate
+      CAI1ResponseItemSetName
       CAI1ResponseItemsRemove
       CAI1ResponseLocationGet
       CAI1ResponseLocationList
@@ -820,6 +849,7 @@
       CAI1ResponseTagList
       CAI1ResponseTagsDelete
       CAI1ResponseTagsPut
+      CAI1ResponseTypeScalarPut
       CAI1Transaction
       CAI1TransactionResponse
     ]

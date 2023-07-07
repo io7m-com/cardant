@@ -49,13 +49,13 @@ public final class CAICmdTagsDelete extends CAICmdAbstract<CAICommandTagsDelete>
   {
     context.securityCheck(INVENTORY_TAGS, DELETE);
 
-    final var queries =
+    final var delete =
       context.transaction()
-        .queries(CADatabaseQueriesTagsType.class);
+        .queries(CADatabaseQueriesTagsType.DeleteType.class);
 
     final var tags = command.tags();
     for (final var tag : tags.tags()) {
-      queries.tagDelete(tag);
+      delete.execute(tag);
     }
 
     return new CAIResponseTagsDelete(context.requestId(), tags);

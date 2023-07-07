@@ -48,6 +48,7 @@ import com.io7m.cardant.model.CASizeRange;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATags;
+import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.cb.CAI1File;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumn;
@@ -70,6 +71,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1SizeRange;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalar;
 import com.io7m.cedarbridge.runtime.api.CBBooleanType;
 import com.io7m.cedarbridge.runtime.api.CBByteArray;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned32;
@@ -81,6 +83,7 @@ import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBSets;
+import com.io7m.lanark.core.RDottedName;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -91,6 +94,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 
+import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 import static com.io7m.cedarbridge.runtime.api.CBCore.unsigned64;
 import static java.lang.Integer.toUnsignedLong;
 
@@ -128,7 +132,7 @@ public final class CAI1ValidationCommon
       final var val =
         entry.getValue();
       final var rKey =
-        new CBString(key);
+        new CBString(key.value());
       final var rVal =
         convertToWireItemMetadata(val);
       metadata.put(rKey, rVal);
@@ -145,6 +149,13 @@ public final class CAI1ValidationCommon
         item.tags()
           .stream()
           .map(CAI1ValidationCommon::convertToWireTag)
+          .toList()
+      ),
+      new CBList<>(
+        item.types()
+          .stream()
+          .map(RDottedName::value)
+          .map(CBString::new)
           .toList()
       )
     );
@@ -187,7 +198,7 @@ public final class CAI1ValidationCommon
     }
 
     final var metadata =
-      new HashMap<String, CAItemMetadata>();
+      new HashMap<RDottedName, CAItemMetadata>();
 
     for (final var entry : item.fieldMetadata().values().entrySet()) {
       final var key =
@@ -195,7 +206,7 @@ public final class CAI1ValidationCommon
       final var val =
         entry.getValue();
       final var rKey =
-        key.value();
+        new RDottedName(key.value());
       final var rVal =
         convertFromWireItemMetadata(val);
       metadata.put(rKey, rVal);
@@ -213,6 +224,14 @@ public final class CAI1ValidationCommon
           .values()
           .stream()
           .map(CAI1ValidationCommon::convertFromWireTag)
+          .toList()
+      ),
+      new TreeSet<>(
+        item.fieldTypes()
+          .values()
+          .stream()
+          .map(CBString::value)
+          .map(RDottedName::new)
           .toList()
       )
     );
@@ -328,7 +347,7 @@ public final class CAI1ValidationCommon
     final CAItemMetadata c)
   {
     return new CAI1ItemMetadata(
-      new CBString(c.name()),
+      new CBString(c.name().value()),
       new CBString(c.value())
     );
   }
@@ -481,7 +500,7 @@ public final class CAI1ValidationCommon
   public static CAItemMetadata convertFromWireItemMetadata(
     final CAI1ItemMetadata i)
   {
-    return new CAItemMetadata(
+    return CAItemMetadata.of(
       i.fieldKey().value(),
       i.fieldValue().value()
     );
@@ -823,6 +842,26 @@ public final class CAI1ValidationCommon
       (int) page.fieldPageIndex().value(),
       (int) page.fieldPageCount().value(),
       page.fieldPageFirstOffset().value()
+    );
+  }
+
+  public static CAI1TypeScalar convertToWireTypeScalar(
+    final CATypeScalar x)
+  {
+    return new CAI1TypeScalar(
+      string(x.name().value()),
+      string(x.description()),
+      string(x.pattern())
+    );
+  }
+
+  static CATypeScalar convertFromWireTypeScalar(
+    final CAI1TypeScalar x)
+  {
+    return new CATypeScalar(
+      new RDottedName(x.fieldName().value()),
+      x.fieldDescription().value(),
+      x.fieldPattern().value()
     );
   }
 

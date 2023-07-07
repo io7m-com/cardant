@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_TAGS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
@@ -104,14 +105,14 @@ public final class CAICmdTagsListTest
     /* Arrange. */
 
     final var tags =
-      mock(CADatabaseQueriesTagsType.class);
+      mock(CADatabaseQueriesTagsType.ListType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesTagsType.class))
+    when(transaction.queries(CADatabaseQueriesTagsType.ListType.class))
       .thenReturn(tags);
 
-    when(tags.tagList())
+    when(tags.execute(UNIT))
       .thenReturn(new TreeSet<>(
         Set.of(TAG_0, TAG_1, TAG_2)
       ));
@@ -142,9 +143,9 @@ public final class CAICmdTagsListTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesTagsType.class);
+      .queries(CADatabaseQueriesTagsType.ListType.class);
     verify(tags)
-      .tagList();
+      .execute(UNIT);
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(tags);

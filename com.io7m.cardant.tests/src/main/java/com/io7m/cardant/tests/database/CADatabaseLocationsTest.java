@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
+import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -86,8 +87,12 @@ public final class CADatabaseLocationsTest
   public void testLocationCreate()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesLocationsType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesLocationsType.PutType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
+    final var list =
+      this.transaction.queries(CADatabaseQueriesLocationsType.ListType.class);
 
     final var loc0 =
       new CALocation(
@@ -111,24 +116,24 @@ public final class CADatabaseLocationsTest
         "Location 2"
       );
 
-    q.locationPut(loc0);
-    q.locationPut(loc1);
-    q.locationPut(loc2);
+    put.execute(loc0);
+    put.execute(loc1);
+    put.execute(loc2);
 
-    q.locationPut(loc0);
-    q.locationPut(loc1);
-    q.locationPut(loc2);
+    put.execute(loc0);
+    put.execute(loc1);
+    put.execute(loc2);
 
     final var r = new TreeMap<CALocationID, CALocation>();
     r.put(loc0.id(), loc0);
     r.put(loc1.id(), loc1);
     r.put(loc2.id(), loc2);
 
-    assertEquals(r, q.locationList());
+    assertEquals(r, list.execute(UNIT));
 
-    assertEquals(loc0, q.locationGet(loc0.id()).orElseThrow());
-    assertEquals(loc1, q.locationGet(loc1.id()).orElseThrow());
-    assertEquals(loc2, q.locationGet(loc2.id()).orElseThrow());
+    assertEquals(loc0, get.execute(loc0.id()).orElseThrow());
+    assertEquals(loc1, get.execute(loc1.id()).orElseThrow());
+    assertEquals(loc2, get.execute(loc2.id()).orElseThrow());
   }
 
   /**
@@ -141,8 +146,12 @@ public final class CADatabaseLocationsTest
   public void testLocationRemoveParent()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesLocationsType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesLocationsType.PutType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
+    final var list =
+      this.transaction.queries(CADatabaseQueriesLocationsType.ListType.class);
 
     final var loc0 =
       new CALocation(
@@ -167,15 +176,15 @@ public final class CADatabaseLocationsTest
       );
 
 
-    q.locationPut(loc0);
-    q.locationPut(loc1with);
-    q.locationPut(loc1without);
+    put.execute(loc0);
+    put.execute(loc1with);
+    put.execute(loc1without);
 
     final var r = new TreeMap<CALocationID, CALocation>();
     r.put(loc0.id(), loc0);
     r.put(loc1without.id(), loc1without);
 
-    assertEquals(r, q.locationList());
+    assertEquals(r, list.execute(UNIT));
   }
 
   /**
@@ -188,8 +197,12 @@ public final class CADatabaseLocationsTest
   public void testLocationCyclic0()
     throws Exception
   {
-    final var q =
-      this.transaction.queries(CADatabaseQueriesLocationsType.class);
+    final var put =
+      this.transaction.queries(CADatabaseQueriesLocationsType.PutType.class);
+    final var get =
+      this.transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
+    final var list =
+      this.transaction.queries(CADatabaseQueriesLocationsType.ListType.class);
 
     final var loc0 =
       new CALocation(
@@ -220,13 +233,13 @@ public final class CADatabaseLocationsTest
         "Location 0"
       );
 
-    q.locationPut(loc0);
-    q.locationPut(loc1);
-    q.locationPut(loc2);
+    put.execute(loc0);
+    put.execute(loc1);
+    put.execute(loc2);
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
-        q.locationPut(loc0cyc);
+        put.execute(loc0cyc);
       });
     assertEquals(CAStandardErrorCodes.errorCyclic(), ex.errorCode());
   }

@@ -73,6 +73,7 @@
   <!-- Record types -->
   <Match>
     <Or>
+      <Class name="com.io7m.cardant.model.CATypeDeclaration"/>
       <Class name="com.io7m.cardant.model.CAByteArray"/>
       <Class name="com.io7m.cardant.model.CAFileID"/>
       <Class name="com.io7m.cardant.model.CAIds"/>
@@ -400,6 +401,12 @@
     </Or>
   </Match>
 
+  <!-- Queries refer to lots of generated classes for the DSL. -->
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="CE_CLASS_ENVY"/>
+  </Match>
+
   <Match>
     <Package name="com.io7m.cardant.database.postgres.internal"/>
     <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS"/>
@@ -412,7 +419,7 @@
     <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
   </Match>
   <Match>
-    <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseQueriesItems"/>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
     <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
   </Match>
 

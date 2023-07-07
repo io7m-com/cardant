@@ -18,6 +18,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentRemoveType.Parameters;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -110,14 +111,19 @@ public final class CAICmdItemAttachmentRemoveTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemAttachRemove =
+      mock(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class))
+      .thenReturn(itemAttachRemove);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
@@ -125,6 +131,7 @@ public final class CAICmdItemAttachmentRemoveTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
+        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 
@@ -155,14 +162,17 @@ public final class CAICmdItemAttachmentRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.class);
-    verify(items)
-      .itemAttachmentRemove(ITEM_ID, FILE_ID, "x");
-    verify(items)
-      .itemGet(ITEM_ID);
+      .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
+    verify(itemAttachRemove)
+      .execute(new Parameters(ITEM_ID, FILE_ID, "x"));
+    verify(itemGet)
+      .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(items);
+    verifyNoMoreInteractions(itemAttachRemove);
+    verifyNoMoreInteractions(itemGet);
   }
 
   /**
@@ -177,21 +187,25 @@ public final class CAICmdItemAttachmentRemoveTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemAttachRemove =
+      mock(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class))
+      .thenReturn(itemAttachRemove);
 
     doThrow(new CADatabaseException(
       "X",
       errorNonexistent(),
       Map.of(),
       Optional.empty()))
-      .when(items)
-      .itemAttachmentRemove(any(), any(), any());
+      .when(itemAttachRemove)
+      .execute(any());
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -238,14 +252,19 @@ public final class CAICmdItemAttachmentRemoveTest
   {
     /* Arrange. */
 
-    final var items =
-      mock(CADatabaseQueriesItemsType.class);
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemAttachRemove =
+      mock(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.class))
-      .thenReturn(items);
-    when(items.itemGet(any()))
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class))
+      .thenReturn(itemAttachRemove);
+
+    when(itemGet.execute(any()))
       .thenReturn(Optional.empty());
 
     CASecurity.setPolicy(new MPolicy(List.of(

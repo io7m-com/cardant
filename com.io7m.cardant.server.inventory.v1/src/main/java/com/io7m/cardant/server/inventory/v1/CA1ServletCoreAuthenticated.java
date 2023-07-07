@@ -163,8 +163,8 @@ public final class CA1ServletCoreAuthenticated
     try (var c = this.database.openConnection(CARDANT)) {
       try (var t = c.openTransaction()) {
         final var q =
-          t.queries(CADatabaseQueriesUsersType.class);
-        return q.userGet(id);
+          t.queries(CADatabaseQueriesUsersType.GetType.class);
+        return q.execute(id);
       }
     }
   }

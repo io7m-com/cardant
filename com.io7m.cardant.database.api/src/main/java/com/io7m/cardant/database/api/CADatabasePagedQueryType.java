@@ -22,50 +22,52 @@ import com.io7m.cardant.model.CAPage;
 /**
  * The type of paged queries.
  *
- * @param <Q> The type of required query interfaces
  * @param <T> The type of result values
  */
 
-public interface CADatabasePagedQueryType<Q extends CADatabaseQueriesType, T>
+public interface CADatabasePagedQueryType<T>
 {
   /**
    * Get data for the current page.
    *
-   * @param queries The query interface
+   * @param transaction The transaction
    *
    * @return A page of results
    *
    * @throws CADatabaseException On errors
    */
 
-  CAPage<T> pageCurrent(Q queries)
+  CAPage<T> pageCurrent(
+    CADatabaseTransactionType transaction)
     throws CADatabaseException;
 
   /**
    * Get data for the next page. If the current page is the last page, the
-   * function acts as {@link #pageCurrent(CADatabaseQueriesType)}.
+   * function acts as {@link #pageCurrent(CADatabaseTransactionType)}.
    *
-   * @param queries The query interface
+   * @param transaction The transaction
    *
    * @return A page of results
    *
    * @throws CADatabaseException On errors
    */
 
-  CAPage<T> pageNext(Q queries)
+  CAPage<T> pageNext(
+    CADatabaseTransactionType transaction)
     throws CADatabaseException;
 
   /**
    * Get data for the previous page. If the current page is the first page, the
-   * function acts as {@link #pageCurrent(CADatabaseQueriesType)}.
+   * function acts as {@link #pageCurrent(CADatabaseTransactionType)}.
    *
-   * @param queries The query interface
+   * @param transaction The transaction
    *
    * @return A page of results
    *
    * @throws CADatabaseException On errors
    */
 
-  CAPage<T> pagePrevious(Q queries)
+  CAPage<T> pagePrevious(
+    CADatabaseTransactionType transaction)
     throws CADatabaseException;
 }

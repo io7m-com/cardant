@@ -19,6 +19,7 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueryType;
 import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -30,14 +31,19 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.Tracer;
 import org.jooq.conf.RenderNameCase;
 import org.jooq.conf.Settings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_SYSTEM;
@@ -51,6 +57,10 @@ import static java.util.Objects.requireNonNullElse;
 
 public final class CADatabase implements CADatabaseType
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CADatabase.class);
+
+  private final Map<Class<?>, Function<CADatabaseTransaction, CADatabaseQueryType<?, ?>>> queries;
   private final Clock clock;
   private final HikariDataSource dataSource;
   private final Settings settings;
@@ -82,25 +92,23 @@ public final class CADatabase implements CADatabaseType
   {
     this.telemetry =
       Objects.requireNonNull(inTelemetry, "telemetry");
-
     this.strings =
       Objects.requireNonNull(inStrings, "inStrings");
-
     this.tracer =
       this.telemetry.tracer();
     this.resources =
       Objects.requireNonNull(inResources, "resources");
-
     this.clock =
       Objects.requireNonNull(inClock, "clock");
     this.dataSource =
       Objects.requireNonNull(inDataSource, "dataSource");
+    this.queries =
+      loadQueryProviders();
+
     this.settings =
       new Settings().withRenderNameCase(RenderNameCase.LOWER);
-
     final var dataSourceBean =
       this.dataSource.getHikariPoolMXBean();
-
     final var meter =
       this.telemetry.meter();
 
@@ -174,6 +182,52 @@ public final class CADatabase implements CADatabaseType
           );
         })
     );
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Map<Class<?>, Function<CADatabaseTransaction, CADatabaseQueryType<?, ?>>> loadQueryProviders()
+  {
+    final var loader =
+      ServiceLoader.load(CADBQueryProviderType.class);
+    final var iterator =
+      loader.iterator();
+
+    final var providers =
+      new HashMap<
+        Class<?>,
+        Function<CADatabaseTransaction, CADatabaseQueryType<?, ?>>>();
+
+    while (iterator.hasNext()) {
+      final var provider =
+        iterator.next();
+      final var information =
+        provider.information();
+
+      final var interfaceClass =
+        information.interfaceClass();
+
+      LOG.debug("Loaded query {}", interfaceClass.getCanonicalName());
+
+      if (providers.containsKey(interfaceClass)) {
+        final var builder = new StringBuilder(128);
+        builder.append("Query interface class registered multiple times.");
+        builder.append(System.lineSeparator());
+        builder.append(" Provider: ");
+        builder.append(provider.getClass());
+        builder.append(System.lineSeparator());
+        builder.append(" Interface: ");
+        builder.append(interfaceClass);
+        builder.append(System.lineSeparator());
+        throw new IllegalStateException(builder.toString());
+      }
+
+      providers.put(
+        interfaceClass,
+        (Function<CADatabaseTransaction, CADatabaseQueryType<?, ?>>) information.constructor()
+      );
+    }
+
+    return Map.copyOf(providers);
   }
 
   private static long maxOf(
@@ -292,5 +346,19 @@ public final class CADatabase implements CADatabaseType
   CAStrings messages()
   {
     return this.strings;
+  }
+
+  /**
+   * Find a query registered with the given class.
+   *
+   * @param qClass The class
+   *
+   * @return A query
+   */
+
+  Function<CADatabaseTransaction, CADatabaseQueryType<?, ?>> queries(
+    final Class<?> qClass)
+  {
+    return this.queries.get(qClass);
   }
 }
