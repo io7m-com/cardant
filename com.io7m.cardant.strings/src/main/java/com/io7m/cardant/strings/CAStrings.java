@@ -46,6 +46,17 @@ public final class CAStrings
     );
   }
 
+  @Override
+  public String format(
+    final CAStringConstantType id,
+    final Object... args)
+  {
+    if (id instanceof final CAStringConstantApplied app) {
+      return this.format(app.constant(), app.args());
+    }
+    return super.format(id, args);
+  }
+
   /**
    * Create string resources.
    *

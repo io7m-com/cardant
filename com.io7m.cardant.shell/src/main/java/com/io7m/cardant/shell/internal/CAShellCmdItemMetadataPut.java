@@ -22,10 +22,10 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
+import com.io7m.quarrel.core.QParameterNamed0N;
 import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
@@ -38,7 +38,7 @@ import java.util.Set;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "item-get"
+ * "item-metadata-put"
  */
 
 public final class CAShellCmdItemMetadataPut
@@ -53,22 +53,13 @@ public final class CAShellCmdItemMetadataPut
       CAItemID.class
     );
 
-  private static final QParameterNamed1<RDottedName> KEY =
-    new QParameterNamed1<>(
-      "--key",
+  private static final QParameterNamed0N<CAItemMetadata> METADATA =
+    new QParameterNamed0N<>(
+      "--metadata",
       List.of(),
       new QConstant("The metadata key."),
-      Optional.empty(),
-      RDottedName.class
-    );
-
-  private static final QParameterNamed1<String> VALUE =
-    new QParameterNamed1<>(
-      "--value",
       List.of(),
-      new QConstant("The metadata value."),
-      Optional.empty(),
-      String.class
+      CAItemMetadata.class
     );
 
   /**
@@ -94,7 +85,7 @@ public final class CAShellCmdItemMetadataPut
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ID, KEY, VALUE);
+    return List.of(ID, METADATA);
   }
 
   @Override
@@ -107,13 +98,11 @@ public final class CAShellCmdItemMetadataPut
 
     final var itemID =
       context.parameterValue(ID);
-    final var key =
-      context.parameterValue(KEY);
-    final var value =
-      context.parameterValue(VALUE);
+    final var metas =
+      context.parameterValues(METADATA);
 
     final var meta =
-      Set.of(new CAItemMetadata(key, value));
+      Set.copyOf(metas);
 
     final var item =
       ((CAIResponseItemMetadataPut) client.executeOrElseThrow(

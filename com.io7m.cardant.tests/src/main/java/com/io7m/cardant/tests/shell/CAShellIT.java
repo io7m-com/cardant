@@ -331,14 +331,11 @@ public final class CAShellIT
     w.println("item-create --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--name 'Battery'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key voltage " +
-                "--value 9");
+                "--metadata voltage:9");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key size " +
-                "--value 23");
+                "--metadata size:23");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key gauge " +
-                "--value 20");
+                "--metadata gauge:20");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--key gauge");
     w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +

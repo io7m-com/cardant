@@ -23,11 +23,13 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveTy
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
+import org.jooq.Query;
+
+import java.util.ArrayList;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
-import static com.io7m.cardant.strings.CAStringConstants.METADATA_NAME;
 
 /**
  * Remove metadata from an item.
@@ -69,23 +71,22 @@ public final class CADBQItemMetadataRemove
   {
     final var item =
       parameters.item();
-    final var name =
-      parameters.name().value();
 
     this.setAttribute(ITEM_ID, item.displayId());
-    this.setAttribute(METADATA_NAME, name);
 
-    final var matchesItem =
-      ITEM_METADATA.METADATA_ITEM_ID.eq(item.id());
-    final var matchesName =
-      ITEM_METADATA.METADATA_NAME.eq(name);
-    final var matches =
-      matchesItem.and(matchesName);
+    final var queries = new ArrayList<Query>();
+    for (final var name : parameters.names()) {
+      final var matchesItem =
+        ITEM_METADATA.METADATA_ITEM_ID.eq(item.id());
+      final var matchesName =
+        ITEM_METADATA.METADATA_NAME.eq(name.value());
+      final var matches =
+        matchesItem.and(matchesName);
 
-    context.deleteFrom(ITEM_METADATA)
-      .where(matches)
-      .execute();
+      queries.add(context.deleteFrom(ITEM_METADATA).where(matches));
+    }
 
+    context.batch(queries).execute();
     return UNIT;
   }
 }

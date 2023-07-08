@@ -18,10 +18,16 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -40,9 +46,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeCheckFailed;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -113,15 +122,22 @@ public final class CAICmdItemMetadataRemoveTest
     final var itemGet =
       mock(CADatabaseQueriesItemsType.GetType.class);
     final var itemMetaRemove =
-      mock(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+      mock(MetadataRemoveType.class);
+    final var typeGet =
+      mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
     when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class))
+    when(transaction.queries(MetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
+    when(transaction.queries(TypeDeclarationGetMultipleType.class))
+      .thenReturn(typeGet);
+
+    when(typeGet.execute(any()))
+      .thenReturn(List.of());
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
@@ -166,13 +182,21 @@ public final class CAICmdItemMetadataRemoveTest
     verify(transaction)
       .queries(CADatabaseQueriesItemsType.GetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+      .queries(MetadataRemoveType.class);
+    verify(transaction)
+      .queries(TypeDeclarationGetMultipleType.class);
     verify(itemMetaRemove)
-      .execute(new Parameters(ITEM_ID, new RDottedName("a")));
-    verify(itemMetaRemove)
-      .execute(new Parameters(ITEM_ID, new RDottedName("b")));
-    verify(itemMetaRemove)
-      .execute(new Parameters(ITEM_ID, new RDottedName("c")));
+      .execute(
+        new Parameters(
+          ITEM_ID,
+          Set.of(
+            new RDottedName("a"),
+            new RDottedName("b"),
+            new RDottedName("c")
+          )
+
+        )
+      );
     verify(itemGet)
       .execute(ITEM_ID);
 
@@ -196,14 +220,23 @@ public final class CAICmdItemMetadataRemoveTest
     final var itemGet =
       mock(CADatabaseQueriesItemsType.GetType.class);
     final var itemMetaRemove =
-      mock(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+      mock(MetadataRemoveType.class);
+
+    doThrow(
+      new CADatabaseException(
+        "Nonexistent.",
+        errorNonexistent(),
+        Map.of(),
+        Optional.empty())
+    ).when(itemMetaRemove)
+      .execute(any());
 
     final var transaction =
       this.transaction();
 
     when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class))
+    when(transaction.queries(MetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
 
     doThrow(new CADatabaseException(
@@ -264,14 +297,23 @@ public final class CAICmdItemMetadataRemoveTest
     final var itemGet =
       mock(CADatabaseQueriesItemsType.GetType.class);
     final var itemMetaRemove =
-      mock(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+      mock(MetadataRemoveType.class);
+
+    doThrow(
+      new CADatabaseException(
+        "Nonexistent.",
+        errorNonexistent(),
+        Map.of(),
+        Optional.empty())
+    ).when(itemMetaRemove)
+      .execute(any());
 
     final var transaction =
       this.transaction();
 
     when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class))
+    when(transaction.queries(MetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
 
     when(itemGet.execute(any()))
@@ -310,5 +352,141 @@ public final class CAICmdItemMetadataRemoveTest
     /* Assert. */
 
     assertEquals(errorNonexistent(), ex.errorCode());
+  }
+
+  /**
+   * Updating fails if type checking fails.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeChecking0()
+    throws Exception
+  {
+    /* Arrange. */
+
+    final var itemGet =
+      mock(CADatabaseQueriesItemsType.GetType.class);
+    final var itemMetaRemove =
+      mock(MetadataRemoveType.class);
+    final var typeGet =
+      mock(TypeDeclarationGetMultipleType.class);
+
+    final var transaction =
+      this.transaction();
+
+    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+      .thenReturn(itemGet);
+    when(transaction.queries(MetadataRemoveType.class))
+      .thenReturn(itemMetaRemove);
+    when(transaction.queries(TypeDeclarationGetMultipleType.class))
+      .thenReturn(typeGet);
+
+    CASecurity.setPolicy(new MPolicy(List.of(
+      new MRule(
+        MRuleName.of("rule0"),
+        "",
+        ALLOW,
+        new MMatchSubjectWithRolesAny(Set.of(ROLE_INVENTORY_ITEMS_WRITER)),
+        new MMatchObjectWithType(INVENTORY_ITEMS.type()),
+        new MMatchActionWithName(WRITE)
+      )
+    )));
+
+    this.setRoles(ROLE_INVENTORY_ITEMS_WRITER);
+
+    final var context =
+      this.createContext();
+
+    final var meta0 =
+      new CAItemMetadata(new RDottedName("a"), "x");
+
+    when(itemGet.execute(any()))
+      .thenReturn(Optional.of(
+        new CAItem(
+          CAItemID.random(),
+          "Item",
+          0L,
+          0L,
+          new TreeMap<>(Map.of(meta0.name(), meta0)),
+          Collections.emptySortedMap(),
+          Collections.emptySortedSet(),
+          new TreeSet<>(
+            Set.of(new RDottedName("t"))
+          )
+        )
+      ));
+
+    final var type =
+      new CATypeDeclaration(
+        new RDottedName("t"),
+        "T",
+        Map.ofEntries(
+          Map.entry(
+            new RDottedName("a"),
+            new CATypeField(
+              new RDottedName("a"),
+              "Field A",
+              new CATypeScalar(
+                new RDottedName("ts0"),
+                "Number",
+                "[0-9]+"
+              ),
+              true
+            )
+          ),
+          Map.entry(
+            new RDottedName("b"),
+            new CATypeField(
+              new RDottedName("b"),
+              "Field B",
+              new CATypeScalar(
+                new RDottedName("ts0"),
+                "Anything",
+                ".*"
+              ),
+              true
+            )
+          )
+        )
+      );
+
+    when(typeGet.execute(any()))
+      .thenReturn(List.of(type));
+
+    /* Act. */
+
+    final var handler = new CAICmdItemMetadataRemove();
+
+    final var ex =
+      assertThrows(CACommandExecutionFailure.class, () -> {
+        handler.execute(
+          context,
+          new CAICommandItemMetadataRemove(
+            ITEM_ID,
+            Set.of(meta0.name())
+          ));
+      });
+
+    /* Assert. */
+
+    assertEquals(errorTypeCheckFailed(), ex.errorCode());
+
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+    verify(transaction)
+      .queries(TypeDeclarationGetMultipleType.class);
+
+    verify(itemGet)
+      .execute(ITEM_ID);
+    verify(itemMetaRemove)
+      .execute(new MetadataRemoveType.Parameters(ITEM_ID, Set.of(meta0.name())));
+
+    verifyNoMoreInteractions(itemGet);
+    verifyNoMoreInteractions(itemMetaRemove);
+    verifyNoMoreInteractions(transaction);
   }
 }

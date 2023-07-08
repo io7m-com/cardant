@@ -51,7 +51,7 @@ public sealed interface CADatabaseQueriesItemsType
   }
 
   /**
-   *  Create an item with the given ID.
+   * Create an item with the given ID.
    */
 
   non-sealed interface CreateType
@@ -72,7 +72,7 @@ public sealed interface CADatabaseQueriesItemsType
     /**
      * Parameters for the operation.
      *
-     * @param item     The item ID
+     * @param item The item ID
      * @param name The new name
      */
 
@@ -85,7 +85,7 @@ public sealed interface CADatabaseQueriesItemsType
   }
 
   /**
-   *  Delete the given items.
+   * Delete the given items.
    */
 
   non-sealed interface DeleteType
@@ -117,8 +117,8 @@ public sealed interface CADatabaseQueriesItemsType
     /**
      * Parameters for the operation.
      *
-     * @param item     The item ID
-     * @param tag The tag
+     * @param item The item ID
+     * @param tag  The tag
      */
 
     record Parameters(
@@ -140,8 +140,8 @@ public sealed interface CADatabaseQueriesItemsType
     /**
      * Parameters for the operation.
      *
-     * @param item     The item ID
-     * @param tag The tag
+     * @param item The item ID
+     * @param tag  The tag
      */
 
     record Parameters(
@@ -180,7 +180,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      CAItemMetadata metadata)
+      Set<CAItemMetadata> metadata)
     {
 
     }
@@ -197,13 +197,13 @@ public sealed interface CADatabaseQueriesItemsType
     /**
      * Parameters for the operation.
      *
-     * @param item     The item ID
-     * @param name The metadata name
+     * @param item The item ID
+     * @param names The metadata names
      */
 
     record Parameters(
       CAItemID item,
-      RDottedName name)
+      Set<RDottedName> names)
     {
 
     }
@@ -232,7 +232,7 @@ public sealed interface CADatabaseQueriesItemsType
      * Parameters for the operation.
      *
      * @param item     The item ID
-     * @param file The file
+     * @param file     The file
      * @param relation The relation
      */
 
@@ -257,7 +257,7 @@ public sealed interface CADatabaseQueriesItemsType
      * Parameters for the operation.
      *
      * @param item     The item ID
-     * @param file The file
+     * @param file     The file
      * @param relation The relation
      */
 
@@ -294,7 +294,7 @@ public sealed interface CADatabaseQueriesItemsType
   }
 
   /**
-   *  Reposit items.
+   * Reposit items.
    */
 
   non-sealed interface RepositType

@@ -84,4 +84,6 @@
   <entry key="error_type_missing_required_field"><![CDATA[A required field is missing.]]></entry>
   <entry key="error_type_invalid_pattern"><![CDATA[Invalid pattern in scalar type.]]></entry>
   <entry key="error_type_field_invalid"><![CDATA[A field does not match the provided pattern.]]></entry>
+  <entry key="error_type_checking"><![CDATA[Type checking failed.]]></entry>
+  <entry key="error_indexed">Error[{0}]</entry>
 </properties>

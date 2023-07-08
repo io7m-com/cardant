@@ -34,6 +34,7 @@ import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.opentelemetry.api.trace.Tracer;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,6 +59,7 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   private final String remoteHost;
   private final String remoteUserAgent;
   private final Tracer tracer;
+  private final Map<CAStringConstantType, String> attributes;
 
   /**
    * The context for execution of a command (or set of commands in a
@@ -99,6 +101,33 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     this.tracer =
       inServices.requireService(CAServerTelemetryServiceType.class)
         .tracer();
+    this.attributes =
+      new HashMap<>(0);
+  }
+
+  /**
+   * @return The attributes as an immutable map
+   */
+
+  public final Map<CAStringConstantType, String> attributes()
+  {
+    return Map.copyOf(this.attributes);
+  }
+
+  /**
+   * Set an attribute for error reporting.
+   *
+   * @param key   The key string constant
+   * @param value The value
+   */
+
+  public final void setAttribute(
+    final CAStringConstantType key,
+    final String value)
+  {
+    Objects.requireNonNull(key, "constant");
+    Objects.requireNonNull(value, "value");
+    this.attributes.put(key, value);
   }
 
   /**
@@ -192,11 +221,11 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   /**
    * Produce an exception indicating an error, with a formatted error message.
    *
-   * @param statusCode The HTTP status code
-   * @param errorCode  The error code
-   * @param attributes The error attributes
-   * @param messageId  The string resource message ID
-   * @param args       The string resource format arguments
+   * @param statusCode      The HTTP status code
+   * @param errorCode       The error code
+   * @param errorAttributes The error attributes
+   * @param messageId       The string resource message ID
+   * @param args            The string resource format arguments
    *
    * @return An execution failure
    */
@@ -204,7 +233,7 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   public final CACommandExecutionFailure failFormatted(
     final int statusCode,
     final CAErrorCode errorCode,
-    final Map<CAStringConstantType, String> attributes,
+    final Map<CAStringConstantType, String> errorAttributes,
     final CAStringConstantType messageId,
     final Object... args)
   {
@@ -212,19 +241,19 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
       statusCode,
       errorCode,
       this.strings.format(messageId, args),
-      attributes
+      errorAttributes
     );
   }
 
   /**
    * Produce an exception indicating an error, with a formatted error message.
    *
-   * @param statusCode The HTTP status code
-   * @param exception  The exception
-   * @param errorCode  The error code
-   * @param attributes The error attributes
-   * @param messageId  The string resource message ID
-   * @param args       The string resource format arguments
+   * @param statusCode      The HTTP status code
+   * @param exception       The exception
+   * @param errorCode       The error code
+   * @param errorAttributes The error attributes
+   * @param messageId       The string resource message ID
+   * @param args            The string resource format arguments
    *
    * @return An execution failure
    */
@@ -233,7 +262,7 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final Exception exception,
     final int statusCode,
     final CAErrorCode errorCode,
-    final Map<CAStringConstantType, String> attributes,
+    final Map<CAStringConstantType, String> errorAttributes,
     final CAStringConstantType messageId,
     final Object... args)
   {
@@ -241,7 +270,7 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
       this.strings.format(messageId, args),
       exception,
       errorCode,
-      this.localMap(attributes),
+      this.localMap(errorAttributes),
       Optional.empty(),
       this.requestId,
       statusCode
@@ -249,9 +278,9 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   }
 
   private Map<String, String> localMap(
-    final Map<CAStringConstantType, String> attributes)
+    final Map<CAStringConstantType, String> unformattedAttributes)
   {
-    return attributes.entrySet()
+    return unformattedAttributes.entrySet()
       .stream()
       .map(e -> Map.entry(this.local(e.getKey()), e.getValue()))
       .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -260,10 +289,10 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   /**
    * Produce an exception indicating an error, with a string constant message.
    *
-   * @param statusCode The HTTP status code
-   * @param errorCode  The error code
-   * @param attributes The error attributes
-   * @param message    The string message
+   * @param statusCode      The HTTP status code
+   * @param errorCode       The error code
+   * @param errorAttributes The error attributes
+   * @param message         The string message
    *
    * @return An execution failure
    */
@@ -272,12 +301,12 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final int statusCode,
     final CAErrorCode errorCode,
     final String message,
-    final Map<CAStringConstantType, String> attributes)
+    final Map<CAStringConstantType, String> errorAttributes)
   {
     return new CACommandExecutionFailure(
       message,
       errorCode,
-      this.localMap(attributes),
+      this.localMap(errorAttributes),
       Optional.empty(),
       this.requestId,
       statusCode
@@ -287,11 +316,11 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   /**
    * Produce an exception indicating an error, with a string constant message.
    *
-   * @param statusCode The HTTP status code
-   * @param errorCode  The error code
-   * @param attributes The error attributes
-   * @param message    The string message
-   * @param cause      The cause
+   * @param statusCode      The HTTP status code
+   * @param errorCode       The error code
+   * @param errorAttributes The error attributes
+   * @param message         The string message
+   * @param cause           The cause
    *
    * @return An execution failure
    */
@@ -301,13 +330,13 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
     final int statusCode,
     final CAErrorCode errorCode,
     final String message,
-    final Map<String, String> attributes)
+    final Map<String, String> errorAttributes)
   {
     return new CACommandExecutionFailure(
       message,
       cause,
       errorCode,
-      attributes,
+      errorAttributes,
       Optional.empty(),
       this.requestId,
       statusCode

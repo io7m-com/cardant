@@ -362,5 +362,18 @@ public final class CAStandardErrorCodes
   {
     return ERROR_TYPE_CHECK_FIELD_INVALID;
   }
+
+  private static final CAErrorCode ERROR_TYPE_CHECK_FAILED =
+    new CAErrorCode("error-type-check-failed");
+
+  /**
+   * Type checking failed.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeCheckFailed()
+  {
+    return ERROR_TYPE_CHECK_FAILED;
+  }
 }
 

@@ -24,3 +24,4 @@ TYPE_FIELD_TYPE_NONEXISTENT|type-field-type-nonexistent|A field in the type decl
 TYPE_CHECK_FIELD_REQUIRED_MISSING|type-field-required-missing|A field was required but is missing.
 TYPE_CHECK_FIELD_PATTERN_FAILURE|type-field-pattern-invalid|A field pattern was invalid.
 TYPE_CHECK_FIELD_INVALID|type-field-invalid|A field value did not match the provided pattern.
+TYPE_CHECK_FAILED|type-check-failed|Type checking failed.

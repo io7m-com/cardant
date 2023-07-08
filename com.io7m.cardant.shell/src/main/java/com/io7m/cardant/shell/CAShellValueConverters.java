@@ -19,9 +19,11 @@ package com.io7m.cardant.shell;
 
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.shell.internal.CAFileIdConverter;
 import com.io7m.cardant.shell.internal.CAItemIdConverter;
+import com.io7m.cardant.shell.internal.CAItemMetadataConverter;
 import com.io7m.cardant.shell.internal.CALocationIdConverter;
 import com.io7m.cardant.shell.internal.CAPatternConverter;
 import com.io7m.cardant.shell.internal.CARDottedNameConverter;
@@ -46,7 +48,8 @@ public final class CAShellValueConverters
       .with(CAFileID.class, new CAFileIdConverter())
       .with(MRoleName.class, new CARoleNameConverter())
       .with(RDottedName.class, new CARDottedNameConverter())
-      .with(Pattern.class, new CAPatternConverter());
+      .with(Pattern.class, new CAPatternConverter())
+      .with(CAItemMetadata.class, new CAItemMetadataConverter());
 
   private CAShellValueConverters()
   {

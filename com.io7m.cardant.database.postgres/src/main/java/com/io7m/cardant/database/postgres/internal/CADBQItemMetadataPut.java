@@ -23,12 +23,13 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
+import org.jooq.Query;
+
+import java.util.ArrayList;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
-import static com.io7m.cardant.strings.CAStringConstants.METADATA_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.METADATA_VALUE;
 
 /**
  * Add or update metadata for an item.
@@ -74,18 +75,21 @@ public final class CADBQItemMetadataPut
       parameters.metadata();
 
     this.setAttribute(ITEM_ID, item.displayId());
-    this.setAttribute(METADATA_NAME, metadata.name().value());
-    this.setAttribute(METADATA_VALUE, metadata.value());
 
-    context.insertInto(ITEM_METADATA)
-      .set(ITEM_METADATA.METADATA_ITEM_ID, item.id())
-      .set(ITEM_METADATA.METADATA_NAME, metadata.name().value())
-      .set(ITEM_METADATA.METADATA_VALUE, metadata.value())
-      .onConflict(ITEM_METADATA.METADATA_ITEM_ID, ITEM_METADATA.METADATA_NAME)
-      .doUpdate()
-      .set(ITEM_METADATA.METADATA_VALUE, metadata.value())
-      .execute();
+    final var batches = new ArrayList<Query>();
+    for (final var meta : metadata) {
+      batches.add(
+        context.insertInto(ITEM_METADATA)
+          .set(ITEM_METADATA.METADATA_ITEM_ID, item.id())
+          .set(ITEM_METADATA.METADATA_NAME, meta.name().value())
+          .set(ITEM_METADATA.METADATA_VALUE, meta.value())
+          .onConflict(ITEM_METADATA.METADATA_ITEM_ID, ITEM_METADATA.METADATA_NAME)
+          .doUpdate()
+          .set(ITEM_METADATA.METADATA_VALUE, meta.value())
+      );
+    }
 
+    context.batch(batches).execute();
     return UNIT;
   }
 }

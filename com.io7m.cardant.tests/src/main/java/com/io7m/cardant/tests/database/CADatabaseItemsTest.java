@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -84,7 +85,6 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooMa
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -1068,33 +1068,59 @@ public final class CADatabaseItemsTest
 
     this.itemCreate.execute(id0);
 
-    final var meta =
-      new CAItemMetadata(new RDottedName("x.y.z"), "abc");
+    final var meta0 =
+      new CAItemMetadata(new RDottedName("x.y.a0"), "abc");
+    final var meta1 =
+      new CAItemMetadata(new RDottedName("x.y.a1"), "def");
+    final var meta2 =
+      new CAItemMetadata(new RDottedName("x.y.a2"), "ghi");
 
-    this.metaAdd.execute(new MetadataPutType.Parameters(id0, meta));
+    this.metaAdd.execute(
+      new MetadataPutType.Parameters(id0, Set.of(meta0, meta1, meta2))
+    );
 
     {
       final var i = this.itemGet.execute(id0).orElseThrow();
-      assertEquals(meta, i.metadata().get(meta.name()));
+      assertEquals(meta0, i.metadata().get(meta0.name()));
+      assertEquals(meta1, i.metadata().get(meta1.name()));
+      assertEquals(meta2, i.metadata().get(meta2.name()));
     }
 
     {
       final var m = this.metaGet.execute(id0);
-      assertEquals(meta, m.get(meta.name()));
+      assertEquals(meta0, m.get(meta0.name()));
+      assertEquals(meta1, m.get(meta1.name()));
+      assertEquals(meta2, m.get(meta2.name()));
     }
 
-    this.metaRemove.execute(new MetadataRemoveType.Parameters(
-      id0,
-      meta.name()));
+    this.metaRemove.execute(
+      new MetadataRemoveType.Parameters(id0, Set.of(meta1.name()))
+    );
 
     {
       final var i = this.itemGet.execute(id0).orElseThrow();
-      assertNull(i.metadata().get(meta.name()));
+      assertEquals(meta0, i.metadata().get(meta0.name()));
+      assertEquals(meta2, i.metadata().get(meta2.name()));
     }
 
     {
       final var m = this.metaGet.execute(id0);
-      assertNull(m.get(meta.name()));
+      assertEquals(meta0, m.get(meta0.name()));
+      assertEquals(meta2, m.get(meta2.name()));
+    }
+
+    this.metaRemove.execute(
+      new MetadataRemoveType.Parameters(id0, Set.of(meta0.name(), meta1.name(), meta2.name()))
+    );
+
+    {
+      final var i = this.itemGet.execute(id0).orElseThrow();
+      assertEquals(Map.of(), i.metadata());
+    }
+
+    {
+      final var m = this.metaGet.execute(id0);
+      assertEquals(Map.of(), m);
     }
   }
 

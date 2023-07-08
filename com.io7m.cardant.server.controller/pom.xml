@@ -71,12 +71,12 @@
     </dependency>
 
     <dependency>
-      <groupId>com.io7m.lanark</groupId>
-      <artifactId>com.io7m.lanark.core</artifactId>
+      <groupId>com.io7m.seltzer</groupId>
+      <artifactId>com.io7m.seltzer.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.io7m.jxtrand</groupId>
-      <artifactId>com.io7m.jxtrand.api</artifactId>
+      <groupId>com.io7m.lanark</groupId>
+      <artifactId>com.io7m.lanark.core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.io7m.idstore</groupId>

@@ -355,6 +355,8 @@
       <Class name="com.io7m.cardant.database.api.CADatabaseRole"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseUpgrade"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseUserUpdates"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataRemoveType$Parameters"/>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>
@@ -715,6 +717,20 @@
   <Match>
     <Class name="com.io7m.cardant.shell.internal.CAShellCmdFileSearchBegin"/>
     <Bug pattern="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
+  </Match>
+
+  <!--                          -->
+  <!-- com.io7m.cardant.strings -->
+  <!--                          -->
+
+  <!-- Record types. -->
+  <Match>
+    <Class name="com.io7m.cardant.strings.CAStringConstantApplied"/>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
   </Match>
 
 </FindBugsFilter>

@@ -17,6 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
@@ -25,12 +26,8 @@ import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 
-import java.util.Map;
-
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
@@ -63,26 +60,17 @@ public final class CAICmdItemMetadataPut
       transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class);
     final var get =
       transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+    final var typeGet =
+      transaction.queries(TypeDeclarationGetMultipleType.class);
 
     final var itemId = command.item();
-    final var itemOpt = get.execute(itemId);
-    if (itemOpt.isEmpty()) {
-      throw context.failFormatted(
-        400,
-        errorNonexistent(),
-        Map.of(ITEM_ID, itemId.displayId()),
-        ERROR_NONEXISTENT
-      );
-    }
+    context.setAttribute(ITEM_ID, itemId.displayId());
 
     final var metadatas = command.metadatas();
-    for (final var metadata : metadatas) {
-      metaPut.execute(new Parameters(itemId, metadata));
-    }
+    metaPut.execute(new Parameters(itemId, metadatas));
 
-    return new CAIResponseItemMetadataPut(
-      context.requestId(),
-      itemOpt.get()
-    );
+    final var item = get.execute(itemId).orElseThrow();
+    CAICmdItemMetadataRemove.checkTypes(context, typeGet, item);
+    return new CAIResponseItemMetadataPut(context.requestId(), item);
   }
 }
