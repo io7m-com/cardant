@@ -89,8 +89,31 @@ public final class CADBQItemTypeDeclPut
         .returning(METADATA_TYPE_DECLARATIONS.ID)
         .execute();
 
-    final var fieldInserts =
+    final var batches =
       new ArrayList<Query>(declaration.fields().size());
+
+    /*
+     * Delete the existing fields associated with this type.
+     */
+
+    final var fieldsJoin =
+      METADATA_TYPE_FIELDS.join(METADATA_TYPE_DECLARATIONS)
+          .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(METADATA_TYPE_DECLARATIONS.ID))
+            .where(METADATA_TYPE_DECLARATIONS.NAME.eq(typeName));
+
+    final var deleteQuery =
+      DSL.deleteFrom(METADATA_TYPE_FIELDS)
+        .whereExists(
+          DSL.select(
+            METADATA_TYPE_FIELDS.FIELD_DECLARATION,
+            METADATA_TYPE_FIELDS.FIELD_NAME
+          ).from(fieldsJoin));
+
+    batches.add(deleteQuery);
+
+    /*
+     * Add new fields.
+     */
 
     for (final var entry : declaration.fields().entrySet()) {
       final var field =
@@ -103,24 +126,24 @@ public final class CADBQItemTypeDeclPut
           .from(METADATA_SCALAR_TYPES)
           .where(METADATA_SCALAR_TYPES.NAME.eq(scalarType.name().value()));
 
-      fieldInserts.add(
+      batches.add(
         DSL.insertInto(METADATA_TYPE_FIELDS)
           .set(METADATA_TYPE_FIELDS.FIELD_NAME, field.name().value())
           .set(METADATA_TYPE_FIELDS.FIELD_DECLARATION, typeId)
           .set(METADATA_TYPE_FIELDS.FIELD_DESCRIPTION, field.description())
           .set(METADATA_TYPE_FIELDS.FIELD_REQUIRED, field.isRequired())
-          .set(METADATA_TYPE_FIELDS.FIELD_TYPE, findTypeId)
+          .set(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE, findTypeId)
           .onConflictOnConstraint(DSL.name("metadata_type_fields_pkey"))
           .doUpdate()
           .set(METADATA_TYPE_FIELDS.FIELD_NAME, field.name().value())
           .set(METADATA_TYPE_FIELDS.FIELD_DECLARATION, typeId)
           .set(METADATA_TYPE_FIELDS.FIELD_DESCRIPTION, field.description())
           .set(METADATA_TYPE_FIELDS.FIELD_REQUIRED, field.isRequired())
-          .set(METADATA_TYPE_FIELDS.FIELD_TYPE, findTypeId)
+          .set(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE, findTypeId)
       );
     }
 
-    context.batch(fieldInserts).execute();
+    context.batch(batches).execute();
     return CADatabaseUnit.UNIT;
   }
 }

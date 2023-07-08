@@ -17,7 +17,6 @@
 package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CATypeDeclaration;
-import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.lanark.core.RDottedName;
 
@@ -82,9 +81,7 @@ public sealed interface CADatabaseQueriesItemTypesType
    */
 
   non-sealed interface TypeDeclarationsReferencingScalarType
-    extends CADatabaseQueryType<
-    RDottedName,
-    CADatabasePagedQueryType<CATypeDeclarationSummary>>,
+    extends CADatabaseQueryType<RDottedName, CADatabaseTypeDeclarationSearchType>,
     CADatabaseQueriesItemTypesType
   {
 
@@ -95,9 +92,7 @@ public sealed interface CADatabaseQueriesItemTypesType
    */
 
   non-sealed interface TypeDeclarationsSearchType
-    extends CADatabaseQueryType<
-    String,
-    CADatabasePagedQueryType<CATypeDeclarationSummary>>,
+    extends CADatabaseQueryType<String, CADatabaseTypeDeclarationSearchType>,
     CADatabaseQueriesItemTypesType
   {
 

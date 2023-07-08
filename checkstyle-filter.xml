@@ -23,6 +23,8 @@
             checks="NPathComplexity"/>
   <suppress files="CAICmdAbstract.java"
             checks="ThrowsCount"/>
+  <suppress files="CAICommandExecutor.java"
+            checks="ClassDataAbstractionCoupling"/>
 
   <suppress files="CAI1Validation.java"
             checks="CyclomaticComplexity"/>

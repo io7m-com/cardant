@@ -24,6 +24,9 @@ import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeDeclarationSummary;
+import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
@@ -395,9 +398,13 @@ public final class CAFormatterPretty implements CAFormatterType
     final Collection<CATypeScalar> types)
     throws TException
   {
+    if (types.isEmpty()) {
+      return;
+    }
+
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(this.softTableWidth(1))
+        .setWidthConstraint(this.softTableWidth(3))
         .declareColumn("Type", atLeastContentOrHeader())
         .declareColumn("Description", atLeastContent())
         .declareColumn("Pattern", atLeastContentOrHeader());
@@ -425,6 +432,81 @@ public final class CAFormatterPretty implements CAFormatterType
       );
 
     this.formatTypesScalarCollection(types.items());
+  }
+
+  @Override
+  public void formatTypeDeclaration(
+    final CATypeDeclaration type)
+    throws Exception
+  {
+    {
+      final var tableBuilder =
+        Tabla.builder()
+          .setWidthConstraint(this.softTableWidth(2))
+          .declareColumn("Type", atLeastContentOrHeader())
+          .declareColumn("Description", atLeastContent());
+
+      tableBuilder.addRow()
+        .addCell(type.name().value())
+        .addCell(type.description());
+
+      this.renderTable(tableBuilder.build());
+    }
+
+    if (!type.fields().isEmpty()) {
+      this.terminal.writer()
+        .println(" Fields");
+
+      final var tableBuilder =
+        Tabla.builder()
+          .setWidthConstraint(this.softTableWidth(3))
+          .declareColumn("Name", atLeastContentOrHeader())
+          .declareColumn("Description", atLeastContent())
+          .declareColumn("Type", atLeastContentOrHeader());
+
+      final var fieldsSorted = new ArrayList<>(type.fields().values());
+      Collections.sort(fieldsSorted, Comparator.comparing(CATypeField::name));
+
+      for (final var field : fieldsSorted) {
+        tableBuilder.addRow()
+          .addCell(field.name().value())
+          .addCell(field.description())
+          .addCell(field.type().name().value());
+      }
+
+      this.renderTable(tableBuilder.build());
+    }
+  }
+
+  @Override
+  public void formatTypeDeclarationPage(
+    final CAPage<CATypeDeclarationSummary> types)
+    throws Exception
+  {
+    this.terminal.writer()
+      .printf(
+        "Search results: Page %d of %d%n",
+        Integer.valueOf(types.pageIndex()),
+        Integer.valueOf(types.pageCount())
+      );
+
+    if (types.items().isEmpty()) {
+      return;
+    }
+
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(2))
+        .declareColumn("Type", atLeastContentOrHeader())
+        .declareColumn("Description", atLeastContent());
+
+    for (final var type : types.items()) {
+      tableBuilder.addRow()
+        .addCell(type.name().value())
+        .addCell(type.description());
+    }
+
+    this.renderTable(tableBuilder.build());
   }
 
   @Override

@@ -165,7 +165,7 @@ public final class CADatabaseExceptions
         .orElse("");
 
     return switch (column) {
-      case "field_type" -> {
+      case "field_scalar_type" -> {
         yield new CADatabaseException(
           transaction.localize(ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE),
           e,
@@ -318,7 +318,7 @@ public final class CADatabaseExceptions
           .flatMap(x -> Optional.ofNullable(x.getConstraint()))
           .orElse("");
 
-      if (Objects.equals(constraint, "field_type_exists")) {
+      if (Objects.equals(constraint, "field_scalar_type_exists")) {
         return new CADatabaseException(
           transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
           e,

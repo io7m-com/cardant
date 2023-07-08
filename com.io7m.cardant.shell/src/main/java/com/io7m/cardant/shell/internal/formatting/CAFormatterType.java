@@ -22,6 +22,8 @@ import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.medrina.api.MRoleName;
 
@@ -126,5 +128,28 @@ public interface CAFormatterType
    */
 
   void formatTypesScalarPage(CAPage<CATypeScalar> types)
+    throws Exception;
+
+  /**
+   * Format a type declaration.
+   *
+   * @param type The type
+   *
+   * @throws Exception On errors
+   */
+
+  void formatTypeDeclaration(CATypeDeclaration type)
+    throws Exception;
+
+  /**
+   * Format a page of types.
+   *
+   * @param types The types
+   *
+   * @throws Exception On errors
+   */
+
+  void formatTypeDeclarationPage(
+    CAPage<CATypeDeclarationSummary> types)
     throws Exception;
 }

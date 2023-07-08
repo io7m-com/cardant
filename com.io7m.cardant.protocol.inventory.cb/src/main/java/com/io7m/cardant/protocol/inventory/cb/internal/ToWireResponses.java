@@ -44,6 +44,10 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarRemove;
@@ -75,6 +79,10 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarRemove;
@@ -195,6 +203,19 @@ public final class ToWireResponses
       return typeScalarRemove(c);
     }
 
+    if (cmd instanceof final CAIResponseTypeDeclarationPut c) {
+      return typeDeclarationPut(c);
+    }
+    if (cmd instanceof final CAIResponseTypeDeclarationGet c) {
+      return typeDeclarationGet(c);
+    }
+    if (cmd instanceof final CAIResponseTypeDeclarationSearch c) {
+      return typeDeclarationSearch(c);
+    }
+    if (cmd instanceof final CAIResponseTypeDeclarationRemove c) {
+      return typeDeclarationRemove(c);
+    }
+
     throw new ProtocolUncheckedException(errorProtocol(cmd));
   }
 
@@ -230,6 +251,42 @@ public final class ToWireResponses
     return new CAI1ResponseTypeScalarPut(
       new CBUUID(c.requestId()),
       CBLists.ofCollection(c.types(), ToWireModel::typeScalar)
+    );
+  }
+
+
+  private static ProtocolCAIv1Type typeDeclarationRemove(
+    final CAIResponseTypeDeclarationRemove c)
+  {
+    return new CAI1ResponseTypeDeclarationRemove(
+      new CBUUID(c.requestId())
+    );
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationSearch(
+    final CAIResponseTypeDeclarationSearch c)
+  {
+    return new CAI1ResponseTypeDeclarationSearch(
+      new CBUUID(c.requestId()),
+      ToWireModel.page(c.data(), ToWireModel::typeDeclarationSummary)
+    );
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationGet(
+    final CAIResponseTypeDeclarationGet c)
+  {
+    return new CAI1ResponseTypeDeclarationGet(
+      new CBUUID(c.requestId()),
+      ToWireModel.typeDeclaration(c.type())
+    );
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationPut(
+    final CAIResponseTypeDeclarationPut c)
+  {
+    return new CAI1ResponseTypeDeclarationPut(
+      new CBUUID(c.requestId()),
+      CBLists.ofCollection(c.types(), ToWireModel::typeDeclaration)
     );
   }
 

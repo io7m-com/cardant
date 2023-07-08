@@ -66,7 +66,7 @@ public final class CAICmdTypeScalarSearchBeginTest
     );
 
   /**
-   * Searching for items requires the permission to READ to INVENTORY_ITEMS.
+   * Searching requires the permission to READ to INVENTORY_ITEMS.
    *
    * @throws Exception On errors
    */
@@ -97,7 +97,7 @@ public final class CAICmdTypeScalarSearchBeginTest
   }
 
   /**
-   * Searching for items works.
+   * Searching works.
    *
    * @throws Exception On errors
    */

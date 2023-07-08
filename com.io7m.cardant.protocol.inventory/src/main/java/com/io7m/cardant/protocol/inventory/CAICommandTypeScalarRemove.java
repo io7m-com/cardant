@@ -33,7 +33,7 @@ public record CAICommandTypeScalarRemove(
   implements CAICommandType<CAIResponseTypeScalarRemove>
 {
   /**
-   * Create or update scalar types.
+   * Remove scalar types.
    *
    * @param types The types
    */

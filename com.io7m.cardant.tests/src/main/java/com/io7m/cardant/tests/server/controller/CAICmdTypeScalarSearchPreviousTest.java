@@ -59,7 +59,7 @@ public final class CAICmdTypeScalarSearchPreviousTest
   extends CACmdAbstractContract
 {
   /**
-   * Searching for items requires the permission to READ to INVENTORY_ITEMS.
+   * Searching requires the permission to READ to INVENTORY_ITEMS.
    *
    * @throws Exception On errors
    */
@@ -90,7 +90,7 @@ public final class CAICmdTypeScalarSearchPreviousTest
   }
 
   /**
-   * Searching for items works.
+   * Searching works.
    *
    * @throws Exception On errors
    */
@@ -162,7 +162,7 @@ public final class CAICmdTypeScalarSearchPreviousTest
   }
 
   /**
-   * Searching for items works.
+   * Searching works.
    *
    * @throws Exception On errors
    */

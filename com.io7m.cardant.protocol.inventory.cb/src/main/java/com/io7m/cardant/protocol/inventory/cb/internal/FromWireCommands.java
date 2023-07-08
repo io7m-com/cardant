@@ -20,6 +20,7 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
@@ -50,6 +51,12 @@ import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
@@ -86,12 +93,19 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationSearchBegin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationSearchNext;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchNext;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchPrevious;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclarationSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalarSearchParameters;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.convenience.CBMaps;
@@ -393,6 +407,67 @@ public final class FromWireCommands
     final CAI1CommandTypeScalarRemove c)
   {
     return new CAICommandTypeScalarRemove(
+      CBSets.toSet(c.fieldTypes(), x -> new RDottedName(x.value()))
+    );
+  }
+
+
+
+
+
+
+
+
+
+  public static CAIMessageType typeDeclarationPut(
+    final CAI1CommandTypeDeclarationPut c)
+  {
+    return new CAICommandTypeDeclarationPut(
+      CBSets.toSet(c.fieldTypes(), FromWireModel::typeDeclaration)
+    );
+  }
+
+  public static CAIMessageType typeDeclarationGet(
+    final CAI1CommandTypeDeclarationGet c)
+  {
+    return new CAICommandTypeDeclarationGet(
+      new RDottedName(c.fieldName().value())
+    );
+  }
+
+  public static CAIMessageType typeDeclarationSearchBegin(
+    final CAI1CommandTypeDeclarationSearchBegin c)
+  {
+    return new CAICommandTypeDeclarationSearchBegin(
+      typeDeclarationSearchParameters(c.fieldParameters())
+    );
+  }
+
+  private static CATypeDeclarationSearchParameters typeDeclarationSearchParameters(
+    final CAI1TypeDeclarationSearchParameters p)
+  {
+    return new CATypeDeclarationSearchParameters(
+      p.fieldSearch().asOptional().map(CBString::value),
+      Math.toIntExact(p.fieldLimit().value())
+    );
+  }
+
+  public static CAIMessageType typeDeclarationSearchNext(
+    final CAI1CommandTypeDeclarationSearchNext c)
+  {
+    return new CAICommandTypeDeclarationSearchNext();
+  }
+
+  public static CAIMessageType typeDeclarationSearchPrevious(
+    final CAI1CommandTypeDeclarationSearchPrevious c)
+  {
+    return new CAICommandTypeDeclarationSearchPrevious();
+  }
+
+  public static CAIMessageType typeDeclarationRemove(
+    final CAI1CommandTypeDeclarationRemove c)
+  {
+    return new CAICommandTypeDeclarationRemove(
       CBSets.toSet(c.fieldTypes(), x -> new RDottedName(x.value()))
     );
   }

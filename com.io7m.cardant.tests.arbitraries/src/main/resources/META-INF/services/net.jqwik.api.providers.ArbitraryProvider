@@ -30,6 +30,12 @@ com.io7m.cardant.tests.arbitraries.CAArbCommandRolesRevoke
 com.io7m.cardant.tests.arbitraries.CAArbCommandTagList
 com.io7m.cardant.tests.arbitraries.CAArbCommandTagsDelete
 com.io7m.cardant.tests.arbitraries.CAArbCommandTagsPut
+com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationGet
+com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationPut
+com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationRemove
+com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationSearchBegin
+com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationSearchNext
+com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationSearchPrevious
 com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarGet
 com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarPut
 com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarRemove
@@ -63,6 +69,10 @@ com.io7m.cardant.tests.arbitraries.CAArbResponseRolesRevoke
 com.io7m.cardant.tests.arbitraries.CAArbResponseTagList
 com.io7m.cardant.tests.arbitraries.CAArbResponseTagsDelete
 com.io7m.cardant.tests.arbitraries.CAArbResponseTagsPut
+com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationGet
+com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationPut
+com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationRemove
+com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationSearch
 com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarGet
 com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarGet
 com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarPut
@@ -105,3 +115,7 @@ com.io7m.cardant.tests.arbitraries.model.CAArbTagID
 com.io7m.cardant.tests.arbitraries.model.CAArbTags
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalar
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarSearchParameters
+com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSummary
+com.io7m.cardant.tests.arbitraries.model.CAArbTypeField
+com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclaration
+com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSearchParameters

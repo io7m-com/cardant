@@ -32,7 +32,7 @@ public record CAICommandTypeScalarGet(
   implements CAICommandType<CAIResponseTypeScalarGet>
 {
   /**
-   * Create or update scalar types.
+   * Get a scalar type.
    *
    * @param name The name
    */

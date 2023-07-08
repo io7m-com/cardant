@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShellValueConverters;
 import com.io7m.jmulticlose.core.CloseableCollection;
@@ -32,6 +31,7 @@ import com.io7m.quarrel.core.QErrorFormatting;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QLocalization;
 import com.io7m.quarrel.core.QLocalizationType;
+import com.io7m.repetoir.core.RPServiceDirectoryType;
 import com.io7m.seltzer.api.SStructuredErrorType;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -57,7 +57,6 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 public final class CAShell implements CAShellType
 {
   private final CloseableCollectionType<ClosingResourceFailedException> resources;
-  private final CAClientSynchronousType client;
   private final LineReader reader;
   private final PrintWriter writer;
   private final QCommandParserConfiguration parserConfiguration;
@@ -65,15 +64,14 @@ public final class CAShell implements CAShellType
   private final QLocalizationType localizer;
   private final SortedMap<String, CAShellCmdType> commandsNamed;
   private final SortedMap<String, QCommandOrGroupType> commandsView;
-  private final CAShellOptions options;
   private final Terminal terminal;
+  private final RPServiceDirectoryType services;
   private volatile QCommandStatus status;
 
   /**
    * The basic shell.
    *
-   * @param inClient        The client
-   * @param inOptions       The shell options
+   * @param inServices      The service directory
    * @param inCommandsNamed The named commands
    * @param inReader        The line reader
    * @param inTerminal      The terminal
@@ -81,17 +79,14 @@ public final class CAShell implements CAShellType
    */
 
   public CAShell(
-    final CAClientSynchronousType inClient,
-    final CAShellOptions inOptions,
+    final RPServiceDirectoryType inServices,
     final Terminal inTerminal,
     final PrintWriter inWriter,
     final Map<String, CAShellCmdType> inCommandsNamed,
     final LineReader inReader)
   {
-    this.client =
-      Objects.requireNonNull(inClient, "client");
-    this.options =
-      Objects.requireNonNull(inOptions, "options");
+    this.services =
+      Objects.requireNonNull(inServices, "services");
     this.terminal =
       Objects.requireNonNull(inTerminal, "terminal");
     this.writer =
@@ -118,7 +113,7 @@ public final class CAShell implements CAShellType
     this.status =
       SUCCESS;
 
-    this.resources.add(this.client);
+    this.resources.add(inServices);
     this.resources.add(this.terminal);
     this.resources.add(this.writer);
     this.resources.add(this.resources);
@@ -150,7 +145,13 @@ public final class CAShell implements CAShellType
         break;
       } catch (final ShellCommandFailed e) {
         this.status = FAILURE;
-        if (this.options.terminateOnErrors().get()) {
+
+        final var terminate =
+          this.services.requireService(CAShellOptions.class)
+            .terminateOnErrors()
+            .get();
+
+        if (terminate) {
           break;
         }
       }

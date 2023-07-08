@@ -18,10 +18,9 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabasePagedQueryType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationsReferencingScalarType;
+import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQOrder;
@@ -45,12 +44,12 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
 
 public final class CADBQItemTypeDeclsReferencingScalar
   extends CADBQAbstract<RDottedName,
-  CADatabasePagedQueryType<CATypeDeclarationSummary>>
+  CADatabaseTypeDeclarationSearchType>
   implements TypeDeclarationsReferencingScalarType
 {
   private static final Service<
     RDottedName,
-    CADatabasePagedQueryType<CATypeDeclarationSummary>,
+    CADatabaseTypeDeclarationSearchType,
     TypeDeclarationsReferencingScalarType> SERVICE =
     new Service<>(
       TypeDeclarationsReferencingScalarType.class,
@@ -79,7 +78,7 @@ public final class CADBQItemTypeDeclsReferencingScalar
   }
 
   @Override
-  protected CADatabasePagedQueryType<CATypeDeclarationSummary> onExecute(
+  protected CADatabaseTypeDeclarationSearchType onExecute(
     final DSLContext context,
     final RDottedName name)
     throws CADatabaseException
@@ -90,7 +89,7 @@ public final class CADBQItemTypeDeclsReferencingScalar
         .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(
           METADATA_TYPE_DECLARATIONS.ID))
         .join(METADATA_SCALAR_TYPES)
-        .on(METADATA_SCALAR_TYPES.ID.eq(METADATA_TYPE_FIELDS.FIELD_TYPE));
+        .on(METADATA_SCALAR_TYPES.ID.eq(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE));
 
     final var searchCondition =
       DSL.condition(METADATA_SCALAR_TYPES.NAME.eq(name.value()));

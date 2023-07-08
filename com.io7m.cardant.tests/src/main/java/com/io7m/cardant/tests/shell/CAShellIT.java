@@ -331,16 +331,16 @@ public final class CAShellIT
     w.println("item-create --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--name 'Battery'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key Voltage " +
+                "--key voltage " +
                 "--value 9");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key Size " +
+                "--key size " +
                 "--value 23");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key Gauge " +
+                "--key gauge " +
                 "--value 20");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key Gauge");
+                "--key gauge");
     w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
                 "--count 100");
@@ -531,6 +531,67 @@ public final class CAShellIT
     w.println("type-scalar-search-begin --query things");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellTypeDeclarationWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+    w.println(
+      "type-scalar-put --name com.x --description 'A description of things.' --pattern '.*'"
+    );
+    w.println("type-create --name com.y --description 'A type'");
+    w.println(
+      "type-field-put " +
+        "--type com.y " +
+        "--field-name x " +
+        "--field-type com.x " +
+        "--field-description 'A field' " +
+        "--field-required true"
+    );
+    w.println(
+      "type-field-put " +
+        "--type com.y " +
+        "--field-name y " +
+        "--field-type com.x " +
+        "--field-description 'Another field' " +
+        "--field-required true"
+    );
+    w.println(
+      "type-field-put " +
+        "--type com.y " +
+        "--field-name z " +
+        "--field-type com.x " +
+        "--field-description 'Yet another field' " +
+        "--field-required false"
+    );
+    w.println(
+      "type-field-put " +
+        "--type com.y " +
+        "--field-name a " +
+        "--field-type com.x " +
+        "--field-description 'A wrong field' " +
+        "--field-required true"
+    );
+    w.println(
+      "type-field-remove --type com.y --field-name a"
+    );
+    w.println("type-get --name com.y");
+    w.println("type-search-begin --query type");
+    w.println("type-search-next");
+    w.println("type-search-previous");
     w.println("logout");
     w.flush();
     w.close();

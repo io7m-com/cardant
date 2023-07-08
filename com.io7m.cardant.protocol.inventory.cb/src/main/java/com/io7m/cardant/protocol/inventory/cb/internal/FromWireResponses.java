@@ -48,6 +48,10 @@ import com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarRemove;
@@ -78,6 +82,10 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarRemove;
@@ -377,6 +385,43 @@ public final class FromWireResponses
   {
     return new CAIResponseTypeScalarRemove(
       c.fieldRequestId().value()
+    );
+  }
+
+  public static CAIMessageType typeDeclarationSearch(
+    final CAI1ResponseTypeDeclarationSearch c)
+  {
+    return new CAIResponseTypeDeclarationSearch(
+      c.fieldRequestId().value(),
+      FromWireModel.page(
+        c.fieldResults(),
+        FromWireModel::typeDeclarationSummary)
+    );
+  }
+
+  public static CAIMessageType typeDeclarationRemove(
+    final CAI1ResponseTypeDeclarationRemove c)
+  {
+    return new CAIResponseTypeDeclarationRemove(
+      c.fieldRequestId().value()
+    );
+  }
+
+  public static CAIMessageType typeDeclarationPut(
+    final CAI1ResponseTypeDeclarationPut m)
+  {
+    return new CAIResponseTypeDeclarationPut(
+      m.fieldRequestId().value(),
+      CBSets.toSet(m.fieldTypes(), FromWireModel::typeDeclaration)
+    );
+  }
+
+  public static CAIMessageType typeDeclarationGet(
+    final CAI1ResponseTypeDeclarationGet m)
+  {
+    return new CAIResponseTypeDeclarationGet(
+      m.fieldRequestId().value(),
+      FromWireModel.typeDeclaration(m.fieldType())
     );
   }
 }

@@ -451,4 +451,110 @@ public final class CADatabaseItemTypesTest
     this.tsRemove.execute(voltage.name());
     assertEquals(Optional.empty(), this.tsGet.execute(voltage.name()));
   }
+
+  /**
+   * Retrieving fieldless type declarations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeDeclarationFieldless()
+    throws Exception
+  {
+    final var typeDeclaration =
+      new CATypeDeclaration(
+        new RDottedName("com.io7m.battery"),
+        "A battery.",
+        Map.of()
+      );
+
+    this.tdPut.execute(typeDeclaration);
+
+    this.transaction.commit();
+
+    final var received =
+      this.tdGet.execute(typeDeclaration.name())
+        .orElseThrow();
+
+    assertEquals(typeDeclaration, received);
+
+    this.tdRemove.execute(typeDeclaration.name());
+    assertEquals(empty(), this.tdGet.execute(typeDeclaration.name()));
+  }
+
+  /**
+   * Removing fields works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeDeclarationPutRemovesField()
+    throws Exception
+  {
+    final var voltage =
+      new CATypeScalar(
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        "^0|([1-9][0-9]+)$"
+      );
+
+    final var size =
+      new CATypeScalar(
+        new RDottedName("com.io7m.battery.size"),
+        "A specification of battery size.",
+        "^.*$"
+      );
+
+    this.tsPut.execute(voltage);
+    this.tsPut.execute(size);
+
+    final var voltageField =
+      new CATypeField(
+        new RDottedName("com.io7m.battery.voltage"),
+        "A measurement of battery voltage.",
+        voltage,
+        true
+      );
+
+    final var sizeField =
+      new CATypeField(
+        new RDottedName("com.io7m.battery.size"),
+        "A battery size (such as AA, AAA, etc).",
+        size,
+        true
+      );
+
+    final var typeDeclaration =
+      new CATypeDeclaration(
+        new RDottedName("com.io7m.battery"),
+        "A battery.",
+        Map.ofEntries(
+          Map.entry(voltageField.name(), voltageField),
+          Map.entry(sizeField.name(), sizeField)
+        )
+      );
+
+    this.tdPut.execute(typeDeclaration);
+    this.transaction.commit();
+
+    final var typeDeclarationAfter =
+      new CATypeDeclaration(
+        new RDottedName("com.io7m.battery"),
+        "A battery.",
+        Map.ofEntries(
+          Map.entry(sizeField.name(), sizeField)
+        )
+      );
+
+    this.tdPut.execute(typeDeclarationAfter);
+    this.transaction.commit();
+
+    final var received =
+      this.tdGet.execute(typeDeclaration.name())
+        .orElseThrow();
+
+    assertEquals(typeDeclarationAfter, received);
+  }
 }

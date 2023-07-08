@@ -17,9 +17,8 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabasePagedQueryType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType;
-import com.io7m.cardant.model.CATypeDeclarationSummary;
+import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQOrder;
@@ -37,12 +36,12 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
  */
 
 public final class CADBQItemTypeDeclsSearch
-  extends CADBQAbstract<String, CADatabasePagedQueryType<CATypeDeclarationSummary>>
+  extends CADBQAbstract<String, CADatabaseTypeDeclarationSearchType>
   implements TypeDeclarationsSearchType
 {
   private static final CADBQueryProviderType.Service<
     String,
-    CADatabasePagedQueryType<CATypeDeclarationSummary>,
+    CADatabaseTypeDeclarationSearchType,
     TypeDeclarationsSearchType> SERVICE =
     new CADBQueryProviderType.Service<>(
       TypeDeclarationsSearchType.class,
@@ -72,7 +71,7 @@ public final class CADBQItemTypeDeclsSearch
 
 
   @Override
-  protected CADatabasePagedQueryType<CATypeDeclarationSummary>
+  protected CADatabaseTypeDeclarationSearchType
   onExecute(
     final DSLContext context,
     final String query)

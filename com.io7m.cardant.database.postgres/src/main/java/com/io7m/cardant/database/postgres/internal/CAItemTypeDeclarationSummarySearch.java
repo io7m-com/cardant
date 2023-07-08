@@ -18,6 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
@@ -32,6 +33,7 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
 
 final class CAItemTypeDeclarationSummarySearch
   extends CAAbstractSearch<CATypeDeclarationSummary>
+  implements CADatabaseTypeDeclarationSearchType
 {
   CAItemTypeDeclarationSummarySearch(
     final List<JQKeysetRandomAccessPageDefinition> inPages)

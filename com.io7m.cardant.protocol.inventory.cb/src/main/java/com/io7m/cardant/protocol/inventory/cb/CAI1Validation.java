@@ -195,6 +195,26 @@ public final class CAI1Validation
         return FromWireCommands.typeScalarRemove(c);
       }
 
+
+      if (message instanceof final CAI1CommandTypeDeclarationPut c) {
+        return FromWireCommands.typeDeclarationPut(c);
+      }
+      if (message instanceof final CAI1CommandTypeDeclarationGet c) {
+        return FromWireCommands.typeDeclarationGet(c);
+      }
+      if (message instanceof final CAI1CommandTypeDeclarationSearchBegin c) {
+        return FromWireCommands.typeDeclarationSearchBegin(c);
+      }
+      if (message instanceof final CAI1CommandTypeDeclarationSearchNext c) {
+        return FromWireCommands.typeDeclarationSearchNext(c);
+      }
+      if (message instanceof final CAI1CommandTypeDeclarationSearchPrevious c) {
+        return FromWireCommands.typeDeclarationSearchPrevious(c);
+      }
+      if (message instanceof final CAI1CommandTypeDeclarationRemove c) {
+        return FromWireCommands.typeDeclarationRemove(c);
+      }
+
       /*
        * Response.
        */
@@ -289,6 +309,21 @@ public final class CAI1Validation
       if (message instanceof final CAI1ResponseTypeScalarRemove m) {
         return FromWireResponses.typeScalarRemove(m);
       }
+
+
+      if (message instanceof final CAI1ResponseTypeDeclarationPut m) {
+        return FromWireResponses.typeDeclarationPut(m);
+      }
+      if (message instanceof final CAI1ResponseTypeDeclarationGet m) {
+        return FromWireResponses.typeDeclarationGet(m);
+      }
+      if (message instanceof final CAI1ResponseTypeDeclarationSearch m) {
+        return FromWireResponses.typeDeclarationSearch(m);
+      }
+      if (message instanceof final CAI1ResponseTypeDeclarationRemove m) {
+        return FromWireResponses.typeDeclarationRemove(m);
+      }
+
     } catch (final ProtocolUncheckedException e) {
       throw e.getCause();
     }

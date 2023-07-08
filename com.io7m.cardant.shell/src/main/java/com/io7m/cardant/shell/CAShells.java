@@ -56,6 +56,13 @@ import com.io7m.cardant.shell.internal.CAShellCmdRolesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdSelf;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
 import com.io7m.cardant.shell.internal.CAShellCmdType;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationCreate;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationFieldPut;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationFieldRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationGet;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationSearchBegin;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationSearchNext;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarGet;
 import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarPut;
 import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarRemove;
@@ -166,6 +173,13 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdRolesRevoke(services),
         new CAShellCmdSelf(services),
         new CAShellCmdSet(services),
+        new CAShellCmdTypeDeclarationCreate(services),
+        new CAShellCmdTypeDeclarationFieldPut(services),
+        new CAShellCmdTypeDeclarationFieldRemove(services),
+        new CAShellCmdTypeDeclarationGet(services),
+        new CAShellCmdTypeDeclarationSearchBegin(services),
+        new CAShellCmdTypeDeclarationSearchNext(services),
+        new CAShellCmdTypeDeclarationSearchPrevious(services),
         new CAShellCmdTypeScalarGet(services),
         new CAShellCmdTypeScalarPut(services),
         new CAShellCmdTypeScalarRemove(services),
@@ -209,8 +223,7 @@ public final class CAShells implements CAShellFactoryType
         .build();
 
     return new CAShell(
-      client,
-      new CAShellOptions(terminal),
+      services,
       terminal,
       writer,
       commandsNamed,

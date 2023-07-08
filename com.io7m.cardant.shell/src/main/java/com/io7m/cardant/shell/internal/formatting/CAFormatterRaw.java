@@ -23,6 +23,8 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATag;
+import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.medrina.api.MRoleName;
 import org.apache.commons.io.FileUtils;
@@ -242,6 +244,61 @@ public final class CAFormatterRaw implements CAFormatterType
   @Override
   public void formatTypesScalarPage(
     final CAPage<CATypeScalar> types)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.printf(
+      "# Search results: Page %d of %d%n",
+      Integer.valueOf(types.pageIndex()),
+      Integer.valueOf(types.pageCount())
+    );
+    w.println(
+      "#--------------------------------"
+    );
+
+    for (final var item : types.items()) {
+      w.printf("%s : %s%n", item.name().value(), item.description());
+    }
+  }
+
+  @Override
+  public void formatTypeDeclaration(
+    final CATypeDeclaration type)
+  {
+    final PrintWriter w = this.terminal.writer();
+    final var main = new TreeMap<String, String>();
+    main.put("Name", type.name().value());
+    main.put("Description", type.description());
+
+    w.printf("# Type %s%n", type.name().value());
+    w.printf("#-----------------------------------------%n");
+    w.println();
+    paddedTable(w, main);
+
+    final var fields = type.fields();
+    if (!fields.isEmpty()) {
+      w.println();
+      w.println("# Fields");
+      w.println("#---------");
+      w.println();
+
+      paddedTable(
+        w,
+        new TreeMap<>(
+          fields.entrySet()
+            .stream()
+            .map(e -> Map.entry(e.getKey(), e.getValue().name().value()))
+            .collect(Collectors.toMap(
+              e -> e.getKey().value(),
+              Map.Entry::getValue))
+        ));
+    }
+
+    w.println();
+  }
+
+  @Override
+  public void formatTypeDeclarationPage(
+    final CAPage<CATypeDeclarationSummary> types)
   {
     final PrintWriter w = this.terminal.writer();
     w.printf(

@@ -45,6 +45,12 @@ import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
@@ -201,6 +207,24 @@ public final class CAICommandExecutor
     }
     if (command instanceof final CAICommandTypeScalarRemove m) {
       return new CAICmdTypeScalarRemove().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeDeclarationSearchNext m) {
+      return new CAICmdTypeDeclarationSearchNext().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeDeclarationSearchPrevious m) {
+      return new CAICmdTypeDeclarationSearchPrevious().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeDeclarationSearchBegin m) {
+      return new CAICmdTypeDeclarationSearchBegin().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeDeclarationPut m) {
+      return new CAICmdTypeDeclarationPut().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeDeclarationGet m) {
+      return new CAICmdTypeDeclarationGet().execute(context, m);
+    }
+    if (command instanceof final CAICommandTypeDeclarationRemove m) {
+      return new CAICmdTypeDeclarationRemove().execute(context, m);
     }
 
     throw new IllegalStateException();

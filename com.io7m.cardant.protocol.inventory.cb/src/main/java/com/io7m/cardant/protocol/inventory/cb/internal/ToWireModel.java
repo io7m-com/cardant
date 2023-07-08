@@ -46,6 +46,9 @@ import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CASizeRange;
 import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATagID;
+import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeDeclarationSummary;
+import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
@@ -71,6 +74,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame;
 import com.io7m.cardant.protocol.inventory.cb.CAI1SizeRange;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclaration;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclarationSummary;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeField;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalar;
 import com.io7m.cedarbridge.runtime.api.CBBooleanType;
 import com.io7m.cedarbridge.runtime.api.CBByteArray;
@@ -83,6 +89,7 @@ import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBLists;
+import com.io7m.cedarbridge.runtime.convenience.CBMaps;
 import com.io7m.lanark.core.RDottedName;
 
 import java.nio.ByteBuffer;
@@ -453,6 +460,40 @@ public final class ToWireModel
       string(x.name().value()),
       string(x.description()),
       string(x.pattern())
+    );
+  }
+
+  public static CAI1TypeField typeField(
+    final CATypeField x)
+  {
+    return new CAI1TypeField(
+      string(x.name().value()),
+      string(x.description()),
+      typeScalar(x.type()),
+      CBBooleanType.fromBoolean(x.isRequired())
+    );
+  }
+
+  public static CAI1TypeDeclaration typeDeclaration(
+    final CATypeDeclaration x)
+  {
+    return new CAI1TypeDeclaration(
+      string(x.name().value()),
+      string(x.description()),
+      CBMaps.ofMap(
+        x.fields(),
+        s -> string(s.value()),
+        ToWireModel::typeField
+      )
+    );
+  }
+
+  public static CAI1TypeDeclarationSummary typeDeclarationSummary(
+    final CATypeDeclarationSummary x)
+  {
+    return new CAI1TypeDeclarationSummary(
+      string(x.name().value()),
+      string(x.description())
     );
   }
 

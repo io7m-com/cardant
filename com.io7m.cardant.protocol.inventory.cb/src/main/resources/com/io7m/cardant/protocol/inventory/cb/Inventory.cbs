@@ -282,6 +282,44 @@
   [field pattern cb:String]
 ]
 
+[documentation CAI1TypeField "A field within a type declaration."]
+[record CAI1TypeField
+  [documentation name "The type field name."]
+  [field name cb:String]
+  [documentation description "The type field description."]
+  [field description cb:String]
+  [documentation type "The type of the field."]
+  [field type CAI1TypeScalar]
+  [documentation required "Whether or not the field is required to be present."]
+  [field required cb:Boolean]
+]
+
+[documentation CAI1TypeDeclaration "A type declaration."]
+[record CAI1TypeDeclaration
+  [documentation name "The type declaration name."]
+  [field name cb:String]
+  [documentation description "The type declaration description."]
+  [field description cb:String]
+  [documentation fields "Whether or not the field is required to be present."]
+  [field fields [cb:Map cb:String CAI1TypeField]]
+]
+
+[documentation CAI1TypeDeclarationSummary "A type declaration summary."]
+[record CAI1TypeDeclarationSummary
+  [documentation name "The type declaration name."]
+  [field name cb:String]
+  [documentation description "The type declaration description."]
+  [field description cb:String]
+]
+
+[documentation CAI1TypeDeclarationSearchParameters "The declared type search parameters."]
+[record CAI1TypeDeclarationSearchParameters
+  [documentation search "The type description search query."]
+  [field search [cb:Option cb:String]]
+  [documentation limit "The limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
 ;
 ; Commands.
 ;
@@ -493,6 +531,36 @@
 
 [documentation CAI1CommandTypeScalarSearchPrevious "Search for scalar types."]
 [record CAI1CommandTypeScalarSearchPrevious]
+
+[documentation CAI1CommandTypeDeclarationPut "Create or update declared types."]
+[record CAI1CommandTypeDeclarationPut
+  [documentation types "The types."]
+  [field types [cb:List CAI1TypeDeclaration]]
+]
+
+[documentation CAI1CommandTypeDeclarationGet "Get a declared type."]
+[record CAI1CommandTypeDeclarationGet
+  [documentation name "The type name."]
+  [field name cb:String]
+]
+
+[documentation CAI1CommandTypeDeclarationRemove "Remove declared types."]
+[record CAI1CommandTypeDeclarationRemove
+  [documentation types "The type names."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandTypeDeclarationSearchBegin "Search for declared types."]
+[record CAI1CommandTypeDeclarationSearchBegin
+  [documentation parameters "The parameters."]
+  [field parameters CAI1TypeDeclarationSearchParameters]
+]
+
+[documentation CAI1CommandTypeDeclarationSearchNext "Search for declared types."]
+[record CAI1CommandTypeDeclarationSearchNext]
+
+[documentation CAI1CommandTypeDeclarationSearchPrevious "Search for declared types."]
+[record CAI1CommandTypeDeclarationSearchPrevious]
 
 ;
 ; Responses.
@@ -748,6 +816,36 @@
   [field results [CAI1Page CAI1TypeScalar]]
 ]
 
+[documentation CAI1ResponseTypeDeclarationPut "A response to CAI1CommandTypeDeclarationPut."]
+[record CAI1ResponseTypeDeclarationPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation types "The scalar types."]
+  [field types [cb:List CAI1TypeDeclaration]]
+]
+
+[documentation CAI1ResponseTypeDeclarationGet "A response to CAI1CommandTypeDeclarationGet."]
+[record CAI1ResponseTypeDeclarationGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation type "The scalar type."]
+  [field type CAI1TypeDeclaration]
+]
+
+[documentation CAI1ResponseTypeDeclarationRemove "A response to CAI1CommandTypeDeclarationRemove."]
+[record CAI1ResponseTypeDeclarationRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+]
+
+[documentation CAI1ResponseTypeDeclarationSearch "A response to CAI1CommandTypeDeclarationSearch*."]
+[record CAI1ResponseTypeDeclarationSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1TypeDeclarationSummary]]
+]
+
 ;
 ; Events.
 ;
@@ -796,6 +894,12 @@
       CAI1CommandTagList
       CAI1CommandTagsDelete
       CAI1CommandTagsPut
+      CAI1CommandTypeDeclarationGet
+      CAI1CommandTypeDeclarationPut
+      CAI1CommandTypeDeclarationRemove
+      CAI1CommandTypeDeclarationSearchBegin
+      CAI1CommandTypeDeclarationSearchNext
+      CAI1CommandTypeDeclarationSearchPrevious
       CAI1CommandTypeScalarGet
       CAI1CommandTypeScalarPut
       CAI1CommandTypeScalarRemove
@@ -829,6 +933,10 @@
       CAI1ResponseTagList
       CAI1ResponseTagsDelete
       CAI1ResponseTagsPut
+      CAI1ResponseTypeDeclarationGet
+      CAI1ResponseTypeDeclarationPut
+      CAI1ResponseTypeDeclarationRemove
+      CAI1ResponseTypeDeclarationSearch
       CAI1ResponseTypeScalarGet
       CAI1ResponseTypeScalarPut
       CAI1ResponseTypeScalarRemove

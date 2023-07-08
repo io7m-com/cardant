@@ -62,6 +62,14 @@ public abstract class CAICmdAbstract<C extends CAProtocolMessageType>
       throw context.failDatabase(e);
     } catch (final CAProtocolException e) {
       throw context.failProtocol(e);
+    } catch (final CACommandExecutionFailure e) {
+      throw context.failWithCause(
+        e,
+        e.httpStatusCode(),
+        e.errorCode(),
+        e.getMessage(),
+        e.attributes()
+      );
     } catch (final CAException e) {
       throw context.failWithCause(
         e,

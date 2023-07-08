@@ -74,7 +74,11 @@ public final class CADBQItemTypeDeclGet
   {
     final var typeName = name.value();
 
-    final var records =
+    final var fieldsWithTypes =
+      METADATA_TYPE_FIELDS.join(METADATA_SCALAR_TYPES)
+        .on(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE.eq(METADATA_SCALAR_TYPES.ID));
+
+    final var query =
       context.select(
           METADATA_TYPE_DECLARATIONS.NAME,
           METADATA_TYPE_DECLARATIONS.DESCRIPTION,
@@ -85,14 +89,12 @@ public final class CADBQItemTypeDeclGet
           METADATA_SCALAR_TYPES.DESCRIPTION,
           METADATA_SCALAR_TYPES.PATTERN)
         .from(METADATA_TYPE_DECLARATIONS)
-        .join(METADATA_TYPE_FIELDS)
-        .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION
-              .eq(METADATA_TYPE_DECLARATIONS.ID))
-        .join(METADATA_SCALAR_TYPES)
-        .on(METADATA_SCALAR_TYPES.ID
-              .eq(METADATA_TYPE_FIELDS.FIELD_TYPE))
-        .where(METADATA_TYPE_DECLARATIONS.NAME.eq(typeName))
-        .fetch();
+        .leftJoin(fieldsWithTypes)
+        .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(METADATA_TYPE_DECLARATIONS.ID))
+        .where(METADATA_TYPE_DECLARATIONS.NAME.eq(typeName));
+
+    final var records =
+      query.fetch();
 
     if (records.isEmpty()) {
       return Optional.empty();
@@ -105,24 +107,29 @@ public final class CADBQItemTypeDeclGet
     for (final var record : records) {
       description = record.get(METADATA_TYPE_DECLARATIONS.DESCRIPTION);
 
-      final var scalarTypeName =
-        new RDottedName(record.get(METADATA_SCALAR_TYPES.NAME));
-      final var scalarType =
-        new CATypeScalar(
-          scalarTypeName,
-          record.get(METADATA_SCALAR_TYPES.DESCRIPTION),
-          record.get(METADATA_SCALAR_TYPES.PATTERN)
-        );
+      final var scalarTypeNameText =
+        record.get(METADATA_SCALAR_TYPES.NAME);
 
-      final var field =
-        new CATypeField(
-          new RDottedName(record.get(METADATA_TYPE_FIELDS.FIELD_NAME)),
-          record.get(METADATA_TYPE_FIELDS.FIELD_DESCRIPTION),
-          scalarType,
-          record.get(METADATA_TYPE_FIELDS.FIELD_REQUIRED).booleanValue()
-        );
+      if (scalarTypeNameText != null) {
+        final var scalarTypeName =
+          new RDottedName(scalarTypeNameText);
+        final var scalarType =
+          new CATypeScalar(
+            scalarTypeName,
+            record.get(METADATA_SCALAR_TYPES.DESCRIPTION),
+            record.get(METADATA_SCALAR_TYPES.PATTERN)
+          );
 
-      fields.put(field.name(), field);
+        final var field =
+          new CATypeField(
+            new RDottedName(record.get(METADATA_TYPE_FIELDS.FIELD_NAME)),
+            record.get(METADATA_TYPE_FIELDS.FIELD_DESCRIPTION),
+            scalarType,
+            record.get(METADATA_TYPE_FIELDS.FIELD_REQUIRED).booleanValue()
+          );
+
+        fields.put(field.name(), field);
+      }
     }
 
     return Optional.of(

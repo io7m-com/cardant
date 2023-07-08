@@ -62,7 +62,7 @@ public final class CAICmdTypeScalarPutTest
     );
 
   /**
-   * Creating a file requires the permission to WRITE to INVENTORY_FILES.
+   * Creating a type requires the permission to WRITE to INVENTORY_ITEMS.
    *
    * @throws Exception On errors
    */
@@ -93,7 +93,7 @@ public final class CAICmdTypeScalarPutTest
   }
 
   /**
-   * Creating a file works.
+   * Creating a type works.
    *
    * @throws Exception On errors
    */

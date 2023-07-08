@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
+import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
@@ -48,6 +49,12 @@ import com.io7m.cardant.protocol.inventory.CAICommandTagList;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
@@ -83,12 +90,19 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationSearchBegin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationSearchNext;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchNext;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchPrevious;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclarationSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalarSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
 import com.io7m.cedarbridge.runtime.api.CBCore;
@@ -217,6 +231,27 @@ public final class ToWireCommands
       return typeScalarRemove(c);
     }
 
+
+    if (cmd instanceof final CAICommandTypeDeclarationPut c) {
+      return typeDeclarationPut(c);
+    }
+    if (cmd instanceof final CAICommandTypeDeclarationGet c) {
+      return typeDeclarationGet(c);
+    }
+    if (cmd instanceof final CAICommandTypeDeclarationSearchBegin c) {
+      return typeDeclarationSearchBegin(c);
+    }
+    if (cmd instanceof final CAICommandTypeDeclarationSearchNext c) {
+      return typeDeclarationSearchNext(c);
+    }
+    if (cmd instanceof final CAICommandTypeDeclarationSearchPrevious c) {
+      return typeDeclarationSearchPrevious(c);
+    }
+    if (cmd instanceof final CAICommandTypeDeclarationRemove c) {
+      return typeDeclarationRemove(c);
+    }
+
+
     throw new ProtocolUncheckedException(CAI1ValidationCommon.errorProtocol(cmd));
   }
 
@@ -273,6 +308,68 @@ public final class ToWireCommands
         c.types(), ToWireModel::typeScalar)
     );
   }
+
+
+
+
+  private static ProtocolCAIv1Type typeDeclarationRemove(
+    final CAICommandTypeDeclarationRemove c)
+  {
+    return new CAI1CommandTypeDeclarationRemove(
+      CBLists.ofCollection(c.types(), r -> CBCore.string(r.value()))
+    );
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationSearchPrevious(
+    final CAICommandTypeDeclarationSearchPrevious c)
+  {
+    return new CAI1CommandTypeDeclarationSearchPrevious();
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationSearchNext(
+    final CAICommandTypeDeclarationSearchNext c)
+  {
+    return new CAI1CommandTypeDeclarationSearchNext();
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationSearchBegin(
+    final CAICommandTypeDeclarationSearchBegin c)
+  {
+    return new CAI1CommandTypeDeclarationSearchBegin(
+      typeDeclarationSearchParameters(c.parameters())
+    );
+  }
+
+  private static CAI1TypeDeclarationSearchParameters typeDeclarationSearchParameters(
+    final CATypeDeclarationSearchParameters parameters)
+  {
+    return new CAI1TypeDeclarationSearchParameters(
+      CBOptionType.fromOptional(parameters.search().map(CBString::new)),
+      CBCore.unsigned32(parameters.limit())
+    );
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationGet(
+    final CAICommandTypeDeclarationGet c)
+  {
+    return new CAI1CommandTypeDeclarationGet(
+      new CBString(c.name().value())
+    );
+  }
+
+  private static ProtocolCAIv1Type typeDeclarationPut(
+    final CAICommandTypeDeclarationPut c)
+  {
+    return new CAI1CommandTypeDeclarationPut(
+      CBLists.ofCollection(
+        c.types(), ToWireModel::typeDeclaration)
+    );
+  }
+
+
+
+
+
 
   private static ProtocolCAIv1Type rolesGet(
     final CAICommandRolesGet c)
