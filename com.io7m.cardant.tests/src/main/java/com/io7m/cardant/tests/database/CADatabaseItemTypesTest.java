@@ -557,4 +557,72 @@ public final class CADatabaseItemTypesTest
 
     assertEquals(typeDeclarationAfter, received);
   }
+
+  /**
+   * Removing type declarations doesn't affect other type declarations.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeDeclarationRemoveSafe()
+    throws Exception
+  {
+    final var voltage =
+      new CATypeScalar(
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        "^0|([1-9][0-9]+)$"
+      );
+
+    this.tsPut.execute(voltage);
+
+    final var voltageField =
+      new CATypeField(
+        new RDottedName("com.io7m.battery.voltage"),
+        "A measurement of battery voltage.",
+        voltage,
+        true
+      );
+
+    final var typeDeclaration0 =
+      new CATypeDeclaration(
+        new RDottedName("com.io7m.battery0"),
+        "A battery.",
+        Map.ofEntries(Map.entry(voltageField.name(), voltageField))
+      );
+
+    final var typeDeclaration1 =
+      new CATypeDeclaration(
+        new RDottedName("com.io7m.battery1"),
+        "A battery.",
+        Map.ofEntries(Map.entry(voltageField.name(), voltageField))
+      );
+
+    final var typeDeclaration2 =
+      new CATypeDeclaration(
+        new RDottedName("com.io7m.battery2"),
+        "A battery.",
+        Map.ofEntries(Map.entry(voltageField.name(), voltageField))
+      );
+
+    this.tdPut.execute(typeDeclaration0);
+    this.tdPut.execute(typeDeclaration1);
+    this.tdPut.execute(typeDeclaration2);
+    this.transaction.commit();
+
+
+    this.tdRemove.execute(typeDeclaration1.name());
+    this.transaction.commit();
+
+    this.tdGet.execute(typeDeclaration0.name())
+      .orElseThrow();
+
+    assertEquals(
+      Optional.empty(),
+      this.tdGet.execute(typeDeclaration1.name()));
+
+    this.tdGet.execute(typeDeclaration2.name())
+      .orElseThrow();
+  }
 }
