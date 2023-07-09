@@ -19,12 +19,8 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseItemSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.model.CAItemColumn;
-import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.security.CASecurity;
@@ -39,7 +35,6 @@ import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
@@ -64,14 +59,6 @@ public final class CAICmdItemSearchNextTest
   extends CACmdAbstractContract
 {
   private static final CAItemID ITEM_ID = CAItemID.random();
-
-  private static final CAItemSearchParameters PARAMETERS =
-    new CAItemSearchParameters(
-      new CAListLocationBehaviourType.CAListLocationsAll(),
-      Optional.empty(),
-      new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-      100
-    );
 
   /**
    * Searching for items requires the permission to READ to INVENTORY_ITEMS.

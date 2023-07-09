@@ -73,6 +73,9 @@
   <!-- Record types -->
   <Match>
     <Or>
+      <Class name="com.io7m.cardant.model.CAItemSearchParameters$CAMetadataMatchType$CAMetadataRequire"/>
+      <Class name="com.io7m.cardant.model.CAItemSearchParameters$CATypeMatchType$CATypeMatchAllOf"/>
+      <Class name="com.io7m.cardant.model.CAItemSearchParameters$CATypeMatchType$CATypeMatchAnyOf"/>
       <Class name="com.io7m.cardant.model.CATypeDeclaration"/>
       <Class name="com.io7m.cardant.model.CAByteArray"/>
       <Class name="com.io7m.cardant.model.CAFileID"/>
@@ -93,7 +96,6 @@
       <Class name="com.io7m.cardant.model.CAItemRepositRemove"/>
       <Class name="com.io7m.cardant.model.CAItemSearchParameters"/>
       <Class name="com.io7m.cardant.model.CAItemSummary"/>
-      <Class name="com.io7m.cardant.model.CAItems"/>
       <Class name="com.io7m.cardant.model.CALocation"/>
       <Class name="com.io7m.cardant.model.CALocationID"/>
       <Class name="com.io7m.cardant.model.CALocations"/>
@@ -357,6 +359,8 @@
       <Class name="com.io7m.cardant.database.api.CADatabaseUserUpdates"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataPutType$Parameters"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesRevokeType$Parameters"/>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>

@@ -255,13 +255,23 @@ CREATE TABLE METADATA_TYPE_FIELDS (
       The ITEMS table contains the list of items.
     </Comment>
 
-    <Statement><![CDATA[
+    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
+      <ParameterReferences>
+        <ParameterReference order="0"
+                            name="search.language"/>
+      </ParameterReferences>
+      <Text><![CDATA[
 CREATE TABLE ITEMS (
-  ITEM_ID       UUID         NOT NULL PRIMARY KEY,
-  ITEM_NAME     VARCHAR(128) NOT NULL,
-  ITEM_DELETED  BOOLEAN      NOT NULL
+  ITEM_ID       UUID          NOT NULL PRIMARY KEY,
+  ITEM_NAME     VARCHAR(1024) NOT NULL,
+  -- [jooq ignore start]
+  ITEM_NAME_SEARCH TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (TO_TSVECTOR(%S, ITEM_NAME)) STORED,
+  -- [jooq ignore stop]
+  ITEM_DELETED  BOOLEAN       NOT NULL
 )
-]]></Statement>
+]]></Text>
+    </StatementParameterized>
 
     <Statement>
       GRANT SELECT, INSERT, UPDATE, DELETE ON ITEMS TO cardant
@@ -378,6 +388,20 @@ CREATE TABLE ITEM_METADATA (
     <Statement>
       GRANT SELECT ON ITEM_METADATA TO cardant_read_only
     </Statement>
+
+    <Comment>
+      The METADATA_ELEMENT_T type holds a metadata value. This type is used
+      as a strongly-typed container for values during search operations.
+    </Comment>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+CREATE TYPE METADATA_ELEMENT_T AS (
+  NAME  VARCHAR(1024),
+  VALUE VARCHAR(1024)
+)
+-- [jooq ignore stop]
+]]></Statement>
 
     <Comment>
       The LOCATIONS table contains storage/deployment locations for each item.

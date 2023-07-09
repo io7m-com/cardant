@@ -40,6 +40,8 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
+import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
@@ -82,6 +84,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSetName;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationList;
@@ -411,14 +415,6 @@ public final class FromWireCommands
     );
   }
 
-
-
-
-
-
-
-
-
   public static CAIMessageType typeDeclarationPut(
     final CAI1CommandTypeDeclarationPut c)
   {
@@ -468,6 +464,24 @@ public final class FromWireCommands
     final CAI1CommandTypeDeclarationRemove c)
   {
     return new CAICommandTypeDeclarationRemove(
+      CBSets.toSet(c.fieldTypes(), x -> new RDottedName(x.value()))
+    );
+  }
+
+  public static CAIMessageType itemTypesAssign(
+    final CAI1CommandItemTypesAssign c)
+  {
+    return new CAICommandItemTypesAssign(
+      new CAItemID(c.fieldItem().value()),
+      CBSets.toSet(c.fieldTypes(), x -> new RDottedName(x.value()))
+    );
+  }
+
+  public static CAIMessageType itemTypesRevoke(
+    final CAI1CommandItemTypesRevoke c)
+  {
+    return new CAICommandItemTypesRevoke(
+      new CAItemID(c.fieldItem().value()),
       CBSets.toSet(c.fieldTypes(), x -> new RDottedName(x.value()))
     );
   }

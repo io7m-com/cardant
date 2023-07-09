@@ -32,6 +32,8 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
@@ -68,6 +70,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSetName;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationList;
@@ -99,6 +103,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.errorProtocol;
+import static com.io7m.cardant.protocol.inventory.cb.internal.ToWireModel.item;
 
 // CHECKSTYLE:OFF
 
@@ -202,7 +207,6 @@ public final class ToWireResponses
     if (cmd instanceof final CAIResponseTypeScalarRemove c) {
       return typeScalarRemove(c);
     }
-
     if (cmd instanceof final CAIResponseTypeDeclarationPut c) {
       return typeDeclarationPut(c);
     }
@@ -215,8 +219,32 @@ public final class ToWireResponses
     if (cmd instanceof final CAIResponseTypeDeclarationRemove c) {
       return typeDeclarationRemove(c);
     }
+    if (cmd instanceof final CAIResponseItemTypesAssign c) {
+      return itemTypesAssign(c);
+    }
+    if (cmd instanceof final CAIResponseItemTypesRevoke c) {
+      return itemTypesRevoke(c);
+    }
 
     throw new ProtocolUncheckedException(errorProtocol(cmd));
+  }
+
+  private static ProtocolCAIv1Type itemTypesRevoke(
+    final CAIResponseItemTypesRevoke c)
+  {
+    return new CAI1ResponseItemTypesRevoke(
+      new CBUUID(c.requestId()),
+      item(c.data())
+    );
+  }
+
+  private static ProtocolCAIv1Type itemTypesAssign(
+    final CAIResponseItemTypesAssign c)
+  {
+    return new CAI1ResponseItemTypesAssign(
+      new CBUUID(c.requestId()),
+      item(c.data())
+    );
   }
 
   private static ProtocolCAIv1Type typeScalarRemove(
@@ -350,7 +378,7 @@ public final class ToWireResponses
     final CAIResponseItemReposit c)
   {
     return new CAI1ResponseItemReposit(
-      new CBUUID(c.requestId()), ToWireModel.item(c.data())
+      new CBUUID(c.requestId()), item(c.data())
     );
   }
 
@@ -367,7 +395,7 @@ public final class ToWireResponses
     final CAIResponseItemSetName c)
   {
     return new CAI1ResponseItemSetName(
-      new CBUUID(c.requestId()), ToWireModel.item(c.data())
+      new CBUUID(c.requestId()), item(c.data())
     );
   }
 
@@ -449,7 +477,7 @@ public final class ToWireResponses
   {
     return new CAI1ResponseItemMetadataRemove(
       new CBUUID(c.requestId()),
-      ToWireModel.item(c.data())
+      item(c.data())
     );
   }
 
@@ -458,7 +486,7 @@ public final class ToWireResponses
   {
     return new CAI1ResponseItemMetadataPut(
       new CBUUID(c.requestId()),
-      ToWireModel.item(c.data())
+      item(c.data())
     );
   }
 
@@ -476,7 +504,7 @@ public final class ToWireResponses
   {
     return new CAI1ResponseItemGet(
       new CBUUID(c.requestId()),
-      ToWireModel.item(c.data())
+      item(c.data())
     );
   }
 
@@ -494,7 +522,7 @@ public final class ToWireResponses
   {
     return new CAI1ResponseItemCreate(
       new CBUUID(c.requestId()),
-      ToWireModel.item(c.data())
+      item(c.data())
     );
   }
 
@@ -502,7 +530,7 @@ public final class ToWireResponses
     final CAIResponseItemAttachmentRemove c)
   {
     return new CAI1ResponseItemAttachmentRemove(
-      new CBUUID(c.requestId()), ToWireModel.item(c.data())
+      new CBUUID(c.requestId()), item(c.data())
     );
   }
 
@@ -510,7 +538,7 @@ public final class ToWireResponses
     final CAIResponseItemAttachmentAdd c)
   {
     return new CAI1ResponseItemAttachmentAdd(
-      new CBUUID(c.requestId()), ToWireModel.item(c.data())
+      new CBUUID(c.requestId()), item(c.data())
     );
   }
 

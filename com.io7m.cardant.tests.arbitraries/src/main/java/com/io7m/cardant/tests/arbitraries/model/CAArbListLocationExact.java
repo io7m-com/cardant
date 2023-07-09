@@ -17,18 +17,18 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbListLocationExact extends CAArbAbstract<CAListLocationExact>
+public final class CAArbListLocationExact extends CAArbAbstract<CALocationExact>
 {
   public CAArbListLocationExact()
   {
     super(
-      CAListLocationExact.class,
-      () -> Arbitraries.defaultFor(CALocationID.class).map(CAListLocationExact::new)
+      CALocationExact.class,
+      () -> Arbitraries.defaultFor(CALocationID.class).map(CALocationExact::new)
     );
   }
 }

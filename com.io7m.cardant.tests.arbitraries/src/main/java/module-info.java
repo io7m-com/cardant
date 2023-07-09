@@ -58,6 +58,8 @@ import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarSearchBegin;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarSearchNext;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarSearchPrevious;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandTypesAssign;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandTypesRevoke;
 import com.io7m.cardant.tests.arbitraries.CAArbResponse;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseError;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseFileGet;
@@ -74,6 +76,8 @@ import com.io7m.cardant.tests.arbitraries.CAArbResponseItemMetadataRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseItemReposit;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseItemSearch;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseItemSetName;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseItemTypesAssign;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseItemTypesRevoke;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseItemsRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationGet;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationList;
@@ -124,6 +128,16 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbLocation;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationID;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocations;
 import com.io7m.cardant.tests.arbitraries.model.CAArbMRoleName;
+import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataMatch;
+import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataMatchAny;
+import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataMatchRequire;
+import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatch;
+import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchAny;
+import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchExact;
+import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatch;
+import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchAny;
+import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchExact;
+import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchSearch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbSizeRange;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTag;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTagID;
@@ -132,6 +146,10 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclaration;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSearchParameters;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSummary;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeField;
+import com.io7m.cardant.tests.arbitraries.model.CAArbTypeMatch;
+import com.io7m.cardant.tests.arbitraries.model.CAArbTypeMatchAllOf;
+import com.io7m.cardant.tests.arbitraries.model.CAArbTypeMatchAny;
+import com.io7m.cardant.tests.arbitraries.model.CAArbTypeMatchAnyOf;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalar;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarSearchParameters;
 import net.jqwik.api.providers.ArbitraryProvider;
@@ -188,12 +206,20 @@ module com.io7m.cardant.tests.arbitraries
       CAArbCommandTagList,
       CAArbCommandTagsDelete,
       CAArbCommandTagsPut,
+      CAArbCommandTypeDeclarationGet,
+      CAArbCommandTypeDeclarationPut,
+      CAArbCommandTypeDeclarationRemove,
+      CAArbCommandTypeDeclarationSearchBegin,
+      CAArbCommandTypeDeclarationSearchNext,
+      CAArbCommandTypeDeclarationSearchPrevious,
       CAArbCommandTypeScalarGet,
       CAArbCommandTypeScalarPut,
       CAArbCommandTypeScalarRemove,
       CAArbCommandTypeScalarSearchBegin,
       CAArbCommandTypeScalarSearchNext,
       CAArbCommandTypeScalarSearchPrevious,
+      CAArbCommandTypesAssign,
+      CAArbCommandTypesRevoke,
       CAArbDottedName,
       CAArbErrorCode,
       CAArbFile,
@@ -225,6 +251,16 @@ module com.io7m.cardant.tests.arbitraries
       CAArbLocationID,
       CAArbLocations,
       CAArbMRoleName,
+      CAArbMetadataMatch,
+      CAArbMetadataMatchAny,
+      CAArbMetadataMatchRequire,
+      CAArbMetadataValueMatch,
+      CAArbMetadataValueMatchAny,
+      CAArbMetadataValueMatchExact,
+      CAArbNameMatch,
+      CAArbNameMatchAny,
+      CAArbNameMatchExact,
+      CAArbNameMatchSearch,
       CAArbResponse,
       CAArbResponseError,
       CAArbResponseFileGet,
@@ -241,6 +277,8 @@ module com.io7m.cardant.tests.arbitraries
       CAArbResponseItemReposit,
       CAArbResponseItemSearch,
       CAArbResponseItemSetName,
+      CAArbResponseItemTypesAssign,
+      CAArbResponseItemTypesRevoke,
       CAArbResponseItemsRemove,
       CAArbResponseLocationGet,
       CAArbResponseLocationList,
@@ -252,6 +290,10 @@ module com.io7m.cardant.tests.arbitraries
       CAArbResponseTagList,
       CAArbResponseTagsDelete,
       CAArbResponseTagsPut,
+      CAArbResponseTypeDeclarationGet,
+      CAArbResponseTypeDeclarationPut,
+      CAArbResponseTypeDeclarationRemove,
+      CAArbResponseTypeDeclarationSearch,
       CAArbResponseTypeScalarGet,
       CAArbResponseTypeScalarPut,
       CAArbResponseTypeScalarRemove,
@@ -260,21 +302,15 @@ module com.io7m.cardant.tests.arbitraries
       CAArbTag,
       CAArbTagID,
       CAArbTags,
-      CAArbTypeScalar,
-      CAArbTypeScalarSearchParameters,
-      CAArbCommandTypeDeclarationGet,
-      CAArbCommandTypeDeclarationPut,
-      CAArbCommandTypeDeclarationRemove,
-      CAArbCommandTypeDeclarationSearchBegin,
-      CAArbCommandTypeDeclarationSearchNext,
-      CAArbCommandTypeDeclarationSearchPrevious,
-      CAArbResponseTypeDeclarationGet,
-      CAArbResponseTypeDeclarationPut,
-      CAArbResponseTypeDeclarationRemove,
-      CAArbResponseTypeDeclarationSearch,
+      CAArbTypeDeclaration,
+      CAArbTypeDeclarationSearchParameters,
       CAArbTypeDeclarationSummary,
       CAArbTypeField,
-      CAArbTypeDeclaration,
-      CAArbTypeDeclarationSearchParameters
+      CAArbTypeMatch,
+      CAArbTypeMatchAny,
+      CAArbTypeMatchAnyOf,
+      CAArbTypeMatchAllOf,
+      CAArbTypeScalar,
+      CAArbTypeScalarSearchParameters
     ;
 }

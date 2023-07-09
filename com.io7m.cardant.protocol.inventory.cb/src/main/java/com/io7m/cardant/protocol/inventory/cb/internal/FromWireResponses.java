@@ -37,6 +37,8 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
@@ -71,6 +73,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSetName;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemsRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationList;
@@ -422,6 +426,24 @@ public final class FromWireResponses
     return new CAIResponseTypeDeclarationGet(
       m.fieldRequestId().value(),
       FromWireModel.typeDeclaration(m.fieldType())
+    );
+  }
+
+  public static CAIMessageType itemTypesAssign(
+    final CAI1ResponseItemTypesAssign m)
+  {
+    return new CAIResponseItemTypesAssign(
+      m.fieldRequestId().value(),
+      FromWireModel.item(m.fieldItem())
+    );
+  }
+
+  public static CAIMessageType itemTypesRevoke(
+    final CAI1ResponseItemTypesRevoke m)
+  {
+    return new CAIResponseItemTypesRevoke(
+      m.fieldRequestId().value(),
+      FromWireModel.item(m.fieldItem())
     );
   }
 }

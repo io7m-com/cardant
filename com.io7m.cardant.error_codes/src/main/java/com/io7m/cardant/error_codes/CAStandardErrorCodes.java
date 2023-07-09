@@ -375,5 +375,18 @@ public final class CAStandardErrorCodes
   {
     return ERROR_TYPE_CHECK_FAILED;
   }
+
+  private static final CAErrorCode ERROR_TYPE_REFERENCED =
+    new CAErrorCode("error-type-referenced");
+
+  /**
+   * The type is referenced by one or more existing items.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeReferenced()
+  {
+    return ERROR_TYPE_REFERENCED;
+  }
 }
 

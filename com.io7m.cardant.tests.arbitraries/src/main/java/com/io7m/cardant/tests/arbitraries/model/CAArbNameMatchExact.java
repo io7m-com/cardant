@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,28 +14,20 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
 
-import java.util.Objects;
-import java.util.Set;
+package com.io7m.cardant.tests.arbitraries.model;
 
-/**
- * A set of items.
- *
- * @param items The items
- */
+import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchExact;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
 
-public record CAItems(Set<CAItem> items)
-  implements CAInventoryElementType
+public final class CAArbNameMatchExact extends CAArbAbstract<CANameMatchExact>
 {
-  /**
-   * A set of items.
-   *
-   * @param items The items
-   */
-
-  public CAItems
+  public CAArbNameMatchExact()
   {
-    Objects.requireNonNull(items, "items");
+    super(
+      CANameMatchExact.class,
+      () -> Arbitraries.strings().map(CANameMatchExact::new)
+    );
   }
 }

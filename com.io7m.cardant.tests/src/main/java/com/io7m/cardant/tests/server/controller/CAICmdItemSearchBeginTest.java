@@ -23,8 +23,11 @@ import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
+import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchAny;
+import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
 import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
+import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.security.CASecurity;
@@ -39,7 +42,6 @@ import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
@@ -66,8 +68,10 @@ public final class CAICmdItemSearchBeginTest
 
   private static final CAItemSearchParameters PARAMETERS =
     new CAItemSearchParameters(
-      new CAListLocationBehaviourType.CAListLocationsAll(),
-      Optional.empty(),
+      new CALocationMatchType.CALocationsAll(),
+      CANameMatchAny.ANY,
+      CATypeMatchAny.ANY,
+      CAMetadataMatchAny.ANY,
       new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
       100
     );

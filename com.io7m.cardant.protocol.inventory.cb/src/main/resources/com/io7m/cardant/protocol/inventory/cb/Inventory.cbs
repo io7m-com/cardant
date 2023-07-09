@@ -199,12 +199,44 @@
   [field ascending cb:Boolean]
 ]
 
+[documentation CAI1NameMatch "An expression against which item names are matched."]
+[variant CAI1NameMatch
+  [case CAI1NameMatchAny]
+  [case CAI1NameMatchExact  [field text cb:String]]
+  [case CAI1NameMatchSearch [field query cb:String]]
+]
+
+[documentation CAI1TypeMatch "An expression against which item types are matched."]
+[variant CAI1TypeMatch
+  [case CAI1TypeMatchAny]
+  [case CAI1TypeMatchAnyOf [field types [cb:List cb:String]]]
+  [case CAI1TypeMatchAllOf [field types [cb:List cb:String]]]
+]
+
+[documentation CAI1MetadataValueMatch "An expression against which item metadata values are matched."]
+[variant CAI1MetadataValueMatch
+  [case CAI1MetadataValueMatchAny]
+  [case CAI1MetadataValueMatchExact
+    [field text cb:String]]
+]
+
+[documentation CAI1MetadataMatch "An expression against which item metadata is matched."]
+[variant CAI1MetadataMatch
+  [case CAI1MetadataMatchAny]
+  [case CAI1MetadataMatchRequire
+    [field values [cb:Map cb:String CAI1MetadataValueMatch]]]
+]
+
 [documentation CAI1ItemSearchParameters "The item search parameters."]
 [record CAI1ItemSearchParameters
   [documentation location "The item location search behaviour."]
   [field location CAI1ListLocationBehaviour]
-  [documentation search "The item search query."]
-  [field search [cb:Option cb:String]]
+  [documentation nameMatch "The item name match expression."]
+  [field nameMatch CAI1NameMatch]
+  [documentation typeMatch "The item type match expression."]
+  [field typeMatch CAI1TypeMatch]
+  [documentation metaMatch "The item metadata match expression."]
+  [field metaMatch CAI1MetadataMatch]
   [documentation order "The item result ordering."]
   [field order CAI1ItemColumnOrdering]
   [documentation limit "The item limit."]
@@ -562,6 +594,22 @@
 [documentation CAI1CommandTypeDeclarationSearchPrevious "Search for declared types."]
 [record CAI1CommandTypeDeclarationSearchPrevious]
 
+[documentation CAI1CommandItemTypesAssign "Assign a set of types to an item."]
+[record CAI1CommandItemTypesAssign
+  [documentation item "The target item."]
+  [field item cb:UUID]
+  [documentation types "The assigned types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandItemTypesRevoke "Revoke a set of types from an item."]
+[record CAI1CommandItemTypesRevoke
+  [documentation item "The target item."]
+  [field item cb:UUID]
+  [documentation types "The removed types."]
+  [field types [cb:List cb:String]]
+]
+
 ;
 ; Responses.
 ;
@@ -846,6 +894,22 @@
   [field results [CAI1Page CAI1TypeDeclarationSummary]]
 ]
 
+[documentation CAI1ResponseItemTypesAssign "A response to CAI1CommandItemTypesAssign."]
+[record CAI1ResponseItemTypesAssign
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemTypesRevoke "A response to CAI1CommandItemTypesRevoke."]
+[record CAI1ResponseItemTypesRevoke
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
 ;
 ; Events.
 ;
@@ -883,6 +947,8 @@
       CAI1CommandItemSearchNext
       CAI1CommandItemSearchPrevious
       CAI1CommandItemSetName
+      CAI1CommandItemTypesAssign
+      CAI1CommandItemTypesRevoke
       CAI1CommandItemsRemove
       CAI1CommandLocationGet
       CAI1CommandLocationList
@@ -922,6 +988,8 @@
       CAI1ResponseItemReposit
       CAI1ResponseItemSearch
       CAI1ResponseItemSetName
+      CAI1ResponseItemTypesAssign
+      CAI1ResponseItemTypesRevoke
       CAI1ResponseItemsRemove
       CAI1ResponseLocationGet
       CAI1ResponseLocationList

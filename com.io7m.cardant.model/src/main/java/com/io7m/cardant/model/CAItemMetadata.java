@@ -44,6 +44,7 @@ public record CAItemMetadata(
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(value, "value");
 
+    value = value.trim();
     if (value.length() >= 1024) {
       throw new CAValidityException(
         String.format("Metadata value too long: %s", name)

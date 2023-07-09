@@ -197,7 +197,7 @@ public sealed interface CADatabaseQueriesItemsType
     /**
      * Parameters for the operation.
      *
-     * @param item The item ID
+     * @param item  The item ID
      * @param names The metadata names
      */
 
@@ -324,5 +324,51 @@ public sealed interface CADatabaseQueriesItemsType
     CADatabaseQueriesItemsType
   {
 
+  }
+
+  /**
+   * Assign types to the given item.
+   */
+
+  non-sealed interface TypesAssignType
+    extends CADatabaseQueryType<TypesAssignType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item  The item ID
+     * @param types The types
+     */
+
+    record Parameters(
+      CAItemID item,
+      Set<RDottedName> types)
+    {
+
+    }
+  }
+
+  /**
+   * Revoke types from the given item.
+   */
+
+  non-sealed interface TypesRevokeType
+    extends CADatabaseQueryType<TypesRevokeType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesItemsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param item  The item ID
+     * @param types The types
+     */
+
+    record Parameters(
+      CAItemID item,
+      Set<RDottedName> types)
+    {
+
+    }
   }
 }

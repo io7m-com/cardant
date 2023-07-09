@@ -17,17 +17,17 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
+import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbListLocationAll extends CAArbAbstract<CAListLocationsAll>
+public final class CAArbListLocationAll extends CAArbAbstract<CALocationsAll>
 {
   public CAArbListLocationAll()
   {
     super(
-      CAListLocationsAll.class,
-      () -> Arbitraries.create(CAListLocationsAll::new)
+      CALocationsAll.class,
+      () -> Arbitraries.create(CALocationsAll::new)
     );
   }
 }

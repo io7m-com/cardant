@@ -37,6 +37,8 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
+import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
@@ -79,6 +81,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSetName;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationList;
@@ -230,8 +234,6 @@ public final class ToWireCommands
     if (cmd instanceof final CAICommandTypeScalarRemove c) {
       return typeScalarRemove(c);
     }
-
-
     if (cmd instanceof final CAICommandTypeDeclarationPut c) {
       return typeDeclarationPut(c);
     }
@@ -250,9 +252,32 @@ public final class ToWireCommands
     if (cmd instanceof final CAICommandTypeDeclarationRemove c) {
       return typeDeclarationRemove(c);
     }
-
+    if (cmd instanceof final CAICommandItemTypesAssign c) {
+      return itemTypesAssign(c);
+    }
+    if (cmd instanceof final CAICommandItemTypesRevoke c) {
+      return itemTypesRevoke(c);
+    }
 
     throw new ProtocolUncheckedException(CAI1ValidationCommon.errorProtocol(cmd));
+  }
+
+  private static ProtocolCAIv1Type itemTypesRevoke(
+    final CAICommandItemTypesRevoke c)
+  {
+    return new CAI1CommandItemTypesRevoke(
+      new CBUUID(c.item().id()),
+      CBLists.ofCollection(c.types(), r -> CBCore.string(r.value()))
+    );
+  }
+
+  private static ProtocolCAIv1Type itemTypesAssign(
+    final CAICommandItemTypesAssign c)
+  {
+    return new CAI1CommandItemTypesAssign(
+      new CBUUID(c.item().id()),
+      CBLists.ofCollection(c.types(), r -> CBCore.string(r.value()))
+    );
   }
 
   private static ProtocolCAIv1Type typeScalarRemove(

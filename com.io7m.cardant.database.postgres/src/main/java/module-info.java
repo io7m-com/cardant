@@ -48,6 +48,8 @@ import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarGet;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarPut;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarRemove;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypesAssign;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypesRevoke;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationGet;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationList;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationPut;
@@ -133,6 +135,8 @@ module com.io7m.cardant.database.postgres
     CADBQItemTypeScalarPut,
     CADBQItemTypeScalarRemove,
     CADBQItemTypeScalarSearch,
+    CADBQItemTypesAssign,
+    CADBQItemTypesRevoke,
     CADBQLocationGet,
     CADBQLocationList,
     CADBQLocationPut,
@@ -142,7 +146,8 @@ module com.io7m.cardant.database.postgres
     CADBQTagList,
     CADBQTagPut,
     CADBQUserGet,
-    CADBQUserPut;
+    CADBQUserPut
+    ;
 
   exports com.io7m.cardant.database.postgres;
 }

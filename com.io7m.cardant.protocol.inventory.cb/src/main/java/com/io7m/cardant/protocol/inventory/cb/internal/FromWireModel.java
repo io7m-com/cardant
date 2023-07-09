@@ -38,10 +38,24 @@ import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType;
+import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
+import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataRequire;
+import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType;
+import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchAny;
+import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchExact;
+import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType;
+import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchAny;
+import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchExact;
+import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchSearch;
+import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType;
+import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAllOf;
+import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
+import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAnyOf;
 import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.model.CAListLocationBehaviourType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CASizeRange;
@@ -71,6 +85,15 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ListLocationBehaviour;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataMatch;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataMatch.CAI1MetadataMatchRequire;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.CAI1MetadataValueMatchAny;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.CAI1MetadataValueMatchExact;
+import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch;
+import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch.CAI1NameMatchAny;
+import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch.CAI1NameMatchExact;
+import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch.CAI1NameMatchSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame;
 import com.io7m.cardant.protocol.inventory.cb.CAI1SizeRange;
@@ -78,6 +101,10 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclaration;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclarationSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeField;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeMatch;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeMatch.CAI1TypeMatchAllOf;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeMatch.CAI1TypeMatchAny;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeMatch.CAI1TypeMatchAnyOf;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalar;
 import com.io7m.cedarbridge.runtime.api.CBByteArray;
 import com.io7m.cedarbridge.runtime.api.CBList;
@@ -90,6 +117,7 @@ import com.io7m.cedarbridge.runtime.convenience.CBSets;
 import com.io7m.lanark.core.RDottedName;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -270,19 +298,19 @@ public final class FromWireModel
     );
   }
 
-  public static CAListLocationBehaviourType itemLocationBehaviour(
+  public static CALocationMatchType itemLocationMatch(
     final CAI1ListLocationBehaviour b)
   {
     if (b instanceof final CAI1ListLocationBehaviour.CAI1ListLocationExact x) {
-      return new CAListLocationBehaviourType.CAListLocationExact(
+      return new CALocationMatchType.CALocationExact(
         new CALocationID(x.fieldLocationId().value())
       );
     }
     if (b instanceof final CAI1ListLocationBehaviour.CAI1ListLocationsAll a) {
-      return new CAListLocationBehaviourType.CAListLocationsAll();
+      return new CALocationMatchType.CALocationsAll();
     }
     if (b instanceof final CAI1ListLocationBehaviour.CAI1ListLocationWithDescendants x) {
-      return new CAListLocationBehaviourType.CAListLocationWithDescendants(
+      return new CALocationMatchType.CALocationWithDescendants(
         new CALocationID(x.fieldLocationId().value())
       );
     }
@@ -400,11 +428,81 @@ public final class FromWireModel
     final CAI1ItemSearchParameters p)
   {
     return new CAItemSearchParameters(
-      itemLocationBehaviour(p.fieldLocation()),
-      p.fieldSearch().asOptional().map(CBString::value),
+      itemLocationMatch(p.fieldLocation()),
+      itemNameMatch(p.fieldNameMatch()),
+      itemTypeMatch(p.fieldTypeMatch()),
+      itemMetadataMatch(p.fieldMetaMatch()),
       itemColumnOrdering(p.fieldOrder()),
       (int) p.fieldLimit().value()
     );
+  }
+
+  private static CAMetadataMatchType itemMetadataMatch(
+    final CAI1MetadataMatch match)
+  {
+    if (match instanceof CAI1MetadataMatch.CAI1MetadataMatchAny) {
+      return CAMetadataMatchAny.ANY;
+    }
+    if (match instanceof final CAI1MetadataMatchRequire r) {
+      return new CAMetadataRequire(metadataFieldValues(r.fieldValues()));
+    }
+    throw new IllegalStateException();
+  }
+
+  private static Map<RDottedName, CAMetadataValueMatchType>
+  metadataFieldValues(final CBMap<CBString, CAI1MetadataValueMatch> map)
+  {
+    return CBMaps.toMap(
+      map,
+      x -> new RDottedName(x.value()),
+      FromWireModel::metadataValueMatch
+    );
+  }
+
+  private static CAMetadataValueMatchType metadataValueMatch(
+    final CAI1MetadataValueMatch m)
+  {
+    if (m instanceof CAI1MetadataValueMatchAny) {
+      return CAMetadataValueMatchAny.ANY;
+    }
+    if (m instanceof final CAI1MetadataValueMatchExact exact) {
+      return new CAMetadataValueMatchExact(exact.fieldText().value());
+    }
+    throw new IllegalStateException();
+  }
+
+  private static CATypeMatchType itemTypeMatch(
+    final CAI1TypeMatch match)
+  {
+    if (match instanceof CAI1TypeMatchAny) {
+      return CATypeMatchAny.ANY;
+    }
+    if (match instanceof final CAI1TypeMatchAllOf types) {
+      return new CATypeMatchAllOf(
+        CBSets.toSet(types.fieldTypes(), x -> new RDottedName(x.value()))
+      );
+    }
+    if (match instanceof final CAI1TypeMatchAnyOf types) {
+      return new CATypeMatchAnyOf(
+        CBSets.toSet(types.fieldTypes(), x -> new RDottedName(x.value()))
+      );
+    }
+    throw new IllegalStateException();
+  }
+
+  private static CANameMatchType itemNameMatch(
+    final CAI1NameMatch match)
+  {
+    if (match instanceof CAI1NameMatchAny) {
+      return CANameMatchAny.ANY;
+    }
+    if (match instanceof final CAI1NameMatchExact exact) {
+      return new CANameMatchExact(exact.fieldText().value());
+    }
+    if (match instanceof final CAI1NameMatchSearch search) {
+      return new CANameMatchSearch(search.fieldQuery().value());
+    }
+    throw new IllegalStateException();
   }
 
   private static CAItemColumnOrdering itemColumnOrdering(

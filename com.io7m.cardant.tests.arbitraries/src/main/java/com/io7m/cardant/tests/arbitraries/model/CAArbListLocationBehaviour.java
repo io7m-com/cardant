@@ -17,33 +17,24 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAListLocationBehaviourType;
-import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationExact;
-import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationWithDescendants;
-import com.io7m.cardant.model.CAListLocationBehaviourType.CAListLocationsAll;
+import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
+import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
+import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
 
-public final class CAArbListLocationBehaviour extends CAArbAbstract<CAListLocationBehaviourType>
+public final class CAArbListLocationBehaviour extends CAArbAbstract<CALocationMatchType>
 {
   public CAArbListLocationBehaviour()
   {
     super(
-      CAListLocationBehaviourType.class,
-      () -> Combinators.combine(
-        Arbitraries.defaultFor(CAListLocationExact.class),
-        Arbitraries.defaultFor(CAListLocationWithDescendants.class),
-        Arbitraries.defaultFor(CAListLocationsAll.class),
-        Arbitraries.integers().between(0, 2)
-      ).as((add, move, remove, which) -> {
-        return switch (which) {
-          case 0 -> add;
-          case 1 -> move;
-          case 2 -> remove;
-          default -> throw new IllegalStateException();
-        };
-      })
+      CALocationMatchType.class,
+      () -> Arbitraries.oneOf(
+        Arbitraries.defaultFor(CALocationExact.class),
+        Arbitraries.defaultFor(CALocationWithDescendants.class),
+        Arbitraries.defaultFor(CALocationsAll.class)
+      )
     );
   }
 }

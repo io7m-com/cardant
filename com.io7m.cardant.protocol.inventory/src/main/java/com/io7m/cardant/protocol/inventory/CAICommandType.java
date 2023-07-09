@@ -46,6 +46,8 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   CAICommandItemSearchNext,
   CAICommandItemSearchPrevious,
   CAICommandItemSetName,
+  CAICommandItemTypesAssign,
+  CAICommandItemTypesRevoke,
   CAICommandItemsRemove,
   CAICommandLocationGet,
   CAICommandLocationList,

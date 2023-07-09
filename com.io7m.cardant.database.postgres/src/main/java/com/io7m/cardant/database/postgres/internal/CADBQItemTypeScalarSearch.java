@@ -22,12 +22,11 @@ import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
+import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
 import com.io7m.jqpage.core.JQOrder;
 import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-
-import java.util.List;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
@@ -78,16 +77,18 @@ public final class CADBQItemTypeScalarSearch
     final var orderField =
       new JQField(METADATA_SCALAR_TYPES.NAME, JQOrder.ASCENDING);
 
+    final var pageParameters =
+      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_SCALAR_TYPES)
+        .addSortField(orderField)
+        .addWhereCondition(searchCondition)
+        .setPageSize(10L)
+        .setStatementListener(statement -> {
+          Span.current().setAttribute(DB_STATEMENT, statement.toString());
+        }).build();
+
     final var pages =
       JQKeysetRandomAccessPagination.createPageDefinitions(
-        context,
-        METADATA_SCALAR_TYPES,
-        List.of(orderField),
-        List.of(searchCondition),
-        List.of(),
-        Integer.toUnsignedLong(10),
-        st -> Span.current().setAttribute(DB_STATEMENT, st.toString())
-      );
+        context, pageParameters);
 
     return new CAItemTypeScalarSearch(pages);
   }

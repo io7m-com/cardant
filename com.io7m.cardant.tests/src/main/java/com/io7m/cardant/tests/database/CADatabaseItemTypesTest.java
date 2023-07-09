@@ -19,8 +19,12 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesRevokeType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
@@ -44,6 +48,7 @@ import java.util.Set;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeFieldTypeNonexistent;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeScalarReferenced;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,6 +72,9 @@ public final class CADatabaseItemTypesTest
   private CADatabaseQueriesItemTypesType.TypeScalarRemoveType tsRemove;
   private CADatabaseQueriesItemTypesType.TypeScalarSearchType tsSearch;
   private CADatabaseQueriesItemTypesType.TypeScalarGetType tsGet;
+  private CADatabaseQueriesItemsType.CreateType iCreate;
+  private CADatabaseQueriesItemsType.TypesAssignType tAssign;
+  private TypesRevokeType tRevoke;
 
   @BeforeAll
   public static void setupOnce(
@@ -91,6 +99,9 @@ public final class CADatabaseItemTypesTest
     this.transaction =
       closeables.addPerTestResource(this.connection.openTransaction());
 
+    this.iCreate =
+      this.transaction.queries(CADatabaseQueriesItemsType.CreateType.class);
+
     this.tsPut =
       this.transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarPutType.class);
     this.tsGet =
@@ -99,7 +110,7 @@ public final class CADatabaseItemTypesTest
       this.transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarRemoveType.class);
     this.tsSearch =
       this.transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarSearchType.class);
-    
+
     this.tdPut =
       this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationPutType.class);
     this.tdGet =
@@ -112,6 +123,11 @@ public final class CADatabaseItemTypesTest
       this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType.class);
     this.tdRefSearch =
       this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationsReferencingScalarType.class);
+
+    this.tAssign =
+      this.transaction.queries(CADatabaseQueriesItemsType.TypesAssignType.class);
+    this.tRevoke =
+      this.transaction.queries(TypesRevokeType.class);
   }
 
   /**
@@ -624,5 +640,69 @@ public final class CADatabaseItemTypesTest
 
     this.tdGet.execute(typeDeclaration2.name())
       .orElseThrow();
+  }
+
+  /**
+   * Assigning type declarations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeAssign()
+    throws Exception
+  {
+    final var voltage =
+      new CATypeScalar(
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        "^0|([1-9][0-9]+)$"
+      );
+
+    this.tsPut.execute(voltage);
+
+    final var voltageField =
+      new CATypeField(
+        new RDottedName("com.io7m.battery.voltage"),
+        "A measurement of battery voltage.",
+        voltage,
+        true
+      );
+
+    final var typeDeclaration0 =
+      new CATypeDeclaration(
+        new RDottedName("com.io7m.battery0"),
+        "A battery.",
+        Map.ofEntries(Map.entry(voltageField.name(), voltageField))
+      );
+
+    this.tdPut.execute(typeDeclaration0);
+    this.transaction.commit();
+
+    /*
+     * An item with the type assigned stops the type from being removed.
+     */
+
+    final var item = CAItemID.random();
+    this.iCreate.execute(item);
+    this.tAssign.execute(new Parameters(item, Set.of(typeDeclaration0.name())));
+
+    {
+      final var ex =
+        assertThrows(CADatabaseException.class, () -> {
+          this.tdRemove.execute(typeDeclaration0.name());
+        });
+      assertEquals(ex.errorCode(), errorTypeReferenced());
+    }
+
+    /*
+     * Revoking the type from the item allows the type to be removed.
+     */
+
+    this.tRevoke.execute(
+      new TypesRevokeType.Parameters(item, Set.of(typeDeclaration0.name()))
+    );
+
+    this.tdRemove.execute(typeDeclaration0.name());
   }
 }

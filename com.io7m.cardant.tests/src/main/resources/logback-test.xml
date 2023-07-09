@@ -26,7 +26,7 @@
           level="INFO"/>
 
   <logger name="org.jooq"
-          level="INFO"/>
+          level="TRACE"/>
 
   <logger name="com.io7m.idstore"
           level="INFO"/>

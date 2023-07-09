@@ -25,3 +25,4 @@ TYPE_CHECK_FIELD_REQUIRED_MISSING|type-field-required-missing|A field was requir
 TYPE_CHECK_FIELD_PATTERN_FAILURE|type-field-pattern-invalid|A field pattern was invalid.
 TYPE_CHECK_FIELD_INVALID|type-field-invalid|A field value did not match the provided pattern.
 TYPE_CHECK_FAILED|type-check-failed|Type checking failed.
+TYPE_REFERENCED|type-referenced|The type is referenced by one or more existing items.

@@ -37,6 +37,8 @@ sealed public interface CAIResponseWithElementType
   CAIResponseItemMetadataRemove,
   CAIResponseItemReposit,
   CAIResponseItemSetName,
+  CAIResponseItemTypesAssign,
+  CAIResponseItemTypesRevoke,
   CAIResponseItemsRemove,
   CAIResponseLocationGet,
   CAIResponseLocationList,

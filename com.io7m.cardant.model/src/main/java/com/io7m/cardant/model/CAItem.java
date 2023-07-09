@@ -70,6 +70,7 @@ public record CAItem(
     Objects.requireNonNull(attachments, "attachments");
     Objects.requireNonNull(tags, "tags");
     Objects.requireNonNull(types, "types");
+    name = name.trim();
   }
 
   /**

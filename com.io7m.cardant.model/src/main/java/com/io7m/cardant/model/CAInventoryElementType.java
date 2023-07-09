@@ -31,7 +31,6 @@ public sealed interface CAInventoryElementType
   CAItemMetadata,
   CAItemMetadatas,
   CAItemRepositType,
-  CAItems,
   CALocation,
   CALocations,
   CATag,

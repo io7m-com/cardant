@@ -33,9 +33,11 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNo
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeFieldTypeNonexistent;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeScalarReferenced;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_SCALAR_STILL_REFERENCED;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_STILL_REFERENCED;
 
 /**
  * Functions to handle database exceptions.
@@ -323,6 +325,16 @@ public final class CADatabaseExceptions
           transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
           e,
           errorTypeScalarReferenced(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
+      if (Objects.equals(constraint, "item_types_declaration_exists")) {
+        return new CADatabaseException(
+          transaction.localize(ERROR_TYPE_STILL_REFERENCED),
+          e,
+          errorTypeReferenced(),
           attributes,
           Optional.empty()
         );

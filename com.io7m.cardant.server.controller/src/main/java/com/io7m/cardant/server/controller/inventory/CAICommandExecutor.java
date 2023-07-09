@@ -34,6 +34,8 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
+import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
@@ -225,6 +227,12 @@ public final class CAICommandExecutor
     }
     if (command instanceof final CAICommandTypeDeclarationRemove m) {
       return new CAICmdTypeDeclarationRemove().execute(context, m);
+    }
+    if (command instanceof final CAICommandItemTypesAssign m) {
+      return new CAICmdItemTypesAssign().execute(context, m);
+    }
+    if (command instanceof final CAICommandItemTypesRevoke m) {
+      return new CAICmdItemTypesRevoke().execute(context, m);
     }
 
     throw new IllegalStateException();

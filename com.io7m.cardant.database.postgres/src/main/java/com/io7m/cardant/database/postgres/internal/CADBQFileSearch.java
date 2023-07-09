@@ -25,14 +25,13 @@ import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
+import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
 import com.io7m.jqpage.core.JQOrder;
 import io.opentelemetry.api.trace.Span;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
-
-import java.util.List;
 
 import static com.io7m.cardant.database.postgres.internal.tables.Files.FILES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
@@ -124,18 +123,18 @@ public final class CADBQFileSearch
     final var orderField =
       orderingToJQField(parameters.ordering());
 
+    final var pageParameters =
+      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
+        .addSortField(orderField)
+        .addWhereCondition(allConditions)
+        .setPageSize(toUnsignedLong(parameters.limit()))
+        .setStatementListener(statement -> {
+          Span.current().setAttribute(DB_STATEMENT, statement.toString());
+        }).build();
+
     final var pages =
       JQKeysetRandomAccessPagination.createPageDefinitions(
-        context,
-        tableSource,
-        List.of(orderField),
-        List.of(allConditions),
-        List.of(),
-        toUnsignedLong(parameters.limit()),
-        statement -> {
-          Span.current().setAttribute(DB_STATEMENT, statement.toString());
-        }
-      );
+        context, pageParameters);
 
     return new CAFileSearch(pages);
   }

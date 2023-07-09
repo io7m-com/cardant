@@ -86,4 +86,5 @@
   <entry key="error_type_field_invalid"><![CDATA[A field does not match the provided pattern.]]></entry>
   <entry key="error_type_checking"><![CDATA[Type checking failed.]]></entry>
   <entry key="error_indexed">Error[{0}]</entry>
+  <entry key="error_type_still_referenced"><![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
 </properties>

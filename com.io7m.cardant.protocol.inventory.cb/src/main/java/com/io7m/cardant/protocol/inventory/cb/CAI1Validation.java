@@ -194,8 +194,6 @@ public final class CAI1Validation
       if (message instanceof final CAI1CommandTypeScalarRemove c) {
         return FromWireCommands.typeScalarRemove(c);
       }
-
-
       if (message instanceof final CAI1CommandTypeDeclarationPut c) {
         return FromWireCommands.typeDeclarationPut(c);
       }
@@ -213,6 +211,12 @@ public final class CAI1Validation
       }
       if (message instanceof final CAI1CommandTypeDeclarationRemove c) {
         return FromWireCommands.typeDeclarationRemove(c);
+      }
+      if (message instanceof final CAI1CommandItemTypesAssign c) {
+        return FromWireCommands.itemTypesAssign(c);
+      }
+      if (message instanceof final CAI1CommandItemTypesRevoke c) {
+        return FromWireCommands.itemTypesRevoke(c);
       }
 
       /*
@@ -309,8 +313,6 @@ public final class CAI1Validation
       if (message instanceof final CAI1ResponseTypeScalarRemove m) {
         return FromWireResponses.typeScalarRemove(m);
       }
-
-
       if (message instanceof final CAI1ResponseTypeDeclarationPut m) {
         return FromWireResponses.typeDeclarationPut(m);
       }
@@ -322,6 +324,12 @@ public final class CAI1Validation
       }
       if (message instanceof final CAI1ResponseTypeDeclarationRemove m) {
         return FromWireResponses.typeDeclarationRemove(m);
+      }
+      if (message instanceof final CAI1ResponseItemTypesAssign c) {
+        return FromWireResponses.itemTypesAssign(c);
+      }
+      if (message instanceof final CAI1ResponseItemTypesRevoke c) {
+        return FromWireResponses.itemTypesRevoke(c);
       }
 
     } catch (final ProtocolUncheckedException e) {
