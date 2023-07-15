@@ -52,13 +52,13 @@ CREATE ROLE cardant_read_only WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE SCHEMA_VERSION (
-  VERSION_LOCK            CHAR(1) NOT NULL DEFAULT 'X',
-  VERSION_APPLICATION_ID  TEXT    NOT NULL,
-  VERSION_NUMBER          BIGINT  NOT NULL,
+CREATE TABLE schema_version (
+  version_lock            CHAR(1) NOT NULL DEFAULT 'X',
+  version_application_id  TEXT    NOT NULL,
+  version_number          BIGINT  NOT NULL,
 
-  CONSTRAINT CHECK_LOCK_PRIMARY PRIMARY KEY (VERSION_LOCK),
-  CONSTRAINT CHECK_LOCK_LOCKED CHECK (VERSION_LOCK = 'X')
+  CONSTRAINT check_lock_primary PRIMARY KEY (version_lock),
+  CONSTRAINT check_lock_locked CHECK (version_lock = 'X')
 )
 ]]>
     </Statement>
@@ -66,46 +66,46 @@ CREATE TABLE SCHEMA_VERSION (
 
   <Schema versionCurrent="1">
     <Comment>
-      The USERS table stores the current set of users. The name field is neither
+      The users table stores the current set of users. The name field is neither
       authoritative, nor expected to be unique, because the external identity
       server is the authoritative source for names.
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE USERS (
-  ID    UUID   NOT NULL PRIMARY KEY,
-  NAME  TEXT   NOT NULL,
-  ROLES TEXT[] NOT NULL
+CREATE TABLE users (
+  id    UUID   NOT NULL PRIMARY KEY,
+  name  TEXT   NOT NULL,
+  roles TEXT[] NOT NULL
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE ON USERS TO cardant
+      GRANT SELECT, INSERT, UPDATE ON users TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON USERS TO cardant_read_only
+      GRANT SELECT ON users TO cardant_read_only
     </Statement>
 
     <Comment>
-      The TAGS table contains the list of tags.
+      The tags table contains the list of tags.
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE TAGS (
-  TAG_ID    UUID         NOT NULL PRIMARY KEY,
-  TAG_NAME  VARCHAR(128) NOT NULL,
+CREATE TABLE tags (
+  tag_id    UUID         NOT NULL PRIMARY KEY,
+  tag_name  VARCHAR(128) NOT NULL,
 
-  CONSTRAINT UNIQUE_TAGS UNIQUE (TAG_NAME)
+  CONSTRAINT unique_tags UNIQUE (tag_name)
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON TAGS TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON tags TO cardant
     </Statement>
-    <Statement>GRANT SELECT ON TAGS TO cardant_read_only</Statement>
+    <Statement>GRANT SELECT ON tags TO cardant_read_only</Statement>
 
     <Comment>
-      The FILES table contains files.
+      The files table contains files.
     </Comment>
 
     <StatementParameterized parameterInterpolation="STRING_FORMATTING">
@@ -115,33 +115,34 @@ CREATE TABLE TAGS (
       </ParameterReferences>
       <Text>
         <![CDATA[
-CREATE TABLE FILES (
-  ID                 UUID          NOT NULL PRIMARY KEY,
-  DESCRIPTION        VARCHAR(256)  NOT NULL,
-  -- [jooq ignore start]
-  DESCRIPTION_SEARCH TSVECTOR      NOT NULL
-    GENERATED ALWAYS AS (TO_TSVECTOR(%S, DESCRIPTION)) STORED,
-  -- [jooq ignore stop]
-  MEDIA_TYPE         VARCHAR(128)  NOT NULL,
-  HASH_ALGORITHM     VARCHAR(32)   NOT NULL,
-  HASH_VALUE         VARCHAR(256)  NOT NULL,
-  DATA               BYTEA         NOT NULL,
-  DATA_USED          BIGINT        NOT NULL,
+CREATE TABLE files (
+  id          UUID         NOT NULL PRIMARY KEY,
+  description VARCHAR(256) NOT NULL,
 
-  CONSTRAINT CHECK_NATURAL_DATA CHECK (DATA_USED >= 0)
+  -- [jooq ignore start]
+  description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, description)) STORED,
+  -- [jooq ignore stop]
+
+  media_type     VARCHAR(128) NOT NULL,
+  hash_algorithm VARCHAR(32)  NOT NULL,
+  hash_value     VARCHAR(256) NOT NULL,
+  data           BYTEA        NOT NULL,
+  data_used      BIGINT       NOT NULL,
+
+  CONSTRAINT check_natural_data CHECK (data_used >= 0)
 )
 ]]></Text>
     </StatementParameterized>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON FILES TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON files TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON FILES TO cardant_read_only
+      GRANT SELECT ON files TO cardant_read_only
     </Statement>
 
     <Comment>
-      The METADATA_TYPE_DECLARATIONS table contains type declarations. A type
+      The metadata_type_declarations table contains type declarations. A type
       declaration essentially consists of a set of typed fields.
     </Comment>
 
@@ -151,31 +152,31 @@ CREATE TABLE FILES (
                             name="search.language"/>
       </ParameterReferences>
       <Text><![CDATA[
-CREATE TABLE METADATA_TYPE_DECLARATIONS (
-  ID                  INTEGER        NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  NAME                VARCHAR(1024)  NOT NULL UNIQUE,
-  DESCRIPTION         VARCHAR(1024)  NOT NULL,
+CREATE TABLE metadata_type_declarations (
+  id          INTEGER       NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name        VARCHAR(1024) NOT NULL UNIQUE,
+  description VARCHAR(1024) NOT NULL,
+
   -- [jooq ignore start]
-  DESCRIPTION_SEARCH  TSVECTOR       NOT NULL
-    GENERATED ALWAYS AS (TO_TSVECTOR(%S, DESCRIPTION)) STORED,
+  description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, description)) STORED,
   -- [jooq ignore stop]
 
-  CONSTRAINT METADATA_TYPE_DECLARATION_NAME_VALID
-    CHECK (NAME ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
+  CONSTRAINT metadata_type_declaration_name_valid
+    CHECK (name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
 )
 ]]></Text>
     </StatementParameterized>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON METADATA_TYPE_DECLARATIONS TO
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_type_declarations TO
       cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON METADATA_TYPE_DECLARATIONS TO cardant_read_only
+      GRANT SELECT ON metadata_type_declarations TO cardant_read_only
     </Statement>
 
     <Comment>
-      The METADATA_SCALAR_TYPES table describes the scalar types that can be
+      The metadata_scalar_types table describes the scalar types that can be
       assigned to fields.
     </Comment>
 
@@ -185,31 +186,32 @@ CREATE TABLE METADATA_TYPE_DECLARATIONS (
                             name="search.language"/>
       </ParameterReferences>
       <Text><![CDATA[
-CREATE TABLE METADATA_SCALAR_TYPES (
-  ID                  INTEGER        NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  NAME                VARCHAR(1024)  NOT NULL UNIQUE,
-  DESCRIPTION         VARCHAR(1024)  NOT NULL,
-  -- [jooq ignore start]
-  DESCRIPTION_SEARCH  TSVECTOR       NOT NULL
-    GENERATED ALWAYS AS (TO_TSVECTOR(%S, DESCRIPTION)) STORED,
-  -- [jooq ignore stop]
-  PATTERN             VARCHAR(1024)  NOT NULL,
+CREATE TABLE metadata_scalar_types (
+  id          INTEGER       NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name        VARCHAR(1024) NOT NULL UNIQUE,
+  description VARCHAR(1024) NOT NULL,
 
-  CONSTRAINT METADATA_SCALAR_TYPES_NAME_VALID
-    CHECK (NAME ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
+  -- [jooq ignore start]
+  description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, description)) STORED,
+  -- [jooq ignore stop]
+
+  pattern VARCHAR(1024) NOT NULL,
+
+  CONSTRAINT metadata_scalar_types_name_valid
+    CHECK (name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
 )
 ]]></Text>
     </StatementParameterized>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON METADATA_SCALAR_TYPES TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_scalar_types TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON METADATA_SCALAR_TYPES TO cardant_read_only
+      GRANT SELECT ON metadata_scalar_types TO cardant_read_only
     </Statement>
 
     <Comment>
-      The METADATA_TYPE_DECLARATION_FIELDS table associates fields with type
+      The METADATA_type_declaration_FIELDS table associates fields with type
       declarations.
     </Comment>
 
@@ -219,40 +221,41 @@ CREATE TABLE METADATA_SCALAR_TYPES (
                             name="search.language"/>
       </ParameterReferences>
       <Text><![CDATA[
-CREATE TABLE METADATA_TYPE_FIELDS (
-  FIELD_DECLARATION         INTEGER        NOT NULL,
-  FIELD_SCALAR_TYPE         INTEGER        NOT NULL,
-  FIELD_NAME                VARCHAR(1024)  NOT NULL,
-  FIELD_DESCRIPTION         VARCHAR(1024)  NOT NULL,
+CREATE TABLE metadata_type_fields (
+  field_declaration INTEGER       NOT NULL,
+  field_scalar_type INTEGER       NOT NULL,
+  field_name        VARCHAR(1024) NOT NULL,
+  field_description VARCHAR(1024) NOT NULL,
+
   -- [jooq ignore start]
-  FIELD_DESCRIPTION_SEARCH  TSVECTOR       NOT NULL
-    GENERATED ALWAYS AS (TO_TSVECTOR(%S, FIELD_DESCRIPTION)) STORED,
+  field_description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, field_description)) STORED,
   -- [jooq ignore stop]
-  FIELD_REQUIRED            BOOLEAN        NOT NULL,
 
-  PRIMARY KEY (FIELD_DECLARATION, FIELD_NAME),
+  field_required BOOLEAN NOT NULL,
 
-  CONSTRAINT FIELD_NAME_VALID
-    CHECK (FIELD_NAME ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
+  PRIMARY KEY (field_declaration, field_name),
 
-  CONSTRAINT FIELD_DECLARATION_EXISTS
-    FOREIGN KEY (FIELD_DECLARATION) REFERENCES METADATA_TYPE_DECLARATIONS (ID),
+  CONSTRAINT field_name_valid
+    CHECK (field_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
 
-  CONSTRAINT FIELD_SCALAR_TYPE_EXISTS
-    FOREIGN KEY (FIELD_SCALAR_TYPE) REFERENCES METADATA_SCALAR_TYPES (ID)
+  CONSTRAINT field_declaration_exists
+    FOREIGN KEY (field_declaration) REFERENCES metadata_type_declarations (id),
+
+  CONSTRAINT field_scalar_type_exists
+    FOREIGN KEY (field_scalar_type) REFERENCES metadata_scalar_types (id)
 )
 ]]></Text>
     </StatementParameterized>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON METADATA_TYPE_FIELDS TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_type_fields TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON METADATA_TYPE_FIELDS TO cardant_read_only
+      GRANT SELECT ON metadata_type_fields TO cardant_read_only
     </Statement>
 
     <Comment>
-      The ITEMS table contains the list of items.
+      The items table contains the list of items.
     </Comment>
 
     <StatementParameterized parameterInterpolation="STRING_FORMATTING">
@@ -261,282 +264,283 @@ CREATE TABLE METADATA_TYPE_FIELDS (
                             name="search.language"/>
       </ParameterReferences>
       <Text><![CDATA[
-CREATE TABLE ITEMS (
-  ITEM_ID       UUID          NOT NULL PRIMARY KEY,
-  ITEM_NAME     VARCHAR(1024) NOT NULL,
+CREATE TABLE items (
+  item_id   UUID          NOT NULL PRIMARY KEY,
+  item_name VARCHAR(1024) NOT NULL,
+
   -- [jooq ignore start]
-  ITEM_NAME_SEARCH TSVECTOR NOT NULL
-    GENERATED ALWAYS AS (TO_TSVECTOR(%S, ITEM_NAME)) STORED,
+  item_name_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, item_name)) STORED,
   -- [jooq ignore stop]
-  ITEM_DELETED  BOOLEAN       NOT NULL
+
+  item_deleted BOOLEAN NOT NULL
 )
 ]]></Text>
     </StatementParameterized>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ITEMS TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON items TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON ITEMS TO cardant_read_only
+      GRANT SELECT ON items TO cardant_read_only
     </Statement>
 
     <Comment>
-      The ITEM_TYPES table assigns types to items. An item can have zero or more
+      The item_types table assigns types to items. An item can have zero or more
       types.
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE ITEM_TYPES (
-  ITEM               UUID     NOT NULL,
-  TYPE_DECLARATION   INTEGER  NOT NULL,
+CREATE TABLE item_types (
+  item             UUID     NOT NULL,
+  type_declaration INTEGER  NOT NULL,
 
-  PRIMARY KEY (ITEM, TYPE_DECLARATION),
+  PRIMARY KEY (item, type_declaration),
 
-  CONSTRAINT ITEM_TYPES_ITEM_EXISTS
-    FOREIGN KEY (ITEM) REFERENCES ITEMS (ITEM_ID),
+  CONSTRAINT item_types_ITEM_EXISTS
+    FOREIGN KEY (item) REFERENCES items (item_id),
 
-  CONSTRAINT ITEM_TYPES_DECLARATION_EXISTS
-    FOREIGN KEY (TYPE_DECLARATION) REFERENCES METADATA_TYPE_DECLARATIONS (ID)
+  CONSTRAINT item_types_DECLARATION_EXISTS
+    FOREIGN KEY (type_declaration) REFERENCES metadata_type_declarations (id)
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ITEM_TYPES TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_types TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON ITEM_TYPES TO cardant_read_only
+      GRANT SELECT ON item_types TO cardant_read_only
     </Statement>
 
     <Comment>
-      The ITEM_TAGS table contains the tags applied to each item.
+      The item_tags table contains the tags applied to each item.
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE ITEM_TAGS (
-  TAG_ITEM_ID  UUID NOT NULL,
-  TAG_ID       UUID NOT NULL,
+CREATE TABLE item_tags (
+  tag_item_id  UUID NOT NULL,
+  tag_id       UUID NOT NULL,
 
-  CONSTRAINT UNIQUE_TAGGING
-    UNIQUE (TAG_ITEM_ID, TAG_ID),
+  CONSTRAINT unique_tagging
+    UNIQUE (tag_item_id, tag_id),
 
-  CONSTRAINT TAG_ITEM_EXISTS
-    FOREIGN KEY (TAG_ITEM_ID) REFERENCES ITEMS (ITEM_ID),
+  CONSTRAINT tag_item_exists
+    FOREIGN KEY (tag_item_id) REFERENCES items (item_id),
 
-  CONSTRAINT TAG_TAG_EXISTS
-    FOREIGN KEY (TAG_ID) REFERENCES TAGS (TAG_ID)
+  CONSTRAINT tag_tag_exists
+    FOREIGN KEY (tag_id) REFERENCES tags (tag_id)
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ITEM_TAGS TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_tags TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON ITEM_TAGS TO cardant_read_only
+      GRANT SELECT ON item_tags TO cardant_read_only
     </Statement>
 
     <Comment>
-      The ITEM_ATTACHMENTS table contains attachments for each item.
+      The item_attachments table contains attachments for each item.
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE ITEM_ATTACHMENTS (
-  FILE_ID   UUID         NOT NULL,
-  ITEM_ID   UUID         NOT NULL,
-  RELATION  VARCHAR(128) NOT NULL,
+CREATE TABLE item_attachments (
+  file_id   UUID         NOT NULL,
+  item_id   UUID         NOT NULL,
+  relation  VARCHAR(128) NOT NULL,
 
   CONSTRAINT FILE_EXISTS
-    FOREIGN KEY (FILE_ID) REFERENCES FILES (ID),
+    FOREIGN KEY (file_id) REFERENCES files (id),
 
   CONSTRAINT ITEM_EXISTS
-    FOREIGN KEY (ITEM_ID) REFERENCES ITEMS (ITEM_ID),
+    FOREIGN KEY (item_id) REFERENCES items (item_id),
 
-  PRIMARY KEY (FILE_ID, ITEM_ID, RELATION)
+  PRIMARY KEY (file_id, item_id, relation)
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ITEM_ATTACHMENTS TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_attachments TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON ITEM_ATTACHMENTS TO cardant_read_only
+      GRANT SELECT ON item_attachments TO cardant_read_only
     </Statement>
 
     <Comment>
-      The ITEM_METADATA table contains metadata for each item.
+      The item_metadata table contains metadata for each item.
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE ITEM_METADATA (
-  METADATA_ITEM_ID  UUID          NOT NULL,
-  METADATA_NAME     VARCHAR(1024) NOT NULL,
-  METADATA_VALUE    VARCHAR(1024) NOT NULL,
+CREATE TABLE item_metadata (
+  metadata_item_id  UUID          NOT NULL,
+  metadata_name     VARCHAR(1024) NOT NULL,
+  metadata_value    VARCHAR(1024) NOT NULL,
 
-  CONSTRAINT METADATA_NAME_VALID
-    CHECK (METADATA_NAME ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
+  CONSTRAINT metadata_name_VALID
+    CHECK (metadata_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
 
-  CONSTRAINT METADATA_ITEM_EXISTS
-    FOREIGN KEY (METADATA_ITEM_ID) REFERENCES ITEMS (ITEM_ID),
+  CONSTRAINT metadata_item_exists
+    FOREIGN KEY (metadata_item_id) REFERENCES items (item_id),
 
-  CONSTRAINT METADATA_NAME_UNIQUE
-    UNIQUE (METADATA_ITEM_ID, METADATA_NAME)
+  CONSTRAINT metadata_name_UNIQUE
+    UNIQUE (metadata_item_id, metadata_name)
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ITEM_METADATA TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_metadata TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON ITEM_METADATA TO cardant_read_only
+      GRANT SELECT ON item_metadata TO cardant_read_only
     </Statement>
 
     <Comment>
-      The METADATA_ELEMENT_T type holds a metadata value. This type is used
+      The metadata_element_t type holds a metadata value. This type is used
       as a strongly-typed container for values during search operations.
     </Comment>
 
     <Statement><![CDATA[
 -- [jooq ignore start]
-CREATE TYPE METADATA_ELEMENT_T AS (
-  NAME  VARCHAR(1024),
-  VALUE VARCHAR(1024)
+CREATE TYPE metadata_element_t AS (
+  name  VARCHAR(1024),
+  value VARCHAR(1024)
 )
 -- [jooq ignore stop]
 ]]></Statement>
 
     <Comment>
-      The LOCATIONS table contains storage/deployment locations for each item.
+      The locations table contains storage/deployment locations for each item.
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE LOCATIONS (
-  LOCATION_ID           UUID          NOT NULL PRIMARY KEY,
-  LOCATION_PARENT       UUID,
-  LOCATION_NAME         VARCHAR(128)  NOT NULL,
-  LOCATION_DESCRIPTION  VARCHAR(1024) NOT NULL,
+CREATE TABLE locations (
+  location_id           UUID          NOT NULL PRIMARY KEY,
+  location_parent       UUID,
+  location_name         VARCHAR(128)  NOT NULL,
+  location_description  VARCHAR(1024) NOT NULL,
 
-  CONSTRAINT LOCATION_PARENT_EXISTS
-    FOREIGN KEY (LOCATION_PARENT) REFERENCES LOCATIONS (LOCATION_ID)
+  CONSTRAINT location_parent_exists
+    FOREIGN KEY (location_parent) REFERENCES locations (location_id)
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON LOCATIONS TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON locations TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON LOCATIONS TO cardant_read_only
+      GRANT SELECT ON locations TO cardant_read_only
     </Statement>
 
     <Statement><![CDATA[
-CREATE TABLE ITEM_LOCATIONS (
-  ITEM_ID              UUID   NOT NULL,
-  ITEM_LOCATION        UUID   NOT NULL,
-  COUNT                BIGINT NOT NULL,
+CREATE TABLE item_locations (
+  item_id       UUID   NOT NULL,
+  item_location UUID   NOT NULL,
+  count         BIGINT NOT NULL,
 
-  PRIMARY KEY (ITEM_ID, ITEM_LOCATION),
+  PRIMARY KEY (item_id, item_location),
 
-  CONSTRAINT ITEM_ID_EXISTS
-    FOREIGN KEY (ITEM_ID) REFERENCES ITEMS (ITEM_ID),
+  CONSTRAINT item_id_exists
+    FOREIGN KEY (item_id) REFERENCES items (item_id),
 
-  CONSTRAINT ITEM_LOCATION_EXISTS
-    FOREIGN KEY (ITEM_LOCATION) REFERENCES LOCATIONS (LOCATION_ID),
+  CONSTRAINT item_location_exists
+    FOREIGN KEY (item_location) REFERENCES locations (location_id),
 
-  CONSTRAINT CHECK_ITEM_LOCATION_COUNT CHECK (COUNT >= 0)
+  CONSTRAINT CHECK_item_location_COUNT CHECK (count >= 0)
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ITEM_LOCATIONS TO cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_locations TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON ITEM_LOCATIONS TO cardant_read_only
+      GRANT SELECT ON item_locations TO cardant_read_only
     </Statement>
 
     <Statement><![CDATA[
-CREATE VIEW ITEM_LOCATIONS_SUMMED (ITEM_ID, ITEM_COUNT)
-  AS SELECT IL.ITEM_ID, SUM (IL.COUNT) FROM ITEM_LOCATIONS AS IL
-    GROUP BY IL.ITEM_ID
+CREATE VIEW item_locations_summed (item_id, ITEM_COUNT)
+  AS SELECT il.item_id, SUM (il.count) FROM item_locations AS il
+    GROUP BY il.item_id
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT ON ITEM_LOCATIONS_SUMMED TO cardant
+      GRANT SELECT ON item_locations_summed TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON ITEM_LOCATIONS_SUMMED TO cardant_read_only
+      GRANT SELECT ON item_locations_summed TO cardant_read_only
     </Statement>
 
     <Comment>
-      The LOCATION_DESCENDANTS function returns the descendants of a given
+      The location_descendants function returns the descendants of a given
       location. The location itself is included in the results.
     </Comment>
 
     <Statement><![CDATA[
-CREATE FUNCTION LOCATION_DESCENDANTS (X UUID)
+CREATE FUNCTION location_descendants (X UUID)
   RETURNS TABLE (LOCATION UUID)
   LANGUAGE SQL
   AS
 $$
-WITH RECURSIVE LOCATION_TREE AS (
+WITH RECURSIVE location_tree AS (
   SELECT
-    LOCATIONS.LOCATION_PARENT,
-    LOCATIONS.LOCATION_ID
-  FROM LOCATIONS
+    locations.location_parent,
+    locations.location_id
+  FROM locations
   WHERE
-    LOCATIONS.LOCATION_PARENT = X
+    locations.location_parent = X
   UNION
     SELECT
-      L.LOCATION_PARENT,
-      L.LOCATION_ID
-    FROM LOCATIONS L
-    JOIN LOCATION_TREE
-      ON LOCATION_TREE.LOCATION_ID = L.LOCATION_PARENT
+      L.location_parent,
+      L.location_id
+    FROM locations L
+    JOIN location_tree
+      ON location_tree.location_id = L.location_parent
 )
 SELECT
-  LOCATION_ID
-FROM LOCATION_TREE
+  location_id
+FROM location_tree
 UNION
-  SELECT Q.LOCATION_ID
-    FROM LOCATIONS Q
-    WHERE Q.LOCATION_ID = X
+  SELECT Q.location_id
+    FROM locations Q
+    WHERE Q.location_id = X
 $$
 ]]></Statement>
 
     <Comment>
-      The LOCATION_DESCENDANTS function returns the descendants of a given
+      The location_descendants function returns the descendants of a given
       location. The location itself is not included in the results.
     </Comment>
 
     <Statement><![CDATA[
-CREATE FUNCTION LOCATION_DESCENDANTS_STRICT (X UUID)
+CREATE FUNCTION location_descendants_strict (X UUID)
   RETURNS TABLE (LOCATION UUID)
   LANGUAGE SQL
   AS
 $$
-WITH RECURSIVE LOCATION_TREE AS (
+WITH RECURSIVE location_tree AS (
   SELECT
-    LOCATIONS.LOCATION_PARENT,
-    LOCATIONS.LOCATION_ID
-  FROM LOCATIONS
+    locations.location_parent,
+    locations.location_id
+  FROM locations
   WHERE
-    LOCATIONS.LOCATION_PARENT = X
+    locations.location_parent = X
   UNION
     SELECT
-      L.LOCATION_PARENT,
-      L.LOCATION_ID
-    FROM LOCATIONS L
-    JOIN LOCATION_TREE
-      ON LOCATION_TREE.LOCATION_ID = L.LOCATION_PARENT
+      L.location_parent,
+      L.location_id
+    FROM locations L
+    JOIN location_tree
+      ON location_tree.location_id = L.location_parent
 )
-SELECT LOCATION_ID FROM LOCATION_TREE
+SELECT location_id FROM location_tree
 $$
 ]]></Statement>
 
     <Comment>
-      The LOCATION_IS_DESCENDANT_OF function returns true if x is a descendant
+      The location_is_descendant_of function returns true if x is a descendant
       of y in terms of the locations table.
     </Comment>
 
     <Statement><![CDATA[
-CREATE FUNCTION LOCATION_IS_DESCENDANT_OF(
+CREATE FUNCTION location_is_descendant_of(
   X UUID,
   Y UUID
 ) RETURNS BOOL
@@ -550,34 +554,33 @@ BEGIN
   DECLARE
     YP UUID;
   BEGIN
-    SELECT LOCATION_PARENT INTO YP FROM LOCATIONS WHERE LOCATION_ID = Y;
-    RETURN LOCATION_IS_DESCENDANT_OF (X, YP);
+    SELECT location_parent INTO YP FROM locations WHERE location_id = Y;
+    RETURN location_is_descendant_of (X, YP);
   END;
 END
 $$
 ]]></Statement>
 
     <Comment>
-      The AUDIT table stores a list of auditable events. Who did it? What did
+      The audit table stores a list of auditable events. Who did it? What did
       they do? When did they do it?
     </Comment>
 
     <Statement><![CDATA[
-CREATE TABLE AUDIT (
-  ID             BIGINT                   NOT NULL
-    PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  USER_ID        UUID                     NOT NULL,
-  TIME           TIMESTAMP WITH TIME ZONE NOT NULL,
-  TYPE           VARCHAR(1000000)         NOT NULL,
-  MESSAGE        VARCHAR(1000000)         NOT NULL
+CREATE TABLE audit (
+  id      BIGINT                   NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id UUID                     NOT NULL,
+  time    TIMESTAMP WITH TIME ZONE NOT NULL,
+  type    VARCHAR(1000000)         NOT NULL,
+  message VARCHAR(1000000)         NOT NULL
 )
 ]]></Statement>
 
     <Statement>
-      GRANT SELECT, INSERT ON AUDIT TO cardant
+      GRANT SELECT, INSERT ON audit TO cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON AUDIT TO cardant_read_only
+      GRANT SELECT ON audit TO cardant_read_only
     </Statement>
   </Schema>
 </Schemas>
