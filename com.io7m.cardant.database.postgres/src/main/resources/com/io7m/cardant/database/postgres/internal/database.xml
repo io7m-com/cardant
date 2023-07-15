@@ -277,10 +277,10 @@ CREATE TABLE item_types (
 
   PRIMARY KEY (item, type_declaration),
 
-  CONSTRAINT item_types_ITEM_EXISTS
+  CONSTRAINT item_types_item_exists
     FOREIGN KEY (item) REFERENCES items (item_id),
 
-  CONSTRAINT item_types_DECLARATION_EXISTS
+  CONSTRAINT item_types_declaration_exists
     FOREIGN KEY (type_declaration) REFERENCES metadata_type_declarations (id)
 )
 ]]></Statement>
@@ -392,6 +392,32 @@ CREATE TABLE locations (
     </Statement>
     <Statement>
       GRANT SELECT ON locations TO cardant_read_only
+    </Statement>
+
+    <Comment>
+      The location_types table associates locations with types.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE TABLE location_types (
+  location         UUID     NOT NULL,
+  type_declaration INTEGER  NOT NULL,
+
+  PRIMARY KEY (location, type_declaration),
+
+  CONSTRAINT location_types_location_exists
+    FOREIGN KEY (location) REFERENCES locations (location_id),
+
+  CONSTRAINT location_types_declaration_exists
+    FOREIGN KEY (type_declaration) REFERENCES metadata_type_declarations (id)
+)
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON location_types TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON location_types TO cardant_read_only
     </Statement>
 
     <Statement><![CDATA[

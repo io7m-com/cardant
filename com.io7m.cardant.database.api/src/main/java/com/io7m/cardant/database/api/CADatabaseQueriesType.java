@@ -27,7 +27,7 @@ import static java.time.ZoneOffset.UTC;
 
 public sealed interface CADatabaseQueriesType
   permits CADatabaseQueriesFilesType,
-  CADatabaseQueriesItemTypesType,
+  CADatabaseQueriesTypesType,
   CADatabaseQueriesItemsType,
   CADatabaseQueriesLocationsType,
   CADatabaseQueriesMaintenanceType,

@@ -17,10 +17,10 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.GetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;

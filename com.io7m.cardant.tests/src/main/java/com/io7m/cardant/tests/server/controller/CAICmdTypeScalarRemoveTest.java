@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
 import com.io7m.cardant.security.CASecurity;
@@ -105,11 +105,11 @@ public final class CAICmdTypeScalarRemoveTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesItemTypesType.TypeScalarRemoveType.class);
+      mock(CADatabaseQueriesTypesType.TypeScalarRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeScalarRemoveType.class))
       .thenReturn(files);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -136,7 +136,7 @@ public final class CAICmdTypeScalarRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeScalarRemoveType.class);
+      .queries(CADatabaseQueriesTypesType.TypeScalarRemoveType.class);
 
     verify(files)
       .execute(TYPE_SCALAR.name());

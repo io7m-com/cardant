@@ -17,7 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -55,7 +55,7 @@ public final class CAICmdTypeScalarSearchBegin
     final var transaction =
       context.transaction();
     final var searchQuery =
-      transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarSearchType.class);
+      transaction.queries(CADatabaseQueriesTypesType.TypeScalarSearchType.class);
 
     final var search =
       searchQuery.execute(

@@ -17,42 +17,34 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationsReferencingScalarType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationsSearchType;
 import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
-import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
 import com.io7m.jqpage.core.JQOrder;
-import com.io7m.lanark.core.RDottedName;
 import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
-import org.jooq.Table;
 import org.jooq.impl.DSL;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_FIELDS;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
- * Search for type declarations that reference the scalar type with the
- * given name.
+ * Search for type declarations.
  */
 
-public final class CADBQItemTypeDeclsReferencingScalar
-  extends CADBQAbstract<RDottedName,
-  CADatabaseTypeDeclarationSearchType>
-  implements TypeDeclarationsReferencingScalarType
+public final class CADBQTypeDeclsSearch
+  extends CADBQAbstract<String, CADatabaseTypeDeclarationSearchType>
+  implements TypeDeclarationsSearchType
 {
-  private static final Service<
-    RDottedName,
+  private static final CADBQueryProviderType.Service<
+    String,
     CADatabaseTypeDeclarationSearchType,
-    TypeDeclarationsReferencingScalarType> SERVICE =
-    new Service<>(
-      TypeDeclarationsReferencingScalarType.class,
-      CADBQItemTypeDeclsReferencingScalar::new
+    TypeDeclarationsSearchType> SERVICE =
+    new CADBQueryProviderType.Service<>(
+      TypeDeclarationsSearchType.class,
+      CADBQTypeDeclsSearch::new
     );
 
   /**
@@ -61,7 +53,7 @@ public final class CADBQItemTypeDeclsReferencingScalar
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeDeclsReferencingScalar(
+  public CADBQTypeDeclsSearch(
     final CADatabaseTransaction transaction)
   {
     super(transaction);
@@ -76,22 +68,21 @@ public final class CADBQItemTypeDeclsReferencingScalar
     return () -> SERVICE;
   }
 
+
   @Override
-  protected CADatabaseTypeDeclarationSearchType onExecute(
+  protected CADatabaseTypeDeclarationSearchType
+  onExecute(
     final DSLContext context,
-    final RDottedName name)
-    throws CADatabaseException
+    final String query)
   {
-    final Table<?> tableSource =
-      METADATA_TYPE_DECLARATIONS
-        .join(METADATA_TYPE_FIELDS)
-        .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(
-          METADATA_TYPE_DECLARATIONS.ID))
-        .join(METADATA_SCALAR_TYPES)
-        .on(METADATA_SCALAR_TYPES.ID.eq(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE));
+    final var tableSource =
+      METADATA_TYPE_DECLARATIONS;
 
     final var searchCondition =
-      DSL.condition(METADATA_SCALAR_TYPES.NAME.eq(name.value()));
+      DSL.condition(
+        "METADATA_TYPE_DECLARATIONS.description_search @@ websearch_to_tsquery(?)",
+        DSL.inline(query)
+      );
 
     final var orderField =
       new JQField(METADATA_TYPE_DECLARATIONS.NAME, JQOrder.ASCENDING);
@@ -111,5 +102,4 @@ public final class CADBQItemTypeDeclsReferencingScalar
 
     return new CAItemTypeDeclarationSummarySearch(pages);
   }
-
 }

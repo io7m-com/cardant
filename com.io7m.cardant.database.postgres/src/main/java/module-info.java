@@ -35,22 +35,22 @@ import com.io7m.cardant.database.postgres.internal.CADBQItemMetadataRemove;
 import com.io7m.cardant.database.postgres.internal.CADBQItemReposit;
 import com.io7m.cardant.database.postgres.internal.CADBQItemSearch;
 import com.io7m.cardant.database.postgres.internal.CADBQItemSetName;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclGet;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclGetMultiple;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclPut;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclRemove;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclsReferencingScalar;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclsSearch;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarGet;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarPut;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarRemove;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTypeScalarSearch;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypesAssign;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypesRevoke;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationGet;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationList;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationPut;
 import com.io7m.cardant.database.postgres.internal.CADBQMaintenance;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeDeclGet;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeDeclGetMultiple;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeDeclPut;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeDeclRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeDeclsReferencingScalar;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeDeclsSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeScalarGet;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeScalarPut;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeScalarRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQTypeScalarSearch;
 import com.io7m.cardant.database.postgres.internal.CADBQUserGet;
 import com.io7m.cardant.database.postgres.internal.CADBQUserPut;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType;
@@ -115,16 +115,16 @@ module com.io7m.cardant.database.postgres
     CADBQItemReposit,
     CADBQItemSearch,
     CADBQItemSetName,
-    CADBQItemTypeDeclGet,
-    CADBQItemTypeDeclGetMultiple,
-    CADBQItemTypeDeclPut,
-    CADBQItemTypeDeclRemove,
-    CADBQItemTypeDeclsReferencingScalar,
-    CADBQItemTypeDeclsSearch,
-    CADBQItemTypeScalarGet,
-    CADBQItemTypeScalarPut,
-    CADBQItemTypeScalarRemove,
-    CADBQItemTypeScalarSearch,
+    CADBQTypeDeclGet,
+    CADBQTypeDeclGetMultiple,
+    CADBQTypeDeclPut,
+    CADBQTypeDeclRemove,
+    CADBQTypeDeclsReferencingScalar,
+    CADBQTypeDeclsSearch,
+    CADBQTypeScalarGet,
+    CADBQTypeScalarPut,
+    CADBQTypeScalarRemove,
+    CADBQTypeScalarSearch,
     CADBQItemTypesAssign,
     CADBQItemTypesRevoke,
     CADBQLocationGet,

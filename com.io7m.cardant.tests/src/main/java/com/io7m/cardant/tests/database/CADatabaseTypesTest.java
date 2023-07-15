@@ -18,10 +18,10 @@ package com.io7m.cardant.tests.database;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesRevokeType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemID;
@@ -56,22 +56,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
 @ErvillaConfiguration(disabledIfUnsupported = true)
-public final class CADatabaseItemTypesTest
+public final class CADatabaseTypesTest
 {
   private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private CADatabaseQueriesItemTypesType.TypeScalarPutType tsPut;
-  private CADatabaseQueriesItemTypesType.TypeDeclarationPutType tdPut;
-  private CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType tdSearch;
-  private CADatabaseQueriesItemTypesType.TypeDeclarationGetType tdGet;
-  private CADatabaseQueriesItemTypesType.TypeDeclarationRemoveType tdRemove;
-  private CADatabaseQueriesItemTypesType.TypeDeclarationsReferencingScalarType tdRefSearch;
-  private CADatabaseQueriesItemTypesType.TypeDeclarationGetMultipleType tdGetMulti;
-  private CADatabaseQueriesItemTypesType.TypeScalarRemoveType tsRemove;
-  private CADatabaseQueriesItemTypesType.TypeScalarSearchType tsSearch;
-  private CADatabaseQueriesItemTypesType.TypeScalarGetType tsGet;
+  private CADatabaseQueriesTypesType.TypeScalarPutType tsPut;
+  private CADatabaseQueriesTypesType.TypeDeclarationPutType tdPut;
+  private CADatabaseQueriesTypesType.TypeDeclarationsSearchType tdSearch;
+  private CADatabaseQueriesTypesType.TypeDeclarationGetType tdGet;
+  private CADatabaseQueriesTypesType.TypeDeclarationRemoveType tdRemove;
+  private CADatabaseQueriesTypesType.TypeDeclarationsReferencingScalarType tdRefSearch;
+  private CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType tdGetMulti;
+  private CADatabaseQueriesTypesType.TypeScalarRemoveType tsRemove;
+  private CADatabaseQueriesTypesType.TypeScalarSearchType tsSearch;
+  private CADatabaseQueriesTypesType.TypeScalarGetType tsGet;
   private CADatabaseQueriesItemsType.CreateType iCreate;
   private CADatabaseQueriesItemsType.TypesAssignType tAssign;
   private TypesRevokeType tRevoke;
@@ -103,26 +103,26 @@ public final class CADatabaseItemTypesTest
       this.transaction.queries(CADatabaseQueriesItemsType.CreateType.class);
 
     this.tsPut =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarPutType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
     this.tsGet =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarGetType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarGetType.class);
     this.tsRemove =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarRemoveType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarRemoveType.class);
     this.tsSearch =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarSearchType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarSearchType.class);
 
     this.tdPut =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationPutType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationPutType.class);
     this.tdGet =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationGetType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
     this.tdGetMulti =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationGetMultipleType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType.class);
     this.tdRemove =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationRemoveType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationRemoveType.class);
     this.tdSearch =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationsSearchType.class);
     this.tdRefSearch =
-      this.transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationsReferencingScalarType.class);
+      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationsReferencingScalarType.class);
 
     this.tAssign =
       this.transaction.queries(CADatabaseQueriesItemsType.TypesAssignType.class);

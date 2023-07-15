@@ -17,7 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
@@ -52,7 +52,7 @@ public final class CAICmdTypeScalarPut
 
     final var put =
       context.transaction()
-        .queries(CADatabaseQueriesItemTypesType.TypeScalarPutType.class);
+        .queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
 
     for (final var type : command.types()) {
       put.execute(type);

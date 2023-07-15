@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeScalar;
@@ -109,7 +109,7 @@ public final class CAICmdTypeScalarSearchBeginTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemTypesType.TypeScalarSearchType.class);
+      mock(CADatabaseQueriesTypesType.TypeScalarSearchType.class);
     final var itemSearch =
       mock(CADatabaseTypeScalarSearchType.class);
 
@@ -127,7 +127,7 @@ public final class CAICmdTypeScalarSearchBeginTest
       );
 
     when(transaction.queries(
-      CADatabaseQueriesItemTypesType.TypeScalarSearchType.class))
+      CADatabaseQueriesTypesType.TypeScalarSearchType.class))
       .thenReturn(items);
     when(items.execute(any()))
       .thenReturn(itemSearch);
@@ -159,7 +159,7 @@ public final class CAICmdTypeScalarSearchBeginTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeScalarSearchType.class);
+      .queries(CADatabaseQueriesTypesType.TypeScalarSearchType.class);
     verify(items)
       .execute("");
     verify(itemSearch)

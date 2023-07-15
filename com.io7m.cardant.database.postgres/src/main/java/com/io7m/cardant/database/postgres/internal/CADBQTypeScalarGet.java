@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeScalarGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.lanark.core.RDottedName;
@@ -33,12 +33,12 @@ import static com.io7m.cardant.strings.CAStringConstants.TYPE;
  * Retrieve a scalar type declaration.
  */
 
-public final class CADBQItemTypeScalarGet
+public final class CADBQTypeScalarGet
   extends CADBQAbstract<RDottedName, Optional<CATypeScalar>>
   implements TypeScalarGetType
 {
   private static final Service<RDottedName, Optional<CATypeScalar>, TypeScalarGetType> SERVICE =
-    new Service<>(TypeScalarGetType.class, CADBQItemTypeScalarGet::new);
+    new Service<>(TypeScalarGetType.class, CADBQTypeScalarGet::new);
 
   /**
    * Construct a query.
@@ -46,7 +46,7 @@ public final class CADBQItemTypeScalarGet
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeScalarGet(
+  public CADBQTypeScalarGet(
     final CADatabaseTransaction transaction)
   {
     super(transaction);

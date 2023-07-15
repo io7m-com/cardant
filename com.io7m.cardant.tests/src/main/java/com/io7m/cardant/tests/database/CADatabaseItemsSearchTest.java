@@ -18,7 +18,6 @@ package com.io7m.cardant.tests.database;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
@@ -26,6 +25,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveTy
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationPutType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemColumn;

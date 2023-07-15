@@ -17,30 +17,43 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeScalarSearchType;
-import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
+import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationsReferencingScalarType;
+import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
 import com.io7m.jqpage.core.JQOrder;
+import com.io7m.lanark.core.RDottedName;
 import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_FIELDS;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
- * Search for scalar type declarations.
+ * Search for type declarations that reference the scalar type with the
+ * given name.
  */
 
-public final class CADBQItemTypeScalarSearch
-  extends CADBQAbstract<String, CADatabaseTypeScalarSearchType>
-  implements TypeScalarSearchType
+public final class CADBQTypeDeclsReferencingScalar
+  extends CADBQAbstract<RDottedName,
+  CADatabaseTypeDeclarationSearchType>
+  implements TypeDeclarationsReferencingScalarType
 {
-  private static final Service<String, CADatabaseTypeScalarSearchType, TypeScalarSearchType> SERVICE =
-    new Service<>(TypeScalarSearchType.class, CADBQItemTypeScalarSearch::new);
+  private static final Service<
+    RDottedName,
+    CADatabaseTypeDeclarationSearchType,
+    TypeDeclarationsReferencingScalarType> SERVICE =
+    new Service<>(
+      TypeDeclarationsReferencingScalarType.class,
+      CADBQTypeDeclsReferencingScalar::new
+    );
 
   /**
    * Construct a query.
@@ -48,7 +61,7 @@ public final class CADBQItemTypeScalarSearch
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeScalarSearch(
+  public CADBQTypeDeclsReferencingScalar(
     final CADatabaseTransaction transaction)
   {
     super(transaction);
@@ -64,21 +77,27 @@ public final class CADBQItemTypeScalarSearch
   }
 
   @Override
-  protected CADatabaseTypeScalarSearchType onExecute(
+  protected CADatabaseTypeDeclarationSearchType onExecute(
     final DSLContext context,
-    final String query)
+    final RDottedName name)
+    throws CADatabaseException
   {
+    final Table<?> tableSource =
+      METADATA_TYPE_DECLARATIONS
+        .join(METADATA_TYPE_FIELDS)
+        .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(
+          METADATA_TYPE_DECLARATIONS.ID))
+        .join(METADATA_SCALAR_TYPES)
+        .on(METADATA_SCALAR_TYPES.ID.eq(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE));
+
     final var searchCondition =
-      DSL.condition(
-        "METADATA_SCALAR_TYPES.description_search @@ websearch_to_tsquery(?)",
-        DSL.inline(query)
-      );
+      DSL.condition(METADATA_SCALAR_TYPES.NAME.eq(name.value()));
 
     final var orderField =
-      new JQField(METADATA_SCALAR_TYPES.NAME, JQOrder.ASCENDING);
+      new JQField(METADATA_TYPE_DECLARATIONS.NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
-      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_SCALAR_TYPES)
+      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
         .addSortField(orderField)
         .addWhereCondition(searchCondition)
         .setPageSize(10L)
@@ -90,6 +109,7 @@ public final class CADBQItemTypeScalarSearch
       JQKeysetRandomAccessPagination.createPageDefinitions(
         context, pageParameters);
 
-    return new CAItemTypeScalarSearch(pages);
+    return new CAItemTypeDeclarationSummarySearch(pages);
   }
+
 }

@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
 import com.io7m.cardant.security.CASecurity;
@@ -101,11 +101,11 @@ public final class CAICmdTypeScalarGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemTypesType.TypeScalarGetType.class);
+      mock(CADatabaseQueriesTypesType.TypeScalarGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarGetType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeScalarGetType.class))
       .thenReturn(itemGet);
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CATypeScalar(
@@ -138,7 +138,7 @@ public final class CAICmdTypeScalarGetTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeScalarGetType.class);
+      .queries(CADatabaseQueriesTypesType.TypeScalarGetType.class);
     verify(itemGet)
       .execute(new RDottedName("a.b.c"));
 
@@ -159,11 +159,11 @@ public final class CAICmdTypeScalarGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemTypesType.TypeScalarGetType.class);
+      mock(CADatabaseQueriesTypesType.TypeScalarGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarGetType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeScalarGetType.class))
       .thenReturn(itemGet);
 
     when(itemGet.execute(any()))

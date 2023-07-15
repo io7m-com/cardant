@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
@@ -42,12 +42,12 @@ import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_F
  * Retrieve multiple type declarations.
  */
 
-public final class CADBQItemTypeDeclGetMultiple
+public final class CADBQTypeDeclGetMultiple
   extends CADBQAbstract<Set<RDottedName>, List<CATypeDeclaration>>
   implements TypeDeclarationGetMultipleType
 {
   private static final Service<Set<RDottedName>, List<CATypeDeclaration>, TypeDeclarationGetMultipleType> SERVICE =
-    new Service<>(TypeDeclarationGetMultipleType.class, CADBQItemTypeDeclGetMultiple::new);
+    new Service<>(TypeDeclarationGetMultipleType.class, CADBQTypeDeclGetMultiple::new);
 
   /**
    * Construct a query.
@@ -55,7 +55,7 @@ public final class CADBQItemTypeDeclGetMultiple
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeDeclGetMultiple(
+  public CADBQTypeDeclGetMultiple(
     final CADatabaseTransaction transaction)
   {
     super(transaction);

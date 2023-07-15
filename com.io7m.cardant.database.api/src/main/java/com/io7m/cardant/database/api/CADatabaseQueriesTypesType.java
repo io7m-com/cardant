@@ -25,10 +25,10 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Model database queries (Items types).
+ * Model database queries (Types).
  */
 
-public sealed interface CADatabaseQueriesItemTypesType
+public sealed interface CADatabaseQueriesTypesType
   extends CADatabaseQueriesType
 {
   /**
@@ -37,7 +37,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeDeclarationRemoveType
     extends CADatabaseQueryType<RDottedName, CADatabaseUnit>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -48,7 +48,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeDeclarationPutType
     extends CADatabaseQueryType<CATypeDeclaration, CADatabaseUnit>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -59,7 +59,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeDeclarationGetType
     extends CADatabaseQueryType<RDottedName, Optional<CATypeDeclaration>>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -70,7 +70,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeDeclarationGetMultipleType
     extends CADatabaseQueryType<Set<RDottedName>, List<CATypeDeclaration>>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -82,7 +82,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeDeclarationsReferencingScalarType
     extends CADatabaseQueryType<RDottedName, CADatabaseTypeDeclarationSearchType>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -93,7 +93,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeDeclarationsSearchType
     extends CADatabaseQueryType<String, CADatabaseTypeDeclarationSearchType>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -104,7 +104,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeScalarGetType
     extends CADatabaseQueryType<RDottedName, Optional<CATypeScalar>>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -115,7 +115,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeScalarSearchType
     extends CADatabaseQueryType<String, CADatabaseTypeScalarSearchType>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -127,7 +127,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeScalarRemoveType
     extends CADatabaseQueryType<RDottedName, CADatabaseUnit>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }
@@ -138,7 +138,7 @@ public sealed interface CADatabaseQueriesItemTypesType
 
   non-sealed interface TypeScalarPutType
     extends CADatabaseQueryType<CATypeScalar, CADatabaseUnit>,
-    CADatabaseQueriesItemTypesType
+    CADatabaseQueriesTypesType
   {
 
   }

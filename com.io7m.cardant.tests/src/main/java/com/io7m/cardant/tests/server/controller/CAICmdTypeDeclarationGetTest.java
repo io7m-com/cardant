@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
@@ -146,11 +146,11 @@ public final class CAICmdTypeDeclarationGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemTypesType.TypeDeclarationGetType.class);
+      mock(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationGetType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class))
       .thenReturn(itemGet);
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(TYPE_DECLARATION));
@@ -181,7 +181,7 @@ public final class CAICmdTypeDeclarationGetTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeDeclarationGetType.class);
+      .queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
     verify(itemGet)
       .execute(new RDottedName("a.b.c"));
 
@@ -202,11 +202,11 @@ public final class CAICmdTypeDeclarationGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemTypesType.TypeDeclarationGetType.class);
+      mock(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationGetType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class))
       .thenReturn(itemGet);
 
     when(itemGet.execute(any()))

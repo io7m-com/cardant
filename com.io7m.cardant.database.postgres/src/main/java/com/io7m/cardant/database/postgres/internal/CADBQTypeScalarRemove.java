@@ -18,24 +18,25 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeScalarPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarRemoveType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
 
 /**
- * Create or update a scalar type declaration.
+ * Remove a scalar type declaration. Fails if any type declarations still
+ * refer to this type.
  */
 
-public final class CADBQItemTypeScalarPut
-  extends CADBQAbstract<CATypeScalar, CADatabaseUnit>
-  implements TypeScalarPutType
+public final class CADBQTypeScalarRemove
+  extends CADBQAbstract<RDottedName, CADatabaseUnit>
+  implements TypeScalarRemoveType
 {
-  private static final Service<CATypeScalar, CADatabaseUnit, TypeScalarPutType> SERVICE =
-    new Service<>(TypeScalarPutType.class, CADBQItemTypeScalarPut::new);
+  private static final Service<RDottedName, CADatabaseUnit, TypeScalarRemoveType> SERVICE =
+    new Service<>(TypeScalarRemoveType.class, CADBQTypeScalarRemove::new);
 
   /**
    * Construct a query.
@@ -43,7 +44,7 @@ public final class CADBQItemTypeScalarPut
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeScalarPut(
+  public CADBQTypeScalarRemove(
     final CADatabaseTransaction transaction)
   {
     super(transaction);
@@ -61,18 +62,13 @@ public final class CADBQItemTypeScalarPut
   @Override
   protected CADatabaseUnit onExecute(
     final DSLContext context,
-    final CATypeScalar scalar)
+    final RDottedName name)
     throws CADatabaseException
   {
-    context.insertInto(METADATA_SCALAR_TYPES)
-      .set(METADATA_SCALAR_TYPES.NAME, scalar.name().value())
-      .set(METADATA_SCALAR_TYPES.DESCRIPTION, scalar.description())
-      .set(METADATA_SCALAR_TYPES.PATTERN, scalar.pattern())
-      .onConflict(METADATA_SCALAR_TYPES.NAME)
-      .doUpdate()
-      .set(METADATA_SCALAR_TYPES.NAME, scalar.name().value())
-      .set(METADATA_SCALAR_TYPES.DESCRIPTION, scalar.description())
-      .set(METADATA_SCALAR_TYPES.PATTERN, scalar.pattern())
+    final var typeName = name.value();
+
+    context.deleteFrom(METADATA_SCALAR_TYPES)
+      .where(METADATA_SCALAR_TYPES.NAME.eq(typeName))
       .execute();
 
     return CADatabaseUnit.UNIT;

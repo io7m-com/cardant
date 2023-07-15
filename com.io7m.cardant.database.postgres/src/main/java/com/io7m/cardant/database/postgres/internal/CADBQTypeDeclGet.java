@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
@@ -38,12 +38,12 @@ import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_F
  * Retrieve a type declaration.
  */
 
-public final class CADBQItemTypeDeclGet
+public final class CADBQTypeDeclGet
   extends CADBQAbstract<RDottedName, Optional<CATypeDeclaration>>
   implements TypeDeclarationGetType
 {
   private static final Service<RDottedName, Optional<CATypeDeclaration>, TypeDeclarationGetType> SERVICE =
-    new Service<>(TypeDeclarationGetType.class, CADBQItemTypeDeclGet::new);
+    new Service<>(TypeDeclarationGetType.class, CADBQTypeDeclGet::new);
 
   /**
    * Construct a query.
@@ -51,7 +51,7 @@ public final class CADBQItemTypeDeclGet
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeDeclGet(
+  public CADBQTypeDeclGet(
     final CADatabaseTransaction transaction)
   {
     super(transaction);

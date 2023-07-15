@@ -17,7 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationsSearchType;
 import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;

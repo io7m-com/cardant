@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -97,11 +97,11 @@ public final class CAICmdTypeDeclarationRemoveTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesItemTypesType.TypeDeclarationRemoveType.class);
+      mock(CADatabaseQueriesTypesType.TypeDeclarationRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationRemoveType.class))
       .thenReturn(files);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -130,7 +130,7 @@ public final class CAICmdTypeDeclarationRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeDeclarationRemoveType.class);
+      .queries(CADatabaseQueriesTypesType.TypeDeclarationRemoveType.class);
 
     verify(files)
       .execute(TYPE_DECLARATION.name());

@@ -17,7 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationRemove;
@@ -52,7 +52,7 @@ public final class CAICmdTypeDeclarationRemove
 
     final var remove =
       context.transaction()
-        .queries(CADatabaseQueriesItemTypesType.TypeDeclarationRemoveType.class);
+        .queries(CADatabaseQueriesTypesType.TypeDeclarationRemoveType.class);
 
     for (final var type : command.types()) {
       remove.execute(type);

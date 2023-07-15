@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import com.io7m.cardant.security.CASecurity;
@@ -105,11 +105,11 @@ public final class CAICmdTypeScalarPutTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesItemTypesType.TypeScalarPutType.class);
+      mock(CADatabaseQueriesTypesType.TypeScalarPutType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeScalarPutType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeScalarPutType.class))
       .thenReturn(files);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -136,7 +136,7 @@ public final class CAICmdTypeScalarPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeScalarPutType.class);
+      .queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
 
     verify(files)
       .execute(TYPE_SCALAR);

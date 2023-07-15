@@ -17,8 +17,9 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType;
-import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarSearchType;
+import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
+import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
@@ -27,25 +28,19 @@ import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
- * Search for type declarations.
+ * Search for scalar type declarations.
  */
 
-public final class CADBQItemTypeDeclsSearch
-  extends CADBQAbstract<String, CADatabaseTypeDeclarationSearchType>
-  implements TypeDeclarationsSearchType
+public final class CADBQTypeScalarSearch
+  extends CADBQAbstract<String, CADatabaseTypeScalarSearchType>
+  implements TypeScalarSearchType
 {
-  private static final CADBQueryProviderType.Service<
-    String,
-    CADatabaseTypeDeclarationSearchType,
-    TypeDeclarationsSearchType> SERVICE =
-    new CADBQueryProviderType.Service<>(
-      TypeDeclarationsSearchType.class,
-      CADBQItemTypeDeclsSearch::new
-    );
+  private static final Service<String, CADatabaseTypeScalarSearchType, TypeScalarSearchType> SERVICE =
+    new Service<>(TypeScalarSearchType.class, CADBQTypeScalarSearch::new);
 
   /**
    * Construct a query.
@@ -53,7 +48,7 @@ public final class CADBQItemTypeDeclsSearch
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeDeclsSearch(
+  public CADBQTypeScalarSearch(
     final CADatabaseTransaction transaction)
   {
     super(transaction);
@@ -68,27 +63,22 @@ public final class CADBQItemTypeDeclsSearch
     return () -> SERVICE;
   }
 
-
   @Override
-  protected CADatabaseTypeDeclarationSearchType
-  onExecute(
+  protected CADatabaseTypeScalarSearchType onExecute(
     final DSLContext context,
     final String query)
   {
-    final var tableSource =
-      METADATA_TYPE_DECLARATIONS;
-
     final var searchCondition =
       DSL.condition(
-        "METADATA_TYPE_DECLARATIONS.description_search @@ websearch_to_tsquery(?)",
+        "METADATA_SCALAR_TYPES.description_search @@ websearch_to_tsquery(?)",
         DSL.inline(query)
       );
 
     final var orderField =
-      new JQField(METADATA_TYPE_DECLARATIONS.NAME, JQOrder.ASCENDING);
+      new JQField(METADATA_SCALAR_TYPES.NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
-      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
+      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_SCALAR_TYPES)
         .addSortField(orderField)
         .addWhereCondition(searchCondition)
         .setPageSize(10L)
@@ -100,6 +90,6 @@ public final class CADBQItemTypeDeclsSearch
       JQKeysetRandomAccessPagination.createPageDefinitions(
         context, pageParameters);
 
-    return new CAItemTypeDeclarationSummarySearch(pages);
+    return new CAItemTypeScalarSearch(pages);
   }
 }

@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
@@ -109,7 +109,7 @@ public final class CAICmdTypeDeclarationSearchBeginTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType.class);
+      mock(CADatabaseQueriesTypesType.TypeDeclarationsSearchType.class);
     final var itemSearch =
       mock(CADatabaseTypeDeclarationSearchType.class);
 
@@ -127,7 +127,7 @@ public final class CAICmdTypeDeclarationSearchBeginTest
       );
 
     when(transaction.queries(
-      CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType.class))
+      CADatabaseQueriesTypesType.TypeDeclarationsSearchType.class))
       .thenReturn(items);
     when(items.execute(any()))
       .thenReturn(itemSearch);
@@ -159,7 +159,7 @@ public final class CAICmdTypeDeclarationSearchBeginTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeDeclarationsSearchType.class);
+      .queries(CADatabaseQueriesTypesType.TypeDeclarationsSearchType.class);
     verify(items)
       .execute("");
     verify(itemSearch)

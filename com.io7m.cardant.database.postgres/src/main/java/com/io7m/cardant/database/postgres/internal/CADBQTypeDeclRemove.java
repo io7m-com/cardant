@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType.TypeDeclarationRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationRemoveType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.lanark.core.RDottedName;
@@ -31,12 +31,12 @@ import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_F
  * Remove a type declaration.
  */
 
-public final class CADBQItemTypeDeclRemove
+public final class CADBQTypeDeclRemove
   extends CADBQAbstract<RDottedName, CADatabaseUnit>
   implements TypeDeclarationRemoveType
 {
   private static final Service<RDottedName, CADatabaseUnit, TypeDeclarationRemoveType> SERVICE =
-    new Service<>(TypeDeclarationRemoveType.class, CADBQItemTypeDeclRemove::new);
+    new Service<>(TypeDeclarationRemoveType.class, CADBQTypeDeclRemove::new);
 
   /**
    * Construct a query.
@@ -44,7 +44,7 @@ public final class CADBQItemTypeDeclRemove
    * @param transaction The transaction
    */
 
-  public CADBQItemTypeDeclRemove(
+  public CADBQTypeDeclRemove(
     final CADatabaseTransaction transaction)
   {
     super(transaction);

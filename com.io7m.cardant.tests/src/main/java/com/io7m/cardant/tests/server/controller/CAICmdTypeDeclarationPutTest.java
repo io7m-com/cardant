@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemTypesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -97,11 +97,11 @@ public final class CAICmdTypeDeclarationPutTest
     /* Arrange. */
 
     final var files =
-      mock(CADatabaseQueriesItemTypesType.TypeDeclarationPutType.class);
+      mock(CADatabaseQueriesTypesType.TypeDeclarationPutType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemTypesType.TypeDeclarationPutType.class))
+    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationPutType.class))
       .thenReturn(files);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -128,7 +128,7 @@ public final class CAICmdTypeDeclarationPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemTypesType.TypeDeclarationPutType.class);
+      .queries(CADatabaseQueriesTypesType.TypeDeclarationPutType.class);
 
     verify(files)
       .execute(TYPE_DECLARATION);
