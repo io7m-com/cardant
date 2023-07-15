@@ -18,18 +18,16 @@ package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
-import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.lanark.core.RDottedName;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedMap;
 
 /**
  * Model database queries (Items).
@@ -122,7 +120,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      Set<CAItemMetadata> metadata)
+      Set<CAMetadata> metadata)
     {
 
     }
@@ -149,17 +147,6 @@ public sealed interface CADatabaseQueriesItemsType
     {
 
     }
-  }
-
-  /**
-   * Retrieve metadata for an item.
-   */
-
-  non-sealed interface MetadataGetType
-    extends CADatabaseQueryType<CAItemID, SortedMap<RDottedName, CAItemMetadata>>,
-    CADatabaseQueriesItemsType
-  {
-
   }
 
   /**
@@ -207,29 +194,6 @@ public sealed interface CADatabaseQueriesItemsType
       CAItemID item,
       CAFileID file,
       String relation)
-    {
-
-    }
-  }
-
-  /**
-   * Retrieve all the attachments associated with an item.
-   */
-
-  non-sealed interface AttachmentsGetType
-    extends CADatabaseQueryType<AttachmentsGetType.Parameters, Set<CAItemAttachment>>,
-    CADatabaseQueriesItemsType
-  {
-    /**
-     * Parameters for the operation.
-     *
-     * @param item     The item ID
-     * @param withData {@code true} if the data should be returned
-     */
-
-    record Parameters(
-      CAItemID item,
-      boolean withData)
     {
 
     }

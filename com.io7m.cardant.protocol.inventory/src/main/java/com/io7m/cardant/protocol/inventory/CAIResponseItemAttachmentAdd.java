@@ -32,7 +32,7 @@ import java.util.UUID;
 public record CAIResponseItemAttachmentAdd(
   UUID requestId,
   CAItem data)
-  implements CAIResponseWithElementType
+  implements CAIResponseType
 {
   /**
    * @see CAICommandItemAttachmentAdd

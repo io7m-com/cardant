@@ -21,6 +21,7 @@ import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
+import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
@@ -151,5 +152,17 @@ public interface CAFormatterType
 
   void formatTypeDeclarationPage(
     CAPage<CATypeDeclarationSummary> types)
+    throws Exception;
+
+  /**
+   * Format a location.
+   *
+   * @param location The location
+   *
+   * @throws Exception On errors
+   */
+
+  void formatLocation(
+    CALocation location)
     throws Exception;
 }

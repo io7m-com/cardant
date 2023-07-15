@@ -248,6 +248,7 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
    * the failure response.
    *
    * @param command The command
+   * @param <R>     The precise type of returned value
    *
    * @return The result
    *
@@ -255,11 +256,11 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
    * @throws InterruptedException On interruption
    */
 
-  default CAIResponseType executeOrElseThrow(
-    final CAICommandType<?> command)
+  default <R extends CAIResponseType> R executeOrElseThrow(
+    final CAICommandType<R> command)
     throws CAClientException, InterruptedException
   {
-    return this.executeOrElseThrow(
+    return (R) this.executeOrElseThrow(
       command,
       CAClientException::ofError
     );

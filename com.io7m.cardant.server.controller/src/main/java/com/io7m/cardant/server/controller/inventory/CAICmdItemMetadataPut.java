@@ -70,7 +70,7 @@ public final class CAICmdItemMetadataPut
     metaPut.execute(new Parameters(itemId, metadatas));
 
     final var item = get.execute(itemId).orElseThrow();
-    CAICmdItemMetadataRemove.checkTypes(context, typeGet, item);
+    CAITypeChecking.checkTypes(context, typeGet, item);
     return new CAIResponseItemMetadataPut(context.requestId(), item);
   }
 }

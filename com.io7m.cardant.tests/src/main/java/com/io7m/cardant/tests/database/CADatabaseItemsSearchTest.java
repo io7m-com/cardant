@@ -19,7 +19,6 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
@@ -31,7 +30,9 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
@@ -47,9 +48,7 @@ import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatch
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
-import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
-import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
@@ -72,6 +71,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -110,7 +110,6 @@ public final class CADatabaseItemsSearchTest
   private CADatabaseQueriesItemsType.GetType itemGet;
   private MetadataPutType metaAdd;
   private MetadataRemoveType metaRemove;
-  private MetadataGetType metaGet;
   private TypeDeclarationPutType typePut;
   private TypesAssignType itemTypeAssign;
 
@@ -161,8 +160,6 @@ public final class CADatabaseItemsSearchTest
       this.transaction.queries(MetadataPutType.class);
     this.metaRemove =
       this.transaction.queries(MetadataRemoveType.class);
-    this.metaGet =
-      this.transaction.queries(MetadataGetType.class);
     this.typePut =
       this.transaction.queries(TypeDeclarationPutType.class);
   }
@@ -182,21 +179,27 @@ public final class CADatabaseItemsSearchTest
         CALocationID.random(),
         empty(),
         "Loc0",
-        "Location 0"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc1 =
       new CALocation(
         CALocationID.random(),
         Optional.of(loc0.id()),
         "Loc1",
-        "Location 1"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc2 =
       new CALocation(
         CALocationID.random(),
         Optional.of(loc1.id()),
         "Loc2",
-        "Location 2"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     final var items = new ArrayList<CAItemID>();
@@ -252,7 +255,7 @@ public final class CADatabaseItemsSearchTest
     {
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
-          new CALocationWithDescendants(loc0.id()),
+          new CAItemLocationWithDescendants(loc0.id()),
           CANameMatchAny.ANY,
           CATypeMatchAny.ANY,
           CAMetadataMatchAny.ANY,
@@ -300,7 +303,7 @@ public final class CADatabaseItemsSearchTest
     {
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
-          new CALocationWithDescendants(loc1.id()),
+          new CAItemLocationWithDescendants(loc1.id()),
           CANameMatchAny.ANY,
           CATypeMatchAny.ANY,
           CAMetadataMatchAny.ANY,
@@ -348,7 +351,7 @@ public final class CADatabaseItemsSearchTest
     {
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
-          new CALocationWithDescendants(loc2.id()),
+          new CAItemLocationWithDescendants(loc2.id()),
           CANameMatchAny.ANY,
           CATypeMatchAny.ANY,
           CAMetadataMatchAny.ANY,
@@ -405,21 +408,27 @@ public final class CADatabaseItemsSearchTest
         CALocationID.random(),
         empty(),
         "Loc0",
-        "Location 0"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc1 =
       new CALocation(
         CALocationID.random(),
         Optional.of(loc0.id()),
         "Loc1",
-        "Location 1"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc2 =
       new CALocation(
         CALocationID.random(),
         Optional.of(loc1.id()),
         "Loc2",
-        "Location 2"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     final var items = new ArrayList<CAItemID>();
@@ -475,7 +484,7 @@ public final class CADatabaseItemsSearchTest
     {
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
-          new CALocationExact(loc0.id()),
+          new CAItemLocationExact(loc0.id()),
           CANameMatchAny.ANY,
           CATypeMatchAny.ANY,
           CAMetadataMatchAny.ANY,
@@ -523,7 +532,7 @@ public final class CADatabaseItemsSearchTest
     {
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
-          new CALocationExact(loc1.id()),
+          new CAItemLocationExact(loc1.id()),
           CANameMatchAny.ANY,
           CATypeMatchAny.ANY,
           CAMetadataMatchAny.ANY,
@@ -571,7 +580,7 @@ public final class CADatabaseItemsSearchTest
     {
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
-          new CALocationExact(loc2.id()),
+          new CAItemLocationExact(loc2.id()),
           CANameMatchAny.ANY,
           CATypeMatchAny.ANY,
           CAMetadataMatchAny.ANY,
@@ -628,21 +637,27 @@ public final class CADatabaseItemsSearchTest
         CALocationID.random(),
         empty(),
         "Loc0",
-        "Location 0"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc1 =
       new CALocation(
         CALocationID.random(),
         Optional.of(loc0.id()),
         "Loc1",
-        "Location 1"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc2 =
       new CALocation(
         CALocationID.random(),
         Optional.of(loc1.id()),
         "Loc2",
-        "Location 2"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     final var items = new ArrayList<CAItemID>();
@@ -698,7 +713,7 @@ public final class CADatabaseItemsSearchTest
     {
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
-          new CALocationsAll(),
+          new CAItemLocationsAll(),
           CANameMatchAny.ANY,
           CATypeMatchAny.ANY,
           CAMetadataMatchAny.ANY,
@@ -756,7 +771,7 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CALocationsAll(),
+        new CAItemLocationsAll(),
         new CANameMatchSearch("join"),
         CATypeMatchAny.ANY,
         CAMetadataMatchAny.ANY,
@@ -796,7 +811,7 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CALocationsAll(),
+        new CAItemLocationsAll(),
         new CANameMatchExact(itemName),
         CATypeMatchAny.ANY,
         CAMetadataMatchAny.ANY,
@@ -845,7 +860,7 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CALocationsAll(),
+        new CAItemLocationsAll(),
         CANameMatchAny.ANY,
         CATypeMatchAny.ANY,
         new CAMetadataRequire(
@@ -895,7 +910,7 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CALocationsAll(),
+        new CAItemLocationsAll(),
         CANameMatchAny.ANY,
         CATypeMatchAny.ANY,
         new CAMetadataRequire(
@@ -939,7 +954,7 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CALocationsAll(),
+        new CAItemLocationsAll(),
         CANameMatchAny.ANY,
         new CATypeMatchAnyOf(
           Set.of(new RDottedName("t0"), new RDottedName("t1"))
@@ -985,7 +1000,7 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CALocationsAll(),
+        new CAItemLocationsAll(),
         CANameMatchAny.ANY,
         new CATypeMatchAllOf(
           Set.of(new RDottedName("t0"), new RDottedName("t1"))
@@ -1053,13 +1068,13 @@ public final class CADatabaseItemsSearchTest
        * Create some metadata.
        */
 
-      final var meta = new HashSet<CAItemMetadata>();
+      final var meta = new HashSet<CAMetadata>();
       for (int metaIndex = 1; metaIndex < 10; ++metaIndex) {
         final var metaValue =
           thisName.get(metaIndex);
         final var metaName =
           new RDottedName(metaValue.substring(0, 1));
-        meta.add(new CAItemMetadata(metaName, metaValue));
+        meta.add(new CAMetadata(metaName, metaValue));
 
         /*
          * Assign some types.

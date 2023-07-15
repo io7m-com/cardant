@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.model;
 
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.model.CATypeChecking;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
@@ -145,7 +145,7 @@ public final class CATypeCheckingTest
         CAStrings.create(Locale.ROOT),
         Set.of(type),
         Set.of(
-          new CAItemMetadata(new RDottedName("com.io7m.x"), "z")
+          new CAMetadata(new RDottedName("com.io7m.x"), "z")
         )
       );
 

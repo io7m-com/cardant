@@ -17,8 +17,8 @@
 
 package com.io7m.cardant.shell.internal;
 
+import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
-import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
@@ -98,14 +98,19 @@ public final class CAShellCmdRolesRevoke extends CAShellCmdAbstract
     final QCommandContextType context)
     throws Exception
   {
+    final var client =
+      this.client();
+    final var userId =
+      context.parameterValue(USER_ID);
+    final var roles =
+      context.parameterValues(ROLES);
+
+    client.executeOrElseThrow(
+      new CAICommandRolesRevoke(userId, Set.copyOf(roles))
+    );
+
     final var response =
-      (CAIResponseRolesGet)
-        this.client().executeOrElseThrow(
-          new CAICommandRolesRevoke(
-            context.parameterValue(USER_ID),
-            Set.copyOf(context.parameterValues(ROLES))
-          )
-        );
+      client.executeOrElseThrow(new CAICommandRolesGet(userId));
 
     this.formatter().formatRoles(response.roles());
     return SUCCESS;

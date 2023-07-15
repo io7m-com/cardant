@@ -14,7 +14,6 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.model.CAItem;
@@ -32,7 +31,7 @@ import java.util.UUID;
 public record CAIResponseItemMetadataRemove(
   UUID requestId,
   CAItem data)
-  implements CAIResponseWithElementType
+  implements CAIResponseType
 {
   /**
    * @see CAICommandItemMetadataRemove

@@ -27,8 +27,32 @@ import java.util.UUID;
 public sealed interface CAIResponseType
   extends CAIMessageType, HBResponseType
   permits CAIResponseError,
+  CAIResponseFileGet,
+  CAIResponseFilePut,
+  CAIResponseFileRemove,
   CAIResponseFileSearch,
+  CAIResponseItemAttachmentAdd,
+  CAIResponseItemAttachmentRemove,
+  CAIResponseItemCreate,
+  CAIResponseItemGet,
+  CAIResponseItemLocationsList,
+  CAIResponseItemMetadataPut,
+  CAIResponseItemMetadataRemove,
+  CAIResponseItemReposit,
   CAIResponseItemSearch,
+  CAIResponseItemSetName,
+  CAIResponseItemTypesAssign,
+  CAIResponseItemTypesRevoke,
+  CAIResponseItemsRemove,
+  CAIResponseLocationAttachmentAdd,
+  CAIResponseLocationAttachmentRemove,
+  CAIResponseLocationGet,
+  CAIResponseLocationList,
+  CAIResponseLocationMetadataPut,
+  CAIResponseLocationMetadataRemove,
+  CAIResponseLocationPut,
+  CAIResponseLocationTypesAssign,
+  CAIResponseLocationTypesRevoke,
   CAIResponseLogin,
   CAIResponseRolesAssign,
   CAIResponseRolesGet,
@@ -40,8 +64,7 @@ public sealed interface CAIResponseType
   CAIResponseTypeScalarGet,
   CAIResponseTypeScalarPut,
   CAIResponseTypeScalarRemove,
-  CAIResponseTypeScalarSearch,
-  CAIResponseWithElementType
+  CAIResponseTypeScalarSearch
 {
   /**
    * @return The ID of the request that yielded this response

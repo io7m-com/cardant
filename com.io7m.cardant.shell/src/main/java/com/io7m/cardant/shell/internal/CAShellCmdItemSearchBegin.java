@@ -19,7 +19,10 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemColumnOrdering;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAItemLocationMatchType;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
@@ -34,10 +37,7 @@ import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatch
 import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CALocationMatchType;
-import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
-import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
-import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.lanark.core.RDottedName;
@@ -145,14 +145,14 @@ public final class CAShellCmdItemSearchBegin
       RDottedName.class
     );
 
-  private static final QParameterNamed0N<CAItemMetadata> METADATA_REQUIRE_EXACT =
+  private static final QParameterNamed0N<CAMetadata> METADATA_REQUIRE_EXACT =
     new QParameterNamed0N<>(
       "--metadata-require-value",
       List.of(),
       new QConstant(
         "Only include items that have metadata with the exact given value."),
       List.of(),
-      CAItemMetadata.class
+      CAMetadata.class
     );
 
   /**
@@ -290,7 +290,7 @@ public final class CAShellCmdItemSearchBegin
     return nameMatch;
   }
 
-  private static CALocationMatchType parseLocationMatch(
+  private static CAItemLocationMatchType parseLocationMatch(
     final QCommandContextType context)
   {
     final var exactOpt =
@@ -298,12 +298,12 @@ public final class CAShellCmdItemSearchBegin
     final var descendantsOpt =
       context.parameterValue(LOCATIONS_DESCENDANTS);
 
-    CALocationMatchType locationMatch = new CALocationsAll();
+    CAItemLocationMatchType locationMatch = new CAItemLocationsAll();
     if (exactOpt.isPresent()) {
-      locationMatch = new CALocationExact(exactOpt.get());
+      locationMatch = new CAItemLocationExact(exactOpt.get());
     }
     if (descendantsOpt.isPresent()) {
-      locationMatch = new CALocationWithDescendants(descendantsOpt.get());
+      locationMatch = new CAItemLocationWithDescendants(descendantsOpt.get());
     }
     return locationMatch;
   }

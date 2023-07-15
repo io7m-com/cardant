@@ -302,10 +302,10 @@ CREATE TABLE item_attachments (
   item_id   UUID         NOT NULL,
   relation  VARCHAR(128) NOT NULL,
 
-  CONSTRAINT FILE_EXISTS
+  CONSTRAINT item_attachments_file_exists
     FOREIGN KEY (file_id) REFERENCES files (id),
 
-  CONSTRAINT ITEM_EXISTS
+  CONSTRAINT item_attachments_item_exists
     FOREIGN KEY (item_id) REFERENCES items (item_id),
 
   PRIMARY KEY (file_id, item_id, relation)
@@ -329,13 +329,13 @@ CREATE TABLE item_metadata (
   metadata_name     VARCHAR(1024) NOT NULL,
   metadata_value    VARCHAR(1024) NOT NULL,
 
-  CONSTRAINT metadata_name_VALID
+  CONSTRAINT item_metadata_name_valid
     CHECK (metadata_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
 
-  CONSTRAINT metadata_item_exists
+  CONSTRAINT item_metadata_item_exists
     FOREIGN KEY (metadata_item_id) REFERENCES items (item_id),
 
-  CONSTRAINT metadata_name_UNIQUE
+  CONSTRAINT item_metadata_name_unique
     UNIQUE (metadata_item_id, metadata_name)
 )
 ]]></Statement>
@@ -375,11 +375,6 @@ CREATE TABLE locations (
   location_id           UUID          NOT NULL PRIMARY KEY,
   location_parent       UUID,
   location_name         VARCHAR(128)  NOT NULL,
-  location_description  VARCHAR(1024) NOT NULL,
-
-  -- [jooq ignore start]
-  location_description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, location_description)) STORED,
-  -- [jooq ignore stop]
 
   CONSTRAINT location_parent_exists
     FOREIGN KEY (location_parent) REFERENCES locations (location_id)
@@ -418,6 +413,61 @@ CREATE TABLE location_types (
     </Statement>
     <Statement>
       GRANT SELECT ON location_types TO cardant_read_only
+    </Statement>
+
+    <Comment>
+      The location_metadata table contains metadata for each location.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE TABLE location_metadata (
+  metadata_location_id  UUID          NOT NULL,
+  metadata_name         VARCHAR(1024) NOT NULL,
+  metadata_value        VARCHAR(1024) NOT NULL,
+
+  CONSTRAINT location_metadata_name_valid
+    CHECK (metadata_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
+
+  CONSTRAINT location_metadata_location_exists
+    FOREIGN KEY (metadata_location_id) REFERENCES locations (location_id),
+
+  CONSTRAINT location_metadata_name_unique
+    UNIQUE (metadata_location_id, metadata_name)
+)
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON location_metadata TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON location_metadata TO cardant_read_only
+    </Statement>
+
+    <Comment>
+      The location_attachments table contains attachments for each location.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE TABLE location_attachments (
+  file_id     UUID         NOT NULL,
+  location_id UUID         NOT NULL,
+  relation    VARCHAR(128) NOT NULL,
+
+  CONSTRAINT location_attachment_file_exists
+    FOREIGN KEY (file_id) REFERENCES files (id),
+
+  CONSTRAINT location_attachment_location_exists
+    FOREIGN KEY (location_id) REFERENCES locations (location_id),
+
+  PRIMARY KEY (file_id, location_id, relation)
+)
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON location_attachments TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON location_attachments TO cardant_read_only
     </Statement>
 
     <Statement><![CDATA[

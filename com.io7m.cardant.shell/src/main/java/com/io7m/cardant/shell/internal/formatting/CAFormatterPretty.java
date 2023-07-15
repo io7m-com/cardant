@@ -20,14 +20,20 @@ package com.io7m.cardant.shell.internal.formatting;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerCredentialsType;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
+import com.io7m.cardant.model.CAAttachment;
+import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
 import com.io7m.tabla.core.TColumnWidthConstraintMaximumAtMost;
@@ -46,6 +52,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
 
 import static com.io7m.cardant.shell.internal.formatting.CAFormatterRaw.formatSize;
 import static com.io7m.tabla.core.TColumnWidthConstraint.atLeastContent;
@@ -212,20 +219,17 @@ public final class CAFormatterPretty implements CAFormatterType
     throws TException
   {
     this.formatItemAttributes(item);
-    this.formatItemMetadata(item);
-    this.formatItemAttachments(item);
+    this.formatMetadata(item.metadata());
+    this.formatAttachments(item.attachments());
   }
 
-  private void formatItemMetadata(
-    final CAItem item)
+  private void formatMetadata(
+    final SortedMap<RDottedName, CAMetadata> metadata)
     throws TException
   {
-    final var metadata =
-      item.metadata();
-
     if (!metadata.isEmpty()) {
       final var writer = this.terminal.writer();
-      writer.println(" Metadata");
+      writer.println(" metadata");
 
       final var tableBuilder =
         Tabla.builder()
@@ -243,13 +247,10 @@ public final class CAFormatterPretty implements CAFormatterType
     }
   }
 
-  private void formatItemAttachments(
-    final CAItem item)
+  private void formatAttachments(
+    final SortedMap<CAAttachmentKey, CAAttachment> attachments)
     throws TException
   {
-    final var attachments =
-      item.attachments();
-
     if (!attachments.isEmpty()) {
       final var writer = this.terminal.writer();
       writer.println(" Attachments");
@@ -507,6 +508,42 @@ public final class CAFormatterPretty implements CAFormatterType
     }
 
     this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatLocation(
+    final CALocation location)
+    throws Exception
+  {
+    this.formatLocationAttributes(location);
+    this.formatMetadata(location.metadata());
+    this.formatAttachments(location.attachments());
+  }
+
+  private void formatLocationAttributes(
+    final CALocation location)
+    throws TException
+  {
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(2))
+        .declareColumn("Attribute", ITEM_ATTRIBUTE_CONSTRAINT)
+        .declareColumn("Value", atLeastContent());
+
+    tableBuilder.addRow()
+      .addCell("Location ID")
+      .addCell(location.id().displayId());
+
+    tableBuilder.addRow()
+      .addCell("Name")
+      .addCell(location.name());
+
+    tableBuilder.addRow()
+      .addCell("Parent")
+      .addCell(location.parent().map(CAIdType::displayId).orElse("None"));
+
+    this.renderTable(tableBuilder.build());
+
   }
 
   @Override

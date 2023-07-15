@@ -21,7 +21,6 @@ package com.io7m.cardant.model;
  */
 
 public sealed interface CAItemRepositType
-  extends CAInventoryElementType
   permits CAItemRepositAdd,
   CAItemRepositMove,
   CAItemRepositRemove

@@ -20,10 +20,8 @@ import com.io7m.lanark.core.RDottedName;
 
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.stream.Stream;
 
 /**
  * An item in the inventory.
@@ -42,10 +40,10 @@ public record CAItem(
   String name,
   long countTotal,
   long countHere,
-  SortedMap<RDottedName, CAItemMetadata> metadata,
-  SortedMap<CAItemAttachmentKey, CAItemAttachment> attachments,
+  SortedMap<RDottedName, CAMetadata> metadata,
+  SortedMap<CAAttachmentKey, CAAttachment> attachments,
   SortedSet<RDottedName> types)
-  implements CAInventoryElementType
+  implements CAInventoryObjectType<CAItemSummary>
 {
   /**
    * Construct an item.
@@ -89,48 +87,6 @@ public record CAItem(
   }
 
   /**
-   * @param relation The relation
-   *
-   * @return The attachments with the given relation
-   */
-
-  public Stream<CAItemAttachment> attachmentsWithRelation(
-    final String relation)
-  {
-    Objects.requireNonNull(relation, "relation");
-    return this.attachments.values()
-      .stream()
-      .filter(attachment -> Objects.equals(attachment.relation(), relation));
-  }
-
-  /**
-   * @param relation The relation
-   *
-   * @return The first attachment with the given relation
-   */
-
-  public Optional<CAItemAttachment> firstAttachmentWithRelation(
-    final String relation)
-  {
-    Objects.requireNonNull(relation, "relation");
-    return this.attachmentsWithRelation(relation)
-      .findFirst();
-  }
-
-  /**
-   * @param relation The relation
-   *
-   * @return {@code true} if any attachment exists with the given relation
-   */
-
-  public boolean hasAttachmentWithRelation(
-    final String relation)
-  {
-    Objects.requireNonNull(relation, "relation");
-    return this.firstAttachmentWithRelation(relation).isPresent();
-  }
-
-  /**
    * Set the count in the current storage location context for this item.
    *
    * @param newCountHere The item count
@@ -150,5 +106,11 @@ public record CAItem(
       this.attachments,
       this.types
     );
+  }
+
+  @Override
+  public CAItemSummary summary()
+  {
+    return new CAItemSummary(this.id, this.name);
   }
 }

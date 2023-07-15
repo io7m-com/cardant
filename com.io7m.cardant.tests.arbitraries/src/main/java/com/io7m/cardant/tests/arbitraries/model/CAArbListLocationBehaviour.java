@@ -17,23 +17,23 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CALocationMatchType;
-import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
-import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
-import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
+import com.io7m.cardant.model.CAItemLocationMatchType;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbListLocationBehaviour extends CAArbAbstract<CALocationMatchType>
+public final class CAArbListLocationBehaviour extends CAArbAbstract<CAItemLocationMatchType>
 {
   public CAArbListLocationBehaviour()
   {
     super(
-      CALocationMatchType.class,
+      CAItemLocationMatchType.class,
       () -> Arbitraries.oneOf(
-        Arbitraries.defaultFor(CALocationExact.class),
-        Arbitraries.defaultFor(CALocationWithDescendants.class),
-        Arbitraries.defaultFor(CALocationsAll.class)
+        Arbitraries.defaultFor(CAItemLocationExact.class),
+        Arbitraries.defaultFor(CAItemLocationWithDescendants.class),
+        Arbitraries.defaultFor(CAItemLocationsAll.class)
       )
     );
   }

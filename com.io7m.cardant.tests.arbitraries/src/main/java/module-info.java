@@ -35,10 +35,18 @@ import com.io7m.cardant.tests.arbitraries.CAArbCommandItemSearchBegin;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandItemSearchNext;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandItemSearchPrevious;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandItemSetName;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandItemTypesAssign;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandItemTypesRevoke;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandItemsRemove;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationAttachmentAdd;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationAttachmentRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationGet;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationList;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationMetadataPut;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationMetadataRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationPut;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationTypesAssign;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandLocationTypesRevoke;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandLogin;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesAssign;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesGet;
@@ -55,8 +63,6 @@ import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarSearchBegin;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarSearchNext;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarSearchPrevious;
-import com.io7m.cardant.tests.arbitraries.CAArbCommandTypesAssign;
-import com.io7m.cardant.tests.arbitraries.CAArbCommandTypesRevoke;
 import com.io7m.cardant.tests.arbitraries.CAArbResponse;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseError;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseFileGet;
@@ -76,9 +82,15 @@ import com.io7m.cardant.tests.arbitraries.CAArbResponseItemSetName;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseItemTypesAssign;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseItemTypesRevoke;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseItemsRemove;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationAttachmentAdd;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationAttachmentRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationGet;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationList;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationMetadataPut;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationMetadataRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationPut;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationTypesAssign;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseLocationTypesRevoke;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseLogin;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesAssign;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesGet;
@@ -91,6 +103,8 @@ import com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarGet;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarPut;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarSearch;
+import com.io7m.cardant.tests.arbitraries.model.CAArbAttachment;
+import com.io7m.cardant.tests.arbitraries.model.CAArbAttachmentKey;
 import com.io7m.cardant.tests.arbitraries.model.CAArbDottedName;
 import com.io7m.cardant.tests.arbitraries.model.CAArbErrorCode;
 import com.io7m.cardant.tests.arbitraries.model.CAArbFile;
@@ -101,8 +115,6 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbFileWithoutData;
 import com.io7m.cardant.tests.arbitraries.model.CAArbIdName;
 import com.io7m.cardant.tests.arbitraries.model.CAArbIds;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItem;
-import com.io7m.cardant.tests.arbitraries.model.CAArbItemAttachment;
-import com.io7m.cardant.tests.arbitraries.model.CAArbItemAttachmentKey;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemColumnOrdering;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemID;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemLocation;
@@ -120,7 +132,8 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbListLocationExact;
 import com.io7m.cardant.tests.arbitraries.model.CAArbListLocationWithDescendants;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocation;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationID;
-import com.io7m.cardant.tests.arbitraries.model.CAArbLocations;
+import com.io7m.cardant.tests.arbitraries.model.CAArbLocationSummaries;
+import com.io7m.cardant.tests.arbitraries.model.CAArbLocationSummary;
 import com.io7m.cardant.tests.arbitraries.model.CAArbMRoleName;
 import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataMatch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataMatchAny;
@@ -165,6 +178,8 @@ module com.io7m.cardant.tests.arbitraries
 
   provides ArbitraryProvider
     with
+      CAArbAttachment,
+      CAArbAttachmentKey,
       CAArbCommand,
       CAArbCommandDebugInvalid,
       CAArbCommandDebugRandom,
@@ -186,10 +201,18 @@ module com.io7m.cardant.tests.arbitraries
       CAArbCommandItemSearchNext,
       CAArbCommandItemSearchPrevious,
       CAArbCommandItemSetName,
+      CAArbCommandItemTypesAssign,
+      CAArbCommandItemTypesRevoke,
       CAArbCommandItemsRemove,
+      CAArbCommandLocationAttachmentAdd,
+      CAArbCommandLocationAttachmentRemove,
       CAArbCommandLocationGet,
       CAArbCommandLocationList,
+      CAArbCommandLocationMetadataPut,
+      CAArbCommandLocationMetadataRemove,
       CAArbCommandLocationPut,
+      CAArbCommandLocationTypesAssign,
+      CAArbCommandLocationTypesRevoke,
       CAArbCommandLogin,
       CAArbCommandRolesAssign,
       CAArbCommandRolesGet,
@@ -206,8 +229,6 @@ module com.io7m.cardant.tests.arbitraries
       CAArbCommandTypeScalarSearchBegin,
       CAArbCommandTypeScalarSearchNext,
       CAArbCommandTypeScalarSearchPrevious,
-      CAArbCommandTypesAssign,
-      CAArbCommandTypesRevoke,
       CAArbDottedName,
       CAArbErrorCode,
       CAArbFile,
@@ -218,8 +239,6 @@ module com.io7m.cardant.tests.arbitraries
       CAArbIdName,
       CAArbIds,
       CAArbItem,
-      CAArbItemAttachment,
-      CAArbItemAttachmentKey,
       CAArbItemColumnOrdering,
       CAArbItemID,
       CAArbItemLocation,
@@ -237,7 +256,8 @@ module com.io7m.cardant.tests.arbitraries
       CAArbListLocationWithDescendants,
       CAArbLocation,
       CAArbLocationID,
-      CAArbLocations,
+      CAArbLocationSummaries,
+      CAArbLocationSummary,
       CAArbMRoleName,
       CAArbMetadataMatch,
       CAArbMetadataMatchAny,
@@ -268,9 +288,15 @@ module com.io7m.cardant.tests.arbitraries
       CAArbResponseItemTypesAssign,
       CAArbResponseItemTypesRevoke,
       CAArbResponseItemsRemove,
+      CAArbResponseLocationAttachmentAdd,
+      CAArbResponseLocationAttachmentRemove,
       CAArbResponseLocationGet,
       CAArbResponseLocationList,
+      CAArbResponseLocationMetadataPut,
+      CAArbResponseLocationMetadataRemove,
       CAArbResponseLocationPut,
+      CAArbResponseLocationTypesAssign,
+      CAArbResponseLocationTypesRevoke,
       CAArbResponseLogin,
       CAArbResponseRolesAssign,
       CAArbResponseRolesGet,
@@ -289,9 +315,9 @@ module com.io7m.cardant.tests.arbitraries
       CAArbTypeDeclarationSummary,
       CAArbTypeField,
       CAArbTypeMatch,
+      CAArbTypeMatchAllOf,
       CAArbTypeMatchAny,
       CAArbTypeMatchAnyOf,
-      CAArbTypeMatchAllOf,
       CAArbTypeScalar,
       CAArbTypeScalarSearchParameters
     ;

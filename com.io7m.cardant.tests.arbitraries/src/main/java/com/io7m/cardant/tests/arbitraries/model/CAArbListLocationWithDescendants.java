@@ -17,19 +17,19 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbListLocationWithDescendants extends CAArbAbstract<CALocationWithDescendants>
+public final class CAArbListLocationWithDescendants extends CAArbAbstract<CAItemLocationWithDescendants>
 {
   public CAArbListLocationWithDescendants()
   {
     super(
-      CALocationWithDescendants.class,
+      CAItemLocationWithDescendants.class,
       () -> Arbitraries.defaultFor(CALocationID.class)
-        .map(CALocationWithDescendants::new)
+        .map(CAItemLocationWithDescendants::new)
     );
   }
 }

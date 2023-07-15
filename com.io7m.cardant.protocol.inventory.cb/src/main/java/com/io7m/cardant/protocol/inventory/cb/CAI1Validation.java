@@ -209,6 +209,24 @@ public final class CAI1Validation
       if (message instanceof final CAI1CommandItemTypesRevoke c) {
         return FromWireCommands.itemTypesRevoke(c);
       }
+      if (message instanceof final CAI1CommandLocationTypesAssign c) {
+        return FromWireCommands.locationTypesAssign(c);
+      }
+      if (message instanceof final CAI1CommandLocationTypesRevoke c) {
+        return FromWireCommands.locationTypesRevoke(c);
+      }
+      if (message instanceof final CAI1CommandLocationMetadataPut m) {
+        return FromWireCommands.locationMetadataPut(m);
+      }
+      if (message instanceof final CAI1CommandLocationMetadataRemove m) {
+        return FromWireCommands.locationMetadataRemove(m);
+      }
+      if (message instanceof final CAI1CommandLocationAttachmentAdd m) {
+        return FromWireCommands.locationAttachmentAdd(m);
+      }
+      if (message instanceof final CAI1CommandLocationAttachmentRemove m) {
+        return FromWireCommands.locationAttachmentRemove(m);
+      }
 
       /*
        * Response.
@@ -312,6 +330,24 @@ public final class CAI1Validation
       }
       if (message instanceof final CAI1ResponseItemTypesRevoke c) {
         return FromWireResponses.itemTypesRevoke(c);
+      }
+      if (message instanceof final CAI1ResponseLocationTypesAssign c) {
+        return FromWireResponses.locationTypesAssign(c);
+      }
+      if (message instanceof final CAI1ResponseLocationTypesRevoke c) {
+        return FromWireResponses.locationTypesRevoke(c);
+      }
+      if (message instanceof final CAI1ResponseLocationMetadataPut m) {
+        return FromWireResponses.locationMetadataPut(m);
+      }
+      if (message instanceof final CAI1ResponseLocationMetadataRemove m) {
+        return FromWireResponses.locationMetadataRemove(m);
+      }
+      if (message instanceof final CAI1ResponseLocationAttachmentAdd m) {
+        return FromWireResponses.locationAttachmentAdd(m);
+      }
+      if (message instanceof final CAI1ResponseLocationAttachmentRemove m) {
+        return FromWireResponses.locationAttachmentRemove(m);
       }
 
     } catch (final ProtocolUncheckedException e) {

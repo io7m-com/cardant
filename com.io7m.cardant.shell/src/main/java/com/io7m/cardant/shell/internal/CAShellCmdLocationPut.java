@@ -18,12 +18,10 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
-import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
@@ -34,11 +32,16 @@ import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_SHELL_OPTIONS_COMBINATION;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
@@ -75,15 +78,6 @@ public final class CAShellCmdLocationPut
       String.class
     );
 
-  private static final QParameterNamed01<String> DESCRIPTION =
-    new QParameterNamed01<>(
-      "--description",
-      List.of(),
-      new QConstant("The location description."),
-      Optional.empty(),
-      String.class
-    );
-
   private static final QParameterNamed01<Boolean> PARENT_DETACH =
     new QParameterNamed01<>(
       "--detach",
@@ -116,7 +110,7 @@ public final class CAShellCmdLocationPut
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ID, PARENT, NAME, DESCRIPTION, PARENT_DETACH);
+    return List.of(ID, PARENT, NAME, PARENT_DETACH);
   }
 
   @Override
@@ -129,88 +123,127 @@ public final class CAShellCmdLocationPut
 
     final var locationID =
       context.parameterValue(ID);
-    final var newName =
-      context.parameterValue(NAME);
-    final var newDescription =
-      context.parameterValue(DESCRIPTION);
     final var newParent =
       context.parameterValue(PARENT);
     final var detach =
       context.parameterValue(PARENT_DETACH)
         .orElse(Boolean.FALSE);
 
-    final var existing =
-      fetchExisting(client, locationID);
-
-    final CALocation toPut;
-    if (existing.isPresent()) {
-      toPut = delta(existing.get(), newName, newDescription, newParent, detach);
-    } else {
-      toPut = initial(locationID, newName, newDescription, newParent);
-    }
-
-    client.executeOrElseThrow(
-      new CAICommandLocationPut(toPut),
-      CAClientException::ofError
-    );
-    return SUCCESS;
-  }
-
-  private static CALocation initial(
-    final CALocationID locationID,
-    final Optional<String> newName,
-    final Optional<String> newDescription,
-    final Optional<CALocationID> newParent)
-  {
-    return new CALocation(
-      locationID,
-      newParent,
-      newName.orElse(""),
-      newDescription.orElse("")
-    );
-  }
-
-  private static CALocation delta(
-    final CALocation existing,
-    final Optional<String> newName,
-    final Optional<String> newDescription,
-    final Optional<CALocationID> newParent,
-    final Boolean detach)
-  {
-    if (detach.booleanValue()) {
-      return new CALocation(
-        existing.id(),
+    if (detach.booleanValue() && newParent.isPresent()) {
+      throw new CAClientException(
+        this.strings()
+          .format(
+            ERROR_SHELL_OPTIONS_COMBINATION,
+            Set.of(PARENT.name(), PARENT_DETACH.name())
+          ),
+        errorApiMisuse(),
+        Map.of(),
         Optional.empty(),
-        newName.orElseGet(existing::name),
-        newDescription.orElseGet(existing::description)
+        Optional.empty()
       );
     }
 
-    return new CALocation(
-      existing.id(),
-      newParent.or(existing::parent),
-      newName.orElseGet(existing::name),
-      newDescription.orElseGet(existing::description)
-    );
-  }
-
-  private static Optional<CALocation> fetchExisting(
-    final CAClientSynchronousType client,
-    final CALocationID locationID)
-    throws CAClientException, InterruptedException
-  {
+    final CALocation location;
     try {
-      return Optional.of(
-        ((CAIResponseLocationGet) client.executeOrElseThrow(
-          new CAICommandLocationGet(locationID),
-          CAClientException::ofError
-        )).data()
-      );
+      location =
+        client.executeOrElseThrow(new CAICommandLocationGet(locationID))
+          .data();
     } catch (final CAClientException e) {
       if (Objects.equals(e.errorCode(), errorNonexistent())) {
-        return Optional.empty();
+        return this.createNewLocation(context);
       }
       throw e;
     }
+
+    return this.modifyExistingLocation(context, location);
+  }
+
+  private QCommandStatus modifyExistingLocation(
+    final QCommandContextType context,
+    final CALocation location)
+    throws Exception
+  {
+    var newLocation = location;
+
+    final var newName =
+      context.parameterValue(NAME);
+
+    if (newName.isPresent()) {
+      newLocation = new CALocation(
+        newLocation.id(),
+        newLocation.parent(),
+        newName.get(),
+        newLocation.metadata(),
+        newLocation.attachments(),
+        newLocation.types()
+      );
+    }
+
+    final var newParent =
+      context.parameterValue(PARENT);
+
+    if (newParent.isPresent()) {
+      newLocation = new CALocation(
+        newLocation.id(),
+        newParent,
+        newLocation.name(),
+        newLocation.metadata(),
+        newLocation.attachments(),
+        newLocation.types()
+      );
+    }
+
+    final var detach =
+      context.parameterValue(PARENT_DETACH)
+        .orElse(Boolean.FALSE);
+
+    if (detach.booleanValue()) {
+      newLocation = new CALocation(
+        newLocation.id(),
+        Optional.empty(),
+        newLocation.name(),
+        newLocation.metadata(),
+        newLocation.attachments(),
+        newLocation.types()
+      );
+    }
+
+    final var client =
+      this.client();
+    final var result =
+      client.executeOrElseThrow(new CAICommandLocationPut(newLocation));
+
+    this.formatter().formatLocation(result.data());
+    return SUCCESS;
+  }
+
+  private QCommandStatus createNewLocation(
+    final QCommandContextType context)
+    throws Exception
+  {
+    final var locationID =
+      context.parameterValue(ID);
+    final var newName =
+      context.parameterValue(NAME);
+    final var newParent =
+      context.parameterValue(PARENT);
+
+    final var newLocation =
+      new CALocation(
+        locationID,
+        newParent,
+        newName.orElse(""),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    final var client =
+      this.client();
+    final var result =
+      client.executeOrElseThrow(new CAICommandLocationPut(newLocation));
+
+    this.formatter().formatLocation(result.data());
+    return SUCCESS;
   }
 }

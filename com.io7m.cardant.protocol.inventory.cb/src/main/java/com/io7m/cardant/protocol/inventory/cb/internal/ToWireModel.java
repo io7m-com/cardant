@@ -18,6 +18,8 @@
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+import com.io7m.cardant.model.CAAttachment;
+import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CAFileColumn;
 import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
@@ -25,14 +27,12 @@ import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocation;
+import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemLocations;
-import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
@@ -55,7 +55,8 @@ import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatch
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationSummary;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CASizeRange;
 import com.io7m.cardant.model.CATypeDeclaration;
@@ -64,24 +65,25 @@ import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
+import com.io7m.cardant.protocol.inventory.cb.CAI1Attachment;
+import com.io7m.cardant.protocol.inventory.cb.CAI1AttachmentKey;
 import com.io7m.cardant.protocol.inventory.cb.CAI1File;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumn;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumnOrdering;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Id;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Item;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ItemAttachment;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ItemAttachmentKey;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemColumn;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemColumnOrdering;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemLocation;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemLocations;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ItemMetadata;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ListLocationBehaviour;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
+import com.io7m.cardant.protocol.inventory.cb.CAI1LocationSummary;
+import com.io7m.cardant.protocol.inventory.cb.CAI1Metadata;
 import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataMatch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.CAI1MetadataValueMatchAny;
@@ -138,7 +140,7 @@ public final class ToWireModel
     final CAItem item)
   {
     final var attachments =
-      new HashMap<CAI1ItemAttachmentKey, CAI1ItemAttachment>();
+      new HashMap<CAI1AttachmentKey, CAI1Attachment>();
 
     for (final var entry : item.attachments().entrySet()) {
       final var key =
@@ -146,14 +148,14 @@ public final class ToWireModel
       final var val =
         entry.getValue();
       final var rKey =
-        itemAttachmentKey(key);
+        attachmentKey(key);
       final var rVal =
-        itemAttachment(val);
+        attachment(val);
       attachments.put(rKey, rVal);
     }
 
     final var metadata =
-      new HashMap<CBString, CAI1ItemMetadata>();
+      new HashMap<CBString, CAI1Metadata>();
 
     for (final var entry : item.metadata().entrySet()) {
       final var key =
@@ -163,7 +165,7 @@ public final class ToWireModel
       final var rKey =
         new CBString(key.value());
       final var rVal =
-        itemMetadata(val);
+        metadata(val);
       metadata.put(rKey, rVal);
     }
 
@@ -184,19 +186,19 @@ public final class ToWireModel
     );
   }
 
-  private static CAI1ItemAttachmentKey itemAttachmentKey(
-    final CAItemAttachmentKey key)
+  private static CAI1AttachmentKey attachmentKey(
+    final CAAttachmentKey key)
   {
-    return new CAI1ItemAttachmentKey(
+    return new CAI1AttachmentKey(
       new CBUUID(key.fileID().id()),
       new CBString(key.relation())
     );
   }
 
-  private static CAI1ItemAttachment itemAttachment(
-    final CAItemAttachment m)
+  private static CAI1Attachment attachment(
+    final CAAttachment m)
   {
-    return new CAI1ItemAttachment(
+    return new CAI1Attachment(
       file(m.file()),
       new CBString(m.relation())
     );
@@ -272,33 +274,81 @@ public final class ToWireModel
   public static CAI1Location location(
     final CALocation location)
   {
+    final var attachments =
+      new HashMap<CAI1AttachmentKey, CAI1Attachment>();
+
+    for (final var entry : location.attachments().entrySet()) {
+      final var key =
+        entry.getKey();
+      final var val =
+        entry.getValue();
+      final var rKey =
+        attachmentKey(key);
+      final var rVal =
+        attachment(val);
+      attachments.put(rKey, rVal);
+    }
+
+    final var metadata =
+      new HashMap<CBString, CAI1Metadata>();
+
+    for (final var entry : location.metadata().entrySet()) {
+      final var key =
+        entry.getKey();
+      final var val =
+        entry.getValue();
+      final var rKey =
+        new CBString(key.value());
+      final var rVal =
+        metadata(val);
+      metadata.put(rKey, rVal);
+    }
+
     return new CAI1Location(
       new CBUUID(location.id().id()),
       CBOptionType.fromOptional(location.parent().map(x -> new CBUUID(x.id()))),
       new CBString(location.name()),
-      new CBString(location.description())
+      new CBMap<>(metadata),
+      new CBMap<>(attachments),
+      new CBList<>(
+        location.types()
+          .stream()
+          .map(RDottedName::value)
+          .map(CBString::new)
+          .toList()
+      )
     );
   }
 
-  public static CAI1ItemMetadata itemMetadata(
-    final CAItemMetadata c)
+  public static CAI1LocationSummary locationSummary(
+    final CALocationSummary summary)
   {
-    return new CAI1ItemMetadata(
+    return new CAI1LocationSummary(
+      new CBUUID(summary.id().id()),
+      CBOptionType.fromOptional(summary.parent().map(x -> new CBUUID(x.id()))),
+      new CBString(summary.name())
+    );
+  }
+
+  public static CAI1Metadata metadata(
+    final CAMetadata c)
+  {
+    return new CAI1Metadata(
       new CBString(c.name().value()),
       new CBString(c.value())
     );
   }
 
   public static CAI1ListLocationBehaviour listLocationBehaviour(
-    final CALocationMatchType b)
+    final CAItemLocationMatchType b)
   {
-    if (b instanceof CALocationMatchType.CALocationsAll) {
+    if (b instanceof CAItemLocationMatchType.CAItemLocationsAll) {
       return new CAI1ListLocationBehaviour.CAI1ListLocationsAll();
-    } else if (b instanceof final CALocationMatchType.CALocationExact e) {
+    } else if (b instanceof final CAItemLocationMatchType.CAItemLocationExact e) {
       return new CAI1ListLocationBehaviour.CAI1ListLocationExact(
         new CBUUID(e.location().id())
       );
-    } else if (b instanceof final CALocationMatchType.CALocationWithDescendants e) {
+    } else if (b instanceof final CAItemLocationMatchType.CAItemLocationWithDescendants e) {
       return new CAI1ListLocationBehaviour.CAI1ListLocationWithDescendants(
         new CBUUID(e.location().id())
       );

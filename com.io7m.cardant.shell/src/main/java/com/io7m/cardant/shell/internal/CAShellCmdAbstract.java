@@ -20,6 +20,7 @@ package com.io7m.cardant.shell.internal;
 import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.shell.internal.formatting.CAFormatterType;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.terminal.Terminal;
@@ -71,6 +72,11 @@ public abstract class CAShellCmdAbstract
   protected final CAShellLoginTracker loginTracker()
   {
     return this.services.requireService(CAShellLoginTracker.class);
+  }
+
+  protected final CAStrings strings()
+  {
+    return this.services.requireService(CAStrings.class);
   }
 
   @Override

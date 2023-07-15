@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests;
 
-import com.io7m.cardant.protocol.inventory.CAIResponseWithElementType;
+import com.io7m.cardant.protocol.inventory.CAICommandType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,7 +57,7 @@ public final class CAGenArbitraries
     throws IOException
   {
     final var commandClasses =
-      CAIResponseWithElementType.class.getPermittedSubclasses();
+      CAICommandType.class.getPermittedSubclasses();
 
     for (final var clazz: commandClasses) {
       generate(clazz);

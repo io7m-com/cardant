@@ -17,11 +17,11 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
+import com.io7m.cardant.model.CAAttachment;
+import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
@@ -43,11 +43,11 @@ public final class CAArbItem extends CAArbAbstract<CAItem>
         Arbitraries.longs(),
         Arbitraries.maps(
           Arbitraries.defaultFor(RDottedName.class),
-          Arbitraries.defaultFor(CAItemMetadata.class)
+          Arbitraries.defaultFor(CAMetadata.class)
         ).map(TreeMap::new),
         Arbitraries.maps(
-          Arbitraries.defaultFor(CAItemAttachmentKey.class),
-          Arbitraries.defaultFor(CAItemAttachment.class)
+          Arbitraries.defaultFor(CAAttachmentKey.class),
+          Arbitraries.defaultFor(CAAttachment.class)
         ).map(TreeMap::new),
         Arbitraries.defaultFor(RDottedName.class)
           .set()

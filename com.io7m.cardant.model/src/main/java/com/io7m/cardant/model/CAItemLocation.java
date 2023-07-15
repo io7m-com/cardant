@@ -30,7 +30,6 @@ public record CAItemLocation(
   CAItemID item,
   CALocationID location,
   long count)
-  implements CAInventoryElementType
 {
   /**
    * An assertion that there are {@code count} {@code item} at {@code location}.

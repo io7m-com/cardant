@@ -27,7 +27,6 @@ import java.util.SortedMap;
 
 public record CAItemLocations(
   SortedMap<CALocationID, SortedMap<CAItemID, CAItemLocation>> itemLocations)
-  implements CAInventoryElementType
 {
   /**
    * A set of assertions indicating items in locations.

@@ -32,7 +32,7 @@ import java.util.UUID;
 public record CAIResponseFilePut(
   UUID requestId,
   CAFileType data)
-  implements CAIResponseWithElementType
+  implements CAIResponseType
 {
   /**
    * @see CAICommandFilePut

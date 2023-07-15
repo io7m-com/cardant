@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
@@ -89,10 +88,8 @@ public final class CAShellCmdLocationGet
       context.parameterValue(ID);
 
     final var existing =
-      ((CAIResponseLocationGet) client.executeOrElseThrow(
-        new CAICommandLocationGet(locationID),
-        CAClientException::ofError
-      )).data();
+      client.executeOrElseThrow(new CAICommandLocationGet(locationID))
+        .data();
 
     final var w = context.output();
     w.printf(
@@ -104,9 +101,6 @@ public final class CAShellCmdLocationGet
     w.printf(
       "Name: %s%n",
       existing.name());
-    w.printf(
-      "Description: %s%n",
-      existing.description());
     w.flush();
     return SUCCESS;
   }

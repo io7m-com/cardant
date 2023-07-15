@@ -22,25 +22,23 @@ import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentAddType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentsGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
-import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
@@ -57,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +90,6 @@ public final class CADatabaseItemsTest
   private CADatabaseQueriesItemsType.GetType itemGet;
   private MetadataPutType metaAdd;
   private MetadataRemoveType metaRemove;
-  private MetadataGetType metaGet;
 
   @BeforeAll
   public static void setupOnce(
@@ -138,8 +136,6 @@ public final class CADatabaseItemsTest
       this.transaction.queries(MetadataPutType.class);
     this.metaRemove =
       this.transaction.queries(MetadataRemoveType.class);
-    this.metaGet =
-      this.transaction.queries(MetadataGetType.class);
   }
 
   /**
@@ -250,7 +246,9 @@ public final class CADatabaseItemsTest
         CALocationID.random(),
         empty(),
         "Loc0",
-        "Location 0"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     this.locPut.execute(loc0);
@@ -289,7 +287,9 @@ public final class CADatabaseItemsTest
         CALocationID.random(),
         empty(),
         "Loc0",
-        "Location 0"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     this.locPut.execute(loc0);
@@ -334,7 +334,9 @@ public final class CADatabaseItemsTest
         CALocationID.random(),
         empty(),
         "Loc0",
-        "Location 0"
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     this.locPut.execute(loc0);
@@ -374,11 +376,21 @@ public final class CADatabaseItemsTest
 
     final var loc0 =
       new CALocation(
-        CALocationID.random(), empty(), "Loc0", "Location 0"
+        CALocationID.random(),
+        empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc1 =
       new CALocation(
-        CALocationID.random(), empty(), "Loc1", "Location 1"
+        CALocationID.random(),
+        empty(),
+        "Loc1",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     this.locPut.execute(loc0);
@@ -414,11 +426,21 @@ public final class CADatabaseItemsTest
 
     final var loc0 =
       new CALocation(
-        CALocationID.random(), empty(), "Loc0", "Location 0"
+        CALocationID.random(),
+        empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
     final var loc1 =
       new CALocation(
-        CALocationID.random(), empty(), "Loc1", "Location 1"
+        CALocationID.random(),
+        empty(),
+        "Loc1",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     this.locPut.execute(loc0);
@@ -453,11 +475,11 @@ public final class CADatabaseItemsTest
     this.itemCreate.execute(id0);
 
     final var meta0 =
-      new CAItemMetadata(new RDottedName("x.y.a0"), "abc");
+      new CAMetadata(new RDottedName("x.y.a0"), "abc");
     final var meta1 =
-      new CAItemMetadata(new RDottedName("x.y.a1"), "def");
+      new CAMetadata(new RDottedName("x.y.a1"), "def");
     final var meta2 =
-      new CAItemMetadata(new RDottedName("x.y.a2"), "ghi");
+      new CAMetadata(new RDottedName("x.y.a2"), "ghi");
 
     this.metaAdd.execute(
       new MetadataPutType.Parameters(id0, Set.of(meta0, meta1, meta2))
@@ -470,13 +492,6 @@ public final class CADatabaseItemsTest
       assertEquals(meta2, i.metadata().get(meta2.name()));
     }
 
-    {
-      final var m = this.metaGet.execute(id0);
-      assertEquals(meta0, m.get(meta0.name()));
-      assertEquals(meta1, m.get(meta1.name()));
-      assertEquals(meta2, m.get(meta2.name()));
-    }
-
     this.metaRemove.execute(
       new MetadataRemoveType.Parameters(id0, Set.of(meta1.name()))
     );
@@ -487,24 +502,18 @@ public final class CADatabaseItemsTest
       assertEquals(meta2, i.metadata().get(meta2.name()));
     }
 
-    {
-      final var m = this.metaGet.execute(id0);
-      assertEquals(meta0, m.get(meta0.name()));
-      assertEquals(meta2, m.get(meta2.name()));
-    }
-
     this.metaRemove.execute(
-      new MetadataRemoveType.Parameters(id0, Set.of(meta0.name(), meta1.name(), meta2.name()))
+      new MetadataRemoveType.Parameters(
+        id0,
+        Set.of(
+          meta0.name(),
+          meta1.name(),
+          meta2.name()))
     );
 
     {
       final var i = this.itemGet.execute(id0).orElseThrow();
       assertEquals(Map.of(), i.metadata());
-    }
-
-    {
-      final var m = this.metaGet.execute(id0);
-      assertEquals(Map.of(), m);
     }
   }
 
@@ -532,9 +541,6 @@ public final class CADatabaseItemsTest
     final var itemAttachmentRemove =
       this.transaction.queries(
         AttachmentRemoveType.class);
-    final var itemAttachmentList =
-      this.transaction.queries(
-        AttachmentsGetType.class);
 
     final var file =
       new CAFileWithData(
@@ -553,11 +559,15 @@ public final class CADatabaseItemsTest
 
     {
       final var a =
-        itemAttachmentList.execute(
-          new AttachmentsGetType.Parameters(id0, false));
+        Set.copyOf(
+          this.itemGet.execute(id0)
+            .orElseThrow()
+            .attachments()
+            .values()
+        );
 
       assertEquals(
-        Set.of(new CAItemAttachment(file.withoutData(), "misc")),
+        Set.of(new CAAttachment(file.withoutData(), "misc")),
         a
       );
     }
@@ -567,8 +577,12 @@ public final class CADatabaseItemsTest
 
     {
       final var a =
-        itemAttachmentList.execute(
-          new AttachmentsGetType.Parameters(id0, false));
+        Set.copyOf(
+          this.itemGet.execute(id0)
+            .orElseThrow()
+            .attachments()
+            .values()
+        );
 
       assertEquals(
         Set.of(),

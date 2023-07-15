@@ -68,7 +68,9 @@ public final class CAICmdItemRepositTest
       CALocationID.random(),
       Optional.empty(),
       "A",
-      "X"
+      Collections.emptySortedMap(),
+      Collections.emptySortedMap(),
+      Collections.emptySortedSet()
     );
 
   /**

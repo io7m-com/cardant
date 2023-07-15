@@ -79,6 +79,7 @@
   <entry key="tag_name">Tag Name</entry>
   <entry key="type">Type</entry>
   <entry key="user_id">User ID</entry>
+  <entry key="error_shell_options_combination">The options {0} cannot be used in combination.</entry>
   <entry key="error_type_scalar_still_referenced"><![CDATA[The given scalar type is still referenced by one or more fields/types, and cannot be removed without first removing those types/fields.]]></entry>
   <entry key="error_type_declaration_refers_to_nonexistent_type"><![CDATA[A field in the type declaration refers to a nonexistent type.]]></entry>
   <entry key="error_type_missing_required_field"><![CDATA[A required field is missing.]]></entry>

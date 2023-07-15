@@ -17,11 +17,18 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
+import com.io7m.cardant.model.CAAttachment;
+import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
+
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public final class CAArbLocation extends CAArbAbstract<CALocation>
 {
@@ -33,7 +40,17 @@ public final class CAArbLocation extends CAArbAbstract<CALocation>
         Arbitraries.defaultFor(CALocationID.class),
         Arbitraries.defaultFor(CALocationID.class).optional(),
         Arbitraries.strings(),
-        Arbitraries.strings()
+        Arbitraries.maps(
+          Arbitraries.defaultFor(RDottedName.class),
+          Arbitraries.defaultFor(CAMetadata.class)
+        ).map(TreeMap::new),
+        Arbitraries.maps(
+          Arbitraries.defaultFor(CAAttachmentKey.class),
+          Arbitraries.defaultFor(CAAttachment.class)
+        ).map(TreeMap::new),
+        Arbitraries.defaultFor(RDottedName.class)
+          .set()
+          .map(TreeSet::new)
       ).as(CALocation::new)
     );
   }

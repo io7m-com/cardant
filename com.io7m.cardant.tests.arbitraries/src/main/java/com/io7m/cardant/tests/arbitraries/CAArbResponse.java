@@ -16,10 +16,8 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.protocol.inventory.CAIResponseWithElementType;
 import net.jqwik.api.Arbitraries;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,7 +29,7 @@ public final class CAArbResponse extends CAArbAbstract<CAIResponseType>
       CAIResponseType.class,
       () -> Arbitraries.oneOf(
         responseTypes()
-          .map(x -> Arbitraries.defaultFor(x))
+          .map(Arbitraries::defaultFor)
           .collect(Collectors.toUnmodifiableList())
       ).map(CAIResponseType.class::cast)
     );
@@ -39,10 +37,6 @@ public final class CAArbResponse extends CAArbAbstract<CAIResponseType>
 
   private static Stream<Class<?>> responseTypes()
   {
-    return Stream.concat(
-        Stream.of(CAIResponseType.class.getPermittedSubclasses()),
-        Stream.of(CAIResponseWithElementType.class.getPermittedSubclasses())
-      )
-      .filter(c -> !Objects.equals(c, CAIResponseWithElementType.class));
+    return Stream.of(CAIResponseType.class.getPermittedSubclasses());
   }
 }

@@ -33,7 +33,7 @@ import java.util.UUID;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNotPermitted;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ADMIN;
-import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_TAGS_WRITER;
+import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,7 +82,7 @@ public final class CAICmdRolesRevokeTest
           context,
           new CAICommandRolesRevoke(
             UUID.randomUUID(),
-            Set.of(ROLE_INVENTORY_TAGS_WRITER))
+            Set.of(ROLE_INVENTORY_ITEMS_WRITER))
         );
       });
 
@@ -114,7 +114,7 @@ public final class CAICmdRolesRevokeTest
     when(userGet.execute(any()))
       .thenReturn(Optional.empty());
 
-    this.setRoles(ROLE_INVENTORY_TAGS_WRITER);
+    this.setRoles(ROLE_INVENTORY_ITEMS_WRITER);
 
     final var context =
       this.createContext();
@@ -128,7 +128,7 @@ public final class CAICmdRolesRevokeTest
           context,
           new CAICommandRolesRevoke(
             UUID.randomUUID(),
-            Set.of(ROLE_INVENTORY_TAGS_WRITER))
+            Set.of(ROLE_INVENTORY_ITEMS_WRITER))
         );
       });
 
@@ -173,7 +173,7 @@ public final class CAICmdRolesRevokeTest
         )
       ));
 
-    this.setRoles(ROLE_INVENTORY_TAGS_WRITER);
+    this.setRoles(ROLE_INVENTORY_ITEMS_WRITER);
 
     final var context =
       this.createContext();
@@ -183,7 +183,7 @@ public final class CAICmdRolesRevokeTest
     final var handler = new CAICmdRolesRevoke();
     handler.execute(
       context,
-      new CAICommandRolesRevoke(targetUser, Set.of(ROLE_INVENTORY_TAGS_WRITER))
+      new CAICommandRolesRevoke(targetUser, Set.of(ROLE_INVENTORY_ITEMS_WRITER))
     );
 
     /* Assert. */
@@ -253,7 +253,7 @@ public final class CAICmdRolesRevokeTest
     final var handler = new CAICmdRolesRevoke();
     handler.execute(
       context,
-      new CAICommandRolesRevoke(targetUser, Set.of(ROLE_INVENTORY_TAGS_WRITER))
+      new CAICommandRolesRevoke(targetUser, Set.of(ROLE_INVENTORY_ITEMS_WRITER))
     );
 
     /* Assert. */

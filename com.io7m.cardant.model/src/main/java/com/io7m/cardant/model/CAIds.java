@@ -26,7 +26,6 @@ import java.util.Set;
  */
 
 public record CAIds(Set<CAIdType> ids)
-  implements CAInventoryElementType
 {
   /**
    * A set of ids.

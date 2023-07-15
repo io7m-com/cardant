@@ -42,13 +42,6 @@ public final class CASecurityPolicy
     LoggerFactory.getLogger(CASecurityPolicy.class);
 
   /**
-   * The tags section of the inventory.
-   */
-
-  public static final MObject INVENTORY_TAGS =
-    new MObject(MTypeName.of("inventory.tags"), Map.of());
-
-  /**
    * The items section of the inventory.
    */
 
@@ -119,20 +112,6 @@ public final class CASecurityPolicy
     MRoleName.of("inventory.items.reader");
 
   /**
-   * A writer of inventory tags.
-   */
-
-  public static final MRoleName ROLE_INVENTORY_TAGS_WRITER =
-    MRoleName.of("inventory.tags.writer");
-
-  /**
-   * A reader of inventory tags.
-   */
-
-  public static final MRoleName ROLE_INVENTORY_TAGS_READER =
-    MRoleName.of("inventory.tags.reader");
-
-  /**
    * A writer of inventory locations.
    */
 
@@ -165,9 +144,7 @@ public final class CASecurityPolicy
       ROLE_INVENTORY_ITEMS_READER,
       ROLE_INVENTORY_ITEMS_WRITER,
       ROLE_INVENTORY_LOCATIONS_READER,
-      ROLE_INVENTORY_LOCATIONS_WRITER,
-      ROLE_INVENTORY_TAGS_READER,
-      ROLE_INVENTORY_TAGS_WRITER
+      ROLE_INVENTORY_LOCATIONS_WRITER
     );
 
   /**

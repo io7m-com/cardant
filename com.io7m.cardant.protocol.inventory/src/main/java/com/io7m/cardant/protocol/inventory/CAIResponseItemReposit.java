@@ -31,7 +31,7 @@ import java.util.UUID;
 public record CAIResponseItemReposit(
   UUID requestId,
   CAItem data)
-  implements CAIResponseWithElementType
+  implements CAIResponseType
 {
   /**
    * @see CAICommandItemReposit

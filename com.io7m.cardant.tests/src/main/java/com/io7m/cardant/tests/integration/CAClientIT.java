@@ -23,13 +23,22 @@ import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CALocation;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
-import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -37,6 +46,7 @@ import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
@@ -45,6 +55,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -52,16 +63,21 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -429,7 +445,7 @@ public final class CAClientIT
       MRoleName.of("inventory.files.writer");
 
     {
-      final var r = (CAIResponseRolesGet)
+      final var r =
         this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
       assertFalse(r.roles().contains(role));
     }
@@ -438,7 +454,7 @@ public final class CAClientIT
       new CAICommandRolesAssign(USER, Set.of(role)));
 
     {
-      final var r = (CAIResponseRolesGet)
+      final var r =
         this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
       assertTrue(r.roles().contains(role));
     }
@@ -461,7 +477,7 @@ public final class CAClientIT
       MRoleName.of("inventory.files.writer");
 
     {
-      final var r = (CAIResponseRolesGet)
+      final var r =
         this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
       assertFalse(r.roles().contains(role));
     }
@@ -470,7 +486,7 @@ public final class CAClientIT
       new CAICommandRolesAssign(USER, Set.of(role)));
 
     {
-      final var r = (CAIResponseRolesGet)
+      final var r =
         this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
       assertTrue(r.roles().contains(role));
     }
@@ -479,9 +495,138 @@ public final class CAClientIT
       new CAICommandRolesRevoke(USER, Set.of(role)));
 
     {
-      final var r = (CAIResponseRolesGet)
+      final var r =
         this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
       assertFalse(r.roles().contains(role));
+    }
+  }
+
+  /**
+   * Creating and modifying locations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationMetadataWorkflow()
+    throws Exception
+  {
+    this.login(new IdName("someone-admin"));
+
+    final var id = CALocationID.random();
+    this.client.executeOrElseThrow(new CAICommandLocationPut(
+      new CALocation(
+        id,
+        Optional.empty(),
+        "Location 0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      )
+    ));
+
+    final var meta0 =
+      new CAMetadata(new RDottedName("a.b0"), "x");
+    final var meta1 =
+      new CAMetadata(new RDottedName("a.b1"), "y");
+    final var meta2 =
+      new CAMetadata(new RDottedName("a.b2"), "z");
+
+    this.client.executeOrElseThrow(
+      new CAICommandLocationMetadataPut(id, Set.of(meta0, meta1, meta2))
+    );
+
+    {
+      final var r =
+        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+      final var m = r.data().metadata();
+      assertEquals(meta0, m.get(meta0.name()));
+      assertEquals(meta1, m.get(meta1.name()));
+      assertEquals(meta2, m.get(meta2.name()));
+    }
+
+    this.client.executeOrElseThrow(
+      new CAICommandLocationMetadataRemove(id, Set.of(meta1.name()))
+    );
+
+    {
+      final var r =
+        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+      final var m = r.data().metadata();
+      assertEquals(meta0, m.get(meta0.name()));
+      assertNull(m.get(meta1.name()));
+      assertEquals(meta2, m.get(meta2.name()));
+    }
+  }
+
+  /**
+   * Creating and modifying locations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationAttachmentWorkflow(
+    final @TempDir Path directory)
+    throws Exception
+  {
+    this.login(new IdName("someone-admin"));
+
+    final var file =
+      Files.writeString(
+        directory.resolve("file.txt"),
+        "Hello!",
+        CREATE,
+        TRUNCATE_EXISTING
+      );
+
+    final var fileId =
+      this.client.fileUploadOrThrow(
+        CAFileID.random(),
+        file,
+        "text/plain",
+        "A file",
+        stats -> {
+        }
+      );
+
+    final var fileData =
+      this.client.executeOrElseThrow(new CAICommandFileGet(fileId))
+        .data();
+
+    final var id = CALocationID.random();
+    this.client.executeOrElseThrow(new CAICommandLocationPut(
+      new CALocation(
+        id,
+        Optional.empty(),
+        "Location 0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      )
+    ));
+
+    this.client.executeOrElseThrow(
+      new CAICommandLocationAttachmentAdd(id, fileId, "text")
+    );
+
+    {
+      final var r =
+        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+      final var m = r.data().attachments();
+      final var attach0 = new CAAttachment(fileData, "text");
+      assertEquals(attach0, m.get(attach0.key()));
+    }
+
+    this.client.executeOrElseThrow(
+      new CAICommandLocationAttachmentRemove(id, fileId, "text")
+    );
+
+    {
+      final var r =
+        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+      final var m = r.data().attachments();
+      assertEquals(0, m.size());
     }
   }
 

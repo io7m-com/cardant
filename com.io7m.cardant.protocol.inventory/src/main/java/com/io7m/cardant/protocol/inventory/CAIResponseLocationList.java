@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.model.CALocations;
+import com.io7m.cardant.model.CALocationSummaries;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -31,8 +31,8 @@ import java.util.UUID;
 
 public record CAIResponseLocationList(
   UUID requestId,
-  CALocations data)
-  implements CAIResponseWithElementType
+  CALocationSummaries data)
+  implements CAIResponseType
 {
   /**
    * @see CAICommandLocationList

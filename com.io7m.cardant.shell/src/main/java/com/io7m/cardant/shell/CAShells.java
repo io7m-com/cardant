@@ -45,6 +45,8 @@ import com.io7m.cardant.shell.internal.CAShellCmdItemRepositRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationGet;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationList;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationPut;
@@ -73,6 +75,7 @@ import com.io7m.cardant.shell.internal.CAShellCmdVersion;
 import com.io7m.cardant.shell.internal.CAShellLoginTracker;
 import com.io7m.cardant.shell.internal.CAShellOptions;
 import com.io7m.cardant.shell.internal.CAShellTerminalHolder;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.repetoir.core.RPServiceDirectory;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.DefaultParser;
@@ -133,9 +136,16 @@ public final class CAShells implements CAShellFactoryType
     services.register(CAShellOptions.class, new CAShellOptions(terminal));
     services.register(CAShellLoginTracker.class, new CAShellLoginTracker());
     services.register(
-      CAPreferencesServiceType.class, configuration.preferences());
+      CAPreferencesServiceType.class,
+      configuration.preferences()
+    );
     services.register(
-      CAShellTerminalHolder.class, new CAShellTerminalHolder(terminal)
+      CAShellTerminalHolder.class,
+      new CAShellTerminalHolder(terminal)
+    );
+    services.register(
+      CAStrings.class,
+      CAStrings.create(configuration.locale())
     );
 
     final List<CAShellCmdType> commands =
@@ -163,6 +173,8 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemSearchBegin(services),
         new CAShellCmdItemSearchNext(services),
         new CAShellCmdItemSearchPrevious(services),
+        new CAShellCmdLocationAttachmentAdd(services),
+        new CAShellCmdLocationAttachmentRemove(services),
         new CAShellCmdLocationGet(services),
         new CAShellCmdLocationList(services),
         new CAShellCmdLocationPut(services),

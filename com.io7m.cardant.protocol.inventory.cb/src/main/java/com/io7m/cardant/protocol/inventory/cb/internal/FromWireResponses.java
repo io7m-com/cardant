@@ -40,9 +40,15 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
@@ -73,9 +79,15 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemsRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationList;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesGet;
@@ -411,6 +423,67 @@ public final class FromWireResponses
     return new CAIResponseItemTypesRevoke(
       m.fieldRequestId().value(),
       FromWireModel.item(m.fieldItem())
+    );
+  }
+
+
+
+
+
+
+
+
+  public static CAIMessageType locationMetadataRemove(
+    final CAI1ResponseLocationMetadataRemove m)
+  {
+    return new CAIResponseLocationMetadataRemove(
+      m.fieldRequestId().value(),
+      FromWireModel.location(m.fieldLocation())
+    );
+  }
+
+  public static CAIMessageType locationMetadataPut(
+    final CAI1ResponseLocationMetadataPut m)
+  {
+    return new CAIResponseLocationMetadataPut(
+      m.fieldRequestId().value(),
+      FromWireModel.location(m.fieldLocation())
+    );
+  }
+
+  public static CAIMessageType locationTypesAssign(
+    final CAI1ResponseLocationTypesAssign m)
+  {
+    return new CAIResponseLocationTypesAssign(
+      m.fieldRequestId().value(),
+      FromWireModel.location(m.fieldLocation())
+    );
+  }
+
+  public static CAIMessageType locationTypesRevoke(
+    final CAI1ResponseLocationTypesRevoke m)
+  {
+    return new CAIResponseLocationTypesRevoke(
+      m.fieldRequestId().value(),
+      FromWireModel.location(m.fieldLocation())
+    );
+  }
+
+  public static CAIMessageType locationAttachmentRemove(
+    final CAI1ResponseLocationAttachmentRemove m)
+  {
+    return new CAIResponseLocationAttachmentRemove(
+      m.fieldRequestId().value(),
+      FromWireModel.location(m.fieldLocation())
+    );
+  }
+
+  public static CAIMessageType locationAttachmentAdd(
+    final CAI1ResponseLocationAttachmentAdd m)
+  {
+    return new CAIResponseLocationAttachmentAdd(
+      m.fieldRequestId().value(),
+      FromWireModel.location(m.fieldLocation())
     );
   }
 }

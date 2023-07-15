@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.model.CALocations;
+import com.io7m.cardant.model.CALocationSummaries;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -55,10 +55,12 @@ public final class CAICmdLocationsList extends CAICmdAbstract<CAICommandLocation
       context.transaction()
         .queries(CADatabaseQueriesLocationsType.ListType.class);
 
-    final var locations = list.execute(UNIT);
+    final var locations =
+      list.execute(UNIT);
+
     return new CAIResponseLocationList(
       context.requestId(),
-      new CALocations(locations)
+      new CALocationSummaries(locations)
     );
   }
 }

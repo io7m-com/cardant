@@ -21,6 +21,7 @@ import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
+import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
@@ -122,7 +123,7 @@ public final class CAFormatterRaw implements CAFormatterType
     final var metadata = item.metadata();
     if (!metadata.isEmpty()) {
       w.println();
-      w.println("# Metadata");
+      w.println("# metadata");
       w.println("#---------");
       w.println();
 
@@ -132,7 +133,7 @@ public final class CAFormatterRaw implements CAFormatterType
           metadata.entrySet()
             .stream()
             .map(e -> Map.entry(
-              "Metadata: " + e.getKey(),
+              "metadata: " + e.getKey(),
               e.getValue().value()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
         ));
@@ -302,6 +303,62 @@ public final class CAFormatterRaw implements CAFormatterType
     for (final var item : types.items()) {
       w.printf("%s : %s%n", item.name().value(), item.description());
     }
+  }
+
+  @Override
+  public void formatLocation(
+    final CALocation location)
+  {
+    final PrintWriter w = this.terminal.writer();
+    final var main = new TreeMap<String, String>();
+    main.put("Location ID", location.id().displayId());
+    main.put("Name", location.name());
+
+    w.printf("# Item %s%n", location.id().displayId());
+    w.printf("#-----------------------------------------%n");
+    w.println();
+    paddedTable(w, main);
+
+    final var metadata = location.metadata();
+    if (!metadata.isEmpty()) {
+      w.println();
+      w.println("# metadata");
+      w.println("#---------");
+      w.println();
+
+      paddedTable(
+        w,
+        new TreeMap<>(
+          metadata.entrySet()
+            .stream()
+            .map(e -> Map.entry(
+              "metadata: " + e.getKey(),
+              e.getValue().value()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+        ));
+    }
+
+    final var attachments = location.attachments();
+    if (!attachments.isEmpty()) {
+      w.println();
+      w.println("# Attachments");
+      w.println("#------------");
+      w.println("# ID ");
+
+      for (final var entry : attachments.entrySet()) {
+        final var itemKey = entry.getKey();
+        final var itemValue = entry.getValue();
+        w.printf(
+          "%s %s %s %s%n",
+          itemKey.fileID().displayId(),
+          itemValue.relation(),
+          itemValue.file().mediaType(),
+          itemValue.file().description()
+        );
+      }
+    }
+
+    w.println();
   }
 
   static String formatSize(

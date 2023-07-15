@@ -32,9 +32,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
+import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_FILES_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
-import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_TAGS_READER;
-import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_TAGS_WRITER;
+import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_WRITER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -122,9 +122,9 @@ public final class CAICmdRolesGetTest
           targetUser,
           new IdName("x"),
           new MSubject(Set.of(
-            ROLE_INVENTORY_TAGS_WRITER,
+            ROLE_INVENTORY_LOCATIONS_WRITER,
             ROLE_INVENTORY_ITEMS_WRITER,
-            ROLE_INVENTORY_TAGS_READER
+            ROLE_INVENTORY_FILES_WRITER
           ))
         )
       ));
@@ -145,9 +145,9 @@ public final class CAICmdRolesGetTest
 
     assertEquals(
       Set.of(
-        ROLE_INVENTORY_TAGS_WRITER,
+        ROLE_INVENTORY_LOCATIONS_WRITER,
         ROLE_INVENTORY_ITEMS_WRITER,
-        ROLE_INVENTORY_TAGS_READER
+        ROLE_INVENTORY_FILES_WRITER
       ),
       get.roles()
     );

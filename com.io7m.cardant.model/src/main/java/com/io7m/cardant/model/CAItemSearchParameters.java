@@ -34,7 +34,7 @@ import java.util.Set;
  */
 
 public record CAItemSearchParameters(
-  CALocationMatchType locationMatch,
+  CAItemLocationMatchType locationMatch,
   CANameMatchType nameMatch,
   CATypeMatchType typeMatch,
   CAMetadataMatchType metadataMatch,

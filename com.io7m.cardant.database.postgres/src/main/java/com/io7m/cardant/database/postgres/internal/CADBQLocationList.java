@@ -20,23 +20,28 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.ListType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationSummary;
 import org.jooq.DSLContext;
+import org.jooq.Record3;
 
+import java.util.Optional;
 import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static com.io7m.cardant.database.postgres.internal.CADBQLocationPut.locationListInner;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 
 /**
  * List locations.
  */
 
 public final class CADBQLocationList
-  extends CADBQAbstract<CADatabaseUnit, SortedMap<CALocationID, CALocation>>
+  extends CADBQAbstract<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>
   implements ListType
 {
-  private static final Service<CADatabaseUnit, SortedMap<CALocationID, CALocation>, ListType> SERVICE =
+  private static final Service<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>, ListType> SERVICE =
     new Service<>(ListType.class, CADBQLocationList::new);
 
   /**
@@ -61,10 +66,37 @@ public final class CADBQLocationList
   }
 
   @Override
-  protected SortedMap<CALocationID, CALocation> onExecute(
+  protected SortedMap<CALocationID, CALocationSummary> onExecute(
     final DSLContext context,
     final CADatabaseUnit parameters)
   {
-    return locationListInner(context);
+    return list(context);
+  }
+
+  static TreeMap<CALocationID, CALocationSummary> list(
+    final DSLContext context)
+  {
+    return new TreeMap<>(
+      context.select(
+          LOCATIONS.LOCATION_ID,
+          LOCATIONS.LOCATION_PARENT,
+          LOCATIONS.LOCATION_NAME
+        ).from(LOCATIONS)
+        .orderBy(LOCATIONS.LOCATION_NAME)
+        .stream()
+        .map(CADBQLocationList::mapRecord)
+        .collect(Collectors.toMap(CALocationSummary::id, s -> s))
+    );
+  }
+
+  private static CALocationSummary mapRecord(
+    final Record3<UUID, UUID, String> rec)
+  {
+    return new CALocationSummary(
+      new CALocationID(rec.get(LOCATIONS.LOCATION_ID)),
+      Optional.ofNullable(rec.get(LOCATIONS.LOCATION_PARENT))
+        .map(CALocationID::new),
+      rec.get(LOCATIONS.LOCATION_NAME)
+    );
   }
 }

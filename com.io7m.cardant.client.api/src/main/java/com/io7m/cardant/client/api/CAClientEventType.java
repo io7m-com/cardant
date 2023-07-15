@@ -24,7 +24,7 @@ import com.io7m.hibiscus.api.HBEventType;
 
 public sealed interface CAClientEventType
   extends HBEventType
-  permits CAClientEventDataReceived,
+  permits
   CAClientEventDataUpdated
 {
 

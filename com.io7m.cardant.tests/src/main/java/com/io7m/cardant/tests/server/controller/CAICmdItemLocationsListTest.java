@@ -35,6 +35,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,7 +72,9 @@ public final class CAICmdItemLocationsListTest
       CALocationID.random(),
       Optional.empty(),
       "A",
-      "X"
+      Collections.emptySortedMap(),
+      Collections.emptySortedMap(),
+      Collections.emptySortedSet()
     );
   
   private static final CALocation LOCATION_1 =
@@ -79,7 +82,9 @@ public final class CAICmdItemLocationsListTest
       CALocationID.random(),
       Optional.of(LOCATION_0.id()),
       "B",
-      "Y"
+      Collections.emptySortedMap(),
+      Collections.emptySortedMap(),
+      Collections.emptySortedSet()
     );
 
   private static final CALocation LOCATION_2 =
@@ -87,7 +92,9 @@ public final class CAICmdItemLocationsListTest
       CALocationID.random(),
       Optional.of(LOCATION_1.id()),
       "C",
-      "Z"
+      Collections.emptySortedMap(),
+      Collections.emptySortedMap(),
+      Collections.emptySortedSet()
     );
 
   /**

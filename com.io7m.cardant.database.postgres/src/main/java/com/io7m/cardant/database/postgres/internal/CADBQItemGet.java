@@ -19,31 +19,33 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.GetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CAByteArray;
+import com.io7m.cardant.model.CAAttachment;
+import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.model.CAFileType;
+import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CAItemAttachment;
-import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Name;
+import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 
-import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
-import static com.io7m.cardant.database.postgres.internal.CADBQItemReposit.itemCount;
 import static com.io7m.cardant.database.postgres.internal.Tables.FILES;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS_SUMMED;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
-import static java.lang.Boolean.FALSE;
 
 /**
  * Retrieve the item with the given ID, if one exists.
@@ -55,6 +57,18 @@ public final class CADBQItemGet
 {
   private static final Service<CAItemID, Optional<CAItem>, GetType> SERVICE =
     new Service<>(GetType.class, CADBQItemGet::new);
+
+  private static final Long ZERO =
+    Long.valueOf(0L);
+
+  private static final Name ITEM_COUNT_NAME =
+    DSL.name("ITEM_COUNT");
+
+  private static final Name ITEM_TYPES_NAME =
+    DSL.name("ITEM_TYPES");
+
+  private static final Field<String[]> ITEM_TYPES_FIELD =
+    DSL.array(DSL.field(ITEM_TYPES_NAME, SQLDataType.VARCHAR));
 
   /**
    * Construct a query.
@@ -82,267 +96,116 @@ public final class CADBQItemGet
     final DSLContext context,
     final CAItemID itemID)
   {
-    return itemGetInner(
-      itemID,
-      context,
-      IncludeDeleted.DELETED_NOT_INCLUDED,
-      IncludeAttachments.ATTACHMENTS_INCLUDED,
-      IncludeMetadata.METADATA_INCLUDED
-    );
-  }
-
-  private static Optional<CAItem> itemGetInner(
-    final CAItemID id,
-    final DSLContext context,
-    final IncludeDeleted includeDeleted,
-    final IncludeAttachments includeAttachments,
-    final IncludeMetadata includeMetadata)
-  {
-    final var itemRec =
-      switch (includeDeleted) {
-        case DELETED_INCLUDED -> context.fetchOne(
-          ITEMS,
-          ITEMS.ITEM_ID.eq(id.id())
+    final var query =
+      context.select(
+          ITEMS.ITEM_ID,
+          ITEMS.ITEM_NAME,
+          DSL.coalesce(ITEM_LOCATIONS_SUMMED.ITEM_COUNT, ZERO)
+            .as(ITEM_COUNT_NAME),
+          DSL.arrayAgg(METADATA_TYPE_DECLARATIONS.NAME)
+            .as(ITEM_TYPES_NAME),
+          ITEM_METADATA.METADATA_NAME,
+          ITEM_METADATA.METADATA_VALUE,
+          ITEM_ATTACHMENTS.RELATION,
+          FILES.ID,
+          FILES.DATA_USED,
+          FILES.DESCRIPTION,
+          FILES.MEDIA_TYPE,
+          FILES.HASH_ALGORITHM,
+          FILES.HASH_VALUE
+        ).from(ITEMS)
+        .leftJoin(ITEM_LOCATIONS_SUMMED)
+        .on(ITEM_LOCATIONS_SUMMED.ITEM_ID.eq(ITEMS.ITEM_ID))
+        .leftJoin(ITEM_TYPES)
+        .on(ITEM_TYPES.ITEM.eq(ITEMS.ITEM_ID))
+        .leftJoin(METADATA_TYPE_DECLARATIONS)
+        .on(METADATA_TYPE_DECLARATIONS.ID.eq(ITEM_TYPES.TYPE_DECLARATION))
+        .leftJoin(ITEM_METADATA)
+        .on(ITEM_METADATA.METADATA_ITEM_ID.eq(ITEMS.ITEM_ID))
+        .leftJoin(ITEM_ATTACHMENTS)
+        .on(ITEM_ATTACHMENTS.ITEM_ID.eq(ITEMS.ITEM_ID))
+        .leftJoin(FILES)
+        .on(FILES.ID.eq(ITEM_ATTACHMENTS.FILE_ID))
+        .where(ITEMS.ITEM_ID.eq(itemID.id()).and(ITEMS.ITEM_DELETED.isFalse()))
+        .groupBy(
+          ITEMS.ITEM_ID,
+          ITEMS.ITEM_NAME,
+          DSL.field(ITEM_COUNT_NAME),
+          ITEM_METADATA.METADATA_NAME,
+          ITEM_METADATA.METADATA_VALUE,
+          ITEM_ATTACHMENTS.RELATION,
+          FILES.ID,
+          FILES.DATA_USED,
+          FILES.DESCRIPTION,
+          FILES.MEDIA_TYPE,
+          FILES.HASH_ALGORITHM,
+          FILES.HASH_VALUE
         );
-        case DELETED_NOT_INCLUDED -> context.fetchOne(
-          ITEMS,
-          ITEMS.ITEM_ID.eq(id.id()).and(ITEMS.ITEM_DELETED.eq(FALSE))
-        );
-      };
 
-    if (itemRec == null) {
+    final var results = query.fetch();
+    if (results.isEmpty()) {
       return Optional.empty();
     }
 
-    final var itemAttachments =
-      itemAttachmentsInner(context, id, includeAttachments);
-
-    final SortedMap<RDottedName, CAItemMetadata> itemMetadatas =
-      switch (includeMetadata) {
-        case METADATA_INCLUDED -> itemMetadataInner(context, id);
-        case METADATA_NOT_INCLUDED -> Collections.emptySortedMap();
-      };
-
-    final var itemTypes =
-      itemTypeListInner(context, id);
-
-    final var count =
-      itemCount(context, id);
-
-    return Optional.of(new CAItem(
-      id,
-      itemRec.getItemName(),
-      count,
-      0L,
-      itemMetadatas,
-      itemAttachments,
-      itemTypes
-    ));
-  }
-
-  private static TreeSet<RDottedName> itemTypeListInner(
-    final DSLContext context,
-    final CAItemID id)
-  {
-    final var results =
-      context.select(METADATA_TYPE_DECLARATIONS.NAME)
-        .from(METADATA_TYPE_DECLARATIONS)
-        .join(ITEM_TYPES)
-        .on(ITEM_TYPES.ITEM.eq(id.id()))
-        .fetch();
-
-    final var names = new TreeSet<RDottedName>();
-    for (final var result : results) {
-      names.add(new RDottedName(result.get(METADATA_TYPE_DECLARATIONS.NAME)));
-    }
-    return names;
-  }
-
-  private static SortedMap<RDottedName, CAItemMetadata> itemMetadataInner(
-    final DSLContext context,
-    final CAItemID id)
-  {
-    final var tableSource =
-      ITEM_METADATA.join(ITEMS)
-        .on(ITEM_METADATA.METADATA_ITEM_ID.eq(ITEMS.ITEM_ID));
-
-    final var metadata =
-      context.select(
-          ITEM_METADATA.METADATA_NAME,
-          ITEM_METADATA.METADATA_VALUE)
-        .from(tableSource)
-        .where(ITEM_METADATA.METADATA_ITEM_ID.eq(id.id()))
-        .fetch();
-
-    final var results = new TreeMap<RDottedName, CAItemMetadata>();
-    for (final var metaRec : metadata) {
-      final var meta =
-        CAItemMetadata.of(metaRec.component1(), metaRec.component2());
-      results.put(meta.name(), meta);
-    }
-    return results;
-  }
-
-  static SortedMap<CAItemAttachmentKey, CAItemAttachment>
-  itemAttachmentsInner(
-    final DSLContext context,
-    final CAItemID id,
-    final IncludeAttachments includeAttachments)
-  {
-    return switch (includeAttachments) {
-      case ATTACHMENTS_INCLUDED -> {
-        yield itemAttachmentsInnerWithoutData(context, id);
-      }
-      case ATTACHMENTS_AND_DATA_INCLUDED -> {
-        yield itemAttachmentsInnerWithData(context, id);
-      }
-      case ATTACHMENTS_NOT_INCLUDED -> {
-        yield Collections.emptySortedMap();
-      }
-    };
-  }
-
-  static SortedMap<CAItemAttachmentKey, CAItemAttachment>
-  itemAttachmentsInnerWithData(
-    final DSLContext context,
-    final CAItemID id)
-  {
-    final var tableSource =
-      ITEM_ATTACHMENTS
-        .join(ITEMS)
-        .on(ITEM_ATTACHMENTS.ITEM_ID.eq(ITEMS.ITEM_ID))
-        .join(FILES)
-        .on(FILES.ID.eq(ITEM_ATTACHMENTS.FILE_ID));
-
+    final var meta =
+      new TreeMap<RDottedName, CAMetadata>();
+    final var types =
+      new TreeSet<RDottedName>();
     final var attachments =
-      context.select(
-          ITEM_ATTACHMENTS.FILE_ID,
-          ITEM_ATTACHMENTS.RELATION,
-          FILES.ID,
-          FILES.DESCRIPTION,
-          FILES.MEDIA_TYPE,
-          FILES.HASH_ALGORITHM,
-          FILES.HASH_VALUE,
-          FILES.DATA,
-          FILES.DATA_USED
-        )
-        .from(tableSource)
-        .where(ITEM_ATTACHMENTS.ITEM_ID.eq(id.id()))
-        .fetch();
+      new TreeMap<CAAttachmentKey, CAAttachment>();
 
-    final var results =
-      new TreeMap<CAItemAttachmentKey, CAItemAttachment>();
+    CAItemID itemId = null;
+    String name = null;
+    long count = ZERO;
 
-    for (final var attRec : attachments) {
-      final var fileId =
-        new CAFileID(attRec.get(FILES.ID));
-      final var relation =
-        attRec.get(ITEM_ATTACHMENTS.RELATION);
+    for (final var rec : results) {
+      itemId = new CAItemID(rec.get(ITEMS.ITEM_ID));
+      name = rec.get(ITEMS.ITEM_NAME);
+      count = rec.get(ITEM_LOCATIONS_SUMMED.ITEM_COUNT).longValue();
 
-      final var itemAttachment =
-        new CAItemAttachment(
-          new CAFileType.CAFileWithData(
-            fileId,
-            attRec.get(FILES.DESCRIPTION),
-            attRec.get(FILES.MEDIA_TYPE),
-            attRec.<Long>get(FILES.DATA_USED).longValue(),
-            attRec.get(FILES.HASH_ALGORITHM),
-            attRec.get(FILES.HASH_VALUE),
-            new CAByteArray(attRec.get(FILES.DATA))
-          ),
-          relation
-        );
+      Optional.ofNullable(rec.get(ITEM_METADATA.METADATA_NAME))
+        .ifPresent(s -> {
+          final var metaName =
+            new RDottedName(s);
+          final var metaValue =
+            rec.get(ITEM_METADATA.METADATA_VALUE);
+          meta.put(metaName, new CAMetadata(metaName, metaValue));
+        });
 
-      results.put(
-        new CAItemAttachmentKey(fileId, relation),
-        itemAttachment
+      Optional.ofNullable(rec.get(ITEM_ATTACHMENTS.RELATION))
+        .ifPresent(f -> {
+          final var attachment = new CAAttachment(
+            new CAFileWithoutData(
+              new CAFileID(rec.get(FILES.ID)),
+              rec.get(FILES.DESCRIPTION),
+              rec.get(FILES.MEDIA_TYPE),
+              rec.<Long>get(FILES.DATA_USED).longValue(),
+              rec.get(FILES.HASH_ALGORITHM),
+              rec.get(FILES.HASH_VALUE)
+            ),
+            rec.get(ITEM_ATTACHMENTS.RELATION)
+          );
+          attachments.put(attachment.key(), attachment);
+        });
+
+      types.addAll(
+        Stream.of(rec.get(ITEM_TYPES_NAME, String[].class))
+          .filter(Objects::nonNull)
+          .map(RDottedName::new)
+          .toList()
       );
     }
 
-    return results;
-  }
-
-  private static SortedMap<CAItemAttachmentKey, CAItemAttachment>
-  itemAttachmentsInnerWithoutData(
-    final DSLContext context,
-    final CAItemID id)
-  {
-    final var tableSource =
-      ITEM_ATTACHMENTS
-        .join(ITEMS)
-        .on(ITEM_ATTACHMENTS.ITEM_ID.eq(ITEMS.ITEM_ID))
-        .join(FILES)
-        .on(FILES.ID.eq(ITEM_ATTACHMENTS.FILE_ID));
-
-    final var attachments =
-      context.select(
-          ITEM_ATTACHMENTS.FILE_ID,
-          ITEM_ATTACHMENTS.RELATION,
-          FILES.ID,
-          FILES.DESCRIPTION,
-          FILES.MEDIA_TYPE,
-          FILES.HASH_ALGORITHM,
-          FILES.HASH_VALUE,
-          FILES.DATA_USED
-        )
-        .from(tableSource)
-        .where(ITEM_ATTACHMENTS.ITEM_ID.eq(id.id()))
-        .fetch();
-
-    final var results =
-      new TreeMap<CAItemAttachmentKey, CAItemAttachment>();
-
-    for (final var attRec : attachments) {
-      final var fileId =
-        new CAFileID(attRec.get(FILES.ID));
-      final var relation =
-        attRec.get(ITEM_ATTACHMENTS.RELATION);
-
-      final var itemAttachment =
-        new CAItemAttachment(
-          new CAFileType.CAFileWithoutData(
-            fileId,
-            attRec.get(FILES.DESCRIPTION),
-            attRec.get(FILES.MEDIA_TYPE),
-            attRec.<Long>get(FILES.DATA_USED).longValue(),
-            attRec.get(FILES.HASH_ALGORITHM),
-            attRec.get(FILES.HASH_VALUE)
-          ),
-          relation
-        );
-
-      results.put(
-        new CAItemAttachmentKey(fileId, relation),
-        itemAttachment
-      );
-    }
-
-    return results;
-  }
-
-
-  enum IncludeTags
-  {
-    TAGS_INCLUDED,
-    TAGS_NOT_INCLUDED
-  }
-
-  enum IncludeDeleted
-  {
-    DELETED_INCLUDED,
-    DELETED_NOT_INCLUDED
-  }
-
-  enum IncludeAttachments
-  {
-    ATTACHMENTS_INCLUDED,
-    ATTACHMENTS_AND_DATA_INCLUDED,
-    ATTACHMENTS_NOT_INCLUDED
-  }
-
-  enum IncludeMetadata
-  {
-    METADATA_INCLUDED,
-    METADATA_NOT_INCLUDED
+    return Optional.of(
+      new CAItem(
+        itemId,
+        name,
+        count,
+        ZERO,
+        meta,
+        attachments,
+        types
+      )
+    );
   }
 }

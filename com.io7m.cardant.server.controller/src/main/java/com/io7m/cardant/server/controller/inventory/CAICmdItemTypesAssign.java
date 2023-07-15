@@ -29,7 +29,6 @@ import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.server.controller.inventory.CAICmdItemMetadataRemove.checkTypes;
 
 /**
  * @see CAICommandItemTypesAssign
@@ -66,7 +65,7 @@ public final class CAICmdItemTypesAssign extends CAICmdAbstract<CAICommandItemTy
     assign.execute(new Parameters(command.item(), command.types()));
 
     final var item = get.execute(command.item()).orElseThrow();
-    checkTypes(context, typeMultiGet, item);
+    CAITypeChecking.checkTypes(context, typeMultiGet, item);
     return new CAIResponseItemTypesAssign(context.requestId(), item);
   }
 }

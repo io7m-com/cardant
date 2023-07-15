@@ -24,7 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveTy
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
@@ -399,7 +399,7 @@ public final class CAICmdItemMetadataRemoveTest
       this.createContext();
 
     final var meta0 =
-      new CAItemMetadata(new RDottedName("a"), "x");
+      new CAMetadata(new RDottedName("a"), "x");
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(

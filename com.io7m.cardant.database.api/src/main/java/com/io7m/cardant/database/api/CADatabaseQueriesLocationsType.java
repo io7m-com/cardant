@@ -16,10 +16,15 @@
 
 package com.io7m.cardant.database.api;
 
+import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationSummary;
+import com.io7m.cardant.model.CAMetadata;
+import com.io7m.lanark.core.RDottedName;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedMap;
 
 /**
@@ -56,9 +61,151 @@ public sealed interface CADatabaseQueriesLocationsType
    */
 
   non-sealed interface ListType
-    extends CADatabaseQueryType<CADatabaseUnit, SortedMap<CALocationID, CALocation>>,
+    extends CADatabaseQueryType<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>,
     CADatabaseQueriesLocationsType
   {
 
+  }
+
+  /**
+   * Add or update metadata on a location.
+   */
+
+  non-sealed interface MetadataPutType
+    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.MetadataPutType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param location The location ID
+     * @param metadata The metadata
+     */
+
+    record Parameters(
+      CALocationID location,
+      Set<CAMetadata> metadata)
+    {
+
+    }
+  }
+
+  /**
+   * Remove metadata from a location.
+   */
+
+  non-sealed interface MetadataRemoveType
+    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.MetadataRemoveType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param location The location ID
+     * @param names    The metadata names
+     */
+
+    record Parameters(
+      CALocationID location,
+      Set<RDottedName> names)
+    {
+
+    }
+  }
+
+  /**
+   * Add an attachment to the given location.
+   */
+
+  non-sealed interface AttachmentAddType
+    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.AttachmentAddType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param location The location ID
+     * @param file     The file
+     * @param relation The relation
+     */
+
+    record Parameters(
+      CALocationID location,
+      CAFileID file,
+      String relation)
+    {
+
+    }
+  }
+
+  /**
+   * Remove an attachment from the given location.
+   */
+
+  non-sealed interface AttachmentRemoveType
+    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.AttachmentRemoveType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param location The location ID
+     * @param file     The file
+     * @param relation The relation
+     */
+
+    record Parameters(
+      CALocationID location,
+      CAFileID file,
+      String relation)
+    {
+
+    }
+  }
+
+  /**
+   * Assign types to the given location.
+   */
+
+  non-sealed interface TypesAssignType
+    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.TypesAssignType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param location The location ID
+     * @param types    The types
+     */
+
+    record Parameters(
+      CALocationID location,
+      Set<RDottedName> types)
+    {
+
+    }
+  }
+
+  /**
+   * Revoke types from the given location.
+   */
+
+  non-sealed interface TypesRevokeType
+    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.TypesRevokeType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param location The location ID
+     * @param types    The types
+     */
+
+    record Parameters(
+      CALocationID location,
+      Set<RDottedName> types)
+    {
+
+    }
   }
 }

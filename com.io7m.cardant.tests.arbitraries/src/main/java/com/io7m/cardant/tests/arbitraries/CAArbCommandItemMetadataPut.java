@@ -16,7 +16,7 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
@@ -29,7 +29,7 @@ public final class CAArbCommandItemMetadataPut extends CAArbAbstract<CAICommandI
       CAICommandItemMetadataPut.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(CAItemMetadata.class).set()
+        Arbitraries.defaultFor(CAMetadata.class).set()
       ).as(CAICommandItemMetadataPut::new)
     );
   }

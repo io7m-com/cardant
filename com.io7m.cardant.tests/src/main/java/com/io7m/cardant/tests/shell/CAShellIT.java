@@ -18,6 +18,7 @@ package com.io7m.cardant.tests.shell;
 
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
+import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShells;
@@ -293,6 +294,53 @@ public final class CAShellIT
   }
 
   @Test
+  public void testShellLocationAttachmentWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var fileNameUp =
+      this.directory.resolve("fileUp.txt");
+
+    Files.writeString(fileNameUp, "HELLO!");
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var fileId =
+      "544c6447-b5dd-4df9-a5c5-78e70b486fcf";
+    final var locationId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "file-put --id %s --file %s%n",
+      fileId,
+      fileNameUp.toAbsolutePath()
+    );
+    w.printf(
+      "location-put --id %s --name Battery%n",
+      locationId
+    );
+    w.printf(
+      "location-attachment-add --id %s --relation icon --file-id %s%n",
+      locationId,
+      fileId
+    );
+    w.printf(
+      "location-attachment-remove --id %s --relation icon --file-id %s%n",
+      locationId,
+      fileId
+    );
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
   public void testShellLocations()
     throws Exception
   {
@@ -301,10 +349,30 @@ public final class CAShellIT
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
     w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-                "--name 'Location 0'");
-    w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-                "--name 'Location 0 (A)'");
+
+    w.println(
+      "location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
+        "--name 'Location 0'"
+    );
+    w.println(
+      "location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
+        "--name 'Location 0 (A)'"
+    );
+    w.println(
+      "location-put --id e892e153-6487-46eb-9042-4cf6c21953a4 " +
+        "--name 'Location 1'"
+    );
+    w.println(
+      "location-put " +
+        "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
+        "--parent e892e153-6487-46eb-9042-4cf6c21953a4 "
+    );
+    w.println(
+      "location-put " +
+        "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
+        "--detach true "
+    );
+
     w.println("location-list");
     w.println("location-get --id 9f87685b-121e-4209-b864-80b0752132b5 ");
     w.println("logout");
@@ -313,6 +381,29 @@ public final class CAShellIT
 
     this.waitForShell();
     assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellLocationsCombinationNotAllowed()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+    w.println(
+      "location-put " +
+        "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
+        "--name 'Location 0' " +
+        "--parent 2d566517-195f-4e4e-9a3d-f86b6b876f46 " +
+        "--detach true"
+    );
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(1, this.exitCode);
   }
 
   @Test
@@ -590,6 +681,33 @@ public final class CAShellIT
     w.println("type-search-next");
     w.println("type-search-previous");
     w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellRolesWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone 12345678%n", this.uri());
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+    w.println(
+      "roles-assign " +
+        "--user " + USER + " " +
+        "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
+    );
+    w.println(
+      "roles-revoke " +
+        "--user " + USER + " " +
+        "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
+    );
     w.flush();
     w.close();
 

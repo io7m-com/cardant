@@ -32,7 +32,7 @@ import java.util.UUID;
 public record CAIResponseFileRemove(
   UUID requestId,
   CAFileID data)
-  implements CAIResponseWithElementType
+  implements CAIResponseType
 {
   /**
    * @see CAICommandFileRemove

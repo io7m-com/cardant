@@ -20,25 +20,16 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
-import com.io7m.cardant.model.CAItem;
-import com.io7m.cardant.model.CATypeChecking;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.strings.CAStringConstantApplied;
-import com.io7m.cardant.strings.CAStrings;
-
-import java.util.Set;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeCheckFailed;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.strings.CAStringConstants.ERROR_INDEXED;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
-import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_CHECKING;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
@@ -91,40 +82,7 @@ public final class CAICmdItemMetadataRemove
     }
 
     final var item = itemOpt.get();
-    checkTypes(context, typeGet, item);
+    CAITypeChecking.checkTypes(context, typeGet, item);
     return new CAIResponseItemMetadataRemove(context.requestId(), item);
-  }
-
-  static void checkTypes(
-    final CAICommandContext context,
-    final TypeDeclarationGetMultipleType typeGet,
-    final CAItem item)
-    throws CADatabaseException, CACommandExecutionFailure
-  {
-    final var types =
-      Set.copyOf(typeGet.execute(item.types()));
-
-    final var checker =
-      CATypeChecking.create(
-        context.services().requireService(CAStrings.class),
-        types,
-        Set.copyOf(item.metadata().values())
-      );
-
-    final var errors = checker.execute();
-    if (!errors.isEmpty()) {
-      for (int index = 0; index < errors.size(); ++index) {
-        context.setAttribute(
-          new CAStringConstantApplied(ERROR_INDEXED, Integer.valueOf(index)),
-          errors.get(index).message()
-        );
-      }
-      throw context.failFormatted(
-        400,
-        errorTypeCheckFailed(),
-        context.attributes(),
-        ERROR_TYPE_CHECKING
-      );
-    }
   }
 }

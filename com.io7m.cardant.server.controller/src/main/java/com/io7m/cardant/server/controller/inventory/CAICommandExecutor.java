@@ -37,9 +37,15 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
@@ -221,6 +227,24 @@ public final class CAICommandExecutor
     }
     if (command instanceof final CAICommandItemTypesRevoke m) {
       return new CAICmdItemTypesRevoke().execute(context, m);
+    }
+    if (command instanceof final CAICommandLocationTypesAssign m) {
+      return new CAICmdLocationTypesAssign().execute(context, m);
+    }
+    if (command instanceof final CAICommandLocationTypesRevoke m) {
+      return new CAICmdLocationTypesRevoke().execute(context, m);
+    }
+    if (command instanceof final CAICommandLocationMetadataPut m) {
+      return new CAICmdLocationMetadataPut().execute(context, m);
+    }
+    if (command instanceof final CAICommandLocationMetadataRemove m) {
+      return new CAICmdLocationMetadataRemove().execute(context, m);
+    }
+    if (command instanceof final CAICommandLocationAttachmentAdd m) {
+      return new CAICmdLocationAttachmentAdd().execute(context, m);
+    }
+    if (command instanceof final CAICommandLocationAttachmentRemove m) {
+      return new CAICmdLocationAttachmentRemove().execute(context, m);
     }
 
     throw new IllegalStateException();

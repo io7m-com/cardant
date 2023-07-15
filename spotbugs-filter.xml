@@ -81,15 +81,15 @@
       <Class name="com.io7m.cardant.model.CAFileID"/>
       <Class name="com.io7m.cardant.model.CAIds"/>
       <Class name="com.io7m.cardant.model.CAItem"/>
-      <Class name="com.io7m.cardant.model.CAItemAttachment"/>
-      <Class name="com.io7m.cardant.model.CAItemAttachmentKey"/>
+      <Class name="com.io7m.cardant.model.CAAttachment"/>
+      <Class name="com.io7m.cardant.model.CAAttachmentKey"/>
       <Class name="com.io7m.cardant.model.CAItemAttachments"/>
       <Class name="com.io7m.cardant.model.CAItemColumn"/>
       <Class name="com.io7m.cardant.model.CAItemColumnOrdering"/>
       <Class name="com.io7m.cardant.model.CAItemID"/>
       <Class name="com.io7m.cardant.model.CAItemLocation"/>
       <Class name="com.io7m.cardant.model.CAItemLocations"/>
-      <Class name="com.io7m.cardant.model.CAItemMetadata"/>
+      <Class name="com.io7m.cardant.model.CAMetadata"/>
       <Class name="com.io7m.cardant.model.CAItemMetadatas"/>
       <Class name="com.io7m.cardant.model.CAItemRepositAdd"/>
       <Class name="com.io7m.cardant.model.CAItemRepositMove"/>
@@ -98,7 +98,7 @@
       <Class name="com.io7m.cardant.model.CAItemSummary"/>
       <Class name="com.io7m.cardant.model.CALocation"/>
       <Class name="com.io7m.cardant.model.CALocationID"/>
-      <Class name="com.io7m.cardant.model.CALocations"/>
+      <Class name="com.io7m.cardant.model.CALocationSummaries"/>
       <Class name="com.io7m.cardant.model.CAPage"/>
       <Class name="com.io7m.cardant.model.CATag"/>
       <Class name="com.io7m.cardant.model.CATagID"/>
@@ -361,6 +361,10 @@
       <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataRemoveType$Parameters"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesAssignType$Parameters"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesRevokeType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesRevokeType$Parameters"/>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>

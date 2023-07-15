@@ -32,7 +32,7 @@ import java.util.UUID;
 public record CAIResponseLocationPut(
   UUID requestId,
   CALocation data)
-  implements CAIResponseWithElementType
+  implements CAIResponseType
 {
   /**
    * @see CAICommandLocationPut

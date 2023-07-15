@@ -35,9 +35,15 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
@@ -51,7 +57,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarSearch;
-import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
+import com.io7m.cardant.protocol.inventory.cb.CAI1LocationSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseError;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFileGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFilePut;
@@ -70,9 +76,15 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemsRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationList;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesGet;
@@ -98,6 +110,7 @@ import java.util.stream.Collectors;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationCommon.errorProtocol;
 import static com.io7m.cardant.protocol.inventory.cb.internal.ToWireModel.item;
+import static com.io7m.cardant.protocol.inventory.cb.internal.ToWireModel.location;
 
 // CHECKSTYLE:OFF
 
@@ -146,15 +159,6 @@ public final class ToWireResponses
     }
     if (cmd instanceof final CAIResponseItemSetName c) {
       return itemSetName(c);
-    }
-    if (cmd instanceof final CAIResponseLocationGet c) {
-      return locationGet(c);
-    }
-    if (cmd instanceof final CAIResponseLocationList c) {
-      return locationList(c);
-    }
-    if (cmd instanceof final CAIResponseLocationPut c) {
-      return locationPut(c);
     }
     if (cmd instanceof final CAIResponseLogin c) {
       return login(c);
@@ -209,6 +213,34 @@ public final class ToWireResponses
     }
     if (cmd instanceof final CAIResponseItemTypesRevoke c) {
       return itemTypesRevoke(c);
+    }
+
+    if (cmd instanceof final CAIResponseLocationGet c) {
+      return locationGet(c);
+    }
+    if (cmd instanceof final CAIResponseLocationList c) {
+      return locationList(c);
+    }
+    if (cmd instanceof final CAIResponseLocationPut c) {
+      return locationPut(c);
+    }
+    if (cmd instanceof final CAIResponseLocationAttachmentAdd c) {
+      return locationAttachmentAdd(c);
+    }
+    if (cmd instanceof final CAIResponseLocationAttachmentRemove c) {
+      return locationAttachmentRemove(c);
+    }
+    if (cmd instanceof final CAIResponseLocationMetadataPut c) {
+      return locationMetadataPut(c);
+    }
+    if (cmd instanceof final CAIResponseLocationMetadataRemove c) {
+      return locationMetadataRemove(c);
+    }
+    if (cmd instanceof final CAIResponseLocationTypesAssign c) {
+      return locationTypesAssign(c);
+    }
+    if (cmd instanceof final CAIResponseLocationTypesRevoke c) {
+      return locationTypesRevoke(c);
     }
 
     throw new ProtocolUncheckedException(errorProtocol(cmd));
@@ -398,7 +430,7 @@ public final class ToWireResponses
   {
     return new CAI1ResponseLocationPut(
       new CBUUID(c.requestId()),
-      ToWireModel.location(c.data())
+      location(c.data())
     );
   }
 
@@ -407,7 +439,7 @@ public final class ToWireResponses
   {
     return new CAI1ResponseLocationGet(
       new CBUUID(c.requestId()),
-      ToWireModel.location(c.data())
+      location(c.data())
     );
   }
 
@@ -421,9 +453,9 @@ public final class ToWireResponses
           .locations()
           .values()
           .stream()
-          .map(ToWireModel::location)
+          .map(ToWireModel::locationSummary)
           .collect(Collectors.toMap(
-            CAI1Location::fieldLocationId,
+            CAI1LocationSummary::fieldId,
             Function.identity())
           )
       )
@@ -514,6 +546,68 @@ public final class ToWireResponses
   {
     return new CAI1ResponseFilePut(
       new CBUUID(c.requestId()), ToWireModel.file(c.data())
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+  private static ProtocolCAIv1Type locationTypesRevoke(
+    final CAIResponseLocationTypesRevoke c)
+  {
+    return new CAI1ResponseLocationTypesRevoke(
+      new CBUUID(c.requestId()),
+      location(c.data())
+    );
+  }
+
+  private static ProtocolCAIv1Type locationTypesAssign(
+    final CAIResponseLocationTypesAssign c)
+  {
+    return new CAI1ResponseLocationTypesAssign(
+      new CBUUID(c.requestId()),
+      location(c.data())
+    );
+  }
+
+  private static ProtocolCAIv1Type locationAttachmentRemove(
+    final CAIResponseLocationAttachmentRemove c)
+  {
+    return new CAI1ResponseLocationAttachmentRemove(
+      new CBUUID(c.requestId()), location(c.data())
+    );
+  }
+
+  private static ProtocolCAIv1Type locationAttachmentAdd(
+    final CAIResponseLocationAttachmentAdd c)
+  {
+    return new CAI1ResponseLocationAttachmentAdd(
+      new CBUUID(c.requestId()), location(c.data())
+    );
+  }
+
+  private static ProtocolCAIv1Type locationMetadataRemove(
+    final CAIResponseLocationMetadataRemove c)
+  {
+    return new CAI1ResponseLocationMetadataRemove(
+      new CBUUID(c.requestId()),
+      location(c.data())
+    );
+  }
+
+  private static ProtocolCAIv1Type locationMetadataPut(
+    final CAIResponseLocationMetadataPut c)
+  {
+    return new CAI1ResponseLocationMetadataPut(
+      new CBUUID(c.requestId()),
+      location(c.data())
     );
   }
 }

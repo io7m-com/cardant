@@ -40,9 +40,15 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
@@ -81,9 +87,15 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSetName;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemsRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationList;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationPut;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesGet;
@@ -244,6 +256,26 @@ public final class ToWireCommands
       return itemTypesRevoke(c);
     }
 
+
+    if (cmd instanceof final CAICommandLocationTypesAssign c) {
+      return locationTypesAssign(c);
+    }
+    if (cmd instanceof final CAICommandLocationTypesRevoke c) {
+      return locationTypesRevoke(c);
+    }
+    if (cmd instanceof final CAICommandLocationMetadataPut c) {
+      return locationMetadataPut(c);
+    }
+    if (cmd instanceof final CAICommandLocationMetadataRemove c) {
+      return locationMetadataRemove(c);
+    }
+    if (cmd instanceof final CAICommandLocationAttachmentAdd c) {
+      return locationAttachmentAdd(c);
+    }
+    if (cmd instanceof final CAICommandLocationAttachmentRemove c) {
+      return locationAttachmentRemove(c);
+    }
+
     throw new ProtocolUncheckedException(CAI1ValidationCommon.errorProtocol(cmd));
   }
 
@@ -320,8 +352,6 @@ public final class ToWireCommands
   }
 
 
-
-
   private static ProtocolCAIv1Type typeDeclarationRemove(
     final CAICommandTypeDeclarationRemove c)
   {
@@ -375,11 +405,6 @@ public final class ToWireCommands
         c.types(), ToWireModel::typeDeclaration)
     );
   }
-
-
-
-
-
 
   private static ProtocolCAIv1Type rolesGet(
     final CAICommandRolesGet c)
@@ -519,7 +544,7 @@ public final class ToWireCommands
   {
     return new CAI1CommandItemMetadataPut(
       new CBUUID(c.item().id()),
-      CBLists.ofCollection(c.metadatas(), ToWireModel::itemMetadata)
+      CBLists.ofCollection(c.metadatas(), ToWireModel::metadata)
     );
   }
 
@@ -582,5 +607,66 @@ public final class ToWireCommands
     final CAICommandFilePut c)
   {
     return new CAI1CommandFilePut(ToWireModel.file(c.data()));
+  }
+
+  private static ProtocolCAIv1Type locationMetadataRemove(
+    final CAICommandLocationMetadataRemove c)
+  {
+    return new CAI1CommandLocationMetadataRemove(
+      new CBUUID(c.location().id()),
+      CBLists.ofCollectionString(
+        c.metadataNames()
+          .stream()
+          .map(RDottedName::value)
+          .toList()
+      )
+    );
+  }
+
+  private static ProtocolCAIv1Type locationMetadataPut(
+    final CAICommandLocationMetadataPut c)
+  {
+    return new CAI1CommandLocationMetadataPut(
+      new CBUUID(c.location().id()),
+      CBLists.ofCollection(c.metadatas(), ToWireModel::metadata)
+    );
+  }
+
+  private static ProtocolCAIv1Type locationAttachmentRemove(
+    final CAICommandLocationAttachmentRemove c)
+  {
+    return new CAI1CommandLocationAttachmentRemove(
+      new CBUUID(c.location().id()),
+      new CBUUID(c.file().id()),
+      new CBString(c.relation())
+    );
+  }
+
+  private static ProtocolCAIv1Type locationAttachmentAdd(
+    final CAICommandLocationAttachmentAdd c)
+  {
+    return new CAI1CommandLocationAttachmentAdd(
+      new CBUUID(c.location().id()),
+      new CBUUID(c.file().id()),
+      new CBString(c.relation())
+    );
+  }
+
+  private static ProtocolCAIv1Type locationTypesRevoke(
+    final CAICommandLocationTypesRevoke c)
+  {
+    return new CAI1CommandLocationTypesRevoke(
+      new CBUUID(c.location().id()),
+      CBLists.ofCollection(c.types(), r -> CBCore.string(r.value()))
+    );
+  }
+
+  private static ProtocolCAIv1Type locationTypesAssign(
+    final CAICommandLocationTypesAssign c)
+  {
+    return new CAI1CommandLocationTypesAssign(
+      new CBUUID(c.location().id()),
+      CBLists.ofCollection(c.types(), r -> CBCore.string(r.value()))
+    );
   }
 }

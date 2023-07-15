@@ -32,7 +32,7 @@ import java.util.UUID;
 public record CAIResponseItemsRemove(
   UUID requestId,
   CAIds data)
-  implements CAIResponseWithElementType
+  implements CAIResponseType
 {
   /**
    * @see CAICommandItemsRemove

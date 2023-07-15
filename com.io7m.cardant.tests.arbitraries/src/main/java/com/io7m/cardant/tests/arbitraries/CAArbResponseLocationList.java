@@ -15,7 +15,7 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CALocations;
+import com.io7m.cardant.model.CALocationSummaries;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
@@ -30,7 +30,7 @@ public final class CAArbResponseLocationList extends CAArbAbstract<CAIResponseLo
       CAIResponseLocationList.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
-        Arbitraries.defaultFor(CALocations.class)
+        Arbitraries.defaultFor(CALocationSummaries.class)
       ).as(CAIResponseLocationList::new)
     );
   }

@@ -23,14 +23,19 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationSummary;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.TreeMap;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorCyclic;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_NAME;
@@ -84,20 +89,68 @@ public final class CADBQLocationPut
 
     this.checkAcyclic(context, location);
 
-    final var id = location.id().id();
-    var locRec = context.fetchOne(LOCATIONS, LOCATIONS.LOCATION_ID.eq(id));
-    if (locRec == null) {
-      locRec = context.newRecord(LOCATIONS);
-      locRec.setLocationId(id);
-    }
-    locRec.setLocationParent(
-      location.parent()
-        .map(CALocationID::id)
-        .orElse(null)
+    final var locationId =
+      location.id().id();
+    final var batches =
+      new ArrayList<Query>();
+
+    batches.add(
+      context.deleteFrom(LOCATION_METADATA)
+        .where(LOCATION_METADATA.METADATA_LOCATION_ID.eq(locationId))
     );
-    locRec.setLocationName(location.name());
-    locRec.setLocationDescription(location.description());
-    locRec.store();
+    batches.add(
+      context.deleteFrom(LOCATION_TYPES)
+        .where(LOCATION_TYPES.LOCATION.eq(locationId))
+    );
+
+    batches.add(
+      context.insertInto(LOCATIONS)
+        .set(
+          LOCATIONS.LOCATION_ID,
+          locationId)
+        .set(
+          LOCATIONS.LOCATION_NAME,
+          location.name())
+        .set(
+          LOCATIONS.LOCATION_PARENT,
+          location.parent().map(CALocationID::id).orElse(null))
+        .onDuplicateKeyUpdate()
+        .set(
+          LOCATIONS.LOCATION_ID,
+          locationId)
+        .set(
+          LOCATIONS.LOCATION_NAME,
+          location.name())
+        .set(
+          LOCATIONS.LOCATION_PARENT,
+          location.parent().map(CALocationID::id).orElse(null))
+    );
+
+    for (final var type : location.types()) {
+      batches.add(
+        context.insertInto(LOCATION_TYPES)
+          .set(
+            LOCATION_TYPES.LOCATION,
+            locationId)
+          .set(
+            LOCATION_TYPES.TYPE_DECLARATION,
+            context.select(METADATA_TYPE_DECLARATIONS.ID)
+              .where(METADATA_TYPE_DECLARATIONS.NAME.eq(type.value()))
+          )
+      );
+    }
+
+    for (final var metaEntry : location.metadata().entrySet()) {
+      batches.add(
+        context.insertInto(LOCATION_METADATA)
+          .set(LOCATION_METADATA.METADATA_LOCATION_ID, locationId)
+          .set(LOCATION_METADATA.METADATA_NAME, metaEntry.getKey().value())
+          .set(LOCATION_METADATA.METADATA_VALUE, metaEntry.getValue().value())
+      );
+    }
+
+    context.batch(batches)
+      .execute();
 
     return CADatabaseUnit.UNIT;
   }
@@ -155,7 +208,7 @@ public final class CADBQLocationPut
       );
 
     final var locations =
-      locationListInner(context);
+      CADBQLocationList.list(context);
 
     try {
       for (final var location : locations.values()) {
@@ -182,7 +235,7 @@ public final class CADBQLocationPut
       this.setAttribute(NEW_LOCATION_ID, newLocation.displayId());
       this.setAttribute(NEW_LOCATION_NAME, newLocation.name());
       this.setAttribute(NEW_LOCATION_PARENT_ID, newParent.displayId());
-      this.setAttribute(OLD_LOCATION_ID, oldLocation.displayId());
+      this.setAttribute(OLD_LOCATION_ID, oldLocation.id().displayId());
       this.setAttribute(OLD_LOCATION_NAME, oldLocation.name());
       oldParentOpt.ifPresent(oldParent -> {
         this.setAttribute(OLD_LOCATION_PARENT_ID, oldParent.displayId());
@@ -198,7 +251,7 @@ public final class CADBQLocationPut
     }
   }
 
-  static Optional<CALocation> locationGetInner(
+  static Optional<CALocationSummary> locationGetInner(
     final CALocationID id,
     final DSLContext context)
   {
@@ -209,11 +262,10 @@ public final class CADBQLocationPut
     }
 
     return Optional.of(
-      new CALocation(
+      new CALocationSummary(
         id,
         Optional.ofNullable(locRec.getLocationParent()).map(CALocationID::new),
-        locRec.getLocationName(),
-        locRec.getLocationDescription()
+        locRec.getLocationName()
       )
     );
   }
@@ -223,23 +275,5 @@ public final class CADBQLocationPut
     CALocationID to)
   {
 
-  }
-
-  static TreeMap<CALocationID, CALocation> locationListInner(
-    final DSLContext context)
-  {
-    final var results = new TreeMap<CALocationID, CALocation>();
-    context.selectFrom(LOCATIONS)
-      .stream()
-      .forEach(r -> {
-        final var loc = new CALocation(
-          new CALocationID(r.getLocationId()),
-          Optional.ofNullable(r.getLocationParent()).map(CALocationID::new),
-          r.getLocationName(),
-          r.getLocationDescription()
-        );
-        results.put(loc.id(), loc);
-      });
-    return results;
   }
 }

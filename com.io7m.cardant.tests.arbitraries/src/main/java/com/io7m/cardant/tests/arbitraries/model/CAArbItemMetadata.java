@@ -17,22 +17,22 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
-public final class CAArbItemMetadata extends CAArbAbstract<CAItemMetadata>
+public final class CAArbItemMetadata extends CAArbAbstract<CAMetadata>
 {
   public CAArbItemMetadata()
   {
     super(
-      CAItemMetadata.class,
+      CAMetadata.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(RDottedName.class),
         Arbitraries.strings()
-      ).as(CAItemMetadata::new)
+      ).as(CAMetadata::new)
     );
   }
 }

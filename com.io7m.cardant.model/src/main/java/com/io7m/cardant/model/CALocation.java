@@ -16,8 +16,12 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.lanark.core.RDottedName;
+
 import java.util.Objects;
 import java.util.Optional;
+import java.util.SortedMap;
+import java.util.SortedSet;
 
 /**
  * A location.
@@ -25,15 +29,19 @@ import java.util.Optional;
  * @param id          The location ID
  * @param parent      The location parent, if any
  * @param name        The location name
- * @param description The location description
+ * @param metadata    The metadata associated with the location
+ * @param types       The types associated with the location
+ * @param attachments The attachments associated with the location
  */
 
 public record CALocation(
   CALocationID id,
   Optional<CALocationID> parent,
   String name,
-  String description
-) implements CAInventoryElementType
+  SortedMap<RDottedName, CAMetadata> metadata,
+  SortedMap<CAAttachmentKey, CAAttachment> attachments,
+  SortedSet<RDottedName> types)
+  implements CAInventoryObjectType<CALocationSummary>
 {
   /**
    * Construct a location.
@@ -41,7 +49,6 @@ public record CALocation(
    * @param id          The location ID
    * @param parent      The location parent, if any
    * @param name        The location name
-   * @param description The location description
    */
 
   public CALocation
@@ -49,7 +56,9 @@ public record CALocation(
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(parent, "parent");
     Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(description, "description");
+    Objects.requireNonNull(metadata, "metadata");
+    Objects.requireNonNull(attachments, "attachments");
+    Objects.requireNonNull(types, "types");
 
     parent.ifPresent(parentId -> {
       if (id.equals(parentId)) {
@@ -66,5 +75,11 @@ public record CALocation(
   public String displayId()
   {
     return this.id.displayId();
+  }
+
+  @Override
+  public CALocationSummary summary()
+  {
+    return new CALocationSummary(this.id, this.parent, this.name);
   }
 }

@@ -23,7 +23,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemMetadata;
+import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalar;
@@ -101,7 +101,7 @@ public final class CAICmdItemMetadataPutTest
           context,
           new CAICommandItemMetadataPut(
             ITEM_ID,
-            Set.of(new CAItemMetadata(name0, "y"))));
+            Set.of(new CAMetadata(name0, "y"))));
       });
 
     /* Assert. */
@@ -183,9 +183,9 @@ public final class CAICmdItemMetadataPutTest
       new CAICommandItemMetadataPut(
         ITEM_ID,
         Set.of(
-          new CAItemMetadata(name0, "x"),
-          new CAItemMetadata(name1, "y"),
-          new CAItemMetadata(name2, "z")
+          new CAMetadata(name0, "x"),
+          new CAMetadata(name1, "y"),
+          new CAMetadata(name2, "z")
         )
       ));
 
@@ -201,9 +201,9 @@ public final class CAICmdItemMetadataPutTest
       .execute(new Parameters(
         ITEM_ID,
         Set.of(
-          new CAItemMetadata(name0, "x"),
-          new CAItemMetadata(name1, "y"),
-          new CAItemMetadata(name2, "z")))
+          new CAMetadata(name0, "x"),
+          new CAMetadata(name1, "y"),
+          new CAMetadata(name2, "z")))
       );
     verify(itemGet)
       .execute(ITEM_ID);
@@ -300,9 +300,9 @@ public final class CAICmdItemMetadataPutTest
           new CAICommandItemMetadataPut(
             ITEM_ID,
             Set.of(
-              new CAItemMetadata(name0, "x"),
-              new CAItemMetadata(name1, "y"),
-              new CAItemMetadata(name2, "z")
+              new CAMetadata(name0, "x"),
+              new CAMetadata(name1, "y"),
+              new CAMetadata(name2, "z")
             )
           ));
       });
@@ -387,9 +387,9 @@ public final class CAICmdItemMetadataPutTest
           new CAICommandItemMetadataPut(
             ITEM_ID,
             Set.of(
-              new CAItemMetadata(name0, "x"),
-              new CAItemMetadata(name1, "y"),
-              new CAItemMetadata(name2, "z")
+              new CAMetadata(name0, "x"),
+              new CAMetadata(name1, "y"),
+              new CAMetadata(name2, "z")
             )
           ));
       });
@@ -410,9 +410,9 @@ public final class CAICmdItemMetadataPutTest
         new Parameters(
           ITEM_ID,
           Set.of(
-            new CAItemMetadata(name0, "x"),
-            new CAItemMetadata(name1, "y"),
-            new CAItemMetadata(name2, "z")
+            new CAMetadata(name0, "x"),
+            new CAMetadata(name1, "y"),
+            new CAMetadata(name2, "z")
           )
         )
       );
@@ -468,7 +468,7 @@ public final class CAICmdItemMetadataPutTest
       this.createContext();
 
     final var meta0 =
-      new CAItemMetadata(new RDottedName("a"), "x");
+      new CAMetadata(new RDottedName("a"), "x");
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(

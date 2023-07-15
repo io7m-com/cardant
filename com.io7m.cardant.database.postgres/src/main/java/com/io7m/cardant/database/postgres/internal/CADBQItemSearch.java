@@ -23,6 +23,10 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemLocationMatchType;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
+import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
@@ -39,10 +43,6 @@ import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatch
 import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
 import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAnyOf;
 import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.model.CALocationMatchType;
-import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
-import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
-import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
@@ -346,7 +346,7 @@ public final class CADBQItemSearch
       DSL.field(AGGREGATED_CTE_META_PAIRS_FIELD_NAME)
         .as(FILTER_META_PAIRS_FIELD_NAME));
 
-    if (!(parameters.locationMatch() instanceof CALocationsAll)) {
+    if (!(parameters.locationMatch() instanceof CAItemLocationsAll)) {
       filterFields.add(
         DSL.field(AGGREGATED_CTE_LOCATION_FIELD_NAME)
           .as(FILTER_LOCATION_FIELD_NAME));
@@ -377,7 +377,7 @@ public final class CADBQItemSearch
     aggregateFields.add(AGGREGATED_CTE_OUTPUT_META_KEYS_FIELD);
     aggregateFields.add(AGGREGATED_CTE_OUTPUT_META_PAIRS_FIELD);
 
-    if (!(parameters.locationMatch() instanceof CALocationsAll)) {
+    if (!(parameters.locationMatch() instanceof CAItemLocationsAll)) {
       aggregateFields.add(AGGREGATED_CTE_OUTPUT_LOCATIONS_FIELD);
     }
 
@@ -410,7 +410,7 @@ public final class CADBQItemSearch
     expandedFields.add(EXPANDED_CTE_OUTPUT_META_VALUE_FIELD);
     expandedFields.add(EXPANDED_CTE_OUTPUT_TYPE_NAME_FIELD);
 
-    if (!(parameters.locationMatch() instanceof CALocationsAll)) {
+    if (!(parameters.locationMatch() instanceof CAItemLocationsAll)) {
       expandedFields.add(EXPANDED_CTE_OUTPUT_LOCATION_FIELD);
     }
 
@@ -451,7 +451,7 @@ public final class CADBQItemSearch
      * to be joined.
      */
 
-    if (!(parameters.locationMatch() instanceof CALocationsAll)) {
+    if (!(parameters.locationMatch() instanceof CAItemLocationsAll)) {
       baseTableSource = baseTableSource.join(ITEM_LOCATIONS)
         .on(ITEM_LOCATIONS.ITEM_ID.eq(ITEMS.ITEM_ID));
     }
@@ -587,9 +587,9 @@ public final class CADBQItemSearch
   }
 
   private static Condition createLocationCondition(
-    final CALocationMatchType match)
+    final CAItemLocationMatchType match)
   {
-    if (match instanceof CALocationsAll) {
+    if (match instanceof CAItemLocationsAll) {
       return DSL.trueCondition();
     }
 
@@ -599,7 +599,7 @@ public final class CADBQItemSearch
      * should only contain one item.
      */
 
-    if (match instanceof final CALocationExact exact) {
+    if (match instanceof final CAItemLocationExact exact) {
       return DSL.condition(
         "? = any(?)",
         exact.location().id(),
@@ -613,7 +613,7 @@ public final class CADBQItemSearch
      * function.
      */
 
-    if (match instanceof final CALocationWithDescendants descendants) {
+    if (match instanceof final CAItemLocationWithDescendants descendants) {
       return DSL.condition(
         "? && (select array(select location_descendants(?)))",
         FILTER_LOCATION_FIELD_NAME,

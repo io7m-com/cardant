@@ -24,8 +24,7 @@ import java.util.Optional;
  * The type of files.
  */
 
-public sealed interface CAFileType extends Comparable<CAFileType>,
-  CAInventoryElementType
+public sealed interface CAFileType extends Comparable<CAFileType>
 {
   /**
    * @return The ID

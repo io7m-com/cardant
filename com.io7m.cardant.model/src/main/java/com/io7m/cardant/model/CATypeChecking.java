@@ -41,12 +41,12 @@ public final class CATypeChecking
 {
   private final CAStrings strings;
   private final Set<CATypeDeclaration> typeDeclarations;
-  private final Set<CAItemMetadata> metadata;
+  private final Set<CAMetadata> metadata;
 
   private CATypeChecking(
     final CAStrings inStrings,
     final Set<CATypeDeclaration> inTypeDeclarations,
-    final Set<CAItemMetadata> inMetadata)
+    final Set<CAMetadata> inMetadata)
   {
     this.strings =
       Objects.requireNonNull(inStrings, "inStrings");
@@ -69,7 +69,7 @@ public final class CATypeChecking
   public static CATypeChecking create(
     final CAStrings inStrings,
     final Set<CATypeDeclaration> inTypeDeclarations,
-    final Set<CAItemMetadata> inMetadata)
+    final Set<CAMetadata> inMetadata)
   {
     return new CATypeChecking(inStrings, inTypeDeclarations, inMetadata);
   }

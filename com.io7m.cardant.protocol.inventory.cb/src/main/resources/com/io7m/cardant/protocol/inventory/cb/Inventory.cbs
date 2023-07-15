@@ -60,24 +60,24 @@
     [field data cb:ByteArray]]
 ]
 
-[documentation CAI1ItemMetadata "An item metadata value."]
-[record CAI1ItemMetadata
+[documentation CAI1Metadata "A metadata value."]
+[record CAI1Metadata
   [documentation key "The metadata value key."]
   [field key cb:String]
   [documentation value "The metadata value."]
   [field value cb:String]
 ]
 
-[documentation CAI1ItemAttachmentKey "The values that uniquely identify an attachment on an item."]
-[record CAI1ItemAttachmentKey
+[documentation CAI1AttachmentKey "The values that uniquely identify an attachment on an object."]
+[record CAI1AttachmentKey
   [documentation id "The file ID."]
   [field id cb:UUID]
   [documentation relation "The relation."]
   [field relation cb:String]
 ]
 
-[documentation CAI1ItemAttachment "An item attachment."]
-[record CAI1ItemAttachment
+[documentation CAI1Attachment "An item attachment."]
+[record CAI1Attachment
   [documentation file "The file ID."]
   [field file CAI1File]
   [documentation relation "The relation."]
@@ -95,9 +95,9 @@
   [documentation countHere "The item count in this location."]
   [field countHere cb:IntegerUnsigned64]
   [documentation metadata "The item metadata."]
-  [field metadata [cb:Map cb:String CAI1ItemMetadata]]
+  [field metadata [cb:Map cb:String CAI1Metadata]]
   [documentation attachments "The item attachments."]
-  [field attachments [cb:Map CAI1ItemAttachmentKey CAI1ItemAttachment]]
+  [field attachments [cb:Map CAI1AttachmentKey CAI1Attachment]]
   [documentation types "The item types."]
   [field types [cb:List cb:String]]
 ]
@@ -160,6 +160,13 @@
     [field count cb:IntegerUnsigned64]]
 ]
 
+[documentation CAI1LocationSummary "A summary of a location."]
+[record CAI1LocationSummary
+  [field id cb:UUID]
+  [field parent [cb:Option cb:UUID]]
+  [field name cb:String]
+]
+
 [documentation CAI1Location "A location."]
 [record CAI1Location
   [documentation locationId "The location ID."]
@@ -168,8 +175,12 @@
   [field parent [cb:Option cb:UUID]]
   [documentation name "The location name."]
   [field name cb:String]
-  [documentation description "The location description."]
-  [field description cb:String]
+  [documentation metadata "The item metadata."]
+  [field metadata [cb:Map cb:String CAI1Metadata]]
+  [documentation attachments "The item attachments."]
+  [field attachments [cb:Map CAI1AttachmentKey CAI1Attachment]]
+  [documentation types "The item types."]
+  [field types [cb:List cb:String]]
 ]
 
 [documentation CAI1ItemColumn "The item column by which to order results."]
@@ -418,7 +429,7 @@
   [documentation itemId "The item ID."]
   [field itemId cb:UUID]
   [documentation metadatas "The item metadatas."]
-  [field metadatas [cb:List CAI1ItemMetadata]]
+  [field metadatas [cb:List CAI1Metadata]]
 ]
 
 [documentation CAI1CommandItemMetadataRemove "Remove metadata values from an item."]
@@ -586,6 +597,58 @@
   [field types [cb:List cb:String]]
 ]
 
+[documentation CAI1CommandLocationMetadataPut "Add or update metadata values in a location."]
+[record CAI1CommandLocationMetadataPut
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation metadatas "The location metadatas."]
+  [field metadatas [cb:List CAI1Metadata]]
+]
+
+[documentation CAI1CommandLocationMetadataRemove "Remove metadata values from a location."]
+[record CAI1CommandLocationMetadataRemove
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation metadatas "The location metadatas."]
+  [field metadatas [cb:List cb:String]]
+]
+
+[documentation CAI1CommandLocationTypesAssign "Assign a set of types to a location."]
+[record CAI1CommandLocationTypesAssign
+  [documentation location "The target location."]
+  [field location cb:UUID]
+  [documentation types "The assigned types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandLocationTypesRevoke "Revoke a set of types from a location."]
+[record CAI1CommandLocationTypesRevoke
+  [documentation location "The target location."]
+  [field location cb:UUID]
+  [documentation types "The removed types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandLocationAttachmentAdd "Add location attachments."]
+[record CAI1CommandLocationAttachmentAdd
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
+  [documentation relation "The attachment relation."]
+  [field relation cb:String]
+]
+
+[documentation CAI1CommandLocationAttachmentRemove "Remove location attachments."]
+[record CAI1CommandLocationAttachmentRemove
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
+  [documentation relation "The attachment relation."]
+  [field relation cb:String]
+]
+
 ;
 ; Responses.
 ;
@@ -739,7 +802,7 @@
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation locations "The locations."]
-  [field locations [cb:Map cb:UUID CAI1Location]]
+  [field locations [cb:Map cb:UUID CAI1LocationSummary]]
 ]
 
 [documentation CAI1ResponseLocationPut "A response to CAI1CommandLocationPut."]
@@ -862,6 +925,55 @@
   [field item CAI1Item]
 ]
 
+[documentation CAI1ResponseLocationMetadataPut "A response to CAI1CommandLocationMetadataPut."]
+[record CAI1ResponseLocationMetadataPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationMetadataRemove "A response to CAI1CommandLocationMetadataRemove."]
+[record CAI1ResponseLocationMetadataRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationTypesAssign "A response to CAI1CommandLocationTypesAssign."]
+[record CAI1ResponseLocationTypesAssign
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationTypesRevoke "A response to CAI1CommandLocationTypesRevoke."]
+[record CAI1ResponseLocationTypesRevoke
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationAttachmentAdd "A response to CAI1CommandLocationAttachmentAdd."]
+[record CAI1ResponseLocationAttachmentAdd
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationAttachmentRemove "A response to CAI1CommandLocationAttachmentRemove."]
+[record CAI1ResponseLocationAttachmentRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+
 ;
 ; Events.
 ;
@@ -902,9 +1014,15 @@
       CAI1CommandItemTypesAssign
       CAI1CommandItemTypesRevoke
       CAI1CommandItemsRemove
+      CAI1CommandLocationAttachmentAdd
+      CAI1CommandLocationAttachmentRemove
       CAI1CommandLocationGet
       CAI1CommandLocationList
+      CAI1CommandLocationMetadataPut
+      CAI1CommandLocationMetadataRemove
       CAI1CommandLocationPut
+      CAI1CommandLocationTypesAssign
+      CAI1CommandLocationTypesRevoke
       CAI1CommandLogin
       CAI1CommandRolesAssign
       CAI1CommandRolesGet
@@ -940,9 +1058,15 @@
       CAI1ResponseItemTypesAssign
       CAI1ResponseItemTypesRevoke
       CAI1ResponseItemsRemove
+      CAI1ResponseLocationAttachmentAdd
+      CAI1ResponseLocationAttachmentRemove
       CAI1ResponseLocationGet
       CAI1ResponseLocationList
+      CAI1ResponseLocationMetadataPut
+      CAI1ResponseLocationMetadataRemove
       CAI1ResponseLocationPut
+      CAI1ResponseLocationTypesAssign
+      CAI1ResponseLocationTypesRevoke
       CAI1ResponseLogin
       CAI1ResponseRolesAssign
       CAI1ResponseRolesGet
