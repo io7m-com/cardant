@@ -211,8 +211,7 @@ CREATE TABLE metadata_scalar_types (
     </Statement>
 
     <Comment>
-      The METADATA_type_declaration_FIELDS table associates fields with type
-      declarations.
+      The metadata_type_fields table associates fields with type declarations.
     </Comment>
 
     <StatementParameterized parameterInterpolation="STRING_FORMATTING">
