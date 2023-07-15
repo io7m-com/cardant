@@ -128,7 +128,6 @@ public final class CAICmdItemSetNameTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 

@@ -58,8 +58,6 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CASizeRange;
-import com.io7m.cardant.model.CATag;
-import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeField;
@@ -95,7 +93,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch.CAI1NameMatchSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame;
 import com.io7m.cardant.protocol.inventory.cb.CAI1SizeRange;
-import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclaration;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclarationSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeField;
@@ -178,12 +175,6 @@ public final class ToWireModel
       new CBMap<>(metadata),
       new CBMap<>(attachments),
       new CBList<>(
-        item.tags()
-          .stream()
-          .map(ToWireModel::tag)
-          .toList()
-      ),
-      new CBList<>(
         item.types()
           .stream()
           .map(RDottedName::value)
@@ -218,8 +209,6 @@ public final class ToWireModel
       return new CAI1Id.CAI1FileID(new CBUUID(xid.id()));
     } else if (id instanceof final CALocationID xid) {
       return new CAI1Id.CAI1LocationID(new CBUUID(xid.id()));
-    } else if (id instanceof final CATagID xid) {
-      return new CAI1Id.CAI1TagID(new CBUUID(xid.id()));
     } else if (id instanceof final CAItemID xid) {
       return new CAI1Id.CAI1ItemID(new CBUUID(xid.id()));
     }
@@ -277,15 +266,6 @@ public final class ToWireModel
       new CBUUID(a.item().id()),
       new CBUUID(a.location().id()),
       new CBIntegerUnsigned64(a.count())
-    );
-  }
-
-  public static CAI1Tag tag(
-    final CATag t)
-  {
-    return new CAI1Tag(
-      new CBUUID(t.id().id()),
-      new CBString(t.name())
     );
   }
 

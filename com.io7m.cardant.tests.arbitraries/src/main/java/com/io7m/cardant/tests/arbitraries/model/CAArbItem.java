@@ -22,7 +22,6 @@ import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
@@ -50,9 +49,6 @@ public final class CAArbItem extends CAArbAbstract<CAItem>
           Arbitraries.defaultFor(CAItemAttachmentKey.class),
           Arbitraries.defaultFor(CAItemAttachment.class)
         ).map(TreeMap::new),
-        Arbitraries.defaultFor(CATag.class)
-          .set()
-          .map(TreeSet::new),
         Arbitraries.defaultFor(RDottedName.class)
           .set()
           .map(TreeSet::new)

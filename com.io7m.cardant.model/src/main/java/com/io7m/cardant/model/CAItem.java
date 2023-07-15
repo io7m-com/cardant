@@ -34,7 +34,6 @@ import java.util.stream.Stream;
  * @param countHere   The item count in the context of a storage location
  * @param metadata    The item metadata
  * @param attachments The item attachments
- * @param tags        The item tags
  * @param types       The item types
  */
 
@@ -45,7 +44,6 @@ public record CAItem(
   long countHere,
   SortedMap<RDottedName, CAItemMetadata> metadata,
   SortedMap<CAItemAttachmentKey, CAItemAttachment> attachments,
-  SortedSet<CATag> tags,
   SortedSet<RDottedName> types)
   implements CAInventoryElementType
 {
@@ -58,7 +56,6 @@ public record CAItem(
    * @param countHere   The item count in the context of a storage location
    * @param metadata    The item metadata
    * @param attachments The item attachments
-   * @param tags        The item tags
    * @param types       The types assigned to the item
    */
 
@@ -68,7 +65,6 @@ public record CAItem(
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(metadata, "metadata");
     Objects.requireNonNull(attachments, "attachments");
-    Objects.requireNonNull(tags, "tags");
     Objects.requireNonNull(types, "types");
     name = name.trim();
   }
@@ -88,7 +84,6 @@ public record CAItem(
       0L,
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
-      Collections.emptySortedSet(),
       Collections.emptySortedSet()
     );
   }
@@ -153,7 +148,6 @@ public record CAItem(
       newCountHere,
       this.metadata,
       this.attachments,
-      this.tags,
       this.types
     );
   }

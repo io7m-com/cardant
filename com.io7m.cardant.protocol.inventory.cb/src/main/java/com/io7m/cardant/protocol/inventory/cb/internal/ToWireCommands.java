@@ -47,9 +47,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
-import com.io7m.cardant.protocol.inventory.CAICommandTagList;
-import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
-import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
@@ -91,9 +88,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesRevoke;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagList;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsDelete;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationRemove;
@@ -176,15 +170,6 @@ public final class ToWireCommands
     }
     if (cmd instanceof final CAICommandLogin c) {
       return login(c);
-    }
-    if (cmd instanceof final CAICommandTagList c) {
-      return tagList(c);
-    }
-    if (cmd instanceof final CAICommandTagsDelete c) {
-      return tagsDelete(c);
-    }
-    if (cmd instanceof final CAICommandTagsPut c) {
-      return tagsPut(c);
     }
     if (cmd instanceof final CAICommandItemSearchBegin c) {
       return itemSearchBegin(c);
@@ -495,28 +480,6 @@ public final class ToWireCommands
       new CBString(c.password()),
       CBMaps.ofMapString(c.metadata())
     );
-  }
-
-  private static ProtocolCAIv1Type tagsPut(
-    final CAICommandTagsPut c)
-  {
-    return new CAI1CommandTagsPut(
-      CBLists.ofCollection(c.tags().tags(), ToWireModel::tag)
-    );
-  }
-
-  private static ProtocolCAIv1Type tagsDelete(
-    final CAICommandTagsDelete c)
-  {
-    return new CAI1CommandTagsDelete(
-      CBLists.ofCollection(c.tags().tags(), ToWireModel::tag)
-    );
-  }
-
-  private static ProtocolCAIv1Type tagList(
-    final CAICommandTagList c)
-  {
-    return new CAI1CommandTagList();
   }
 
   private static ProtocolCAIv1Type locationPut(

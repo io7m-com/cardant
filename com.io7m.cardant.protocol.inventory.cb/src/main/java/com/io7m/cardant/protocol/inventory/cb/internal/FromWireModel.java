@@ -59,9 +59,6 @@ import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CALocations;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CASizeRange;
-import com.io7m.cardant.model.CATag;
-import com.io7m.cardant.model.CATagID;
-import com.io7m.cardant.model.CATags;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeField;
@@ -97,7 +94,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch.CAI1NameMatchSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Page;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseBlame;
 import com.io7m.cardant.protocol.inventory.cb.CAI1SizeRange;
-import com.io7m.cardant.protocol.inventory.cb.CAI1Tag;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclaration;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclarationSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeField;
@@ -107,7 +103,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1TypeMatch.CAI1TypeMatchAny;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeMatch.CAI1TypeMatchAnyOf;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalar;
 import com.io7m.cedarbridge.runtime.api.CBByteArray;
-import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 import com.io7m.cedarbridge.runtime.api.CBString;
@@ -174,13 +169,6 @@ public final class FromWireModel
       item.fieldCountHere().value(),
       new TreeMap<>(metadata),
       new TreeMap<>(attachments),
-      new TreeSet<>(
-        item.fieldTags()
-          .values()
-          .stream()
-          .map(FromWireModel::tag)
-          .toList()
-      ),
       new TreeSet<>(
         item.fieldTypes()
           .values()
@@ -256,20 +244,6 @@ public final class FromWireModel
     );
   }
 
-  public static CATags tags(
-    final CBList<CAI1Tag> c)
-  {
-    return new CATags(
-      new TreeSet<>(CBSets.toSet(c, FromWireModel::tag))
-    );
-  }
-
-  private static CATag tag(
-    final CAI1Tag t)
-  {
-    return new CATag(new CATagID(t.fieldId().value()), t.fieldValue().value());
-  }
-
   public static CAIdType id(final CAI1Id i)
   {
     if (i instanceof final CAI1Id.CAI1LocationID ii) {
@@ -277,9 +251,6 @@ public final class FromWireModel
     }
     if (i instanceof final CAI1Id.CAI1ItemID ii) {
       return new CAItemID(ii.fieldId().value());
-    }
-    if (i instanceof final CAI1Id.CAI1TagID ii) {
-      return new CATagID(ii.fieldId().value());
     }
     if (i instanceof final CAI1Id.CAI1FileID ii) {
       return new CAFileID(ii.fieldId().value());

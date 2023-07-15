@@ -137,15 +137,6 @@ public final class CAI1Validation
       if (message instanceof final CAI1CommandLogin m) {
         return FromWireCommands.login(m);
       }
-      if (message instanceof final CAI1CommandTagList m) {
-        return FromWireCommands.tagList(m);
-      }
-      if (message instanceof final CAI1CommandTagsDelete m) {
-        return FromWireCommands.tagsDelete(m);
-      }
-      if (message instanceof final CAI1CommandTagsPut m) {
-        return FromWireCommands.tagsPut(m);
-      }
       if (message instanceof final CAI1CommandItemSearchBegin m) {
         return FromWireCommands.itemSearchBegin(m);
       }
@@ -276,15 +267,6 @@ public final class CAI1Validation
       }
       if (message instanceof final CAI1ResponseLogin m) {
         return FromWireResponses.login(m);
-      }
-      if (message instanceof final CAI1ResponseTagList m) {
-        return FromWireResponses.tagList(m);
-      }
-      if (message instanceof final CAI1ResponseTagsDelete m) {
-        return FromWireResponses.tagsDelete(m);
-      }
-      if (message instanceof final CAI1ResponseTagsPut m) {
-        return FromWireResponses.tagsPut(m);
       }
       if (message instanceof final CAI1ResponseError m) {
         return FromWireResponses.error(m);

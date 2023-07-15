@@ -35,9 +35,6 @@ import com.io7m.cardant.database.postgres.internal.CADBQItemMetadataRemove;
 import com.io7m.cardant.database.postgres.internal.CADBQItemReposit;
 import com.io7m.cardant.database.postgres.internal.CADBQItemSearch;
 import com.io7m.cardant.database.postgres.internal.CADBQItemSetName;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTagAdd;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTagList;
-import com.io7m.cardant.database.postgres.internal.CADBQItemTagRemove;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclGet;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclGetMultiple;
 import com.io7m.cardant.database.postgres.internal.CADBQItemTypeDeclPut;
@@ -54,10 +51,6 @@ import com.io7m.cardant.database.postgres.internal.CADBQLocationGet;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationList;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationPut;
 import com.io7m.cardant.database.postgres.internal.CADBQMaintenance;
-import com.io7m.cardant.database.postgres.internal.CADBQTagDelete;
-import com.io7m.cardant.database.postgres.internal.CADBQTagGet;
-import com.io7m.cardant.database.postgres.internal.CADBQTagList;
-import com.io7m.cardant.database.postgres.internal.CADBQTagPut;
 import com.io7m.cardant.database.postgres.internal.CADBQUserGet;
 import com.io7m.cardant.database.postgres.internal.CADBQUserPut;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType;
@@ -122,9 +115,6 @@ module com.io7m.cardant.database.postgres
     CADBQItemReposit,
     CADBQItemSearch,
     CADBQItemSetName,
-    CADBQItemTagAdd,
-    CADBQItemTagList,
-    CADBQItemTagRemove,
     CADBQItemTypeDeclGet,
     CADBQItemTypeDeclGetMultiple,
     CADBQItemTypeDeclPut,
@@ -141,10 +131,6 @@ module com.io7m.cardant.database.postgres
     CADBQLocationList,
     CADBQLocationPut,
     CADBQMaintenance,
-    CADBQTagDelete,
-    CADBQTagGet,
-    CADBQTagList,
-    CADBQTagPut,
     CADBQUserGet,
     CADBQUserPut
     ;

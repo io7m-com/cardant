@@ -135,7 +135,6 @@ public final class CAICmdItemRepositTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 

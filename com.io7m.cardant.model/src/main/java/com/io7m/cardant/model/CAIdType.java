@@ -27,8 +27,7 @@ public sealed interface CAIdType
   permits
   CAFileID,
   CAItemID,
-  CALocationID,
-  CATagID
+  CALocationID
 {
   /**
    * @return The raw ID value

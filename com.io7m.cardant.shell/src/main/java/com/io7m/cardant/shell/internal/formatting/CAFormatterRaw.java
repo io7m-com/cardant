@@ -22,7 +22,6 @@ import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATag;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeScalar;
@@ -157,16 +156,6 @@ public final class CAFormatterRaw implements CAFormatterType
           itemValue.file().description()
         );
       }
-    }
-
-    final var tags = item.tags();
-    if (!tags.isEmpty()) {
-      w.printf(
-        "Tags: %s%n",
-        tags.stream()
-          .map(CATag::name)
-          .collect(Collectors.joining(", "))
-      );
     }
 
     w.println();

@@ -24,7 +24,6 @@ import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemMetadata;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CATag;
 import com.io7m.lanark.core.RDottedName;
 
 import java.util.Collection;
@@ -101,63 +100,6 @@ public sealed interface CADatabaseQueriesItemsType
 
   non-sealed interface DeleteMarkOnlyType
     extends CADatabaseQueryType<Collection<CAItemID>, CADatabaseUnit>,
-    CADatabaseQueriesItemsType
-  {
-
-  }
-
-  /**
-   * Add the given tag to the given item.
-   */
-
-  non-sealed interface TagAddType
-    extends CADatabaseQueryType<TagAddType.Parameters, CADatabaseUnit>,
-    CADatabaseQueriesItemsType
-  {
-    /**
-     * Parameters for the operation.
-     *
-     * @param item The item ID
-     * @param tag  The tag
-     */
-
-    record Parameters(
-      CAItemID item,
-      CATag tag)
-    {
-
-    }
-  }
-
-  /**
-   * Remove the given tag from the given item.
-   */
-
-  non-sealed interface TagRemoveType
-    extends CADatabaseQueryType<TagRemoveType.Parameters, CADatabaseUnit>,
-    CADatabaseQueriesItemsType
-  {
-    /**
-     * Parameters for the operation.
-     *
-     * @param item The item ID
-     * @param tag  The tag
-     */
-
-    record Parameters(
-      CAItemID item,
-      CATag tag)
-    {
-
-    }
-  }
-
-  /**
-   * List tags on an item.
-   */
-
-  non-sealed interface TagListType
-    extends CADatabaseQueryType<CAItemID, Set<CATag>>,
     CADatabaseQueriesItemsType
   {
 

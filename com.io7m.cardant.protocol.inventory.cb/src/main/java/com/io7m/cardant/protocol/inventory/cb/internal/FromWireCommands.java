@@ -50,9 +50,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
-import com.io7m.cardant.protocol.inventory.CAICommandTagList;
-import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
-import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
@@ -94,9 +91,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesRevoke;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagList;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsDelete;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTagsPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeDeclarationRemove;
@@ -174,25 +168,6 @@ public final class FromWireCommands
     final CAI1CommandLocationList m)
   {
     return new CAICommandLocationList();
-  }
-
-  public static CAIMessageType tagsPut(
-    final CAI1CommandTagsPut m)
-  {
-    return new CAICommandTagsPut(FromWireModel.tags(m.fieldTags())
-    );
-  }
-
-  public static CAIMessageType tagsDelete(
-    final CAI1CommandTagsDelete m)
-  {
-    return new CAICommandTagsDelete(FromWireModel.tags(m.fieldTags()));
-  }
-
-  public static CAIMessageType tagList(
-    final CAI1CommandTagList m)
-  {
-    return new CAICommandTagList();
   }
 
   public static CAIMessageType login(

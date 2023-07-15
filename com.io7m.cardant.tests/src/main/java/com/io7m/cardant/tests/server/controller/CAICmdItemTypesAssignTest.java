@@ -150,7 +150,6 @@ public final class CAICmdItemTypesAssignTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        Collections.emptySortedSet(),
         new TreeSet<>(Set.of(new RDottedName("t")))
       )));
 
@@ -247,7 +246,6 @@ public final class CAICmdItemTypesAssignTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        Collections.emptySortedSet(),
         new TreeSet<>(Set.of(new RDottedName("t")))
       )));
 

@@ -87,24 +87,6 @@ CREATE TABLE users (
     </Statement>
 
     <Comment>
-      The tags table contains the list of tags.
-    </Comment>
-
-    <Statement><![CDATA[
-CREATE TABLE tags (
-  tag_id    UUID         NOT NULL PRIMARY KEY,
-  tag_name  VARCHAR(128) NOT NULL,
-
-  CONSTRAINT unique_tags UNIQUE (tag_name)
-)
-]]></Statement>
-
-    <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON tags TO cardant
-    </Statement>
-    <Statement>GRANT SELECT ON tags TO cardant_read_only</Statement>
-
-    <Comment>
       The files table contains files.
     </Comment>
 
@@ -308,33 +290,6 @@ CREATE TABLE item_types (
     </Statement>
     <Statement>
       GRANT SELECT ON item_types TO cardant_read_only
-    </Statement>
-
-    <Comment>
-      The item_tags table contains the tags applied to each item.
-    </Comment>
-
-    <Statement><![CDATA[
-CREATE TABLE item_tags (
-  tag_item_id  UUID NOT NULL,
-  tag_id       UUID NOT NULL,
-
-  CONSTRAINT unique_tagging
-    UNIQUE (tag_item_id, tag_id),
-
-  CONSTRAINT tag_item_exists
-    FOREIGN KEY (tag_item_id) REFERENCES items (item_id),
-
-  CONSTRAINT tag_tag_exists
-    FOREIGN KEY (tag_id) REFERENCES tags (tag_id)
-)
-]]></Statement>
-
-    <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON item_tags TO cardant
-    </Statement>
-    <Statement>
-      GRANT SELECT ON item_tags TO cardant_read_only
     </Statement>
 
     <Comment>

@@ -42,10 +42,7 @@ sealed public interface CAIResponseWithElementType
   CAIResponseItemsRemove,
   CAIResponseLocationGet,
   CAIResponseLocationList,
-  CAIResponseLocationPut,
-  CAIResponseTagList,
-  CAIResponseTagsDelete,
-  CAIResponseTagsPut
+  CAIResponseLocationPut
 {
 
   /**

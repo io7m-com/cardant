@@ -27,11 +27,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TagAddType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TagListType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TagRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTagsType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
@@ -45,8 +41,6 @@ import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CATag;
-import com.io7m.cardant.model.CATagID;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
@@ -73,9 +67,7 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
 @ErvillaConfiguration(disabledIfUnsupported = true)
@@ -513,78 +505,6 @@ public final class CADatabaseItemsTest
     {
       final var m = this.metaGet.execute(id0);
       assertEquals(Map.of(), m);
-    }
-  }
-
-  /**
-   * Item tag adjustments work.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemTags()
-    throws Exception
-  {
-    final var id0 =
-      CAItemID.random();
-
-    this.itemCreate.execute(id0);
-
-    final var tagPut =
-      this.transaction.queries(CADatabaseQueriesTagsType.PutType.class);
-    final var itemTagPut =
-      this.transaction.queries(TagAddType.class);
-    final var itemTagRemove =
-      this.transaction.queries(TagRemoveType.class);
-    final var itemTagList =
-      this.transaction.queries(TagListType.class);
-
-    final var tag0 =
-      new CATag(CATagID.random(), "TAG0");
-    final var tag1 =
-      new CATag(CATagID.random(), "TAG1");
-    final var tag2 =
-      new CATag(CATagID.random(), "TAG2");
-
-    tagPut.execute(tag0);
-    tagPut.execute(tag1);
-    tagPut.execute(tag2);
-
-    itemTagPut.execute(new TagAddType.Parameters(id0, tag0));
-    itemTagPut.execute(new TagAddType.Parameters(id0, tag1));
-    itemTagPut.execute(new TagAddType.Parameters(id0, tag2));
-
-    this.transaction.commit();
-
-    {
-      final var i = this.itemGet.execute(id0).orElseThrow();
-      assertTrue(i.tags().contains(tag0));
-      assertTrue(i.tags().contains(tag1));
-      assertTrue(i.tags().contains(tag2));
-    }
-
-    {
-      final var t = itemTagList.execute(id0);
-      assertTrue(t.contains(tag0));
-      assertTrue(t.contains(tag1));
-      assertTrue(t.contains(tag2));
-    }
-
-    itemTagRemove.execute(new TagRemoveType.Parameters(id0, tag1));
-
-    {
-      final var i = this.itemGet.execute(id0).orElseThrow();
-      assertTrue(i.tags().contains(tag0));
-      assertFalse(i.tags().contains(tag1));
-      assertTrue(i.tags().contains(tag2));
-    }
-
-    {
-      final var t = itemTagList.execute(id0);
-      assertTrue(t.contains(tag0));
-      assertFalse(t.contains(tag1));
-      assertTrue(t.contains(tag2));
     }
   }
 

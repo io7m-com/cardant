@@ -149,7 +149,6 @@ public final class CAICmdItemMetadataPutTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 
@@ -256,7 +255,6 @@ public final class CAICmdItemMetadataPutTest
           0L,
           Collections.emptySortedMap(),
           Collections.emptySortedMap(),
-          Collections.emptySortedSet(),
           Collections.emptySortedSet())
       ));
 
@@ -481,7 +479,6 @@ public final class CAICmdItemMetadataPutTest
           0L,
           new TreeMap<>(Map.of(meta0.name(), meta0)),
           Collections.emptySortedMap(),
-          Collections.emptySortedSet(),
           new TreeSet<>(
             Set.of(new RDottedName("t"))
           )

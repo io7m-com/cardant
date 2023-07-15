@@ -47,9 +47,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke;
-import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
-import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
-import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationRemove;
@@ -83,9 +80,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagList;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsDelete;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationRemove;
@@ -161,33 +155,6 @@ public final class FromWireResponses
     return new CAIResponseLocationList(
       m.fieldRequestId().value(),
       FromWireModel.locations(m.fieldLocations())
-    );
-  }
-
-  public static CAIMessageType tagsPut(
-    final CAI1ResponseTagsPut m)
-  {
-    return new CAIResponseTagsPut(
-      m.fieldRequestId().value(),
-      FromWireModel.tags(m.fieldTags())
-    );
-  }
-
-  public static CAIMessageType tagsDelete(
-    final CAI1ResponseTagsDelete m)
-  {
-    return new CAIResponseTagsDelete(
-      m.fieldRequestId().value(),
-      FromWireModel.tags(m.fieldTags())
-    );
-  }
-
-  public static CAIMessageType tagList(
-    final CAI1ResponseTagList m)
-  {
-    return new CAIResponseTagList(
-      m.fieldRequestId().value(),
-      FromWireModel.tags(m.fieldTags())
     );
   }
 

@@ -43,9 +43,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
-import com.io7m.cardant.protocol.inventory.CAICommandTagList;
-import com.io7m.cardant.protocol.inventory.CAICommandTagsDelete;
-import com.io7m.cardant.protocol.inventory.CAICommandTagsPut;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
@@ -152,15 +149,6 @@ public final class CAICommandExecutor
     }
     if (command instanceof final CAICommandLocationPut m) {
       return new CAICmdLocationPut().execute(context, m);
-    }
-    if (command instanceof final CAICommandTagList m) {
-      return new CAICmdTagsList().execute(context, m);
-    }
-    if (command instanceof final CAICommandTagsDelete m) {
-      return new CAICmdTagsDelete().execute(context, m);
-    }
-    if (command instanceof final CAICommandTagsPut m) {
-      return new CAICmdTagsPut().execute(context, m);
     }
     if (command instanceof final CAICommandItemSearchBegin m) {
       return new CAICmdItemSearchBegin().execute(context, m);

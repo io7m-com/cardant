@@ -31,7 +31,6 @@ import java.util.Collection;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
-import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TAGS;
 
 /**
  * Delete the given items.
@@ -80,10 +79,6 @@ public final class CADBQItemDelete
       deletes.add(
         context.deleteFrom(ITEM_METADATA)
           .where(ITEM_METADATA.METADATA_ITEM_ID.eq(item.id()))
-      );
-      deletes.add(
-        context.deleteFrom(ITEM_TAGS)
-          .where(ITEM_TAGS.TAG_ITEM_ID.eq(item.id()))
       );
       deletes.add(
         context.deleteFrom(ITEMS)

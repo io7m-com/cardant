@@ -25,7 +25,6 @@
   [case CAI1FileID     [field id cb:UUID]]
   [case CAI1ItemID     [field id cb:UUID]]
   [case CAI1LocationID [field id cb:UUID]]
-  [case CAI1TagID      [field id cb:UUID]]
   [case CAI1UserID     [field id cb:UUID]]
 ]
 
@@ -69,14 +68,6 @@
   [field value cb:String]
 ]
 
-[documentation CAI1Tag "A tag."]
-[record CAI1Tag
-  [documentation id "The tag ID."]
-  [field id cb:UUID]
-  [documentation value "The tag value."]
-  [field value cb:String]
-]
-
 [documentation CAI1ItemAttachmentKey "The values that uniquely identify an attachment on an item."]
 [record CAI1ItemAttachmentKey
   [documentation id "The file ID."]
@@ -107,8 +98,6 @@
   [field metadata [cb:Map cb:String CAI1ItemMetadata]]
   [documentation attachments "The item attachments."]
   [field attachments [cb:Map CAI1ItemAttachmentKey CAI1ItemAttachment]]
-  [documentation tags "The item tags."]
-  [field tags [cb:List CAI1Tag]]
   [documentation types "The item types."]
   [field types [cb:List cb:String]]
 ]
@@ -475,19 +464,6 @@
   [field location CAI1Location]
 ]
 
-[documentation CAI1CommandTagList "List tags."]
-[record CAI1CommandTagList]
-
-[documentation CAI1CommandTagsDelete "Delete tags."]
-[record CAI1CommandTagsDelete
-  [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]]
-
-[documentation CAI1CommandTagsPut "Add/update tags."]
-[record CAI1CommandTagsPut
-  [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]]
-
 [documentation CAI1CommandItemSearchBegin "Start searching for items."]
 [record CAI1CommandItemSearchBegin
   [documentation parameters "The search parameters."]
@@ -774,30 +750,6 @@
   [field location CAI1Location]
 ]
 
-[documentation CAI1ResponseTagList "A response to CAI1CommandTagList."]
-[record CAI1ResponseTagList
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]
-]
-
-[documentation CAI1ResponseTagsDelete "A response to CAI1CommandTagsDelete."]
-[record CAI1ResponseTagsDelete
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]
-]
-
-[documentation CAI1ResponseTagsPut "A response to CAI1CommandTagsPut."]
-[record CAI1ResponseTagsPut
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation tags "The tags."]
-  [field tags [cb:List CAI1Tag]]
-]
-
 [documentation CAI1ResponseItemSearch "A response to CAI1CommandItemSearch."]
 [record CAI1ResponseItemSearch
   [documentation requestId "The ID of the request that yielded this response."]
@@ -957,9 +909,6 @@
       CAI1CommandRolesAssign
       CAI1CommandRolesGet
       CAI1CommandRolesRevoke
-      CAI1CommandTagList
-      CAI1CommandTagsDelete
-      CAI1CommandTagsPut
       CAI1CommandTypeDeclarationGet
       CAI1CommandTypeDeclarationPut
       CAI1CommandTypeDeclarationRemove
@@ -998,9 +947,6 @@
       CAI1ResponseRolesAssign
       CAI1ResponseRolesGet
       CAI1ResponseRolesRevoke
-      CAI1ResponseTagList
-      CAI1ResponseTagsDelete
-      CAI1ResponseTagsPut
       CAI1ResponseTypeDeclarationGet
       CAI1ResponseTypeDeclarationPut
       CAI1ResponseTypeDeclarationRemove

@@ -131,7 +131,6 @@ public final class CAICmdItemAttachmentAddTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        Collections.emptySortedSet(),
         Collections.emptySortedSet()
       )));
 

@@ -32,9 +32,7 @@ public sealed interface CAInventoryElementType
   CAItemMetadatas,
   CAItemRepositType,
   CALocation,
-  CALocations,
-  CATag,
-  CATags
+  CALocations
 {
 
 }

@@ -27,9 +27,6 @@ com.io7m.cardant.tests.arbitraries.CAArbCommandLogin
 com.io7m.cardant.tests.arbitraries.CAArbCommandRolesAssign
 com.io7m.cardant.tests.arbitraries.CAArbCommandRolesGet
 com.io7m.cardant.tests.arbitraries.CAArbCommandRolesRevoke
-com.io7m.cardant.tests.arbitraries.CAArbCommandTagList
-com.io7m.cardant.tests.arbitraries.CAArbCommandTagsDelete
-com.io7m.cardant.tests.arbitraries.CAArbCommandTagsPut
 com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationGet
 com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationPut
 com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationRemove
@@ -70,9 +67,6 @@ com.io7m.cardant.tests.arbitraries.CAArbResponseLogin
 com.io7m.cardant.tests.arbitraries.CAArbResponseRolesAssign
 com.io7m.cardant.tests.arbitraries.CAArbResponseRolesGet
 com.io7m.cardant.tests.arbitraries.CAArbResponseRolesRevoke
-com.io7m.cardant.tests.arbitraries.CAArbResponseTagList
-com.io7m.cardant.tests.arbitraries.CAArbResponseTagsDelete
-com.io7m.cardant.tests.arbitraries.CAArbResponseTagsPut
 com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationGet
 com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationPut
 com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationRemove
@@ -124,9 +118,6 @@ com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchAny
 com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchExact
 com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchSearch
 com.io7m.cardant.tests.arbitraries.model.CAArbSizeRange
-com.io7m.cardant.tests.arbitraries.model.CAArbTag
-com.io7m.cardant.tests.arbitraries.model.CAArbTagID
-com.io7m.cardant.tests.arbitraries.model.CAArbTags
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclaration
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSearchParameters
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSummary

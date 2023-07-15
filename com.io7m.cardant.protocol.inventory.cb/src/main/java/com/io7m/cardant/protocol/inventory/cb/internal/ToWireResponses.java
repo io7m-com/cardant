@@ -42,9 +42,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke;
-import com.io7m.cardant.protocol.inventory.CAIResponseTagList;
-import com.io7m.cardant.protocol.inventory.CAIResponseTagsDelete;
-import com.io7m.cardant.protocol.inventory.CAIResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationPut;
@@ -80,9 +77,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagList;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsDelete;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTagsPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeDeclarationRemove;
@@ -164,15 +158,6 @@ public final class ToWireResponses
     }
     if (cmd instanceof final CAIResponseLogin c) {
       return login(c);
-    }
-    if (cmd instanceof final CAIResponseTagList c) {
-      return tagList(c);
-    }
-    if (cmd instanceof final CAIResponseTagsDelete c) {
-      return tagsDelete(c);
-    }
-    if (cmd instanceof final CAIResponseTagsPut c) {
-      return tagsPut(c);
     }
     if (cmd instanceof final CAIResponseError c) {
       return error(c);
@@ -405,33 +390,6 @@ public final class ToWireResponses
     return new CAI1ResponseLogin(
       new CBUUID(c.requestId()),
       new CBUUID(c.userId())
-    );
-  }
-
-  private static ProtocolCAIv1Type tagsPut(
-    final CAIResponseTagsPut c)
-  {
-    return new CAI1ResponseTagsPut(
-      new CBUUID(c.requestId()),
-      CBLists.ofCollection(c.data().tags(), ToWireModel::tag)
-    );
-  }
-
-  private static ProtocolCAIv1Type tagsDelete(
-    final CAIResponseTagsDelete c)
-  {
-    return new CAI1ResponseTagsDelete(
-      new CBUUID(c.requestId()),
-      CBLists.ofCollection(c.data().tags(), ToWireModel::tag)
-    );
-  }
-
-  private static ProtocolCAIv1Type tagList(
-    final CAIResponseTagList c)
-  {
-    return new CAI1ResponseTagList(
-      new CBUUID(c.requestId()),
-      CBLists.ofCollection(c.data().tags(), ToWireModel::tag)
     );
   }
 

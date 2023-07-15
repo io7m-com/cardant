@@ -43,9 +43,6 @@ import com.io7m.cardant.tests.arbitraries.CAArbCommandLogin;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesAssign;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesGet;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesRevoke;
-import com.io7m.cardant.tests.arbitraries.CAArbCommandTagList;
-import com.io7m.cardant.tests.arbitraries.CAArbCommandTagsDelete;
-import com.io7m.cardant.tests.arbitraries.CAArbCommandTagsPut;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationGet;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationPut;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationRemove;
@@ -86,9 +83,6 @@ import com.io7m.cardant.tests.arbitraries.CAArbResponseLogin;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesAssign;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesGet;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesRevoke;
-import com.io7m.cardant.tests.arbitraries.CAArbResponseTagList;
-import com.io7m.cardant.tests.arbitraries.CAArbResponseTagsDelete;
-import com.io7m.cardant.tests.arbitraries.CAArbResponseTagsPut;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationGet;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationPut;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationRemove;
@@ -139,9 +133,6 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchAny;
 import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchExact;
 import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchSearch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbSizeRange;
-import com.io7m.cardant.tests.arbitraries.model.CAArbTag;
-import com.io7m.cardant.tests.arbitraries.model.CAArbTagID;
-import com.io7m.cardant.tests.arbitraries.model.CAArbTags;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclaration;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSearchParameters;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSummary;
@@ -203,9 +194,6 @@ module com.io7m.cardant.tests.arbitraries
       CAArbCommandRolesAssign,
       CAArbCommandRolesGet,
       CAArbCommandRolesRevoke,
-      CAArbCommandTagList,
-      CAArbCommandTagsDelete,
-      CAArbCommandTagsPut,
       CAArbCommandTypeDeclarationGet,
       CAArbCommandTypeDeclarationPut,
       CAArbCommandTypeDeclarationRemove,
@@ -287,9 +275,6 @@ module com.io7m.cardant.tests.arbitraries
       CAArbResponseRolesAssign,
       CAArbResponseRolesGet,
       CAArbResponseRolesRevoke,
-      CAArbResponseTagList,
-      CAArbResponseTagsDelete,
-      CAArbResponseTagsPut,
       CAArbResponseTypeDeclarationGet,
       CAArbResponseTypeDeclarationPut,
       CAArbResponseTypeDeclarationRemove,
@@ -299,9 +284,6 @@ module com.io7m.cardant.tests.arbitraries
       CAArbResponseTypeScalarRemove,
       CAArbResponseTypeScalarSearch,
       CAArbSizeRange,
-      CAArbTag,
-      CAArbTagID,
-      CAArbTags,
       CAArbTypeDeclaration,
       CAArbTypeDeclarationSearchParameters,
       CAArbTypeDeclarationSummary,

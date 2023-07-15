@@ -27,15 +27,12 @@ import com.io7m.cardant.model.CAItemAttachment;
 import com.io7m.cardant.model.CAItemAttachmentKey;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemMetadata;
-import com.io7m.cardant.model.CATag;
-import com.io7m.cardant.model.CATagID;
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -44,10 +41,8 @@ import static com.io7m.cardant.database.postgres.internal.Tables.FILES;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
-import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TAGS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
-import static com.io7m.cardant.database.postgres.internal.Tables.TAGS;
 import static java.lang.Boolean.FALSE;
 
 /**
@@ -91,7 +86,6 @@ public final class CADBQItemGet
       itemID,
       context,
       IncludeDeleted.DELETED_NOT_INCLUDED,
-      IncludeTags.TAGS_INCLUDED,
       IncludeAttachments.ATTACHMENTS_INCLUDED,
       IncludeMetadata.METADATA_INCLUDED
     );
@@ -101,7 +95,6 @@ public final class CADBQItemGet
     final CAItemID id,
     final DSLContext context,
     final IncludeDeleted includeDeleted,
-    final IncludeTags includeTags,
     final IncludeAttachments includeAttachments,
     final IncludeMetadata includeMetadata)
   {
@@ -130,12 +123,6 @@ public final class CADBQItemGet
         case METADATA_NOT_INCLUDED -> Collections.emptySortedMap();
       };
 
-    final var itemTags =
-      switch (includeTags) {
-        case TAGS_INCLUDED -> itemTagListInner(context, id);
-        case TAGS_NOT_INCLUDED -> Collections.<CATag>emptySortedSet();
-      };
-
     final var itemTypes =
       itemTypeListInner(context, id);
 
@@ -149,7 +136,6 @@ public final class CADBQItemGet
       0L,
       itemMetadatas,
       itemAttachments,
-      itemTags,
       itemTypes
     ));
   }
@@ -171,34 +157,6 @@ public final class CADBQItemGet
     }
     return names;
   }
-
-
-  private static SortedSet<CATag> itemTagListInner(
-    final DSLContext context,
-    final CAItemID id)
-  {
-    final var tableSource =
-      TAGS.join(ITEM_TAGS)
-        .on(TAGS.TAG_ID.eq(ITEM_TAGS.TAG_ID));
-
-    final var tags =
-      context.select(TAGS.TAG_ID, TAGS.TAG_NAME)
-        .from(tableSource)
-        .where(ITEM_TAGS.TAG_ITEM_ID.eq(id.id()))
-        .fetch();
-
-    final var results = new TreeSet<CATag>();
-    for (final var tagRec : tags) {
-      results.add(
-        new CATag(
-          new CATagID(tagRec.get(TAGS.TAG_ID)),
-          tagRec.get(TAGS.TAG_NAME)
-        )
-      );
-    }
-    return results;
-  }
-
 
   private static SortedMap<RDottedName, CAItemMetadata> itemMetadataInner(
     final DSLContext context,
