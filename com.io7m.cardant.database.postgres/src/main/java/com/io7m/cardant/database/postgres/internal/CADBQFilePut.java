@@ -70,24 +70,24 @@ public final class CADBQFilePut
     this.setAttribute(CAStringConstants.FILE_ID, file.id().displayId());
 
     final var id = file.id().id();
-    var fileRec = context.fetchOne(FILES, FILES.ID.eq(id));
+    var fileRec = context.fetchOne(FILES, FILES.FILE_ID.eq(id));
     if (fileRec == null) {
       fileRec = context.newRecord(FILES);
-      fileRec.set(FILES.ID, id);
+      fileRec.set(FILES.FILE_ID, id);
     }
 
-    fileRec.set(FILES.DESCRIPTION, file.description());
-    fileRec.set(FILES.MEDIA_TYPE, file.mediaType());
-    fileRec.set(FILES.HASH_ALGORITHM, file.hashAlgorithm());
-    fileRec.set(FILES.HASH_VALUE, file.hashValue());
+    fileRec.set(FILES.FILE_DESCRIPTION, file.description());
+    fileRec.set(FILES.FILE_MEDIA_TYPE, file.mediaType());
+    fileRec.set(FILES.FILE_HASH_ALGORITHM, file.hashAlgorithm());
+    fileRec.set(FILES.FILE_HASH_VALUE, file.hashValue());
     if (file instanceof final CAFileType.CAFileWithData withData) {
       final var bytes =
         withData.data().data();
       final var size =
         toUnsignedLong(bytes.length);
 
-      fileRec.set(FILES.DATA, bytes);
-      fileRec.set(FILES.DATA_USED, size);
+      fileRec.set(FILES.FILE_DATA, bytes);
+      fileRec.set(FILES.FILE_DATA_USED, size);
     }
 
     fileRec.store();

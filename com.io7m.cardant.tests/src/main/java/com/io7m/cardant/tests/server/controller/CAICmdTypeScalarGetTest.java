@@ -18,7 +18,7 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType.Integral;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -108,10 +108,10 @@ public final class CAICmdTypeScalarGetTest
     when(transaction.queries(CADatabaseQueriesTypesType.TypeScalarGetType.class))
       .thenReturn(itemGet);
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CATypeScalar(
+      .thenReturn(Optional.of(new Integral(
         new RDottedName("a.b.c"),
         "a",
-        "b"
+        23L, 91L
       )));
 
     CASecurity.setPolicy(new MPolicy(List.of(

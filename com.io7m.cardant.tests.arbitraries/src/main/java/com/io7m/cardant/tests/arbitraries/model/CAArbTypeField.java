@@ -18,7 +18,7 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
@@ -33,7 +33,7 @@ public final class CAArbTypeField extends CAArbAbstract<CATypeField>
       () -> Combinators.combine(
         Arbitraries.defaultFor(RDottedName.class),
         Arbitraries.strings(),
-        Arbitraries.defaultFor(CATypeScalar.class),
+        Arbitraries.defaultFor(CATypeScalarType.class),
         Arbitraries.integers().map(x -> Boolean.valueOf(x % 2 == 0))
       ).as(CATypeField::new)
     );

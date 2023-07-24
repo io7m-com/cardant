@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -21,51 +21,61 @@ import com.io7m.lanark.core.RDottedName;
 import java.util.Objects;
 
 /**
- * A metadata value.
- *
- * @param name  The metadata name
- * @param value The metadata value
+ * Expressions that match metadata names.
  */
 
-public record CAMetadata(
-  RDottedName name,
-  String value)
+sealed public interface CAMetadataNameMatchType
 {
   /**
-   * A metadata value.
-   *
-   * @param name  The metadata name
-   * @param value The metadata value
+   * Match any name.
    */
 
-  public CAMetadata
+  enum AnyName implements CAMetadataNameMatchType
   {
-    Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(value, "value");
+    /**
+     * Match any name.
+     */
 
-    value = value.trim();
-    if (value.length() >= 1024) {
-      throw new CAValidityException(
-        String.format("Metadata value too long: %s", name)
-      );
+    ANY_NAME
+  }
+
+  /**
+   * Match metadata names exactly.
+   *
+   * @param name The name
+   */
+
+  record ExactName(
+    RDottedName name)
+    implements CAMetadataNameMatchType
+  {
+    /**
+     * Match metadata names exactly.
+     */
+
+    public ExactName
+    {
+      Objects.requireNonNull(name, "name");
     }
   }
 
   /**
-   * A metadata value.
+   * Match metadata names according to the given search query.
    *
-   * @return A metadata value
-   * @param key  The metadata name
-   * @param value The metadata value
+   * @param query The query
    */
 
-  public static CAMetadata of(
-    final String key,
-    final String value)
+  record SearchName(
+    String query)
+    implements CAMetadataNameMatchType
   {
-    return new CAMetadata(
-      new RDottedName(key),
-      value
-    );
+    /**
+     * Match metadata names according to the given search query.
+     */
+
+    public SearchName
+    {
+      Objects.requireNonNull(query, "query");
+    }
   }
 }

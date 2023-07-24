@@ -77,11 +77,11 @@ public final class CADBQLocationAttachmentRemove
     this.setAttribute(RELATION, relation);
 
     final var matchesLocation =
-      LOCATION_ATTACHMENTS.LOCATION_ID.eq(location.id());
+      LOCATION_ATTACHMENTS.LA_LOCATION_ID.eq(location.id());
     final var matchesFile =
-      LOCATION_ATTACHMENTS.FILE_ID.eq(file.id());
+      LOCATION_ATTACHMENTS.LA_FILE_ID.eq(file.id());
     final var matchesRelation =
-      LOCATION_ATTACHMENTS.RELATION.eq(relation);
+      LOCATION_ATTACHMENTS.LA_RELATION.eq(relation);
     final var matches =
       matchesLocation.and(matchesFile).and(matchesRelation);
 

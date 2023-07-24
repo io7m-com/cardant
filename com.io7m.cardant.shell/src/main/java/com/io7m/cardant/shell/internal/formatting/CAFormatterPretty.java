@@ -27,12 +27,12 @@ import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
@@ -224,7 +224,7 @@ public final class CAFormatterPretty implements CAFormatterType
   }
 
   private void formatMetadata(
-    final SortedMap<RDottedName, CAMetadata> metadata)
+    final SortedMap<RDottedName, CAMetadataType> metadata)
     throws TException
   {
     if (!metadata.isEmpty()) {
@@ -240,7 +240,7 @@ public final class CAFormatterPretty implements CAFormatterType
       for (final var entry : metadata.entrySet()) {
         tableBuilder.addRow()
           .addCell(entry.getKey().value())
-          .addCell(entry.getValue().value());
+          .addCell(entry.getValue().valueString());
       }
 
       this.renderTable(tableBuilder.build());
@@ -383,7 +383,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
   @Override
   public void formatTypesScalar(
-    final Set<CATypeScalar> types)
+    final Set<CATypeScalarType> types)
     throws Exception
   {
     if (types.isEmpty()) {
@@ -391,12 +391,12 @@ public final class CAFormatterPretty implements CAFormatterType
     }
 
     final var typesSorted = new ArrayList<>(types);
-    Collections.sort(typesSorted, Comparator.comparing(CATypeScalar::name));
+    Collections.sort(typesSorted, Comparator.comparing(CATypeScalarType::name));
     this.formatTypesScalarCollection(typesSorted);
   }
 
   private void formatTypesScalarCollection(
-    final Collection<CATypeScalar> types)
+    final Collection<CATypeScalarType> types)
     throws TException
   {
     if (types.isEmpty()) {
@@ -408,13 +408,15 @@ public final class CAFormatterPretty implements CAFormatterType
         .setWidthConstraint(this.softTableWidth(3))
         .declareColumn("Type", atLeastContentOrHeader())
         .declareColumn("Description", atLeastContent())
-        .declareColumn("Pattern", atLeastContentOrHeader());
+        .declareColumn("Base", atLeastContentOrHeader())
+        .declareColumn("Constraint", atLeastContentOrHeader());
 
     for (final var type : types) {
       tableBuilder.addRow()
         .addCell(type.name().value())
         .addCell(type.description())
-        .addCell(type.pattern());
+        .addCell(type.kind().name())
+        .addCell(type.showConstraint());
     }
 
     this.renderTable(tableBuilder.build());
@@ -422,7 +424,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
   @Override
   public void formatTypesScalarPage(
-    final CAPage<CATypeScalar> types)
+    final CAPage<CATypeScalarType> types)
     throws Exception
   {
     this.terminal.writer()

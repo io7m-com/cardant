@@ -31,6 +31,7 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.error_codes;
   requires com.io7m.cardant.main;
   requires com.io7m.cardant.model;
+  requires com.io7m.cardant.parsers;
   requires com.io7m.cardant.protocol.api;
   requires com.io7m.cardant.protocol.inventory.cb;
   requires com.io7m.cardant.protocol.inventory;

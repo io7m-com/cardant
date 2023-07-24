@@ -17,26 +17,23 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
 
-public final class CAArbTypeScalar extends CAArbAbstract<CATypeScalar>
+public final class CAArbTypeScalar extends CAArbAbstract<CATypeScalarType>
 {
   public CAArbTypeScalar()
   {
     super(
-      CATypeScalar.class,
-      () -> Combinators.combine(
-        Arbitraries.defaultFor(RDottedName.class),
-        Arbitraries.strings(),
-        Arbitraries.strings()
-          .withCharRange('a', 'b')
-          .ofMinLength(1)
-          .ofMaxLength(1)
-      ).as(CATypeScalar::new)
+      CATypeScalarType.class,
+      () -> Arbitraries.oneOf(
+        Arbitraries.defaultFor(CATypeScalarType.Integral.class),
+        Arbitraries.defaultFor(CATypeScalarType.Monetary.class),
+        Arbitraries.defaultFor(CATypeScalarType.Real.class),
+        Arbitraries.defaultFor(CATypeScalarType.Text.class),
+        Arbitraries.defaultFor(CATypeScalarType.Time.class)
+      )
     );
   }
 }

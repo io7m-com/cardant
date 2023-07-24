@@ -26,9 +26,11 @@ module com.io7m.cardant.model
   requires transitive com.io7m.cardant.strings;
   requires transitive com.io7m.cardant.error_codes;
 
-  requires transitive com.io7m.lanark.core;
   requires transitive com.io7m.idstore.model;
+  requires transitive com.io7m.jranges.core;
+  requires transitive com.io7m.lanark.core;
   requires transitive com.io7m.medrina.api;
+  requires transitive org.joda.money;
 
   exports com.io7m.cardant.model;
 }

@@ -25,11 +25,13 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.lanark.core.RDottedName;
+import org.joda.money.CurrencyUnit;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Name;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 
@@ -45,7 +47,7 @@ import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENT
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS_SUMMED;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 
 /**
  * Retrieve the item with the given ID, if one exists.
@@ -102,44 +104,56 @@ public final class CADBQItemGet
           ITEMS.ITEM_NAME,
           DSL.coalesce(ITEM_LOCATIONS_SUMMED.ITEM_COUNT, ZERO)
             .as(ITEM_COUNT_NAME),
-          DSL.arrayAgg(METADATA_TYPE_DECLARATIONS.NAME)
+          DSL.arrayAgg(METADATA_TYPES_RECORDS.MTR_NAME)
             .as(ITEM_TYPES_NAME),
-          ITEM_METADATA.METADATA_NAME,
-          ITEM_METADATA.METADATA_VALUE,
-          ITEM_ATTACHMENTS.RELATION,
-          FILES.ID,
-          FILES.DATA_USED,
-          FILES.DESCRIPTION,
-          FILES.MEDIA_TYPE,
-          FILES.HASH_ALGORITHM,
-          FILES.HASH_VALUE
+          ITEM_METADATA.ITEM_META_NAME,
+          ITEM_METADATA.ITEM_META_VALUE_INTEGRAL,
+          ITEM_METADATA.ITEM_META_VALUE_MONEY,
+          ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY,
+          ITEM_METADATA.ITEM_META_VALUE_REAL,
+          ITEM_METADATA.ITEM_META_VALUE_TEXT,
+          ITEM_METADATA.ITEM_META_VALUE_TIME,
+          ITEM_METADATA.ITEM_META_VALUE_TYPE,
+          ITEM_ATTACHMENTS.IA_RELATION,
+          FILES.FILE_ID,
+          FILES.FILE_DATA_USED,
+          FILES.FILE_DESCRIPTION,
+          FILES.FILE_MEDIA_TYPE,
+          FILES.FILE_HASH_ALGORITHM,
+          FILES.FILE_HASH_VALUE
         ).from(ITEMS)
         .leftJoin(ITEM_LOCATIONS_SUMMED)
         .on(ITEM_LOCATIONS_SUMMED.ITEM_ID.eq(ITEMS.ITEM_ID))
         .leftJoin(ITEM_TYPES)
-        .on(ITEM_TYPES.ITEM.eq(ITEMS.ITEM_ID))
-        .leftJoin(METADATA_TYPE_DECLARATIONS)
-        .on(METADATA_TYPE_DECLARATIONS.ID.eq(ITEM_TYPES.TYPE_DECLARATION))
+        .on(ITEM_TYPES.IT_ITEM.eq(ITEMS.ITEM_ID))
+        .leftJoin(METADATA_TYPES_RECORDS)
+        .on(METADATA_TYPES_RECORDS.MTR_ID.eq(ITEM_TYPES.IT_TYPE))
         .leftJoin(ITEM_METADATA)
-        .on(ITEM_METADATA.METADATA_ITEM_ID.eq(ITEMS.ITEM_ID))
+        .on(ITEM_METADATA.ITEM_META_ITEM.eq(ITEMS.ITEM_ID))
         .leftJoin(ITEM_ATTACHMENTS)
-        .on(ITEM_ATTACHMENTS.ITEM_ID.eq(ITEMS.ITEM_ID))
+        .on(ITEM_ATTACHMENTS.IA_ITEM_ID.eq(ITEMS.ITEM_ID))
         .leftJoin(FILES)
-        .on(FILES.ID.eq(ITEM_ATTACHMENTS.FILE_ID))
+        .on(FILES.FILE_ID.eq(ITEM_ATTACHMENTS.IA_FILE_ID))
         .where(ITEMS.ITEM_ID.eq(itemID.id()).and(ITEMS.ITEM_DELETED.isFalse()))
         .groupBy(
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
           DSL.field(ITEM_COUNT_NAME),
-          ITEM_METADATA.METADATA_NAME,
-          ITEM_METADATA.METADATA_VALUE,
-          ITEM_ATTACHMENTS.RELATION,
-          FILES.ID,
-          FILES.DATA_USED,
-          FILES.DESCRIPTION,
-          FILES.MEDIA_TYPE,
-          FILES.HASH_ALGORITHM,
-          FILES.HASH_VALUE
+          ITEM_METADATA.ITEM_META_NAME,
+          ITEM_METADATA.ITEM_META_VALUE_INTEGRAL,
+          ITEM_METADATA.ITEM_META_VALUE_MONEY,
+          ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY,
+          ITEM_METADATA.ITEM_META_VALUE_REAL,
+          ITEM_METADATA.ITEM_META_VALUE_TEXT,
+          ITEM_METADATA.ITEM_META_VALUE_TIME,
+          ITEM_METADATA.ITEM_META_VALUE_TYPE,
+          ITEM_ATTACHMENTS.IA_RELATION,
+          FILES.FILE_ID,
+          FILES.FILE_DATA_USED,
+          FILES.FILE_DESCRIPTION,
+          FILES.FILE_MEDIA_TYPE,
+          FILES.FILE_HASH_ALGORITHM,
+          FILES.FILE_HASH_VALUE
         );
 
     final var results = query.fetch();
@@ -148,7 +162,7 @@ public final class CADBQItemGet
     }
 
     final var meta =
-      new TreeMap<RDottedName, CAMetadata>();
+      new TreeMap<RDottedName, CAMetadataType>();
     final var types =
       new TreeSet<RDottedName>();
     final var attachments =
@@ -163,27 +177,24 @@ public final class CADBQItemGet
       name = rec.get(ITEMS.ITEM_NAME);
       count = rec.get(ITEM_LOCATIONS_SUMMED.ITEM_COUNT).longValue();
 
-      Optional.ofNullable(rec.get(ITEM_METADATA.METADATA_NAME))
+      Optional.ofNullable(rec.get(ITEM_METADATA.ITEM_META_NAME))
         .ifPresent(s -> {
-          final var metaName =
-            new RDottedName(s);
-          final var metaValue =
-            rec.get(ITEM_METADATA.METADATA_VALUE);
-          meta.put(metaName, new CAMetadata(metaName, metaValue));
+          final var metaName = new RDottedName(s);
+          meta.put(metaName, mapItemMetadataRecord(metaName, rec));
         });
 
-      Optional.ofNullable(rec.get(ITEM_ATTACHMENTS.RELATION))
+      Optional.ofNullable(rec.get(ITEM_ATTACHMENTS.IA_RELATION))
         .ifPresent(f -> {
           final var attachment = new CAAttachment(
             new CAFileWithoutData(
-              new CAFileID(rec.get(FILES.ID)),
-              rec.get(FILES.DESCRIPTION),
-              rec.get(FILES.MEDIA_TYPE),
-              rec.<Long>get(FILES.DATA_USED).longValue(),
-              rec.get(FILES.HASH_ALGORITHM),
-              rec.get(FILES.HASH_VALUE)
+              new CAFileID(rec.get(FILES.FILE_ID)),
+              rec.get(FILES.FILE_DESCRIPTION),
+              rec.get(FILES.FILE_MEDIA_TYPE),
+              rec.<Long>get(FILES.FILE_DATA_USED).longValue(),
+              rec.get(FILES.FILE_HASH_ALGORITHM),
+              rec.get(FILES.FILE_HASH_VALUE)
             ),
-            rec.get(ITEM_ATTACHMENTS.RELATION)
+            rec.get(ITEM_ATTACHMENTS.IA_RELATION)
           );
           attachments.put(attachment.key(), attachment);
         });
@@ -207,5 +218,47 @@ public final class CADBQItemGet
         types
       )
     );
+  }
+
+  static CAMetadataType mapItemMetadataRecord(
+    final RDottedName name,
+    final Record rec)
+  {
+    final var typeCode =
+      rec.get(ITEM_METADATA.ITEM_META_VALUE_TYPE);
+
+    return switch (typeCode) {
+      case SCALAR_INTEGRAL -> {
+        yield new CAMetadataType.Integral(
+          name,
+          rec.get(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL).longValue()
+        );
+      }
+      case SCALAR_REAL -> {
+        yield new CAMetadataType.Real(
+          name,
+          rec.get(ITEM_METADATA.ITEM_META_VALUE_REAL).doubleValue()
+        );
+      }
+      case SCALAR_MONEY -> {
+        yield new CAMetadataType.Monetary(
+          name,
+          rec.get(ITEM_METADATA.ITEM_META_VALUE_MONEY),
+          CurrencyUnit.of(rec.get(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY))
+        );
+      }
+      case SCALAR_TEXT -> {
+        yield new CAMetadataType.Text(
+          name,
+          rec.get(ITEM_METADATA.ITEM_META_VALUE_TEXT)
+        );
+      }
+      case SCALAR_TIME -> {
+        yield new CAMetadataType.Time(
+          name,
+          rec.get(ITEM_METADATA.ITEM_META_VALUE_TIME)
+        );
+      }
+    };
   }
 }

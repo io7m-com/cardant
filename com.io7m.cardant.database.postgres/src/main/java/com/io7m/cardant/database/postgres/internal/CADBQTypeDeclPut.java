@@ -28,9 +28,9 @@ import org.jooq.impl.DSL;
 
 import java.util.ArrayList;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_FIELDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 import static com.io7m.cardant.strings.CAStringConstants.TYPE;
 
 /**
@@ -79,14 +79,14 @@ public final class CADBQTypeDeclPut
     this.setAttribute(TYPE, typeName);
 
     final var typeId =
-      context.insertInto(METADATA_TYPE_DECLARATIONS)
-        .set(METADATA_TYPE_DECLARATIONS.NAME, typeName)
-        .set(METADATA_TYPE_DECLARATIONS.DESCRIPTION, description)
-        .onConflict(METADATA_TYPE_DECLARATIONS.NAME)
+      context.insertInto(METADATA_TYPES_RECORDS)
+        .set(METADATA_TYPES_RECORDS.MTR_NAME, typeName)
+        .set(METADATA_TYPES_RECORDS.MTR_DESCRIPTION, description)
+        .onConflict(METADATA_TYPES_RECORDS.MTR_NAME)
         .doUpdate()
-        .set(METADATA_TYPE_DECLARATIONS.NAME, typeName)
-        .set(METADATA_TYPE_DECLARATIONS.DESCRIPTION, description)
-        .returning(METADATA_TYPE_DECLARATIONS.ID)
+        .set(METADATA_TYPES_RECORDS.MTR_NAME, typeName)
+        .set(METADATA_TYPES_RECORDS.MTR_DESCRIPTION, description)
+        .returning(METADATA_TYPES_RECORDS.MTR_ID)
         .execute();
 
     final var batches =
@@ -97,16 +97,16 @@ public final class CADBQTypeDeclPut
      */
 
     final var fieldsJoin =
-      METADATA_TYPE_FIELDS.join(METADATA_TYPE_DECLARATIONS)
-          .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(METADATA_TYPE_DECLARATIONS.ID))
-            .where(METADATA_TYPE_DECLARATIONS.NAME.eq(typeName));
+      METADATA_TYPES_RECORD_FIELDS.join(METADATA_TYPES_RECORDS)
+          .on(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION.eq(METADATA_TYPES_RECORDS.MTR_ID))
+            .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(typeName));
 
     final var deleteQuery =
-      DSL.deleteFrom(METADATA_TYPE_FIELDS)
+      DSL.deleteFrom(METADATA_TYPES_RECORD_FIELDS)
         .whereExists(
           DSL.select(
-            METADATA_TYPE_FIELDS.FIELD_DECLARATION,
-            METADATA_TYPE_FIELDS.FIELD_NAME
+            METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION,
+            METADATA_TYPES_RECORD_FIELDS.MTRF_NAME
           ).from(fieldsJoin));
 
     batches.add(deleteQuery);
@@ -122,24 +122,24 @@ public final class CADBQTypeDeclPut
         field.type();
 
       final var findTypeId =
-        DSL.select(METADATA_SCALAR_TYPES.ID)
-          .from(METADATA_SCALAR_TYPES)
-          .where(METADATA_SCALAR_TYPES.NAME.eq(scalarType.name().value()));
+        DSL.select(METADATA_TYPES_SCALAR.MTS_ID)
+          .from(METADATA_TYPES_SCALAR)
+          .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(scalarType.name().value()));
 
       batches.add(
-        DSL.insertInto(METADATA_TYPE_FIELDS)
-          .set(METADATA_TYPE_FIELDS.FIELD_NAME, field.name().value())
-          .set(METADATA_TYPE_FIELDS.FIELD_DECLARATION, typeId)
-          .set(METADATA_TYPE_FIELDS.FIELD_DESCRIPTION, field.description())
-          .set(METADATA_TYPE_FIELDS.FIELD_REQUIRED, field.isRequired())
-          .set(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE, findTypeId)
-          .onConflictOnConstraint(DSL.name("metadata_type_fields_pkey"))
+        DSL.insertInto(METADATA_TYPES_RECORD_FIELDS)
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_NAME, field.name().value())
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION, typeId)
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_DESCRIPTION, field.description())
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_REQUIRED, field.isRequired())
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_SCALAR_TYPE, findTypeId)
+          .onConflictOnConstraint(DSL.name("metadata_types_record_fields_primary_key"))
           .doUpdate()
-          .set(METADATA_TYPE_FIELDS.FIELD_NAME, field.name().value())
-          .set(METADATA_TYPE_FIELDS.FIELD_DECLARATION, typeId)
-          .set(METADATA_TYPE_FIELDS.FIELD_DESCRIPTION, field.description())
-          .set(METADATA_TYPE_FIELDS.FIELD_REQUIRED, field.isRequired())
-          .set(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE, findTypeId)
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_NAME, field.name().value())
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION, typeId)
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_DESCRIPTION, field.description())
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_REQUIRED, field.isRequired())
+          .set(METADATA_TYPES_RECORD_FIELDS.MTRF_SCALAR_TYPE, findTypeId)
       );
     }
 

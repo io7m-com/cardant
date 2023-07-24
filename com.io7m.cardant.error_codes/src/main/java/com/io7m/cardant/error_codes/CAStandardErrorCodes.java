@@ -388,5 +388,18 @@ public final class CAStandardErrorCodes
   {
     return ERROR_TYPE_REFERENCED;
   }
+
+  private static final CAErrorCode ERROR_PARSE =
+    new CAErrorCode("error-parse");
+
+  /**
+   * A parse error was encountered.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorParse()
+  {
+    return ERROR_PARSE;
+  }
 }
 

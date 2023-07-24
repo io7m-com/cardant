@@ -28,7 +28,7 @@ import org.jooq.exception.DataAccessException;
 import java.util.List;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 final class CAItemTypeDeclarationSummarySearch
@@ -58,8 +58,8 @@ final class CAItemTypeDeclarationSummarySearch
         page.queryFields(
           context,
           List.of(
-            METADATA_TYPE_DECLARATIONS.NAME,
-            METADATA_TYPE_DECLARATIONS.DESCRIPTION
+            METADATA_TYPES_RECORDS.MTR_NAME,
+            METADATA_TYPES_RECORDS.MTR_DESCRIPTION
           )
         );
 
@@ -68,8 +68,8 @@ final class CAItemTypeDeclarationSummarySearch
       final var items =
         query.fetch().map(record -> {
           return new CATypeDeclarationSummary(
-            new RDottedName(record.get(METADATA_TYPE_DECLARATIONS.NAME)),
-            record.get(METADATA_TYPE_DECLARATIONS.DESCRIPTION)
+            new RDottedName(record.get(METADATA_TYPES_RECORDS.MTR_NAME)),
+            record.get(METADATA_TYPES_RECORDS.MTR_DESCRIPTION)
           );
         });
 

@@ -32,10 +32,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataPut.setMetadataValue;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorCyclic;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_NAME;
@@ -96,11 +97,11 @@ public final class CADBQLocationPut
 
     batches.add(
       context.deleteFrom(LOCATION_METADATA)
-        .where(LOCATION_METADATA.METADATA_LOCATION_ID.eq(locationId))
+        .where(LOCATION_METADATA.LOCATION_META_LOCATION.eq(locationId))
     );
     batches.add(
       context.deleteFrom(LOCATION_TYPES)
-        .where(LOCATION_TYPES.LOCATION.eq(locationId))
+        .where(LOCATION_TYPES.LT_LOCATION.eq(locationId))
     );
 
     batches.add(
@@ -130,22 +131,19 @@ public final class CADBQLocationPut
       batches.add(
         context.insertInto(LOCATION_TYPES)
           .set(
-            LOCATION_TYPES.LOCATION,
+            LOCATION_TYPES.LT_LOCATION,
             locationId)
           .set(
-            LOCATION_TYPES.TYPE_DECLARATION,
-            context.select(METADATA_TYPE_DECLARATIONS.ID)
-              .where(METADATA_TYPE_DECLARATIONS.NAME.eq(type.value()))
+            LOCATION_TYPES.LT_TYPE,
+            context.select(METADATA_TYPES_RECORDS.MTR_ID)
+              .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(type.value()))
           )
       );
     }
 
     for (final var metaEntry : location.metadata().entrySet()) {
       batches.add(
-        context.insertInto(LOCATION_METADATA)
-          .set(LOCATION_METADATA.METADATA_LOCATION_ID, locationId)
-          .set(LOCATION_METADATA.METADATA_NAME, metaEntry.getKey().value())
-          .set(LOCATION_METADATA.METADATA_VALUE, metaEntry.getValue().value())
+        setMetadataValue(context, location.id(), metaEntry.getValue())
       );
     }
 

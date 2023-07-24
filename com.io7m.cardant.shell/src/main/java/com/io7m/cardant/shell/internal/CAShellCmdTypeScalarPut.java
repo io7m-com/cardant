@@ -18,23 +18,31 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CAMonetaryRange;
+import com.io7m.cardant.model.CATimeRange;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
+import com.io7m.jranges.RangeInclusiveD;
+import com.io7m.jranges.RangeInclusiveL;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
+import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 
+import static com.io7m.quarrel.core.QCommandStatus.FAILURE;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
@@ -62,13 +70,57 @@ public final class CAShellCmdTypeScalarPut
       String.class
     );
 
-  private static final QParameterNamed1<Pattern> PATTERN =
-    new QParameterNamed1<>(
-      "--pattern",
+  private static final QParameterNamed01<RangeInclusiveL> INTEGRAL =
+    new QParameterNamed01<>(
+      "--base-is-integral",
       List.of(),
-      new QConstant("The pattern that defines valid values of the type."),
-      Optional.empty(),
-      Pattern.class
+      new QConstant(
+        "Specify that the base type is integral and provide an inclusive range of values."),
+      Optional.of(RangeInclusiveL.of(Long.MIN_VALUE, Long.MAX_VALUE)),
+      RangeInclusiveL.class
+    );
+
+  private static final QParameterNamed01<RangeInclusiveD> REAL =
+    new QParameterNamed01<>(
+      "--base-is-real",
+      List.of(),
+      new QConstant(
+        "Specify that the base type is real and provide an inclusive range of values."),
+      Optional.of(RangeInclusiveD.of(-Double.MAX_VALUE, Double.MAX_VALUE)),
+      RangeInclusiveD.class
+    );
+
+  private static final QParameterNamed01<CATimeRange> TIME =
+    new QParameterNamed01<>(
+      "--base-is-time",
+      List.of(),
+      new QConstant(
+        "Specify that the base type is a timestamp and provide an inclusive range of values."),
+      Optional.of(new CATimeRange(
+        OffsetDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC),
+        OffsetDateTime.now()
+      )),
+      CATimeRange.class
+    );
+
+  private static final QParameterNamed01<CAMonetaryRange> MONETARY =
+    new QParameterNamed01<>(
+      "--base-is-monetary",
+      List.of(),
+      new QConstant(
+        "Specify that the base type is monetary and provide an inclusive range of values."),
+      Optional.of(new CAMonetaryRange(BigDecimal.ZERO, new BigDecimal("1000000000000"))),
+      CAMonetaryRange.class
+    );
+
+  private static final QParameterNamed01<String> TEXT =
+    new QParameterNamed01<>(
+      "--base-is-text",
+      List.of(),
+      new QConstant(
+        "Specify that the base type is text and provide a validating pattern."),
+      Optional.of(".*"),
+      String.class
     );
 
   /**
@@ -95,7 +147,7 @@ public final class CAShellCmdTypeScalarPut
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(TYPE_NAME, DESCRIPTION, PATTERN);
+    return List.of(TYPE_NAME, DESCRIPTION, INTEGRAL, REAL, TIME, MONETARY, TEXT);
   }
 
   @Override
@@ -103,31 +155,153 @@ public final class CAShellCmdTypeScalarPut
     final QCommandContextType context)
     throws Exception
   {
-    final var client =
-      this.client();
-
     final var typeName =
       context.parameterValue(TYPE_NAME);
     final var description =
       context.parameterValue(DESCRIPTION);
-    final var pattern =
-      context.parameterValue(PATTERN);
 
-    final var types =
-      ((CAIResponseTypeScalarPut) client.executeOrElseThrow(
-        new CAICommandTypeScalarPut(
-          Set.of(
-            new CATypeScalar(
-              typeName,
-              description,
-              pattern.pattern()
-            )
-          )
-        ),
-        CAClientException::ofError
-      )).types();
+    final var integral =
+      context.parameterValue(INTEGRAL);
+    final var real =
+      context.parameterValue(REAL);
+    final var time =
+      context.parameterValue(TIME);
+    final var monetary =
+      context.parameterValue(MONETARY);
+    final var text =
+      context.parameterValue(TEXT);
+
+    final Set<CATypeScalarType> types;
+    if (integral.isPresent()) {
+      types = this.putIntegral(typeName, description, integral.get());
+    } else if (real.isPresent()) {
+      types = this.putReal(typeName, description, real.get());
+    } else if (time.isPresent()) {
+      types = this.putTime(typeName, description, time.get());
+    } else if (monetary.isPresent()) {
+      types = this.putMonetary(typeName, description, monetary.get());
+    } else if (text.isPresent()) {
+      types = this.putText(typeName, description, text.get());
+    } else {
+      context.output().println("A base type must be specified.");
+      return FAILURE;
+    }
 
     this.formatter().formatTypesScalar(types);
     return SUCCESS;
+  }
+
+  private Set<CATypeScalarType> putText(
+    final RDottedName typeName,
+    final String description,
+    final String pattern)
+    throws CAClientException, InterruptedException
+  {
+    final var client = this.client();
+
+    return ((CAIResponseTypeScalarPut) client.executeOrElseThrow(
+      new CAICommandTypeScalarPut(
+        Set.of(
+          new CATypeScalarType.Text(
+            typeName,
+            description,
+            pattern
+          )
+        )
+      ),
+      CAClientException::ofError
+    )).types();
+  }
+
+  private Set<CATypeScalarType> putMonetary(
+    final RDottedName typeName,
+    final String description,
+    final CAMonetaryRange range)
+    throws CAClientException, InterruptedException
+  {
+    final var client = this.client();
+
+    return ((CAIResponseTypeScalarPut) client.executeOrElseThrow(
+      new CAICommandTypeScalarPut(
+        Set.of(
+          new CATypeScalarType.Monetary(
+            typeName,
+            description,
+            range.lower(),
+            range.upper()
+          )
+        )
+      ),
+      CAClientException::ofError
+    )).types();
+  }
+
+  private Set<CATypeScalarType> putTime(
+    final RDottedName typeName,
+    final String description,
+    final CATimeRange range)
+    throws CAClientException, InterruptedException
+  {
+    final var client = this.client();
+
+    return ((CAIResponseTypeScalarPut) client.executeOrElseThrow(
+      new CAICommandTypeScalarPut(
+        Set.of(
+          new CATypeScalarType.Time(
+            typeName,
+            description,
+            range.lower(),
+            range.upper()
+          )
+        )
+      ),
+      CAClientException::ofError
+    )).types();
+  }
+
+  private Set<CATypeScalarType> putReal(
+    final RDottedName typeName,
+    final String description,
+    final RangeInclusiveD range)
+    throws CAClientException, InterruptedException
+  {
+    final var client = this.client();
+
+    return ((CAIResponseTypeScalarPut) client.executeOrElseThrow(
+      new CAICommandTypeScalarPut(
+        Set.of(
+          new CATypeScalarType.Real(
+            typeName,
+            description,
+            range.lower(),
+            range.upper()
+          )
+        )
+      ),
+      CAClientException::ofError
+    )).types();
+  }
+
+  private Set<CATypeScalarType> putIntegral(
+    final RDottedName typeName,
+    final String description,
+    final RangeInclusiveL range)
+    throws CAClientException, InterruptedException
+  {
+    final var client = this.client();
+
+    return ((CAIResponseTypeScalarPut) client.executeOrElseThrow(
+      new CAICommandTypeScalarPut(
+        Set.of(
+          new CATypeScalarType.Integral(
+            typeName,
+            description,
+            range.lower(),
+            range.upper()
+          )
+        )
+      ),
+      CAClientException::ofError
+    )).types();
   }
 }

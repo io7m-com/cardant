@@ -1,5 +1,5 @@
 /*
- * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -32,7 +32,7 @@ public final class CADatabaseException extends CAException
    * Construct an exception.
    *
    * @param message             The message
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
    */
@@ -51,7 +51,7 @@ public final class CADatabaseException extends CAException
    *
    * @param message             The message
    * @param cause               The cause
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
    */

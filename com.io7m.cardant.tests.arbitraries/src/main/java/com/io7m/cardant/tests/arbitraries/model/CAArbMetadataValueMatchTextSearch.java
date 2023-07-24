@@ -17,18 +17,18 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbMetadataMatchAny
-  extends CAArbAbstract<CAMetadataMatchAny>
+public final class CAArbMetadataValueMatchTextSearch
+  extends CAArbAbstract<TextMatchType.Search>
 {
-  public CAArbMetadataMatchAny()
+  public CAArbMetadataValueMatchTextSearch()
   {
     super(
-      CAMetadataMatchAny.class,
-      () -> Arbitraries.create(() -> CAMetadataMatchAny.ANY)
+      TextMatchType.Search.class,
+      () -> Arbitraries.strings().map(TextMatchType.Search::new)
     );
   }
 }

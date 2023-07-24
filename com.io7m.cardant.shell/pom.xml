@@ -46,6 +46,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.parsers</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.cardant.protocol.inventory</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -114,6 +119,14 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jranges</groupId>
+      <artifactId>com.io7m.jranges.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.joda</groupId>
+      <artifactId>joda-money</artifactId>
     </dependency>
 
     <dependency>

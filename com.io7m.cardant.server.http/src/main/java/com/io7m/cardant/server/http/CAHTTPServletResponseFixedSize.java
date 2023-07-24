@@ -22,7 +22,7 @@ import java.util.OptionalLong;
 /**
  * A fixed size servlet response.
  *
- * @param statusCode  The status code
+ * @param statusCode  The status kind
  * @param contentType The content type
  * @param data        The data
  */
@@ -36,7 +36,7 @@ public record CAHTTPServletResponseFixedSize(
   /**
    * A fixed size servlet response.
    *
-   * @param statusCode  The status code
+   * @param statusCode  The status kind
    * @param contentType The content type
    * @param data        The data
    */

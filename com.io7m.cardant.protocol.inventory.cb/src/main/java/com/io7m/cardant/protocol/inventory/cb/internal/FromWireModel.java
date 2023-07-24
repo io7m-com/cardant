@@ -38,32 +38,33 @@ import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataRequire;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchExact;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchExact;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchSearch;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAllOf;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAnyOf;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummaries;
 import com.io7m.cardant.model.CALocationSummary;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.model.CAMetadataNameMatchType;
+import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAMetadataValueMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
+import com.io7m.cardant.model.CAMoney;
+import com.io7m.cardant.model.CANameMatchType;
+import com.io7m.cardant.model.CANameMatchType.Any;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CASizeRange;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeMatchType;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAllOf;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAnyOf;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Attachment;
 import com.io7m.cardant.protocol.inventory.cb.CAI1AttachmentKey;
@@ -84,11 +85,16 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ListLocationBehaviour;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1LocationSummary;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Metadata;
-import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataMatch;
-import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataMatch.CAI1MetadataMatchRequire;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataElementMatch;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataNameMatch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch;
-import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.CAI1MetadataValueMatchAny;
-import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.CAI1MetadataValueMatchExact;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.IntegralWithinRange;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.MonetaryWithCurrency;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.MonetaryWithinRange;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.RealWithinRange;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.TextExact;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.TextSearch;
+import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataValueMatch.TimeWithinRange;
 import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch.CAI1NameMatchAny;
 import com.io7m.cardant.protocol.inventory.cb.CAI1NameMatch.CAI1NameMatchExact;
@@ -112,9 +118,10 @@ import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBMaps;
 import com.io7m.cedarbridge.runtime.convenience.CBSets;
 import com.io7m.lanark.core.RDottedName;
+import org.joda.money.CurrencyUnit;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -150,7 +157,7 @@ public final class FromWireModel
     }
 
     final var metadata =
-      new HashMap<RDottedName, CAMetadata>();
+      new HashMap<RDottedName, CAMetadataType>();
 
     for (final var entry : item.fieldMetadata().values().entrySet()) {
       final var key =
@@ -211,8 +218,7 @@ public final class FromWireModel
       return repositAdd(a);
     }
 
-    throw new ProtocolUncheckedException(
-      CAI1ValidationCommon.errorProtocol(i));
+    throw new ProtocolUncheckedException(errorProtocol(i));
   }
 
   private static CAItemRepositType repositAdd(
@@ -258,17 +264,45 @@ public final class FromWireModel
       return new CAFileID(ii.fieldId().value());
     }
 
-    throw new ProtocolUncheckedException(
-      CAI1ValidationCommon.errorProtocol(i));
+    throw new ProtocolUncheckedException(errorProtocol(i));
   }
 
-  public static CAMetadata metadata(
+  public static CAMetadataType metadata(
     final CAI1Metadata i)
   {
-    return CAMetadata.of(
-      i.fieldKey().value(),
-      i.fieldValue().value()
-    );
+    if (i instanceof final CAI1Metadata.Integral ti) {
+      return new CAMetadataType.Integral(
+        new RDottedName(ti.fieldKey().value()),
+        ti.fieldValue().value()
+      );
+    }
+    if (i instanceof final CAI1Metadata.Real ti) {
+      return new CAMetadataType.Real(
+        new RDottedName(ti.fieldKey().value()),
+        ti.fieldValue().value()
+      );
+    }
+    if (i instanceof final CAI1Metadata.Text ti) {
+      return new CAMetadataType.Text(
+        new RDottedName(ti.fieldKey().value()),
+        ti.fieldValue().value()
+      );
+    }
+    if (i instanceof final CAI1Metadata.Time ti) {
+      return new CAMetadataType.Time(
+        new RDottedName(ti.fieldKey().value()),
+        ti.fieldValue().value()
+      );
+    }
+    if (i instanceof final CAI1Metadata.Monetary ti) {
+      return new CAMetadataType.Monetary(
+        new RDottedName(ti.fieldKey().value()),
+        CAMoney.money(ti.fieldValue().value()),
+        CurrencyUnit.of(ti.fieldCurrency().value())
+      );
+    }
+
+    throw new ProtocolUncheckedException(errorProtocol(i));
   }
 
   public static CAItemLocationMatchType itemLocationMatch(
@@ -289,7 +323,7 @@ public final class FromWireModel
     }
 
     throw new ProtocolUncheckedException(
-      CAI1ValidationCommon.errorProtocol(b));
+      errorProtocol(b));
   }
 
   public static CAFileType file(
@@ -300,7 +334,6 @@ public final class FromWireModel
         new CAFileID(with.fieldId().value()),
         with.fieldDescription().value(),
         with.fieldMediaType().value(),
-        with.fieldSize().value(),
         with.fieldHashAlgorithm().value(),
         with.fieldHashValue().value(),
         byteArray(with.fieldData())
@@ -318,8 +351,7 @@ public final class FromWireModel
       );
     }
 
-    throw new ProtocolUncheckedException(
-      CAI1ValidationCommon.errorProtocol(f));
+    throw new ProtocolUncheckedException(errorProtocol(f));
   }
 
   private static CAByteArray byteArray(
@@ -350,7 +382,7 @@ public final class FromWireModel
     }
 
     final var metadata =
-      new HashMap<RDottedName, CAMetadata>();
+      new HashMap<RDottedName, CAMetadataType>();
 
     for (final var entry : c.fieldMetadata().values().entrySet()) {
       final var key =
@@ -455,43 +487,99 @@ public final class FromWireModel
       itemLocationMatch(p.fieldLocation()),
       itemNameMatch(p.fieldNameMatch()),
       itemTypeMatch(p.fieldTypeMatch()),
-      itemMetadataMatch(p.fieldMetaMatch()),
+      metadataMatch(p.fieldMetaMatch()),
       itemColumnOrdering(p.fieldOrder()),
       (int) p.fieldLimit().value()
     );
   }
 
-  private static CAMetadataMatchType itemMetadataMatch(
-    final CAI1MetadataMatch match)
+  private static CAMetadataElementMatchType metadataMatch(
+    final CAI1MetadataElementMatch match)
   {
-    if (match instanceof CAI1MetadataMatch.CAI1MetadataMatchAny) {
-      return CAMetadataMatchAny.ANY;
+    if (match instanceof final CAI1MetadataElementMatch.And and) {
+      return new CAMetadataElementMatchType.And(
+        metadataMatch(and.fieldE0()),
+        metadataMatch(and.fieldE1())
+      );
     }
-    if (match instanceof final CAI1MetadataMatchRequire r) {
-      return new CAMetadataRequire(metadataFieldValues(r.fieldValues()));
+    if (match instanceof final CAI1MetadataElementMatch.Or or) {
+      return new CAMetadataElementMatchType.Or(
+        metadataMatch(or.fieldE0()),
+        metadataMatch(or.fieldE1())
+      );
     }
+    if (match instanceof final CAI1MetadataElementMatch.Specific specific) {
+      return new CAMetadataElementMatchType.Specific(
+        metadataNameMatch(specific.fieldName()),
+        metadataValueMatch(specific.fieldValue())
+      );
+    }
+
     throw new IllegalStateException();
   }
 
-  private static Map<RDottedName, CAMetadataValueMatchType>
-  metadataFieldValues(final CBMap<CBString, CAI1MetadataValueMatch> map)
+  private static CAMetadataNameMatchType metadataNameMatch(
+    final CAI1MetadataNameMatch m)
   {
-    return CBMaps.toMap(
-      map,
-      x -> new RDottedName(x.value()),
-      FromWireModel::metadataValueMatch
-    );
+    if (m instanceof CAI1MetadataNameMatch.Anything) {
+      return CAMetadataNameMatchType.AnyName.ANY_NAME;
+    }
+    if (m instanceof final CAI1MetadataNameMatch.Exact exact) {
+      return new CAMetadataNameMatchType.ExactName(
+        new RDottedName(exact.fieldName().value())
+      );
+    }
+    if (m instanceof final CAI1MetadataNameMatch.Search search) {
+      return new CAMetadataNameMatchType.SearchName(
+        search.fieldSearch().value()
+      );
+    }
+
+    throw new IllegalStateException();
   }
 
   private static CAMetadataValueMatchType metadataValueMatch(
     final CAI1MetadataValueMatch m)
   {
-    if (m instanceof CAI1MetadataValueMatchAny) {
-      return CAMetadataValueMatchAny.ANY;
+    if (m instanceof CAI1MetadataValueMatch.Anything) {
+      return CAMetadataValueMatchType.AnyValue.ANY_VALUE;
     }
-    if (m instanceof final CAI1MetadataValueMatchExact exact) {
-      return new CAMetadataValueMatchExact(exact.fieldText().value());
+    if (m instanceof final IntegralWithinRange w) {
+      return new IntegralMatchType.WithinRange(
+        w.fieldLower().value(),
+        w.fieldUpper().value()
+      );
     }
+    if (m instanceof final RealWithinRange w) {
+      return new RealMatchType.WithinRange(
+        w.fieldLower().value(),
+        w.fieldUpper().value()
+      );
+    }
+    if (m instanceof final TimeWithinRange w) {
+      return new TimeMatchType.WithinRange(
+        w.fieldLower().value(),
+        w.fieldUpper().value()
+      );
+    }
+    if (m instanceof final MonetaryWithinRange w) {
+      return new MonetaryMatchType.WithinRange(
+        new BigDecimal(w.fieldLower().value()),
+        new BigDecimal(w.fieldUpper().value())
+      );
+    }
+    if (m instanceof final MonetaryWithCurrency w) {
+      return new MonetaryMatchType.WithCurrency(
+        CurrencyUnit.of(w.fieldCurrency().value())
+      );
+    }
+    if (m instanceof final TextExact w) {
+      return new TextMatchType.ExactTextValue(w.fieldExact().value());
+    }
+    if (m instanceof final TextSearch w) {
+      return new TextMatchType.Search(w.fieldSearch().value());
+    }
+
     throw new IllegalStateException();
   }
 
@@ -518,13 +606,13 @@ public final class FromWireModel
     final CAI1NameMatch match)
   {
     if (match instanceof CAI1NameMatchAny) {
-      return CANameMatchAny.ANY;
+      return Any.ANY_NAME;
     }
     if (match instanceof final CAI1NameMatchExact exact) {
-      return new CANameMatchExact(exact.fieldText().value());
+      return new CANameMatchType.Exact(exact.fieldText().value());
     }
     if (match instanceof final CAI1NameMatchSearch search) {
-      return new CANameMatchSearch(search.fieldQuery().value());
+      return new CANameMatchType.Search(search.fieldQuery().value());
     }
     throw new IllegalStateException();
   }
@@ -548,7 +636,7 @@ public final class FromWireModel
       return CAItemColumn.BY_NAME;
     }
     throw new ProtocolUncheckedException(
-      CAI1ValidationCommon.errorProtocol(c));
+      errorProtocol(c));
   }
 
   public static CAFileSearchParameters fileSearchParameters(
@@ -592,8 +680,7 @@ public final class FromWireModel
     if (c instanceof CAI1FileColumn.CAI1ByDescription) {
       return CAFileColumn.BY_DESCRIPTION;
     }
-    throw new ProtocolUncheckedException(
-      CAI1ValidationCommon.errorProtocol(c));
+    throw new ProtocolUncheckedException(errorProtocol(c));
   }
 
   public static CAItemSummary itemSummary(
@@ -617,14 +704,49 @@ public final class FromWireModel
     );
   }
 
-  public static CATypeScalar typeScalar(
+  public static CATypeScalarType typeScalar(
     final CAI1TypeScalar x)
   {
-    return new CATypeScalar(
-      new RDottedName(x.fieldName().value()),
-      x.fieldDescription().value(),
-      x.fieldPattern().value()
-    );
+    if (x instanceof final CAI1TypeScalar.Integral xt) {
+      return new CATypeScalarType.Integral(
+        new RDottedName(xt.fieldName().value()),
+        xt.fieldDescription().value(),
+        xt.fieldRangeLower().value(),
+        xt.fieldRangeUpper().value()
+      );
+    }
+    if (x instanceof final CAI1TypeScalar.Time xt) {
+      return new CATypeScalarType.Time(
+        new RDottedName(xt.fieldName().value()),
+        xt.fieldDescription().value(),
+        xt.fieldRangeLower().value(),
+        xt.fieldRangeUpper().value()
+      );
+    }
+    if (x instanceof final CAI1TypeScalar.Text xt) {
+      return new CATypeScalarType.Text(
+        new RDottedName(xt.fieldName().value()),
+        xt.fieldDescription().value(),
+        xt.fieldPattern().value()
+      );
+    }
+    if (x instanceof final CAI1TypeScalar.Monetary xt) {
+      return new CATypeScalarType.Monetary(
+        new RDottedName(xt.fieldName().value()),
+        xt.fieldDescription().value(),
+        CAMoney.money(xt.fieldRangeLower().value()),
+        CAMoney.money(xt.fieldRangeUpper().value())
+      );
+    }
+    if (x instanceof final CAI1TypeScalar.Real xt) {
+      return new CATypeScalarType.Real(
+        new RDottedName(xt.fieldName().value()),
+        xt.fieldDescription().value(),
+        xt.fieldRangeLower().value(),
+        xt.fieldRangeUpper().value()
+      );
+    }
+    throw new ProtocolUncheckedException(errorProtocol(x));
   }
 
   public static CATypeField typeField(

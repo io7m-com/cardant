@@ -27,7 +27,7 @@ import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
@@ -526,11 +526,11 @@ public final class CAClientIT
     ));
 
     final var meta0 =
-      new CAMetadata(new RDottedName("a.b0"), "x");
+      new CAMetadataType.Text(new RDottedName("a.b0"), "x");
     final var meta1 =
-      new CAMetadata(new RDottedName("a.b1"), "y");
+      new CAMetadataType.Text(new RDottedName("a.b1"), "y");
     final var meta2 =
-      new CAMetadata(new RDottedName("a.b2"), "z");
+      new CAMetadataType.Text(new RDottedName("a.b2"), "z");
 
     this.client.executeOrElseThrow(
       new CAICommandLocationMetadataPut(id, Set.of(meta0, meta1, meta2))

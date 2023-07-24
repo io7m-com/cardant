@@ -164,7 +164,6 @@ public final class CA1ServletFileUpload
               new CAFileID(vFileId.get()),
               vDescription.get(),
               vContentType.get(),
-              Integer.toUnsignedLong(data.length),
               digest.getAlgorithm(),
               vHashValue.get(),
               new CAByteArray(data)

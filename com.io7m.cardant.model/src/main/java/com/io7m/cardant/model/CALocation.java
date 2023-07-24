@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -38,7 +38,7 @@ public record CALocation(
   CALocationID id,
   Optional<CALocationID> parent,
   String name,
-  SortedMap<RDottedName, CAMetadata> metadata,
+  SortedMap<RDottedName, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
   SortedSet<RDottedName> types)
   implements CAInventoryObjectType<CALocationSummary>

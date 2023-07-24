@@ -25,7 +25,7 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.medrina.api.MRoleName;
 import org.apache.commons.io.FileUtils;
 import org.jline.terminal.Terminal;
@@ -134,7 +134,7 @@ public final class CAFormatterRaw implements CAFormatterType
             .stream()
             .map(e -> Map.entry(
               "metadata: " + e.getKey(),
-              e.getValue().value()))
+              e.getValue().valueString()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
         ));
     }
@@ -216,14 +216,14 @@ public final class CAFormatterRaw implements CAFormatterType
 
   @Override
   public void formatTypesScalar(
-    final Set<CATypeScalar> types)
+    final Set<CATypeScalarType> types)
   {
     if (types.isEmpty()) {
       return;
     }
 
     final var typesSorted = new ArrayList<>(types);
-    Collections.sort(typesSorted, Comparator.comparing(CATypeScalar::name));
+    Collections.sort(typesSorted, Comparator.comparing(CATypeScalarType::name));
 
     final PrintWriter w = this.terminal.writer();
     for (final var type : typesSorted) {
@@ -233,7 +233,7 @@ public final class CAFormatterRaw implements CAFormatterType
 
   @Override
   public void formatTypesScalarPage(
-    final CAPage<CATypeScalar> types)
+    final CAPage<CATypeScalarType> types)
   {
     final PrintWriter w = this.terminal.writer();
     w.printf(
@@ -333,7 +333,7 @@ public final class CAFormatterRaw implements CAFormatterType
             .stream()
             .map(e -> Map.entry(
               "metadata: " + e.getKey(),
-              e.getValue().value()))
+              e.getValue().valueString()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
         ));
     }

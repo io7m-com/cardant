@@ -92,7 +92,7 @@ public final class CAMain implements Runnable
    *
    * @param args Command line arguments
    *
-   * @return The exit code
+   * @return The exit kind
    */
 
   public static int mainExitless(
@@ -104,7 +104,7 @@ public final class CAMain implements Runnable
   }
 
   /**
-   * @return The program exit code
+   * @return The program exit kind
    */
 
   public int exitCode()

@@ -57,8 +57,11 @@ CREATE TABLE schema_version (
   version_application_id  TEXT    NOT NULL,
   version_number          BIGINT  NOT NULL,
 
-  CONSTRAINT check_lock_primary PRIMARY KEY (version_lock),
-  CONSTRAINT check_lock_locked CHECK (version_lock = 'X')
+  CONSTRAINT check_lock_primary
+    PRIMARY KEY (version_lock),
+
+  CONSTRAINT check_lock_locked
+    CHECK (version_lock = 'X')
 )
 ]]>
     </Statement>
@@ -98,20 +101,25 @@ CREATE TABLE users (
       <Text>
         <![CDATA[
 CREATE TABLE files (
-  id          UUID         NOT NULL PRIMARY KEY,
-  description VARCHAR(256) NOT NULL,
+  file_id          UUID         NOT NULL,
+  file_description VARCHAR(256) NOT NULL,
 
   -- [jooq ignore start]
-  description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, description)) STORED,
+  file_description_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%S, file_description)) STORED,
   -- [jooq ignore stop]
 
-  media_type     VARCHAR(128) NOT NULL,
-  hash_algorithm VARCHAR(32)  NOT NULL,
-  hash_value     VARCHAR(256) NOT NULL,
-  data           BYTEA        NOT NULL,
-  data_used      BIGINT       NOT NULL,
+  file_media_type     VARCHAR(128) NOT NULL,
+  file_hash_algorithm VARCHAR(32)  NOT NULL,
+  file_hash_value     VARCHAR(256) NOT NULL,
+  file_data           BYTEA        NOT NULL,
+  file_data_used      BIGINT       NOT NULL,
 
-  CONSTRAINT check_natural_data CHECK (data_used >= 0)
+  CONSTRAINT files_primary_key
+    PRIMARY KEY (file_id),
+
+  CONSTRAINT files_data_used_nonnegative
+    CHECK (file_data_used >= 0)
 )
 ]]></Text>
     </StatementParameterized>
@@ -124,8 +132,9 @@ CREATE TABLE files (
     </Statement>
 
     <Comment>
-      The metadata_type_declarations table contains type declarations. A type
-      declaration essentially consists of a set of typed fields.
+      The metadata_types_records table contains record type declarations. A
+      record type declaration essentially consists of a set of scalar-typed
+      fields.
     </Comment>
 
     <StatementParameterized parameterInterpolation="STRING_FORMATTING">
@@ -134,105 +143,184 @@ CREATE TABLE files (
                             name="search.language"/>
       </ParameterReferences>
       <Text><![CDATA[
-CREATE TABLE metadata_type_declarations (
-  id          INTEGER       NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  name        VARCHAR(1024) NOT NULL UNIQUE,
-  description VARCHAR(1024) NOT NULL,
+CREATE TABLE metadata_types_records (
+  mtr_id          INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
+  mtr_name        VARCHAR(1024) NOT NULL UNIQUE,
+  mtr_description VARCHAR(1024) NOT NULL,
 
   -- [jooq ignore start]
-  description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, description)) STORED,
+  mtr_description_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%S, mtr_description)) STORED,
   -- [jooq ignore stop]
 
-  CONSTRAINT metadata_type_declaration_name_valid
-    CHECK (name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
+  CONSTRAINT metadata_types_records_primary_key
+    PRIMARY KEY (mtr_id),
+
+  CONSTRAINT metadata_types_records_name_valid
+    CHECK (mtr_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
 )
 ]]></Text>
     </StatementParameterized>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_type_declarations TO
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_types_records TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON metadata_types_records TO cardant_read_only
+    </Statement>
+
+    <Comment>
+      The metadata_scalar_base_type_t type represents the available base types
+      for scalar values.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE TYPE metadata_scalar_base_type_t AS ENUM(
+  'SCALAR_INTEGRAL',
+  'SCALAR_TEXT',
+  'SCALAR_MONEY',
+  'SCALAR_TIME',
+  'SCALAR_REAL'
+);
+]]></Statement>
+
+    <Comment>
+      The metadata_types_scalar table stores the set of scalar type declarations
+      that can be used to constrain the types of the fields of record types.
+    </Comment>
+
+    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
+      <ParameterReferences>
+        <ParameterReference order="0"
+                            name="search.language"/>
+      </ParameterReferences>
+      <Text><![CDATA[
+CREATE TABLE metadata_types_scalar (
+  mts_id          INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
+  mts_name        VARCHAR(1024) NOT NULL UNIQUE,
+  mts_description VARCHAR(1024) NOT NULL,
+
+  -- [jooq ignore start]
+  mts_description_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%S, mts_description)) STORED,
+  -- [jooq ignore stop]
+
+  mts_base_type       metadata_scalar_base_type_t NOT NULL,
+  mts_integral_lower  BIGINT,
+  mts_integral_upper  BIGINT,
+  mts_text_pattern    TEXT,
+  mts_time_lower      TIMESTAMP WITH TIME ZONE,
+  mts_time_upper      TIMESTAMP WITH TIME ZONE,
+  mts_money_lower     NUMERIC(36, 16),
+  mts_money_upper     NUMERIC(36, 16),
+  mts_real_lower      DOUBLE PRECISION,
+  mts_real_upper      DOUBLE PRECISION,
+
+  CONSTRAINT metadata_types_scalar_primary_key
+    PRIMARY KEY (mts_id),
+
+  -- [jooq ignore start]
+  CONSTRAINT metadata_types_scalar_base_type_values_present CHECK (
+    CASE
+      WHEN mts_base_type = 'SCALAR_INTEGRAL' THEN
+        (mts_integral_lower IS NOT NULL)
+      WHEN mts_base_type = 'SCALAR_TEXT' THEN
+        (mts_text_pattern IS NOT NULL)
+      WHEN mts_base_type = 'SCALAR_MONEY' THEN
+        (mts_money_lower IS NOT NULL)
+      WHEN mts_base_type = 'SCALAR_TIME' THEN
+        (mts_time_lower IS NOT NULL)
+      WHEN mts_base_type = 'SCALAR_REAL' THEN
+        (mts_real_lower IS NOT NULL)
+      ELSE
+        'f'::boolean
+    END
+  ),
+  -- [jooq ignore stop]
+
+  CONSTRAINT metadata_types_scalar_base_type_integral_valid CHECK (
+    (mts_integral_lower IS NULL) = (mts_integral_upper IS NULL)
+  ),
+  CONSTRAINT metadata_types_scalar_base_type_integral_range_valid CHECK (
+    COALESCE(mts_integral_lower, 0) <= COALESCE(mts_integral_upper, 0)
+  ),
+
+  CONSTRAINT metadata_types_scalar_base_type_time_valid CHECK (
+    (mts_time_lower IS NULL) = (mts_time_upper IS NULL)
+  ),
+  CONSTRAINT metadata_types_scalar_base_type_time_range_valid CHECK (
+    COALESCE(mts_time_lower, now()) <= COALESCE(mts_time_upper, now())
+  ),
+
+  CONSTRAINT metadata_types_scalar_base_type_money_valid CHECK (
+    (mts_money_lower IS NULL) = (mts_money_upper IS NULL)
+  ),
+  CONSTRAINT metadata_types_scalar_base_type_money_range_valid CHECK (
+    COALESCE(mts_money_lower, 0) <= COALESCE(mts_money_upper, 0)
+  ),
+
+  CONSTRAINT metadata_types_scalar_base_type_real_valid CHECK (
+    (mts_real_lower IS NULL) = (mts_real_upper IS NULL)
+  ),
+  CONSTRAINT metadata_types_scalar_base_type_real_range_valid CHECK (
+    COALESCE(mts_real_lower, 0) <= COALESCE(mts_real_upper, 0)
+  )
+)
+]]></Text>
+    </StatementParameterized>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_types_scalar TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON metadata_types_scalar TO cardant_read_only
+    </Statement>
+
+    <Comment>
+      The metadata_types_record_fields table associates fields with record type
+      declarations.
+    </Comment>
+
+    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
+      <ParameterReferences>
+        <ParameterReference order="0"
+                            name="search.language"/>
+      </ParameterReferences>
+      <Text><![CDATA[
+CREATE TABLE metadata_types_record_fields (
+  mtrf_declaration INTEGER       NOT NULL,
+  mtrf_scalar_type INTEGER       NOT NULL,
+  mtrf_name        VARCHAR(1024) NOT NULL,
+  mtrf_description VARCHAR(1024) NOT NULL,
+
+  -- [jooq ignore start]
+  mtrf_description_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%S, mtrf_description)) STORED,
+  -- [jooq ignore stop]
+
+  mtrf_required BOOLEAN NOT NULL,
+
+  CONSTRAINT metadata_types_record_fields_primary_key
+    PRIMARY KEY (mtrf_declaration, mtrf_name),
+
+  CONSTRAINT metadata_types_record_fields_name_valid
+    CHECK (mtrf_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
+
+  CONSTRAINT metadata_types_record_fields_record_exists
+    FOREIGN KEY (mtrf_declaration) REFERENCES metadata_types_records (mtr_id),
+
+  CONSTRAINT metadata_types_record_fields_scalar_exists
+    FOREIGN KEY (mtrf_scalar_type) REFERENCES metadata_types_scalar (mts_id)
+)
+]]></Text>
+    </StatementParameterized>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_types_record_fields TO
       cardant
     </Statement>
     <Statement>
-      GRANT SELECT ON metadata_type_declarations TO cardant_read_only
-    </Statement>
-
-    <Comment>
-      The metadata_scalar_types table describes the scalar types that can be
-      assigned to fields.
-    </Comment>
-
-    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
-      <ParameterReferences>
-        <ParameterReference order="0"
-                            name="search.language"/>
-      </ParameterReferences>
-      <Text><![CDATA[
-CREATE TABLE metadata_scalar_types (
-  id          INTEGER       NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  name        VARCHAR(1024) NOT NULL UNIQUE,
-  description VARCHAR(1024) NOT NULL,
-
-  -- [jooq ignore start]
-  description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, description)) STORED,
-  -- [jooq ignore stop]
-
-  pattern VARCHAR(1024) NOT NULL,
-
-  CONSTRAINT metadata_scalar_types_name_valid
-    CHECK (name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
-)
-]]></Text>
-    </StatementParameterized>
-
-    <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_scalar_types TO cardant
-    </Statement>
-    <Statement>
-      GRANT SELECT ON metadata_scalar_types TO cardant_read_only
-    </Statement>
-
-    <Comment>
-      The metadata_type_fields table associates fields with type declarations.
-    </Comment>
-
-    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
-      <ParameterReferences>
-        <ParameterReference order="0"
-                            name="search.language"/>
-      </ParameterReferences>
-      <Text><![CDATA[
-CREATE TABLE metadata_type_fields (
-  field_declaration INTEGER       NOT NULL,
-  field_scalar_type INTEGER       NOT NULL,
-  field_name        VARCHAR(1024) NOT NULL,
-  field_description VARCHAR(1024) NOT NULL,
-
-  -- [jooq ignore start]
-  field_description_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, field_description)) STORED,
-  -- [jooq ignore stop]
-
-  field_required BOOLEAN NOT NULL,
-
-  PRIMARY KEY (field_declaration, field_name),
-
-  CONSTRAINT field_name_valid
-    CHECK (field_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
-
-  CONSTRAINT field_declaration_exists
-    FOREIGN KEY (field_declaration) REFERENCES metadata_type_declarations (id),
-
-  CONSTRAINT field_scalar_type_exists
-    FOREIGN KEY (field_scalar_type) REFERENCES metadata_scalar_types (id)
-)
-]]></Text>
-    </StatementParameterized>
-
-    <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_type_fields TO cardant
-    </Statement>
-    <Statement>
-      GRANT SELECT ON metadata_type_fields TO cardant_read_only
+      GRANT SELECT ON metadata_types_record_fields TO cardant_read_only
     </Statement>
 
     <Comment>
@@ -246,14 +334,18 @@ CREATE TABLE metadata_type_fields (
       </ParameterReferences>
       <Text><![CDATA[
 CREATE TABLE items (
-  item_id   UUID          NOT NULL PRIMARY KEY,
+  item_id   UUID          NOT NULL,
   item_name VARCHAR(1024) NOT NULL,
 
   -- [jooq ignore start]
-  item_name_search TSVECTOR NOT NULL GENERATED ALWAYS AS (to_tsvector(%S, item_name)) STORED,
+  item_name_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%S, item_name)) STORED,
   -- [jooq ignore stop]
 
-  item_deleted BOOLEAN NOT NULL
+  item_deleted BOOLEAN NOT NULL,
+
+  CONSTRAINT items_primary_key
+    PRIMARY KEY (item_id)
 )
 ]]></Text>
     </StatementParameterized>
@@ -272,16 +364,17 @@ CREATE TABLE items (
 
     <Statement><![CDATA[
 CREATE TABLE item_types (
-  item             UUID     NOT NULL,
-  type_declaration INTEGER  NOT NULL,
+  it_item UUID     NOT NULL,
+  it_type INTEGER  NOT NULL,
 
-  PRIMARY KEY (item, type_declaration),
+  CONSTRAINT item_types_primary_key
+    PRIMARY KEY (it_item, it_type),
 
   CONSTRAINT item_types_item_exists
-    FOREIGN KEY (item) REFERENCES items (item_id),
+    FOREIGN KEY (it_item) REFERENCES items (item_id),
 
-  CONSTRAINT item_types_declaration_exists
-    FOREIGN KEY (type_declaration) REFERENCES metadata_type_declarations (id)
+  CONSTRAINT item_types_record_type_exists
+    FOREIGN KEY (it_type) REFERENCES metadata_types_records (mtr_id)
 )
 ]]></Statement>
 
@@ -298,17 +391,21 @@ CREATE TABLE item_types (
 
     <Statement><![CDATA[
 CREATE TABLE item_attachments (
-  file_id   UUID         NOT NULL,
-  item_id   UUID         NOT NULL,
-  relation  VARCHAR(128) NOT NULL,
+  ia_file_id   UUID          NOT NULL,
+  ia_item_id   UUID          NOT NULL,
+  ia_relation  VARCHAR(1024) NOT NULL,
 
   CONSTRAINT item_attachments_file_exists
-    FOREIGN KEY (file_id) REFERENCES files (id),
+    FOREIGN KEY (ia_file_id) REFERENCES files (file_id),
 
   CONSTRAINT item_attachments_item_exists
-    FOREIGN KEY (item_id) REFERENCES items (item_id),
+    FOREIGN KEY (ia_item_id) REFERENCES items (item_id),
 
-  PRIMARY KEY (file_id, item_id, relation)
+  CONSTRAINT item_attachments_primary_key
+    PRIMARY KEY (ia_file_id, ia_item_id, ia_relation),
+
+  CONSTRAINT item_attachments_relation_valid
+    CHECK (ia_relation ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
 )
 ]]></Statement>
 
@@ -323,22 +420,63 @@ CREATE TABLE item_attachments (
       The item_metadata table contains metadata for each item.
     </Comment>
 
-    <Statement><![CDATA[
+    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
+      <ParameterReferences>
+        <ParameterReference order="0"
+                            name="search.language"/>
+      </ParameterReferences>
+      <Text><![CDATA[
 CREATE TABLE item_metadata (
-  metadata_item_id  UUID          NOT NULL,
-  metadata_name     VARCHAR(1024) NOT NULL,
-  metadata_value    VARCHAR(1024) NOT NULL,
+  item_meta_item  UUID          NOT NULL,
+  item_meta_name  VARCHAR(1024) NOT NULL,
+
+  item_meta_value_type           metadata_scalar_base_type_t NOT NULL,
+  item_meta_value_integral       BIGINT,
+  item_meta_value_text           TEXT,
+  -- [jooq ignore start]
+  item_meta_value_text_search    TSVECTOR
+    GENERATED ALWAYS AS (to_tsvector(%S, item_meta_value_text)) STORED,
+  -- [jooq ignore stop]
+  item_meta_value_time           TIMESTAMP WITH TIME ZONE,
+  item_meta_value_money          NUMERIC(36, 16),
+  item_meta_value_money_currency VARCHAR(4),
+  item_meta_value_real           DOUBLE PRECISION,
+
+  CONSTRAINT item_metadata_primary_key
+    PRIMARY KEY (item_meta_item, item_meta_name),
+
+  -- [jooq ignore start]
+  CONSTRAINT item_metadata_values_present CHECK (
+    CASE
+      WHEN item_meta_value_type = 'SCALAR_INTEGRAL' THEN
+        (item_meta_value_integral IS NOT NULL)
+
+      WHEN item_meta_value_type = 'SCALAR_TEXT' THEN
+        ((item_meta_value_text IS NOT NULL) AND (item_meta_value_text_search IS NOT NULL))
+
+      WHEN item_meta_value_type = 'SCALAR_MONEY' THEN
+        ((item_meta_value_money IS NOT NULL) AND (item_meta_value_money_currency IS NOT NULL))
+
+      WHEN item_meta_value_type = 'SCALAR_TIME' THEN
+        (item_meta_value_time IS NOT NULL)
+
+      WHEN item_meta_value_type = 'SCALAR_REAL' THEN
+        (item_meta_value_real IS NOT NULL)
+
+      ELSE
+        'f'::boolean
+    END
+  ),
+  -- [jooq ignore stop]
 
   CONSTRAINT item_metadata_name_valid
-    CHECK (metadata_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
+    CHECK (item_meta_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
 
   CONSTRAINT item_metadata_item_exists
-    FOREIGN KEY (metadata_item_id) REFERENCES items (item_id),
-
-  CONSTRAINT item_metadata_name_unique
-    UNIQUE (metadata_item_id, metadata_name)
+    FOREIGN KEY (item_meta_item) REFERENCES items (item_id)
 )
-]]></Statement>
+]]></Text>
+    </StatementParameterized>
 
     <Statement>
       GRANT SELECT, INSERT, UPDATE, DELETE ON item_metadata TO cardant
@@ -347,19 +485,106 @@ CREATE TABLE item_metadata (
       GRANT SELECT ON item_metadata TO cardant_read_only
     </Statement>
 
-    <Comment>
-      The metadata_element_t type holds a metadata value. This type is used as a
-      strongly-typed container for values during search operations.
-    </Comment>
+    <Statement><![CDATA[
+CREATE VIEW item_metadata_integral AS
+  SELECT
+    item_metadata.item_meta_item,
+    item_metadata.item_meta_name,
+    item_metadata.item_meta_value_type,
+    item_metadata.item_meta_value_integral
+  FROM
+    item_metadata
+  WHERE
+    item_metadata.item_meta_value_type = 'SCALAR_INTEGRAL'
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_metadata_integral TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON item_metadata_integral TO cardant_read_only
+    </Statement>
 
     <Statement><![CDATA[
--- [jooq ignore start]
-CREATE TYPE metadata_element_t AS (
-  name  VARCHAR(1024),
-  value VARCHAR(1024)
-)
--- [jooq ignore stop]
+CREATE VIEW item_metadata_text AS
+  SELECT
+    item_metadata.item_meta_item,
+    item_metadata.item_meta_name,
+    item_metadata.item_meta_value_type,
+    item_metadata.item_meta_value_text
+  FROM
+    item_metadata
+  WHERE
+    item_metadata.item_meta_value_type = 'SCALAR_TEXT'
 ]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_metadata_text TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON item_metadata_text TO cardant_read_only
+    </Statement>
+
+    <Statement><![CDATA[
+CREATE VIEW item_metadata_time AS
+  SELECT
+    item_metadata.item_meta_item,
+    item_metadata.item_meta_name,
+    item_metadata.item_meta_value_type,
+    item_metadata.item_meta_value_time
+  FROM
+    item_metadata
+  WHERE
+    item_metadata.item_meta_value_type = 'SCALAR_TIME'
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_metadata_time TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON item_metadata_time TO cardant_read_only
+    </Statement>
+
+    <Statement><![CDATA[
+CREATE VIEW item_metadata_money AS
+  SELECT
+    item_metadata.item_meta_item,
+    item_metadata.item_meta_name,
+    item_metadata.item_meta_value_type,
+    item_metadata.item_meta_value_money,
+    item_metadata.item_meta_value_money_currency
+  FROM
+    item_metadata
+  WHERE
+    item_metadata.item_meta_value_type = 'SCALAR_MONEY'
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_metadata_money TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON item_metadata_money TO cardant_read_only
+    </Statement>
+
+    <Statement><![CDATA[
+CREATE VIEW item_metadata_real AS
+  SELECT
+    item_metadata.item_meta_item,
+    item_metadata.item_meta_name,
+    item_metadata.item_meta_value_type,
+    item_metadata.item_meta_value_real
+  FROM
+    item_metadata
+  WHERE
+    item_metadata.item_meta_value_type = 'SCALAR_REAL'
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON item_metadata_real TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON item_metadata_real TO cardant_read_only
+    </Statement>
 
     <Comment>
       The locations table contains storage/deployment locations for each item.
@@ -372,9 +597,12 @@ CREATE TYPE metadata_element_t AS (
       </ParameterReferences>
       <Text><![CDATA[
 CREATE TABLE locations (
-  location_id           UUID          NOT NULL PRIMARY KEY,
+  location_id           UUID NOT NULL,
   location_parent       UUID,
-  location_name         VARCHAR(128)  NOT NULL,
+  location_name         VARCHAR(128) NOT NULL,
+
+  CONSTRAINT locations_primary_key
+    PRIMARY KEY (location_id),
 
   CONSTRAINT location_parent_exists
     FOREIGN KEY (location_parent) REFERENCES locations (location_id)
@@ -395,16 +623,17 @@ CREATE TABLE locations (
 
     <Statement><![CDATA[
 CREATE TABLE location_types (
-  location         UUID     NOT NULL,
-  type_declaration INTEGER  NOT NULL,
+  lt_location UUID     NOT NULL,
+  lt_type     INTEGER  NOT NULL,
 
-  PRIMARY KEY (location, type_declaration),
+  CONSTRAINT location_types_primary_key
+    PRIMARY KEY (lt_location, lt_type),
 
   CONSTRAINT location_types_location_exists
-    FOREIGN KEY (location) REFERENCES locations (location_id),
+    FOREIGN KEY (lt_location) REFERENCES locations (location_id),
 
   CONSTRAINT location_types_declaration_exists
-    FOREIGN KEY (type_declaration) REFERENCES metadata_type_declarations (id)
+    FOREIGN KEY (lt_type) REFERENCES metadata_types_records (mtr_id)
 )
 ]]></Statement>
 
@@ -419,22 +648,60 @@ CREATE TABLE location_types (
       The location_metadata table contains metadata for each location.
     </Comment>
 
-    <Statement><![CDATA[
+    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
+      <ParameterReferences>
+        <ParameterReference order="0"
+                            name="search.language"/>
+      </ParameterReferences>
+      <Text><![CDATA[
 CREATE TABLE location_metadata (
-  metadata_location_id  UUID          NOT NULL,
-  metadata_name         VARCHAR(1024) NOT NULL,
-  metadata_value        VARCHAR(1024) NOT NULL,
+  location_meta_location  UUID          NOT NULL,
+  location_meta_name      VARCHAR(1024) NOT NULL,
+
+  location_meta_value_type           metadata_scalar_base_type_t NOT NULL,
+  location_meta_value_integral       BIGINT,
+  location_meta_value_text           TEXT,
+  -- [jooq ignore start]
+  location_meta_value_text_search    TSVECTOR
+    GENERATED ALWAYS AS (to_tsvector(%S, location_meta_value_text)) STORED,
+  -- [jooq ignore stop]
+  location_meta_value_time           TIMESTAMP WITH TIME ZONE,
+  location_meta_value_money          NUMERIC(36, 16),
+  location_meta_value_money_currency VARCHAR(4),
+  location_meta_value_real           DOUBLE PRECISION,
+
+  CONSTRAINT location_metadata_primary_key
+    PRIMARY KEY (location_meta_location, location_meta_name),
+
+  -- [jooq ignore start]
+  CONSTRAINT location_meta_type_values_present CHECK (
+    CASE
+      WHEN location_meta_value_type = 'SCALAR_INTEGRAL' THEN
+        (location_meta_value_integral IS NOT NULL)
+      WHEN location_meta_value_type = 'SCALAR_TEXT' THEN
+        (location_meta_value_text IS NOT NULL)
+          AND (location_meta_value_text_search IS NOT NULL)
+      WHEN location_meta_value_type = 'SCALAR_MONEY' THEN
+        (location_meta_value_money IS NOT NULL)
+          AND (location_meta_value_money_currency IS NOT NULL)
+      WHEN location_meta_value_type = 'SCALAR_TIME' THEN
+        (location_meta_value_time IS NOT NULL)
+      WHEN location_meta_value_type = 'SCALAR_REAL' THEN
+        (location_meta_value_real IS NOT NULL)
+      ELSE
+        'f'::boolean
+    END
+  ),
+  -- [jooq ignore stop]
 
   CONSTRAINT location_metadata_name_valid
-    CHECK (metadata_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
+    CHECK (location_meta_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
 
   CONSTRAINT location_metadata_location_exists
-    FOREIGN KEY (metadata_location_id) REFERENCES locations (location_id),
-
-  CONSTRAINT location_metadata_name_unique
-    UNIQUE (metadata_location_id, metadata_name)
+    FOREIGN KEY (location_meta_location) REFERENCES locations (location_id)
 )
-]]></Statement>
+]]></Text>
+    </StatementParameterized>
 
     <Statement>
       GRANT SELECT, INSERT, UPDATE, DELETE ON location_metadata TO cardant
@@ -449,17 +716,21 @@ CREATE TABLE location_metadata (
 
     <Statement><![CDATA[
 CREATE TABLE location_attachments (
-  file_id     UUID         NOT NULL,
-  location_id UUID         NOT NULL,
-  relation    VARCHAR(128) NOT NULL,
+  la_file_id     UUID          NOT NULL,
+  la_location_id UUID          NOT NULL,
+  la_relation    VARCHAR(1024) NOT NULL,
 
-  CONSTRAINT location_attachment_file_exists
-    FOREIGN KEY (file_id) REFERENCES files (id),
+  CONSTRAINT location_attachments_primary_key
+    PRIMARY KEY (la_file_id, la_location_id, la_relation),
 
-  CONSTRAINT location_attachment_location_exists
-    FOREIGN KEY (location_id) REFERENCES locations (location_id),
+  CONSTRAINT location_attachments_file_exists
+    FOREIGN KEY (la_file_id) REFERENCES files (file_id),
 
-  PRIMARY KEY (file_id, location_id, relation)
+  CONSTRAINT location_attachments_location_exists
+    FOREIGN KEY (la_location_id) REFERENCES locations (location_id),
+
+  CONSTRAINT location_attachments_relation_valid
+    CHECK (la_relation ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$')
 )
 ]]></Statement>
 
@@ -472,19 +743,20 @@ CREATE TABLE location_attachments (
 
     <Statement><![CDATA[
 CREATE TABLE item_locations (
-  item_id       UUID   NOT NULL,
-  item_location UUID   NOT NULL,
-  count         BIGINT NOT NULL,
+  item_location_item  UUID   NOT NULL,
+  item_location       UUID   NOT NULL,
+  item_location_count BIGINT NOT NULL,
 
-  PRIMARY KEY (item_id, item_location),
+  CONSTRAINT item_locations_primary_key
+    PRIMARY KEY (item_location_item, item_location),
 
   CONSTRAINT item_id_exists
-    FOREIGN KEY (item_id) REFERENCES items (item_id),
+    FOREIGN KEY (item_location_item) REFERENCES items (item_id),
 
   CONSTRAINT item_location_exists
     FOREIGN KEY (item_location) REFERENCES locations (location_id),
 
-  CONSTRAINT CHECK_item_location_COUNT CHECK (count >= 0)
+  CONSTRAINT CHECK_item_location_COUNT CHECK (item_location_count >= 0)
 )
 ]]></Statement>
 
@@ -496,9 +768,12 @@ CREATE TABLE item_locations (
     </Statement>
 
     <Statement><![CDATA[
-CREATE VIEW item_locations_summed (item_id, ITEM_COUNT)
-  AS SELECT il.item_id, SUM (il.count) FROM item_locations AS il
-    GROUP BY il.item_id
+CREATE VIEW item_locations_summed (item_id, item_count) AS
+  SELECT
+    item_locations.item_location_item,
+    SUM (item_locations.item_location_count)
+  FROM item_locations
+  GROUP BY item_locations.item_location_item
 ]]></Statement>
 
     <Statement>
@@ -602,17 +877,123 @@ $$
 ]]></Statement>
 
     <Comment>
+      A view for performing item searches.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE VIEW item_search_view AS
+  SELECT
+    items.item_id,
+    items.item_name,
+    -- [jooq ignore start]
+    items.item_name_search,
+    -- [jooq ignore stop]
+    items.item_deleted,
+    item_metadata.item_meta_name,
+    item_metadata.item_meta_value_type,
+    item_metadata.item_meta_value_integral,
+    item_metadata.item_meta_value_text,
+    item_metadata.item_meta_value_time,
+    item_metadata.item_meta_value_money,
+    item_metadata.item_meta_value_money_currency,
+    item_metadata.item_meta_value_real,
+    array_agg(metadata_types_records.mtr_name) AS isv_mtr_names,
+    array_agg(item_locations.item_location)    AS isv_item_locations
+  FROM
+    items
+  LEFT JOIN item_types
+    ON item_types.it_item = items.item_id
+  LEFT JOIN item_metadata
+    ON item_metadata.item_meta_item = items.item_id
+  LEFT JOIN metadata_types_records
+    ON metadata_types_records.mtr_id = item_types.it_type
+  LEFT JOIN item_locations
+    ON item_locations.item_location_item = items.item_id
+  GROUP BY
+    items.item_id,
+    items.item_name,
+    -- [jooq ignore start]
+    items.item_name_search,
+    -- [jooq ignore stop]
+    items.item_deleted,
+    item_metadata.item_meta_name,
+    item_metadata.item_meta_value_type,
+    item_metadata.item_meta_value_integral,
+    item_metadata.item_meta_value_text,
+    item_metadata.item_meta_value_time,
+    item_metadata.item_meta_value_money,
+    item_metadata.item_meta_value_money_currency,
+    item_metadata.item_meta_value_real
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT ON item_search_view TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON item_search_view TO cardant_read_only
+    </Statement>
+
+    <Comment>
+      A view for performing location searches.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE VIEW location_search_view AS
+  SELECT
+    locations.location_id,
+    locations.location_name,
+    location_metadata.location_meta_name,
+    location_metadata.location_meta_value_type,
+    location_metadata.location_meta_value_integral,
+    location_metadata.location_meta_value_text,
+    location_metadata.location_meta_value_time,
+    location_metadata.location_meta_value_money,
+    location_metadata.location_meta_value_money_currency,
+    location_metadata.location_meta_value_real,
+    array_agg(metadata_types_records.mtr_name) AS mtr_names
+  FROM
+    locations
+  LEFT JOIN location_types
+    ON location_types.lt_location = locations.location_id
+  LEFT JOIN location_metadata
+    ON location_metadata.location_meta_location = locations.location_id
+  LEFT JOIN metadata_types_records
+    ON metadata_types_records.mtr_id = location_types.lt_type
+  GROUP BY
+    locations.location_id,
+    locations.location_name,
+    location_metadata.location_meta_name,
+    location_metadata.location_meta_value_type,
+    location_metadata.location_meta_value_integral,
+    location_metadata.location_meta_value_text,
+    location_metadata.location_meta_value_time,
+    location_metadata.location_meta_value_money,
+    location_metadata.location_meta_value_money_currency,
+    location_metadata.location_meta_value_real
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT ON location_search_view TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON location_search_view TO cardant_read_only
+    </Statement>
+
+    <Comment>
       The audit table stores a list of auditable events. Who did it? What did
       they do? When did they do it?
     </Comment>
 
     <Statement><![CDATA[
 CREATE TABLE audit (
-  id      BIGINT                   NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  id      BIGINT                   NOT NULL GENERATED ALWAYS AS IDENTITY,
   user_id UUID                     NOT NULL,
   time    TIMESTAMP WITH TIME ZONE NOT NULL,
   type    VARCHAR(1000000)         NOT NULL,
-  message VARCHAR(1000000)         NOT NULL
+  message VARCHAR(1000000)         NOT NULL,
+
+  CONSTRAINT audit_primary_key
+    PRIMARY KEY (id)
 )
 ]]></Statement>
 

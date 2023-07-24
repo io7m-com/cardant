@@ -24,11 +24,11 @@ import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
 import com.io7m.cardant.model.CAItemSummary;
+import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.model.CANameMatchType.Any;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -69,9 +69,9 @@ public final class CAICmdItemSearchBeginTest
   private static final CAItemSearchParameters PARAMETERS =
     new CAItemSearchParameters(
       new CAItemLocationMatchType.CAItemLocationsAll(),
-      CANameMatchAny.ANY,
+      Any.ANY_NAME,
       CATypeMatchAny.ANY,
-      CAMetadataMatchAny.ANY,
+      CAMetadataElementMatchType.ANYTHING,
       new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
       100
     );

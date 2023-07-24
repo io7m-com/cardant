@@ -17,17 +17,17 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchSearch;
+import com.io7m.cardant.model.CANameMatchType.Search;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbNameMatchSearch extends CAArbAbstract<CANameMatchSearch>
+public final class CAArbNameMatchSearch extends CAArbAbstract<Search>
 {
   public CAArbNameMatchSearch()
   {
     super(
-      CANameMatchSearch.class,
-      () -> Arbitraries.strings().map(CANameMatchSearch::new)
+      Search.class,
+      () -> Arbitraries.strings().map(Search::new)
     );
   }
 }

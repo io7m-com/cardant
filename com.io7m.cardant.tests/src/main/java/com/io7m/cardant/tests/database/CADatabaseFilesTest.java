@@ -458,7 +458,6 @@ public final class CADatabaseFilesTest
       CAFileID.random(),
       "File %d".formatted(Integer.valueOf(index)),
       "text/plain+%d".formatted(Integer.valueOf(index)),
-      contentBytes.length,
       "SHA-256",
       hashS,
       new CAByteArray(contentBytes)

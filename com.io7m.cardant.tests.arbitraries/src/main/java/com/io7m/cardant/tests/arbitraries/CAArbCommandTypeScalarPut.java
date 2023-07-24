@@ -15,7 +15,7 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import net.jqwik.api.Arbitraries;
 
@@ -25,7 +25,7 @@ public final class CAArbCommandTypeScalarPut extends CAArbAbstract<CAICommandTyp
   {
     super(
       CAICommandTypeScalarPut.class,
-      () -> Arbitraries.defaultFor(CATypeScalar.class)
+      () -> Arbitraries.defaultFor(CATypeScalarType.class)
         .set()
         .map(CAICommandTypeScalarPut::new)
     );

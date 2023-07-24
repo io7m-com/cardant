@@ -20,9 +20,9 @@ package com.io7m.cardant.tests.arbitraries.model;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType;
+import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.model.CANameMatchType;
+import com.io7m.cardant.model.CATypeMatchType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
@@ -38,7 +38,7 @@ public final class CAArbItemSearchParameters
         Arbitraries.defaultFor(CAItemLocationMatchType.class),
         Arbitraries.defaultFor(CANameMatchType.class),
         Arbitraries.defaultFor(CATypeMatchType.class),
-        Arbitraries.defaultFor(CAMetadataMatchType.class),
+        Arbitraries.defaultFor(CAMetadataElementMatchType.class),
         Arbitraries.defaultFor(CAItemColumnOrdering.class),
         Arbitraries.integers().between(1, 1000)
       ).as(CAItemSearchParameters::new)

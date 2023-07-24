@@ -19,7 +19,7 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -53,13 +53,13 @@ public final class CAShellCmdItemMetadataPut
       CAItemID.class
     );
 
-  private static final QParameterNamed0N<CAMetadata> METADATA =
+  private static final QParameterNamed0N<CAMetadataType> METADATA =
     new QParameterNamed0N<>(
       "--metadata",
       List.of(),
       new QConstant("The metadata key."),
       List.of(),
-      CAMetadata.class
+      CAMetadataType.class
     );
 
   /**

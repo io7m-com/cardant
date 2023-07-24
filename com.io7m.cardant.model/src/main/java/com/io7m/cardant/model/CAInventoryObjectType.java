@@ -92,7 +92,7 @@ public sealed interface CAInventoryObjectType<S>
    * @return The metadata on this object
    */
 
-  SortedMap<RDottedName, CAMetadata> metadata();
+  SortedMap<RDottedName, CAMetadataType> metadata();
 
   /**
    * @return The attachments on this object

@@ -221,8 +221,8 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   /**
    * Produce an exception indicating an error, with a formatted error message.
    *
-   * @param statusCode      The HTTP status code
-   * @param errorCode       The error code
+   * @param statusCode      The HTTP status kind
+   * @param errorCode       The error kind
    * @param errorAttributes The error attributes
    * @param messageId       The string resource message ID
    * @param args            The string resource format arguments
@@ -248,9 +248,9 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   /**
    * Produce an exception indicating an error, with a formatted error message.
    *
-   * @param statusCode      The HTTP status code
+   * @param statusCode      The HTTP status kind
    * @param exception       The exception
-   * @param errorCode       The error code
+   * @param errorCode       The error kind
    * @param errorAttributes The error attributes
    * @param messageId       The string resource message ID
    * @param args            The string resource format arguments
@@ -289,8 +289,8 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   /**
    * Produce an exception indicating an error, with a string constant message.
    *
-   * @param statusCode      The HTTP status code
-   * @param errorCode       The error code
+   * @param statusCode      The HTTP status kind
+   * @param errorCode       The error kind
    * @param errorAttributes The error attributes
    * @param message         The string message
    *
@@ -316,8 +316,8 @@ public abstract class CACommandContext<E extends CAProtocolMessageType>
   /**
    * Produce an exception indicating an error, with a string constant message.
    *
-   * @param statusCode      The HTTP status code
-   * @param errorCode       The error code
+   * @param statusCode      The HTTP status kind
+   * @param errorCode       The error kind
    * @param errorAttributes The error attributes
    * @param message         The string message
    * @param cause           The cause

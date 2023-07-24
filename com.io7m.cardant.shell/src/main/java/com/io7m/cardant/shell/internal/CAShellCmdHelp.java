@@ -24,6 +24,7 @@ import com.io7m.quarrel.core.QCommandTreeResolver;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionOKCommand;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionOKGroup;
 import com.io7m.quarrel.core.QCommandTreeResolver.QResolutionRoot;
+import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParametersPositionalAny;
 import com.io7m.quarrel.core.QParametersPositionalType;
@@ -82,6 +83,7 @@ public final class CAShellCmdHelp extends CAShellCmdAbstract
   @Override
   public QCommandStatus onExecute(
     final QCommandContextType context)
+    throws QException
   {
     final var resolution =
       QCommandTreeResolver.resolve(

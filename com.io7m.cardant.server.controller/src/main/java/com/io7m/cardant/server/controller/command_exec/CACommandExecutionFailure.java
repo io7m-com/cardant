@@ -43,7 +43,7 @@ public final class CACommandExecutionFailure extends CAException
   }
 
   /**
-   * @return The HTTP status code
+   * @return The HTTP status kind
    */
 
   public int httpStatusCode()
@@ -55,11 +55,11 @@ public final class CACommandExecutionFailure extends CAException
    * Construct an exception.
    *
    * @param message             The message
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
    * @param inRequestId         The request ID
-   * @param inHttpStatusCode    The HTTP status code
+   * @param inHttpStatusCode    The HTTP status kind
    */
 
   public CACommandExecutionFailure(
@@ -82,11 +82,11 @@ public final class CACommandExecutionFailure extends CAException
    *
    * @param message             The message
    * @param cause               The cause
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
    * @param inRequestId         The request ID
-   * @param inHttpStatusCode    The HTTP status code
+   * @param inHttpStatusCode    The HTTP status kind
    */
 
   public CACommandExecutionFailure(

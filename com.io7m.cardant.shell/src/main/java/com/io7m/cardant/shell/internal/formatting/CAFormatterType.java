@@ -25,7 +25,7 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.medrina.api.MRoleName;
 
 import java.util.List;
@@ -117,7 +117,7 @@ public interface CAFormatterType
    * @throws Exception On errors
    */
 
-  void formatTypesScalar(Set<CATypeScalar> types)
+  void formatTypesScalar(Set<CATypeScalarType> types)
     throws Exception;
 
   /**
@@ -128,7 +128,7 @@ public interface CAFormatterType
    * @throws Exception On errors
    */
 
-  void formatTypesScalarPage(CAPage<CATypeScalar> types)
+  void formatTypesScalarPage(CAPage<CATypeScalarType> types)
     throws Exception;
 
   /**

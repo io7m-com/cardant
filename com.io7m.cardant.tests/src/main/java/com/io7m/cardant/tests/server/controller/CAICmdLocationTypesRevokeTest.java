@@ -25,7 +25,7 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -230,7 +230,7 @@ public final class CAICmdLocationTypesRevokeTest
             new CATypeField(
               new RDottedName("a"),
               "A field",
-              new CATypeScalar(new RDottedName("z"), "x", ".*"),
+              new CATypeScalarType.Integral(new RDottedName("z"), "x", 23L, 1000L),
               true
             )
           )

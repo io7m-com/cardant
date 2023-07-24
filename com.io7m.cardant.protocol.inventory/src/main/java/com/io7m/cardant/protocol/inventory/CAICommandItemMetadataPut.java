@@ -18,7 +18,7 @@
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 
 import java.util.Objects;
 import java.util.Set;
@@ -32,7 +32,7 @@ import java.util.Set;
 
 public record CAICommandItemMetadataPut(
   CAItemID item,
-  Set<CAMetadata> metadatas)
+  Set<CAMetadataType> metadatas)
   implements CAICommandType<CAIResponseItemMetadataPut>
 {
   /**

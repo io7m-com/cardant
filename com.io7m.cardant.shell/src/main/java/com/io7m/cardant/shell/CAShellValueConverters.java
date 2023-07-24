@@ -17,23 +17,24 @@
 
 package com.io7m.cardant.shell;
 
-import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadata;
 import com.io7m.cardant.shell.internal.CAFileIdConverter;
 import com.io7m.cardant.shell.internal.CAItemIdConverter;
+import com.io7m.cardant.shell.internal.CAItemLocationMatchConverter;
 import com.io7m.cardant.shell.internal.CALocationIdConverter;
 import com.io7m.cardant.shell.internal.CAMetadataConverter;
+import com.io7m.cardant.shell.internal.CAMetadataMatchConverter;
+import com.io7m.cardant.shell.internal.CAMonetaryRangeConverter;
+import com.io7m.cardant.shell.internal.CANameMatchConverter;
 import com.io7m.cardant.shell.internal.CAPatternConverter;
 import com.io7m.cardant.shell.internal.CARDottedNameConverter;
+import com.io7m.cardant.shell.internal.CARangeInclusiveDConverter;
+import com.io7m.cardant.shell.internal.CARangeInclusiveLConverter;
 import com.io7m.cardant.shell.internal.CARoleNameConverter;
-import com.io7m.lanark.core.RDottedName;
-import com.io7m.medrina.api.MRoleName;
+import com.io7m.cardant.shell.internal.CATimeRangeConverter;
+import com.io7m.cardant.shell.internal.CATypeMatchConverter;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QValueConverterDirectory;
 import com.io7m.quarrel.core.QValueConverterDirectoryType;
-
-import java.util.regex.Pattern;
 
 /**
  * Value converters for the shell commands.
@@ -41,27 +42,35 @@ import java.util.regex.Pattern;
 
 public final class CAShellValueConverters
 {
-  private static final QValueConverterDirectoryType CONVERTERS =
-    QValueConverterDirectory.core()
-      .with(CALocationID.class, new CALocationIdConverter())
-      .with(CAItemID.class, new CAItemIdConverter())
-      .with(CAFileID.class, new CAFileIdConverter())
-      .with(MRoleName.class, new CARoleNameConverter())
-      .with(RDottedName.class, new CARDottedNameConverter())
-      .with(Pattern.class, new CAPatternConverter())
-      .with(CAMetadata.class, new CAMetadataConverter());
-
   private CAShellValueConverters()
   {
 
   }
 
   /**
+   * @param strings The string resources
+   *
    * @return The value converters
    */
 
-  public static QValueConverterDirectoryType get()
+  public static QValueConverterDirectoryType create(
+    final CAStrings strings)
   {
-    return CONVERTERS;
+    return QValueConverterDirectory.core()
+      .with(new CAFileIdConverter())
+      .with(new CAItemIdConverter())
+      .with(new CAItemLocationMatchConverter(strings))
+      .with(new CALocationIdConverter())
+      .with(new CAMetadataConverter(strings))
+      .with(new CAMetadataMatchConverter(strings))
+      .with(new CAMonetaryRangeConverter(strings))
+      .with(new CANameMatchConverter(strings))
+      .with(new CAPatternConverter())
+      .with(new CARDottedNameConverter())
+      .with(new CARangeInclusiveDConverter(strings))
+      .with(new CARangeInclusiveLConverter(strings))
+      .with(new CARoleNameConverter())
+      .with(new CATimeRangeConverter(strings))
+      .with(new CATypeMatchConverter(strings));
   }
 }

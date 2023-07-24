@@ -15,8 +15,6 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CATypeScalarSearchParameters;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchNext;
 import net.jqwik.api.Arbitraries;
 

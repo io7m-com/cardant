@@ -25,9 +25,10 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
@@ -41,6 +42,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -141,10 +143,106 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
+      );
+
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+  }
+
+  /**
+   * Creating scalar type declarations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeScalarPut1()
+    throws Exception
+  {
+    final var voltage =
+      new CATypeScalarType.Integral(
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        -1000L,
+        1000L
+      );
+
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+  }
+
+  /**
+   * Creating scalar type declarations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeScalarPut2()
+    throws Exception
+  {
+    final var voltage =
+      new CATypeScalarType.Monetary(
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        CAMoney.money("-1000.0"),
+        CAMoney.money("1000.0")
+      );
+
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+  }
+
+  /**
+   * Creating scalar type declarations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeScalarPut3()
+    throws Exception
+  {
+    final var voltage =
+      new CATypeScalarType.Time(
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        OffsetDateTime.parse("2000-01-01T00:00:00+00:00"),
+        OffsetDateTime.parse("2010-01-01T00:00:00+00:00")
+      );
+
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+    this.tsPut.execute(voltage);
+    this.tsRemove.execute(voltage.name());
+  }
+
+  /**
+   * Creating scalar type declarations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeScalarPut4()
+    throws Exception
+  {
+    final var voltage =
+      new CATypeScalarType.Text(
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        ".*"
       );
 
     this.tsPut.execute(voltage);
@@ -164,14 +262,15 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     final var size =
-      new CATypeScalar(
+      new CATypeScalarType.Text(
         new RDottedName("com.io7m.battery.size"),
         "A specification of battery size.",
         "^.*$"
@@ -248,14 +347,15 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     final var size =
-      new CATypeScalar(
+      new CATypeScalarType.Text(
         new RDottedName("com.io7m.battery.size"),
         "A specification of battery size.",
         "^.*$"
@@ -344,10 +444,11 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     this.tsPut.execute(voltage);
@@ -389,10 +490,11 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     final var voltageField =
@@ -430,10 +532,11 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     this.tsPut.execute(voltage);
@@ -456,10 +559,11 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     this.tsPut.execute(voltage);
@@ -510,14 +614,15 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     final var size =
-      new CATypeScalar(
+      new CATypeScalarType.Text(
         new RDottedName("com.io7m.battery.size"),
         "A specification of battery size.",
         "^.*$"
@@ -585,10 +690,11 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     this.tsPut.execute(voltage);
@@ -653,10 +759,11 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalar(
+      new CATypeScalarType.Real(
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
-        "^0|([1-9][0-9]+)$"
+        -1000.0,
+        1000.0
       );
 
     this.tsPut.execute(voltage);

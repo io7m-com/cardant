@@ -25,7 +25,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType.Integral;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -231,7 +231,7 @@ public final class CAICmdItemTypesAssignTest
             new CATypeField(
               new RDottedName("a"),
               "A field",
-              new CATypeScalar(new RDottedName("z"), "x", ".*"),
+              new Integral(new RDottedName("z"), "x", 23L, 1000L),
               true
             )
           )

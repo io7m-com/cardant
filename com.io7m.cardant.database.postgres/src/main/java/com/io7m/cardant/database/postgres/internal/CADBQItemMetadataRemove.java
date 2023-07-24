@@ -77,9 +77,9 @@ public final class CADBQItemMetadataRemove
     final var queries = new ArrayList<Query>();
     for (final var name : parameters.names()) {
       final var matchesItem =
-        ITEM_METADATA.METADATA_ITEM_ID.eq(item.id());
+        ITEM_METADATA.ITEM_META_ITEM.eq(item.id());
       final var matchesName =
-        ITEM_METADATA.METADATA_NAME.eq(name.value());
+        ITEM_METADATA.ITEM_META_NAME.eq(name.value());
       final var matches =
         matchesItem.and(matchesName);
 

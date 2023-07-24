@@ -17,23 +17,22 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataRequire;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType;
+import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-public final class CAArbMetadataMatchRequire
-  extends CAArbAbstract<CAMetadataRequire>
+public final class CAArbMetadataElementMatchAnd
+  extends CAArbAbstract<CAMetadataElementMatchType.And>
 {
-  public CAArbMetadataMatchRequire()
+  public CAArbMetadataElementMatchAnd()
   {
     super(
-      CAMetadataRequire.class,
-      () -> Arbitraries.maps(
-        Arbitraries.defaultFor(RDottedName.class),
-        Arbitraries.defaultFor(CAMetadataValueMatchType.class)
-      ).map(CAMetadataRequire::new)
+      CAMetadataElementMatchType.And.class,
+      () -> Combinators.combine(
+        Arbitraries.defaultFor(CAMetadataElementMatchType.Specific.class),
+        Arbitraries.defaultFor(CAMetadataElementMatchType.Specific.class)
+      ).as(CAMetadataElementMatchType.And::new)
     );
   }
 }

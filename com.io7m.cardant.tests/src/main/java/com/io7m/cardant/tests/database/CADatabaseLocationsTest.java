@@ -37,7 +37,7 @@ import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -311,11 +311,11 @@ public final class CADatabaseLocationsTest
     );
 
     final var meta0 =
-      new CAMetadata(new RDottedName("x.y.a0"), "abc");
+      new CAMetadataType.Text(new RDottedName("x.y.a0"), "abc");
     final var meta1 =
-      new CAMetadata(new RDottedName("x.y.a1"), "def");
+      new CAMetadataType.Text(new RDottedName("x.y.a1"), "def");
     final var meta2 =
-      new CAMetadata(new RDottedName("x.y.a2"), "ghi");
+      new CAMetadataType.Text(new RDottedName("x.y.a2"), "ghi");
 
     this.metaPut.execute(
       new MetadataPutType.Parameters(
@@ -398,7 +398,6 @@ public final class CADatabaseLocationsTest
         CAFileID.random(),
         "Description",
         "text/plain",
-        1L,
         "SHA-256",
         "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
         new CAByteArray("a".getBytes(StandardCharsets.UTF_8))

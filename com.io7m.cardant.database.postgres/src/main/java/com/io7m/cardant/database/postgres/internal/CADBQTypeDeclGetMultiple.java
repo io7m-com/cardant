@@ -22,7 +22,6 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationG
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
@@ -34,9 +33,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_FIELDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 
 /**
  * Retrieve multiple type declarations.
@@ -83,19 +82,28 @@ public final class CADBQTypeDeclGetMultiple
 
     final var query =
       context.select(
-          METADATA_TYPE_DECLARATIONS.NAME,
-          METADATA_TYPE_DECLARATIONS.DESCRIPTION,
-          METADATA_TYPE_FIELDS.FIELD_NAME,
-          METADATA_TYPE_FIELDS.FIELD_DESCRIPTION,
-          METADATA_TYPE_FIELDS.FIELD_REQUIRED,
-          METADATA_SCALAR_TYPES.NAME,
-          METADATA_SCALAR_TYPES.DESCRIPTION,
-          METADATA_SCALAR_TYPES.PATTERN)
-        .from(METADATA_TYPE_DECLARATIONS, METADATA_TYPE_FIELDS)
-        .join(METADATA_SCALAR_TYPES)
-        .on(METADATA_SCALAR_TYPES.ID.eq(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE))
-        .where(METADATA_TYPE_DECLARATIONS.NAME.in(nameSet))
-        .orderBy(METADATA_TYPE_DECLARATIONS.NAME.asc());
+          METADATA_TYPES_RECORDS.MTR_NAME,
+          METADATA_TYPES_RECORDS.MTR_DESCRIPTION,
+          METADATA_TYPES_RECORD_FIELDS.MTRF_NAME,
+          METADATA_TYPES_RECORD_FIELDS.MTRF_DESCRIPTION,
+          METADATA_TYPES_RECORD_FIELDS.MTRF_REQUIRED,
+          METADATA_TYPES_SCALAR.MTS_DESCRIPTION,
+          METADATA_TYPES_SCALAR.MTS_NAME,
+          METADATA_TYPES_SCALAR.MTS_BASE_TYPE,
+          METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER,
+          METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER,
+          METADATA_TYPES_SCALAR.MTS_MONEY_LOWER,
+          METADATA_TYPES_SCALAR.MTS_MONEY_UPPER,
+          METADATA_TYPES_SCALAR.MTS_REAL_LOWER,
+          METADATA_TYPES_SCALAR.MTS_REAL_UPPER,
+          METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN,
+          METADATA_TYPES_SCALAR.MTS_TIME_LOWER,
+          METADATA_TYPES_SCALAR.MTS_TIME_UPPER)
+        .from(METADATA_TYPES_RECORDS, METADATA_TYPES_RECORD_FIELDS)
+        .join(METADATA_TYPES_SCALAR)
+        .on(METADATA_TYPES_SCALAR.MTS_ID.eq(METADATA_TYPES_RECORD_FIELDS.MTRF_SCALAR_TYPE))
+        .where(METADATA_TYPES_RECORDS.MTR_NAME.in(nameSet))
+        .orderBy(METADATA_TYPES_RECORDS.MTR_NAME.asc());
 
     final var records =
       query.fetch();
@@ -107,27 +115,21 @@ public final class CADBQTypeDeclGetMultiple
 
     for (final var record : records) {
       final var typeName =
-        new RDottedName(record.get(METADATA_TYPE_DECLARATIONS.NAME));
+        new RDottedName(record.get(METADATA_TYPES_RECORDS.MTR_NAME));
       final var description =
-        record.get(METADATA_TYPE_DECLARATIONS.DESCRIPTION);
+        record.get(METADATA_TYPES_RECORDS.MTR_DESCRIPTION);
 
       descriptionsByTypeName.put(typeName, description);
 
-      final var scalarTypeName =
-        new RDottedName(record.get(METADATA_SCALAR_TYPES.NAME));
       final var scalarType =
-        new CATypeScalar(
-          scalarTypeName,
-          record.get(METADATA_SCALAR_TYPES.DESCRIPTION),
-          record.get(METADATA_SCALAR_TYPES.PATTERN)
-        );
+        CADBQTypeScalarGet.mapRecord(record);
 
       final var field =
         new CATypeField(
-          new RDottedName(record.get(METADATA_TYPE_FIELDS.FIELD_NAME)),
-          record.get(METADATA_TYPE_FIELDS.FIELD_DESCRIPTION),
+          new RDottedName(record.get(METADATA_TYPES_RECORD_FIELDS.MTRF_NAME)),
+          record.get(METADATA_TYPES_RECORD_FIELDS.MTRF_DESCRIPTION),
           scalarType,
-          record.get(METADATA_TYPE_FIELDS.FIELD_REQUIRED).booleanValue()
+          record.get(METADATA_TYPES_RECORD_FIELDS.MTRF_REQUIRED).booleanValue()
         );
 
       var fields = fieldsByTypeName.get(typeName);

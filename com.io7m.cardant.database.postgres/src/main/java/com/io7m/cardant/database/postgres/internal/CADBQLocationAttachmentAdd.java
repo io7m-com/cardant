@@ -77,12 +77,12 @@ public final class CADBQLocationAttachmentAdd
     this.setAttribute(RELATION, relation);
 
     context.insertInto(LOCATION_ATTACHMENTS)
-      .set(LOCATION_ATTACHMENTS.LOCATION_ID, location.id())
-      .set(LOCATION_ATTACHMENTS.FILE_ID, file.id())
-      .set(LOCATION_ATTACHMENTS.RELATION, relation)
+      .set(LOCATION_ATTACHMENTS.LA_LOCATION_ID, location.id())
+      .set(LOCATION_ATTACHMENTS.LA_FILE_ID, file.id())
+      .set(LOCATION_ATTACHMENTS.LA_RELATION, relation)
       .onDuplicateKeyUpdate()
-      .set(LOCATION_ATTACHMENTS.FILE_ID, file.id())
-      .set(LOCATION_ATTACHMENTS.RELATION, relation)
+      .set(LOCATION_ATTACHMENTS.LA_FILE_ID, file.id())
+      .set(LOCATION_ATTACHMENTS.LA_RELATION, relation)
       .execute();
 
     return UNIT;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,14 +17,14 @@
 
 package com.io7m.cardant.database.api;
 
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 
 /**
  * The type of scalar type searches.
  */
 
 public interface CADatabaseTypeScalarSearchType
-  extends CADatabasePagedQueryType<CATypeScalar>
+  extends CADatabasePagedQueryType<CATypeScalarType>
 {
 
 }

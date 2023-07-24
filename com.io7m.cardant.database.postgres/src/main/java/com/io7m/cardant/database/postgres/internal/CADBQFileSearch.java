@@ -87,7 +87,7 @@ public final class CADBQFileSearch
     if (descriptionQuery.isPresent()) {
       descriptionCondition =
         DSL.condition(
-          "files.description_search @@ websearch_to_tsquery(?)",
+          "files.file_description_search @@ websearch_to_tsquery(?)",
           DSL.inline(descriptionQuery.get())
         );
     } else {
@@ -99,7 +99,7 @@ public final class CADBQFileSearch
     if (mediaQuery.isPresent()) {
       final var searchText = "%%%s%%".formatted(mediaQuery.get());
       mediaCondition =
-        DSL.condition(FILES.MEDIA_TYPE.likeIgnoreCase(searchText));
+        DSL.condition(FILES.FILE_MEDIA_TYPE.likeIgnoreCase(searchText));
     } else {
       mediaCondition = DSL.trueCondition();
     }
@@ -109,9 +109,9 @@ public final class CADBQFileSearch
     if (sizeQuery.isPresent()) {
       final var range = sizeQuery.get();
       final var sizeLowerCondition =
-        DSL.condition(FILES.DATA_USED.ge(Long.valueOf(range.sizeMinimum())));
+        DSL.condition(FILES.FILE_DATA_USED.ge(Long.valueOf(range.sizeMinimum())));
       final var sizeUpperCondition =
-        DSL.condition(FILES.DATA_USED.le(Long.valueOf(range.sizeMaximum())));
+        DSL.condition(FILES.FILE_DATA_USED.le(Long.valueOf(range.sizeMaximum())));
       sizeCondition = DSL.and(sizeLowerCondition, sizeUpperCondition);
     } else {
       sizeCondition = DSL.trueCondition();
@@ -144,8 +144,8 @@ public final class CADBQFileSearch
   {
     final var field =
       switch (ordering.column()) {
-        case BY_ID -> FILES.ID;
-        case BY_DESCRIPTION -> FILES.DESCRIPTION;
+        case BY_ID -> FILES.FILE_ID;
+        case BY_DESCRIPTION -> FILES.FILE_DESCRIPTION;
       };
 
     return new JQField(

@@ -23,10 +23,10 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutT
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -101,7 +101,7 @@ public final class CAICmdLocationMetadataPutTest
           context,
           new CAICommandLocationMetadataPut(
             LOCATION_ID,
-            Set.of(new CAMetadata(name0, "y"))));
+            Set.of(new CAMetadataType.Text(name0, "y"))));
       });
 
     /* Assert. */
@@ -182,9 +182,9 @@ public final class CAICmdLocationMetadataPutTest
       new CAICommandLocationMetadataPut(
         LOCATION_ID,
         Set.of(
-          new CAMetadata(name0, "x"),
-          new CAMetadata(name1, "y"),
-          new CAMetadata(name2, "z")
+          new CAMetadataType.Text(name0, "x"),
+          new CAMetadataType.Text(name1, "y"),
+          new CAMetadataType.Text(name2, "z")
         )
       ));
 
@@ -200,9 +200,9 @@ public final class CAICmdLocationMetadataPutTest
       .execute(new Parameters(
         LOCATION_ID,
         Set.of(
-          new CAMetadata(name0, "x"),
-          new CAMetadata(name1, "y"),
-          new CAMetadata(name2, "z")))
+          new CAMetadataType.Text(name0, "x"),
+          new CAMetadataType.Text(name1, "y"),
+          new CAMetadataType.Text(name2, "z")))
       );
     verify(locationGet)
       .execute(LOCATION_ID);
@@ -298,9 +298,9 @@ public final class CAICmdLocationMetadataPutTest
           new CAICommandLocationMetadataPut(
             LOCATION_ID,
             Set.of(
-              new CAMetadata(name0, "x"),
-              new CAMetadata(name1, "y"),
-              new CAMetadata(name2, "z")
+              new CAMetadataType.Text(name0, "x"),
+              new CAMetadataType.Text(name1, "y"),
+              new CAMetadataType.Text(name2, "z")
             )
           ));
       });
@@ -385,9 +385,9 @@ public final class CAICmdLocationMetadataPutTest
           new CAICommandLocationMetadataPut(
             LOCATION_ID,
             Set.of(
-              new CAMetadata(name0, "x"),
-              new CAMetadata(name1, "y"),
-              new CAMetadata(name2, "z")
+              new CAMetadataType.Text(name0, "x"),
+              new CAMetadataType.Text(name1, "y"),
+              new CAMetadataType.Text(name2, "z")
             )
           ));
       });
@@ -408,9 +408,9 @@ public final class CAICmdLocationMetadataPutTest
         new Parameters(
           LOCATION_ID,
           Set.of(
-            new CAMetadata(name0, "x"),
-            new CAMetadata(name1, "y"),
-            new CAMetadata(name2, "z")
+            new CAMetadataType.Text(name0, "x"),
+            new CAMetadataType.Text(name1, "y"),
+            new CAMetadataType.Text(name2, "z")
           )
         )
       );
@@ -466,7 +466,7 @@ public final class CAICmdLocationMetadataPutTest
       this.createContext();
 
     final var meta0 =
-      new CAMetadata(new RDottedName("a"), "x");
+      new CAMetadataType.Text(new RDottedName("a"), "x");
 
     when(locationGet.execute(any()))
       .thenReturn(Optional.of(
@@ -492,10 +492,11 @@ public final class CAICmdLocationMetadataPutTest
             new CATypeField(
               new RDottedName("a"),
               "Field A",
-              new CATypeScalar(
+              new CATypeScalarType.Integral(
                 new RDottedName("ts0"),
                 "Number",
-                "[0-9]+"
+                23L,
+                100L
               ),
               true
             )
@@ -505,7 +506,7 @@ public final class CAICmdLocationMetadataPutTest
             new CATypeField(
               new RDottedName("b"),
               "Field B",
-              new CATypeScalar(
+              new CATypeScalarType.Text(
                 new RDottedName("ts0"),
                 "Anything",
                 ".*"

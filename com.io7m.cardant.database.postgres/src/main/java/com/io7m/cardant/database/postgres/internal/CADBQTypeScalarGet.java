@@ -20,13 +20,13 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
 import java.util.Optional;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 import static com.io7m.cardant.strings.CAStringConstants.TYPE;
 
 /**
@@ -34,10 +34,10 @@ import static com.io7m.cardant.strings.CAStringConstants.TYPE;
  */
 
 public final class CADBQTypeScalarGet
-  extends CADBQAbstract<RDottedName, Optional<CATypeScalar>>
+  extends CADBQAbstract<RDottedName, Optional<CATypeScalarType>>
   implements TypeScalarGetType
 {
-  private static final Service<RDottedName, Optional<CATypeScalar>, TypeScalarGetType> SERVICE =
+  private static final Service<RDottedName, Optional<CATypeScalarType>, TypeScalarGetType> SERVICE =
     new Service<>(TypeScalarGetType.class, CADBQTypeScalarGet::new);
 
   /**
@@ -62,7 +62,7 @@ public final class CADBQTypeScalarGet
   }
 
   @Override
-  protected Optional<CATypeScalar> onExecute(
+  protected Optional<CATypeScalarType> onExecute(
     final DSLContext context,
     final RDottedName name)
     throws CADatabaseException
@@ -70,18 +70,74 @@ public final class CADBQTypeScalarGet
     this.setAttribute(TYPE, name.value());
 
     return context.select(
-        METADATA_SCALAR_TYPES.NAME,
-        METADATA_SCALAR_TYPES.PATTERN,
-        METADATA_SCALAR_TYPES.DESCRIPTION)
-      .from(METADATA_SCALAR_TYPES)
-      .where(METADATA_SCALAR_TYPES.NAME.eq(name.value()))
+        METADATA_TYPES_SCALAR.MTS_DESCRIPTION,
+        METADATA_TYPES_SCALAR.MTS_NAME,
+        METADATA_TYPES_SCALAR.MTS_BASE_TYPE,
+        METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER,
+        METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER,
+        METADATA_TYPES_SCALAR.MTS_MONEY_LOWER,
+        METADATA_TYPES_SCALAR.MTS_MONEY_UPPER,
+        METADATA_TYPES_SCALAR.MTS_REAL_LOWER,
+        METADATA_TYPES_SCALAR.MTS_REAL_UPPER,
+        METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN,
+        METADATA_TYPES_SCALAR.MTS_TIME_LOWER,
+        METADATA_TYPES_SCALAR.MTS_TIME_UPPER
+      )
+      .from(METADATA_TYPES_SCALAR)
+      .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(name.value()))
       .fetchOptional()
-      .map(record -> {
-        return new CATypeScalar(
-          new RDottedName(record.get(METADATA_SCALAR_TYPES.NAME)),
-          record.get(METADATA_SCALAR_TYPES.DESCRIPTION),
-          record.get(METADATA_SCALAR_TYPES.PATTERN)
+      .map(CADBQTypeScalarGet::mapRecord);
+  }
+
+  static CATypeScalarType mapRecord(
+    final org.jooq.Record record)
+  {
+    return switch (record.get(METADATA_TYPES_SCALAR.MTS_BASE_TYPE)) {
+      case SCALAR_INTEGRAL -> {
+        yield new CATypeScalarType.Integral(
+          new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
+          record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
+          record.get(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER),
+          record.get(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER)
         );
-      });
+      }
+      case SCALAR_MONEY -> {
+        yield new CATypeScalarType.Monetary(
+          new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
+          record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
+          record.get(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER),
+          record.get(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER)
+        );
+      }
+      case SCALAR_REAL -> {
+        yield new CATypeScalarType.Real(
+          new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
+          record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
+          record.get(METADATA_TYPES_SCALAR.MTS_REAL_LOWER),
+          record.get(METADATA_TYPES_SCALAR.MTS_REAL_UPPER)
+        );
+      }
+      case SCALAR_TEXT -> {
+        yield new CATypeScalarType.Text(
+          new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
+          record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
+          record.get(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN)
+        );
+      }
+      case SCALAR_TIME -> {
+        yield new CATypeScalarType.Time(
+          new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
+          record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
+          record.get(METADATA_TYPES_SCALAR.MTS_TIME_LOWER),
+          record.get(METADATA_TYPES_SCALAR.MTS_TIME_UPPER)
+        );
+      }
+      default -> {
+        throw new IllegalStateException(
+          "Unexpected value: %d"
+            .formatted(record.get(METADATA_TYPES_SCALAR.MTS_BASE_TYPE))
+        );
+      }
+    };
   }
 }

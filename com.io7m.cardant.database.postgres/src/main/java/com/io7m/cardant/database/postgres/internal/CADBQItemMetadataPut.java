@@ -22,13 +22,22 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAMetadataType;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_REAL;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_TEXT;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_TIME;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
@@ -78,18 +87,165 @@ public final class CADBQItemMetadataPut
 
     final var batches = new ArrayList<Query>();
     for (final var meta : metadata) {
-      batches.add(
-        context.insertInto(ITEM_METADATA)
-          .set(ITEM_METADATA.METADATA_ITEM_ID, item.id())
-          .set(ITEM_METADATA.METADATA_NAME, meta.name().value())
-          .set(ITEM_METADATA.METADATA_VALUE, meta.value())
-          .onConflict(ITEM_METADATA.METADATA_ITEM_ID, ITEM_METADATA.METADATA_NAME)
-          .doUpdate()
-          .set(ITEM_METADATA.METADATA_VALUE, meta.value())
-      );
+      batches.add(setMetadataValue(context, item, meta));
     }
 
     context.batch(batches).execute();
     return UNIT;
+  }
+
+  private static Query setMetadataValue(
+    final DSLContext context,
+    final CAItemID itemID,
+    final CAMetadataType meta)
+  {
+    if (meta instanceof final CAMetadataType.Monetary m) {
+      return setMetadataValueMonetary(context, itemID, m);
+    }
+    if (meta instanceof final CAMetadataType.Real m) {
+      return setMetadataValueReal(context, itemID, m);
+    }
+    if (meta instanceof final CAMetadataType.Time m) {
+      return setMetadataValueTime(context, itemID, m);
+    }
+    if (meta instanceof final CAMetadataType.Text m) {
+      return setMetadataValueText(context, itemID, m);
+    }
+    if (meta instanceof final CAMetadataType.Integral m) {
+      return setMetadataValueIntegral(context, itemID, m);
+    }
+    throw new IllegalStateException();
+  }
+
+  private static Query setMetadataValueIntegral(
+    final DSLContext context,
+    final CAItemID itemID,
+    final CAMetadataType.Integral meta)
+  {
+    return context.insertInto(ITEM_METADATA)
+      .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
+      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_INTEGRAL)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, Long.valueOf(meta.value()))
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .doUpdate()
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_INTEGRAL)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, Long.valueOf(meta.value()))
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null);
+  }
+
+  private static Query setMetadataValueText(
+    final DSLContext context,
+    final CAItemID itemID,
+    final CAMetadataType.Text meta)
+  {
+    return context.insertInto(ITEM_METADATA)
+      .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
+      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TEXT)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, meta.value())
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .doUpdate()
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TEXT)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, meta.value())
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null);
+  }
+
+  private static Query setMetadataValueTime(
+    final DSLContext context,
+    final CAItemID itemID,
+    final CAMetadataType.Time meta)
+  {
+    return context.insertInto(ITEM_METADATA)
+      .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
+      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TIME)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, meta.value())
+      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .doUpdate()
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TIME)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, meta.value());
+  }
+
+  private static Query setMetadataValueReal(
+    final DSLContext context,
+    final CAItemID itemID,
+    final CAMetadataType.Real meta)
+  {
+    return context.insertInto(ITEM_METADATA)
+      .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
+      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_REAL)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, Double.valueOf(meta.value()))
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .doUpdate()
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_REAL)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, Double.valueOf(meta.value()))
+      .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null);
+  }
+
+  private static Query setMetadataValueMonetary(
+    final DSLContext context,
+    final CAItemID itemID,
+    final CAMetadataType.Monetary meta)
+  {
+    return context.insertInto(ITEM_METADATA)
+      .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
+      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_MONEY)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, meta.value())
+      .set(
+        ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY,
+        meta.currency().getCode())
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .doUpdate()
+      .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_MONEY)
+      .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, meta.value())
+      .set(
+        ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY,
+        meta.currency().getCode())
+      .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
+      .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null);
   }
 }

@@ -28,7 +28,7 @@ import org.jooq.Query;
 import java.util.ArrayList;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 /**
@@ -77,14 +77,14 @@ public final class CADBQLocationTypesAssign
 
     for (final var type : parameters.types()) {
       final var selectType =
-        context.select(METADATA_TYPE_DECLARATIONS.ID)
-          .from(METADATA_TYPE_DECLARATIONS)
-          .where(METADATA_TYPE_DECLARATIONS.NAME.eq(type.value()));
+        context.select(METADATA_TYPES_RECORDS.MTR_ID)
+          .from(METADATA_TYPES_RECORDS)
+          .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(type.value()));
 
       final var query =
         context.insertInto(LOCATION_TYPES)
-          .set(LOCATION_TYPES.LOCATION, locationID.id())
-          .set(LOCATION_TYPES.TYPE_DECLARATION, selectType)
+          .set(LOCATION_TYPES.LT_LOCATION, locationID.id())
+          .set(LOCATION_TYPES.LT_TYPE, selectType)
           .onConflictDoNothing();
 
       batches.add(query);
