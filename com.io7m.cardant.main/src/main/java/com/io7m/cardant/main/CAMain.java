@@ -104,6 +104,15 @@ public final class CAMain implements Runnable
   }
 
   /**
+   * @return The application instance
+   */
+
+  public QApplicationType application()
+  {
+    return this.application;
+  }
+
+  /**
    * @return The program exit kind
    */
 
