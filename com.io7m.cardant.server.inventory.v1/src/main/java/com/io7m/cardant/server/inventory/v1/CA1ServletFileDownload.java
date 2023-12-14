@@ -132,7 +132,7 @@ public final class CA1ServletFileDownload
       vindicator.addRequiredParameter("FileID", uuids());
 
     try {
-      vindicator.check(request.getParameterMap());
+      vindicator.checkArrayTyped(request.getParameterMap());
     } catch (final CAException e) {
       return errorResponseOf(messages, information, BLAME_CLIENT, e);
     }

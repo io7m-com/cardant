@@ -146,7 +146,7 @@ public final class CA1ServletFileUpload
       vindicator.addRequiredParameter("HashValue", strings());
 
     try {
-      vindicator.check(request.getParameterMap());
+      vindicator.checkArrayTyped(request.getParameterMap());
     } catch (final CAException e) {
       return errorResponseOf(messages, information, BLAME_CLIENT, e);
     }

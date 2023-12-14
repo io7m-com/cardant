@@ -31,7 +31,7 @@ import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.lanark.core.RDottedName;
@@ -57,7 +57,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
-@ErvillaConfiguration(disabledIfUnsupported = true)
+@ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseTypesTest
 {
   private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
@@ -80,7 +80,7 @@ public final class CADatabaseTypesTest
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterAll EContainerSupervisorType containers)
+    final @ErvillaCloseAfterClass EContainerSupervisorType containers)
     throws Exception
   {
     DATABASE_FIXTURE =

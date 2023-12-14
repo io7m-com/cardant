@@ -18,7 +18,9 @@
 package com.io7m.cardant.tests.containers;
 
 import com.io7m.ervilla.api.EContainerConfiguration;
+import com.io7m.ervilla.api.EContainerSupervisorScope;
 import com.io7m.ervilla.native_exec.ENContainerSupervisors;
+import com.io7m.lanark.core.RDottedName;
 
 import java.nio.file.Files;
 
@@ -38,12 +40,13 @@ public final class CATestContainerDemo
     final var supervisors =
       new ENContainerSupervisors();
     final var configuration =
-      new EContainerConfiguration("podman", 30L, SECONDS);
+      new EContainerConfiguration(
+        new RDottedName("com.io7m.cardant"), "podman", 30L, SECONDS);
 
     final var directory =
       Files.createTempDirectory("cardant-");
 
-    try (var supervisor = supervisors.create(configuration)) {
+    try (var supervisor = supervisors.create(configuration, EContainerSupervisorScope.PER_SUITE)) {
       final var idstoreFixture =
         CATestContainers.createIdstore(
           supervisor,

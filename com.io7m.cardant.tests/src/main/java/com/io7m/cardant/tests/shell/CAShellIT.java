@@ -25,7 +25,7 @@ import com.io7m.cardant.shell.CAShells;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Timeout(value = 30L)
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
-@ErvillaConfiguration(disabledIfUnsupported = true)
+@ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CAShellIT
 {
   private static final Logger LOG =
@@ -81,7 +81,7 @@ public final class CAShellIT
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterAll EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {

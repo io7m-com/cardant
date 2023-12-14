@@ -471,6 +471,12 @@
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
   </Match>
 
+  <!-- IOException -> UncheckedIOException -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
   <!--                          -->
   <!-- com.io7m.cardant.parsers -->
   <!--                          -->

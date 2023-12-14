@@ -19,7 +19,7 @@ package com.io7m.cardant.tests.server.v1;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
-@ErvillaConfiguration(disabledIfUnsupported = true)
+@ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CAI1ServerTest
 {
   private static CATestContainers.CAIdstoreFixture IDSTORE;
@@ -52,7 +52,7 @@ public final class CAI1ServerTest
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterAll EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
