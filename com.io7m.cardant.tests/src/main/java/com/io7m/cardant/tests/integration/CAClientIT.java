@@ -27,7 +27,7 @@ import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
@@ -42,7 +42,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
@@ -84,7 +84,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("integration")
 @Tag("client")
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
-@ErvillaConfiguration(disabledIfUnsupported = true)
+@ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CAClientIT
 {
   private static UUID USER_ADMIN;
@@ -96,7 +96,7 @@ public final class CAClientIT
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterAll EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
@@ -526,11 +526,11 @@ public final class CAClientIT
     ));
 
     final var meta0 =
-      new CAMetadata(new RDottedName("a.b0"), "x");
+      new CAMetadataType.Text(new RDottedName("a.b0"), "x");
     final var meta1 =
-      new CAMetadata(new RDottedName("a.b1"), "y");
+      new CAMetadataType.Text(new RDottedName("a.b1"), "y");
     final var meta2 =
-      new CAMetadata(new RDottedName("a.b2"), "z");
+      new CAMetadataType.Text(new RDottedName("a.b2"), "z");
 
     this.client.executeOrElseThrow(
       new CAICommandLocationMetadataPut(id, Set.of(meta0, meta1, meta2))

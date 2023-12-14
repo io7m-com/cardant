@@ -24,10 +24,10 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveTy
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeDeclaration;
 import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -399,7 +399,7 @@ public final class CAICmdItemMetadataRemoveTest
       this.createContext();
 
     final var meta0 =
-      new CAMetadata(new RDottedName("a"), "x");
+      new CAMetadataType.Text(new RDottedName("a"), "x");
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(
@@ -426,10 +426,11 @@ public final class CAICmdItemMetadataRemoveTest
             new CATypeField(
               new RDottedName("a"),
               "Field A",
-              new CATypeScalar(
+              new CATypeScalarType.Integral(
                 new RDottedName("ts0"),
                 "Number",
-                "[0-9]+"
+                23L,
+                1000L
               ),
               true
             )
@@ -439,7 +440,7 @@ public final class CAICmdItemMetadataRemoveTest
             new CATypeField(
               new RDottedName("b"),
               "Field B",
-              new CATypeScalar(
+              new CATypeScalarType.Text(
                 new RDottedName("ts0"),
                 "Anything",
                 ".*"

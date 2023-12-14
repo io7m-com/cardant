@@ -18,6 +18,7 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShellValueConverters;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
 import com.io7m.jmulticlose.core.ClosingResourceFailedException;
@@ -105,7 +106,9 @@ public final class CAShell implements CAShellType
       new QCommandParsers();
     this.parserConfiguration =
       new QCommandParserConfiguration(
-        CAShellValueConverters.get(),
+        CAShellValueConverters.create(
+          inServices.requireService(CAStrings.class)
+        ),
         QCommandParsers.emptyResources()
       );
     this.localizer =

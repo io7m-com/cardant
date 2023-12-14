@@ -29,8 +29,10 @@ module com.io7m.cardant.shell
   requires com.io7m.cardant.client.api;
   requires com.io7m.cardant.client.basic;
   requires com.io7m.cardant.client.preferences.api;
+  requires com.io7m.cardant.parsers;
   requires com.io7m.cardant.strings;
 
+  requires com.io7m.jeucreader.core;
   requires com.io7m.jmulticlose.core;
   requires com.io7m.junreachable.core;
   requires com.io7m.lanark.core;

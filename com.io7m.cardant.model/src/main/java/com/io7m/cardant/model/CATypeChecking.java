@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Functions for performing type checking on metadata.
@@ -41,12 +40,12 @@ public final class CATypeChecking
 {
   private final CAStrings strings;
   private final Set<CATypeDeclaration> typeDeclarations;
-  private final Set<CAMetadata> metadata;
+  private final Set<CAMetadataType> metadata;
 
   private CATypeChecking(
     final CAStrings inStrings,
     final Set<CATypeDeclaration> inTypeDeclarations,
-    final Set<CAMetadata> inMetadata)
+    final Set<CAMetadataType> inMetadata)
   {
     this.strings =
       Objects.requireNonNull(inStrings, "inStrings");
@@ -69,7 +68,7 @@ public final class CATypeChecking
   public static CATypeChecking create(
     final CAStrings inStrings,
     final Set<CATypeDeclaration> inTypeDeclarations,
-    final Set<CAMetadata> inMetadata)
+    final Set<CAMetadataType> inMetadata)
   {
     return new CATypeChecking(inStrings, inTypeDeclarations, inMetadata);
   }
@@ -118,31 +117,132 @@ public final class CATypeChecking
         continue;
       }
 
-      final var foundMeta =
-        foundMetaOpt.get();
-      final var pattern =
-        Pattern.compile(field.type().pattern());
-
-      if (!pattern.matcher(foundMeta.value()).matches()) {
-        errors.add(
-          this.errorFieldInvalid(
-            typeDeclaration.name(),
-            field.name(),
-            field.type().name(),
-            field.type().pattern(),
-            foundMeta.value())
-        );
-      }
+      this.checkTypeValue(errors, field.type(), foundMetaOpt.get());
     }
 
     return errors;
+  }
+
+  private void checkTypeValue(
+    final ArrayList<SStructuredError<CAErrorCode>> errors,
+    final CATypeScalarType type,
+    final CAMetadataType meta)
+  {
+    if (type instanceof final CATypeScalarType.Integral typeT
+      && meta instanceof final CAMetadataType.Integral metaT) {
+      if (!typeT.isValid(metaT.value())) {
+        errors.add(
+          this.errorFieldInvalid(
+            type.name(),
+            meta.name(),
+            type.name(),
+            type.showConstraint(),
+            Long.toString(metaT.value())
+          )
+        );
+      }
+      return;
+    }
+
+    if (type instanceof final CATypeScalarType.Monetary typeT
+      && meta instanceof final CAMetadataType.Monetary metaT) {
+      if (!typeT.isValid(metaT.value())) {
+        errors.add(
+          this.errorFieldInvalid(
+            type.name(),
+            meta.name(),
+            type.name(),
+            type.showConstraint(),
+            metaT.value().toString()
+          )
+        );
+      }
+      return;
+    }
+
+    if (type instanceof final CATypeScalarType.Real typeT
+      && meta instanceof final CAMetadataType.Real metaT) {
+      if (!typeT.isValid(metaT.value())) {
+        errors.add(
+          this.errorFieldInvalid(
+            type.name(),
+            meta.name(),
+            type.name(),
+            type.showConstraint(),
+            Double.toString(metaT.value())
+          )
+        );
+      }
+      return;
+    }
+
+    if (type instanceof final CATypeScalarType.Time typeT
+      && meta instanceof final CAMetadataType.Time metaT) {
+      if (!typeT.isValid(metaT.value())) {
+        errors.add(
+          this.errorFieldInvalid(
+            type.name(),
+            meta.name(),
+            type.name(),
+            type.showConstraint(),
+            metaT.value().toString()
+          )
+        );
+      }
+      return;
+    }
+
+    if (type instanceof final CATypeScalarType.Text typeT
+      && meta instanceof final CAMetadataType.Text metaT) {
+      if (!typeT.isValid(metaT.value())) {
+        errors.add(
+          this.errorFieldInvalid(
+            type.name(),
+            meta.name(),
+            type.name(),
+            type.showConstraint(),
+            metaT.value()
+          )
+        );
+      }
+      return;
+    }
+
+    errors.add(
+      this.errorFieldInvalidUnknown(
+        type.name(),
+        meta.name(),
+        type.showConstraint(),
+        meta.valueString()
+      )
+    );
+  }
+
+  private SStructuredError<CAErrorCode> errorFieldInvalidUnknown(
+    final RDottedName typeName,
+    final RDottedName fieldName,
+    final String constraint,
+    final String value)
+  {
+    return new SStructuredError<>(
+      CAStandardErrorCodes.errorTypeCheckFieldInvalid(),
+      this.strings.format(CAStringConstants.ERROR_TYPE_FIELD_INVALID),
+      Map.ofEntries(
+        Map.entry("Type", typeName.value()),
+        Map.entry("Field", fieldName.value()),
+        Map.entry("Constraint", constraint),
+        Map.entry("Value", value)
+      ),
+      Optional.empty(),
+      Optional.empty()
+    );
   }
 
   private SStructuredError<CAErrorCode> errorFieldInvalid(
     final RDottedName typeName,
     final RDottedName fieldName,
     final RDottedName fieldTypeName,
-    final String pattern,
+    final String constraint,
     final String value)
   {
     return new SStructuredError<>(
@@ -152,7 +252,7 @@ public final class CATypeChecking
         Map.entry("Type", typeName.value()),
         Map.entry("Field", fieldName.value()),
         Map.entry("Field Type", fieldTypeName.value()),
-        Map.entry("Pattern", pattern),
+        Map.entry("Constraint", constraint),
         Map.entry("Value", value)
       ),
       Optional.empty(),

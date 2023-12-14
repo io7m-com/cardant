@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 
 import java.util.Objects;
 import java.util.Set;
@@ -32,7 +32,7 @@ import java.util.UUID;
 
 public record CAIResponseTypeScalarPut(
   UUID requestId,
-  Set<CATypeScalar> types)
+  Set<CATypeScalarType> types)
   implements CAIResponseType
 {
   /**

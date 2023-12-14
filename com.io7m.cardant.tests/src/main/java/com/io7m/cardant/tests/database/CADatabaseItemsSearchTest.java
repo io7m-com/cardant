@@ -35,25 +35,25 @@ import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescenda
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemRepositAdd;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataMatchType.CAMetadataRequire;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchExact;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchExact;
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchSearch;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAllOf;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAnyOf;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
+import com.io7m.cardant.model.CAMetadataNameMatchType.ExactName;
+import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.ExactTextValue;
+import com.io7m.cardant.model.CANameMatchType;
+import com.io7m.cardant.model.CANameMatchType.Any;
+import com.io7m.cardant.model.CANameMatchType.Search;
 import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAllOf;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAnyOf;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.lanark.core.RDottedName;
@@ -83,13 +83,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
+import static com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue.ANY_VALUE;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
-@ErvillaConfiguration(disabledIfUnsupported = true)
+@ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseItemsSearchTest
 {
   private static final Logger LOG =
@@ -115,7 +116,7 @@ public final class CADatabaseItemsSearchTest
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterAll EContainerSupervisorType containers)
+    final @ErvillaCloseAfterClass EContainerSupervisorType containers)
     throws Exception
   {
     DATABASE_FIXTURE =
@@ -256,9 +257,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationWithDescendants(loc0.id()),
-          CANameMatchAny.ANY,
+          Any.ANY_NAME,
           CATypeMatchAny.ANY,
-          CAMetadataMatchAny.ANY,
+          CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
         ));
@@ -304,9 +305,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationWithDescendants(loc1.id()),
-          CANameMatchAny.ANY,
+          Any.ANY_NAME,
           CATypeMatchAny.ANY,
-          CAMetadataMatchAny.ANY,
+          CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
         ));
@@ -352,9 +353,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationWithDescendants(loc2.id()),
-          CANameMatchAny.ANY,
+          Any.ANY_NAME,
           CATypeMatchAny.ANY,
-          CAMetadataMatchAny.ANY,
+          CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
         ));
@@ -485,9 +486,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationExact(loc0.id()),
-          CANameMatchAny.ANY,
+          Any.ANY_NAME,
           CATypeMatchAny.ANY,
-          CAMetadataMatchAny.ANY,
+          CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
         ));
@@ -533,9 +534,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationExact(loc1.id()),
-          CANameMatchAny.ANY,
+          Any.ANY_NAME,
           CATypeMatchAny.ANY,
-          CAMetadataMatchAny.ANY,
+          CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
         ));
@@ -581,9 +582,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationExact(loc2.id()),
-          CANameMatchAny.ANY,
+          Any.ANY_NAME,
           CATypeMatchAny.ANY,
-          CAMetadataMatchAny.ANY,
+          CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
         ));
@@ -714,9 +715,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationsAll(),
-          CANameMatchAny.ANY,
+          Any.ANY_NAME,
           CATypeMatchAny.ANY,
-          CAMetadataMatchAny.ANY,
+          CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
         ));
@@ -772,9 +773,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        new CANameMatchSearch("join"),
+        new Search("join"),
         CATypeMatchAny.ANY,
-        CAMetadataMatchAny.ANY,
+        CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -812,9 +813,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        new CANameMatchExact(itemName),
+        new CANameMatchType.Exact(itemName),
         CATypeMatchAny.ANY,
-        CAMetadataMatchAny.ANY,
+        CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -861,14 +862,14 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        CANameMatchAny.ANY,
+        Any.ANY_NAME,
         CATypeMatchAny.ANY,
-        new CAMetadataRequire(
-          Map.ofEntries(
-            Map.entry(name0, CAMetadataValueMatchAny.ANY),
-            Map.entry(name1, CAMetadataValueMatchAny.ANY),
-            Map.entry(name2, CAMetadataValueMatchAny.ANY)
-          )
+        new CAMetadataElementMatchType.And(
+          new CAMetadataElementMatchType.And(
+            new Specific(new ExactName(name0), ANY_VALUE),
+            new Specific(new ExactName(name1), ANY_VALUE)
+          ),
+          new Specific(new ExactName(name2), ANY_VALUE)
         ),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -903,7 +904,7 @@ public final class CADatabaseItemsSearchTest
 
     /*
      * Search for items that have the given metadata keys with
-     * any values.
+     * specific values.
      */
 
     final var name0 = new RDottedName("e");
@@ -911,13 +912,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        CANameMatchAny.ANY,
+        Any.ANY_NAME,
         CATypeMatchAny.ANY,
-        new CAMetadataRequire(
-          Map.ofEntries(
-            Map.entry(name0, new CAMetadataValueMatchExact("explanation"))
-          )
-        ),
+        new Specific(new ExactName(name0), new ExactTextValue("explanation")),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -930,7 +927,7 @@ public final class CADatabaseItemsSearchTest
         this.itemGet.execute(summary.id()).orElseThrow();
 
       assertTrue(item.metadata().containsKey(name0));
-      assertEquals("explanation", item.metadata().get(name0).value());
+      assertEquals("explanation", item.metadata().get(name0).valueString());
     }
   }
 
@@ -955,11 +952,11 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        CANameMatchAny.ANY,
+        Any.ANY_NAME,
         new CATypeMatchAnyOf(
           Set.of(new RDottedName("t0"), new RDottedName("t1"))
         ),
-        CAMetadataMatchAny.ANY,
+        CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         1000
       ));
@@ -1001,11 +998,11 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        CANameMatchAny.ANY,
+        Any.ANY_NAME,
         new CATypeMatchAllOf(
           Set.of(new RDottedName("t0"), new RDottedName("t1"))
         ),
-        CAMetadataMatchAny.ANY,
+        CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -1068,26 +1065,26 @@ public final class CADatabaseItemsSearchTest
        * Create some metadata.
        */
 
-      final var meta = new HashSet<CAMetadata>();
+      final var meta = new HashSet<CAMetadataType>();
       for (int metaIndex = 1; metaIndex < 10; ++metaIndex) {
         final var metaValue =
           thisName.get(metaIndex);
         final var metaName =
           new RDottedName(metaValue.substring(0, 1));
-        meta.add(new CAMetadata(metaName, metaValue));
+        meta.add(new CAMetadataType.Text(metaName, metaValue));
 
         /*
          * Assign some types.
          */
 
-        if (metaValue.startsWith("o")) {
+        if (metaValue.toUpperCase().startsWith("O")) {
           this.itemTypeAssign.execute(new TypesAssignType.Parameters(
             itemId,
             Set.of(type0.name())
           ));
         }
 
-        if (metaValue.startsWith("i")) {
+        if (metaValue.toUpperCase().startsWith("I")) {
           this.itemTypeAssign.execute(new TypesAssignType.Parameters(
             itemId,
             Set.of(type1.name())

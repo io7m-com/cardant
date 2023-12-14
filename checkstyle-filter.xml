@@ -41,4 +41,15 @@
   <suppress files="CADatabaseQueriesItems.java"
             checks="FileLength"/>
   
+  <suppress files="CAMetadataElementMatchType.java"
+            checks="InterfaceIsType"/>
+  
+  <suppress files="CATypeChecking.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CATypeChecking.java"
+            checks="NPathComplexity"/>
+
+  <suppress files="CAMetadataMatchExpressions.java"
+            checks="NPathComplexity"/>
+  
 </suppressions>

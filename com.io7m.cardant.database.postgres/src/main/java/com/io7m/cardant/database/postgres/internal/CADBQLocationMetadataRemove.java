@@ -77,9 +77,9 @@ public final class CADBQLocationMetadataRemove
     final var queries = new ArrayList<Query>();
     for (final var name : parameters.names()) {
       final var matchesLocation =
-        LOCATION_METADATA.METADATA_LOCATION_ID.eq(location.id());
+        LOCATION_METADATA.LOCATION_META_LOCATION.eq(location.id());
       final var matchesName =
-        LOCATION_METADATA.METADATA_NAME.eq(name.value());
+        LOCATION_METADATA.LOCATION_META_NAME.eq(name.value());
       final var matches =
         matchesLocation.and(matchesName);
 

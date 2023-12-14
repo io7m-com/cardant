@@ -17,71 +17,88 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.parsers.CAMetadataExpressions;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.lanark.core.RDottedName;
+import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterType;
+import org.joda.money.CurrencyUnit;
+
+import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * A value converter for metadata.
  */
 
 public final class CAMetadataConverter
-  implements QValueConverterType<CAMetadata>
+  implements QValueConverterType<CAMetadataType>
 {
+  private final CAStrings strings;
+
   /**
    * Construct a converter.
+   *
+   * @param inStrings The string resources
    */
 
-  public CAMetadataConverter()
+  public CAMetadataConverter(
+    final CAStrings inStrings)
   {
-
+    this.strings = Objects.requireNonNull(inStrings, "strings");
   }
 
   @Override
-  public CAMetadata convertFromString(
+  public CAMetadataType convertFromString(
     final String text)
+    throws QException
   {
-    final var colon = text.indexOf(':');
-    if (colon == -1) {
-      throw new IllegalArgumentException("Expected <dotted-name> : text.");
+    try {
+      return new CAMetadataExpressions(this.strings).metadataParse(text);
+    } catch (final CAException e) {
+      throw QException.adapt(e, CAErrorCode::id);
     }
-
-    final var name =
-      text.substring(0, colon);
-    final var value =
-      text.substring(colon);
-
-    return new CAMetadata(
-      new RDottedName(name),
-       value
-    );
   }
 
   @Override
   public String convertToString(
-    final CAMetadata value)
+    final CAMetadataType value)
+    throws QException
   {
-    return value.value();
+    try {
+      return new CAMetadataExpressions(this.strings)
+        .metadataSerializeToString(value);
+    } catch (final CAException e) {
+      throw QException.adapt(e, CAErrorCode::id);
+    }
   }
 
   @Override
-  public CAMetadata exampleValue()
+  public CAMetadataType exampleValue()
   {
-    return new CAMetadata(
+    return new CAMetadataType.Monetary(
       new RDottedName("com.io7m.metadata"),
-      "Example value."
+      new BigDecimal("250.23"),
+      CurrencyUnit.EUR
     );
   }
 
   @Override
   public String syntax()
   {
-    return "<dotted-name> : <text>";
+    return "[Text <dotted-name> <quoted>] "
+      + "| [Integer <dotted-name> <integer>] "
+      + "| [Real <dotted-name> <real>] "
+      + "| [Time <dotted-name> <offset-date-time>] "
+      + "| [Money <dotted-name> <money> <currency>]";
   }
 
   @Override
-  public Class<CAMetadata> convertedClass()
+  public Class<CAMetadataType> convertedClass()
   {
-    return CAMetadata.class;
+    return CAMetadataType.class;
   }
 }

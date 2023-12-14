@@ -51,9 +51,9 @@ public interface CAServerTelemetryServiceType extends RPServiceType
   Logger logger();
 
   /**
-   * Set the error code for the current span.
+   * Set the error kind for the current span.
    *
-   * @param errorCode The error code
+   * @param errorCode The error kind
    */
 
   static void setSpanErrorCode(
@@ -65,9 +65,9 @@ public interface CAServerTelemetryServiceType extends RPServiceType
   }
 
   /**
-   * Set the error code for the current span.
+   * Set the error kind for the current span.
    *
-   * @param e The error code
+   * @param e The error kind
    */
 
   static void recordSpanException(

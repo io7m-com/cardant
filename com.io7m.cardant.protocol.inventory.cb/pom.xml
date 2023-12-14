@@ -62,6 +62,10 @@
     </dependency>
     <dependency>
       <groupId>com.io7m.cedarbridge</groupId>
+      <artifactId>com.io7m.cedarbridge.runtime.time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.cedarbridge</groupId>
       <artifactId>com.io7m.cedarbridge.runtime.convenience</artifactId>
     </dependency>
     <dependency>
@@ -75,6 +79,10 @@
     <dependency>
       <groupId>com.io7m.medrina</groupId>
       <artifactId>com.io7m.medrina.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.joda</groupId>
+      <artifactId>joda-money</artifactId>
     </dependency>
 
     <dependency>
@@ -91,7 +99,7 @@
 
   <build>
     <plugins>
-      <!-- Generate Cedarbridge code. -->
+      <!-- Generate Cedarbridge kind. -->
       <plugin>
         <groupId>com.io7m.cedarbridge</groupId>
         <artifactId>com.io7m.cedarbridge.maven_plugin</artifactId>

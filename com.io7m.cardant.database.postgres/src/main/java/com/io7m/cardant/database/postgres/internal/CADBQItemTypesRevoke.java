@@ -28,7 +28,7 @@ import org.jooq.Query;
 import java.util.ArrayList;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
@@ -77,14 +77,14 @@ public final class CADBQItemTypesRevoke
 
     for (final var type : parameters.types()) {
       final var selectType =
-        context.select(METADATA_TYPE_DECLARATIONS.ID)
-          .from(METADATA_TYPE_DECLARATIONS)
-          .where(METADATA_TYPE_DECLARATIONS.NAME.eq(type.value()));
+        context.select(METADATA_TYPES_RECORDS.MTR_ID)
+          .from(METADATA_TYPES_RECORDS)
+          .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(type.value()));
 
       final var query =
         context.deleteFrom(ITEM_TYPES)
-          .where(ITEM_TYPES.ITEM.eq(itemID.id())
-                   .and(ITEM_TYPES.TYPE_DECLARATION.eq(selectType)));
+          .where(ITEM_TYPES.IT_ITEM.eq(itemID.id())
+                   .and(ITEM_TYPES.IT_TYPE.eq(selectType)));
 
       batches.add(query);
     }

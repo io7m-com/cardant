@@ -66,7 +66,7 @@ public final class CADBQFileRemove
   {
     final var id = fileID.id();
     context.deleteFrom(FILES)
-      .where(FILES.ID.eq(id))
+      .where(FILES.FILE_ID.eq(id))
       .execute();
 
     return CADatabaseUnit.UNIT;

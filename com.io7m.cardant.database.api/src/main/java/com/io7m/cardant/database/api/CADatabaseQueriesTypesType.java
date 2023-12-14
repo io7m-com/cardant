@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,7 +17,7 @@
 package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CATypeDeclaration;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.lanark.core.RDottedName;
 
 import java.util.List;
@@ -103,7 +103,7 @@ public sealed interface CADatabaseQueriesTypesType
    */
 
   non-sealed interface TypeScalarGetType
-    extends CADatabaseQueryType<RDottedName, Optional<CATypeScalar>>,
+    extends CADatabaseQueryType<RDottedName, Optional<CATypeScalarType>>,
     CADatabaseQueriesTypesType
   {
 
@@ -137,7 +137,7 @@ public sealed interface CADatabaseQueriesTypesType
    */
 
   non-sealed interface TypeScalarPutType
-    extends CADatabaseQueryType<CATypeScalar, CADatabaseUnit>,
+    extends CADatabaseQueryType<CATypeScalarType, CADatabaseUnit>,
     CADatabaseQueriesTypesType
   {
 

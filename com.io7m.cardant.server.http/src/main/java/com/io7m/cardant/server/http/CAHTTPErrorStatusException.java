@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * An exception with an associated error code and HTTP status code.
+ * An exception with an associated error kind and HTTP status kind.
  */
 
 public final class CAHTTPErrorStatusException extends CAException
@@ -36,10 +36,10 @@ public final class CAHTTPErrorStatusException extends CAException
    * Construct an exception.
    *
    * @param message             The message
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
-   * @param inHttpStatusCode    The HTTP status code
+   * @param inHttpStatusCode    The HTTP status kind
    */
 
   public CAHTTPErrorStatusException(
@@ -58,10 +58,10 @@ public final class CAHTTPErrorStatusException extends CAException
    *
    * @param message             The message
    * @param cause               The cause
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
-   * @param inHttpStatusCode    The HTTP status code
+   * @param inHttpStatusCode    The HTTP status kind
    */
 
   public CAHTTPErrorStatusException(
@@ -77,7 +77,7 @@ public final class CAHTTPErrorStatusException extends CAException
   }
 
   /**
-   * @return The HTTP status code
+   * @return The HTTP status kind
    */
 
   public int httpStatusCode()

@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CATypeMatchType.CATypeMatchAny;
+import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 

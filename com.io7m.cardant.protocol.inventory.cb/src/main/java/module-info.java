@@ -29,6 +29,7 @@ module com.io7m.cardant.protocol.inventory.cb
   requires com.io7m.cedarbridge.runtime.api;
   requires com.io7m.cedarbridge.runtime.bssio;
   requires com.io7m.cedarbridge.runtime.convenience;
+  requires com.io7m.cedarbridge.runtime.time;
   requires com.io7m.jbssio.api;
   requires com.io7m.jbssio.vanilla;
   requires com.io7m.lanark.core;

@@ -57,12 +57,12 @@ final class CAFileSearch
     try {
       final var query =
         page.queryFields(context, List.of(
-          FILES.DATA_USED,
-          FILES.DESCRIPTION,
-          FILES.HASH_ALGORITHM,
-          FILES.HASH_VALUE,
-          FILES.ID,
-          FILES.MEDIA_TYPE
+          FILES.FILE_DATA_USED,
+          FILES.FILE_DESCRIPTION,
+          FILES.FILE_HASH_ALGORITHM,
+          FILES.FILE_HASH_VALUE,
+          FILES.FILE_ID,
+          FILES.FILE_MEDIA_TYPE
         ));
 
       querySpan.setAttribute(DB_STATEMENT, query.toString());
@@ -70,12 +70,12 @@ final class CAFileSearch
       final var items =
         query.fetch().map(record -> {
           return new CAFileType.CAFileWithoutData(
-            new CAFileID(record.get(FILES.ID)),
-            record.get(FILES.DESCRIPTION),
-            record.get(FILES.MEDIA_TYPE),
-            record.<Long>get(FILES.DATA_USED).longValue(),
-            record.get(FILES.HASH_ALGORITHM),
-            record.get(FILES.HASH_VALUE)
+            new CAFileID(record.get(FILES.FILE_ID)),
+            record.get(FILES.FILE_DESCRIPTION),
+            record.get(FILES.FILE_MEDIA_TYPE),
+            record.<Long>get(FILES.FILE_DATA_USED).longValue(),
+            record.get(FILES.FILE_HASH_ALGORITHM),
+            record.get(FILES.FILE_HASH_VALUE)
           );
         });
 

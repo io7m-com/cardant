@@ -24,8 +24,8 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_FIELDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
 
 /**
  * Remove a type declaration.
@@ -68,16 +68,16 @@ public final class CADBQTypeDeclRemove
     final var typeName = name.value();
 
     final var typeId =
-      context.select(METADATA_TYPE_DECLARATIONS.ID)
-        .from(METADATA_TYPE_DECLARATIONS)
-        .where(METADATA_TYPE_DECLARATIONS.NAME.eq(typeName));
+      context.select(METADATA_TYPES_RECORDS.MTR_ID)
+        .from(METADATA_TYPES_RECORDS)
+        .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(typeName));
 
-    context.deleteFrom(METADATA_TYPE_FIELDS)
-      .where(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(typeId))
+    context.deleteFrom(METADATA_TYPES_RECORD_FIELDS)
+      .where(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION.eq(typeId))
       .execute();
 
-    context.deleteFrom(METADATA_TYPE_DECLARATIONS)
-      .where(METADATA_TYPE_DECLARATIONS.NAME.eq(typeName))
+    context.deleteFrom(METADATA_TYPES_RECORDS)
+      .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(typeName))
       .execute();
 
     return CADatabaseUnit.UNIT;

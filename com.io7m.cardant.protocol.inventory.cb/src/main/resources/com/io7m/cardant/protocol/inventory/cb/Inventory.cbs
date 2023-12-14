@@ -19,6 +19,7 @@
 [package com.io7m.cardant.protocol.inventory.cb]
 
 [import com.io7m.cedarbridge cb]
+[import com.io7m.cedarbridge.time ct]
 
 [documentation CAI1Id "An identifier value."]
 [variant CAI1Id
@@ -61,11 +62,39 @@
 ]
 
 [documentation CAI1Metadata "A metadata value."]
-[record CAI1Metadata
-  [documentation key "The metadata value key."]
-  [field key cb:String]
-  [documentation value "The metadata value."]
-  [field value cb:String]
+[variant CAI1Metadata
+  [case Integral
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:IntegerSigned64]
+  ]
+  [case Text
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:String]
+  ]
+  [case Time
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value ct:OffsetDateTime]
+  ]
+  [case Monetary
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:String]
+    [documentation currency "The metadata currency unit."]
+    [field currency cb:String]
+  ]
+  [case Real
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:Float64]
+  ]
 ]
 
 [documentation CAI1AttachmentKey "The values that uniquely identify an attachment on an object."]
@@ -215,16 +244,59 @@
 
 [documentation CAI1MetadataValueMatch "An expression against which item metadata values are matched."]
 [variant CAI1MetadataValueMatch
-  [case CAI1MetadataValueMatchAny]
-  [case CAI1MetadataValueMatchExact
-    [field text cb:String]]
+  [case Anything]
+  [case IntegralWithinRange
+    [field lower cb:IntegerSigned64]
+    [field upper cb:IntegerSigned64]
+  ]
+  [case RealWithinRange
+    [field lower cb:Float64]
+    [field upper cb:Float64]
+  ]
+  [case TimeWithinRange
+    [field lower ct:OffsetDateTime]
+    [field upper ct:OffsetDateTime]
+  ]
+  [case MonetaryWithinRange
+    [field lower cb:String]
+    [field upper cb:String]
+  ]
+  [case MonetaryWithCurrency
+    [field currency cb:String]
+  ]
+  [case TextExact
+    [field exact cb:String]
+  ]
+  [case TextSearch
+    [field search cb:String]
+  ]
 ]
 
-[documentation CAI1MetadataMatch "An expression against which item metadata is matched."]
-[variant CAI1MetadataMatch
-  [case CAI1MetadataMatchAny]
-  [case CAI1MetadataMatchRequire
-    [field values [cb:Map cb:String CAI1MetadataValueMatch]]]
+[documentation CAI1MetadataNameMatch "An expression against which item metadata names are matched."]
+[variant CAI1MetadataNameMatch
+  [case Anything]
+  [case Exact
+    [field name cb:String]
+  ]
+  [case Search
+    [field search cb:String]
+  ]
+]
+
+[documentation CAI1MetadataElementMatch "An expression against which item metadata is matched."]
+[variant CAI1MetadataElementMatch
+  [case And
+    [field e0 CAI1MetadataElementMatch]
+    [field e1 CAI1MetadataElementMatch]
+  ]
+  [case Or
+    [field e0 CAI1MetadataElementMatch]
+    [field e1 CAI1MetadataElementMatch]
+  ]
+  [case Specific
+    [field name CAI1MetadataNameMatch]
+    [field value CAI1MetadataValueMatch]
+  ]
 ]
 
 [documentation CAI1ItemSearchParameters "The item search parameters."]
@@ -236,7 +308,7 @@
   [documentation typeMatch "The item type match expression."]
   [field typeMatch CAI1TypeMatch]
   [documentation metaMatch "The item metadata match expression."]
-  [field metaMatch CAI1MetadataMatch]
+  [field metaMatch CAI1MetadataElementMatch]
   [documentation order "The item result ordering."]
   [field order CAI1ItemColumnOrdering]
   [documentation limit "The item limit."]
@@ -305,13 +377,46 @@
 ]
 
 [documentation CAI1TypeScalar "A scalar type."]
-[record CAI1TypeScalar
-  [documentation name "The type name."]
-  [field name cb:String]
-  [documentation description "The type description."]
-  [field description cb:String]
-  [documentation pattern "The type pattern."]
-  [field pattern cb:String]
+[variant CAI1TypeScalar
+  [case Integral
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower cb:IntegerSigned64]
+    [field rangeUpper cb:IntegerSigned64]
+  ]
+  [case Text
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field pattern cb:String]
+  ]
+  [case Time
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower ct:OffsetDateTime]
+    [field rangeUpper ct:OffsetDateTime]
+  ]
+  [case Monetary
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower cb:String]
+    [field rangeUpper cb:String]
+  ]
+  [case Real
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower cb:Float64]
+    [field rangeUpper cb:Float64]
+  ]
 ]
 
 [documentation CAI1TypeField "A field within a type declaration."]

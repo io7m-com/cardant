@@ -24,7 +24,7 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 
 /**
  * Remove a scalar type declaration. Fails if any type declarations still
@@ -67,8 +67,8 @@ public final class CADBQTypeScalarRemove
   {
     final var typeName = name.value();
 
-    context.deleteFrom(METADATA_SCALAR_TYPES)
-      .where(METADATA_SCALAR_TYPES.NAME.eq(typeName))
+    context.deleteFrom(METADATA_TYPES_SCALAR)
+      .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(typeName))
       .execute();
 
     return CADatabaseUnit.UNIT;

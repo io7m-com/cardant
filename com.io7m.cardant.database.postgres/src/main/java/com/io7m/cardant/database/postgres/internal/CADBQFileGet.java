@@ -73,34 +73,33 @@ public final class CADBQFileGet
       parameters.withData();
 
     final var id = file.id();
-    final var fileRec = context.fetchOne(FILES, FILES.ID.eq(id));
+    final var fileRec = context.fetchOne(FILES, FILES.FILE_ID.eq(id));
     if (fileRec == null) {
       return Optional.empty();
     }
 
     final var size =
-      fileRec.getDataUsed()
+      fileRec.getFileDataUsed()
         .longValue();
 
     if (withData) {
       return Optional.of(new CAFileType.CAFileWithData(
         file,
-        fileRec.getDescription(),
-        fileRec.getMediaType(),
-        size,
-        fileRec.getHashAlgorithm(),
-        fileRec.getHashValue(),
-        new CAByteArray(fileRec.getData())
+        fileRec.getFileDescription(),
+        fileRec.getFileMediaType(),
+        fileRec.getFileHashAlgorithm(),
+        fileRec.getFileHashValue(),
+        new CAByteArray(fileRec.getFileData())
       ));
     }
 
     return Optional.of(new CAFileType.CAFileWithoutData(
       file,
-      fileRec.getDescription(),
-      fileRec.getMediaType(),
+      fileRec.getFileDescription(),
+      fileRec.getFileMediaType(),
       size,
-      fileRec.getHashAlgorithm(),
-      fileRec.getHashValue()
+      fileRec.getFileHashAlgorithm(),
+      fileRec.getFileHashValue()
     ));
   }
 }

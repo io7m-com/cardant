@@ -73,9 +73,10 @@
   <!-- Record types -->
   <Match>
     <Or>
-      <Class name="com.io7m.cardant.model.CAItemSearchParameters$CAMetadataMatchType$CAMetadataRequire"/>
-      <Class name="com.io7m.cardant.model.CAItemSearchParameters$CATypeMatchType$CATypeMatchAllOf"/>
-      <Class name="com.io7m.cardant.model.CAItemSearchParameters$CATypeMatchType$CATypeMatchAnyOf"/>
+      <Class name="com.io7m.cardant.model.CAMetadataType$Monetary"/>
+      <Class name="com.io7m.cardant.model.CAMetadataValueMatchType$MonetaryMatchType$WithCurrency"/>
+      <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAllOf"/>
+      <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAnyOf"/>
       <Class name="com.io7m.cardant.model.CATypeDeclaration"/>
       <Class name="com.io7m.cardant.model.CAByteArray"/>
       <Class name="com.io7m.cardant.model.CAFileID"/>
@@ -110,6 +111,12 @@
       <Bug pattern="EI_EXPOSE_REP2"/>
       <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
     </Or>
+  </Match>
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Class name="com.io7m.cardant.model.CATypeChecking"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
   </Match>
 
   <!--                              -->
@@ -382,6 +389,9 @@
     <Package name="com.io7m.cardant.database.postgres.internal.tables.records"/>
   </Match>
   <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal.enums"/>
+  </Match>
+  <Match>
     <Package name="com.io7m.cardant.database.postgres.internal.tables"/>
   </Match>
   <Match>
@@ -459,6 +469,32 @@
   <Match>
     <Class name="com.io7m.cardant.database.postgres.internal.CADatabase"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- IOException -> UncheckedIOException -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!--                          -->
+  <!-- com.io7m.cardant.parsers -->
+  <!--                          -->
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="CE_CLASS_ENVY"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
   </Match>
 
   <!--                             -->
@@ -725,6 +761,11 @@
   <Match>
     <Class name="com.io7m.cardant.shell.internal.CAShellCmdFileSearchBegin"/>
     <Bug pattern="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.shell.internal"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
   </Match>
 
   <!--                          -->

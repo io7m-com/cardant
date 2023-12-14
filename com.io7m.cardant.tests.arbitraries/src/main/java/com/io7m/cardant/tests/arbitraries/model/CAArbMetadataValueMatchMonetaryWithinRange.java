@@ -15,39 +15,28 @@
  */
 
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Combinators;
 
-import java.util.Objects;
-import java.util.regex.Pattern;
-
-/**
- * A scalar type.
- *
- * @param name        The type name
- * @param description The description
- * @param pattern     The pattern that defines valid values of the type
- */
-
-public record CATypeScalar(
-  RDottedName name,
-  String description,
-  String pattern)
+public final class CAArbMetadataValueMatchMonetaryWithinRange
+  extends CAArbAbstract<MonetaryMatchType.WithinRange>
 {
-  /**
-   * A scalar type.
-   *
-   * @param name        The type name
-   * @param description The description
-   * @param pattern     The pattern that defines valid values of the type
-   */
-
-  public CATypeScalar
+  public CAArbMetadataValueMatchMonetaryWithinRange()
   {
-    Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(description, "description");
-    Objects.requireNonNull(pattern, "pattern");
-    Pattern.compile(pattern);
+    super(
+      MonetaryMatchType.WithinRange.class,
+      () -> Combinators.combine(
+        CAArbMoney.money(),
+        CAArbMoney.money()
+      ).as((x, y) -> {
+        return new MonetaryMatchType.WithinRange(
+          x.min(y),
+          x.max(y)
+        );
+      })
+    );
   }
 }

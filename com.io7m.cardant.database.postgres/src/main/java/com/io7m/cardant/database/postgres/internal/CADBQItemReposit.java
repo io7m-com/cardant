@@ -137,7 +137,7 @@ public final class CADBQItemReposit
   {
     try {
       final var matchItem =
-        ITEM_LOCATIONS.ITEM_ID.eq(remove.item().id());
+        ITEM_LOCATIONS.ITEM_LOCATION_ITEM.eq(remove.item().id());
       final var matchLocation =
         ITEM_LOCATIONS.ITEM_LOCATION.eq(remove.location().id());
       final var matches =
@@ -146,11 +146,11 @@ public final class CADBQItemReposit
       final var newCount =
         context.update(ITEM_LOCATIONS)
           .set(
-            ITEM_LOCATIONS.COUNT,
-            ITEM_LOCATIONS.COUNT.sub(Long.valueOf(remove.count())))
+            ITEM_LOCATIONS.ITEM_LOCATION_COUNT,
+            ITEM_LOCATIONS.ITEM_LOCATION_COUNT.sub(Long.valueOf(remove.count())))
           .where(matches)
-          .returning(ITEM_LOCATIONS.COUNT)
-          .fetchOptional(ITEM_LOCATIONS.COUNT)
+          .returning(ITEM_LOCATIONS.ITEM_LOCATION_COUNT)
+          .fetchOptional(ITEM_LOCATIONS.ITEM_LOCATION_COUNT)
           .orElse(Long.valueOf(0L))
           .longValue();
 
@@ -246,9 +246,9 @@ public final class CADBQItemReposit
   {
     context.insertInto(
         ITEM_LOCATIONS,
-        ITEM_LOCATIONS.ITEM_ID,
+        ITEM_LOCATIONS.ITEM_LOCATION_ITEM,
         ITEM_LOCATIONS.ITEM_LOCATION,
-        ITEM_LOCATIONS.COUNT)
+        ITEM_LOCATIONS.ITEM_LOCATION_COUNT)
       .values(
         add.item().id(),
         add.location().id(),
@@ -256,8 +256,8 @@ public final class CADBQItemReposit
       )
       .onDuplicateKeyUpdate()
       .set(
-        ITEM_LOCATIONS.COUNT,
-        ITEM_LOCATIONS.COUNT.add(Long.valueOf(add.count())))
+        ITEM_LOCATIONS.ITEM_LOCATION_COUNT,
+        ITEM_LOCATIONS.ITEM_LOCATION_COUNT.add(Long.valueOf(add.count())))
       .execute();
 
     return add.count();

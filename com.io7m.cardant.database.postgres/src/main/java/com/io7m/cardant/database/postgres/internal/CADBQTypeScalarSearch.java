@@ -28,7 +28,7 @@ import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
@@ -70,15 +70,15 @@ public final class CADBQTypeScalarSearch
   {
     final var searchCondition =
       DSL.condition(
-        "METADATA_SCALAR_TYPES.description_search @@ websearch_to_tsquery(?)",
+        "METADATA_TYPES_SCALAR.mts_description_search @@ websearch_to_tsquery(?)",
         DSL.inline(query)
       );
 
     final var orderField =
-      new JQField(METADATA_SCALAR_TYPES.NAME, JQOrder.ASCENDING);
+      new JQField(METADATA_TYPES_SCALAR.MTS_NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
-      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_SCALAR_TYPES)
+      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_TYPES_SCALAR)
         .addSortField(orderField)
         .addWhereCondition(searchCondition)
         .setPageSize(10L)

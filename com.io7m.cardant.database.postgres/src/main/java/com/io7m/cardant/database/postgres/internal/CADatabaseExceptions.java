@@ -22,6 +22,7 @@ import org.jooq.exception.DataAccessException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -166,8 +167,8 @@ public final class CADatabaseExceptions
         .map(ServerErrorMessage::getColumn)
         .orElse("");
 
-    return switch (column) {
-      case "field_scalar_type" -> {
+    return switch (column.toUpperCase(Locale.ROOT)) {
+      case "MTRF_SCALAR_TYPE" -> {
         yield new CADatabaseException(
           transaction.localize(ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE),
           e,
@@ -220,7 +221,7 @@ public final class CADatabaseExceptions
         .orElse("");
 
     return switch (constraint) {
-      case "files_pkey" -> {
+      case "files_primary_key" -> {
         yield new CADatabaseException(
           "File already exists.",
           errorDuplicate(),
@@ -229,7 +230,7 @@ public final class CADatabaseExceptions
         );
       }
 
-      case "item_attachments_pkey" -> {
+      case "item_attachments_primary_key" -> {
         yield new CADatabaseException(
           "Item attachment already exists.",
           errorDuplicate(),
@@ -238,7 +239,7 @@ public final class CADatabaseExceptions
         );
       }
 
-      case "item_locations_pkey" -> {
+      case "item_locations_primary_key" -> {
         yield new CADatabaseException(
           "Item location already exists.",
           errorDuplicate(),
@@ -247,7 +248,7 @@ public final class CADatabaseExceptions
         );
       }
 
-      case "items_pkey" -> {
+      case "items_primary_key" -> {
         yield new CADatabaseException(
           "Item already exists.",
           errorDuplicate(),
@@ -256,7 +257,7 @@ public final class CADatabaseExceptions
         );
       }
 
-      case "locations_pkey" -> {
+      case "locations_primary_key" -> {
         yield new CADatabaseException(
           "Location already exists.",
           errorDuplicate(),
@@ -265,16 +266,7 @@ public final class CADatabaseExceptions
         );
       }
 
-      case "tags_pkey" -> {
-        yield new CADatabaseException(
-          "Tag already exists.",
-          errorDuplicate(),
-          attributes,
-          Optional.empty()
-        );
-      }
-
-      case "users_pkey" -> {
+      case "users_primary_key" -> {
         yield new CADatabaseException(
           "User already exists.",
           errorDuplicate(),
@@ -320,7 +312,7 @@ public final class CADatabaseExceptions
           .flatMap(x -> Optional.ofNullable(x.getConstraint()))
           .orElse("");
 
-      if (Objects.equals(constraint, "field_scalar_type_exists")) {
+      if (Objects.equals(constraint, "metadata_types_record_fields_scalar_exists")) {
         return new CADatabaseException(
           transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
           e,
@@ -330,7 +322,7 @@ public final class CADatabaseExceptions
         );
       }
 
-      if (Objects.equals(constraint, "item_types_declaration_exists")) {
+      if (Objects.equals(constraint, "item_types_record_type_exists")) {
         return new CADatabaseException(
           transaction.localize(ERROR_TYPE_STILL_REFERENCED),
           e,

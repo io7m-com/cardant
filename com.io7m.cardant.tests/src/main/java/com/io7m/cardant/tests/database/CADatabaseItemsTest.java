@@ -38,15 +38,17 @@ import com.io7m.cardant.model.CAItemRepositMove;
 import com.io7m.cardant.model.CAItemRepositRemove;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
+import org.joda.money.CurrencyUnit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -64,12 +67,13 @@ import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
-@ErvillaConfiguration(disabledIfUnsupported = true)
+@ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseItemsTest
 {
   private static final Logger LOG =
@@ -93,7 +97,7 @@ public final class CADatabaseItemsTest
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterAll EContainerSupervisorType containers)
+    final @ErvillaCloseAfterClass EContainerSupervisorType containers)
     throws Exception
   {
     DATABASE_FIXTURE =
@@ -475,14 +479,37 @@ public final class CADatabaseItemsTest
     this.itemCreate.execute(id0);
 
     final var meta0 =
-      new CAMetadata(new RDottedName("x.y.a0"), "abc");
+      new CAMetadataType.Text(
+        new RDottedName("x.y.a0"),
+        "abc"
+      );
     final var meta1 =
-      new CAMetadata(new RDottedName("x.y.a1"), "def");
+      new CAMetadataType.Integral(
+        new RDottedName("x.y.a1"),
+        230L
+      );
     final var meta2 =
-      new CAMetadata(new RDottedName("x.y.a2"), "ghi");
+      new CAMetadataType.Real(
+        new RDottedName("x.y.a2"),
+        45.0
+      );
+    final var meta3 =
+      new CAMetadataType.Time(
+        new RDottedName("x.y.a3"),
+        OffsetDateTime.of(2000, 1, 1, 13, 30, 23, 0, UTC)
+      );
+    final var meta4 =
+      new CAMetadataType.Monetary(
+        new RDottedName("x.y.a4"),
+        CAMoney.money("200.0000000000000000"),
+        CurrencyUnit.EUR
+      );
 
     this.metaAdd.execute(
-      new MetadataPutType.Parameters(id0, Set.of(meta0, meta1, meta2))
+      new MetadataPutType.Parameters(
+        id0,
+        Set.of(meta0, meta1, meta2, meta3, meta4)
+      )
     );
 
     {
@@ -490,6 +517,8 @@ public final class CADatabaseItemsTest
       assertEquals(meta0, i.metadata().get(meta0.name()));
       assertEquals(meta1, i.metadata().get(meta1.name()));
       assertEquals(meta2, i.metadata().get(meta2.name()));
+      assertEquals(meta3, i.metadata().get(meta3.name()));
+      assertEquals(meta4, i.metadata().get(meta4.name()));
     }
 
     this.metaRemove.execute(
@@ -500,6 +529,8 @@ public final class CADatabaseItemsTest
       final var i = this.itemGet.execute(id0).orElseThrow();
       assertEquals(meta0, i.metadata().get(meta0.name()));
       assertEquals(meta2, i.metadata().get(meta2.name()));
+      assertEquals(meta3, i.metadata().get(meta3.name()));
+      assertEquals(meta4, i.metadata().get(meta4.name()));
     }
 
     this.metaRemove.execute(
@@ -508,7 +539,9 @@ public final class CADatabaseItemsTest
         Set.of(
           meta0.name(),
           meta1.name(),
-          meta2.name()))
+          meta2.name(),
+          meta3.name(),
+          meta4.name()))
     );
 
     {
@@ -547,7 +580,6 @@ public final class CADatabaseItemsTest
         CAFileID.random(),
         "Description",
         "text/plain",
-        1L,
         "SHA-256",
         "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
         new CAByteArray("a".getBytes(StandardCharsets.UTF_8))

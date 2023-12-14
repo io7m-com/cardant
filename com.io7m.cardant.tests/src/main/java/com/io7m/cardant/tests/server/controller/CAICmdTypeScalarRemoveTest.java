@@ -18,7 +18,7 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -54,11 +54,12 @@ import static org.mockito.Mockito.when;
 public final class CAICmdTypeScalarRemoveTest
   extends CACmdAbstractContract
 {
-  private static final CATypeScalar TYPE_SCALAR =
-    new CATypeScalar(
+  private static final CATypeScalarType.Integral TYPE_SCALAR =
+    new CATypeScalarType.Integral(
       new RDottedName("a.b.c"),
       "a",
-      "b"
+      23L,
+      1000L
     );
 
   /**

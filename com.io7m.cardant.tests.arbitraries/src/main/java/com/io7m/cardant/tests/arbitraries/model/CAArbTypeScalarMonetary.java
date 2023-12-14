@@ -17,22 +17,25 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
-public final class CAArbItemMetadata extends CAArbAbstract<CAMetadata>
+public final class CAArbTypeScalarMonetary
+  extends CAArbAbstract<CATypeScalarType.Monetary>
 {
-  public CAArbItemMetadata()
+  public CAArbTypeScalarMonetary()
   {
     super(
-      CAMetadata.class,
+      CATypeScalarType.Monetary.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(RDottedName.class),
-        Arbitraries.strings()
-      ).as(CAMetadata::new)
+        Arbitraries.strings(),
+        CAArbMoney.money(),
+        CAArbMoney.money()
+      ).as(CATypeScalarType.Monetary::new)
     );
   }
 }

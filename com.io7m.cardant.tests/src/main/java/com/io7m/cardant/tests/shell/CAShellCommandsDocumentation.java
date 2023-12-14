@@ -22,6 +22,7 @@ import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellValueConverters;
 import com.io7m.cardant.shell.CAShells;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QCommandOrGroupType;
 import com.io7m.quarrel.core.QCommandParserConfiguration;
 import com.io7m.quarrel.core.QCommandParsers;
@@ -68,9 +69,14 @@ public final class CAShellCommandsDocumentation
     final var xs =
       new QCommandXS("xs", true);
 
+    final var strings =
+      CAStrings.create(configuration.locale());
+    final var converters =
+      CAShellValueConverters.create(strings);
+
     final var parserConfig =
       new QCommandParserConfiguration(
-        CAShellValueConverters.get(),
+        converters,
         QCommandParsers.emptyResources()
       );
 

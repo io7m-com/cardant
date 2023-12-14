@@ -20,19 +20,18 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
-import com.io7m.lanark.core.RDottedName;
 import org.jooq.exception.DataAccessException;
 
 import java.util.List;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 final class CAItemTypeScalarSearch
-  extends CAAbstractSearch<CATypeScalar>
+  extends CAAbstractSearch<CATypeScalarType>
   implements CADatabaseTypeScalarSearchType
 {
   CAItemTypeScalarSearch(
@@ -42,7 +41,7 @@ final class CAItemTypeScalarSearch
   }
 
   @Override
-  protected CAPage<CATypeScalar> page(
+  protected CAPage<CATypeScalarType> page(
     final CADatabaseTransaction transaction,
     final JQKeysetRandomAccessPageDefinition page)
     throws CADatabaseException
@@ -58,22 +57,26 @@ final class CAItemTypeScalarSearch
         page.queryFields(
           context,
           List.of(
-            METADATA_SCALAR_TYPES.NAME,
-            METADATA_SCALAR_TYPES.DESCRIPTION,
-            METADATA_SCALAR_TYPES.PATTERN
+            METADATA_TYPES_SCALAR.MTS_DESCRIPTION,
+            METADATA_TYPES_SCALAR.MTS_NAME,
+            METADATA_TYPES_SCALAR.MTS_BASE_TYPE,
+            METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER,
+            METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER,
+            METADATA_TYPES_SCALAR.MTS_MONEY_LOWER,
+            METADATA_TYPES_SCALAR.MTS_MONEY_UPPER,
+            METADATA_TYPES_SCALAR.MTS_REAL_LOWER,
+            METADATA_TYPES_SCALAR.MTS_REAL_UPPER,
+            METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN,
+            METADATA_TYPES_SCALAR.MTS_TIME_LOWER,
+            METADATA_TYPES_SCALAR.MTS_TIME_UPPER
           )
         );
 
       querySpan.setAttribute(DB_STATEMENT, query.toString());
 
       final var items =
-        query.fetch().map(record -> {
-          return new CATypeScalar(
-            new RDottedName(record.get(METADATA_SCALAR_TYPES.NAME)),
-            record.get(METADATA_SCALAR_TYPES.DESCRIPTION),
-            record.get(METADATA_SCALAR_TYPES.PATTERN)
-          );
-        });
+        query.fetch()
+          .map(CADBQTypeScalarGet::mapRecord);
 
       return new CAPage<>(
         items,

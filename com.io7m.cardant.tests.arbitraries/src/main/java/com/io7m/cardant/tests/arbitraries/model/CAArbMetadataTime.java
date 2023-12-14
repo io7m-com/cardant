@@ -17,18 +17,24 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchAny;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-public final class CAArbMetadataValueMatchAny
-  extends CAArbAbstract<CAMetadataValueMatchAny>
+import java.time.OffsetDateTime;
+
+public final class CAArbMetadataTime extends CAArbAbstract<CAMetadataType.Time>
 {
-  public CAArbMetadataValueMatchAny()
+  public CAArbMetadataTime()
   {
     super(
-      CAMetadataValueMatchAny.class,
-      () -> Arbitraries.create(() -> CAMetadataValueMatchAny.ANY)
+      CAMetadataType.Time.class,
+      () -> Combinators.combine(
+        Arbitraries.defaultFor(RDottedName.class),
+        Arbitraries.defaultFor(OffsetDateTime.class)
+      ).as(CAMetadataType.Time::new)
     );
   }
 }

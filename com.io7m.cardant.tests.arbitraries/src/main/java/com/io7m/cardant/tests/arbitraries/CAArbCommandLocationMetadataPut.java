@@ -16,7 +16,7 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadata;
+import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
@@ -29,7 +29,7 @@ public final class CAArbCommandLocationMetadataPut extends CAArbAbstract<CAIComm
       CAICommandLocationMetadataPut.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.defaultFor(CAMetadata.class).set()
+        Arbitraries.defaultFor(CAMetadataType.class).set()
       ).as(CAICommandLocationMetadataPut::new)
     );
   }

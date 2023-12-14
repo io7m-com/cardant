@@ -15,7 +15,7 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarSearch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbPage;
 import net.jqwik.api.Arbitraries;
@@ -31,7 +31,7 @@ public final class CAArbResponseTypeScalarSearch extends CAArbAbstract<CAIRespon
       CAIResponseTypeScalarSearch.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
-        CAArbPage.of(Arbitraries.defaultFor(CATypeScalar.class))
+        CAArbPage.of(Arbitraries.defaultFor(CATypeScalarType.class))
       ).as(CAIResponseTypeScalarSearch::new)
     );
   }

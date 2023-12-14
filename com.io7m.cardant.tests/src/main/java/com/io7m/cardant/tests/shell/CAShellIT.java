@@ -25,7 +25,7 @@ import com.io7m.cardant.shell.CAShells;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterAll;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Timeout(value = 30L)
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
-@ErvillaConfiguration(disabledIfUnsupported = true)
+@ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CAShellIT
 {
   private static final Logger LOG =
@@ -81,7 +81,7 @@ public final class CAShellIT
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterAll EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
@@ -422,11 +422,11 @@ public final class CAShellIT
     w.println("item-create --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--name 'Battery'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--metadata voltage:9");
+                "--metadata '[integer voltage 9]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--metadata size:23");
+                "--metadata '[integer size 23]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--metadata gauge:20");
+                "--metadata '[integer gauge 20]'");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--key gauge");
     w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
@@ -609,7 +609,34 @@ public final class CAShellIT
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println(
-      "type-scalar-put --name com.x --description 'A description of things.' --pattern '.*'"
+      "type-scalar-put " +
+        "--name com.x " +
+        "--description 'A description of things.' " +
+        "--base-is-text '.*'"
+    );
+    w.println(
+      "type-scalar-put " +
+        "--name com.y " +
+        "--description 'A description of things.' " +
+        "--base-is-integral '[23 24]'"
+    );
+    w.println(
+      "type-scalar-put " +
+        "--name com.z " +
+        "--description 'A description of things.' " +
+        "--base-is-real '[23 24]'"
+    );
+    w.println(
+      "type-scalar-put " +
+        "--name com.a " +
+        "--description 'A description of things.' " +
+        "--base-is-time '[2023-01-01T00:00:00+00:00 2023-03-01T00:00:00+00:00]'"
+    );
+    w.println(
+      "type-scalar-put " +
+        "--name com.b " +
+        "--description 'A description of things.' " +
+        "--base-is-monetary '[23 24]'"
     );
     w.println("type-scalar-get --name com.x");
     w.println("type-scalar-search-begin --query things");
@@ -638,7 +665,10 @@ public final class CAShellIT
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println(
-      "type-scalar-put --name com.x --description 'A description of things.' --pattern '.*'"
+      "type-scalar-put " +
+        "--name com.x " +
+        "--description 'A description of things.' " +
+        "--base-is-text '.*'"
     );
     w.println("type-create --name com.y --description 'A type'");
     w.println(

@@ -39,7 +39,7 @@ public interface CAShellType extends AutoCloseable
   void run();
 
   /**
-   * @return The shell exit code
+   * @return The shell exit kind
    */
 
   int exitCode();

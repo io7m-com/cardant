@@ -27,7 +27,7 @@ import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
@@ -76,16 +76,16 @@ public final class CADBQTypeDeclsSearch
     final String query)
   {
     final var tableSource =
-      METADATA_TYPE_DECLARATIONS;
+      METADATA_TYPES_RECORDS;
 
     final var searchCondition =
       DSL.condition(
-        "METADATA_TYPE_DECLARATIONS.description_search @@ websearch_to_tsquery(?)",
+        "METADATA_TYPES_RECORDS.mtr_description_search @@ websearch_to_tsquery(?)",
         DSL.inline(query)
       );
 
     final var orderField =
-      new JQField(METADATA_TYPE_DECLARATIONS.NAME, JQOrder.ASCENDING);
+      new JQField(METADATA_TYPES_RECORDS.MTR_NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
       JQKeysetRandomAccessPaginationParameters.forTable(tableSource)

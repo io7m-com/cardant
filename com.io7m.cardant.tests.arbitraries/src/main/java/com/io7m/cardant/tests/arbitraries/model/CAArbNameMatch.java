@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType;
+import com.io7m.cardant.model.CANameMatchType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
@@ -28,9 +28,9 @@ public final class CAArbNameMatch extends CAArbAbstract<CANameMatchType>
     super(
       CANameMatchType.class,
       () -> Arbitraries.oneOf(
-        Arbitraries.defaultFor(CANameMatchType.CANameMatchAny.class),
-        Arbitraries.defaultFor(CANameMatchType.CANameMatchSearch.class),
-        Arbitraries.defaultFor(CANameMatchType.CANameMatchExact.class)
+        Arbitraries.defaultFor(CANameMatchType.Any.class),
+        Arbitraries.defaultFor(CANameMatchType.Search.class),
+        Arbitraries.defaultFor(CANameMatchType.Exact.class)
       )
     );
   }

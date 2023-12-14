@@ -68,7 +68,7 @@ public final class CADBQItemLocations
     throws CADatabaseException
   {
     throw new CADatabaseException(
-      "Unimplemented code.",
+      "Unimplemented kind.",
       errorIo(),
       Map.of(),
       Optional.empty()

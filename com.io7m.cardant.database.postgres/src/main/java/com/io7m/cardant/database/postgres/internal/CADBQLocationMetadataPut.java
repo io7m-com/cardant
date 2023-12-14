@@ -22,13 +22,22 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutT
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAMetadataType;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_REAL;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_TEXT;
+import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_TIME;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 /**
@@ -78,18 +87,183 @@ public final class CADBQLocationMetadataPut
 
     final var batches = new ArrayList<Query>();
     for (final var meta : metadata) {
-      batches.add(
-        context.insertInto(LOCATION_METADATA)
-          .set(LOCATION_METADATA.METADATA_LOCATION_ID, location.id())
-          .set(LOCATION_METADATA.METADATA_NAME, meta.name().value())
-          .set(LOCATION_METADATA.METADATA_VALUE, meta.value())
-          .onConflict(LOCATION_METADATA.METADATA_LOCATION_ID, LOCATION_METADATA.METADATA_NAME)
-          .doUpdate()
-          .set(LOCATION_METADATA.METADATA_VALUE, meta.value())
-      );
+      batches.add(setMetadataValue(context, location, meta));
     }
 
     context.batch(batches).execute();
     return UNIT;
+  }
+
+  static Query setMetadataValue(
+    final DSLContext context,
+    final CALocationID locationID,
+    final CAMetadataType meta)
+  {
+    if (meta instanceof final CAMetadataType.Monetary m) {
+      return setMetadataValueMonetary(context, locationID, m);
+    }
+    if (meta instanceof final CAMetadataType.Real m) {
+      return setMetadataValueReal(context, locationID, m);
+    }
+    if (meta instanceof final CAMetadataType.Time m) {
+      return setMetadataValueTime(context, locationID, m);
+    }
+    if (meta instanceof final CAMetadataType.Text m) {
+      return setMetadataValueText(context, locationID, m);
+    }
+    if (meta instanceof final CAMetadataType.Integral m) {
+      return setMetadataValueIntegral(context, locationID, m);
+    }
+    throw new IllegalStateException();
+  }
+
+  private static Query setMetadataValueIntegral(
+    final DSLContext context,
+    final CALocationID locationID,
+    final CAMetadataType.Integral meta)
+  {
+    return context.insertInto(LOCATION_METADATA)
+      .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
+      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_INTEGRAL)
+      .set(
+        LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL,
+        Long.valueOf(meta.value()))
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(
+        LOCATION_METADATA.LOCATION_META_LOCATION,
+        LOCATION_METADATA.LOCATION_META_NAME)
+      .doUpdate()
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_INTEGRAL)
+      .set(
+        LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL,
+        Long.valueOf(meta.value()))
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null);
+  }
+
+  private static Query setMetadataValueText(
+    final DSLContext context,
+    final CALocationID locationID,
+    final CAMetadataType.Text meta)
+  {
+    return context.insertInto(LOCATION_METADATA)
+      .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
+      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TEXT)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, meta.value())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(
+        LOCATION_METADATA.LOCATION_META_LOCATION,
+        LOCATION_METADATA.LOCATION_META_NAME)
+      .doUpdate()
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TEXT)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, meta.value())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null);
+  }
+
+  private static Query setMetadataValueTime(
+    final DSLContext context,
+    final CALocationID locationID,
+    final CAMetadataType.Time meta)
+  {
+    return context.insertInto(LOCATION_METADATA)
+      .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
+      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TIME)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, meta.value())
+      .onConflict(
+        LOCATION_METADATA.LOCATION_META_LOCATION,
+        LOCATION_METADATA.LOCATION_META_NAME)
+      .doUpdate()
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TIME)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, meta.value());
+  }
+
+  private static Query setMetadataValueReal(
+    final DSLContext context,
+    final CALocationID locationID,
+    final CAMetadataType.Real meta)
+  {
+    return context.insertInto(LOCATION_METADATA)
+      .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
+      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_REAL)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(
+        LOCATION_METADATA.LOCATION_META_VALUE_REAL,
+        Double.valueOf(meta.value()))
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(
+        LOCATION_METADATA.LOCATION_META_LOCATION,
+        LOCATION_METADATA.LOCATION_META_NAME)
+      .doUpdate()
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_REAL)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY, (String) null)
+      .set(
+        LOCATION_METADATA.LOCATION_META_VALUE_REAL,
+        Double.valueOf(meta.value()))
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TEXT, (String) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null);
+  }
+
+  private static Query setMetadataValueMonetary(
+    final DSLContext context,
+    final CALocationID locationID,
+    final CAMetadataType.Monetary meta)
+  {
+    return context.insertInto(LOCATION_METADATA)
+      .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
+      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_MONEY)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, meta.value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY,
+        meta.currency().getCode())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
+      .onConflict(
+        LOCATION_METADATA.LOCATION_META_LOCATION,
+        LOCATION_METADATA.LOCATION_META_NAME)
+      .doUpdate()
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_MONEY)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, meta.value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY,
+        meta.currency().getCode())
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_REAL, (Double) null)
+      .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null);
   }
 }

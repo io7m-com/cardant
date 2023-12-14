@@ -31,9 +31,9 @@ import org.jooq.DSLContext;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_SCALAR_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_DECLARATIONS;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_FIELDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
@@ -83,18 +83,18 @@ public final class CADBQTypeDeclsReferencingScalar
     throws CADatabaseException
   {
     final Table<?> tableSource =
-      METADATA_TYPE_DECLARATIONS
-        .join(METADATA_TYPE_FIELDS)
-        .on(METADATA_TYPE_FIELDS.FIELD_DECLARATION.eq(
-          METADATA_TYPE_DECLARATIONS.ID))
-        .join(METADATA_SCALAR_TYPES)
-        .on(METADATA_SCALAR_TYPES.ID.eq(METADATA_TYPE_FIELDS.FIELD_SCALAR_TYPE));
+      METADATA_TYPES_RECORDS
+        .join(METADATA_TYPES_RECORD_FIELDS)
+        .on(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION.eq(
+          METADATA_TYPES_RECORDS.MTR_ID))
+        .join(METADATA_TYPES_SCALAR)
+        .on(METADATA_TYPES_SCALAR.MTS_ID.eq(METADATA_TYPES_RECORD_FIELDS.MTRF_SCALAR_TYPE));
 
     final var searchCondition =
-      DSL.condition(METADATA_SCALAR_TYPES.NAME.eq(name.value()));
+      DSL.condition(METADATA_TYPES_SCALAR.MTS_NAME.eq(name.value()));
 
     final var orderField =
-      new JQField(METADATA_TYPE_DECLARATIONS.NAME, JQOrder.ASCENDING);
+      new JQField(METADATA_TYPES_RECORDS.MTR_NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
       JQKeysetRandomAccessPaginationParameters.forTable(tableSource)

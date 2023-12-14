@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -126,7 +126,6 @@ public sealed interface CAFileType extends Comparable<CAFileType>
    * @param id            The ID
    * @param description   The description
    * @param mediaType     The media type
-   * @param size          The size in bytes
    * @param hashAlgorithm The hash algorithm
    * @param hashValue     The hash value
    * @param data          The data
@@ -136,7 +135,6 @@ public sealed interface CAFileType extends Comparable<CAFileType>
     CAFileID id,
     String description,
     String mediaType,
-    long size,
     String hashAlgorithm,
     String hashValue,
     CAByteArray data)
@@ -154,18 +152,12 @@ public sealed interface CAFileType extends Comparable<CAFileType>
       Objects.requireNonNull(hashAlgorithm, "hashAlgorithm");
       Objects.requireNonNull(hashValue, "hashValue");
       Objects.requireNonNull(data, "data");
+    }
 
-      final var dataArray = data.data();
-      if (dataArray.length != size) {
-        throw new IllegalArgumentException(
-          new StringBuilder(64)
-            .append("Data length ")
-            .append(dataArray.length)
-            .append(" != size ")
-            .append(size)
-            .toString()
-        );
-      }
+    @Override
+    public long size()
+    {
+      return Integer.toUnsignedLong(this.data.data().length);
     }
 
     @Override
@@ -181,7 +173,7 @@ public sealed interface CAFileType extends Comparable<CAFileType>
         this.id,
         this.description,
         this.mediaType,
-        this.size,
+        this.size(),
         this.hashAlgorithm,
         this.hashValue);
     }

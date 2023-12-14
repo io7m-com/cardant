@@ -30,7 +30,7 @@ import java.util.UUID;
  * @param requestId         The request ID
  * @param message           The error summary
  * @param remediatingAction The remediating action, if any
- * @param errorCode         The error code
+ * @param errorCode         The error kind
  * @param attributes        The error attributes
  * @param exception         The exception associated with the error, if any
  * @param blame             The blame assignment
@@ -52,7 +52,7 @@ public record CAIResponseError(
    * @param requestId         The request ID
    * @param message           The error summary
    * @param remediatingAction The remediating action, if any
-   * @param errorCode         The error code
+   * @param errorCode         The error kind
    * @param attributes        The error attributes
    * @param exception         The exception associated with the error, if any
    * @param blame             The blame assignment

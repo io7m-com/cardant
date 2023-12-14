@@ -20,7 +20,7 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeScalar;
+import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchPrevious;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -110,9 +110,9 @@ public final class CAICmdTypeScalarSearchPreviousTest
       this.transaction();
 
     final var page =
-      new CAPage<>(
+      new CAPage<CATypeScalarType>(
         List.of(
-          new CATypeScalar(new RDottedName("a.b.c"), "x", "a")
+          new CATypeScalarType.Text(new RDottedName("a.b.c"), "x", "a")
         ),
         0,
         1,

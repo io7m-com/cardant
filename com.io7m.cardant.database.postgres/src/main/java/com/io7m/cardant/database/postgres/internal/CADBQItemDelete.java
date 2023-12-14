@@ -74,11 +74,11 @@ public final class CADBQItemDelete
     for (final var item : items) {
       deletes.add(
         context.deleteFrom(ITEM_ATTACHMENTS)
-          .where(ITEM_ATTACHMENTS.ITEM_ID.eq(item.id()))
+          .where(ITEM_ATTACHMENTS.IA_ITEM_ID.eq(item.id()))
       );
       deletes.add(
         context.deleteFrom(ITEM_METADATA)
-          .where(ITEM_METADATA.METADATA_ITEM_ID.eq(item.id()))
+          .where(ITEM_METADATA.ITEM_META_ITEM.eq(item.id()))
       );
       deletes.add(
         context.deleteFrom(ITEMS)

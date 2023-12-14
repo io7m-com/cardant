@@ -77,11 +77,11 @@ public final class CADBQItemAttachmentRemove
     this.setAttribute(RELATION, relation);
 
     final var matchesItem =
-      ITEM_ATTACHMENTS.ITEM_ID.eq(item.id());
+      ITEM_ATTACHMENTS.IA_ITEM_ID.eq(item.id());
     final var matchesFile =
-      ITEM_ATTACHMENTS.FILE_ID.eq(file.id());
+      ITEM_ATTACHMENTS.IA_FILE_ID.eq(file.id());
     final var matchesRelation =
-      ITEM_ATTACHMENTS.RELATION.eq(relation);
+      ITEM_ATTACHMENTS.IA_RELATION.eq(relation);
     final var matches =
       matchesItem.and(matchesFile).and(matchesRelation);
 

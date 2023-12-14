@@ -77,12 +77,12 @@ public final class CADBQItemAttachmentAdd
     this.setAttribute(RELATION, relation);
 
     context.insertInto(ITEM_ATTACHMENTS)
-      .set(ITEM_ATTACHMENTS.ITEM_ID, item.id())
-      .set(ITEM_ATTACHMENTS.FILE_ID, file.id())
-      .set(ITEM_ATTACHMENTS.RELATION, relation)
+      .set(ITEM_ATTACHMENTS.IA_ITEM_ID, item.id())
+      .set(ITEM_ATTACHMENTS.IA_FILE_ID, file.id())
+      .set(ITEM_ATTACHMENTS.IA_RELATION, relation)
       .onDuplicateKeyUpdate()
-      .set(ITEM_ATTACHMENTS.FILE_ID, file.id())
-      .set(ITEM_ATTACHMENTS.RELATION, relation)
+      .set(ITEM_ATTACHMENTS.IA_FILE_ID, file.id())
+      .set(ITEM_ATTACHMENTS.IA_RELATION, relation)
       .execute();
 
     return UNIT;

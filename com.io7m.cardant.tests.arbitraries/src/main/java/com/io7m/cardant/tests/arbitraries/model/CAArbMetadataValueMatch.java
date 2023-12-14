@@ -17,9 +17,13 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchAny;
-import com.io7m.cardant.model.CAItemSearchParameters.CAMetadataValueMatchType.CAMetadataValueMatchExact;
+
+import com.io7m.cardant.model.CAMetadataValueMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
@@ -31,8 +35,12 @@ public final class CAArbMetadataValueMatch
     super(
       CAMetadataValueMatchType.class,
       () -> Arbitraries.oneOf(
-        Arbitraries.defaultFor(CAMetadataValueMatchAny.class),
-        Arbitraries.defaultFor(CAMetadataValueMatchExact.class)
+        Arbitraries.defaultFor(CAMetadataValueMatchType.AnyValue.class),
+        Arbitraries.defaultFor(IntegralMatchType.class),
+        Arbitraries.defaultFor(MonetaryMatchType.class),
+        Arbitraries.defaultFor(RealMatchType.class),
+        Arbitraries.defaultFor(TextMatchType.class),
+        Arbitraries.defaultFor(TimeMatchType.class)
       )
     );
   }

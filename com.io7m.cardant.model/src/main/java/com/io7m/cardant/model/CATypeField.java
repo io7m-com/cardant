@@ -33,7 +33,7 @@ import java.util.Objects;
 public record CATypeField(
   RDottedName name,
   String description,
-  CATypeScalar type,
+  CATypeScalarType type,
   boolean isRequired)
 {
   /**

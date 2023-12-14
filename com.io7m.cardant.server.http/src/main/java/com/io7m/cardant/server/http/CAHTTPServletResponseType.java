@@ -27,7 +27,7 @@ public sealed interface CAHTTPServletResponseType
   permits CAHTTPServletResponseFixedSize, CAHTTPServletResponseRedirect
 {
   /**
-   * @return The response status code
+   * @return The response status kind
    */
 
   int statusCode();

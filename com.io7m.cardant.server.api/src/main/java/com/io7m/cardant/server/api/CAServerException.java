@@ -33,7 +33,7 @@ public final class CAServerException extends CAException
    * Construct an exception.
    *
    * @param message             The message
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
    */
@@ -52,7 +52,7 @@ public final class CAServerException extends CAException
    *
    * @param message             The message
    * @param cause               The cause
-   * @param inErrorCode         The error code
+   * @param inErrorCode         The error kind
    * @param inAttributes        The error attributes
    * @param inRemediatingAction The remediating action, if any
    */

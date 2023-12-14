@@ -17,17 +17,17 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemSearchParameters.CANameMatchType.CANameMatchExact;
+import com.io7m.cardant.model.CANameMatchType.Exact;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbNameMatchExact extends CAArbAbstract<CANameMatchExact>
+public final class CAArbNameMatchExact extends CAArbAbstract<Exact>
 {
   public CAArbNameMatchExact()
   {
     super(
-      CANameMatchExact.class,
-      () -> Arbitraries.strings().map(CANameMatchExact::new)
+      Exact.class,
+      () -> Arbitraries.strings().map(Exact::new)
     );
   }
 }

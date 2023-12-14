@@ -48,8 +48,6 @@ public final class CAI1Validation
 
   }
 
-
-
   @Override
   public ProtocolCAIv1Type convertToWire(
     final CAIMessageType message)
