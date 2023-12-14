@@ -52,4 +52,7 @@
   <suppress files="CAMetadataMatchExpressions.java"
             checks="NPathComplexity"/>
   
+  <suppress files="CA1HandlerLogin.java"
+            checks="ParameterNumber"/>
+  
 </suppressions>

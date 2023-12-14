@@ -142,7 +142,13 @@ public final class CAServerTelemetryServices
         .loggerBuilder("com.io7m.cardant")
         .build();
 
-    return new CAServerTelemetryService(openTelemetry, tracer, meter, logger);
+    return new CAServerTelemetryService(
+      openTelemetry,
+      tracer,
+      meter,
+      logger,
+      openTelemetry.getPropagators().getTextMapPropagator()
+    );
   }
 
   private static SdkMeterProvider createMeterProvider(

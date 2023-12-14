@@ -22,11 +22,12 @@ import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.server.http.CAHTTPServletRequestInformation;
-import com.io7m.cardant.server.http.CAHTTPServletResponseFixedSize;
-import com.io7m.cardant.server.http.CAHTTPServletResponseType;
+import com.io7m.cardant.server.http.CAHTTPRequestInformation;
+import com.io7m.cardant.server.http.CAHTTPResponseFixedSize;
+import com.io7m.cardant.server.http.CAHTTPResponseType;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Functions to transform exceptions.
@@ -50,12 +51,12 @@ public final class CA1Errors
    */
 
   static CAIResponseError errorOf(
-    final CAHTTPServletRequestInformation information,
+    final CAHTTPRequestInformation information,
     final CAIResponseBlame blame,
     final CAException exception)
   {
     return new CAIResponseError(
-      information.requestId(),
+      information.requestID(),
       exception.getMessage(),
       exception.errorCode(),
       exception.attributes(),
@@ -76,17 +77,18 @@ public final class CA1Errors
    * @return An error response
    */
 
-  public static CAHTTPServletResponseType errorResponseOf(
+  public static CAHTTPResponseType errorResponseOf(
     final CAI1Messages messages,
-    final CAHTTPServletRequestInformation information,
+    final CAHTTPRequestInformation information,
     final CAIResponseBlame blame,
     final CAException exception)
   {
-    return new CAHTTPServletResponseFixedSize(
+    return new CAHTTPResponseFixedSize(
       switch (blame) {
         case BLAME_CLIENT -> 400;
         case BLAME_SERVER -> 500;
       },
+      Set.of(),
       CAI1Messages.contentType(),
       messages.serialize(errorOf(information, blame, exception))
     );
@@ -102,9 +104,9 @@ public final class CA1Errors
    * @return An error response
    */
 
-  public static CAHTTPServletResponseType errorResponseOf(
+  public static CAHTTPResponseType errorResponseOf(
     final CAI1Messages messages,
-    final CAHTTPServletRequestInformation information,
+    final CAHTTPRequestInformation information,
     final CACommandExecutionFailure exception)
   {
     final CAIResponseBlame blame;
@@ -114,8 +116,9 @@ public final class CA1Errors
       blame = CAIResponseBlame.BLAME_SERVER;
     }
 
-    return new CAHTTPServletResponseFixedSize(
+    return new CAHTTPResponseFixedSize(
       exception.httpStatusCode(),
+      Set.of(),
       CAI1Messages.contentType(),
       messages.serialize(errorOf(information, blame, exception))
     );

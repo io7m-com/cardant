@@ -23,6 +23,7 @@ module com.io7m.cardant.server.controller
   requires static org.osgi.annotation.versioning;
   requires static org.osgi.annotation.bundle;
 
+  requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.service.clock;
@@ -32,6 +33,7 @@ module com.io7m.cardant.server.controller
 
   requires com.io7m.medrina.api;
   requires com.io7m.repetoir.core;
+  requires io.opentelemetry.api;
   requires io.opentelemetry.context;
   requires org.slf4j;
 

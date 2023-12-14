@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Configuration xmlns="com.io7m.cardant:configuration:1">
+<Configuration xmlns="com.io7m.cardant:configuration:1" xmlns:ct="com.io7m.cardant:tls:1">
 
   <InventoryService ListenAddress="[::]"
                     ListenPort="30000"
                     SessionExpiration="PT30M"
-                    ExternalAddress="http://cardant.example.com:30000"/>
+                    ExternalAddress="http://cardant.example.com:30000">
+    <ct:TLSDisabled/>
+  </InventoryService>
 
   <Database Kind="POSTGRESQL"
             OwnerRoleName="cardant_install"
@@ -19,7 +21,7 @@
             Upgrade="true"
             Language="english"/>
 
-  <IdStore BaseURI="http://idstore.example.com:50000"
+  <Idstore BaseURI="http://idstore.example.com:50000"
            PasswordResetURI="http://idstore.example.com:50001/reset"/>
 
   <Limits MaximumFileUploadSizeOctets="10000000"

@@ -14,14 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.server.service.reqlimit;
 
+import com.io7m.cardant.server.http.CAHTTPServerRequests;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
 import com.io7m.repetoir.core.RPServiceType;
-import jakarta.servlet.http.HttpServletRequest;
+import io.helidon.webserver.http.ServerRequest;
 import org.apache.commons.io.input.BoundedInputStream;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.function.Function;
@@ -32,22 +33,22 @@ import java.util.function.Function;
 
 public final class CARequestLimits implements RPServiceType
 {
+  private final CAConfigurationServiceType configService;
   private final Function<Long, String> requestTooLargeMessage;
-  private final CAConfigurationServiceType configuration;
 
   /**
    * Methods to handle request size limits.
    *
-   * @param inConfiguration          The configuration service
+   * @param inConfigService          The configuration service
    * @param inRequestTooLargeMessage A function that formats a message
    */
 
   public CARequestLimits(
-    final CAConfigurationServiceType inConfiguration,
+    final CAConfigurationServiceType inConfigService,
     final Function<Long, String> inRequestTooLargeMessage)
   {
-    this.configuration =
-      Objects.requireNonNull(inConfiguration, "inConfiguration");
+    this.configService =
+      Objects.requireNonNull(inConfigService, "configService");
     this.requestTooLargeMessage =
       Objects.requireNonNull(
         inRequestTooLargeMessage, "requestTooLargeMessage");
@@ -62,17 +63,18 @@ public final class CARequestLimits implements RPServiceType
    *
    * @return A bounded input stream
    *
-   * @throws IOException            On errors
    * @throws CARequestLimitExceeded On errors
    */
 
-  private InputStream boundedMaximumInput(
-    final HttpServletRequest request,
+  public InputStream boundedMaximumInput(
+    final ServerRequest request,
     final long maximum)
-    throws IOException, CARequestLimitExceeded
+    throws CARequestLimitExceeded
   {
     final long size;
-    final var specifiedLength = request.getContentLengthLong();
+    final var specifiedLength =
+      CAHTTPServerRequests.contentLength(request);
+
     if (specifiedLength == -1L) {
       size = maximum;
     } else {
@@ -88,75 +90,9 @@ public final class CARequestLimits implements RPServiceType
       size = specifiedLength;
     }
 
-    final var baseStream = request.getInputStream();
-    return new BoundedInputStream(baseStream, size);
-  }
-
-  /**
-   * Bound the given servlet request to the given maximum size for file
-   * uploads.
-   *
-   * @param request The request
-   *
-   * @return A bounded input stream
-   *
-   * @throws IOException            On errors
-   * @throws CARequestLimitExceeded On errors
-   */
-
-  public InputStream boundedMaximumInputForFileUpload(
-    final HttpServletRequest request)
-    throws IOException, CARequestLimitExceeded
-  {
-    return this.boundedMaximumInput(
-      request,
-      this.configuration.configuration()
-        .limitsConfiguration()
-        .maximumFileUploadSizeOctets()
-    );
-  }
-
-  /**
-   * Bound the given servlet request to the given maximum size for commands.
-   *
-   * @param request The request
-   *
-   * @return A bounded input stream
-   *
-   * @throws IOException            On errors
-   * @throws CARequestLimitExceeded On errors
-   */
-
-  public InputStream boundedMaximumInputForCommand(
-    final HttpServletRequest request)
-    throws IOException, CARequestLimitExceeded
-  {
-    return this.boundedMaximumInput(
-      request,
-      this.configuration.configuration()
-        .limitsConfiguration()
-        .maximumCommandSizeOctets()
-    );
-  }
-
-  /**
-   * Bound the given servlet request to the given maximum size for login commands.
-   *
-   * @param request The request
-   *
-   * @return A bounded input stream
-   *
-   * @throws IOException            On errors
-   * @throws CARequestLimitExceeded On errors
-   */
-
-  public InputStream boundedMaximumInputForLoginCommand(
-    final HttpServletRequest request)
-    throws IOException, CARequestLimitExceeded
-  {
-    return this.boundedMaximumInput(
-      request,
-      1024L
+    return new BoundedInputStream(
+      request.content().inputStream(),
+      size
     );
   }
 
@@ -171,5 +107,53 @@ public final class CARequestLimits implements RPServiceType
   {
     return "[CARequestLimits 0x%s]"
       .formatted(Long.toUnsignedString(this.hashCode(), 16));
+  }
+
+  /**
+   * Bound the given servlet request to a maximum size suitable for file
+   * uploads, raising an exception if the incoming Content-Length is larger
+   * than this size.
+   *
+   * @param request The request
+   *
+   * @return A bounded input stream
+   *
+   * @throws CARequestLimitExceeded On errors
+   */
+
+  public InputStream boundedMaximumInputForFileUpload(
+    final ServerRequest request)
+    throws CARequestLimitExceeded
+  {
+    return this.boundedMaximumInput(
+      request,
+      this.configService.configuration()
+        .limitsConfiguration()
+        .maximumFileUploadSizeOctets()
+    );
+  }
+
+  /**
+   * Bound the given servlet request to a maximum size suitable for login commands,
+   * raising an exception if the incoming Content-Length is larger
+   * than this size.
+   *
+   * @param request The request
+   *
+   * @return A bounded input stream
+   *
+   * @throws CARequestLimitExceeded On errors
+   */
+
+  public InputStream boundedMaximumInputForLoginCommand(
+    final ServerRequest request)
+    throws CARequestLimitExceeded
+  {
+    return this.boundedMaximumInput(
+      request,
+      this.configService.configuration()
+        .limitsConfiguration()
+        .maximumCommandSizeOctets()
+    );
   }
 }

@@ -34,6 +34,7 @@ import com.io7m.cardant.server.api.CAServerType;
 import com.io7m.cardant.server.basic.CAServers;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestProperties;
+import com.io7m.cardant.tls.CATLSDisabled;
 import com.io7m.ervilla.api.EContainerSpec;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.api.EContainerType;
@@ -477,7 +478,8 @@ public final class CATestContainers
           "localhost",
           apiPort,
           URI.create("http://localhost:" + apiPort),
-          Optional.of(Duration.ofHours(1L))
+          Optional.of(Duration.ofHours(1L)),
+          CATLSDisabled.TLS_DISABLED
         ),
         new CAServerIdstoreConfiguration(
           URI.create("http://localhost:" + idstoreFixture.userAPIPort),
@@ -487,7 +489,7 @@ public final class CATestContainers
           10_000_000L,
           1_000_000L
         ),
-        Optional.empty()
+        empty()
       );
 
     final var fixture =

@@ -98,7 +98,7 @@ public final class CAServerConfigurations
       strings,
       database,
       databaseConfiguration,
-      file.httpConfiguration().inventoryService(),
+      file.inventoryService(),
       file.idstoreConfiguration(),
       file.limitsConfiguration(),
       file.openTelemetry()

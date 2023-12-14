@@ -27,7 +27,7 @@ import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerException;
 import com.io7m.cardant.server.api.CAServerType;
-import com.io7m.cardant.server.inventory.v1.CAI1Server;
+import com.io7m.cardant.server.inventory.v1.CA1Server;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.configuration.CAConfigurationService;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
@@ -42,6 +42,8 @@ import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryNoOp;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFactoryType;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
+import com.io7m.cardant.server.service.tls.CATLSContextService;
+import com.io7m.cardant.server.service.tls.CATLSContextServiceType;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessages;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessagesType;
 import com.io7m.cardant.strings.CAStrings;
@@ -53,7 +55,6 @@ import com.io7m.repetoir.core.RPServiceDirectory;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
-import org.eclipse.jetty.server.Server;
 
 import java.time.Duration;
 import java.util.Map;
@@ -140,8 +141,8 @@ public final class CAServer implements CAServerType
           final var services =
             this.resources.add(this.createServiceDirectory(this.database));
 
-          final Server userView = CAI1Server.create(services);
-          this.resources.add(userView::stop);
+          final var inventory = CA1Server.create(services);
+          this.resources.add(inventory::stop);
 
         } catch (final CADatabaseException e) {
           startupSpan.recordException(e);
@@ -193,6 +194,9 @@ public final class CAServer implements CAServerType
     services.register(CAServerTelemetryServiceType.class, this.telemetry);
     services.register(CADatabaseType.class, newDatabase);
 
+    final var verdant = new CAVerdantMessages();
+    services.register(CAVerdantMessagesType.class, verdant);
+
     final var metrics = new CAMetricsService(this.telemetry);
     services.register(CAMetricsServiceType.class, metrics);
 
@@ -202,7 +206,7 @@ public final class CAServer implements CAServerType
     final var sessionInventoryService =
       new CASessionService(
         metrics,
-        this.configuration.inventoryApiAddress()
+        this.configuration.inventoryApiConfiguration()
           .sessionExpiration()
           .orElseGet(() -> Duration.ofDays(3650L))
       );
@@ -232,10 +236,13 @@ public final class CAServer implements CAServerType
     final var maintenance =
       CAMaintenanceService.create(clock, this.telemetry, newDatabase);
 
+    final var tls = CATLSContextService.createService(services);
+    services.register(CATLSContextServiceType.class, tls);
+
     services.register(CAMaintenanceService.class, maintenance);
     services.register(
       CARequestLimits.class,
-      new CARequestLimits(configService, size -> {
+      new CARequestLimits(configService, (Long size) -> {
         return strings.format(ERROR_REQUEST_TOO_LARGE, size);
       }));
     return services;

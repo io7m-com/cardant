@@ -24,13 +24,13 @@ module com.io7m.cardant.server.service.configuration
   requires static org.osgi.annotation.versioning;
 
   requires com.io7m.cardant.server.api;
+  requires com.io7m.cardant.tls;
 
-  requires transitive com.io7m.repetoir.core;
-  requires jakarta.xml.bind;
-  requires org.slf4j;
-
-  opens com.io7m.cardant.server.service.configuration.xml
-    to jakarta.xml.bind;
+  requires com.io7m.anethum.api;
+  requires com.io7m.blackthorne.core;
+  requires com.io7m.blackthorne.jxe;
+  requires com.io7m.jxe.core;
+  requires com.io7m.repetoir.core;
 
   exports com.io7m.cardant.server.service.configuration;
 }

@@ -50,7 +50,7 @@ public interface CAServerType extends AutoCloseable
 
   default URI inventoryAPI()
   {
-    return this.configuration().inventoryApiAddress().externalAddress();
+    return this.configuration().inventoryApiConfiguration().externalAddress();
   }
 
   /**

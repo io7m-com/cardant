@@ -18,6 +18,7 @@
   <entry key="count">Count</entry>
   <entry key="count_expected">Count Expected</entry>
   <entry key="count_received">Count Received</entry>
+  <entry key="error_io">I/O operation failed.</entry>
   <entry key="error_attachment_missing_data">Cannot update an attachment with missing data.</entry>
   <entry key="error_close_connection">Failed to close a database connection: {0}.</entry>
   <entry key="error_command_not_here">This command cannot be executed on this endpoint.</entry>

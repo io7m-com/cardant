@@ -23,19 +23,18 @@ module com.io7m.cardant.server.http
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.error_codes;
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.telemetry.api;
 
+  requires io.helidon.http;
+  requires io.helidon.webserver;
   requires io.opentelemetry.api;
-  requires io.opentelemetry.semconv;
   requires io.opentelemetry.context;
-
-  requires jetty.servlet.api;
-  requires org.eclipse.jetty.http;
-  requires org.eclipse.jetty.servlet;
-  requires org.eclipse.jetty.util;
+  requires io.opentelemetry.semconv;
+  requires org.slf4j;
 
   exports com.io7m.cardant.server.http;
 }

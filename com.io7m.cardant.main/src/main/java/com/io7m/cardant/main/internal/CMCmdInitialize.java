@@ -17,9 +17,10 @@
 
 package com.io7m.cardant.main.internal;
 
+import com.io7m.anethum.slf4j.ParseStatusLogging;
 import com.io7m.cardant.server.api.CAServerConfigurations;
 import com.io7m.cardant.server.api.CAServerFactoryType;
-import com.io7m.cardant.server.service.configuration.CAConfigurationFiles;
+import com.io7m.cardant.server.service.configuration.CAServerConfigurationParsers;
 import com.io7m.idstore.model.IdName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
@@ -29,6 +30,8 @@ import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.quarrel.ext.logback.QLogback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.nio.file.Path;
@@ -48,6 +51,9 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 public final class CMCmdInitialize implements QCommandType
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CMCmdInitialize.class);
+
   private static final QParameterNamed1<Path> CONFIGURATION_FILE =
     new QParameterNamed1<>(
       "--configuration",
@@ -127,9 +133,14 @@ public final class CMCmdInitialize implements QCommandType
     final var configurationFile =
       context.parameterValue(CONFIGURATION_FILE);
 
+    final var parsers =
+      new CAServerConfigurationParsers();
+
     final var configFile =
-      new CAConfigurationFiles()
-        .parse(configurationFile);
+      parsers.parseFile(
+        configurationFile,
+        status -> ParseStatusLogging.logWithAll(LOG, status)
+      );
 
     final var configuration =
       CAServerConfigurations.ofFile(

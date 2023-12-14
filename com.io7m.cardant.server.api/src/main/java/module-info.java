@@ -21,11 +21,13 @@
 module com.io7m.cardant.server.api
 {
   uses com.io7m.cardant.database.api.CADatabaseFactoryType;
+
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.cardant.database.api;
-  requires transitive com.io7m.cardant.error_codes;
+  requires com.io7m.cardant.database.api;
+  requires com.io7m.cardant.error_codes;
+  requires com.io7m.cardant.tls;
   requires java.net.http;
 
   exports com.io7m.cardant.server.api;

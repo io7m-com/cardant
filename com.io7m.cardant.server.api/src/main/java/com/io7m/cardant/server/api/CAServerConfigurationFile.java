@@ -22,7 +22,7 @@ import java.util.Optional;
 /**
  * The server configuration file.
  *
- * @param httpConfiguration     The HTTP configuration
+ * @param inventoryService      The inventory service configuration
  * @param databaseConfiguration The database configuration
  * @param idstoreConfiguration  The idstore server configuration
  * @param limitsConfiguration   The limits configuration
@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 
 public record CAServerConfigurationFile(
-  CAServerHTTPConfiguration httpConfiguration,
+  CAServerHTTPServiceConfiguration inventoryService,
   CAServerDatabaseConfiguration databaseConfiguration,
   CAServerIdstoreConfiguration idstoreConfiguration,
   CAServerLimitsConfiguration limitsConfiguration,
@@ -39,7 +39,7 @@ public record CAServerConfigurationFile(
   /**
    * The server configuration file.
    *
-   * @param httpConfiguration     The HTTP configuration
+   * @param inventoryService      The inventory service configuration
    * @param databaseConfiguration The database configuration
    * @param idstoreConfiguration  The idstore server configuration
    * @param limitsConfiguration   The limits configuration
@@ -48,7 +48,7 @@ public record CAServerConfigurationFile(
 
   public CAServerConfigurationFile
   {
-    Objects.requireNonNull(httpConfiguration, "httpConfiguration");
+    Objects.requireNonNull(inventoryService, "inventoryService");
     Objects.requireNonNull(databaseConfiguration, "databaseConfiguration");
     Objects.requireNonNull(idstoreConfiguration, "idstoreConfiguration");
     Objects.requireNonNull(limitsConfiguration, "limitsConfiguration");

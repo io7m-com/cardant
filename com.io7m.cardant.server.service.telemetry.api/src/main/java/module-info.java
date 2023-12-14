@@ -23,11 +23,13 @@ module com.io7m.cardant.server.service.telemetry.api
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.repetoir.core;
-  requires transitive io.opentelemetry.api;
-  requires transitive com.io7m.cardant.server.api;
+  requires com.io7m.cardant.error_codes;
+  requires com.io7m.cardant.server.api;
 
   requires com.io7m.jmulticlose.core;
+  requires com.io7m.repetoir.core;
+  requires io.opentelemetry.api;
+  requires io.opentelemetry.context;
 
   exports com.io7m.cardant.server.service.telemetry.api;
 }

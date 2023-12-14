@@ -19,13 +19,9 @@ package com.io7m.cardant.server.http;
 
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import io.helidon.webserver.http.RoutingRequest;
+import io.helidon.webserver.http.RoutingResponse;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -33,7 +29,7 @@ import java.util.Objects;
  * A filter that tracks request times.
  */
 
-public final class CAHTTPRequestTimeFilter implements Filter
+public final class CAHTTPRequestTimeFilter implements io.helidon.webserver.http.Filter
 {
   private final CAServerClock clock;
   private final CAMetricsServiceType metrics;
@@ -56,27 +52,26 @@ public final class CAHTTPRequestTimeFilter implements Filter
   }
 
   @Override
-  public void doFilter(
-    final ServletRequest request,
-    final ServletResponse response,
-    final FilterChain chain)
-    throws IOException, ServletException
+  public String toString()
+  {
+    return "[CAHTTPRequestTimeFilter 0x%s]"
+      .formatted(Long.toUnsignedString(this.hashCode(), 16));
+  }
+
+  @Override
+  public void filter(
+    final io.helidon.webserver.http.FilterChain chain,
+    final RoutingRequest req,
+    final RoutingResponse res)
   {
     final var timeThen = this.clock.nowPrecise();
     try {
-      chain.doFilter(request, response);
+      chain.proceed();
     } finally {
       final var timeNow = this.clock.nowPrecise();
       this.metrics.onHttpResponseTime(
         Duration.between(timeThen, timeNow)
       );
     }
-  }
-
-  @Override
-  public String toString()
-  {
-    return "[CAHTTPRequestTimeFilter 0x%s]"
-      .formatted(Long.toUnsignedString(this.hashCode(), 16));
   }
 }

@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.server.api;
 
+import com.io7m.cardant.tls.CATLSConfigurationType;
+
 import java.net.URI;
 import java.time.Duration;
 import java.util.Objects;
@@ -29,13 +31,15 @@ import java.util.Optional;
  * @param externalAddress   The externally visible address
  * @param sessionExpiration The session expiration duration, if sessions should
  *                          expire
+ * @param tlsConfiguration  The TLS configuration
  */
 
 public record CAServerHTTPServiceConfiguration(
   String listenAddress,
   int listenPort,
   URI externalAddress,
-  Optional<Duration> sessionExpiration)
+  Optional<Duration> sessionExpiration,
+  CATLSConfigurationType tlsConfiguration)
 {
   /**
    * Configuration for the part of the server that serves over HTTP.
@@ -45,6 +49,7 @@ public record CAServerHTTPServiceConfiguration(
    * @param externalAddress   The externally visible address
    * @param sessionExpiration The session expiration duration, if sessions
    *                          should expire
+   * @param tlsConfiguration  The TLS configuration
    */
 
   public CAServerHTTPServiceConfiguration
@@ -52,5 +57,6 @@ public record CAServerHTTPServiceConfiguration(
     Objects.requireNonNull(listenAddress, "listenAddress");
     Objects.requireNonNull(externalAddress, "externalAddress");
     Objects.requireNonNull(sessionExpiration, "sessionExpiration");
+    Objects.requireNonNull(tlsConfiguration, "tlsConfiguration");
   }
 }

@@ -29,11 +29,11 @@ module com.io7m.cardant.server.basic
 
   uses CAServerTelemetryServiceFactoryType;
 
-  requires transitive com.io7m.cardant.server.api;
-
+  requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.protocol.inventory.cb;
   requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.security;
+  requires com.io7m.cardant.server.api;
   requires com.io7m.cardant.server.inventory.v1;
   requires com.io7m.cardant.server.service.clock;
   requires com.io7m.cardant.server.service.configuration;
@@ -46,8 +46,9 @@ module com.io7m.cardant.server.basic
   requires com.io7m.cardant.server.service.verdant;
 
   requires com.io7m.jmulticlose.core;
-  requires org.eclipse.jetty.server;
-  requires org.eclipse.jetty.util;
+  requires io.helidon.webserver;
+  requires io.opentelemetry.api;
+  requires com.io7m.cardant.server.service.tls;
 
   provides CAServerFactoryType
     with CAServers;

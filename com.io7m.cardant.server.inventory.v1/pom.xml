@@ -76,6 +76,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.server.service.tls</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.cardant.error_codes</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -112,6 +117,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.cardant.strings</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.tls</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -156,28 +166,32 @@
       <artifactId>com.io7m.medrina.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty.toolchain</groupId>
-      <artifactId>jetty-jakarta-servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-context</artifactId>
     </dependency>
     <dependency>
       <groupId>com.io7m.jvindicator</groupId>
       <artifactId>com.io7m.jvindicator.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.http</groupId>
+      <artifactId>helidon-http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.webserver</groupId>
+      <artifactId>helidon-webserver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.common</groupId>
+      <artifactId>helidon-common-parameters</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.common</groupId>
+      <artifactId>helidon-common-tls</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.common</groupId>
+      <artifactId>helidon-common-uri</artifactId>
     </dependency>
 
     <dependency>

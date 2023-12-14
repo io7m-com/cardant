@@ -38,15 +38,17 @@ module com.io7m.cardant.server.inventory.v1
   requires com.io7m.cardant.server.service.reqlimit;
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
+  requires com.io7m.cardant.server.service.tls;
   requires com.io7m.cardant.server.service.verdant;
+  requires com.io7m.cardant.tls;
 
-  requires com.io7m.idstore.user_client.api;
-  requires com.io7m.jvindicator.core;
+  requires com.io7m.verdant.core;
+  requires io.helidon.webserver;
   requires io.opentelemetry.api;
-  requires jetty.servlet.api;
-  requires org.eclipse.jetty.http;
-  requires org.eclipse.jetty.server;
-  requires org.eclipse.jetty.servlet;
+  requires org.slf4j;
+  requires com.io7m.jvindicator.core;
+  requires com.io7m.idstore.protocol.user;
+  requires com.io7m.idstore.user_client.api;
 
   exports com.io7m.cardant.server.inventory.v1;
 }

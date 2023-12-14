@@ -66,6 +66,14 @@
     <Bug pattern="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
   </Match>
 
+  <!-- We don't use nullable annotations because we don't use null. -->
+  <Match>
+    <Or>
+      <Bug pattern="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
+      <Bug pattern="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
+    </Or>
+  </Match>
+
   <!--                        -->
   <!-- com.io7m.cardant.model -->
   <!--                        -->
@@ -604,22 +612,44 @@
   <!-- com.io7m.cardant.server.service.configuration -->
   <!--                                               -->
 
-  <!-- Generated code. -->
+  <!-- Mindless blackthorne code. -->
   <Match>
-    <Package name="com.io7m.cardant.server.service.configuration.xml"/>
+    <Package name="com.io7m.cardant.server.service.configuration.v1"/>
   </Match>
 
-  <!-- API. -->
+  <!-- Pattern matching. -->
   <Match>
-    <Class name="com.io7m.cardant.server.service.configuration.CAConfigurationFiles"/>
-    <Method name="parse"/>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationSerializer"/>
+    <Method name="serializeTLS"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
+  <!-- Unavoidable. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationSerializer"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- It's an API. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationFiles"/>
     <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
   </Match>
 
-  <!-- Translating XML to records. -->
+  <!-- Translating generated classes to records. -->
   <Match>
-    <Class name="com.io7m.cardant.server.service.configuration.CAConfigurationFiles"/>
-    <Bug pattern="CE_CLASS_ENVY"/>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationFiles"/>
+    <Or>
+      <Bug pattern="CE_CLASS_ENVY"/>
+      <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+      <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Or>
+  </Match>
+
+  <!-- Reading paths from a configuration file. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationFiles"/>
+    <Bug pattern="PATH_TRAVERSAL_IN"/>
   </Match>
 
   <!--                              -->
@@ -628,7 +658,10 @@
 
   <!-- Record type. -->
   <Match>
-    <Class name="com.io7m.cardant.server.http.CAHTTPServletResponseFixedSize"/>
+    <Or>
+      <Class name="com.io7m.cardant.server.http.CAHTTPResponseFixedSize"/>
+      <Class name="com.io7m.cardant.server.http.CAHTTPResponseRedirect"/>
+    </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>
       <Bug pattern="EI_EXPOSE_REP2"/>
@@ -642,30 +675,37 @@
     <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
   </Match>
 
+  <!-- It's an API. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.http.CAHTTPServerRequests"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
   <!-- toString() isn't needed here. -->
   <Match>
     <Or>
-      <Class name="com.io7m.cardant.server.http.CAHTTPServletCoreInstrumented"/>
-      <Class name="com.io7m.cardant.server.http.CAServletHolders"/>
+      <Class name="com.io7m.cardant.server.http.CAHTTPHandlerCoreFixedDelay"/>
+      <Class name="com.io7m.cardant.server.http.CAHTTPHandlerCoreInstrumented"/>
+      <Class name="com.io7m.cardant.server.http.CAHandlerHolders"/>
     </Or>
     <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
   </Match>
 
   <!-- False positive. The code throws an unchecked exception, it doesn't convert one. -->
   <Match>
-    <Class name="com.io7m.cardant.server.http.CAHTTPServletFunctional"/>
+    <Class name="com.io7m.cardant.server.http.CAHTTPHandlerFunctional"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_HAS_CHECKED"/>
   </Match>
 
   <!-- JDK 21 pattern matching required. -->
   <Match>
-    <Class name="com.io7m.cardant.server.http.CAHTTPServletFunctional"/>
+    <Class name="com.io7m.cardant.server.http.CAHTTPHandlerFunctional"/>
     <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
   </Match>
 
   <!-- equals() isn't needed here. -->
   <Match>
-    <Class name="com.io7m.cardant.server.http.CAServletHolder"/>
+    <Class name="com.io7m.cardant.server.http.CAHandlerHolder"/>
     <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
   </Match>
 
@@ -677,6 +717,11 @@
   <Match>
     <Class name="com.io7m.cardant.server.service.reqlimit.CARequestLimitExceeded"/>
     <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
+  </Match>
+
+  <!-- It's an API. -->
+  <Match>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
   </Match>
 
   <!--                                      -->
@@ -691,7 +736,7 @@
 
   <!-- IOException -> UncheckedIOException -->
   <Match>
-    <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletCommand"/>
+    <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerCommand"/>
     <Method name="execute"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
   </Match>
@@ -699,8 +744,8 @@
   <!-- IOException -> UncheckedIOException -->
   <Match>
     <Or>
-      <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletLogin"/>
-      <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletFileUpload"/>
+      <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerLogin"/>
+      <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerFileUpload"/>
     </Or>
     <Method name="execute"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
@@ -708,7 +753,7 @@
 
   <!-- This string specifically needs to write \r\n\r\n -->
   <Match>
-    <Class name="com.io7m.cardant.server.inventory.v1.CA1ServletVersion"/>
+    <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerVersion"/>
     <Method name="execute"/>
     <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
   </Match>

@@ -22,6 +22,7 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.propagation.TextMapPropagator;
 
 import java.util.Objects;
 
@@ -32,34 +33,39 @@ import java.util.Objects;
 public final class CAServerTelemetryService
   implements CAServerTelemetryServiceType
 {
+  private final OpenTelemetry openTelemetry;
   private final Tracer tracer;
   private final Meter meter;
   private final Logger logger;
-  private final OpenTelemetry openTelemetry;
+  private final TextMapPropagator textMapPropagator;
 
   /**
    * An OpenTelemetry service.
    *
-   * @param inOpenTelemetry The OpenTelemetry instance
-   * @param inTracer        The tracer instance
-   * @param inMeter         The meter
-   * @param inLogger        The logger
+   * @param inOpenTelemetry     The underlying OT service
+   * @param inTracer            The tracer instance
+   * @param inMeter             The meter instance
+   * @param inLogger            The logger instance
+   * @param inTextMapPropagator The text map propagator
    */
 
   public CAServerTelemetryService(
     final OpenTelemetry inOpenTelemetry,
     final Tracer inTracer,
     final Meter inMeter,
-    final Logger inLogger)
+    final Logger inLogger,
+    final TextMapPropagator inTextMapPropagator)
   {
     this.openTelemetry =
-      Objects.requireNonNull(inOpenTelemetry, "inOpenTelemetry");
+      Objects.requireNonNull(inOpenTelemetry, "openTelemetry");
     this.tracer =
       Objects.requireNonNull(inTracer, "tracer");
     this.meter =
       Objects.requireNonNull(inMeter, "meter");
     this.logger =
       Objects.requireNonNull(inLogger, "logger");
+    this.textMapPropagator =
+      Objects.requireNonNull(inTextMapPropagator, "textMapPropagator");
   }
 
   @Override
@@ -67,6 +73,18 @@ public final class CAServerTelemetryService
   {
     return "[CAServerTelemetryService 0x%s]"
       .formatted(Long.toUnsignedString(this.hashCode(), 16));
+  }
+
+  @Override
+  public OpenTelemetry openTelemetry()
+  {
+    return this.openTelemetry;
+  }
+
+  @Override
+  public TextMapPropagator textMapPropagator()
+  {
+    return this.textMapPropagator;
   }
 
   @Override
@@ -97,11 +115,5 @@ public final class CAServerTelemetryService
   public boolean isNoOp()
   {
     return false;
-  }
-
-  @Override
-  public OpenTelemetry openTelemetry()
-  {
-    return this.openTelemetry;
   }
 }

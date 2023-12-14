@@ -17,9 +17,11 @@
 
 package com.io7m.cardant.tests.server;
 
-import com.io7m.cardant.server.api.CAServerDatabaseConfiguration;
-import com.io7m.cardant.server.api.CAServerDatabaseKind;
-import com.io7m.cardant.server.api.CAServerHTTPConfiguration;
+import com.io7m.anethum.slf4j.ParseStatusLogging;
+import com.io7m.cardant.database.api.CADatabaseConfiguration;
+import com.io7m.cardant.database.api.CADatabaseCreate;
+import com.io7m.cardant.database.api.CADatabaseUpgrade;
+import com.io7m.cardant.server.api.CAServerConfigurations;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
 import com.io7m.cardant.server.api.CAServerLimitsConfiguration;
@@ -27,25 +29,32 @@ import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CALogs;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CAMetrics;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CATraces;
-import com.io7m.cardant.server.service.configuration.CAConfigurationFiles;
+import com.io7m.cardant.server.service.configuration.CAServerConfigurationParsers;
 import com.io7m.cardant.tests.CATestDirectories;
+import com.io7m.cardant.tls.CATLSDisabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.time.Clock;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class CAServerConfigurationTest
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CAServerConfigurationTest.class);
+
   @Test
   public void testParse(
     final @TempDir Path directory)
-    throws IOException
+    throws Exception
   {
     final var file =
       CATestDirectories.resourceOf(
@@ -54,13 +63,24 @@ public final class CAServerConfigurationTest
         "config0.xml"
       );
 
+    final var parsers =
+      new CAServerConfigurationParsers();
+
+    final var configFile =
+      parsers.parseFile(
+        file,
+        status -> ParseStatusLogging.logWithAll(LOG, status)
+      );
+
     final var configuration =
-      new CAConfigurationFiles()
-        .parse(file);
+      CAServerConfigurations.ofFile(
+        Locale.getDefault(),
+        Clock.systemUTC(),
+        configFile
+      );
 
     assertEquals(
-      new CAServerDatabaseConfiguration(
-        CAServerDatabaseKind.POSTGRESQL,
+      new CADatabaseConfiguration(
         "cardant_install",
         "892a2b68-2ddf-478a-a8ab-37172f6ac2fe",
         "e61135dc-1d3f-4ab2-85ef-95ef49d66285",
@@ -68,23 +88,24 @@ public final class CAServerConfigurationTest
         "db.example.com",
         5432,
         "cardant",
+        CADatabaseCreate.CREATE_DATABASE,
+        CADatabaseUpgrade.UPGRADE_DATABASE,
         "english",
-        true,
-        true
+        configuration.databaseConfiguration().clock(),
+        configuration.databaseConfiguration().strings()
       ),
       configuration.databaseConfiguration()
     );
 
     assertEquals(
-      new CAServerHTTPConfiguration(
-        new CAServerHTTPServiceConfiguration(
-          "[::]",
-          30000,
-          URI.create("http://cardant.example.com:30000"),
-          Optional.of(Duration.ofMinutes(30L))
-        )
+      new CAServerHTTPServiceConfiguration(
+        "[::]",
+        30000,
+        URI.create("http://cardant.example.com:30000"),
+        Optional.of(Duration.ofMinutes(30L)),
+        CATLSDisabled.TLS_DISABLED
       ),
-      configuration.httpConfiguration()
+      configuration.inventoryApiConfiguration()
     );
 
     assertEquals(

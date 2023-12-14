@@ -51,9 +51,12 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.service.telemetry.otp;
   requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
+  requires com.io7m.cardant.tls;
 
   uses ArbitraryProvider;
 
+  requires com.io7m.anethum.api;
+  requires com.io7m.anethum.slf4j;
   requires com.io7m.ervilla.api;
   requires com.io7m.ervilla.native_exec;
   requires com.io7m.ervilla.postgres;
@@ -67,11 +70,9 @@ open module com.io7m.cardant.tests
   requires com.io7m.verdant.core;
   requires com.io7m.zelador.test_extension;
   requires io.opentelemetry.api;
-  requires jakarta.mail;
   requires java.net.http;
   requires java.sql;
   requires java.xml;
-  requires jetty.servlet.api;
   requires net.bytebuddy.agent;
   requires net.bytebuddy;
   requires net.jqwik.api;

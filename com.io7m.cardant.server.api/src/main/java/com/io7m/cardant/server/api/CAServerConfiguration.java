@@ -37,7 +37,7 @@ import java.util.Optional;
  * @param limitsConfiguration   The limits configuration
  * @param idstoreConfiguration  The idstore configuration
  * @param openTelemetry         The OpenTelemetry configuration
- * @param inventoryApiAddress   The inventory API address
+ * @param inventoryApiConfiguration   The inventory API address
  */
 
 public record CAServerConfiguration(
@@ -46,7 +46,7 @@ public record CAServerConfiguration(
   CAStrings strings,
   CADatabaseFactoryType databases,
   CADatabaseConfiguration databaseConfiguration,
-  CAServerHTTPServiceConfiguration inventoryApiAddress,
+  CAServerHTTPServiceConfiguration inventoryApiConfiguration,
   CAServerIdstoreConfiguration idstoreConfiguration,
   CAServerLimitsConfiguration limitsConfiguration,
   Optional<CAServerOpenTelemetryConfiguration> openTelemetry)
@@ -63,12 +63,12 @@ public record CAServerConfiguration(
    * @param limitsConfiguration   The limits configuration
    * @param idstoreConfiguration  The idstore configuration
    * @param openTelemetry         The OpenTelemetry configuration
-   * @param inventoryApiAddress   The inventory API address
+   * @param inventoryApiConfiguration   The inventory API address
    */
 
   public CAServerConfiguration
   {
-    Objects.requireNonNull(inventoryApiAddress, "inventoryApiAddress");
+    Objects.requireNonNull(inventoryApiConfiguration, "inventoryApiAddress");
     Objects.requireNonNull(clock, "clock");
     Objects.requireNonNull(strings, "strings");
     Objects.requireNonNull(databaseConfiguration, "databaseConfiguration");

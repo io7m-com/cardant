@@ -20,6 +20,7 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.propagation.TextMapPropagator;
 
 import java.util.Objects;
 
@@ -30,25 +31,32 @@ import java.util.Objects;
 public final class CAServerTelemetryNoOp
   implements CAServerTelemetryServiceType
 {
-  private final Meter meter;
-  private final Tracer tracer;
-  private final Logger logger;
   private final OpenTelemetry openTelemetry;
+  private final Tracer tracer;
+  private final Meter meter;
+  private final Logger logger;
+  private final TextMapPropagator textMapPropagator;
+  private final boolean isNoOp;
 
   private CAServerTelemetryNoOp(
     final OpenTelemetry inOpenTelemetry,
-    final Meter inMeter,
     final Tracer inTracer,
-    final Logger inLogger)
+    final Meter inMeter,
+    final Logger inLogger,
+    final TextMapPropagator inTextMapPropagator,
+    final boolean noOp)
   {
     this.openTelemetry =
       Objects.requireNonNull(inOpenTelemetry, "openTelemetry");
-    this.meter =
-      Objects.requireNonNull(inMeter, "meter");
     this.tracer =
       Objects.requireNonNull(inTracer, "tracer");
+    this.meter =
+      Objects.requireNonNull(inMeter, "inMeter");
     this.logger =
-      Objects.requireNonNull(inLogger, "logger");
+      Objects.requireNonNull(inLogger, "inLogger");
+    this.textMapPropagator =
+      Objects.requireNonNull(inTextMapPropagator, "inTextMapPropagator");
+    this.isNoOp = noOp;
   }
 
   /**
@@ -60,10 +68,25 @@ public final class CAServerTelemetryNoOp
     final var noop = OpenTelemetry.noop();
     return new CAServerTelemetryNoOp(
       noop,
-      noop.getMeter("noop"),
       noop.getTracer("noop"),
-      noop.getLogsBridge().get("noop")
+      noop.getMeter("noop"),
+      noop.getLogsBridge().get("noop"),
+      noop.getPropagators()
+        .getTextMapPropagator(),
+      true
     );
+  }
+
+  @Override
+  public OpenTelemetry openTelemetry()
+  {
+    return this.openTelemetry;
+  }
+
+  @Override
+  public TextMapPropagator textMapPropagator()
+  {
+    return this.textMapPropagator;
   }
 
   @Override
@@ -87,13 +110,7 @@ public final class CAServerTelemetryNoOp
   @Override
   public boolean isNoOp()
   {
-    return true;
-  }
-
-  @Override
-  public OpenTelemetry openTelemetry()
-  {
-    return this.openTelemetry;
+    return this.isNoOp;
   }
 
   @Override

@@ -18,7 +18,10 @@
 
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
         targetNamespace="com.io7m.cardant:configuration:1"
+        xmlns:ct="com.io7m.cardant:tls:1"
         xmlns:c="com.io7m.cardant:configuration:1">
+
+  <import namespace="com.io7m.cardant:tls:1"/>
 
   <annotation>
     <documentation>
@@ -44,7 +47,7 @@
     </restriction>
   </simpleType>
 
-  <element name="IdStore">
+  <element name="Idstore">
     <annotation>
       <documentation>
         Configuration for the idstore server that will be used for user identity information.
@@ -339,6 +342,11 @@
   </element>
 
   <complexType name="HTTPService">
+    <sequence minOccurs="1"
+              maxOccurs="1">
+      <group ref="ct:TLSGroup"/>
+    </sequence>
+
     <attribute name="ListenAddress"
                type="string"
                use="required">
@@ -431,7 +439,7 @@
       <sequence>
         <element ref="c:InventoryService"/>
         <element ref="c:Database"/>
-        <element ref="c:IdStore"/>
+        <element ref="c:Idstore"/>
         <element ref="c:Limits"/>
         <element ref="c:OpenTelemetry"
                  minOccurs="0"

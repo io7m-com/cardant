@@ -55,6 +55,8 @@ open module com.io7m.cardant.main
   requires org.slf4j;
   requires com.io7m.jade.api;
   requires com.io7m.jade.vanilla;
+  requires com.io7m.anethum.api;
+  requires com.io7m.anethum.slf4j;
 
   exports com.io7m.cardant.main.internal
     to com.io7m.cardant.documentation;
