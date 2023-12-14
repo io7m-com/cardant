@@ -23,6 +23,7 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerException;
@@ -144,6 +145,12 @@ public final class CAServer implements CAServerType
           final var inventory = CA1Server.create(services);
           this.resources.add(inventory::stop);
 
+          /*
+           * After everything is started, load the security policy. The default
+           * policy is deny-all, so this effectively opens the server for access.
+           */
+
+          CASecurity.setPolicy(CASecurityPolicy.open());
         } catch (final CADatabaseException e) {
           startupSpan.recordException(e);
 

@@ -95,7 +95,7 @@ public final class CA1Server
         .post(
           "/inventory/1/0/file-upload",
           new CA1HandlerFileUpload(services))
-        .post(
+        .get(
           "/inventory/1/0/file-download",
           new CA1HandlerFileDownload(services))
         .get("/version", new CA1HandlerVersion(services))
@@ -107,7 +107,7 @@ public final class CA1Server
     if (httpConfig.tlsConfiguration() instanceof final CATLSEnabled enabled) {
       final var tlsContext =
         tlsService.create(
-          "UserAPI",
+          "InventoryAPI",
           enabled.keyStore(),
           enabled.trustStore()
         );
@@ -132,7 +132,7 @@ public final class CA1Server
         .build();
 
     webServer.start();
-    LOG.info("[{}] Admin API server started", address);
+    LOG.info("[{}] Inventory API server started", address);
     return webServer;
   }
 }
