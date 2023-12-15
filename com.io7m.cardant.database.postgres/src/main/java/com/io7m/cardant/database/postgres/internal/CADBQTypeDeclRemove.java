@@ -24,6 +24,10 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
 
@@ -76,9 +80,21 @@ public final class CADBQTypeDeclRemove
       .where(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION.eq(typeId))
       .execute();
 
-    context.deleteFrom(METADATA_TYPES_RECORDS)
-      .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(typeName))
-      .execute();
+    final var deleted =
+      context.deleteFrom(METADATA_TYPES_RECORDS)
+        .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(typeName))
+        .execute();
+
+    if (deleted != 0) {
+      final var transaction = this.transaction();
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "TYPE_DECLARATION_REMOVED",
+        Map.entry("Type", typeName)
+      ).execute();
+    }
 
     return CADatabaseUnit.UNIT;
   }

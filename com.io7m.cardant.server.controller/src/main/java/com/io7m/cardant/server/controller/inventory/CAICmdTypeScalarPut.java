@@ -50,9 +50,11 @@ public final class CAICmdTypeScalarPut
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var put =
-      context.transaction()
-        .queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
+      transaction.queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
 
     for (final var type : command.types()) {
       put.execute(type);

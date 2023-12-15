@@ -54,8 +54,9 @@ public final class CAICmdLocationMetadataPut
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
-    final var transaction =
-      context.transaction();
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var metaPut =
       transaction.queries(CADatabaseQueriesLocationsType.MetadataPutType.class);
     final var get =

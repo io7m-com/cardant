@@ -138,7 +138,8 @@ public final class CAICmdTypeScalarRemoveTest
 
     verify(transaction)
       .queries(CADatabaseQueriesTypesType.TypeScalarRemoveType.class);
-
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(files)
       .execute(TYPE_SCALAR.name());
 

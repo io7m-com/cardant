@@ -129,7 +129,8 @@ public final class CAICmdTypeDeclarationPutTest
 
     verify(transaction)
       .queries(CADatabaseQueriesTypesType.TypeDeclarationPutType.class);
-
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(files)
       .execute(TYPE_DECLARATION);
 

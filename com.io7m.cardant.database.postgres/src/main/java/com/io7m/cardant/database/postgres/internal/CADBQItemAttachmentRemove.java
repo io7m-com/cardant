@@ -24,7 +24,11 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
 import static com.io7m.cardant.strings.CAStringConstants.FILE_ID;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
@@ -88,6 +92,16 @@ public final class CADBQItemAttachmentRemove
     context.deleteFrom(ITEM_ATTACHMENTS)
       .where(matches)
       .execute();
+
+    final var transaction = this.transaction();
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "ITEM_ATTACHMENT_REMOVED",
+      Map.entry("Item", item.displayId()),
+      Map.entry("File", file.displayId())
+    ).execute();
 
     return UNIT;
   }

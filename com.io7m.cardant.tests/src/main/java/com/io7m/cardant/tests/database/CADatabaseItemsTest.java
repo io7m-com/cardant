@@ -26,6 +26,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAAttachment;
@@ -40,12 +41,15 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
+import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.idstore.model.IdName;
 import com.io7m.lanark.core.RDottedName;
+import com.io7m.medrina.api.MSubject;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
 import org.joda.money.CurrencyUnit;
@@ -62,6 +66,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
@@ -117,6 +122,12 @@ public final class CADatabaseItemsTest
       closeables.addPerTestResource(this.database.openConnection(CARDANT));
     this.transaction =
       closeables.addPerTestResource(this.connection.openTransaction());
+
+    final var userId = UUID.randomUUID();
+    this.transaction.queries(CADatabaseQueriesUsersType.PutType.class)
+      .execute(new CAUser(userId, new IdName("x"), new MSubject(Set.of())));
+    this.transaction.commit();
+    this.transaction.setUserId(userId);
 
     this.itemCreate =
       this.transaction.queries(CADatabaseQueriesItemsType.CreateType.class);

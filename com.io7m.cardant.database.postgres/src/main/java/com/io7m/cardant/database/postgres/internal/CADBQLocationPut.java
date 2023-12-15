@@ -28,10 +28,13 @@ import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataPut.setMetadataValue;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
@@ -147,9 +150,18 @@ public final class CADBQLocationPut
       );
     }
 
-    context.batch(batches)
-      .execute();
+    final var transaction = this.transaction();
+    batches.add(
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "LOCATION_UPDATED",
+        Map.entry("Location", locationId.toString())
+      )
+    );
 
+    context.batch(batches).execute();
     return CADatabaseUnit.UNIT;
   }
 
@@ -254,9 +266,9 @@ public final class CADBQLocationPut
     final DSLContext context)
   {
     return context.select(
-      LOCATIONS.LOCATION_PARENT,
-      LOCATIONS.LOCATION_NAME
-    ).from(LOCATIONS)
+        LOCATIONS.LOCATION_PARENT,
+        LOCATIONS.LOCATION_NAME
+      ).from(LOCATIONS)
       .where(LOCATIONS.LOCATION_ID.eq(id.id()))
       .fetchOptional()
       .map(r -> {

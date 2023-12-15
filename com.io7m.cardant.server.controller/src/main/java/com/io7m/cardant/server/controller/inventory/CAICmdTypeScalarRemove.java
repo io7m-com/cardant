@@ -50,9 +50,11 @@ public final class CAICmdTypeScalarRemove
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var remove =
-      context.transaction()
-        .queries(CADatabaseQueriesTypesType.TypeScalarRemoveType.class);
+      transaction.queries(CADatabaseQueriesTypesType.TypeScalarRemoveType.class);
 
     for (final var type : command.types()) {
       remove.execute(type);

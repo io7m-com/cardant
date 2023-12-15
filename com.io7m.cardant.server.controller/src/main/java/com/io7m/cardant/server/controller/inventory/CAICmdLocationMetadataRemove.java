@@ -56,8 +56,9 @@ public final class CAICmdLocationMetadataRemove
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
-    final var transaction =
-      context.transaction();
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var metaRemove =
       transaction.queries(CADatabaseQueriesLocationsType.MetadataRemoveType.class);
     final var get =

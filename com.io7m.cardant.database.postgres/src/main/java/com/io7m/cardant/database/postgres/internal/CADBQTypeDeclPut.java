@@ -26,8 +26,11 @@ import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.impl.DSL;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
@@ -142,6 +145,17 @@ public final class CADBQTypeDeclPut
           .set(METADATA_TYPES_RECORD_FIELDS.MTRF_SCALAR_TYPE, findTypeId)
       );
     }
+
+    final var transaction = this.transaction();
+    batches.add(
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "TYPE_DECLARATION_UPDATED",
+        Map.entry("Type", typeName)
+      )
+    );
 
     context.batch(batches).execute();
     return CADatabaseUnit.UNIT;

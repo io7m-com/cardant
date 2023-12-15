@@ -24,8 +24,11 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
@@ -88,6 +91,16 @@ public final class CADBQItemSetName
         Optional.empty()
       );
     }
+
+    final var transaction = this.transaction();
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "ITEM_NAME_UPDATED",
+      Map.entry("Item", itemID.displayId())
+    ).execute();
+
     return CADatabaseUnit.UNIT;
   }
 }

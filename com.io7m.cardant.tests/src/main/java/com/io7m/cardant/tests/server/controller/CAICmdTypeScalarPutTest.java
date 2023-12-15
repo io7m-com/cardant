@@ -138,7 +138,8 @@ public final class CAICmdTypeScalarPutTest
 
     verify(transaction)
       .queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
-
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(files)
       .execute(TYPE_SCALAR);
 

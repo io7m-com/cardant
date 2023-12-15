@@ -160,7 +160,10 @@ public final class CA1HandlerFileUpload
 
         try (var connection = database.openConnection(CADatabaseRole.CARDANT)) {
           try (var transaction = connection.openTransaction()) {
-            final var q = transaction.queries(CADatabaseQueriesFilesType.PutType.class);
+            transaction.setUserId(user.userId());
+
+            final var q =
+              transaction.queries(CADatabaseQueriesFilesType.PutType.class);
             final var file = new CAFileType.CAFileWithData(
               new CAFileID(vFileId.get()),
               vDescription.get(),

@@ -24,6 +24,10 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 
 /**
@@ -71,6 +75,14 @@ public final class CADBQTypeScalarRemove
       .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(typeName))
       .execute();
 
+    final var transaction = this.transaction();
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "TYPE_SCALAR_REMOVED",
+      Map.entry("Type", name.value())
+    ).execute();
     return CADatabaseUnit.UNIT;
   }
 }

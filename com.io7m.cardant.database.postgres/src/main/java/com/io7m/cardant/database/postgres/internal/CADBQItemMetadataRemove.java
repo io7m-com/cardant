@@ -25,9 +25,12 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
@@ -85,6 +88,17 @@ public final class CADBQItemMetadataRemove
 
       queries.add(context.deleteFrom(ITEM_METADATA).where(matches));
     }
+
+    final var transaction = this.transaction();
+    queries.add(
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "ITEM_METADATA_UPDATED",
+        Map.entry("Item", item.displayId())
+      )
+    );
 
     context.batch(queries).execute();
     return UNIT;

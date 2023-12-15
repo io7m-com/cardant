@@ -31,10 +31,12 @@ import org.jooq.exception.DataAccessException;
 import org.jooq.exception.SQLStateClass;
 
 import java.math.BigInteger;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS_SUMMED;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
@@ -46,6 +48,7 @@ import static com.io7m.cardant.strings.CAStringConstants.ERROR_ITEM_COUNT_STORE_
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_ITEM_COUNT_TOO_MANY_REMOVED;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_LOCATION;
+import static java.lang.Long.toUnsignedString;
 
 /**
  * Reposit items.
@@ -88,33 +91,35 @@ public final class CADBQItemReposit
     final var countInitial =
       itemCount(context, reposit.item());
 
-    if (reposit instanceof final CAItemRepositAdd add) {
-      final var countAdded = itemRepositAdd(context, add);
-      this.checkItemCountInvariant(
-        context,
-        add.item(),
-        countInitial + countAdded
-      );
-      return UNIT;
-    }
+    switch (reposit) {
+      case final CAItemRepositAdd add -> {
+        final var countAdded =
+          itemRepositAdd(this.transaction(), context, add);
+        this.checkItemCountInvariant(
+          context,
+          add.item(),
+          countInitial + countAdded
+        );
+        return UNIT;
+      }
 
-    if (reposit instanceof final CAItemRepositMove move) {
-      this.itemRepositMove(context, move);
-      this.checkItemCountInvariant(context, move.item(), countInitial);
-      return UNIT;
-    }
+      case final CAItemRepositMove move -> {
+        this.itemRepositMove(this.transaction(), context, move);
+        this.checkItemCountInvariant(context, move.item(), countInitial);
+        return UNIT;
+      }
 
-    if (reposit instanceof final CAItemRepositRemove remove) {
-      final var countRemoved = this.itemRepositRemove(context, remove);
-      this.checkItemCountInvariant(
-        context,
-        remove.item(),
-        countInitial - countRemoved
-      );
-      return UNIT;
+      case final CAItemRepositRemove remove -> {
+        final var countRemoved =
+          this.itemRepositRemove(this.transaction(), context, remove);
+        this.checkItemCountInvariant(
+          context,
+          remove.item(),
+          countInitial - countRemoved
+        );
+        return UNIT;
+      }
     }
-
-    throw new IllegalStateException();
   }
 
   static long itemCount(
@@ -131,6 +136,7 @@ public final class CADBQItemReposit
   }
 
   private long itemRepositRemove(
+    final CADatabaseTransaction transaction,
     final DSLContext context,
     final CAItemRepositRemove remove)
     throws CADatabaseException
@@ -160,6 +166,15 @@ public final class CADBQItemReposit
           .execute();
       }
 
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "ITEM_REPOSIT_REMOVED",
+        Map.entry("Item", remove.item().displayId()),
+        Map.entry("Count", toUnsignedString(remove.count()))
+      ).execute();
+
       return remove.count();
     } catch (final DataAccessException e) {
       if (e.sqlStateClass() == SQLStateClass.C23_INTEGRITY_CONSTRAINT_VIOLATION) {
@@ -175,7 +190,7 @@ public final class CADBQItemReposit
                 remove.location().displayId()),
               Map.entry(
                 this.local(COUNT),
-                Long.toUnsignedString(remove.count()))
+                toUnsignedString(remove.count()))
             ),
             Optional.empty()
           );
@@ -207,10 +222,10 @@ public final class CADBQItemReposit
           Map.entry(this.local(ITEM_ID), item.displayId()),
           Map.entry(
             this.local(COUNT_EXPECTED),
-            Long.toUnsignedString(countExpected)),
+            toUnsignedString(countExpected)),
           Map.entry(
             this.local(COUNT_RECEIVED),
-            Long.toUnsignedString(countReceived))
+            toUnsignedString(countReceived))
         ),
         Optional.empty()
       );
@@ -218,29 +233,37 @@ public final class CADBQItemReposit
   }
 
   private long itemRepositMove(
+    final CADatabaseTransaction transaction,
     final DSLContext context,
     final CAItemRepositMove move)
     throws CADatabaseException
   {
     final var newCount0 =
-      this.itemRepositRemove(context, new CAItemRepositRemove(
-        move.item(),
-        move.fromLocation(),
-        move.count()
-      ));
+      this.itemRepositRemove(
+        transaction,
+        context,
+        new CAItemRepositRemove(
+          move.item(),
+          move.fromLocation(),
+          move.count()
+        ));
 
     final var newCount1 =
-      itemRepositAdd(context, new CAItemRepositAdd(
-        move.item(),
-        move.toLocation(),
-        move.count()
-      ));
+      itemRepositAdd(
+        transaction,
+        context,
+        new CAItemRepositAdd(
+          move.item(),
+          move.toLocation(),
+          move.count()
+        ));
 
     return newCount0 + newCount1;
   }
 
 
   private static long itemRepositAdd(
+    final CADatabaseTransaction transaction,
     final DSLContext context,
     final CAItemRepositAdd add)
   {
@@ -259,6 +282,15 @@ public final class CADBQItemReposit
         ITEM_LOCATIONS.ITEM_LOCATION_COUNT,
         ITEM_LOCATIONS.ITEM_LOCATION_COUNT.add(Long.valueOf(add.count())))
       .execute();
+
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "ITEM_REPOSIT_ADDED",
+      Map.entry("Item", add.item().displayId()),
+      Map.entry("Count", toUnsignedString(add.count()))
+    ).execute();
 
     return add.count();
   }

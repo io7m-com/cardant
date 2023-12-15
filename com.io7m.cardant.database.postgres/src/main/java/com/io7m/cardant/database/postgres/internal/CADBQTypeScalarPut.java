@@ -25,7 +25,9 @@ import org.jooq.DSLContext;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Map;
 
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
@@ -70,28 +72,33 @@ public final class CADBQTypeScalarPut
     final DSLContext context,
     final CATypeScalarType scalar)
   {
-    if (scalar instanceof final CATypeScalarType.Monetary t) {
-      onExecuteMonetary(context, scalar, t);
-      return CADatabaseUnit.UNIT;
-    }
-    if (scalar instanceof final CATypeScalarType.Text t) {
-      onExecuteText(context, scalar, t);
-      return CADatabaseUnit.UNIT;
-    }
-    if (scalar instanceof final CATypeScalarType.Integral t) {
-      onExecuteIntegral(context, scalar, t);
-      return CADatabaseUnit.UNIT;
-    }
-    if (scalar instanceof final CATypeScalarType.Real t) {
-      onExecuteReal(context, scalar, t);
-      return CADatabaseUnit.UNIT;
-    }
-    if (scalar instanceof final CATypeScalarType.Time t) {
-      onExecuteTime(context, scalar, t);
-      return CADatabaseUnit.UNIT;
+    switch (scalar) {
+      case final CATypeScalarType.Monetary t -> {
+        onExecuteMonetary(context, scalar, t);
+      }
+      case final CATypeScalarType.Text t -> {
+        onExecuteText(context, scalar, t);
+      }
+      case final CATypeScalarType.Integral t -> {
+        onExecuteIntegral(context, scalar, t);
+      }
+      case final CATypeScalarType.Real t -> {
+        onExecuteReal(context, scalar, t);
+      }
+      case final CATypeScalarType.Time t -> {
+        onExecuteTime(context, scalar, t);
+      }
     }
 
-    throw new IllegalStateException();
+    final var transaction = this.transaction();
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "TYPE_SCALAR_UPDATED",
+      Map.entry("Type", scalar.name().value())
+    ).execute();
+    return CADatabaseUnit.UNIT;
   }
 
   private static void onExecuteTime(

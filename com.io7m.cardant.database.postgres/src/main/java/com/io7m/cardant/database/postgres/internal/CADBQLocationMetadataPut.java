@@ -30,8 +30,10 @@ import org.jooq.Query;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
@@ -90,6 +92,15 @@ public final class CADBQLocationMetadataPut
       batches.add(setMetadataValue(context, location, meta));
     }
 
+    final var transaction = this.transaction();
+    batches.add(auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "LOCATION_METADATA_UPDATED",
+      Map.entry("Location", location.displayId())
+    ));
+
     context.batch(batches).execute();
     return UNIT;
   }
@@ -99,22 +110,23 @@ public final class CADBQLocationMetadataPut
     final CALocationID locationID,
     final CAMetadataType meta)
   {
-    if (meta instanceof final CAMetadataType.Monetary m) {
-      return setMetadataValueMonetary(context, locationID, m);
-    }
-    if (meta instanceof final CAMetadataType.Real m) {
-      return setMetadataValueReal(context, locationID, m);
-    }
-    if (meta instanceof final CAMetadataType.Time m) {
-      return setMetadataValueTime(context, locationID, m);
-    }
-    if (meta instanceof final CAMetadataType.Text m) {
-      return setMetadataValueText(context, locationID, m);
-    }
-    if (meta instanceof final CAMetadataType.Integral m) {
-      return setMetadataValueIntegral(context, locationID, m);
-    }
-    throw new IllegalStateException();
+    return switch (meta) {
+      case final CAMetadataType.Monetary m -> {
+        yield setMetadataValueMonetary(context, locationID, m);
+      }
+      case final CAMetadataType.Real m -> {
+        yield setMetadataValueReal(context, locationID, m);
+      }
+      case final CAMetadataType.Time m -> {
+        yield setMetadataValueTime(context, locationID, m);
+      }
+      case final CAMetadataType.Text m -> {
+        yield setMetadataValueText(context, locationID, m);
+      }
+      case final CAMetadataType.Integral m -> {
+        yield setMetadataValueIntegral(context, locationID, m);
+      }
+    };
   }
 
   private static Query setMetadataValueIntegral(

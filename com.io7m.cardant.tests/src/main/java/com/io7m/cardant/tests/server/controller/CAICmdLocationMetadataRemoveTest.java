@@ -183,6 +183,8 @@ public final class CAICmdLocationMetadataRemoveTest
       .queries(MetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(locationMetaRemove)
       .execute(
         new Parameters(
@@ -476,6 +478,8 @@ public final class CAICmdLocationMetadataRemoveTest
       .queries(MetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
 
     verify(locationGet)
       .execute(LOCATION_ID);

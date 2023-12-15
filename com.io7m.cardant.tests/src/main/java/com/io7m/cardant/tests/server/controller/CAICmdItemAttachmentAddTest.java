@@ -164,6 +164,8 @@ public final class CAICmdItemAttachmentAddTest
       .queries(CADatabaseQueriesItemsType.GetType.class);
     verify(transaction)
       .queries(CADatabaseQueriesItemsType.AttachmentAddType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(itemAdd)
       .execute(new Parameters(ITEM_ID, FILE_ID, "x"));
     verify(itemGet)

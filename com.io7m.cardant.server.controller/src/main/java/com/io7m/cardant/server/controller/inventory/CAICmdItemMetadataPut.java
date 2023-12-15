@@ -54,8 +54,9 @@ public final class CAICmdItemMetadataPut
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var transaction =
-      context.transaction();
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var metaPut =
       transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class);
     final var get =

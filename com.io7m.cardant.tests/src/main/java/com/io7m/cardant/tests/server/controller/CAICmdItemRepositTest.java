@@ -171,6 +171,8 @@ public final class CAICmdItemRepositTest
       .queries(CADatabaseQueriesItemsType.RepositType.class);
     verify(transaction)
       .queries(CADatabaseQueriesItemsType.GetType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(itemReposit)
       .execute(new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L));
     verify(itemGet)

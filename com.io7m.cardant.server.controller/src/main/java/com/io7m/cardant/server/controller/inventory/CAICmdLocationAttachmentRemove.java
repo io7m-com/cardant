@@ -57,8 +57,9 @@ public final class CAICmdLocationAttachmentRemove
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
-    final var transaction =
-      context.transaction();
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var attachRemove =
       transaction
         .queries(CADatabaseQueriesLocationsType.AttachmentRemoveType.class);

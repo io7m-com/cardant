@@ -184,6 +184,8 @@ public final class CAICmdItemMetadataRemoveTest
       .queries(MetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(itemMetaRemove)
       .execute(
         new Parameters(
@@ -478,6 +480,8 @@ public final class CAICmdItemMetadataRemoveTest
       .queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
 
     verify(itemGet)
       .execute(ITEM_ID);

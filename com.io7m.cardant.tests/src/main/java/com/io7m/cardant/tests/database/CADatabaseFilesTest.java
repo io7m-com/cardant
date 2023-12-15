@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType.GetType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAByteArray;
@@ -28,12 +29,15 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CASizeRange;
+import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.idstore.model.IdName;
+import com.io7m.medrina.api.MSubject;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
 import org.junit.jupiter.api.BeforeAll;
@@ -45,6 +49,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -81,6 +87,12 @@ public final class CADatabaseFilesTest
       closeables.addPerTestResource(this.database.openConnection(CARDANT));
     this.transaction =
       closeables.addPerTestResource(this.connection.openTransaction());
+
+    final var userId = UUID.randomUUID();
+    this.transaction.queries(CADatabaseQueriesUsersType.PutType.class)
+      .execute(new CAUser(userId, new IdName("x"), new MSubject(Set.of())));
+    this.transaction.commit();
+    this.transaction.setUserId(userId);
   }
 
   /**

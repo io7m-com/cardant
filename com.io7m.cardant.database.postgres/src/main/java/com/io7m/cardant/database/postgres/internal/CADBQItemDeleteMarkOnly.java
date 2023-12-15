@@ -23,11 +23,14 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAItemID;
 import org.jooq.DSLContext;
-import org.jooq.UpdateConditionStep;
+import org.jooq.Query;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static java.lang.Boolean.TRUE;
 
@@ -69,13 +72,23 @@ public final class CADBQItemDeleteMarkOnly
     final Collection<CAItemID> items)
     throws CADatabaseException
   {
+    final var transaction = this.transaction();
     final var updates =
-      new ArrayList<UpdateConditionStep<?>>(items.size());
+      new ArrayList<Query>(items.size());
     for (final var item : items) {
       updates.add(
         context.update(ITEMS)
           .set(ITEMS.ITEM_DELETED, TRUE)
           .where(ITEMS.ITEM_ID.eq(item.id()))
+      );
+      updates.add(
+        auditEvent(
+          context,
+          OffsetDateTime.now(transaction.clock()),
+          transaction.userId(),
+          "ITEM_MARKED_DELETED",
+          Map.entry("Item", item.displayId())
+        )
       );
     }
     context.batch(updates).execute();

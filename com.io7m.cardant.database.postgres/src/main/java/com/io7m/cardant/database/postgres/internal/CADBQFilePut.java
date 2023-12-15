@@ -25,7 +25,11 @@ import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.strings.CAStringConstants;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.tables.Files.FILES;
 
 /**
@@ -96,6 +100,15 @@ public final class CADBQFilePut
 
     q1.where(FILES.FILE_ID.eq(file.id().id()))
       .execute();
+
+    final var transaction = this.transaction();
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "FILE_UPDATED",
+      Map.entry("File", file.id().displayId())
+    ).execute();
 
     return UNIT;
   }

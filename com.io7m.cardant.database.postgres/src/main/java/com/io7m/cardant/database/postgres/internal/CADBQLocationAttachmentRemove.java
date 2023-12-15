@@ -24,7 +24,11 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_ATTACHMENTS;
 import static com.io7m.cardant.strings.CAStringConstants.FILE_ID;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
@@ -39,7 +43,9 @@ public final class CADBQLocationAttachmentRemove
   implements AttachmentRemoveType
 {
   private static final Service<Parameters, CADatabaseUnit, AttachmentRemoveType> SERVICE =
-    new Service<>(AttachmentRemoveType.class, CADBQLocationAttachmentRemove::new);
+    new Service<>(
+      AttachmentRemoveType.class,
+      CADBQLocationAttachmentRemove::new);
 
   /**
    * Construct a query.
@@ -85,9 +91,22 @@ public final class CADBQLocationAttachmentRemove
     final var matches =
       matchesLocation.and(matchesFile).and(matchesRelation);
 
-    context.deleteFrom(LOCATION_ATTACHMENTS)
-      .where(matches)
-      .execute();
+    final var deleted =
+      context.deleteFrom(LOCATION_ATTACHMENTS)
+        .where(matches)
+        .execute();
+
+    if (deleted != 0) {
+      final var transaction = this.transaction();
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "LOCATION_ATTACHMENT_REMOVED",
+        Map.entry("Location", location.displayId()),
+        Map.entry("File", file.displayId())
+      ).execute();
+    }
 
     return UNIT;
   }

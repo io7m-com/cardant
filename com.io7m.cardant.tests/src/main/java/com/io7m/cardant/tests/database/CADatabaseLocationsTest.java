@@ -27,6 +27,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.ListType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.PutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
@@ -38,13 +39,16 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
+import com.io7m.idstore.model.IdName;
 import com.io7m.lanark.core.RDottedName;
+import com.io7m.medrina.api.MSubject;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,6 +62,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
@@ -100,6 +105,12 @@ public final class CADatabaseLocationsTest
       closeables.addPerTestResource(this.database.openConnection(CARDANT));
     this.transaction =
       closeables.addPerTestResource(this.connection.openTransaction());
+
+    final var userId = UUID.randomUUID();
+    this.transaction.queries(CADatabaseQueriesUsersType.PutType.class)
+      .execute(new CAUser(userId, new IdName("x"), new MSubject(Set.of())));
+    this.transaction.commit();
+    this.transaction.setUserId(userId);
 
     this.locationPut =
       this.transaction.queries(PutType.class);

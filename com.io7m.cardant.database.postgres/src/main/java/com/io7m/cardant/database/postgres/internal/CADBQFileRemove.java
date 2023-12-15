@@ -24,6 +24,10 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import com.io7m.cardant.model.CAFileID;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.tables.Files.FILES;
 
 /**
@@ -65,9 +69,22 @@ public final class CADBQFileRemove
     throws CADatabaseException
   {
     final var id = fileID.id();
-    context.deleteFrom(FILES)
-      .where(FILES.FILE_ID.eq(id))
-      .execute();
+
+    final var deleted =
+      context.deleteFrom(FILES)
+        .where(FILES.FILE_ID.eq(id))
+        .execute();
+
+    if (deleted != 0) {
+      final var transaction = this.transaction();
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "FILE_DELETED",
+        Map.entry("File", fileID.displayId())
+      ).execute();
+    }
 
     return CADatabaseUnit.UNIT;
   }

@@ -164,6 +164,8 @@ public final class CAICmdItemAttachmentRemoveTest
       .queries(CADatabaseQueriesItemsType.GetType.class);
     verify(transaction)
       .queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(itemAttachRemove)
       .execute(new Parameters(ITEM_ID, FILE_ID, "x"));
     verify(itemGet)

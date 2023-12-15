@@ -57,8 +57,9 @@ public final class CAICmdLocationAttachmentAdd
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
-    final var transaction =
-      context.transaction();
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var attachmentAdd =
       transaction.queries(CADatabaseQueriesLocationsType.AttachmentAddType.class);
     final var get =

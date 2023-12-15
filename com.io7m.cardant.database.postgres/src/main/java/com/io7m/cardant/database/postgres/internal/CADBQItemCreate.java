@@ -23,7 +23,11 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.model.CAItemID;
 import org.jooq.DSLContext;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
+
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 import static java.lang.Boolean.FALSE;
@@ -73,6 +77,15 @@ public final class CADBQItemCreate
       .set(ITEMS.ITEM_DELETED, FALSE)
       .set(ITEMS.ITEM_NAME, "")
       .execute();
+
+    final var transaction = this.transaction();
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "ITEM_CREATED",
+      Map.entry("Item", itemID.displayId())
+    ).execute();
 
     return UNIT;
   }

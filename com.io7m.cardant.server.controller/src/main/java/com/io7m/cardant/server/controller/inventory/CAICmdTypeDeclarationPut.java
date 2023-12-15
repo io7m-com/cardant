@@ -50,9 +50,11 @@ public final class CAICmdTypeDeclarationPut
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
+    final var transaction = context.transaction();
+    transaction.setUserId(context.session().userId());
+
     final var put =
-      context.transaction()
-        .queries(CADatabaseQueriesTypesType.TypeDeclarationPutType.class);
+      transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationPutType.class);
 
     for (final var type : command.types()) {
       put.execute(type);

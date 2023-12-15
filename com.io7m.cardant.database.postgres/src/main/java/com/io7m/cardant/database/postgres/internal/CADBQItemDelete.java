@@ -25,9 +25,12 @@ import com.io7m.cardant.model.CAItemID;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
@@ -70,6 +73,7 @@ public final class CADBQItemDelete
     final Collection<CAItemID> items)
     throws CADatabaseException
   {
+    final var transaction = this.transaction();
     final var deletes = new ArrayList<Query>(items.size());
     for (final var item : items) {
       deletes.add(
@@ -84,7 +88,17 @@ public final class CADBQItemDelete
         context.deleteFrom(ITEMS)
           .where(ITEMS.ITEM_ID.eq(item.id()))
       );
+      deletes.add(
+        auditEvent(
+          context,
+          OffsetDateTime.now(transaction.clock()),
+          transaction.userId(),
+          "ITEM_DELETED",
+          Map.entry("Item", item.displayId())
+        )
+      );
     }
+
     context.batch(deletes).execute();
     return CADatabaseUnit.UNIT;
   }

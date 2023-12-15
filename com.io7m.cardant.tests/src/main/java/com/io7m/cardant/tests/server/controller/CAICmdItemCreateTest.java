@@ -163,6 +163,8 @@ public final class CAICmdItemCreateTest
       .queries(CADatabaseQueriesItemsType.CreateType.class);
     verify(transaction)
       .queries(CADatabaseQueriesItemsType.SetNameType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(itemCreate)
       .execute(ITEM_ID);
     verify(itemNameSet)

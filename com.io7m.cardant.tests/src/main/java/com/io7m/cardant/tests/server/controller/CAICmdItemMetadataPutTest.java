@@ -197,6 +197,8 @@ public final class CAICmdItemMetadataPutTest
       .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
     verify(itemMetaPut)
       .execute(new Parameters(
         ITEM_ID,
@@ -404,6 +406,8 @@ public final class CAICmdItemMetadataPutTest
       .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
 
     verify(itemMetaPut)
       .execute(
@@ -546,6 +550,8 @@ public final class CAICmdItemMetadataPutTest
       .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
+    verify(transaction)
+      .setUserId(context.session().userId());
 
     verify(itemGet)
       .execute(ITEM_ID);
