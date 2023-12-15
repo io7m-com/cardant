@@ -21,6 +21,32 @@
 [import com.io7m.cedarbridge cb]
 [import com.io7m.cedarbridge.time ct]
 
+[variant CAU1ComparisonExact
+  [parameter T]
+  [case Anything]
+  [case IsEqualTo    [field value T]]
+  [case IsNotEqualTo [field value T]]
+]
+
+[variant CAU1ComparisonFuzzy
+  [parameter T]
+  [case Anything]
+  [case IsEqualTo      [field value T]]
+  [case IsNotEqualTo   [field value T]]
+  [case IsSimilarTo    [field value T]]
+  [case IsNotSimilarTo [field value T]]
+]
+
+[variant CAU1ComparisonSet
+  [parameter T]
+  [case Anything]
+  [case IsEqualTo     [field value [cb:List T]]]
+  [case IsNotEqualTo  [field value [cb:List T]]]
+  [case IsSubsetOf    [field value [cb:List T]]]
+  [case IsSupersetOf  [field value [cb:List T]]]
+  [case IsOverlapping [field value [cb:List T]]]
+]
+
 [documentation CAI1Id "An identifier value."]
 [variant CAI1Id
   [case CAI1FileID     [field id cb:UUID]]
@@ -342,11 +368,11 @@
 [documentation CAI1FileSearchParameters "The item search parameters."]
 [record CAI1FileSearchParameters
   [documentation search "The file description search query."]
-  [field search [cb:Option cb:String]]
+  [field search [CAU1ComparisonFuzzy cb:String]]
   [documentation mediaType "The file media type search query."]
-  [field mediaType [cb:Option cb:String]]
+  [field mediaType [CAU1ComparisonFuzzy cb:String]]
   [documentation sizeRange "The file size range query."]
-  [field sizeRange [cb:Option CAI1SizeRange]]
+  [field sizeRange CAI1SizeRange]
   [documentation order "The file result ordering."]
   [field order CAI1FileColumnOrdering]
   [documentation limit "The file limit."]

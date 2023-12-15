@@ -36,4 +36,21 @@ public final class CAValidityException extends RuntimeException
   {
     super(Objects.requireNonNull(message, "message"));
   }
+
+  /**
+   * Construct an exception.
+   *
+   * @param message The message
+   * @param e       The cause
+   */
+
+  public CAValidityException(
+    final String message,
+    final Exception e)
+  {
+    super(
+      Objects.requireNonNull(message, "message"),
+      Objects.requireNonNull(e, "e")
+    );
+  }
 }

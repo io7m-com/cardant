@@ -81,9 +81,7 @@
   <!-- Record types -->
   <Match>
     <Or>
-      <Or>
-        <Package name="com.io7m.cardant.model.comparisons"/>
-      </Or>
+      <Package name="com.io7m.cardant.model.comparisons"/>
       <Or>
         <Class name="com.io7m.cardant.model.CAAttachment"/>
         <Class name="com.io7m.cardant.model.CAAttachmentKey"/>
@@ -201,13 +199,17 @@
       <Package name="com.io7m.cardant.protocol.inventory.cb.internal"/>
     </Or>
     <Or>
+      <Bug pattern="BC_UNCONFIRMED_CAST"/>
       <Bug pattern="BED_BOGUS_EXCEPTION_DECLARATION"/>
       <Bug pattern="CC_CYCLOMATIC_COMPLEXITY"/>
       <Bug pattern="CE_CLASS_ENVY"/>
       <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+      <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
       <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
       <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
       <Bug pattern="RI_REDUNDANT_INTERFACES"/>
+      <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
       <Bug pattern="UP_UNUSED_PARAMETER"/>
     </Or>
   </Match>

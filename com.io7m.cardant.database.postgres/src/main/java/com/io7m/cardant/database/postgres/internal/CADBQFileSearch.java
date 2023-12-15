@@ -74,47 +74,31 @@ public final class CADBQFileSearch
     final CAFileSearchParameters parameters)
     throws CADatabaseException
   {
-    final Table<?> tableSource =
-      FILES;
+    final Table<?> tableSource = FILES;
 
-    /*
-     * Search queries might be present.
-     */
+    final Condition descriptionCondition =
+      CADBComparisons.createFuzzyMatchQuery(
+        parameters.description(),
+        FILES.FILE_DESCRIPTION,
+        "FILES.FILE_DESCRIPTION_SEARCH"
+      );
 
-    final Condition descriptionCondition;
-    final var descriptionQuery = parameters.description();
-    if (descriptionQuery.isPresent()) {
-      descriptionCondition =
-        DSL.condition(
-          "files.file_description_search @@ websearch_to_tsquery(?)",
-          DSL.inline(descriptionQuery.get())
-        );
-    } else {
-      descriptionCondition = DSL.trueCondition();
-    }
 
-    final Condition mediaCondition;
-    final var mediaQuery = parameters.mediaType();
-    if (mediaQuery.isPresent()) {
-      final var searchText = "%%%s%%".formatted(mediaQuery.get());
-      mediaCondition =
-        DSL.condition(FILES.FILE_MEDIA_TYPE.likeIgnoreCase(searchText));
-    } else {
-      mediaCondition = DSL.trueCondition();
-    }
+    final Condition mediaCondition =
+      CADBComparisons.createFuzzyMatchQuery(
+        parameters.mediaType(),
+        FILES.FILE_MEDIA_TYPE,
+        "FILES.FILE_MEDIA_TYPE_SEARCH"
+      );
 
-    final Condition sizeCondition;
-    final var sizeQuery = parameters.sizeRange();
-    if (sizeQuery.isPresent()) {
-      final var range = sizeQuery.get();
-      final var sizeLowerCondition =
-        DSL.condition(FILES.FILE_DATA_USED.ge(Long.valueOf(range.sizeMinimum())));
-      final var sizeUpperCondition =
-        DSL.condition(FILES.FILE_DATA_USED.le(Long.valueOf(range.sizeMaximum())));
-      sizeCondition = DSL.and(sizeLowerCondition, sizeUpperCondition);
-    } else {
-      sizeCondition = DSL.trueCondition();
-    }
+    final var range =
+      parameters.sizeRange();
+    final var sizeLowerCondition =
+      DSL.condition(FILES.FILE_DATA_USED.ge(Long.valueOf(range.sizeMinimum())));
+    final var sizeUpperCondition =
+      DSL.condition(FILES.FILE_DATA_USED.le(Long.valueOf(range.sizeMaximum())));
+    final Condition sizeCondition =
+      DSL.and(sizeLowerCondition, sizeUpperCondition);
 
     final var allConditions =
       DSL.and(descriptionCondition, mediaCondition, sizeCondition);

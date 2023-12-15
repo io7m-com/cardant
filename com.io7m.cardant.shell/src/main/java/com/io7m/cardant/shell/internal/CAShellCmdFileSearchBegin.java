@@ -21,6 +21,7 @@ import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CASizeRange;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -45,20 +46,74 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 public final class CAShellCmdFileSearchBegin
   extends CAShellCmdAbstractCR<CAICommandFileSearchBegin, CAIResponseFileSearch>
 {
-  private static final QParameterNamed01<String> DESCRIPTION =
+  private static final QParameterNamed01<String> DESCRIPTION_EQUALS =
     new QParameterNamed01<>(
-      "--description",
+      "--description-equal-to",
       List.of(),
-      new QConstant("The file description search query."),
+      new QConstant("Filter files by description."),
       Optional.empty(),
       String.class
     );
 
-  private static final QParameterNamed01<String> MEDIA_TYPE =
+  private static final QParameterNamed01<String> DESCRIPTION_NEQUALS =
     new QParameterNamed01<>(
-      "--media-type",
+      "--description-not-equal-to",
       List.of(),
-      new QConstant("The file media type search query."),
+      new QConstant("Filter files by description."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> DESCRIPTION_SIMILAR =
+    new QParameterNamed01<>(
+      "--description-similar-to",
+      List.of(),
+      new QConstant("Filter files by description."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> DESCRIPTION_NOT_SIMILAR =
+    new QParameterNamed01<>(
+      "--description-not-similar-to",
+      List.of(),
+      new QConstant("Filter files by description."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> MEDIA_EQUALS =
+    new QParameterNamed01<>(
+      "--media-equal-to",
+      List.of(),
+      new QConstant("Filter files by media type."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> MEDIA_NEQUALS =
+    new QParameterNamed01<>(
+      "--media-not-equal-to",
+      List.of(),
+      new QConstant("Filter files by media type."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> MEDIA_SIMILAR =
+    new QParameterNamed01<>(
+      "--media-similar-to",
+      List.of(),
+      new QConstant("Filter files by media type."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> MEDIA_NOT_SIMILAR =
+    new QParameterNamed01<>(
+      "--media-not-similar-to",
+      List.of(),
+      new QConstant("Filter files by media type."),
       Optional.empty(),
       String.class
     );
@@ -81,13 +136,13 @@ public final class CAShellCmdFileSearchBegin
       Long.class
     );
 
-  private static final QParameterNamed1<Integer> LIMIT =
+  private static final QParameterNamed1<Long> LIMIT =
     new QParameterNamed1<>(
       "--limit",
       List.of(),
       new QConstant("The maximum number of results per page."),
-      Optional.of(Integer.valueOf(100)),
-      Integer.class
+      Optional.of(Long.valueOf(100L)),
+      Long.class
     );
 
   /**
@@ -113,7 +168,19 @@ public final class CAShellCmdFileSearchBegin
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(DESCRIPTION, LIMIT, MEDIA_TYPE, SIZE_MINIMUM, SIZE_MAXIMUM);
+    return List.of(
+      DESCRIPTION_EQUALS,
+      DESCRIPTION_NEQUALS,
+      DESCRIPTION_SIMILAR,
+      DESCRIPTION_NOT_SIMILAR,
+      MEDIA_EQUALS,
+      MEDIA_NEQUALS,
+      MEDIA_SIMILAR,
+      MEDIA_NOT_SIMILAR,
+      LIMIT,
+      SIZE_MINIMUM,
+      SIZE_MAXIMUM
+    );
   }
 
   @Override
@@ -123,19 +190,63 @@ public final class CAShellCmdFileSearchBegin
   {
     final var client =
       this.client();
-    
+
+    final var descriptionEquals =
+      context.parameterValue(DESCRIPTION_EQUALS)
+        .map(CAComparisonFuzzyType.IsEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionNequals =
+      context.parameterValue(DESCRIPTION_NEQUALS)
+        .map(CAComparisonFuzzyType.IsNotEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionSimilar =
+      context.parameterValue(DESCRIPTION_SIMILAR)
+        .map(CAComparisonFuzzyType.IsSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionNotSimilar =
+      context.parameterValue(DESCRIPTION_NOT_SIMILAR)
+        .map(CAComparisonFuzzyType.IsNotSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionMatch =
+      descriptionEquals
+        .or(() -> descriptionNequals)
+        .or(() -> descriptionSimilar)
+        .or(() -> descriptionNotSimilar)
+        .orElseGet(CAComparisonFuzzyType.Anything::new);
+
+    final var mediaEquals =
+      context.parameterValue(MEDIA_EQUALS)
+        .map(CAComparisonFuzzyType.IsEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var mediaNequals =
+      context.parameterValue(MEDIA_NEQUALS)
+        .map(CAComparisonFuzzyType.IsNotEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var mediaSimilar =
+      context.parameterValue(MEDIA_SIMILAR)
+        .map(CAComparisonFuzzyType.IsSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var mediaNotSimilar =
+      context.parameterValue(MEDIA_NOT_SIMILAR)
+        .map(CAComparisonFuzzyType.IsNotSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var mediaMatch =
+      mediaEquals
+        .or(() -> mediaNequals)
+        .or(() -> mediaSimilar)
+        .or(() -> mediaNotSimilar)
+        .orElseGet(CAComparisonFuzzyType.Anything::new);
+
     final var parameters =
       new CAFileSearchParameters(
-        context.parameterValue(DESCRIPTION),
-        context.parameterValue(MEDIA_TYPE),
-        Optional.of(
-          new CASizeRange(
-            context.parameterValue(SIZE_MINIMUM).longValue(),
-            context.parameterValue(SIZE_MAXIMUM).longValue()
-          )
+        descriptionMatch,
+        mediaMatch,
+        new CASizeRange(
+          context.parameterValue(SIZE_MINIMUM).longValue(),
+          context.parameterValue(SIZE_MAXIMUM).longValue()
         ),
         new CAFileColumnOrdering(BY_DESCRIPTION, true),
-        context.parameterValue(LIMIT).intValue()
+        context.parameterValue(LIMIT).longValue()
       );
 
     final var files =

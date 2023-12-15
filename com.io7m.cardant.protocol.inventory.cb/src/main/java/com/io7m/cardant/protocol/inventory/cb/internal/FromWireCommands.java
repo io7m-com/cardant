@@ -22,6 +22,7 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
@@ -125,6 +126,8 @@ import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 
 import java.util.stream.Collectors;
+
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVFileSearchParameters.FILE_SEARCH_PARAMETERS;
 
 // CHECKSTYLE:OFF
 
@@ -307,9 +310,10 @@ public final class FromWireCommands
 
   public static CAIMessageType fileSearchBegin(
     final CAI1CommandFileSearchBegin m)
+    throws CAProtocolException
   {
     return new CAICommandFileSearchBegin(
-      FromWireModel.fileSearchParameters(m.fieldParameters())
+      FILE_SEARCH_PARAMETERS.convertFromWire(m.fieldParameters())
     );
   }
 

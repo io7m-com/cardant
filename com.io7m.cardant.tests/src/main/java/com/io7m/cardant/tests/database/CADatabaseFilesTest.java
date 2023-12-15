@@ -28,6 +28,7 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CASizeRange;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
@@ -176,9 +177,9 @@ public final class CADatabaseFilesTest
 
     final var s =
       search.execute(new CAFileSearchParameters(
-        Optional.empty(),
-        Optional.empty(),
-        Optional.empty(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CASizeRange(0L, Long.MAX_VALUE),
         new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
         100
       ));
@@ -219,9 +220,9 @@ public final class CADatabaseFilesTest
 
     final var s =
       search.execute(new CAFileSearchParameters(
-        Optional.empty(),
-        Optional.empty(),
-        Optional.empty(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CASizeRange(0L, Long.MAX_VALUE),
         new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, false),
         100
       ));
@@ -262,9 +263,9 @@ public final class CADatabaseFilesTest
 
     final var s =
       search.execute(new CAFileSearchParameters(
-        Optional.of("File 1"),
-        Optional.empty(),
-        Optional.empty(),
+        new CAComparisonFuzzyType.IsEqualTo<>("File 1"),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CASizeRange(0L, Long.MAX_VALUE),
         new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
         100
       ));
@@ -303,9 +304,9 @@ public final class CADatabaseFilesTest
 
     final var s =
       search.execute(new CAFileSearchParameters(
-        Optional.empty(),
-        Optional.of("text/plain+1"),
-        Optional.empty(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.IsEqualTo<>("text/plain+1"),
+        new CASizeRange(0L, Long.MAX_VALUE),
         new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
         100
       ));
@@ -344,9 +345,9 @@ public final class CADatabaseFilesTest
 
     final var s =
       search.execute(new CAFileSearchParameters(
-        Optional.empty(),
-        Optional.empty(),
-        Optional.of(new CASizeRange(0L, 3L)),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CASizeRange(0L, 3L),
         new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
         100
       ));
@@ -384,9 +385,9 @@ public final class CADatabaseFilesTest
 
     final var s =
       search.execute(new CAFileSearchParameters(
-        Optional.empty(),
-        Optional.of("text/plain+1"),
-        Optional.empty(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.IsEqualTo<>("text/plain+1"),
+        new CASizeRange(0L, Long.MAX_VALUE),
         new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
         100
       ));
@@ -425,9 +426,9 @@ public final class CADatabaseFilesTest
 
     final var s =
       search.execute(new CAFileSearchParameters(
-        Optional.empty(),
-        Optional.empty(),
-        Optional.of(new CASizeRange(9L, Long.MAX_VALUE)),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CASizeRange(9L, Long.MAX_VALUE),
         new CAFileColumnOrdering(CAFileColumn.BY_DESCRIPTION, true),
         100
       ));

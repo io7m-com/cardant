@@ -14,41 +14,38 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.api;
+
+package com.io7m.cardant.protocol.inventory.cb.internal;
+
+import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cedarbridge.runtime.api.CBString;
+
+import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
 /**
- * The type of validators that convert between core messages and "wire"
- * (versioned) messages.
- *
- * @param <T> The type of core messages
- * @param <R> The type of wire messages
+ * String conversion.
  */
 
-public interface CAProtocolMessageValidatorType<T, R>
+public enum CAUVStrings
+  implements CAProtocolMessageValidatorType<String, CBString>
 {
   /**
-   * Convert a core message to a wire message.
-   *
-   * @param message The core message
-   *
-   * @return The wire message
-   *
-   * @throws CAProtocolException On errors
+   * String conversion.
    */
 
-  R convertToWire(T message)
-    throws CAProtocolException;
+  STRINGS;
 
-  /**
-   * Convert a wire message to a core message.
-   *
-   * @param message The wire message
-   *
-   * @return The core message
-   *
-   * @throws CAProtocolException On errors
-   */
+  @Override
+  public CBString convertToWire(
+    final String message)
+  {
+    return string(message);
+  }
 
-  T convertFromWire(R message)
-    throws CAProtocolException;
+  @Override
+  public String convertFromWire(
+    final CBString message)
+  {
+    return message.value();
+  }
 }

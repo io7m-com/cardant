@@ -25,6 +25,8 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CASizeRange;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -38,7 +40,6 @@ import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
@@ -66,9 +67,9 @@ public final class CAICmdFileSearchPreviousTest
 
   private static final CAFileSearchParameters PARAMETERS =
     new CAFileSearchParameters(
-      Optional.empty(),
-      Optional.empty(),
-      Optional.empty(),
+      new CAComparisonFuzzyType.Anything<>(),
+      new CAComparisonFuzzyType.Anything<>(),
+      new CASizeRange(0L, Long.MAX_VALUE),
       new CAFileColumnOrdering(CAFileColumn.BY_ID, true),
       100
     );

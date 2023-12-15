@@ -23,7 +23,6 @@ import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAFileColumn;
 import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
@@ -71,7 +70,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1AttachmentKey;
 import com.io7m.cardant.protocol.inventory.cb.CAI1File;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumn;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumnOrdering;
-import com.io7m.cardant.protocol.inventory.cb.CAI1FileSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Id;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Item;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemColumn;
@@ -637,20 +635,6 @@ public final class FromWireModel
     }
     throw new ProtocolUncheckedException(
       errorProtocol(c));
-  }
-
-  public static CAFileSearchParameters fileSearchParameters(
-    final CAI1FileSearchParameters p)
-  {
-    return new CAFileSearchParameters(
-      p.fieldSearch().asOptional().map(CBString::value),
-      p.fieldMediaType()
-        .asOptional().map(CBString::value),
-      p.fieldSizeRange()
-        .asOptional().map(FromWireModel::sizeRange),
-      fileColumnOrdering(p.fieldOrder()),
-      (int) p.fieldLimit().value()
-    );
   }
 
   private static CASizeRange sizeRange(

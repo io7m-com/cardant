@@ -16,8 +16,9 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * The immutable parameters required to search for files.
@@ -30,9 +31,9 @@ import java.util.Optional;
  */
 
 public record CAFileSearchParameters(
-  Optional<String> description,
-  Optional<String> mediaType,
-  Optional<CASizeRange> sizeRange,
+  CAComparisonFuzzyType<String> description,
+  CAComparisonFuzzyType<String> mediaType,
+  CASizeRange sizeRange,
   CAFileColumnOrdering ordering,
   long pageSize)
   implements CASearchParametersType

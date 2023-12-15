@@ -23,7 +23,6 @@ import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CAFileColumn;
 import com.io7m.cardant.model.CAFileColumnOrdering;
 import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
@@ -70,7 +69,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1AttachmentKey;
 import com.io7m.cardant.protocol.inventory.cb.CAI1File;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumn;
 import com.io7m.cardant.protocol.inventory.cb.CAI1FileColumnOrdering;
-import com.io7m.cardant.protocol.inventory.cb.CAI1FileSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Id;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Item;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemColumn;
@@ -597,21 +595,6 @@ public final class ToWireModel
       );
     }
     throw new IllegalStateException();
-  }
-
-  public static CAI1FileSearchParameters fileSearchParameters(
-    final CAFileSearchParameters parameters)
-  {
-    return new CAI1FileSearchParameters(
-      CBOptionType.fromOptional(parameters.description().map(CBString::new)),
-      CBOptionType.fromOptional(parameters.mediaType().map(CBString::new)),
-      CBOptionType.fromOptional(
-        parameters.sizeRange()
-          .map(ToWireModel::sizeRange)
-      ),
-      fileColumnOrdering(parameters.ordering()),
-      unsigned32(parameters.pageSize())
-    );
   }
 
   private static CAI1SizeRange sizeRange(

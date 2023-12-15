@@ -15,29 +15,44 @@
  */
 
 
-package com.io7m.cardant.tests.arbitraries.model;
+package com.io7m.cardant.protocol.inventory.cb.internal;
 
-import com.io7m.cardant.model.CAFileColumnOrdering;
-import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CASizeRange;
-import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
+import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cardant.protocol.inventory.cb.CAI1SizeRange;
 
-public final class CAArbFileSearchParameters
-  extends CAArbAbstract<CAFileSearchParameters>
+import static com.io7m.cedarbridge.runtime.api.CBCore.unsigned64;
+
+/**
+ * A validator.
+ */
+
+public enum CAUVSizeRange
+  implements CAProtocolMessageValidatorType<CASizeRange, CAI1SizeRange>
 {
-  public CAArbFileSearchParameters()
+  /**
+   * A validator.
+   */
+
+  SIZE_RANGE;
+
+  @Override
+  public CAI1SizeRange convertToWire(
+    final CASizeRange parameters)
   {
-    super(
-      CAFileSearchParameters.class,
-      () -> Combinators.combine(
-        CAArbComparisons.fuzzy(Arbitraries.strings()),
-        CAArbComparisons.fuzzy(Arbitraries.strings()),
-        Arbitraries.defaultFor(CASizeRange.class),
-        Arbitraries.defaultFor(CAFileColumnOrdering.class),
-        Arbitraries.integers().between(1, 1000)
-      ).as(CAFileSearchParameters::new)
+    return new CAI1SizeRange(
+      unsigned64(parameters.sizeMinimum()),
+      unsigned64(parameters.sizeMaximum())
+    );
+  }
+
+  @Override
+  public CASizeRange convertFromWire(
+    final CAI1SizeRange message)
+  {
+    return new CASizeRange(
+      message.fieldSizeMinimum().value(),
+      message.fieldSizeMaximum().value()
     );
   }
 }

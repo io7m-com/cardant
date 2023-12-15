@@ -19,6 +19,7 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
@@ -123,6 +124,8 @@ import com.io7m.cedarbridge.runtime.convenience.CBLists;
 import com.io7m.cedarbridge.runtime.convenience.CBMaps;
 import com.io7m.lanark.core.RDottedName;
 
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVFileSearchParameters.FILE_SEARCH_PARAMETERS;
+
 // CHECKSTYLE:OFF
 
 public final class ToWireCommands
@@ -134,6 +137,7 @@ public final class ToWireCommands
 
   public static ProtocolCAIv1Type command(
     final CAICommandType<?> cmd)
+    throws CAProtocolException
   {
     if (cmd instanceof final CAICommandFilePut c) {
       return filePut(c);
@@ -446,9 +450,10 @@ public final class ToWireCommands
 
   private static ProtocolCAIv1Type fileSearchBegin(
     final CAICommandFileSearchBegin c)
+    throws CAProtocolException
   {
     return new CAI1CommandFileSearchBegin(
-      ToWireModel.fileSearchParameters(c.parameters())
+      FILE_SEARCH_PARAMETERS.convertToWire(c.parameters())
     );
   }
 
