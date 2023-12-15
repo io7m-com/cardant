@@ -14,45 +14,45 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.model;
+
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
- * The immutable parameters required to search for files.
+ * The search parameters for the audit log.
  *
- * @param description The description query
- * @param mediaType   The media type query
- * @param ordering    The ordering specification
- * @param sizeRange   The range of file sizes to consider
- * @param pageSize    The page size
+ * @param owner     Limit events to the given owner
+ * @param type      Limit events to the given type
+ * @param timeRange Limit events to the given time range
+ * @param pageSize  The page size
  */
 
-public record CAFileSearchParameters(
-  Optional<String> description,
-  Optional<String> mediaType,
-  Optional<CASizeRange> sizeRange,
-  CAFileColumnOrdering ordering,
+public record CAAuditSearchParameters(
+  Optional<UUID> owner,
+  CAComparisonExactType<String> type,
+  CATimeRange timeRange,
   long pageSize)
   implements CASearchParametersType
 {
   /**
-   * The immutable parameters required to search for files.
+   * The search parameters for the audit log.
    *
-   * @param description The description query
-   * @param mediaType   The media type query
-   * @param ordering    The ordering specification
-   * @param sizeRange   The range of file sizes to consider
-   * @param pageSize    The page size
+   * @param owner     Limit events to the given owner
+   * @param type      Limit events to the given type
+   * @param timeRange Limit events to the given time range
+   * @param pageSize  The page size
    */
 
-  public CAFileSearchParameters
+  public CAAuditSearchParameters
   {
-    Objects.requireNonNull(description, "description");
-    Objects.requireNonNull(mediaType, "mediaType");
-    Objects.requireNonNull(sizeRange, "sizeRange");
-    Objects.requireNonNull(ordering, "ordering");
+    Objects.requireNonNull(owner, "owner");
+    Objects.requireNonNull(type, "type");
+    Objects.requireNonNull(timeRange, "timeRange");
     pageSize = CAPageSizes.clampPageSize(pageSize);
   }
 }

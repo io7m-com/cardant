@@ -81,38 +81,45 @@
   <!-- Record types -->
   <Match>
     <Or>
-      <Class name="com.io7m.cardant.model.CAMetadataType$Monetary"/>
-      <Class name="com.io7m.cardant.model.CAMetadataValueMatchType$MonetaryMatchType$WithCurrency"/>
-      <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAllOf"/>
-      <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAnyOf"/>
-      <Class name="com.io7m.cardant.model.CATypeDeclaration"/>
-      <Class name="com.io7m.cardant.model.CAByteArray"/>
-      <Class name="com.io7m.cardant.model.CAFileID"/>
-      <Class name="com.io7m.cardant.model.CAIds"/>
-      <Class name="com.io7m.cardant.model.CAItem"/>
-      <Class name="com.io7m.cardant.model.CAAttachment"/>
-      <Class name="com.io7m.cardant.model.CAAttachmentKey"/>
-      <Class name="com.io7m.cardant.model.CAItemAttachments"/>
-      <Class name="com.io7m.cardant.model.CAItemColumn"/>
-      <Class name="com.io7m.cardant.model.CAItemColumnOrdering"/>
-      <Class name="com.io7m.cardant.model.CAItemID"/>
-      <Class name="com.io7m.cardant.model.CAItemLocation"/>
-      <Class name="com.io7m.cardant.model.CAItemLocations"/>
-      <Class name="com.io7m.cardant.model.CAMetadata"/>
-      <Class name="com.io7m.cardant.model.CAItemMetadatas"/>
-      <Class name="com.io7m.cardant.model.CAItemRepositAdd"/>
-      <Class name="com.io7m.cardant.model.CAItemRepositMove"/>
-      <Class name="com.io7m.cardant.model.CAItemRepositRemove"/>
-      <Class name="com.io7m.cardant.model.CAItemSearchParameters"/>
-      <Class name="com.io7m.cardant.model.CAItemSummary"/>
-      <Class name="com.io7m.cardant.model.CALocation"/>
-      <Class name="com.io7m.cardant.model.CALocationID"/>
-      <Class name="com.io7m.cardant.model.CALocationSummaries"/>
-      <Class name="com.io7m.cardant.model.CAPage"/>
-      <Class name="com.io7m.cardant.model.CATag"/>
-      <Class name="com.io7m.cardant.model.CATagID"/>
-      <Class name="com.io7m.cardant.model.CATags"/>
-      <Class name="com.io7m.cardant.model.CAUser"/>
+      <Or>
+        <Package name="com.io7m.cardant.model.comparisons"/>
+      </Or>
+      <Or>
+        <Class name="com.io7m.cardant.model.CAAttachment"/>
+        <Class name="com.io7m.cardant.model.CAAttachmentKey"/>
+        <Class name="com.io7m.cardant.model.CAAuditEvent"/>
+        <Class name="com.io7m.cardant.model.CAAuditSearchParameters"/>
+        <Class name="com.io7m.cardant.model.CAByteArray"/>
+        <Class name="com.io7m.cardant.model.CAFileID"/>
+        <Class name="com.io7m.cardant.model.CAIds"/>
+        <Class name="com.io7m.cardant.model.CAItem"/>
+        <Class name="com.io7m.cardant.model.CAItemAttachments"/>
+        <Class name="com.io7m.cardant.model.CAItemColumn"/>
+        <Class name="com.io7m.cardant.model.CAItemColumnOrdering"/>
+        <Class name="com.io7m.cardant.model.CAItemID"/>
+        <Class name="com.io7m.cardant.model.CAItemLocation"/>
+        <Class name="com.io7m.cardant.model.CAItemLocations"/>
+        <Class name="com.io7m.cardant.model.CAItemMetadatas"/>
+        <Class name="com.io7m.cardant.model.CAItemRepositAdd"/>
+        <Class name="com.io7m.cardant.model.CAItemRepositMove"/>
+        <Class name="com.io7m.cardant.model.CAItemRepositRemove"/>
+        <Class name="com.io7m.cardant.model.CAItemSearchParameters"/>
+        <Class name="com.io7m.cardant.model.CAItemSummary"/>
+        <Class name="com.io7m.cardant.model.CALocation"/>
+        <Class name="com.io7m.cardant.model.CALocationID"/>
+        <Class name="com.io7m.cardant.model.CALocationSummaries"/>
+        <Class name="com.io7m.cardant.model.CAMetadata"/>
+        <Class name="com.io7m.cardant.model.CAMetadataType$Monetary"/>
+        <Class name="com.io7m.cardant.model.CAMetadataValueMatchType$MonetaryMatchType$WithCurrency"/>
+        <Class name="com.io7m.cardant.model.CAPage"/>
+        <Class name="com.io7m.cardant.model.CATag"/>
+        <Class name="com.io7m.cardant.model.CATagID"/>
+        <Class name="com.io7m.cardant.model.CATags"/>
+        <Class name="com.io7m.cardant.model.CATypeDeclaration"/>
+        <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAllOf"/>
+        <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAnyOf"/>
+        <Class name="com.io7m.cardant.model.CAUser"/>
+      </Or>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>

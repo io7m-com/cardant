@@ -73,33 +73,48 @@ public final class CADBQFileGet
       parameters.withData();
 
     final var id = file.id();
-    final var fileRec = context.fetchOne(FILES, FILES.FILE_ID.eq(id));
-    if (fileRec == null) {
-      return Optional.empty();
-    }
-
-    final var size =
-      fileRec.getFileDataUsed()
-        .longValue();
 
     if (withData) {
-      return Optional.of(new CAFileType.CAFileWithData(
-        file,
-        fileRec.getFileDescription(),
-        fileRec.getFileMediaType(),
-        fileRec.getFileHashAlgorithm(),
-        fileRec.getFileHashValue(),
-        new CAByteArray(fileRec.getFileData())
-      ));
+      return context.select(
+        FILES.FILE_DATA_USED,
+        FILES.FILE_DESCRIPTION,
+        FILES.FILE_MEDIA_TYPE,
+        FILES.FILE_DATA,
+        FILES.FILE_HASH_ALGORITHM,
+        FILES.FILE_HASH_VALUE
+      ).from(FILES)
+        .where(FILES.FILE_ID.eq(id))
+        .fetchOptional()
+        .map(r -> {
+          return new CAFileType.CAFileWithData(
+            file,
+            r.get(FILES.FILE_DESCRIPTION),
+            r.get(FILES.FILE_MEDIA_TYPE),
+            r.get(FILES.FILE_HASH_ALGORITHM),
+            r.get(FILES.FILE_HASH_VALUE),
+            new CAByteArray(r.get(FILES.FILE_DATA))
+          );
+        });
     }
 
-    return Optional.of(new CAFileType.CAFileWithoutData(
-      file,
-      fileRec.getFileDescription(),
-      fileRec.getFileMediaType(),
-      size,
-      fileRec.getFileHashAlgorithm(),
-      fileRec.getFileHashValue()
-    ));
+    return context.select(
+        FILES.FILE_DATA_USED,
+        FILES.FILE_DESCRIPTION,
+        FILES.FILE_MEDIA_TYPE,
+        FILES.FILE_HASH_ALGORITHM,
+        FILES.FILE_HASH_VALUE
+      ).from(FILES)
+      .where(FILES.FILE_ID.eq(id))
+      .fetchOptional()
+      .map(r -> {
+        return new CAFileType.CAFileWithoutData(
+          file,
+          r.get(FILES.FILE_DESCRIPTION),
+          r.get(FILES.FILE_MEDIA_TYPE),
+          r.get(FILES.FILE_DATA_USED),
+          r.get(FILES.FILE_HASH_ALGORITHM),
+          r.get(FILES.FILE_HASH_VALUE)
+        );
+      });
   }
 }

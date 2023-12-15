@@ -14,33 +14,46 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.model;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.UUID;
 
 /**
- * The immutable parameters required to search declared types.
+ * An audit event.
  *
- * @param search The search query
- * @param pageSize  The page size
+ * @param id    The event ID
+ * @param time  The event time
+ * @param owner The event owner
+ * @param type  The event type
+ * @param data  The event data
  */
 
-public record CATypeDeclarationSearchParameters(
-  Optional<String> search,
-  long pageSize)
-  implements CASearchParametersType
+public record CAAuditEvent(
+  long id,
+  OffsetDateTime time,
+  UUID owner,
+  String type,
+  Map<String, String> data)
 {
   /**
-   * The immutable parameters required to search declared types.
+   * An audit event.
    *
-   * @param search The search query
-   * @param pageSize  The page size
+   * @param id    The event ID
+   * @param time  The event time
+   * @param owner The event owner
+   * @param type  The event type
+   * @param data  The event data
    */
 
-  public CATypeDeclarationSearchParameters
+  public CAAuditEvent
   {
-    Objects.requireNonNull(search, "search");
-    pageSize = CAPageSizes.clampPageSize(pageSize);
+    Objects.requireNonNull(time, "time");
+    Objects.requireNonNull(owner, "owner");
+    Objects.requireNonNull(type, "type");
+    Objects.requireNonNull(data, "data");
   }
 }

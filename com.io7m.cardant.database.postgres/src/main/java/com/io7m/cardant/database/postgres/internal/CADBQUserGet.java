@@ -76,22 +76,23 @@ public final class CADBQUserGet
     throws CADatabaseException
   {
     try {
-      final var userRec = context.fetchOne(USERS, USERS.ID.eq(id));
-      if (userRec == null) {
-        return Optional.empty();
-      }
-
-      return Optional.of(
-        new CAUser(
-          id,
-          new IdName(userRec.get(USERS.NAME)),
-          new MSubject(
-            Stream.of(userRec.getRoles())
-              .map(MRoleName::of)
-              .collect(Collectors.toUnmodifiableSet())
-          )
-        )
-      );
+      return context.select(
+          USERS.NAME,
+          USERS.ROLES)
+        .from(USERS)
+        .where(USERS.ID.eq(id))
+        .fetchOptional()
+        .map(r -> {
+          return new CAUser(
+            id,
+            new IdName(r.get(USERS.NAME)),
+            new MSubject(
+              Stream.of(r.get(USERS.ROLES))
+                .map(MRoleName::of)
+                .collect(Collectors.toUnmodifiableSet())
+            )
+          );
+        });
     } catch (final IdValidityException e) {
       Span.current().recordException(e);
       throw new CADatabaseException(

@@ -49,7 +49,6 @@ import java.util.UUID;
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_SEARCH_VIEW;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
-import static java.lang.Integer.toUnsignedLong;
 
 /**
  * Search for items.
@@ -175,7 +174,7 @@ public final class CADBQItemSearch
         .addWhereCondition(simpleConditions)
         .addGroupByField(ITEM_SEARCH_VIEW.ITEM_ID)
         .addGroupByField(ITEM_SEARCH_VIEW.ITEM_NAME)
-        .setPageSize(toUnsignedLong(parameters.limit()))
+        .setPageSize(parameters.pageSize())
         .setStatementListener(statement -> {
           Span.current().setAttribute(DB_STATEMENT, statement.toString());
         }).build();

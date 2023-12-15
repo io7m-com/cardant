@@ -28,10 +28,11 @@ import org.jooq.DSLContext;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
-import static com.io7m.cardant.database.postgres.internal.Tables.AUDIT;
+import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.USERS;
 
 /**
@@ -85,20 +86,6 @@ public final class CADBQUserPut
     final CAUser user)
     throws CADatabaseException
   {
-    var userRec = context.fetchOne(USERS, USERS.ID.eq(user.userId()));
-    if (userRec == null) {
-      userRec = context.newRecord(USERS);
-      userRec.set(USERS.ID, user.userId());
-      userRec.set(USERS.NAME, user.name().value());
-
-      final var auditRec = context.newRecord(AUDIT);
-      auditRec.setUserId(this.transaction().userId());
-      auditRec.setTime(OffsetDateTime.now(this.transaction().clock()));
-      auditRec.setType("USER_FIRST_LOGIN");
-      auditRec.setMessage(user.userId().toString());
-      auditRec.store();
-    }
-
     final var sourceRoles =
       user.subject()
         .roles();
@@ -110,20 +97,26 @@ public final class CADBQUserPut
       targetRoles = sourceRoles;
     }
 
-    final String[] roles =
+    final String[] roleArray =
       roleSetToStringArray(targetRoles);
 
-    userRec.set(USERS.NAME, user.name().value());
-    userRec.setRoles(roles);
-    userRec.store();
+    context.insertInto(USERS)
+      .set(USERS.ID, user.userId())
+      .set(USERS.NAME, user.name().value())
+      .set(USERS.ROLES, roleArray)
+      .onDuplicateKeyUpdate()
+      .set(USERS.NAME, user.name().value())
+      .set(USERS.ROLES, roleArray)
+      .where(USERS.ID.eq(user.userId()))
+      .execute();
 
-    final var auditRec = context.newRecord(AUDIT);
-    auditRec.setUserId(this.transaction().userId());
-    auditRec.setTime(OffsetDateTime.now(this.transaction().clock()));
-    auditRec.setType("USER_ROLES_CHANGED");
-    auditRec.setMessage(String.join(",", roles));
-    auditRec.store();
-
+    auditEvent(
+      context,
+      OffsetDateTime.now(this.transaction().clock()),
+      user.userId(),
+      "USER_ROLES_CHANGED",
+      Map.entry("Roles", String.join(",", roleArray))
+    );
     return UNIT;
   }
 }

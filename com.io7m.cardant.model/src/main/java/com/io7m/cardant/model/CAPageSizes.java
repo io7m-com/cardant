@@ -14,33 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.model;
 
-import java.util.Objects;
-import java.util.Optional;
-
 /**
- * The immutable parameters required to search declared types.
- *
- * @param search The search query
- * @param pageSize  The page size
+ * The page sizes.
  */
 
-public record CATypeDeclarationSearchParameters(
-  Optional<String> search,
-  long pageSize)
-  implements CASearchParametersType
+public final class CAPageSizes
 {
+  private CAPageSizes()
+  {
+
+  }
+
   /**
-   * The immutable parameters required to search declared types.
+   * Clamp the page size to a sensible range.
    *
-   * @param search The search query
-   * @param pageSize  The page size
+   * @param size The size
+   *
+   * @return The clamped size
    */
 
-  public CATypeDeclarationSearchParameters
+  public static long clampPageSize(
+    final long size)
   {
-    Objects.requireNonNull(search, "search");
-    pageSize = CAPageSizes.clampPageSize(pageSize);
+    return Math.max(1L, Math.min(1000L, size));
   }
 }

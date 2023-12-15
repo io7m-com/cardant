@@ -330,7 +330,7 @@ public final class ToWireCommands
   {
     return new CAI1TypeScalarSearchParameters(
       CBOptionType.fromOptional(parameters.search().map(CBString::new)),
-      CBCore.unsigned32(parameters.limit())
+      CBCore.unsigned32(parameters.pageSize())
     );
   }
 
@@ -385,7 +385,7 @@ public final class ToWireCommands
   {
     return new CAI1TypeDeclarationSearchParameters(
       CBOptionType.fromOptional(parameters.search().map(CBString::new)),
-      CBCore.unsigned32(parameters.limit())
+      CBCore.unsigned32(parameters.pageSize())
     );
   }
 

@@ -68,11 +68,11 @@ public final class CADBQItemCreate
   {
     this.setAttribute(ITEM_ID, itemID.displayId());
 
-    final var itemRec = context.newRecord(ITEMS);
-    itemRec.setItemId(itemID.id());
-    itemRec.setItemDeleted(FALSE);
-    itemRec.setItemName("");
-    itemRec.store();
+    context.insertInto(ITEMS)
+      .set(ITEMS.ITEM_ID, itemID.id())
+      .set(ITEMS.ITEM_DELETED, FALSE)
+      .set(ITEMS.ITEM_NAME, "")
+      .execute();
 
     return UNIT;
   }

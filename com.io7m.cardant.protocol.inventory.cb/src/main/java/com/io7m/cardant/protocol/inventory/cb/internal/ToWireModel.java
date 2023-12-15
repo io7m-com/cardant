@@ -127,6 +127,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAI1ValidationComm
 import static com.io7m.cedarbridge.runtime.api.CBCore.float64;
 import static com.io7m.cedarbridge.runtime.api.CBCore.signed64;
 import static com.io7m.cedarbridge.runtime.api.CBCore.string;
+import static com.io7m.cedarbridge.runtime.api.CBCore.unsigned32;
 import static com.io7m.cedarbridge.runtime.api.CBCore.unsigned64;
 import static java.lang.Integer.toUnsignedLong;
 
@@ -476,7 +477,7 @@ public final class ToWireModel
       typeMatch(parameters.typeMatch()),
       metadataMatch(parameters.metadataMatch()),
       itemColumnOrdering(parameters.ordering()),
-      new CBIntegerUnsigned32(toUnsignedLong(parameters.limit()))
+      unsigned32(parameters.pageSize())
     );
   }
 
@@ -609,7 +610,7 @@ public final class ToWireModel
           .map(ToWireModel::sizeRange)
       ),
       fileColumnOrdering(parameters.ordering()),
-      new CBIntegerUnsigned32(toUnsignedLong(parameters.limit()))
+      unsigned32(parameters.pageSize())
     );
   }
 

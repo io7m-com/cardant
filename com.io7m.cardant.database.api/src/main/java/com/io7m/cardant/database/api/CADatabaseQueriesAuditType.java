@@ -14,33 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.database.api;
 
-import java.util.Objects;
-import java.util.Optional;
+import com.io7m.cardant.model.CAAuditEvent;
+import com.io7m.cardant.model.CAAuditSearchParameters;
 
 /**
- * The immutable parameters required to search declared types.
- *
- * @param search The search query
- * @param pageSize  The page size
+ * The database queries involving the audit log.
  */
 
-public record CATypeDeclarationSearchParameters(
-  Optional<String> search,
-  long pageSize)
-  implements CASearchParametersType
+public sealed interface CADatabaseQueriesAuditType
+  extends CADatabaseQueriesType
 {
   /**
-   * The immutable parameters required to search declared types.
-   *
-   * @param search The search query
-   * @param pageSize  The page size
+   * Add an audit event.
    */
 
-  public CATypeDeclarationSearchParameters
+  non-sealed interface EventAddType
+    extends CADatabaseQueryType<CAAuditEvent, CADatabaseUnit>,
+    CADatabaseQueriesAuditType
   {
-    Objects.requireNonNull(search, "search");
-    pageSize = CAPageSizes.clampPageSize(pageSize);
+
+  }
+
+  /**
+   * Search for audit events.
+   */
+
+  non-sealed interface EventSearchType
+    extends CADatabaseQueryType<CAAuditSearchParameters, CAAuditPagedType>,
+    CADatabaseQueriesAuditType
+  {
+
   }
 }

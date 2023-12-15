@@ -26,7 +26,7 @@ import java.util.Objects;
  * @param typeMatch     The type match expression
  * @param metadataMatch The metadata match expression
  * @param ordering      The ordering specification
- * @param limit         The limit on the number of returned users
+ * @param pageSize      The page size
  */
 
 public record CAItemSearchParameters(
@@ -35,7 +35,8 @@ public record CAItemSearchParameters(
   CATypeMatchType typeMatch,
   CAMetadataElementMatchType metadataMatch,
   CAItemColumnOrdering ordering,
-  int limit)
+  long pageSize)
+  implements CASearchParametersType
 {
   /**
    * The immutable parameters required to search items.
@@ -45,7 +46,7 @@ public record CAItemSearchParameters(
    * @param typeMatch     The type match expression
    * @param metadataMatch The metadata match expression
    * @param ordering      The ordering specification
-   * @param limit         The limit on the number of returned users
+   * @param pageSize      The page size
    */
 
   public CAItemSearchParameters
@@ -55,16 +56,6 @@ public record CAItemSearchParameters(
     Objects.requireNonNull(nameMatch, "nameMatch");
     Objects.requireNonNull(metadataMatch, "metadataMatch");
     Objects.requireNonNull(ordering, "ordering");
+    pageSize = CAPageSizes.clampPageSize(pageSize);
   }
-
-  /**
-   * @return The limit on the number of returned items
-   */
-
-  @Override
-  public int limit()
-  {
-    return Math.max(1, this.limit);
-  }
-
 }

@@ -35,7 +35,6 @@ import org.jooq.impl.DSL;
 
 import static com.io7m.cardant.database.postgres.internal.tables.Files.FILES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
-import static java.lang.Integer.toUnsignedLong;
 
 /**
  * Remove a file.
@@ -127,7 +126,7 @@ public final class CADBQFileSearch
       JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
         .addSortField(orderField)
         .addWhereCondition(allConditions)
-        .setPageSize(toUnsignedLong(parameters.limit()))
+        .setPageSize(parameters.pageSize())
         .setStatementListener(statement -> {
           Span.current().setAttribute(DB_STATEMENT, statement.toString());
         }).build();

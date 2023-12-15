@@ -32,5 +32,6 @@ module com.io7m.cardant.model
   requires transitive com.io7m.medrina.api;
   requires transitive org.joda.money;
 
+  exports com.io7m.cardant.model.comparisons;
   exports com.io7m.cardant.model;
 }

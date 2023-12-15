@@ -74,8 +74,13 @@ public final class CADBQItemSetName
     this.setAttribute(ITEM_ID, itemID.displayId());
     this.setAttribute(ITEM_NAME, parameters.name());
 
-    final var itemRec = context.fetchOne(ITEMS, ITEMS.ITEM_ID.eq(itemID.id()));
-    if (itemRec == null) {
+    final var updated =
+      context.update(ITEMS)
+        .set(ITEMS.ITEM_NAME, parameters.name())
+        .where(ITEMS.ITEM_ID.eq(parameters.item().id()))
+        .execute();
+
+    if (updated == 0) {
       throw new CADatabaseException(
         this.local(ERROR_NONEXISTENT),
         errorNonexistent(),
@@ -83,8 +88,6 @@ public final class CADBQItemSetName
         Optional.empty()
       );
     }
-    itemRec.setItemName(parameters.name());
-    itemRec.store();
     return CADatabaseUnit.UNIT;
   }
 }

@@ -27,7 +27,6 @@ import org.jooq.DSLContext;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.tables.Files.FILES;
-import static java.lang.Integer.toUnsignedLong;
 
 /**
  * Create or update a file.
@@ -69,28 +68,35 @@ public final class CADBQFilePut
   {
     this.setAttribute(CAStringConstants.FILE_ID, file.id().displayId());
 
-    final var id = file.id().id();
-    var fileRec = context.fetchOne(FILES, FILES.FILE_ID.eq(id));
-    if (fileRec == null) {
-      fileRec = context.newRecord(FILES);
-      fileRec.set(FILES.FILE_ID, id);
-    }
+    var q0 =
+      context.insertInto(FILES)
+        .set(FILES.FILE_ID, file.id().id())
+        .set(FILES.FILE_DESCRIPTION, file.description())
+        .set(FILES.FILE_HASH_ALGORITHM, file.hashAlgorithm())
+        .set(FILES.FILE_HASH_VALUE, file.hashValue())
+        .set(FILES.FILE_MEDIA_TYPE, file.mediaType());
 
-    fileRec.set(FILES.FILE_DESCRIPTION, file.description());
-    fileRec.set(FILES.FILE_MEDIA_TYPE, file.mediaType());
-    fileRec.set(FILES.FILE_HASH_ALGORITHM, file.hashAlgorithm());
-    fileRec.set(FILES.FILE_HASH_VALUE, file.hashValue());
     if (file instanceof final CAFileType.CAFileWithData withData) {
-      final var bytes =
-        withData.data().data();
-      final var size =
-        toUnsignedLong(bytes.length);
-
-      fileRec.set(FILES.FILE_DATA, bytes);
-      fileRec.set(FILES.FILE_DATA_USED, size);
+      q0 = q0
+        .set(FILES.FILE_DATA, withData.data().data())
+        .set(FILES.FILE_DATA_USED, Long.valueOf(withData.size()));
     }
 
-    fileRec.store();
+    var q1 = q0.onDuplicateKeyUpdate()
+      .set(FILES.FILE_DESCRIPTION, file.description())
+      .set(FILES.FILE_HASH_ALGORITHM, file.hashAlgorithm())
+      .set(FILES.FILE_HASH_VALUE, file.hashValue())
+      .set(FILES.FILE_MEDIA_TYPE, file.mediaType());
+
+    if (file instanceof final CAFileType.CAFileWithData withData) {
+      q1 = q1
+        .set(FILES.FILE_DATA, withData.data().data())
+        .set(FILES.FILE_DATA_USED, Long.valueOf(withData.size()));
+    }
+
+    q1.where(FILES.FILE_ID.eq(file.id().id()))
+      .execute();
+
     return UNIT;
   }
 }

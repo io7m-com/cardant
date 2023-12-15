@@ -14,33 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
 
-import java.util.Objects;
-import java.util.Optional;
+package com.io7m.cardant.model.comparisons;
 
 /**
- * The immutable parameters required to search declared types.
- *
- * @param search The search query
- * @param pageSize  The page size
+ * The type of comparison expressions.
  */
 
-public record CATypeDeclarationSearchParameters(
-  Optional<String> search,
-  long pageSize)
-  implements CASearchParametersType
+public sealed interface CAComparisonType
+  permits CAComparisonExactType, CAComparisonFuzzyType, CAComparisonSetType
 {
-  /**
-   * The immutable parameters required to search declared types.
-   *
-   * @param search The search query
-   * @param pageSize  The page size
-   */
 
-  public CATypeDeclarationSearchParameters
-  {
-    Objects.requireNonNull(search, "search");
-    pageSize = CAPageSizes.clampPageSize(pageSize);
-  }
 }

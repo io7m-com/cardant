@@ -22,33 +22,25 @@ import java.util.Optional;
 /**
  * The immutable parameters required to search scalar types.
  *
- * @param search The search query
- * @param limit  The limit on the number of returned users
+ * @param search   The search query
+ * @param pageSize The page size
  */
 
 public record CATypeScalarSearchParameters(
   Optional<String> search,
-  int limit)
+  long pageSize)
+  implements CASearchParametersType
 {
   /**
    * The immutable parameters required to search scalar types.
    *
-   * @param search The search query
-   * @param limit  The limit on the number of returned users
+   * @param search   The search query
+   * @param pageSize The page size
    */
 
   public CATypeScalarSearchParameters
   {
     Objects.requireNonNull(search, "search");
-  }
-
-  /**
-   * @return The limit on the number of returned items
-   */
-
-  @Override
-  public int limit()
-  {
-    return Math.max(1, this.limit);
+    pageSize = CAPageSizes.clampPageSize(pageSize);
   }
 }

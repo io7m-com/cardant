@@ -28,7 +28,7 @@ module com.io7m.cardant.database.postgres
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.cardant.database.api;
+  requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.strings;
 
@@ -44,13 +44,12 @@ module com.io7m.cardant.database.postgres
   requires io.opentelemetry.semconv;
   requires java.sql;
   requires org.jgrapht.core;
+  requires org.jooq.postgres.extensions;
   requires org.jooq;
   requires org.postgresql.jdbc;
   requires org.slf4j;
 
   exports com.io7m.cardant.database.postgres.internal.tables
-    to org.jooq;
-  exports com.io7m.cardant.database.postgres.internal.tables.records
     to org.jooq;
   exports com.io7m.cardant.database.postgres.internal
     to org.jooq;

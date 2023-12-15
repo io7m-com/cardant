@@ -14,33 +14,13 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
-
-import java.util.Objects;
-import java.util.Optional;
-
 /**
- * The immutable parameters required to search declared types.
- *
- * @param search The search query
- * @param pageSize  The page size
+ * Inventory system (Comparisons)
  */
 
-public record CATypeDeclarationSearchParameters(
-  Optional<String> search,
-  long pageSize)
-  implements CASearchParametersType
-{
-  /**
-   * The immutable parameters required to search declared types.
-   *
-   * @param search The search query
-   * @param pageSize  The page size
-   */
+@Export
+@Version("1.0.0")
+package com.io7m.cardant.model.comparisons;
 
-  public CATypeDeclarationSearchParameters
-  {
-    Objects.requireNonNull(search, "search");
-    pageSize = CAPageSizes.clampPageSize(pageSize);
-  }
-}
+import org.osgi.annotation.bundle.Export;
+import org.osgi.annotation.versioning.Version;

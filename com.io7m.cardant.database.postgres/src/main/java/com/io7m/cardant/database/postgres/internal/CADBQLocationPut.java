@@ -253,19 +253,20 @@ public final class CADBQLocationPut
     final CALocationID id,
     final DSLContext context)
   {
-    final var locRec =
-      context.fetchOne(LOCATIONS, LOCATIONS.LOCATION_ID.eq(id.id()));
-    if (locRec == null) {
-      return Optional.empty();
-    }
-
-    return Optional.of(
-      new CALocationSummary(
-        id,
-        Optional.ofNullable(locRec.getLocationParent()).map(CALocationID::new),
-        locRec.getLocationName()
-      )
-    );
+    return context.select(
+      LOCATIONS.LOCATION_PARENT,
+      LOCATIONS.LOCATION_NAME
+    ).from(LOCATIONS)
+      .where(LOCATIONS.LOCATION_ID.eq(id.id()))
+      .fetchOptional()
+      .map(r -> {
+        return new CALocationSummary(
+          id,
+          Optional.ofNullable(r.get(LOCATIONS.LOCATION_PARENT))
+            .map(CALocationID::new),
+          r.get(LOCATIONS.LOCATION_NAME)
+        );
+      });
   }
 
   private record CALocationEdge(

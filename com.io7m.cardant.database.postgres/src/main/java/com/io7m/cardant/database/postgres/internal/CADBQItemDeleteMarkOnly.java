@@ -21,7 +21,6 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.DeleteMarkOnlyType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.database.postgres.internal.tables.records.ItemsRecord;
 import com.io7m.cardant.model.CAItemID;
 import org.jooq.DSLContext;
 import org.jooq.UpdateConditionStep;
@@ -71,7 +70,7 @@ public final class CADBQItemDeleteMarkOnly
     throws CADatabaseException
   {
     final var updates =
-      new ArrayList<UpdateConditionStep<ItemsRecord>>(items.size());
+      new ArrayList<UpdateConditionStep<?>>(items.size());
     for (final var item : items) {
       updates.add(
         context.update(ITEMS)

@@ -69,6 +69,44 @@ CREATE TABLE schema_version (
 
   <Schema versionCurrent="1">
     <Comment>
+      Some tables use the hstore type to store unstructured key/value maps.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE EXTENSION hstore;
+]]></Statement>
+
+    <Comment>
+      The database makes extensive use of Lanark dotted names. It's necessary to tokenize those names in order to use
+      them with full text searching. Essentially, anything that isn't a letter or a number is converted to a space. This
+      translated string can then be given to the various full-text search functions for indexing.
+    </Comment>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+
+CREATE FUNCTION tokenize_dotted_name(x text) RETURNS text
+  LANGUAGE SQL
+  IMMUTABLE
+  RETURNS NULL ON NULL INPUT
+    RETURN TRANSLATE (x, '-_.', '   ')
+
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+
+CREATE OR REPLACE FUNCTION text_array_to_text(TEXT[])
+  RETURNS TEXT AS
+$$
+  SELECT array_to_string($1, ' ');
+$$ LANGUAGE SQL IMMUTABLE;
+
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Comment>
       The users table stores the current set of users. The name field is neither
       authoritative, nor expected to be unique, because the external identity
       server is the authoritative source for names.
@@ -986,11 +1024,14 @@ CREATE VIEW location_search_view AS
 
     <Statement><![CDATA[
 CREATE TABLE audit (
-  id      BIGINT                   NOT NULL GENERATED ALWAYS AS IDENTITY,
-  user_id UUID                     NOT NULL,
-  time    TIMESTAMP WITH TIME ZONE NOT NULL,
-  type    VARCHAR(1000000)         NOT NULL,
-  message VARCHAR(1000000)         NOT NULL,
+  id         BIGINT                   NOT NULL GENERATED ALWAYS AS IDENTITY,
+  user_id    UUID                     NOT NULL,
+  time       TIMESTAMP WITH TIME ZONE NOT NULL,
+  type       TEXT                     NOT NULL,
+
+  -- [jooq ignore start]
+  data       HSTORE                   NOT NULL,
+  -- [jooq ignore stop]
 
   CONSTRAINT audit_primary_key
     PRIMARY KEY (id)
