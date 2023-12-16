@@ -446,6 +446,10 @@ public final class CAShellIT
     w.println("item-search-begin");
     w.println("item-search-next");
     w.println("item-search-previous");
+    w.println("set --formatter RAW");
+    w.println("item-search-begin");
+    w.println("item-search-next");
+    w.println("item-search-previous");
     w.println("logout");
     w.flush();
     w.close();
@@ -558,6 +562,10 @@ public final class CAShellIT
     w.println("file-search-begin");
     w.println("file-search-next");
     w.println("file-search-previous");
+    w.println("set --formatter RAW");
+    w.println("file-search-begin");
+    w.println("file-search-next");
+    w.println("file-search-previous");
     w.println("logout");
     w.flush();
     w.close();
@@ -589,6 +597,8 @@ public final class CAShellIT
     w.printf("bookmark-list%n");
     w.printf("bookmark-login --name b1%n");
     w.printf("bookmark-remove --name b1%n");
+    w.printf("bookmark-list%n");
+    w.println("set --formatter RAW");
     w.printf("bookmark-list%n");
     w.println("logout");
     w.flush();
@@ -643,6 +653,10 @@ public final class CAShellIT
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
     w.println("type-scalar-remove --name com.x");
+    w.println("type-scalar-search-begin --query things");
+    w.println("type-scalar-search-next");
+    w.println("type-scalar-search-previous");
+    w.println("set --formatter RAW");
     w.println("type-scalar-search-begin --query things");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
@@ -710,6 +724,41 @@ public final class CAShellIT
     w.println("type-search-begin --query type");
     w.println("type-search-next");
     w.println("type-search-previous");
+    w.println("set --formatter RAW");
+    w.println("type-search-begin --query type");
+    w.println("type-search-next");
+    w.println("type-search-previous");
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellAuditWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+    w.println(
+      "type-scalar-put " +
+      "--name com.x " +
+      "--description 'A description of things.' " +
+      "--base-is-text '.*'"
+    );
+    w.println("audit-search-begin");
+    w.println("audit-search-next");
+    w.println("audit-search-previous");
+    w.println("set --formatter RAW");
+    w.println("audit-search-begin");
+    w.println("audit-search-next");
+    w.println("audit-search-previous");
     w.println("logout");
     w.flush();
     w.close();

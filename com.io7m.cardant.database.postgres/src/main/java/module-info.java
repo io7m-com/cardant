@@ -60,6 +60,8 @@ module com.io7m.cardant.database.postgres
   uses CADBQueryProviderType;
 
   provides CADBQueryProviderType with
+    com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd,
+    com.io7m.cardant.database.postgres.internal.CADBQAuditEventSearch,
     com.io7m.cardant.database.postgres.internal.CADBQFileGet,
     com.io7m.cardant.database.postgres.internal.CADBQFilePut,
     com.io7m.cardant.database.postgres.internal.CADBQFileRemove,

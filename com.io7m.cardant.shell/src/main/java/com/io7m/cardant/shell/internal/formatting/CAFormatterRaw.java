@@ -18,6 +18,7 @@
 package com.io7m.cardant.shell.internal.formatting;
 
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
+import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
@@ -322,7 +323,7 @@ public final class CAFormatterRaw implements CAFormatterType
     final var metadata = location.metadata();
     if (!metadata.isEmpty()) {
       w.println();
-      w.println("# metadata");
+      w.println("# Metadata");
       w.println("#---------");
       w.println();
 
@@ -332,7 +333,7 @@ public final class CAFormatterRaw implements CAFormatterType
           metadata.entrySet()
             .stream()
             .map(e -> Map.entry(
-              "metadata: " + e.getKey(),
+              "Metadata: " + e.getKey(),
               e.getValue().valueString()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
         ));
@@ -359,6 +360,33 @@ public final class CAFormatterRaw implements CAFormatterType
     }
 
     w.println();
+  }
+
+  @Override
+  public void formatAuditPage(
+    final CAPage<CAAuditEvent> page)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.printf(
+      "# Search results: Page %d of %d%n",
+      Integer.valueOf(page.pageIndex()),
+      Integer.valueOf(page.pageCount())
+    );
+    w.println(
+      "#--------------------------------"
+    );
+
+    final var events = page.items();
+    for (final var event : events) {
+      w.printf(
+        "%s %s %s %s %s%n",
+        Long.toUnsignedString(event.id()),
+        event.owner().id(),
+        event.type(),
+        event.time(),
+        event.data()
+      );
+    }
   }
 
   static String formatSize(

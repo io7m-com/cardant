@@ -17,6 +17,7 @@
 package com.io7m.cardant.shell.internal.formatting;
 
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
+import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
@@ -164,5 +165,17 @@ public interface CAFormatterType
 
   void formatLocation(
     CALocation location)
+    throws Exception;
+
+  /**
+   * Format a page of audit events.
+   *
+   * @param page The page
+   *
+   * @throws Exception On errors
+   */
+
+  void formatAuditPage(
+    CAPage<CAAuditEvent> page)
     throws Exception;
 }

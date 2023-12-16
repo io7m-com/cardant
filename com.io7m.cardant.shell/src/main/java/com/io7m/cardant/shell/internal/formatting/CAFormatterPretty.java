@@ -22,6 +22,7 @@ import com.io7m.cardant.client.preferences.api.CAPreferenceServerCredentialsType
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
 import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAAttachmentKey;
+import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
@@ -520,6 +521,43 @@ public final class CAFormatterPretty implements CAFormatterType
     this.formatLocationAttributes(location);
     this.formatMetadata(location.metadata());
     this.formatAttachments(location.attachments());
+  }
+
+  @Override
+  public void formatAuditPage(
+    final CAPage<CAAuditEvent> page)
+    throws Exception
+  {
+    this.terminal.writer()
+      .printf(
+        "Search results: Page %d of %d%n",
+        Integer.valueOf(page.pageIndex()),
+        Integer.valueOf(page.pageCount())
+      );
+
+    if (page.items().isEmpty()) {
+      return;
+    }
+
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(2))
+        .declareColumn("ID", atLeastContentOrHeader())
+        .declareColumn("Owner", atLeastContent())
+        .declareColumn("Type", atLeastContent())
+        .declareColumn("Time", atLeastContent())
+        .declareColumn("Data", atLeastContent());
+
+    for (final var event : page.items()) {
+      tableBuilder.addRow()
+        .addCell(Long.toUnsignedString(event.id()))
+        .addCell(event.owner().toString())
+        .addCell(event.type())
+        .addCell(event.time().toString())
+        .addCell(event.data().toString());
+    }
+
+    this.renderTable(tableBuilder.build());
   }
 
   private void formatLocationAttributes(

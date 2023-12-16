@@ -39,6 +39,12 @@ public record CAFileID(UUID id)
     Objects.requireNonNull(id, "id");
   }
 
+  @Override
+  public String toString()
+  {
+    return this.id.toString();
+  }
+
   /**
    * Construct an ID.
    *

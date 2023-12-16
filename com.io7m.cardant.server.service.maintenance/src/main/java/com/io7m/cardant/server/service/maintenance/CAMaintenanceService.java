@@ -23,7 +23,6 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.repetoir.core.RPServiceType;
-import io.opentelemetry.api.trace.SpanKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +136,6 @@ public final class CAMaintenanceService
     final var span =
       this.telemetry.tracer()
         .spanBuilder("Maintenance")
-        .setSpanKind(SpanKind.INTERNAL)
         .startSpan();
 
     try (var ignored = span.makeCurrent()) {

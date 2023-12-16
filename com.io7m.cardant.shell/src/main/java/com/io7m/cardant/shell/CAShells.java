@@ -22,6 +22,9 @@ import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.shell.internal.CAShell;
+import com.io7m.cardant.shell.internal.CAShellCmdAuditSearchBegin;
+import com.io7m.cardant.shell.internal.CAShellCmdAuditSearchNext;
+import com.io7m.cardant.shell.internal.CAShellCmdAuditSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdBookmarkList;
 import com.io7m.cardant.shell.internal.CAShellCmdBookmarkLogin;
 import com.io7m.cardant.shell.internal.CAShellCmdBookmarkPut;
@@ -150,6 +153,9 @@ public final class CAShells implements CAShellFactoryType
 
     final List<CAShellCmdType> commands =
       List.of(
+        new CAShellCmdAuditSearchBegin(services),
+        new CAShellCmdAuditSearchNext(services),
+        new CAShellCmdAuditSearchPrevious(services),
         new CAShellCmdBookmarkList(services),
         new CAShellCmdBookmarkLogin(services),
         new CAShellCmdBookmarkPut(services),
