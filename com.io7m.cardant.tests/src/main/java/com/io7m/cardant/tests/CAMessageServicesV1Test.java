@@ -23,6 +23,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,12 @@ public final class CAMessageServicesV1Test
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CAMessageServicesV1Test.class);
+
+  @Test
+  public void testIdentifier()
+  {
+    LOG.debug("{}", CAI1Messages.protocolId());
+  }
 
   @Property(tries = 3_000)
   public void testRoundTripCommands(

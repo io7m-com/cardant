@@ -27,6 +27,7 @@
     <module>com.io7m.cardant.client.preferences.vanilla</module>
     <module>com.io7m.cardant.database.api</module>
     <module>com.io7m.cardant.database.postgres</module>
+    <module>com.io7m.cardant.documentation</module>
     <module>com.io7m.cardant.error_codes</module>
     <module>com.io7m.cardant.main</module>
     <module>com.io7m.cardant.model</module>

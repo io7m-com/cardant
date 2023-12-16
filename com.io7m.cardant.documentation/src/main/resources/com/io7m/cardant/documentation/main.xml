@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Document xmlns="urn:com.io7m.structural:8:0"
+          xmlns:dc="http://purl.org/dc/elements/1.1/"
+          xmlns:xi="http://www.w3.org/2001/XInclude"
+          tableOfContentsDepth="1">
+
+  <Metadata>
+    <dc:date>2023-12-16T17:05:50+00:00</dc:date>
+    <dc:description>User manual for the cardant server.</dc:description>
+    <dc:identifier>9e6e25d5-7759-49a9-97b4-d0c645799e42</dc:identifier>
+    <dc:language>en</dc:language>
+    <dc:source>https://www.io7m.com/software/cardant/</dc:source>
+    <dc:title>Cardant User Manual ${project.version}</dc:title>
+
+    <MetaProperty name="com.io7m.xstructural.epub.colophon">colophon_extra.xml</MetaProperty>
+    <MetaProperty name="com.io7m.xstructural.epub.cover">cover.jpg</MetaProperty>
+    <MetaProperty name="com.io7m.xstructural.web.branding.header">brand.xml</MetaProperty>
+    <MetaProperty name="com.io7m.xstructural.web.branding.footer">brand.xml</MetaProperty>
+  </Metadata>
+
+  <xi:include href="intro.xml"/>
+  <xi:include href="install.xml"/>
+  <xi:include href="model.xml"/>
+  <xi:include href="api.xml"/>
+
+</Document>

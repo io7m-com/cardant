@@ -199,8 +199,8 @@ public final class CAPGDatabases implements CADatabaseFactoryType
 
     final var config = new HikariConfig();
     config.setJdbcUrl(url.toString());
-    config.setUsername(configuration.ownerRoleName());
-    config.setPassword(configuration.ownerRolePassword());
+    config.setUsername("cardant");
+    config.setPassword(configuration.workerRolePassword());
     config.setAutoCommit(false);
 
     final var dataSource =

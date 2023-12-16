@@ -1,0 +1,2 @@
+$ cardant server --configuration server.conf
+info: [localhost/<unresolved>:30000] Inventory API server started

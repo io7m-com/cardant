@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         id="6c1816ac-b3ec-43df-a4a6-d623b5ac297b"
+         title="Introduction">
+
+  <Paragraph>
+    The <Term type="package">cardant</Term> package...
+  </Paragraph>
+
+</Section>

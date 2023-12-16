@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         id="e7b8d1c0-1329-4bcd-aabb-276d0219593b"
+         title="Model">
+
+  <Subsection title="Overview">
+    <Paragraph>
+      The <Term type="package">cardant</Term> package provides a server-based application to track inventory.
+      It stores detailed information about types of items, and can store the counts of those items present
+      in defined locations.
+    </Paragraph>
+    <Paragraph>
+      This section of the documentation describes the internal <Term type="package">cardant</Term> model.
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="Audit Log"
+              id="021fa938-f249-4620-a938-959b308e1d1f">
+    <Paragraph>
+      The server maintains an append-only <Term type="term">audit log</Term> consisting of a series of
+      <Term type="term">audit events</Term>. An <Term type="term">audit event</Term> has an integer
+      <Term type="term">id</Term>, an <Term type="term">owner</Term> (represented by an account UUID),
+      a <Term type="term">timestamp</Term>, a <Term type="term">type</Term>, and a
+      <Term type="term">message</Term> consisting of a set of key/value pairs.
+    </Paragraph>
+    <Paragraph>
+      Each operation that changes the underlying database typically results in an event being logged
+      to the audit log.
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="Inventory API"
+              id="3dff8219-1792-41a3-bd8b-797efe61348c">
+    <Paragraph>
+      The <Term type="term">inventory API</Term> is the interface exposed to user clients. It exposes
+      a <LinkExternal target="https://www.io7m.com/software/cedarbridge">Cedarbridge</LinkExternal>-based API over HTTP,
+      using the included
+      <Link target="18b8c54d-2127-4a9f-9321-980ea59a568e">schema</Link>.
+    </Paragraph>
+    <Paragraph>
+      The inventory API is the primary means by which clients perform operations on the server.
+    </Paragraph>
+  </Subsection>
+
+</Section>
