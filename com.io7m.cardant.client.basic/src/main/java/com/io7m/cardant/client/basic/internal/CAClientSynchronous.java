@@ -24,6 +24,7 @@ import com.io7m.cardant.client.api.CAClientSynchronousType;
 import com.io7m.cardant.client.api.CAClientTransferStatistics;
 import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
@@ -37,7 +38,6 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
@@ -113,7 +113,7 @@ public final class CAClientSynchronous
   }
 
   @Override
-  public Optional<UUID> userId()
+  public Optional<CAUserID> userId()
   {
     return this.subscriber.getUserId();
   }

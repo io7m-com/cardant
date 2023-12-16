@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.client.api;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -23,7 +24,6 @@ import com.io7m.hibiscus.api.HBClientAsynchronousType;
 import com.io7m.repetoir.core.RPServiceType;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * The type of client instances.
@@ -50,5 +50,5 @@ public interface CAClientAsynchronousType
    * @return The current logged-in user
    */
 
-  Optional<UUID> userId();
+  Optional<CAUserID> userId();
 }

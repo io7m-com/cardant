@@ -116,7 +116,7 @@ public final class CA1HandlerFileUpload
   {
     try {
       CASecurity.check(
-        user.userId(),
+        user.userId().id(),
         user.subject(),
         new MObject(
           MTypeName.of("inventory.files"),

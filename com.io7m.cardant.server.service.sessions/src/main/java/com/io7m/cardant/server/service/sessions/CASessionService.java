@@ -21,6 +21,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.Scheduler;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
 import com.io7m.idstore.model.IdName;
 import com.io7m.jaffirm.core.Preconditions;
@@ -32,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 
@@ -136,7 +136,7 @@ public final class CASessionService implements RPServiceType
    */
 
   public CASession createSession(
-    final UUID userId,
+    final CAUserID userId,
     final IdName name,
     final MSubject subject)
   {

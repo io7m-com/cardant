@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.database.api;
 
-import java.util.UUID;
+import com.io7m.cardant.model.CAUserID;
 
 /**
  * A database transaction. If the transaction is closed, it is automatically
@@ -68,11 +68,11 @@ public interface CADatabaseTransactionType extends AutoCloseable
    */
 
   void setUserId(
-    UUID newUserId);
+    CAUserID newUserId);
 
   /**
    * @return The transaction's user ID
    */
 
-  UUID userId();
+  CAUserID userId();
 }

@@ -15,10 +15,9 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import net.jqwik.api.Arbitraries;
-
-import java.util.UUID;
 
 public final class CAArbCommandRolesGet extends CAArbAbstract<CAICommandRolesGet>
 {
@@ -26,7 +25,7 @@ public final class CAArbCommandRolesGet extends CAArbAbstract<CAICommandRolesGet
   {
     super(
       CAICommandRolesGet.class,
-      () -> Arbitraries.create(UUID::randomUUID).map(CAICommandRolesGet::new)
+      () -> Arbitraries.defaultFor(CAUserID.class).map(CAICommandRolesGet::new)
     );
   }
 }

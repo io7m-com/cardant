@@ -18,6 +18,7 @@ package com.io7m.cardant.tests.shell;
 
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellType;
@@ -45,7 +46,6 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,8 +61,8 @@ public final class CAShellIT
   private static final Logger LOG =
     LoggerFactory.getLogger(CAShellIT.class);
 
-  private static UUID USER_ADMIN;
-  private static UUID USER;
+  private static CAUserID USER_ADMIN;
+  private static CAUserID USER;
   private static CATestContainers.CAIdstoreFixture IDSTORE;
   private static CATestContainers.CADatabaseFixture DATABASE;
   private static Path DIRECTORY;
@@ -730,12 +730,12 @@ public final class CAShellIT
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println(
       "roles-assign " +
-        "--user " + USER + " " +
+        "--user " + USER.displayId() + " " +
         "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
     );
     w.println(
       "roles-revoke " +
-        "--user " + USER + " " +
+        "--user " + USER.displayId() + " " +
         "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
     );
     w.flush();

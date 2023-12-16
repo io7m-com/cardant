@@ -22,6 +22,7 @@ import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.security.CASecurityPolicy;
@@ -62,7 +63,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
@@ -302,7 +302,7 @@ public final class CAServer implements CAServerType
 
   @Override
   public void setUserAsAdmin(
-    final UUID adminId,
+    final CAUserID adminId,
     final IdName adminName)
     throws CAServerException
   {
@@ -356,7 +356,7 @@ public final class CAServer implements CAServerType
 
   private static void setUserAsAdminSpan(
     final CADatabaseType database,
-    final UUID adminId,
+    final CAUserID adminId,
     final IdName adminName)
     throws CAServerException
   {

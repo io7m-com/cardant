@@ -16,11 +16,11 @@
 
 package com.io7m.cardant.protocol.inventory;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.medrina.api.MRoleName;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Revoke the given roles from the given user.
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 
 public record CAICommandRolesRevoke(
-  UUID user,
+  CAUserID user,
   Set<MRoleName> roles)
   implements CAICommandType<CAIResponseRolesRevoke>
 {

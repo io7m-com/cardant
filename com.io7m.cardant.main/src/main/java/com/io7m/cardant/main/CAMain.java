@@ -20,6 +20,8 @@ import com.io7m.cardant.main.internal.CMCmdInitialize;
 import com.io7m.cardant.main.internal.CMCmdServer;
 import com.io7m.cardant.main.internal.CMCmdShell;
 import com.io7m.cardant.model.CAVersion;
+import com.io7m.cardant.shell.CAShellValueConverters;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QApplication;
 import com.io7m.quarrel.core.QApplicationMetadata;
 import com.io7m.quarrel.core.QApplicationType;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -67,6 +70,9 @@ public final class CAMain implements Runnable
       );
 
     final var builder = QApplication.builder(metadata);
+    builder.setValueConverters(
+      CAShellValueConverters.create(CAStrings.create(Locale.getDefault()))
+    );
     builder.addCommand(new CMCmdInitialize());
     builder.addCommand(new CMCmdServer());
     builder.addCommand(new CMCmdShell());

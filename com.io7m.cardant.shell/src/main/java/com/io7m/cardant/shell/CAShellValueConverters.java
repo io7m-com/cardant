@@ -32,6 +32,7 @@ import com.io7m.cardant.shell.internal.CARangeInclusiveLConverter;
 import com.io7m.cardant.shell.internal.CARoleNameConverter;
 import com.io7m.cardant.shell.internal.CATimeRangeConverter;
 import com.io7m.cardant.shell.internal.CATypeMatchConverter;
+import com.io7m.cardant.shell.internal.CAUserIdConverter;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QValueConverterDirectory;
 import com.io7m.quarrel.core.QValueConverterDirectoryType;
@@ -71,6 +72,7 @@ public final class CAShellValueConverters
       .with(new CARangeInclusiveLConverter(strings))
       .with(new CARoleNameConverter())
       .with(new CATimeRangeConverter(strings))
-      .with(new CATypeMatchConverter(strings));
+      .with(new CATypeMatchConverter(strings))
+      .with(new CAUserIdConverter());
   }
 }

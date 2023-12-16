@@ -57,37 +57,31 @@ public final class CAUVComparisonsFuzzy<V, W extends CBSerializableType>
     final CAComparisonFuzzyType<V> message)
     throws CAProtocolException
   {
-    if (message instanceof CAComparisonFuzzyType.Anything<V>) {
-      return new CAU1ComparisonFuzzy.Anything<>();
-    }
-
-    if (message instanceof final CAComparisonFuzzyType.IsEqualTo<V> e) {
-      return new CAU1ComparisonFuzzy.IsEqualTo<>(
-        this.validator.convertToWire(e.value())
-      );
-    }
-
-    if (message instanceof final CAComparisonFuzzyType.IsNotEqualTo<V> e) {
-      return new CAU1ComparisonFuzzy.IsNotEqualTo<>(
-        this.validator.convertToWire(e.value())
-      );
-    }
-
-    if (message instanceof final CAComparisonFuzzyType.IsSimilarTo<V> e) {
-      return new CAU1ComparisonFuzzy.IsSimilarTo<>(
-        this.validator.convertToWire(e.value())
-      );
-    }
-
-    if (message instanceof final CAComparisonFuzzyType.IsNotSimilarTo<V> e) {
-      return new CAU1ComparisonFuzzy.IsNotSimilarTo<>(
-        this.validator.convertToWire(e.value())
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized message: %s".formatted(message)
-    );
+    return switch (message) {
+      case final CAComparisonFuzzyType.Anything<V> e -> {
+        yield new CAU1ComparisonFuzzy.Anything<>();
+      }
+      case final CAComparisonFuzzyType.IsEqualTo<V> e -> {
+        yield new CAU1ComparisonFuzzy.IsEqualTo<>(
+          this.validator.convertToWire(e.value())
+        );
+      }
+      case final CAComparisonFuzzyType.IsNotEqualTo<V> e -> {
+        yield new CAU1ComparisonFuzzy.IsNotEqualTo<>(
+          this.validator.convertToWire(e.value())
+        );
+      }
+      case final CAComparisonFuzzyType.IsSimilarTo<V> e -> {
+        yield new CAU1ComparisonFuzzy.IsSimilarTo<>(
+          this.validator.convertToWire(e.value())
+        );
+      }
+      case final CAComparisonFuzzyType.IsNotSimilarTo<V> e -> {
+        yield new CAU1ComparisonFuzzy.IsNotSimilarTo<>(
+          this.validator.convertToWire(e.value())
+        );
+      }
+    };
   }
 
   @Override
@@ -95,36 +89,30 @@ public final class CAUVComparisonsFuzzy<V, W extends CBSerializableType>
     final CAU1ComparisonFuzzy<W> message)
     throws CAProtocolException
   {
-    if (message instanceof CAU1ComparisonFuzzy.Anything<W>) {
-      return new CAComparisonFuzzyType.Anything<>();
-    }
-
-    if (message instanceof final CAU1ComparisonFuzzy.IsEqualTo<W> e) {
-      return new CAComparisonFuzzyType.IsEqualTo<>(
-        this.validator.convertFromWire(e.fieldValue())
-      );
-    }
-
-    if (message instanceof final CAU1ComparisonFuzzy.IsNotEqualTo<W> e) {
-      return new CAComparisonFuzzyType.IsNotEqualTo<>(
-        this.validator.convertFromWire(e.fieldValue())
-      );
-    }
-
-    if (message instanceof final CAU1ComparisonFuzzy.IsSimilarTo<W> e) {
-      return new CAComparisonFuzzyType.IsSimilarTo<>(
-        this.validator.convertFromWire(e.fieldValue())
-      );
-    }
-
-    if (message instanceof final CAU1ComparisonFuzzy.IsNotSimilarTo<W> e) {
-      return new CAComparisonFuzzyType.IsNotSimilarTo<>(
-        this.validator.convertFromWire(e.fieldValue())
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized message: %s".formatted(message)
-    );
+    return switch (message) {
+      case CAU1ComparisonFuzzy.Anything<W> e -> {
+        yield new CAComparisonFuzzyType.Anything<>();
+      }
+      case final CAU1ComparisonFuzzy.IsEqualTo<W> e -> {
+        yield new CAComparisonFuzzyType.IsEqualTo<>(
+          this.validator.convertFromWire(e.fieldValue())
+        );
+      }
+      case final CAU1ComparisonFuzzy.IsNotEqualTo<W> e -> {
+        yield new CAComparisonFuzzyType.IsNotEqualTo<>(
+          this.validator.convertFromWire(e.fieldValue())
+        );
+      }
+      case final CAU1ComparisonFuzzy.IsSimilarTo<W> e -> {
+        yield new CAComparisonFuzzyType.IsSimilarTo<>(
+          this.validator.convertFromWire(e.fieldValue())
+        );
+      }
+      case final CAU1ComparisonFuzzy.IsNotSimilarTo<W> e -> {
+        yield new CAComparisonFuzzyType.IsNotSimilarTo<>(
+          this.validator.convertFromWire(e.fieldValue())
+        );
+      }
+    };
   }
 }

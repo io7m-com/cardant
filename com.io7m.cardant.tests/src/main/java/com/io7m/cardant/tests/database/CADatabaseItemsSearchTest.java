@@ -52,6 +52,7 @@ import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAllOf;
 import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
 import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAnyOf;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -83,7 +84,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -142,7 +142,7 @@ public final class CADatabaseItemsSearchTest
     this.transaction =
       closeables.addPerTestResource(this.connection.openTransaction());
 
-    final var userId = UUID.randomUUID();
+    final var userId = CAUserID.random();
     this.transaction.queries(CADatabaseQueriesUsersType.PutType.class)
       .execute(new CAUser(userId, new IdName("x"), new MSubject(Set.of())));
     this.transaction.commit();

@@ -101,13 +101,13 @@ public final class CADBQUserPut
       roleSetToStringArray(targetRoles);
 
     context.insertInto(USERS)
-      .set(USERS.ID, user.userId())
+      .set(USERS.ID, user.userId().id())
       .set(USERS.NAME, user.name().value())
       .set(USERS.ROLES, roleArray)
       .onDuplicateKeyUpdate()
       .set(USERS.NAME, user.name().value())
       .set(USERS.ROLES, roleArray)
-      .where(USERS.ID.eq(user.userId()))
+      .where(USERS.ID.eq(user.userId().id()))
       .execute();
 
     auditEvent(

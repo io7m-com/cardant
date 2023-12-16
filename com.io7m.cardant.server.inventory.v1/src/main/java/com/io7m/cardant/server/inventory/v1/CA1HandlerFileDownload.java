@@ -111,7 +111,7 @@ public final class CA1HandlerFileDownload
   {
     try {
       CASecurity.check(
-        user.userId(),
+        user.userId().id(),
         user.subject(),
         new MObject(
           MTypeName.of("inventory.files"),

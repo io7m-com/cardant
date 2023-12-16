@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.api.CADatabaseUpgrade;
 import com.io7m.cardant.database.postgres.CAPGDatabases;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.server.api.CAServerConfiguration;
 import com.io7m.cardant.server.api.CAServerException;
 import com.io7m.cardant.server.api.CAServerFactoryType;
@@ -300,7 +301,7 @@ public final class CATestContainers
       );
     }
 
-    public UUID createUser(
+    public CAUserID createUser(
       final String userName)
       throws Exception
     {
@@ -334,7 +335,7 @@ public final class CATestContainers
             IdAClientException::ofError
           );
 
-        return response.user().id();
+        return new CAUserID(response.user().id());
       }
     }
   }
@@ -453,7 +454,7 @@ public final class CATestContainers
     }
 
     public void setUserAsAdmin(
-      final UUID userId,
+      final CAUserID userId,
       final String userName)
       throws CAServerException
     {

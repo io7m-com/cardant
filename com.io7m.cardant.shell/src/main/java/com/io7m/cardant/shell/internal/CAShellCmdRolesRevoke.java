@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.shell.internal;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.medrina.api.MRoleName;
@@ -34,7 +35,6 @@ import org.jline.reader.Completer;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
@@ -44,13 +44,13 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 public final class CAShellCmdRolesRevoke extends CAShellCmdAbstract
 {
-  private static final QParameterNamed1<UUID> USER_ID =
+  private static final QParameterNamed1<CAUserID> USER_ID =
     new QParameterNamed1<>(
       "--user",
       List.of(),
       new QConstant("The user ID."),
       Optional.empty(),
-      UUID.class
+      CAUserID.class
     );
 
   private static final QParameterNamed0N<MRoleName> ROLES =

@@ -18,6 +18,7 @@
 package com.io7m.cardant.main.internal;
 
 import com.io7m.anethum.slf4j.ParseStatusLogging;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.server.api.CAServerConfigurations;
 import com.io7m.cardant.server.api.CAServerFactoryType;
 import com.io7m.cardant.server.service.configuration.CAServerConfigurationParsers;
@@ -40,7 +41,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
@@ -63,13 +63,13 @@ public final class CMCmdInitialize implements QCommandType
       Path.class
     );
 
-  private static final QParameterNamed1<UUID> ADMIN =
+  private static final QParameterNamed1<CAUserID> ADMIN =
     new QParameterNamed1<>(
       "--admin-id",
       List.of(),
       new QConstant("The ID of the user that will be the initial administrator."),
       Optional.empty(),
-      UUID.class
+      CAUserID.class
     );
 
   private static final QParameterNamed1<String> ADMIN_NAME =

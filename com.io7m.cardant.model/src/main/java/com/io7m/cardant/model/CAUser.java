@@ -20,7 +20,6 @@ import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MSubject;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * A snapshot of a user.
@@ -31,7 +30,7 @@ import java.util.UUID;
  */
 
 public record CAUser(
-  UUID userId,
+  CAUserID userId,
   IdName name,
   MSubject subject)
 {

@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.inventory.CAICmdRolesAssign;
@@ -28,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNotPermitted;
@@ -81,7 +81,7 @@ public final class CAICmdRolesAssignTest
         handler.execute(
           context,
           new CAICommandRolesAssign(
-            UUID.randomUUID(),
+            CAUserID.random(),
             Set.of(ROLE_INVENTORY_ITEMS_WRITER))
         );
       });
@@ -127,7 +127,7 @@ public final class CAICmdRolesAssignTest
         handler.execute(
           context,
           new CAICommandRolesAssign(
-            UUID.randomUUID(),
+            CAUserID.random(),
             Set.of(ROLE_INVENTORY_ITEMS_WRITER))
         );
       });
@@ -157,7 +157,7 @@ public final class CAICmdRolesAssignTest
       this.transaction();
 
     final var targetUser =
-      UUID.randomUUID();
+      CAUserID.random();
 
     when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
       .thenReturn(userGet);
@@ -227,7 +227,7 @@ public final class CAICmdRolesAssignTest
       this.transaction();
 
     final var targetUser =
-      UUID.randomUUID();
+      CAUserID.random();
 
     when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
       .thenReturn(userGet);

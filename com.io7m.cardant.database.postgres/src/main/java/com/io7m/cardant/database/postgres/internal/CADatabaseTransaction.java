@@ -21,6 +21,7 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesType;
 import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.strings.CAStringConstantType;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -34,7 +35,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSqlUnsupportedQueryClass;
@@ -48,7 +48,7 @@ final class CADatabaseTransaction
 {
   private final CADatabaseConnection connection;
   private final Span transactionSpan;
-  private UUID userId;
+  private CAUserID userId;
 
   CADatabaseTransaction(
     final CADatabaseConnection inConnection,
@@ -218,13 +218,13 @@ final class CADatabaseTransaction
 
   @Override
   public void setUserId(
-    final UUID newUserId)
+    final CAUserID newUserId)
   {
     this.userId = Objects.requireNonNull(newUserId, "userId");
   }
 
   @Override
-  public UUID userId()
+  public CAUserID userId()
   {
     if (this.userId == null) {
       throw new IllegalStateException("No user ID has been set.");

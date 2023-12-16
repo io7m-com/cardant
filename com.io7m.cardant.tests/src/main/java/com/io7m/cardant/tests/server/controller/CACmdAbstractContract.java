@@ -18,6 +18,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.server.controller.inventory.CAICommandContext;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.sessions.CASession;
@@ -76,7 +77,7 @@ public abstract class CACmdAbstractContract
 
     this.user =
       new CAUser(
-        UUID.randomUUID(),
+        CAUserID.random(),
         new IdName("x"),
         new MSubject(Set.of())
       );

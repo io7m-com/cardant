@@ -15,12 +15,11 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.medrina.api.MRoleName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
-
-import java.util.UUID;
 
 public final class CAArbCommandRolesRevoke extends CAArbAbstract<CAICommandRolesRevoke>
 {
@@ -29,7 +28,7 @@ public final class CAArbCommandRolesRevoke extends CAArbAbstract<CAICommandRoles
     super(
       CAICommandRolesRevoke.class,
       () -> Combinators.combine(
-        Arbitraries.create(UUID::randomUUID),
+        Arbitraries.defaultFor(CAUserID.class),
         Arbitraries.defaultFor(MRoleName.class).set()
       ).as(CAICommandRolesRevoke::new)
     );

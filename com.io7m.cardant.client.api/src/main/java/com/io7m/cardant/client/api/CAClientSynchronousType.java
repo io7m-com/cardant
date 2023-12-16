@@ -17,6 +17,7 @@
 package com.io7m.cardant.client.api;
 
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -26,7 +27,6 @@ import com.io7m.repetoir.core.RPServiceType;
 
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -53,7 +53,7 @@ public interface CAClientSynchronousType extends HBClientSynchronousType<
    * @return The current logged-in user
    */
 
-  Optional<UUID> userId();
+  Optional<CAUserID> userId();
 
   /**
    * Download the data associated with the given file. The file will be

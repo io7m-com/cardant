@@ -16,8 +16,9 @@
 
 package com.io7m.cardant.protocol.inventory;
 
+import com.io7m.cardant.model.CAUserID;
+
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Retrieve the roles for the given user.
@@ -26,7 +27,7 @@ import java.util.UUID;
  */
 
 public record CAICommandRolesGet(
-  UUID user)
+  CAUserID user)
   implements CAICommandType<CAIResponseRolesGet>
 {
   /**

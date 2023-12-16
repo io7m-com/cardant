@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory;
 
+import com.io7m.cardant.model.CAUserID;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -28,7 +30,7 @@ import java.util.UUID;
 
 public record CAIResponseLogin(
   UUID requestId,
-  UUID userId)
+  CAUserID userId)
   implements CAIResponseType
 {
   /**

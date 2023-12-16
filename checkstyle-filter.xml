@@ -26,14 +26,16 @@
   <suppress files="CAICommandExecutor.java"
             checks="ClassDataAbstractionCoupling"/>
 
-  <suppress files="CAI1Validation.java"
+  <suppress files="CAUVMessage.java"
             checks="CyclomaticComplexity"/>
-  <suppress files="CAI1Validation.java"
+  <suppress files="CAUVMessage.java"
             checks="NPathComplexity"/>
-  <suppress files="CAI1Validation.java"
+  <suppress files="CAUVMessage.java"
             checks="ExecutableStatementCount"/>
-  <suppress files="CAI1Validation.java"
+  <suppress files="CAUVMessage.java"
             checks="JavaNCSS"/>
+  <suppress files="CAUVMessage.java"
+            checks="ClassFanOutComplexity"/>
 
   <suppress files="CAShells.java"
             checks="ClassDataAbstractionCoupling"/>

@@ -22,6 +22,7 @@ import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientCredentials;
 import com.io7m.cardant.client.api.CAClientEventType;
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -30,7 +31,6 @@ import com.io7m.hibiscus.basic.HBClientAsynchronousAbstract;
 
 import java.net.http.HttpClient;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.lang.Integer.toUnsignedString;
 
@@ -76,7 +76,7 @@ public final class CAClientAsynchronous
   }
 
   @Override
-  public Optional<UUID> userId()
+  public Optional<CAUserID> userId()
   {
     return this.subscriber.getUserId();
   }

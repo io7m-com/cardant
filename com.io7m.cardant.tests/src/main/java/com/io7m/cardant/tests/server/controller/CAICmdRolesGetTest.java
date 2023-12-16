@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -29,7 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_FILES_WRITER;
@@ -84,7 +84,7 @@ public final class CAICmdRolesGetTest
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
           context,
-          new CAICommandRolesGet(UUID.randomUUID())
+          new CAICommandRolesGet(CAUserID.random())
         );
       });
 
@@ -111,7 +111,7 @@ public final class CAICmdRolesGetTest
       this.transaction();
 
     final var targetUser =
-      UUID.randomUUID();
+      CAUserID.random();
 
     when(transaction.queries(CADatabaseQueriesUsersType.GetType.class))
       .thenReturn(userGet);

@@ -20,13 +20,13 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseQueriesAuditType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.model.CAAuditEvent;
+import com.io7m.cardant.model.CAUserID;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.postgres.extensions.types.Hstore;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventSearch.AU_DATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.AUDIT;
@@ -69,13 +69,13 @@ public final class CADBQAuditEventAdd
   static Query auditEvent(
     final DSLContext context,
     final OffsetDateTime time,
-    final UUID user,
+    final CAUserID user,
     final String type,
     final Map.Entry<String, String>... entries)
   {
     return auditEvent(
       context,
-      new CAAuditEvent(0L, time, user, type, Map.ofEntries(entries))
+      new CAAuditEvent(0L, time, user.id(), type, Map.ofEntries(entries))
     );
   }
 

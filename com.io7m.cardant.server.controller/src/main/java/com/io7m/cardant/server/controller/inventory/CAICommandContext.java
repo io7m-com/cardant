@@ -81,7 +81,7 @@ public final class CAICommandContext
     throws CASecurityException
   {
     CASecurity.check(
-      this.session().userId(),
+      this.session().userId().id(),
       this.session().subject(),
       object,
       action

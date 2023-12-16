@@ -22,6 +22,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.CAValidityException;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
@@ -42,7 +43,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_CLIENT;
@@ -173,7 +173,7 @@ public final class CA1HandlerCoreAuthenticated
   }
 
   private Optional<CAUser> userGet(
-    final UUID id)
+    final CAUserID id)
     throws CADatabaseException
   {
     try (var c = this.database.openConnection(CARDANT)) {

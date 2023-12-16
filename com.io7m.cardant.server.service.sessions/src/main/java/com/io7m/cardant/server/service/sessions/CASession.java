@@ -17,11 +17,11 @@
 package com.io7m.cardant.server.service.sessions;
 
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.medrina.api.MSubject;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -81,7 +81,7 @@ public final class CASession
    * @return The user ID
    */
 
-  public UUID userId()
+  public CAUserID userId()
   {
     return this.user.userId();
   }

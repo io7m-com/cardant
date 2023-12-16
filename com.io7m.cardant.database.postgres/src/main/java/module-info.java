@@ -52,7 +52,7 @@ module com.io7m.cardant.database.postgres
   exports com.io7m.cardant.database.postgres.internal.tables
     to org.jooq;
   exports com.io7m.cardant.database.postgres.internal
-    to org.jooq;
+    to org.jooq, com.io7m.cardant.tests;
 
   provides CADatabaseFactoryType
     with CAPGDatabases;

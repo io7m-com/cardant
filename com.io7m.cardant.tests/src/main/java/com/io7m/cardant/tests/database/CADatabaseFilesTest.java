@@ -30,6 +30,7 @@ import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CASizeRange;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -50,7 +51,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -88,7 +88,7 @@ public final class CADatabaseFilesTest
     this.transaction =
       closeables.addPerTestResource(this.connection.openTransaction());
 
-    final var userId = UUID.randomUUID();
+    final var userId = CAUserID.random();
     this.transaction.queries(CADatabaseQueriesUsersType.PutType.class)
       .execute(new CAUser(userId, new IdName("x"), new MSubject(Set.of())));
     this.transaction.commit();

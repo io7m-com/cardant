@@ -17,10 +17,10 @@
 package com.io7m.cardant.server.api;
 
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.idstore.model.IdName;
 
 import java.net.URI;
-import java.util.UUID;
 
 /**
  * The type of servers.
@@ -83,7 +83,7 @@ public interface CAServerType extends AutoCloseable
    */
 
   void setUserAsAdmin(
-    UUID adminId,
+    CAUserID adminId,
     IdName adminName)
     throws CAServerException;
 

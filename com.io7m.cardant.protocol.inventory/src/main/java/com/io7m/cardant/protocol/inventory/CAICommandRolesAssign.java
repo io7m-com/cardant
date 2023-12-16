@@ -16,11 +16,11 @@
 
 package com.io7m.cardant.protocol.inventory;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.medrina.api.MRoleName;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Assign the given role to the given user.
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 
 public record CAICommandRolesAssign(
-  UUID user,
+  CAUserID user,
   Set<MRoleName> roles)
   implements CAICommandType<CAIResponseRolesAssign>
 {

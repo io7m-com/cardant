@@ -182,6 +182,8 @@ com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchRealWithinRange,
 com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchText,
 com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchTextExact,
 com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchTextSearch,
+com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchTime,
+com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchTimeWithinRange,
 com.io7m.cardant.tests.arbitraries.model.CAArbNameMatch,
 com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchAny,
 com.io7m.cardant.tests.arbitraries.model.CAArbNameMatchExact,
@@ -203,7 +205,6 @@ com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarReal,
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarSearchParameters,
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarText,
 com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarTime,
-com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchTime,
-com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchTimeWithinRange
+com.io7m.cardant.tests.arbitraries.model.CAArbUserID
     ;
 }

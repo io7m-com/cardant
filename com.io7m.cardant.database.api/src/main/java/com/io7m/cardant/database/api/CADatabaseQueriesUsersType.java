@@ -17,9 +17,9 @@
 package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * The database queries involving users.
@@ -44,7 +44,7 @@ public sealed interface CADatabaseQueriesUsersType
    */
 
   non-sealed interface GetType
-    extends CADatabaseQueryType<UUID, Optional<CAUser>>,
+    extends CADatabaseQueryType<CAUserID, Optional<CAUser>>,
     CADatabaseQueriesUsersType
   {
 

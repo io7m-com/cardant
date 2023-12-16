@@ -21,6 +21,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
@@ -38,7 +39,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,7 +93,7 @@ public final class CADatabaseUsersTest
 
     final var user =
       new CAUser(
-        UUID.randomUUID(),
+        CAUserID.random(),
         new IdName("x"),
         new MSubject(Set.of())
       );
@@ -120,7 +120,7 @@ public final class CADatabaseUsersTest
 
     final var user =
       new CAUser(
-        UUID.randomUUID(),
+        CAUserID.random(),
         new IdName("x"),
         new MSubject(Set.of(
           MRoleName.of("role0"),
@@ -148,6 +148,6 @@ public final class CADatabaseUsersTest
     final var get =
       this.transaction.queries(CADatabaseQueriesUsersType.GetType.class);
 
-    assertEquals(Optional.empty(), get.execute(UUID.randomUUID()));
+    assertEquals(Optional.empty(), get.execute(CAUserID.random()));
   }
 }

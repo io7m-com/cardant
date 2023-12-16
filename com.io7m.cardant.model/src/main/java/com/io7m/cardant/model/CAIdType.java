@@ -23,10 +23,7 @@ import java.util.UUID;
  */
 
 public sealed interface CAIdType
-  permits
-  CAFileID,
-  CAItemID,
-  CALocationID
+  permits CAFileID, CAItemID, CALocationID, CAUserID
 {
   /**
    * @return The raw ID value

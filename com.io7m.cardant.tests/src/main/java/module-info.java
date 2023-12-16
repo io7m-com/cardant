@@ -14,6 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType;
 import net.jqwik.api.providers.ArbitraryProvider;
 
 /**
@@ -51,9 +52,11 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.service.telemetry.otp;
   requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
+  requires com.io7m.cardant.tests.arbitraries;
   requires com.io7m.cardant.tls;
 
   uses ArbitraryProvider;
+  uses CADBQueryProviderType;
 
   requires com.io7m.anethum.api;
   requires com.io7m.anethum.slf4j;

@@ -15,6 +15,7 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
@@ -29,7 +30,7 @@ public final class CAArbResponseLogin extends CAArbAbstract<CAIResponseLogin>
       CAIResponseLogin.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
-        Arbitraries.create(UUID::randomUUID)
+        Arbitraries.defaultFor(CAUserID.class)
       ).as(CAIResponseLogin::new)
     );
   }

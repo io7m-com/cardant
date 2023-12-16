@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseUserUpdates;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
@@ -219,7 +220,7 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
      */
 
     var icUser =
-      new CAUser(userId, login.userName(), new MSubject(Set.of()));
+      new CAUser(new CAUserID(userId), login.userName(), new MSubject(Set.of()));
 
     try {
       icUser = CADatabaseUserUpdates.userMerge(database, icUser);
@@ -237,7 +238,6 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
       information,
       transaction,
       login,
-      userId,
       icUser,
       sessionDuration
     );
@@ -254,7 +254,6 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
     final CAHTTPRequestInformation information,
     final CADatabaseTransactionType transaction,
     final CAICommandLogin login,
-    final UUID userId,
     final CAUser icUser,
     final Duration sessionDuration)
   {
@@ -289,7 +288,7 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
       messages.serialize(
         new CAIResponseLogin(
           information.requestID(),
-          userId
+          icUser.userId()
         )
       )
     );

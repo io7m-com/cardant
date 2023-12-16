@@ -17,10 +17,10 @@
 
 package com.io7m.cardant.shell.internal;
 
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.repetoir.core.RPServiceType;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * A tracker for login details.
@@ -29,7 +29,7 @@ import java.util.UUID;
 public final class CAShellLoginTracker
   implements RPServiceType
 {
-  private Optional<UUID> userId;
+  private Optional<CAUserID> userId;
 
   /**
    * A tracker for login details.
@@ -47,7 +47,7 @@ public final class CAShellLoginTracker
    */
 
   public void setUserId(
-    final UUID newUserId)
+    final CAUserID newUserId)
   {
     this.userId = Optional.of(newUserId);
   }
@@ -65,7 +65,7 @@ public final class CAShellLoginTracker
    * @return The current user ID
    */
 
-  public Optional<UUID> userId()
+  public Optional<CAUserID> userId()
   {
     return this.userId;
   }

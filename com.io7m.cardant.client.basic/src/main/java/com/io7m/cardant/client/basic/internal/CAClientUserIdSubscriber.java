@@ -17,6 +17,7 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -26,7 +27,6 @@ import com.io7m.hibiscus.api.HBStateType.HBStateExecutingLoginSucceeded;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.Flow;
 
 import static java.lang.Integer.toUnsignedString;
@@ -41,7 +41,7 @@ public final class CAClientUserIdSubscriber
   AutoCloseable
 {
   private Flow.Subscription subscription;
-  private volatile Optional<UUID> userId;
+  private volatile Optional<CAUserID> userId;
 
   /**
    * A subscriber that tracks user IDs.
@@ -56,7 +56,7 @@ public final class CAClientUserIdSubscriber
    * @return The current user ID
    */
 
-  public Optional<UUID> getUserId()
+  public Optional<CAUserID> getUserId()
   {
     return this.userId;
   }

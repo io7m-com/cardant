@@ -22,6 +22,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesUsersType.GetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAUser;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.idstore.model.IdName;
 import com.io7m.idstore.model.IdValidityException;
 import com.io7m.medrina.api.MRoleName;
@@ -30,7 +31,6 @@ import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,10 +41,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.USERS;
  */
 
 public final class CADBQUserGet
-  extends CADBQAbstract<UUID, Optional<CAUser>>
+  extends CADBQAbstract<CAUserID, Optional<CAUser>>
   implements GetType
 {
-  private static final Service<UUID, Optional<CAUser>, GetType> SERVICE =
+  private static final Service<CAUserID, Optional<CAUser>, GetType> SERVICE =
     new Service<>(GetType.class, CADBQUserGet::new);
 
   /**
@@ -72,7 +72,7 @@ public final class CADBQUserGet
   @Override
   protected Optional<CAUser> onExecute(
     final DSLContext context,
-    final UUID id)
+    final CAUserID id)
     throws CADatabaseException
   {
     try {
@@ -80,7 +80,7 @@ public final class CADBQUserGet
           USERS.NAME,
           USERS.ROLES)
         .from(USERS)
-        .where(USERS.ID.eq(id))
+        .where(USERS.ID.eq(id.id()))
         .fetchOptional()
         .map(r -> {
           return new CAUser(
