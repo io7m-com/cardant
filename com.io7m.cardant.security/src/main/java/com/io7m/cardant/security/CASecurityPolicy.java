@@ -42,6 +42,13 @@ public final class CASecurityPolicy
     LoggerFactory.getLogger(CASecurityPolicy.class);
 
   /**
+   * The audit log.
+   */
+
+  public static final MObject AUDIT =
+    new MObject(MTypeName.of("audit"), Map.of());
+
+  /**
    * The items section of the inventory.
    */
 
@@ -126,6 +133,13 @@ public final class CASecurityPolicy
     MRoleName.of("inventory.locations.reader");
 
   /**
+   * A reader of the audit log.
+   */
+
+  public static final MRoleName ROLE_AUDIT_READER =
+    MRoleName.of("audit.reader");
+
+  /**
    * An all-powerful administrator of inventories.
    */
 
@@ -138,6 +152,7 @@ public final class CASecurityPolicy
 
   public static final Set<MRoleName> ROLES_ALL =
     Set.of(
+      ROLE_AUDIT_READER,
       ROLE_INVENTORY_ADMIN,
       ROLE_INVENTORY_FILES_READER,
       ROLE_INVENTORY_FILES_WRITER,

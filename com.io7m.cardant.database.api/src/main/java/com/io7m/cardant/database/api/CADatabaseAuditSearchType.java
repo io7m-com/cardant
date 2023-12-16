@@ -14,37 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CAAuditEvent;
-import com.io7m.cardant.model.CAAuditSearchParameters;
 
 /**
- * The database queries involving the audit log.
+ * The type of audit event searches.
  */
 
-public sealed interface CADatabaseQueriesAuditType
-  extends CADatabaseQueriesType
+public interface CADatabaseAuditSearchType
+  extends CADatabasePagedQueryType<CAAuditEvent>
 {
-  /**
-   * Add an audit event.
-   */
 
-  non-sealed interface EventAddType
-    extends CADatabaseQueryType<CAAuditEvent, CADatabaseUnit>,
-    CADatabaseQueriesAuditType
-  {
-
-  }
-
-  /**
-   * Search for audit events.
-   */
-
-  non-sealed interface EventSearchType
-    extends CADatabaseQueryType<CAAuditSearchParameters, CADatabaseAuditSearchType>,
-    CADatabaseQueriesAuditType
-  {
-
-  }
 }

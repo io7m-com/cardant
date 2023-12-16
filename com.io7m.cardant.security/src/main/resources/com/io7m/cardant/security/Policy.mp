@@ -126,3 +126,14 @@
   [MatchObject  [WithType inventory.locations]]
   [MatchAction  [WithName read]]
 ]
+
+#------------------------------------------------------------------------
+# Audit
+#
+
+[Rule
+  [Conclusion   AllowImmediately]
+  [MatchSubject [WithAnyRolesFrom audit.reader]]
+  [MatchObject  [WithType audit]]
+  [MatchAction  [WithName read]]
+]

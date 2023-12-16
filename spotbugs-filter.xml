@@ -767,6 +767,15 @@
     <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
   </Match>
 
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICommandExecutor"/>
+    <Bug pattern="CC_CYCLOMATIC_COMPLEXITY"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICommandExecutor"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
   <!--                              -->
   <!-- com.io7m.cardant.server.main -->
   <!--                              -->

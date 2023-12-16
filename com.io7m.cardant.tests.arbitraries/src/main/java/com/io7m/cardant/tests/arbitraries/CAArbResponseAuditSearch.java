@@ -13,38 +13,26 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
-package com.io7m.cardant.database.api;
+package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CAAuditEvent;
-import com.io7m.cardant.model.CAAuditSearchParameters;
+import com.io7m.cardant.protocol.inventory.CAIResponseAuditSearch;
+import com.io7m.cardant.tests.arbitraries.model.CAArbPage;
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-/**
- * The database queries involving the audit log.
- */
+import java.util.UUID;
 
-public sealed interface CADatabaseQueriesAuditType
-  extends CADatabaseQueriesType
+public final class CAArbResponseAuditSearch extends CAArbAbstract<CAIResponseAuditSearch>
 {
-  /**
-   * Add an audit event.
-   */
-
-  non-sealed interface EventAddType
-    extends CADatabaseQueryType<CAAuditEvent, CADatabaseUnit>,
-    CADatabaseQueriesAuditType
+  public CAArbResponseAuditSearch()
   {
-
-  }
-
-  /**
-   * Search for audit events.
-   */
-
-  non-sealed interface EventSearchType
-    extends CADatabaseQueryType<CAAuditSearchParameters, CADatabaseAuditSearchType>,
-    CADatabaseQueriesAuditType
-  {
-
+    super(
+      CAIResponseAuditSearch.class,
+      () -> Combinators.combine(
+        Arbitraries.create(UUID::randomUUID),
+        CAArbPage.of(Arbitraries.defaultFor(CAAuditEvent.class))
+      ).as(CAIResponseAuditSearch::new)
+    );
   }
 }

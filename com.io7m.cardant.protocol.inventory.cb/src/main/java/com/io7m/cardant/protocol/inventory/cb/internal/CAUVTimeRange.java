@@ -14,37 +14,44 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
 
-import com.io7m.cardant.model.CAAuditEvent;
-import com.io7m.cardant.model.CAAuditSearchParameters;
+package com.io7m.cardant.protocol.inventory.cb.internal;
+
+import com.io7m.cardant.model.CATimeRange;
+import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TimeRange;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 /**
- * The database queries involving the audit log.
+ * A validator.
  */
 
-public sealed interface CADatabaseQueriesAuditType
-  extends CADatabaseQueriesType
+public enum CAUVTimeRange
+  implements CAProtocolMessageValidatorType<CATimeRange, CAI1TimeRange>
 {
   /**
-   * Add an audit event.
+   * A validator.
    */
 
-  non-sealed interface EventAddType
-    extends CADatabaseQueryType<CAAuditEvent, CADatabaseUnit>,
-    CADatabaseQueriesAuditType
-  {
+  TIME_RANGE;
 
+  @Override
+  public CAI1TimeRange convertToWire(
+    final CATimeRange parameters)
+  {
+    return new CAI1TimeRange(
+      new CBOffsetDateTime(parameters.lower()),
+      new CBOffsetDateTime(parameters.upper())
+    );
   }
 
-  /**
-   * Search for audit events.
-   */
-
-  non-sealed interface EventSearchType
-    extends CADatabaseQueryType<CAAuditSearchParameters, CADatabaseAuditSearchType>,
-    CADatabaseQueriesAuditType
+  @Override
+  public CATimeRange convertFromWire(
+    final CAI1TimeRange message)
   {
-
+    return new CATimeRange(
+      message.fieldTimeLower().value(),
+      message.fieldTimeUpper().value()
+    );
   }
 }

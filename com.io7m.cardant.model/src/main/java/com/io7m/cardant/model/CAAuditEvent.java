@@ -20,7 +20,6 @@ package com.io7m.cardant.model;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An audit event.
@@ -35,7 +34,7 @@ import java.util.UUID;
 public record CAAuditEvent(
   long id,
   OffsetDateTime time,
-  UUID owner,
+  CAUserID owner,
   String type,
   Map<String, String> data)
 {

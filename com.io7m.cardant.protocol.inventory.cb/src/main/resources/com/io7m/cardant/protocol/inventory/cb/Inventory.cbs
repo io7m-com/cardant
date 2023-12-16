@@ -21,14 +21,14 @@
 [import com.io7m.cedarbridge cb]
 [import com.io7m.cedarbridge.time ct]
 
-[variant CAU1ComparisonExact
+[variant CAI1ComparisonExact
   [parameter T]
   [case Anything]
   [case IsEqualTo    [field value T]]
   [case IsNotEqualTo [field value T]]
 ]
 
-[variant CAU1ComparisonFuzzy
+[variant CAI1ComparisonFuzzy
   [parameter T]
   [case Anything]
   [case IsEqualTo      [field value T]]
@@ -37,7 +37,7 @@
   [case IsNotSimilarTo [field value T]]
 ]
 
-[variant CAU1ComparisonSet
+[variant CAI1ComparisonSet
   [parameter T]
   [case Anything]
   [case IsEqualTo     [field value [cb:List T]]]
@@ -365,12 +365,18 @@
   [field sizeMaximum cb:IntegerUnsigned64]
 ]
 
+[documentation CAI1TimeRange "An inclusive time range."]
+[record CAI1TimeRange
+  [field timeLower ct:OffsetDateTime]
+  [field timeUpper ct:OffsetDateTime]
+]
+
 [documentation CAI1FileSearchParameters "The item search parameters."]
 [record CAI1FileSearchParameters
   [documentation search "The file description search query."]
-  [field search [CAU1ComparisonFuzzy cb:String]]
+  [field search [CAI1ComparisonFuzzy cb:String]]
   [documentation mediaType "The file media type search query."]
-  [field mediaType [CAU1ComparisonFuzzy cb:String]]
+  [field mediaType [CAI1ComparisonFuzzy cb:String]]
   [documentation sizeRange "The file size range query."]
   [field sizeRange CAI1SizeRange]
   [documentation order "The file result ordering."]
@@ -481,6 +487,32 @@
   [field search [cb:Option cb:String]]
   [documentation limit "The limit."]
   [field limit cb:IntegerUnsigned32]
+]
+
+[documentation CAI1AuditSearchParameters "The audit search parameters."]
+[record CAI1AuditSearchParameters
+  [documentation owner "Limit to events with the given owner."]
+  [field owner [cb:Option cb:UUID]]
+  [documentation type "Limit to events with the given type."]
+  [field type [CAI1ComparisonExact cb:String]]
+  [documentation timeRange "Limit to events in the given time range."]
+  [field timeRange CAI1TimeRange]
+  [documentation pageSize "The page size."]
+  [field pageSize cb:IntegerUnsigned32]
+]
+
+[documentation CAI1AuditEvent "An audit event."]
+[record CAI1AuditEvent
+  [documentation id "The event ID."]
+  [field id cb:IntegerUnsigned64]
+  [documentation time "The event time."]
+  [field time ct:OffsetDateTime]
+  [documentation owner "The event owner."]
+  [field owner cb:UUID]
+  [documentation type "The event type."]
+  [field type cb:String]
+  [documentation data "The event data."]
+  [field data [cb:Map cb:String cb:String]]
 ]
 
 ;
@@ -779,6 +811,18 @@
   [documentation relation "The attachment relation."]
   [field relation cb:String]
 ]
+
+[documentation CAI1CommandAuditSearchBegin "Start searching audit events."]
+[record CAI1CommandAuditSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1AuditSearchParameters]
+]
+
+[documentation CAI1CommandAuditSearchNext "Continue searching audit events."]
+[record CAI1CommandAuditSearchNext]
+
+[documentation CAI1CommandAuditSearchPrevious "Continue searching audit events."]
+[record CAI1CommandAuditSearchPrevious]
 
 ;
 ; Responses.
@@ -1104,6 +1148,13 @@
   [field location CAI1Location]
 ]
 
+[documentation CAI1ResponseAuditSearch "A response to CAI1CommandAuditSearchBegin."]
+[record CAI1ResponseAuditSearch
+  [documentation messageId "The message ID"]
+  [field messageId cb:UUID]
+  [documentation results "The results"]
+  [field results [CAI1Page CAI1AuditEvent]]
+]
 
 ;
 ; Events.
@@ -1124,6 +1175,9 @@
 [protocol CAI
   [version 1
     [types-added
+      CAI1CommandAuditSearchBegin
+      CAI1CommandAuditSearchNext
+      CAI1CommandAuditSearchPrevious
       CAI1CommandFileGet
       CAI1CommandFilePut
       CAI1CommandFileRemove
@@ -1171,6 +1225,7 @@
       CAI1CommandTypeScalarSearchNext
       CAI1CommandTypeScalarSearchPrevious
       CAI1EventUpdated
+      CAI1ResponseAuditSearch
       CAI1ResponseError
       CAI1ResponseFileGet
       CAI1ResponseFilePut

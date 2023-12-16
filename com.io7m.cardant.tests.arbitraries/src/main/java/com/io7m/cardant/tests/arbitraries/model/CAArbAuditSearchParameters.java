@@ -15,16 +15,28 @@
  */
 
 
-package com.io7m.cardant.database.api;
+package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAAuditEvent;
+import com.io7m.cardant.model.CAAuditSearchParameters;
+import com.io7m.cardant.model.CATimeRange;
+import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-/**
- * A paged query that returns audit log events.
- */
-
-public interface CAAuditPagedType
-  extends CADatabasePagedQueryType<CAAuditEvent>
+public final class CAArbAuditSearchParameters
+  extends CAArbAbstract<CAAuditSearchParameters>
 {
-
+  public CAArbAuditSearchParameters()
+  {
+    super(
+      CAAuditSearchParameters.class,
+      () -> Combinators.combine(
+        Arbitraries.defaultFor(CAUserID.class).optional(),
+        CAArbComparisons.exact(Arbitraries.strings()),
+        Arbitraries.defaultFor(CATimeRange.class),
+        Arbitraries.integers().between(1, 1000)
+      ).as(CAAuditSearchParameters::new)
+    );
+  }
 }

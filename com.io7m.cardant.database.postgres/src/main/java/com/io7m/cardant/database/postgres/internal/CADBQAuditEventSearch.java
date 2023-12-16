@@ -16,13 +16,14 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CAAuditPagedType;
+import com.io7m.cardant.database.api.CADatabaseAuditSearchType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesAuditType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAAuditSearchParameters;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
@@ -51,10 +52,10 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
  */
 
 public final class CADBQAuditEventSearch
-  extends CADBQAbstract<CAAuditSearchParameters, CAAuditPagedType>
+  extends CADBQAbstract<CAAuditSearchParameters, CADatabaseAuditSearchType>
   implements CADatabaseQueriesAuditType.EventSearchType
 {
-  private static final Service<CAAuditSearchParameters, CAAuditPagedType, EventSearchType> SERVICE =
+  private static final Service<CAAuditSearchParameters, CADatabaseAuditSearchType, EventSearchType> SERVICE =
     new Service<>(EventSearchType.class, CADBQAuditEventSearch::new);
 
   private static final DataType<Hstore> AU_DATA_TYPE =
@@ -79,12 +80,13 @@ public final class CADBQAuditEventSearch
   }
 
   @Override
-  protected CAAuditPagedType onExecute(
+  protected CADatabaseAuditSearchType onExecute(
     final DSLContext context,
     final CAAuditSearchParameters parameters)
   {
     final var conditionUser =
       parameters.owner()
+        .map(CAUserID::id)
         .map(AUDIT.USER_ID::eq)
         .orElse(TRUE_CONDITION);
 
@@ -125,7 +127,7 @@ public final class CADBQAuditEventSearch
 
   private static final class CAAuditSearch
     extends CAAbstractSearch<CAAuditEvent>
-    implements CAAuditPagedType
+    implements CADatabaseAuditSearchType
   {
     CAAuditSearch(
       final List<JQKeysetRandomAccessPageDefinition> inPages)
@@ -160,7 +162,7 @@ public final class CADBQAuditEventSearch
         final var items =
           query.fetch().map(record -> {
             final var userId =
-              record.get(AUDIT.USER_ID);
+              new CAUserID(record.get(AUDIT.USER_ID));
 
             return new CAAuditEvent(
               record.get(AUDIT.ID).longValue(),

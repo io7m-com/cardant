@@ -21,7 +21,6 @@ import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * The search parameters for the audit log.
@@ -33,7 +32,7 @@ import java.util.UUID;
  */
 
 public record CAAuditSearchParameters(
-  Optional<UUID> owner,
+  Optional<CAUserID> owner,
   CAComparisonExactType<String> type,
   CATimeRange timeRange,
   long pageSize)

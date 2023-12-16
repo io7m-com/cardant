@@ -20,7 +20,7 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cardant.protocol.inventory.cb.CAU1ComparisonExact;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ComparisonExact;
 import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 
 import java.util.Objects;
@@ -35,7 +35,7 @@ import java.util.Objects;
 public final class CAUVComparisonsExact<V, W extends CBSerializableType>
   implements CAProtocolMessageValidatorType<
   CAComparisonExactType<V>,
-  CAU1ComparisonExact<W>>
+  CAI1ComparisonExact<W>>
 {
   private final CAProtocolMessageValidatorType<V, W> validator;
 
@@ -53,54 +53,46 @@ public final class CAUVComparisonsExact<V, W extends CBSerializableType>
   }
 
   @Override
-  public CAU1ComparisonExact<W> convertToWire(
+  public CAI1ComparisonExact<W> convertToWire(
     final CAComparisonExactType<V> message)
     throws CAProtocolException
   {
-    if (message instanceof CAComparisonExactType.Anything<V>) {
-      return new CAU1ComparisonExact.Anything<>();
-    }
-
-    if (message instanceof final CAComparisonExactType.IsEqualTo<V> e) {
-      return new CAU1ComparisonExact.IsEqualTo<>(
-        this.validator.convertToWire(e.value())
-      );
-    }
-
-    if (message instanceof final CAComparisonExactType.IsNotEqualTo<V> e) {
-      return new CAU1ComparisonExact.IsNotEqualTo<>(
-        this.validator.convertToWire(e.value())
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized message: %s".formatted(message)
-    );
+    return switch (message) {
+      case final CAComparisonExactType.Anything<V> e -> {
+        yield new CAI1ComparisonExact.Anything<>();
+      }
+      case final CAComparisonExactType.IsEqualTo<V> e -> {
+        yield new CAI1ComparisonExact.IsEqualTo<>(
+          this.validator.convertToWire(e.value())
+        );
+      }
+      case final CAComparisonExactType.IsNotEqualTo<V> e -> {
+        yield new CAI1ComparisonExact.IsNotEqualTo<>(
+          this.validator.convertToWire(e.value())
+        );
+      }
+    };
   }
 
   @Override
   public CAComparisonExactType<V> convertFromWire(
-    final CAU1ComparisonExact<W> message)
+    final CAI1ComparisonExact<W> message)
     throws CAProtocolException
   {
-    if (message instanceof CAU1ComparisonExact.Anything<W>) {
-      return new CAComparisonExactType.Anything<>();
-    }
-
-    if (message instanceof final CAU1ComparisonExact.IsEqualTo<W> e) {
-      return new CAComparisonExactType.IsEqualTo<>(
-        this.validator.convertFromWire(e.fieldValue())
-      );
-    }
-
-    if (message instanceof final CAU1ComparisonExact.IsNotEqualTo<W> e) {
-      return new CAComparisonExactType.IsNotEqualTo<>(
-        this.validator.convertFromWire(e.fieldValue())
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized message: %s".formatted(message)
-    );
+    return switch (message) {
+      case final CAI1ComparisonExact.Anything<W> e -> {
+        yield new CAComparisonExactType.Anything<>();
+      }
+      case final CAI1ComparisonExact.IsEqualTo<W> e -> {
+        yield new CAComparisonExactType.IsEqualTo<>(
+          this.validator.convertFromWire(e.fieldValue())
+        );
+      }
+      case final CAI1ComparisonExact.IsNotEqualTo<W> e -> {
+        yield new CAComparisonExactType.IsNotEqualTo<>(
+          this.validator.convertFromWire(e.fieldValue())
+        );
+      }
+    };
   }
 }

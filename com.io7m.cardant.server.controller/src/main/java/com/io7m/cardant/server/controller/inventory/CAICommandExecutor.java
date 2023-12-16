@@ -16,6 +16,11 @@
 
 package com.io7m.cardant.server.controller.inventory;
 
+import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchPrevious;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
 import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
@@ -46,6 +51,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
+import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
@@ -72,9 +78,9 @@ import com.io7m.cardant.server.controller.command_exec.CACommandExecutorType;
 
 public final class CAICommandExecutor
   implements CACommandExecutorType<
-    CAICommandContext,
-    CAICommandType<? extends CAIResponseType>,
-    CAIResponseType>
+  CAICommandContext,
+  CAICommandType<? extends CAIResponseType>,
+  CAIResponseType>
 {
   /**
    * A command executor for public commands.
@@ -111,142 +117,160 @@ public final class CAICommandExecutor
     final CAICommandType<? extends CAIResponseType> command)
     throws CACommandExecutionFailure
   {
-    if (command instanceof final CAICommandFilePut m) {
-      return new CAICmdFilePut().execute(context, m);
-    }
-    if (command instanceof final CAICommandFileRemove m) {
-      return new CAICmdFileRemove().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemAttachmentAdd m) {
-      return new CAICmdItemAttachmentAdd().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemAttachmentRemove m) {
-      return new CAICmdItemAttachmentRemove().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemCreate m) {
-      return new CAICmdItemCreate().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemGet m) {
-      return new CAICmdItemGet().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemLocationsList m) {
-      return new CAICmdItemLocationsList().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemMetadataPut m) {
-      return new CAICmdItemMetadataPut().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemMetadataRemove m) {
-      return new CAICmdItemMetadataRemove().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemReposit m) {
-      return new CAICmdItemReposit().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemsRemove m) {
-      return new CAICmdItemsRemove().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemSetName m) {
-      return new CAICmdItemSetName().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationGet m) {
-      return new CAICmdLocationGet().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationList m) {
-      return new CAICmdLocationsList().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationPut m) {
-      return new CAICmdLocationPut().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemSearchBegin m) {
-      return new CAICmdItemSearchBegin().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemSearchNext m) {
-      return new CAICmdItemSearchNext().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemSearchPrevious m) {
-      return new CAICmdItemSearchPrevious().execute(context, m);
-    }
-    if (command instanceof final CAICommandRolesAssign m) {
-      return new CAICmdRolesAssign().execute(context, m);
-    }
-    if (command instanceof final CAICommandRolesRevoke m) {
-      return new CAICmdRolesRevoke().execute(context, m);
-    }
-    if (command instanceof final CAICommandRolesGet m) {
-      return new CAICmdRolesGet().execute(context, m);
-    }
-    if (command instanceof final CAICommandFileSearchBegin m) {
-      return new CAICmdFileSearchBegin().execute(context, m);
-    }
-    if (command instanceof final CAICommandFileSearchNext m) {
-      return new CAICmdFileSearchNext().execute(context, m);
-    }
-    if (command instanceof final CAICommandFileSearchPrevious m) {
-      return new CAICmdFileSearchPrevious().execute(context, m);
-    }
-    if (command instanceof final CAICommandFileGet m) {
-      return new CAICmdFileGet().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeScalarSearchNext m) {
-      return new CAICmdTypeScalarSearchNext().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeScalarSearchPrevious m) {
-      return new CAICmdTypeScalarSearchPrevious().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeScalarSearchBegin m) {
-      return new CAICmdTypeScalarSearchBegin().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeScalarPut m) {
-      return new CAICmdTypeScalarPut().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeScalarGet m) {
-      return new CAICmdTypeScalarGet().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeScalarRemove m) {
-      return new CAICmdTypeScalarRemove().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeDeclarationSearchNext m) {
-      return new CAICmdTypeDeclarationSearchNext().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeDeclarationSearchPrevious m) {
-      return new CAICmdTypeDeclarationSearchPrevious().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeDeclarationSearchBegin m) {
-      return new CAICmdTypeDeclarationSearchBegin().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeDeclarationPut m) {
-      return new CAICmdTypeDeclarationPut().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeDeclarationGet m) {
-      return new CAICmdTypeDeclarationGet().execute(context, m);
-    }
-    if (command instanceof final CAICommandTypeDeclarationRemove m) {
-      return new CAICmdTypeDeclarationRemove().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemTypesAssign m) {
-      return new CAICmdItemTypesAssign().execute(context, m);
-    }
-    if (command instanceof final CAICommandItemTypesRevoke m) {
-      return new CAICmdItemTypesRevoke().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationTypesAssign m) {
-      return new CAICmdLocationTypesAssign().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationTypesRevoke m) {
-      return new CAICmdLocationTypesRevoke().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationMetadataPut m) {
-      return new CAICmdLocationMetadataPut().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationMetadataRemove m) {
-      return new CAICmdLocationMetadataRemove().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationAttachmentAdd m) {
-      return new CAICmdLocationAttachmentAdd().execute(context, m);
-    }
-    if (command instanceof final CAICommandLocationAttachmentRemove m) {
-      return new CAICmdLocationAttachmentRemove().execute(context, m);
-    }
-
-    throw new IllegalStateException();
+    return switch (command) {
+      case final CAICommandFilePut m -> {
+        yield new CAICmdFilePut().execute(context, m);
+      }
+      case final CAICommandFileRemove m -> {
+        yield new CAICmdFileRemove().execute(context, m);
+      }
+      case final CAICommandItemAttachmentAdd m -> {
+        yield new CAICmdItemAttachmentAdd().execute(context, m);
+      }
+      case final CAICommandItemAttachmentRemove m -> {
+        yield new CAICmdItemAttachmentRemove().execute(context, m);
+      }
+      case final CAICommandItemCreate m -> {
+        yield new CAICmdItemCreate().execute(context, m);
+      }
+      case final CAICommandItemGet m -> {
+        yield new CAICmdItemGet().execute(context, m);
+      }
+      case final CAICommandItemLocationsList m -> {
+        yield new CAICmdItemLocationsList().execute(context, m);
+      }
+      case final CAICommandItemMetadataPut m -> {
+        yield new CAICmdItemMetadataPut().execute(context, m);
+      }
+      case final CAICommandItemMetadataRemove m -> {
+        yield new CAICmdItemMetadataRemove().execute(context, m);
+      }
+      case final CAICommandItemReposit m -> {
+        yield new CAICmdItemReposit().execute(context, m);
+      }
+      case final CAICommandItemsRemove m -> {
+        yield new CAICmdItemsRemove().execute(context, m);
+      }
+      case final CAICommandItemSetName m -> {
+        yield new CAICmdItemSetName().execute(context, m);
+      }
+      case final CAICommandLocationGet m -> {
+        yield new CAICmdLocationGet().execute(context, m);
+      }
+      case final CAICommandLocationList m -> {
+        yield new CAICmdLocationsList().execute(context, m);
+      }
+      case final CAICommandLocationPut m -> {
+        yield new CAICmdLocationPut().execute(context, m);
+      }
+      case final CAICommandItemSearchBegin m -> {
+        yield new CAICmdItemSearchBegin().execute(context, m);
+      }
+      case final CAICommandItemSearchNext m -> {
+        yield new CAICmdItemSearchNext().execute(context, m);
+      }
+      case final CAICommandItemSearchPrevious m -> {
+        yield new CAICmdItemSearchPrevious().execute(context, m);
+      }
+      case final CAICommandRolesAssign m -> {
+        yield new CAICmdRolesAssign().execute(context, m);
+      }
+      case final CAICommandRolesRevoke m -> {
+        yield new CAICmdRolesRevoke().execute(context, m);
+      }
+      case final CAICommandRolesGet m -> {
+        yield new CAICmdRolesGet().execute(context, m);
+      }
+      case final CAICommandFileSearchBegin m -> {
+        yield new CAICmdFileSearchBegin().execute(context, m);
+      }
+      case final CAICommandFileSearchNext m -> {
+        yield new CAICmdFileSearchNext().execute(context, m);
+      }
+      case final CAICommandFileSearchPrevious m -> {
+        yield new CAICmdFileSearchPrevious().execute(context, m);
+      }
+      case final CAICommandFileGet m -> {
+        yield new CAICmdFileGet().execute(context, m);
+      }
+      case final CAICommandTypeScalarSearchNext m -> {
+        yield new CAICmdTypeScalarSearchNext().execute(context, m);
+      }
+      case final CAICommandTypeScalarSearchPrevious m -> {
+        yield new CAICmdTypeScalarSearchPrevious().execute(context, m);
+      }
+      case final CAICommandTypeScalarSearchBegin m -> {
+        yield new CAICmdTypeScalarSearchBegin().execute(context, m);
+      }
+      case final CAICommandTypeScalarPut m -> {
+        yield new CAICmdTypeScalarPut().execute(context, m);
+      }
+      case final CAICommandTypeScalarGet m -> {
+        yield new CAICmdTypeScalarGet().execute(context, m);
+      }
+      case final CAICommandTypeScalarRemove m -> {
+        yield new CAICmdTypeScalarRemove().execute(context, m);
+      }
+      case final CAICommandTypeDeclarationSearchNext m -> {
+        yield new CAICmdTypeDeclarationSearchNext().execute(context, m);
+      }
+      case final CAICommandTypeDeclarationSearchPrevious m -> {
+        yield new CAICmdTypeDeclarationSearchPrevious().execute(context, m);
+      }
+      case final CAICommandTypeDeclarationSearchBegin m -> {
+        yield new CAICmdTypeDeclarationSearchBegin().execute(context, m);
+      }
+      case final CAICommandTypeDeclarationPut m -> {
+        yield new CAICmdTypeDeclarationPut().execute(context, m);
+      }
+      case final CAICommandTypeDeclarationGet m -> {
+        yield new CAICmdTypeDeclarationGet().execute(context, m);
+      }
+      case final CAICommandTypeDeclarationRemove m -> {
+        yield new CAICmdTypeDeclarationRemove().execute(context, m);
+      }
+      case final CAICommandItemTypesAssign m -> {
+        yield new CAICmdItemTypesAssign().execute(context, m);
+      }
+      case final CAICommandItemTypesRevoke m -> {
+        yield new CAICmdItemTypesRevoke().execute(context, m);
+      }
+      case final CAICommandLocationTypesAssign m -> {
+        yield new CAICmdLocationTypesAssign().execute(context, m);
+      }
+      case final CAICommandLocationTypesRevoke m -> {
+        yield new CAICmdLocationTypesRevoke().execute(context, m);
+      }
+      case final CAICommandLocationMetadataPut m -> {
+        yield new CAICmdLocationMetadataPut().execute(context, m);
+      }
+      case final CAICommandLocationMetadataRemove m -> {
+        yield new CAICmdLocationMetadataRemove().execute(context, m);
+      }
+      case final CAICommandLocationAttachmentAdd m -> {
+        yield new CAICmdLocationAttachmentAdd().execute(context, m);
+      }
+      case final CAICommandLocationAttachmentRemove m -> {
+        yield new CAICmdLocationAttachmentRemove().execute(context, m);
+      }
+      case final CAICommandAuditSearchBegin m -> {
+        yield new CAICmdAuditSearchBegin().execute(context, m);
+      }
+      case final CAICommandAuditSearchNext m -> {
+        yield new CAICmdAuditSearchNext().execute(context, m);
+      }
+      case final CAICommandAuditSearchPrevious m -> {
+        yield new CAICmdAuditSearchPrevious().execute(context, m);
+      }
+      case final CAICommandDebugInvalid m -> {
+        throw new IllegalStateException();
+      }
+      case final CAICommandDebugRandom m -> {
+        throw new IllegalStateException();
+      }
+      case final CAICommandLogin m -> {
+        throw new IllegalStateException();
+      }
+    };
   }
 }

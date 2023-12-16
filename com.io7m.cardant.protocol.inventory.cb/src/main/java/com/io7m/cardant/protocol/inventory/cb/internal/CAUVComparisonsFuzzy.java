@@ -20,7 +20,7 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cardant.protocol.inventory.cb.CAU1ComparisonFuzzy;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ComparisonFuzzy;
 import com.io7m.cedarbridge.runtime.api.CBSerializableType;
 
 import java.util.Objects;
@@ -35,7 +35,7 @@ import java.util.Objects;
 public final class CAUVComparisonsFuzzy<V, W extends CBSerializableType>
   implements CAProtocolMessageValidatorType<
   CAComparisonFuzzyType<V>,
-  CAU1ComparisonFuzzy<W>>
+  CAI1ComparisonFuzzy<W>>
 {
   private final CAProtocolMessageValidatorType<V, W> validator;
 
@@ -53,31 +53,31 @@ public final class CAUVComparisonsFuzzy<V, W extends CBSerializableType>
   }
 
   @Override
-  public CAU1ComparisonFuzzy<W> convertToWire(
+  public CAI1ComparisonFuzzy<W> convertToWire(
     final CAComparisonFuzzyType<V> message)
     throws CAProtocolException
   {
     return switch (message) {
       case final CAComparisonFuzzyType.Anything<V> e -> {
-        yield new CAU1ComparisonFuzzy.Anything<>();
+        yield new CAI1ComparisonFuzzy.Anything<>();
       }
       case final CAComparisonFuzzyType.IsEqualTo<V> e -> {
-        yield new CAU1ComparisonFuzzy.IsEqualTo<>(
+        yield new CAI1ComparisonFuzzy.IsEqualTo<>(
           this.validator.convertToWire(e.value())
         );
       }
       case final CAComparisonFuzzyType.IsNotEqualTo<V> e -> {
-        yield new CAU1ComparisonFuzzy.IsNotEqualTo<>(
+        yield new CAI1ComparisonFuzzy.IsNotEqualTo<>(
           this.validator.convertToWire(e.value())
         );
       }
       case final CAComparisonFuzzyType.IsSimilarTo<V> e -> {
-        yield new CAU1ComparisonFuzzy.IsSimilarTo<>(
+        yield new CAI1ComparisonFuzzy.IsSimilarTo<>(
           this.validator.convertToWire(e.value())
         );
       }
       case final CAComparisonFuzzyType.IsNotSimilarTo<V> e -> {
-        yield new CAU1ComparisonFuzzy.IsNotSimilarTo<>(
+        yield new CAI1ComparisonFuzzy.IsNotSimilarTo<>(
           this.validator.convertToWire(e.value())
         );
       }
@@ -86,29 +86,29 @@ public final class CAUVComparisonsFuzzy<V, W extends CBSerializableType>
 
   @Override
   public CAComparisonFuzzyType<V> convertFromWire(
-    final CAU1ComparisonFuzzy<W> message)
+    final CAI1ComparisonFuzzy<W> message)
     throws CAProtocolException
   {
     return switch (message) {
-      case CAU1ComparisonFuzzy.Anything<W> e -> {
+      case CAI1ComparisonFuzzy.Anything<W> e -> {
         yield new CAComparisonFuzzyType.Anything<>();
       }
-      case final CAU1ComparisonFuzzy.IsEqualTo<W> e -> {
+      case final CAI1ComparisonFuzzy.IsEqualTo<W> e -> {
         yield new CAComparisonFuzzyType.IsEqualTo<>(
           this.validator.convertFromWire(e.fieldValue())
         );
       }
-      case final CAU1ComparisonFuzzy.IsNotEqualTo<W> e -> {
+      case final CAI1ComparisonFuzzy.IsNotEqualTo<W> e -> {
         yield new CAComparisonFuzzyType.IsNotEqualTo<>(
           this.validator.convertFromWire(e.fieldValue())
         );
       }
-      case final CAU1ComparisonFuzzy.IsSimilarTo<W> e -> {
+      case final CAI1ComparisonFuzzy.IsSimilarTo<W> e -> {
         yield new CAComparisonFuzzyType.IsSimilarTo<>(
           this.validator.convertFromWire(e.fieldValue())
         );
       }
-      case final CAU1ComparisonFuzzy.IsNotSimilarTo<W> e -> {
+      case final CAI1ComparisonFuzzy.IsNotSimilarTo<W> e -> {
         yield new CAComparisonFuzzyType.IsNotSimilarTo<>(
           this.validator.convertFromWire(e.fieldValue())
         );

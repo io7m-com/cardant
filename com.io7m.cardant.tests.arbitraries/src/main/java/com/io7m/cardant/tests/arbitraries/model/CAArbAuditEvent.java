@@ -14,37 +14,33 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
+
+package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAAuditEvent;
-import com.io7m.cardant.model.CAAuditSearchParameters;
+import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-/**
- * The database queries involving the audit log.
- */
+import java.time.OffsetDateTime;
 
-public sealed interface CADatabaseQueriesAuditType
-  extends CADatabaseQueriesType
+public final class CAArbAuditEvent extends CAArbAbstract<CAAuditEvent>
 {
-  /**
-   * Add an audit event.
-   */
-
-  non-sealed interface EventAddType
-    extends CADatabaseQueryType<CAAuditEvent, CADatabaseUnit>,
-    CADatabaseQueriesAuditType
+  public CAArbAuditEvent()
   {
-
-  }
-
-  /**
-   * Search for audit events.
-   */
-
-  non-sealed interface EventSearchType
-    extends CADatabaseQueryType<CAAuditSearchParameters, CADatabaseAuditSearchType>,
-    CADatabaseQueriesAuditType
-  {
-
+    super(
+      CAAuditEvent.class,
+      () ->
+        Combinators.combine(
+          Arbitraries.longs(),
+          Arbitraries.defaultFor(OffsetDateTime.class),
+          Arbitraries.defaultFor(CAUserID.class),
+          Arbitraries.strings().alpha(),
+          Arbitraries.maps(
+            Arbitraries.strings().alpha(),
+            Arbitraries.strings().alpha())
+        ).as(CAAuditEvent::new)
+    );
   }
 }

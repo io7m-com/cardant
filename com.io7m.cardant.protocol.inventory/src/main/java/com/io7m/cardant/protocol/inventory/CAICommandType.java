@@ -26,7 +26,10 @@ import com.io7m.hibiscus.api.HBCommandType;
 
 public sealed interface CAICommandType<R extends CAIResponseType>
   extends CAIMessageType, HBCommandType
-  permits CAICommandDebugInvalid,
+  permits CAICommandAuditSearchBegin,
+  CAICommandAuditSearchNext,
+  CAICommandAuditSearchPrevious,
+  CAICommandDebugInvalid,
   CAICommandDebugRandom,
   CAICommandFileGet,
   CAICommandFilePut,

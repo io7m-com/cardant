@@ -61,7 +61,7 @@ public final class CADBQAuditEventAdd
     return context.insertInto(AUDIT)
         .set(AUDIT.TYPE, parameters.type())
         .set(AUDIT.TIME, parameters.time())
-        .set(AUDIT.USER_ID, parameters.owner())
+        .set(AUDIT.USER_ID, parameters.owner().id())
         .set(AU_DATA, Hstore.valueOf(parameters.data()));
   }
 
@@ -75,7 +75,7 @@ public final class CADBQAuditEventAdd
   {
     return auditEvent(
       context,
-      new CAAuditEvent(0L, time, user.id(), type, Map.ofEntries(entries))
+      new CAAuditEvent(0L, time, user, type, Map.ofEntries(entries))
     );
   }
 

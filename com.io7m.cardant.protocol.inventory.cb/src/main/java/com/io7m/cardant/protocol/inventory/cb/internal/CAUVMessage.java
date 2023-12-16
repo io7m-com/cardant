@@ -19,6 +19,9 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
@@ -71,6 +74,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIEventType;
 import com.io7m.cardant.protocol.inventory.CAIEventUpdated;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIResponseAuditSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
@@ -111,6 +115,9 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarSearch;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandAuditSearchBegin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandAuditSearchNext;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandAuditSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFilePut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileRemove;
@@ -158,6 +165,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchNext;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypeScalarSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1EventUpdated;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseAuditSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseError;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFileGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFilePut;
@@ -200,6 +208,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypeScalarSearch;
 import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAIUVEventUpdated.EVENT_UPDATED;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandAuditSearchBegin.COMMAND_AUDIT_SEARCH_BEGIN;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandAuditSearchNext.COMMAND_AUDIT_SEARCH_NEXT;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandAuditSearchPrevious.COMMAND_AUDIT_SEARCH_PREVIOUS;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandFileGet.COMMAND_FILE_GET;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandFilePut.COMMAND_FILE_PUT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandFileRemove.COMMAND_FILE_REMOVE;
@@ -246,6 +257,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypeSca
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypeScalarSearchBegin.COMMAND_TYPE_SCALAR_SEARCH_BEGIN;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypeScalarSearchNext.COMMAND_TYPE_SCALAR_SEARCH_NEXT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypeScalarSearchPrevious.COMMAND_TYPE_SCALAR_SEARCH_PREVIOUS;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseAuditSearch.RESPONSE_AUDIT_SEARCH;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseError.RESPONSE_ERROR;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseFileGet.RESPONSE_FILE_GET;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseFilePut.RESPONSE_FILE_PUT;
@@ -296,7 +308,7 @@ public enum CAUVMessage
   /**
    * A validator.
    */
-  
+
   MESSAGE;
 
   private static ProtocolCAIv1Type convertToWireCommand(
@@ -452,6 +464,15 @@ public enum CAUVMessage
       case final CAICommandTypeScalarSearchPrevious c -> {
         yield COMMAND_TYPE_SCALAR_SEARCH_PREVIOUS.convertToWire(c);
       }
+      case final CAICommandAuditSearchBegin c -> {
+        yield COMMAND_AUDIT_SEARCH_BEGIN.convertToWire(c);
+      }
+      case final CAICommandAuditSearchNext c -> {
+        yield COMMAND_AUDIT_SEARCH_NEXT.convertToWire(c);
+      }
+      case final CAICommandAuditSearchPrevious c -> {
+        yield COMMAND_AUDIT_SEARCH_PREVIOUS.convertToWire(c);
+      }
     };
   }
 
@@ -477,7 +498,9 @@ public enum CAUVMessage
     final CAIEventType message)
   {
     return switch (message) {
-      case final CAIEventUpdated e -> EVENT_UPDATED.convertToWire(e);
+      case final CAIEventUpdated e -> {
+        yield EVENT_UPDATED.convertToWire(e);
+      }
     };
   }
 
@@ -601,6 +624,9 @@ public enum CAUVMessage
       }
       case final CAIResponseTypeScalarSearch r -> {
         yield RESPONSE_TYPE_SCALAR_SEARCH.convertToWire(r);
+      }
+      case final CAIResponseAuditSearch r -> {
+        yield RESPONSE_AUDIT_SEARCH.convertToWire(r);
       }
     };
   }
@@ -870,6 +896,19 @@ public enum CAUVMessage
 
       case final CAI1EventUpdated e -> {
         yield EVENT_UPDATED.convertFromWire(e);
+      }
+
+      case final CAI1CommandAuditSearchBegin c -> {
+        yield COMMAND_AUDIT_SEARCH_BEGIN.convertFromWire(c);
+      }
+      case final CAI1CommandAuditSearchNext c -> {
+        yield COMMAND_AUDIT_SEARCH_NEXT.convertFromWire(c);
+      }
+      case final CAI1CommandAuditSearchPrevious c -> {
+        yield COMMAND_AUDIT_SEARCH_PREVIOUS.convertFromWire(c);
+      }
+      case final CAI1ResponseAuditSearch r -> {
+        yield RESPONSE_AUDIT_SEARCH.convertFromWire(r);
       }
     };
   }

@@ -14,37 +14,24 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
 
-import com.io7m.cardant.model.CAAuditEvent;
-import com.io7m.cardant.model.CAAuditSearchParameters;
+package com.io7m.cardant.tests.arbitraries.model;
 
-/**
- * The database queries involving the audit log.
- */
+import com.io7m.cardant.model.CATimeRange;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
 
-public sealed interface CADatabaseQueriesAuditType
-  extends CADatabaseQueriesType
+import java.time.OffsetDateTime;
+
+public final class CAArbTimeRange extends CAArbAbstract<CATimeRange>
 {
-  /**
-   * Add an audit event.
-   */
-
-  non-sealed interface EventAddType
-    extends CADatabaseQueryType<CAAuditEvent, CADatabaseUnit>,
-    CADatabaseQueriesAuditType
+  public CAArbTimeRange()
   {
-
-  }
-
-  /**
-   * Search for audit events.
-   */
-
-  non-sealed interface EventSearchType
-    extends CADatabaseQueryType<CAAuditSearchParameters, CADatabaseAuditSearchType>,
-    CADatabaseQueriesAuditType
-  {
-
+    super(
+      CATimeRange.class,
+      () -> Arbitraries.defaultFor(OffsetDateTime.class).map(t -> {
+        return new CATimeRange(t, t.plusDays(365L));
+      })
+    );
   }
 }

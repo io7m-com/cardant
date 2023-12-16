@@ -14,37 +14,38 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
 
-import com.io7m.cardant.model.CAAuditEvent;
+package com.io7m.cardant.protocol.inventory;
+
+
 import com.io7m.cardant.model.CAAuditSearchParameters;
 
+import java.util.Objects;
+
 /**
- * The database queries involving the audit log.
+ * Start searching audit events.
+ *
+ * @param parameters The search parameters
  */
 
-public sealed interface CADatabaseQueriesAuditType
-  extends CADatabaseQueriesType
+public record CAICommandAuditSearchBegin(
+  CAAuditSearchParameters parameters)
+  implements CAICommandType<CAIResponseAuditSearch>
 {
   /**
-   * Add an audit event.
+   * Start searching audit events.
+   *
+   * @param parameters The search parameters
    */
 
-  non-sealed interface EventAddType
-    extends CADatabaseQueryType<CAAuditEvent, CADatabaseUnit>,
-    CADatabaseQueriesAuditType
+  public CAICommandAuditSearchBegin
   {
-
+    Objects.requireNonNull(parameters, "parameters");
   }
 
-  /**
-   * Search for audit events.
-   */
-
-  non-sealed interface EventSearchType
-    extends CADatabaseQueryType<CAAuditSearchParameters, CADatabaseAuditSearchType>,
-    CADatabaseQueriesAuditType
+  @Override
+  public Class<CAIResponseAuditSearch> responseClass()
   {
-
+    return CAIResponseAuditSearch.class;
   }
 }

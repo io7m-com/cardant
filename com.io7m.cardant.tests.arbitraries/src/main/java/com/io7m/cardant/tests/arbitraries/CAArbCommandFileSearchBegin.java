@@ -19,7 +19,8 @@ import com.io7m.cardant.model.CAFileSearchParameters;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbCommandFileSearchBegin extends CAArbAbstract<CAICommandFileSearchBegin>
+public final class CAArbCommandFileSearchBegin
+  extends CAArbAbstract<CAICommandFileSearchBegin>
 {
   public CAArbCommandFileSearchBegin()
   {
