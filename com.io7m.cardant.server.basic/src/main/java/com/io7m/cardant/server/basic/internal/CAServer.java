@@ -240,13 +240,19 @@ public final class CAServer implements CAServerType
     final var idA1Messages = new CAI1Messages();
     services.register(CAI1Messages.class, idA1Messages);
 
-    final var maintenance =
-      CAMaintenanceService.create(clock, this.telemetry, newDatabase);
-
     final var tls = CATLSContextService.createService(services);
     services.register(CATLSContextServiceType.class, tls);
 
+    final var maintenance =
+      CAMaintenanceService.create(
+        clock,
+        this.telemetry,
+        configService,
+        tls,
+        this.database
+      );
     services.register(CAMaintenanceService.class, maintenance);
+
     services.register(
       CARequestLimits.class,
       new CARequestLimits(configService, (Long size) -> {

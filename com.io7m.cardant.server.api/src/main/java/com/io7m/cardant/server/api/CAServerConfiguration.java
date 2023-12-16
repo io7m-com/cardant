@@ -28,16 +28,17 @@ import java.util.Optional;
 /**
  * The configuration for a server.
  *
- * @param clock                 The clock
- * @param strings               The string resources
- * @param databaseConfiguration The database configuration for the server
- * @param databases             The factory of databases that will be used for
- *                              the server
- * @param locale                The locale
- * @param limitsConfiguration   The limits configuration
- * @param idstoreConfiguration  The idstore configuration
- * @param openTelemetry         The OpenTelemetry configuration
- * @param inventoryApiConfiguration   The inventory API address
+ * @param clock                     The clock
+ * @param strings                   The string resources
+ * @param databaseConfiguration     The database configuration for the server
+ * @param databases                 The factory of databases that will be used for
+ *                                  the server
+ * @param locale                    The locale
+ * @param limitsConfiguration       The limits configuration
+ * @param idstoreConfiguration      The idstore configuration
+ * @param maintenanceConfiguration  The maintenance configuration
+ * @param openTelemetry             The OpenTelemetry configuration
+ * @param inventoryApiConfiguration The inventory API address
  */
 
 public record CAServerConfiguration(
@@ -49,33 +50,38 @@ public record CAServerConfiguration(
   CAServerHTTPServiceConfiguration inventoryApiConfiguration,
   CAServerIdstoreConfiguration idstoreConfiguration,
   CAServerLimitsConfiguration limitsConfiguration,
+  CAServerMaintenanceConfiguration maintenanceConfiguration,
   Optional<CAServerOpenTelemetryConfiguration> openTelemetry)
 {
   /**
    * The configuration for a server.
    *
-   * @param clock                 The clock
-   * @param strings               The string resources
-   * @param databaseConfiguration The database configuration for the server
-   * @param databases             The factory of databases that will be used for
-   *                              the server
-   * @param locale                The locale
-   * @param limitsConfiguration   The limits configuration
-   * @param idstoreConfiguration  The idstore configuration
-   * @param openTelemetry         The OpenTelemetry configuration
-   * @param inventoryApiConfiguration   The inventory API address
+   * @param clock                     The clock
+   * @param strings                   The string resources
+   * @param databaseConfiguration     The database configuration for the server
+   * @param databases                 The factory of databases that will be used for
+   *                                  the server
+   * @param locale                    The locale
+   * @param limitsConfiguration       The limits configuration
+   * @param idstoreConfiguration      The idstore configuration
+   * @param maintenanceConfiguration  The maintenance configuration
+   * @param openTelemetry             The OpenTelemetry configuration
+   * @param inventoryApiConfiguration The inventory API address
    */
 
   public CAServerConfiguration
   {
-    Objects.requireNonNull(inventoryApiConfiguration, "inventoryApiAddress");
     Objects.requireNonNull(clock, "clock");
-    Objects.requireNonNull(strings, "strings");
     Objects.requireNonNull(databaseConfiguration, "databaseConfiguration");
     Objects.requireNonNull(databases, "databases");
     Objects.requireNonNull(idstoreConfiguration, "idstoreConfiguration");
+    Objects.requireNonNull(inventoryApiConfiguration, "inventoryApiAddress");
     Objects.requireNonNull(limitsConfiguration, "limitsConfiguration");
     Objects.requireNonNull(locale, "locale");
+    Objects.requireNonNull(
+      maintenanceConfiguration,
+      "maintenanceConfiguration");
     Objects.requireNonNull(openTelemetry, "openTelemetry");
+    Objects.requireNonNull(strings, "strings");
   }
 }

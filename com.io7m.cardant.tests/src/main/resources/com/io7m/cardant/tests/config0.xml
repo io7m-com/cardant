@@ -27,6 +27,8 @@
   <Limits MaximumFileUploadSizeOctets="10000000"
           MaximumCommandSizeOctets="100000"/>
 
+  <Maintenance TLSReloadInterval="PT24H"/>
+
   <OpenTelemetry LogicalServiceName="cardant01">
     <Logs Endpoint="http://logs.example.com:4317"
           Protocol="GRPC"/>

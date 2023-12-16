@@ -14,25 +14,30 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.server.api;
+
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Optional;
+
 /**
- * Inventory server (Server maintenance service)
+ * Configuration information for the server's maintenance service.
+ *
+ * @param tlsReloadInterval The interval at which to reload TLS contexts
  */
 
-module com.io7m.cardant.server.service.maintenance
+public record CAServerMaintenanceConfiguration(
+  Optional<Duration> tlsReloadInterval)
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * Configuration information for the server's maintenance service.
+   *
+   * @param tlsReloadInterval The interval at which to reload TLS contexts
+   */
 
-  requires com.io7m.cardant.database.api;
-  requires com.io7m.cardant.server.api;
-  requires com.io7m.cardant.server.service.clock;
-  requires com.io7m.cardant.server.service.configuration;
-  requires com.io7m.cardant.server.service.telemetry.api;
-  requires com.io7m.cardant.server.service.tls;
-
-  requires com.io7m.repetoir.core;
-  requires io.opentelemetry.context;
-  requires org.slf4j;
-
-  exports com.io7m.cardant.server.service.maintenance;
+  public CAServerMaintenanceConfiguration
+  {
+    Objects.requireNonNull(
+      tlsReloadInterval, "tlsReloadInterval");
+  }
 }

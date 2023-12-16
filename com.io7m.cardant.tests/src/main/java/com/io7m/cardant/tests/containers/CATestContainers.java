@@ -31,6 +31,7 @@ import com.io7m.cardant.server.api.CAServerFactoryType;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
 import com.io7m.cardant.server.api.CAServerLimitsConfiguration;
+import com.io7m.cardant.server.api.CAServerMaintenanceConfiguration;
 import com.io7m.cardant.server.api.CAServerType;
 import com.io7m.cardant.server.basic.CAServers;
 import com.io7m.cardant.strings.CAStrings;
@@ -489,6 +490,9 @@ public final class CATestContainers
         new CAServerLimitsConfiguration(
           10_000_000L,
           1_000_000L
+        ),
+        new CAServerMaintenanceConfiguration(
+          Optional.empty()
         ),
         empty()
       );

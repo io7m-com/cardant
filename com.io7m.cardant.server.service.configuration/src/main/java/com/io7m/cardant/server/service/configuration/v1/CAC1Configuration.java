@@ -26,6 +26,7 @@ import com.io7m.cardant.server.api.CAServerDatabaseConfiguration;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
 import com.io7m.cardant.server.api.CAServerIdstoreConfiguration;
 import com.io7m.cardant.server.api.CAServerLimitsConfiguration;
+import com.io7m.cardant.server.api.CAServerMaintenanceConfiguration;
 import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration;
 
 import java.util.Map;
@@ -46,6 +47,7 @@ public final class CAC1Configuration
   private CAServerIdstoreConfiguration idstore;
   private CAServerLimitsConfiguration limits;
   private CAServerHTTPServiceConfiguration inventory;
+  private CAServerMaintenanceConfiguration maintenance;
 
   /**
    * The root configuration parser.
@@ -69,6 +71,7 @@ public final class CAC1Configuration
       entry(qName("InventoryService"), CAC1InventoryService::new),
       entry(qName("Idstore"), CAC1Idstore::new),
       entry(qName("Limits"), CAC1Limits::new),
+      entry(qName("Maintenance"), CAC1Maintenance::new),
       entry(qName("OpenTelemetry"), CAC1Telemetry::new)
     );
   }
@@ -94,6 +97,9 @@ public final class CAC1Configuration
       case final CAServerHTTPServiceConfiguration c -> {
         this.inventory = c;
       }
+      case final CAServerMaintenanceConfiguration c -> {
+        this.maintenance = c;
+      }
       default -> {
         throw new IllegalArgumentException(
           "Unrecognized element: %s".formatted(result)
@@ -111,6 +117,7 @@ public final class CAC1Configuration
       this.database,
       this.idstore,
       this.limits,
+      this.maintenance,
       this.telemetry
     );
   }

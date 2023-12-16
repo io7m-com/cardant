@@ -718,19 +718,40 @@
     <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
   </Match>
 
-  <!--                                          -->
-  <!-- com.io7m.cardant.server.service.reqlimit -->
-  <!--                                          -->
+  <!--                                             -->
+  <!-- com.io7m.cardant.server.service.maintenance -->
+  <!--                                             -->
 
-  <!-- Exception types don't need equality. -->
+  <!-- Catching any exception. -->
   <Match>
-    <Class name="com.io7m.cardant.server.service.reqlimit.CARequestLimitExceeded"/>
-    <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
+    <Class name="com.io7m.cardant.server.service.maintenance.CAMaintenanceService"/>
+    <Bug pattern="REC_CATCH_EXCEPTION"/>
+  </Match>
+
+  <!-- False positive; executor is closed and is a virtual thread executor anyway. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.maintenance.CAMaintenanceService"/>
+    <Bug pattern="HES_EXECUTOR_NEVER_SHUTDOWN"/>
   </Match>
 
   <!-- It's an API. -->
   <Match>
     <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!--                                          -->
+  <!-- com.io7m.cardant.server.service.reqlimit -->
+  <!--                                          -->
+
+  <!-- It's an API. -->
+  <Match>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!-- equals() not needed. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.reqlimit.CARequestLimitExceeded"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
   </Match>
 
   <!--                                      -->

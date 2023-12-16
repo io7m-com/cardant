@@ -101,6 +101,7 @@ public final class CAServerConfigurations
       file.inventoryService(),
       file.idstoreConfiguration(),
       file.limitsConfiguration(),
+      file.maintenanceConfiguration(),
       file.openTelemetry()
     );
   }

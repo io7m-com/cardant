@@ -22,11 +22,12 @@ import java.util.Optional;
 /**
  * The server configuration file.
  *
- * @param inventoryService      The inventory service configuration
- * @param databaseConfiguration The database configuration
- * @param idstoreConfiguration  The idstore server configuration
- * @param limitsConfiguration   The limits configuration
- * @param openTelemetry         The OpenTelemetry configuration
+ * @param inventoryService         The inventory service configuration
+ * @param databaseConfiguration    The database configuration
+ * @param idstoreConfiguration     The idstore server configuration
+ * @param limitsConfiguration      The limits configuration
+ * @param maintenanceConfiguration The maintenance configuration
+ * @param openTelemetry            The OpenTelemetry configuration
  */
 
 public record CAServerConfigurationFile(
@@ -34,16 +35,18 @@ public record CAServerConfigurationFile(
   CAServerDatabaseConfiguration databaseConfiguration,
   CAServerIdstoreConfiguration idstoreConfiguration,
   CAServerLimitsConfiguration limitsConfiguration,
+  CAServerMaintenanceConfiguration maintenanceConfiguration,
   Optional<CAServerOpenTelemetryConfiguration> openTelemetry)
 {
   /**
    * The server configuration file.
    *
-   * @param inventoryService      The inventory service configuration
-   * @param databaseConfiguration The database configuration
-   * @param idstoreConfiguration  The idstore server configuration
-   * @param limitsConfiguration   The limits configuration
-   * @param openTelemetry         The OpenTelemetry configuration
+   * @param inventoryService         The inventory service configuration
+   * @param databaseConfiguration    The database configuration
+   * @param idstoreConfiguration     The idstore server configuration
+   * @param limitsConfiguration      The limits configuration
+   * @param maintenanceConfiguration The maintenance configuration
+   * @param openTelemetry            The OpenTelemetry configuration
    */
 
   public CAServerConfigurationFile
@@ -52,6 +55,9 @@ public record CAServerConfigurationFile(
     Objects.requireNonNull(databaseConfiguration, "databaseConfiguration");
     Objects.requireNonNull(idstoreConfiguration, "idstoreConfiguration");
     Objects.requireNonNull(limitsConfiguration, "limitsConfiguration");
+    Objects.requireNonNull(
+      maintenanceConfiguration,
+      "maintenanceConfiguration");
     Objects.requireNonNull(openTelemetry, "openTelemetry");
   }
 }
