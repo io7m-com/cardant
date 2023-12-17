@@ -18,6 +18,7 @@
 package com.io7m.cardant.main.internal;
 
 import com.io7m.anethum.slf4j.ParseStatusLogging;
+import com.io7m.canonmill.core.CMKeyStoreProvider;
 import com.io7m.cardant.server.api.CAServerConfigurations;
 import com.io7m.cardant.server.api.CAServerFactoryType;
 import com.io7m.cardant.server.service.configuration.CAServerConfigurationParsers;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.nio.file.Path;
+import java.security.Security;
 import java.time.Clock;
 import java.util.List;
 import java.util.Locale;
@@ -102,6 +104,8 @@ public final class CMCmdServer implements QCommandType
 
     SLF4JBridgeHandler.removeHandlersForRootLogger();
     SLF4JBridgeHandler.install();
+
+    Security.addProvider(new CMKeyStoreProvider());
 
     QLogback.configure(context);
 

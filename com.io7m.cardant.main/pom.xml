@@ -110,6 +110,10 @@
       <groupId>com.io7m.anethum</groupId>
       <artifactId>com.io7m.anethum.api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.io7m.canonmill</groupId>
+      <artifactId>com.io7m.canonmill.core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>
@@ -132,6 +136,9 @@
         <configuration>
           <failOnWarning>true</failOnWarning>
           <ignoredUnusedDeclaredDependencies>
+            <ignoredUnusedDeclaredDependency>
+              com.io7m.canonmill:*
+            </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
               com.io7m.jade:*
             </ignoredUnusedDeclaredDependency>

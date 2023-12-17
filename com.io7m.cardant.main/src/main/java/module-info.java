@@ -48,6 +48,7 @@ open module com.io7m.cardant.main
   requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
 
+  requires com.io7m.canonmill.core;
   requires com.io7m.quarrel.core;
   requires com.io7m.quarrel.ext.logback;
   requires com.io7m.repetoir.core;

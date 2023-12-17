@@ -28,6 +28,7 @@ module com.io7m.cardant.server.service.tls
   requires com.io7m.cardant.strings;
   requires com.io7m.cardant.tls;
 
+  requires io.opentelemetry.api;
   requires com.io7m.repetoir.core;
 
   exports com.io7m.cardant.server.service.tls;
