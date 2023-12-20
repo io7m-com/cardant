@@ -128,7 +128,7 @@ OK]]></Verbatim>
   </Subsection>
 
   <Subsection title="Running The Server">
-    <Subsection title="Initialization">
+    <Subsection title="Initialization" id="1720443b-3f44-485b-b5c0-d0268d418785">
       <Paragraph>
         Given an appropriate configuration file
         in <Term type="expression">server.conf</Term>, it's necessary to tell

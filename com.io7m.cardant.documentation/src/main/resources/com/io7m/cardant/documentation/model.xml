@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Section xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
          id="e7b8d1c0-1329-4bcd-aabb-276d0219593b"
          title="Model">
 
@@ -220,6 +221,45 @@
         reposit operations allow for a primitive form of <LinkExternal
         target="https://en.wikipedia.org/wiki/Double-entry_bookkeeping">double-entry bookkeeping</LinkExternal>.
       </Paragraph>
+    </Subsection>
+  </Subsection>
+
+  <Subsection title="Security" id="bc059ce6-a6c2-42c1-bc20-c84851bd347b">
+    <Subsection title="Overview">
+      <Paragraph>
+        The <Term type="package">cardant</Term> package uses role-based access control for all operations.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Roles" id="04998c79-db74-4769-b649-1bac687f9451">
+      <Paragraph>
+        Each user has a set of
+        <Link target="1bb88043-9712-4719-bdb7-829777586149">roles</Link>
+        associated with it. When the user attempts to perform an operation on the server, the account's
+        roles are checked to see if it has permission to perform the action.
+      </Paragraph>
+      <Paragraph>
+        A role <Term type="variable">R</Term> may be <Term type="term">granted</Term> to a user
+        <Term type="variable">A</Term> by user <Term type="variable">B</Term> if <Term type="variable">B</Term>
+        has role <Term type="variable">R</Term>. Accordingly, a role <Term type="variable">R</Term> may be
+        <Term type="term">revoked</Term> from a user
+        <Term type="variable">A</Term> by user <Term type="variable">B</Term> if <Term type="variable">B</Term>
+        has role <Term type="variable">R</Term>.
+      </Paragraph>
+      <Paragraph>
+        A user holding the <Term type="expression">inventory.admin</Term> role effectively always has all available
+        roles. If new roles are added in future versions of the <Term type="package">cardant</Term> package, users
+        holding the <Term type="expression">inventory.admin</Term> role will be automatically granted the new roles.
+        It is recommended to limit this role to a single user, and to avoid using that user account for day-to-day
+        operations.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Defined Roles" id="1bb88043-9712-4719-bdb7-829777586149">
+      <Paragraph>
+        The following roles are available:
+      </Paragraph>
+      <FormalItem title="Roles">
+        <xi:include href="m-roles.xml"/>
+      </FormalItem>
     </Subsection>
   </Subsection>
 

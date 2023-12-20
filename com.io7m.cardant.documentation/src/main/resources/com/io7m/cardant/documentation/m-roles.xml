@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Table type="genericTable"
+       xmlns="urn:com.io7m.structural:8:0">
+  <Columns>
+    <Column>Name</Column>
+    <Column>Description</Column>
+  </Columns>
+  <Row>
+    <Cell>inventory.files.writer</Cell>
+    <Cell>A writer of inventory files.</Cell>
+  </Row>
+  <Row>
+    <Cell>inventory.files.reader</Cell>
+    <Cell>A reader of inventory files.</Cell>
+  </Row>
+  <Row>
+    <Cell>inventory.items.writer</Cell>
+    <Cell>A writer of inventory items.</Cell>
+  </Row>
+  <Row>
+    <Cell>inventory.items.reader</Cell>
+    <Cell>A reader of inventory items.</Cell>
+  </Row>
+  <Row>
+    <Cell>inventory.locations.writer</Cell>
+    <Cell>A writer of inventory locations.</Cell>
+  </Row>
+  <Row>
+    <Cell>inventory.locations.reader</Cell>
+    <Cell>A reader of inventory locations.</Cell>
+  </Row>
+  <Row>
+    <Cell>audit.reader</Cell>
+    <Cell>A reader of the audit log.</Cell>
+  </Row>
+  <Row>
+    <Cell>inventory.admin</Cell>
+    <Cell>An all-powerful administrator of inventories.</Cell>
+  </Row>
+</Table>

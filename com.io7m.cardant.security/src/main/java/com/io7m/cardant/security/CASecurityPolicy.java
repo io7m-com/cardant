@@ -45,6 +45,7 @@ public final class CASecurityPolicy
    * The audit log.
    */
 
+  @CASecurityDocumentation("The audit log.")
   public static final MObject AUDIT =
     new MObject(MTypeName.of("audit"), Map.of());
 
@@ -52,6 +53,7 @@ public final class CASecurityPolicy
    * The items section of the inventory.
    */
 
+  @CASecurityDocumentation("The items section of the inventory.")
   public static final MObject INVENTORY_ITEMS =
     new MObject(MTypeName.of("inventory.items"), Map.of());
 
@@ -59,6 +61,7 @@ public final class CASecurityPolicy
    * The files section of the inventory.
    */
 
+  @CASecurityDocumentation("The files section of the inventory.")
   public static final MObject INVENTORY_FILES =
     new MObject(MTypeName.of("inventory.files"), Map.of());
 
@@ -66,6 +69,7 @@ public final class CASecurityPolicy
    * The locations section of the inventory.
    */
 
+  @CASecurityDocumentation("The locations section of the inventory.")
   public static final MObject INVENTORY_LOCATIONS =
     new MObject(MTypeName.of("inventory.locations"), Map.of());
 
@@ -94,6 +98,7 @@ public final class CASecurityPolicy
    * A writer of inventory files.
    */
 
+  @CASecurityDocumentation("A writer of inventory files.")
   public static final MRoleName ROLE_INVENTORY_FILES_WRITER =
     MRoleName.of("inventory.files.writer");
 
@@ -101,6 +106,7 @@ public final class CASecurityPolicy
    * A reader of inventory files.
    */
 
+  @CASecurityDocumentation("A reader of inventory files.")
   public static final MRoleName ROLE_INVENTORY_FILES_READER =
     MRoleName.of("inventory.files.reader");
 
@@ -108,6 +114,7 @@ public final class CASecurityPolicy
    * A writer of inventory items.
    */
 
+  @CASecurityDocumentation("A writer of inventory items.")
   public static final MRoleName ROLE_INVENTORY_ITEMS_WRITER =
     MRoleName.of("inventory.items.writer");
 
@@ -115,6 +122,7 @@ public final class CASecurityPolicy
    * A reader of inventory items.
    */
 
+  @CASecurityDocumentation("A reader of inventory items.")
   public static final MRoleName ROLE_INVENTORY_ITEMS_READER =
     MRoleName.of("inventory.items.reader");
 
@@ -122,6 +130,7 @@ public final class CASecurityPolicy
    * A writer of inventory locations.
    */
 
+  @CASecurityDocumentation("A writer of inventory locations.")
   public static final MRoleName ROLE_INVENTORY_LOCATIONS_WRITER =
     MRoleName.of("inventory.locations.writer");
 
@@ -129,6 +138,7 @@ public final class CASecurityPolicy
    * A reader of inventory locations.
    */
 
+  @CASecurityDocumentation("A reader of inventory locations.")
   public static final MRoleName ROLE_INVENTORY_LOCATIONS_READER =
     MRoleName.of("inventory.locations.reader");
 
@@ -136,6 +146,7 @@ public final class CASecurityPolicy
    * A reader of the audit log.
    */
 
+  @CASecurityDocumentation("A reader of the audit log.")
   public static final MRoleName ROLE_AUDIT_READER =
     MRoleName.of("audit.reader");
 
@@ -143,6 +154,7 @@ public final class CASecurityPolicy
    * An all-powerful administrator of inventories.
    */
 
+  @CASecurityDocumentation("An all-powerful administrator of inventories.")
   public static final MRoleName ROLE_INVENTORY_ADMIN =
     MRoleName.of("inventory.admin");
 
