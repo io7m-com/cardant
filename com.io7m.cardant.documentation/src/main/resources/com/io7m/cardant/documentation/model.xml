@@ -121,7 +121,7 @@
         associated with the item according to a given <Term type="term">relation</Term>. For example, an electronics
         component might have a PDF datasheet associated with it using a <Term type="expression">datasheet</Term>
         relation. Relations are entirely user-defined, and it is the responsibility of the inventory manager to
-        use a consistent set of relations.
+        use sensible and consistent relations.
       </Paragraph>
     </Subsection>
   </Subsection>

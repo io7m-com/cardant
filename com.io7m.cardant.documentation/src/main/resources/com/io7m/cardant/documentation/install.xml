@@ -134,7 +134,9 @@ OK]]></Verbatim>
         in <Term type="expression">server.conf</Term>, it's necessary to tell
         <Term type="command">cardant</Term>
         to configure the database and create an
-        initial administrator:
+        initial administrator. It's necessary to specify the <Term type="package">idstore</Term> user ID
+        of a user that will be considered to be the administrator of the <Term type="command">cardant</Term>
+        server:
       </Paragraph>
       <FormalItem title="Initialize">
         <Verbatim>
@@ -142,6 +144,10 @@ OK]]></Verbatim>
                       parse="text"/>
         </Verbatim>
       </FormalItem>
+      <Paragraph>
+        It is not critical that the username given match the user ID on the <Term type="package">idstore</Term>
+        server; the name will be updated automatically from that server when a user logs in.
+      </Paragraph>
     </Subsection>
 
     <Subsection title="Running">
