@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section id="80d0af5f-505b-4dee-b733-296a6f3970a4"
+         title="Shell"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <Section title="Usage">
+    <Subsection title="Overview">
+      <Paragraph>
+        In addition to the API access the server provides, the <Term type="package">cardant</Term> package includes
+        an interactive command-line shell for performing tasks.
+      </Paragraph>
+      <Paragraph>
+        The shell is started using the <Link target="15c17f31-3293-4a64-8e37-e420aef8a8c3">shell</Link>
+        command. The shell supports basic tab-completion and history accessed with the up and down arrows.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Tab Completion">
+      <Paragraph>
+        When running on an appropriate terminal, the shell supports tab completion for command and most
+        command arguments. Begin typing the name of a command, or the name of a command argument, and then
+        press tab. A set of completion options will be displayed.
+      </Paragraph>
+      <FormalItem title="Command Completion">
+        <Image source="term0.png" width="495" height="314">Command completion.</Image>
+      </FormalItem>
+      <FormalItem title="Argument Completion">
+        <Image source="term1.png" width="495" height="314">Argument completion.</Image>
+      </FormalItem>
+    </Subsection>
+    <Subsection title="History">
+      <Paragraph>
+        When running on an appropriate terminal, the command shell stores the history of commands in memory (the
+        history is not saved to disk, for security reasons). Press the up and down arrows to navigate to previously
+        executed commands.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Quoting">
+      <Paragraph>
+        Arguments to shell commands may be quoted using the <Term type="constant">"</Term> or
+        <Term type="constant">'</Term> characters. This is required when calling commands that take arguments
+        that may need to contain strings.
+      </Paragraph>
+      <FormalItem title="Strings">
+        <Image source="term2.png" width="495" height="314">Quoting.</Image>
+      </FormalItem>
+    </Subsection>
+    <Subsection title="Newlines">
+      <Paragraph>
+        Typically, the <Term type="expression">ENTER</Term> key ends the current line. This will cause the shell to
+        interpret the contents of a line as a command and execute it. Pressing <Term type="expression">ALT+ENTER</Term>
+        inserts an actual newline character without executing the command. This can be useful if an argument to a
+        command needs to contain a newline character:
+      </Paragraph>
+      <FormalItem title="Strings">
+        <Image source="term3.png" width="495" height="314">Multiline.</Image>
+      </FormalItem>
+      <Paragraph>
+        When in this mode, the cursor can be moved around freely with the arrow keys to allow for editing lines.
+        Pressing the <Term type="expression">ENTER</Term> key ends the multiline editing mode and executes the
+        command.
+      </Paragraph>
+    </Subsection>
+  </Section>
+
+  <Section title="Shell Command Reference">
+    <xi:include href="scmd-audit-search-begin.xml"/>
+    <xi:include href="scmd-audit-search-next.xml"/>
+    <xi:include href="scmd-audit-search-previous.xml"/>
+    <xi:include href="scmd-bookmark-list.xml"/>
+    <xi:include href="scmd-bookmark-login.xml"/>
+    <xi:include href="scmd-bookmark-put.xml"/>
+    <xi:include href="scmd-bookmark-remove.xml"/>
+    <xi:include href="scmd-file-get.xml"/>
+    <xi:include href="scmd-file-put.xml"/>
+    <xi:include href="scmd-file-search-begin.xml"/>
+    <xi:include href="scmd-file-search-next.xml"/>
+    <xi:include href="scmd-file-search-previous.xml"/>
+    <xi:include href="scmd-files-recent.xml"/>
+    <xi:include href="scmd-help.xml"/>
+    <xi:include href="scmd-item-attachment-add.xml"/>
+    <xi:include href="scmd-item-attachment-remove.xml"/>
+    <xi:include href="scmd-item-create.xml"/>
+    <xi:include href="scmd-item-get.xml"/>
+    <xi:include href="scmd-item-metadata-put.xml"/>
+    <xi:include href="scmd-item-metadata-remove.xml"/>
+    <xi:include href="scmd-item-reposit-add.xml"/>
+    <xi:include href="scmd-item-reposit-move.xml"/>
+    <xi:include href="scmd-item-reposit-remove.xml"/>
+    <xi:include href="scmd-item-search-begin.xml"/>
+    <xi:include href="scmd-item-search-next.xml"/>
+    <xi:include href="scmd-item-search-previous.xml"/>
+    <xi:include href="scmd-location-attachment-add.xml"/>
+    <xi:include href="scmd-location-attachment-remove.xml"/>
+    <xi:include href="scmd-location-get.xml"/>
+    <xi:include href="scmd-location-list.xml"/>
+    <xi:include href="scmd-location-put.xml"/>
+    <xi:include href="scmd-login.xml"/>
+    <xi:include href="scmd-logout.xml"/>
+    <xi:include href="scmd-roles-assign.xml"/>
+    <xi:include href="scmd-roles-get.xml"/>
+    <xi:include href="scmd-roles-revoke.xml"/>
+    <xi:include href="scmd-self.xml"/>
+    <xi:include href="scmd-set.xml"/>
+    <xi:include href="scmd-type-create.xml"/>
+    <xi:include href="scmd-type-field-put.xml"/>
+    <xi:include href="scmd-type-field-remove.xml"/>
+    <xi:include href="scmd-type-get.xml"/>
+    <xi:include href="scmd-type-scalar-get.xml"/>
+    <xi:include href="scmd-type-scalar-put.xml"/>
+    <xi:include href="scmd-type-scalar-remove.xml"/>
+    <xi:include href="scmd-type-scalar-search-begin.xml"/>
+    <xi:include href="scmd-type-scalar-search-next.xml"/>
+    <xi:include href="scmd-type-scalar-search-previous.xml"/>
+    <xi:include href="scmd-type-search-begin.xml"/>
+    <xi:include href="scmd-type-search-next.xml"/>
+    <xi:include href="scmd-type-search-previous.xml"/>
+    <xi:include href="scmd-version.xml"/>
+  </Section>
+
+</Section>

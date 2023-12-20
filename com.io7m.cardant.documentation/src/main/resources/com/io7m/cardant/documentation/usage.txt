@@ -1,0 +1,25 @@
+cardant: usage: cardant [command] [arguments ...]
+
+  The cardant server command-line application.
+
+  Use the "help" command to examine specific commands:
+
+    $ cardant help help.
+
+  Command-line arguments can be placed one per line into a file, and
+  the file can be referenced using the @ symbol:
+
+    $ echo help > file.txt
+    $ echo help >> file.txt
+    $ cardant @file.txt
+
+  Commands:
+    help          Show usage information for a command.
+    initialize    Initialize the server and database.
+    server        Start the server.
+    shell         Start the shell.
+    version       Show the application version.
+
+  Documentation:
+    https://www.io7m.com/software/cardant/
+

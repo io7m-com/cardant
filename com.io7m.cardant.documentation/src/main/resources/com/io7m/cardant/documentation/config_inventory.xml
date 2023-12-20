@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<InventoryService xmlns="com.io7m.cardant:configuration:1"
+                  xmlns:tls="com.io7m.cardant:tls:1"
+                  ListenAddress="[::]"
+                  ListenPort="30000"
+                  SessionExpiration="PT30M"
+                  ExternalAddress="http://cardant.example.com:30000">
+  <tls:TLSEnabled>
+    <tls:KeyStore Type="CANONMILL"
+                  Provider="CANONMILL"
+                  Password="ignored"
+                  File="/cardant/keystore.xml"/>
+    <tls:TrustStore Type="JKS"
+                    Provider="SUN"
+                    Password="changeit"
+                    File="/usr/lib/jvm/java-21-openjdk/lib/security/cacerts"/>
+  </tls:TLSEnabled>
+</InventoryService>

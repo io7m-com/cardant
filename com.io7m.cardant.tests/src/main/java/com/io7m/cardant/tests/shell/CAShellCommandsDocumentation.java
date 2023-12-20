@@ -54,11 +54,14 @@ public final class CAShellCommandsDocumentation
   {
     final var shells =
       new CAShells();
+    final var tempFile =
+      Files.createTempFile("cardant-", ".txt");
+
+    Files.deleteIfExists(tempFile);
+
     final var configuration =
       new CAShellConfiguration(
-        CAPreferencesService.openOrDefault(
-          Files.createTempFile("cardant-", ".txt")
-        ),
+        CAPreferencesService.openOrDefault(tempFile),
         Locale.ROOT,
         Clock.systemUTC(),
         Optional.empty()

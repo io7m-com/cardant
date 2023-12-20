@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="103ba5e0-d015-3e59-a752-38f31b676fa7" title="type-scalar-remove" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-scalar-remove</Term>
+       - Remove one or more scalar types
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-scalar-remove</Term>
+       command removes one or more scalar types.
+    </Paragraph>
+    <FormalItem title="Parameters">
+      <Table type="parameterTable">
+        <Columns>
+          <Column>Parameter</Column>
+          <Column>Type</Column>
+          <Column>Cardinality</Column>
+          <Column>Default</Column>
+          <Column>Description</Column>
+        </Columns>
+        <Row>
+          <Cell>
+            <Term type="parameter">--name</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.lanark.core.RDottedName</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, N]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant">[]</Term>
+          </Cell>
+          <Cell>The type name.</Cell>
+        </Row>
+      </Table>
+    </FormalItem>
+  </Subsection>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim>...</Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

@@ -21,7 +21,12 @@
 
   <xi:include href="intro.xml"/>
   <xi:include href="install.xml"/>
+  <xi:include href="configuration.xml"/>
   <xi:include href="model.xml"/>
+  <xi:include href="monitoring.xml"/>
+  <xi:include href="cmdline.xml"/>
+  <xi:include href="shell.xml"/>
   <xi:include href="api.xml"/>
+  <xi:include href="security.xml"/>
 
 </Document>

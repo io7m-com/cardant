@@ -1,0 +1,29 @@
+cardant: usage: initialize [named-arguments ...]
+
+  Initialize the server and database.
+
+  Named parameters:
+  * --admin-id
+      Description       : The ID of the user that will be the initial administrator.
+      Type              : CAUserID
+      Cardinality       : [1]; Specify exactly once.
+      Syntax            : [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
+  * --admin-name
+      Description       : The name of the user that will be the initial administrator.
+      Type              : String
+      Cardinality       : [1]; Specify exactly once.
+      Syntax            : <any sequence of characters>
+  * --configuration
+      Description       : The configuration file.
+      Type              : Path
+      Cardinality       : [1]; Specify exactly once.
+      Syntax            : <platform-specific path syntax>
+    --verbose
+      Description       : Set the logging level of the application.
+      Type              : QLogLevel
+      Cardinality       : [1]; Specify exactly once, or use the default.
+      Default value     : info
+      Syntax            : trace|debug|info|warn|error
+
+  The command does not accept any positional arguments.
+

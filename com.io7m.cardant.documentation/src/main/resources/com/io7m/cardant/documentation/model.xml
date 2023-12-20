@@ -245,7 +245,7 @@
         <Term type="variable">A</Term> by user <Term type="variable">B</Term> if <Term type="variable">B</Term>
         has role <Term type="variable">R</Term>.
       </Paragraph>
-      <Paragraph>
+      <Paragraph id="f57f5739-f60b-4eeb-b31c-99be0efbfde4">
         A user holding the <Term type="expression">inventory.admin</Term> role effectively always has all available
         roles. If new roles are added in future versions of the <Term type="package">cardant</Term> package, users
         holding the <Term type="expression">inventory.admin</Term> role will be automatically granted the new roles.

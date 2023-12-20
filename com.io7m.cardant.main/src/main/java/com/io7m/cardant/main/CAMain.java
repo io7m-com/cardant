@@ -65,7 +65,7 @@ public final class CAMain implements Runnable
         "com.io7m.cardant",
         CAVersion.MAIN_VERSION,
         CAVersion.MAIN_BUILD,
-        "The cardant server and command-line application.",
+        "The cardant server command-line application.",
         Optional.of(URI.create("https://www.io7m.com/software/cardant/"))
       );
 

@@ -130,17 +130,19 @@ OK]]></Verbatim>
   <Subsection title="Running The Server">
     <Subsection title="Initialization" id="1720443b-3f44-485b-b5c0-d0268d418785">
       <Paragraph>
-        Given an appropriate configuration file
+        Given an appropriate
+        <Link target="f1e0e558-035d-4f3c-b1a2-cf3a096044f3">configuration file</Link>
         in <Term type="expression">server.conf</Term>, it's necessary to tell
         <Term type="command">cardant</Term>
         to configure the database and create an
-        initial administrator. It's necessary to specify the <Term type="package">idstore</Term> user ID
+        initial <Link target="f57f5739-f60b-4eeb-b31c-99be0efbfde4">administrator</Link>. It's necessary to specify
+        the <Term type="package">idstore</Term> user ID
         of a user that will be considered to be the administrator of the <Term type="command">cardant</Term>
         server:
       </Paragraph>
       <FormalItem title="Initialize">
         <Verbatim>
-          <xi:include href="c-initial-admin-example.txt"
+          <xi:include href="c-initialize-example.txt"
                       parse="text"/>
         </Verbatim>
       </FormalItem>

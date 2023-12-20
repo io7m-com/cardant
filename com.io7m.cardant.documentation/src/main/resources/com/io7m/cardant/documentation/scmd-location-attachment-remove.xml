@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="efbdb429-ebf0-39b6-be36-e229306c5246" title="location-attachment-remove" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">location-attachment-remove</Term>
+       - Remove an attachment from an location.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">location-attachment-remove</Term>
+       command removes an attachment from a location.
+    </Paragraph>
+    <FormalItem title="Parameters">
+      <Table type="parameterTable">
+        <Columns>
+          <Column>Parameter</Column>
+          <Column>Type</Column>
+          <Column>Cardinality</Column>
+          <Column>Default</Column>
+          <Column>Description</Column>
+        </Columns>
+        <Row>
+          <Cell>
+            <Term type="parameter">--file-id</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.cardant.model.CAFileID</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[1, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>The file ID.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--id</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.cardant.model.CALocationID</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[1, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>The location ID.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--relation</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[1, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>The attachment relation.</Cell>
+        </Row>
+      </Table>
+    </FormalItem>
+  </Subsection>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim>...</Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

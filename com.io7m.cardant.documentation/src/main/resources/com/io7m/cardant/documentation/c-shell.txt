@@ -1,0 +1,14 @@
+cardant: usage: shell [named-arguments ...]
+
+  Start the shell.
+
+  Named parameters:
+    --verbose
+      Description       : Set the logging level of the application.
+      Type              : QLogLevel
+      Cardinality       : [1]; Specify exactly once, or use the default.
+      Default value     : info
+      Syntax            : trace|debug|info|warn|error
+
+  The command does not accept any positional arguments.
+

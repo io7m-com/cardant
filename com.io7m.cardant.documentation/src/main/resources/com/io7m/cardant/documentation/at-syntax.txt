@@ -1,0 +1,9 @@
+$ cardant server --configuration server.conf
+
+$ (cat <<EOF
+--configuration
+server.conf
+EOF
+) > args.txt
+
+$ cardant @args.txt

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="401f79b4-60ee-3740-9a73-edf4f80d7f60" title="item-search-previous" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">item-search-previous</Term>
+       - Go to the previous page of items.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">item-search-previous</Term>
+       command goes to the previous page of item search results.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim>...</Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

@@ -22,7 +22,10 @@
     </Paragraph>
     <FormalItem title="Verdant Example">
       <Verbatim><![CDATA[$ curl https://cardant.example.com:30000/ | hexdump
-
+0000:0000  00 00 00 01 00 00 00 01  8e e2 31 58 f8 db 31 7a  |..........1X..1z|
+0000:0010  a5 8b 45 bd 9d 70 20 40  00 00 00 01 00 00 00 00  |..E..p @........|
+0000:0020  00 00 00 0f 2f 69 6e 76  65 6e 74 6f 72 79 2f 31  |..../inventory/1|
+0000:0030  2f 30 2f                                          |/0/|
 ]]></Verbatim>
     </FormalItem>
   </Subsection>
