@@ -7,8 +7,9 @@
   <Subsection title="Overview">
     <Paragraph>
       The <Term type="package">cardant</Term> package provides a server-based application to track inventory.
-      It stores detailed information about types of items, and can store the counts of those items present
-      in defined locations.
+      It stores detailed information about types of <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">items</Link>,
+      and can store the counts of those items present in defined
+      <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>.
     </Paragraph>
     <Paragraph>
       This section of the documentation describes the internal <Term type="package">cardant</Term> model.
@@ -114,6 +115,15 @@
         those items that have an <Term type="type">output_voltage</Term> value equal to <Term type="type">5.0</Term>).
       </Paragraph>
     </Subsection>
+    <Subsection title="Attachments" id="31255944-64ca-4b59-b2fd-e5d31aaad374">
+      <Paragraph>
+        Items can have zero or more <Term type="term">attachments</Term>. An attachment is simply a file
+        associated with the item according to a given <Term type="term">relation</Term>. For example, an electronics
+        component might have a PDF datasheet associated with it using a <Term type="expression">datasheet</Term>
+        relation. Relations are entirely user-defined, and it is the responsibility of the inventory manager to
+        use a consistent set of relations.
+      </Paragraph>
+    </Subsection>
   </Subsection>
 
   <Subsection title="Locations" id="d5fa706f-6150-4c71-b5be-311e2680b89a">
@@ -141,10 +151,18 @@
         manner as items.
       </Paragraph>
     </Subsection>
+    <Subsection title="Attachments">
+      <Paragraph>
+        Locations can have <Link target="31255944-64ca-4b59-b2fd-e5d31aaad374">attachments</Link> in the same
+        manner as items.
+      </Paragraph>
+    </Subsection>
     <Subsection title="Hierarchy" id="c4dba23a-9e90-4ac0-b5a5-c0a6f16609a4">
       <Paragraph>
         Locations form a <Term type="term">hierarchy</Term> (specifically, a tree) in that any location may have any
         number of <Term type="term">child locations</Term>, although a location may only have at most one parent.
+        Locations can be <Term type="term">reparented</Term> at any time; they are not locked into having whichever
+        parent they had when they were created.
       </Paragraph>
       <Paragraph>
         The hierarchical nature of locations can be used to model different kinds of inventory arrangements. For
@@ -155,6 +173,8 @@
         the manager might place a single motherboard <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">item</Link>,
         one or more CPU items, and so on, from the inventory. This allows the manager to know what computer parts
         they have, and the computers in which those parts are being used in the laboratories under their supervision.
+        Additionally, should one assembled computer be moved from one laboratory to another, the manager can simply
+        reparent the computer location to the new laboratory.
       </Paragraph>
       <Paragraph>
         Conversely, a manager of a retail business might define a <Term type="term">Storage Room A</Term> location, and
@@ -196,7 +216,8 @@
         <Term type="expression">S</Term>.
       </Paragraph>
       <Paragraph>
-        Reposit operations allow for a primitive form of <LinkExternal
+        With the right arrangement of locations,
+        reposit operations allow for a primitive form of <LinkExternal
         target="https://en.wikipedia.org/wiki/Double-entry_bookkeeping">double-entry bookkeeping</LinkExternal>.
       </Paragraph>
     </Subsection>
