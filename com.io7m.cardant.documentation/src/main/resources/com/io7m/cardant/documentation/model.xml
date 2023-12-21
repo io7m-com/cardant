@@ -7,9 +7,9 @@
 
   <Subsection title="Overview">
     <Paragraph>
-      The <Term type="package">cardant</Term> package provides a server-based application to track inventory.
-      It stores detailed information about types of <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">items</Link>,
-      and can store the counts of those items present in defined
+      The <Term type="package">cardant</Term> package provides a server-based application to track inventory. It stores
+      detailed information about types of <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">items</Link>, and can
+      store the counts of those items present in defined
       <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>.
     </Paragraph>
     <Paragraph>
@@ -17,23 +17,78 @@
     </Paragraph>
   </Subsection>
 
-  <Subsection title="Items" id="98e6044d-2cd6-4646-be40-cf57695ee9e7">
+  <Subsection title="Items"
+              id="98e6044d-2cd6-4646-be40-cf57695ee9e7">
     <Subsection title="Overview">
       <Paragraph>
         An <Term type="term">item</Term> is an object that is tracked by the inventory system. When the
-        <Term type="package">cardant</Term> package refers to items, it should more accurately be understood
-        to be referring to <Term type="term">classes</Term> of items. That is, the inventory system tracks
-        sets of items of a given class within <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>.
-        An item has associated <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link>, an
-        identifier that uniquely identifies the item class, zero or more
-        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link> that can constrain the metadata associated
-        with the item, and a <Term type="term">name</Term>.
+        <Term type="package">cardant</Term>
+        package refers to items, it should more accurately be understood to be referring to <Term type="term">classes
+      </Term> of items. That is, the inventory system tracks sets of items of a given class
+        within <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>. An item has
+        associated <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link>, an identifier that uniquely
+        identifies the item class, zero or more
+        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link>
+        that can constrain the metadata associated with the item, and a <Term type="term">name</Term>.
       </Paragraph>
     </Subsection>
-    <Subsection title="Metadata" id="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">
+
+    <Subsection title="Metadata"
+                id="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">
       <Paragraph>
-        <Term type="term">Metadata</Term> is data associated with an item that describes that item. Individual metadata
-        values may be of the following <Term type="term">scalar types</Term>:
+        <Term type="term">Metadata</Term>
+        is data associated with an item that describes that item. Items can have any number of metadata values, and
+        inventory managers can introduce strong requirements on the presence and types of metadata on items through the
+        application of <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link>.
+      </Paragraph>
+    </Subsection>
+
+    <Subsection title="Types"
+                id="32d947cf-5f95-4576-b5f7-104a5a3b82f6">
+      <Paragraph>
+        A <Term type="term">type</Term> is a label that can be applied to an item that will constrain the
+        <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link>
+        associated with that item. A <Term type="term">type</Term> on an item refers to a
+        <Term type="term">type declaration</Term>
+        created by the inventory manager. A
+        <Term type="term">type declaration</Term>
+        is essentially a
+        <Term type="term">record type</Term>
+        in the sense that it defines a set of named metadata values along with their individual
+        <Link target="e0f0dda3-ecba-4571-8464-2a0f81ed25c6">scalar types</Link>.
+      </Paragraph>
+      <Paragraph>
+        Types are intended to ensure the integrity and quality of metadata associated with items, and allow for more
+        precise searching. For example, inventory managers might define a <Term type="type">voltage_regulator</Term> type
+        that is applied to electronics components within the inventory that are voltage regulators. The
+        <Term type="type">voltage_regulator</Term>
+        type might be declared to require that metadata includes numeric values
+        <Term type="type">input_voltage</Term>
+        and
+        <Term type="type">output_voltage</Term>
+        that describe the input and output voltages of the regular. Any attempt to update an item that has the
+        <Term type="type">voltage_regulator</Term>
+        type applied without providing values for the
+        <Term type="type">input_voltage</Term>
+        and <Term type="type">output_voltage</Term> metadata will be rejected with a clear error message.
+      </Paragraph>
+      <Paragraph>
+        As mentioned, types are intended to facilitate more precise searching. It is possible to, for example, search
+        for all items in the inventory that have an <Term type="type">output_voltage</Term> metadata value, but this
+        does not imply that all the returned items will be voltage regulators. With a well-designed and well-managed
+        inventory, one can simply search for all items that have the type
+        <Term type="type">voltage_regulator</Term>
+        (and then perhaps narrow down the search by asking for only those items that have an
+        <Term type="type">output_voltage</Term>
+        value equal to <Term type="type">5.0</Term>).
+      </Paragraph>
+    </Subsection>
+
+    <Subsection title="Scalar Types"
+                id="e0f0dda3-ecba-4571-8464-2a0f81ed25c6">
+      <Paragraph>
+        A <Term type="term">scalar type</Term> is a named type derived from one of the following <Term type="term">base
+        types</Term>:
       </Paragraph>
       <FormalItem title="Metadata Value Types">
         <Table type="genericTable">
@@ -84,81 +139,68 @@
         </Table>
       </FormalItem>
       <Paragraph>
-        Items can have any number of metadata values, and inventory managers can introduce strong requirements
-        on the presence and types of metadata on items through the application of <Link
-        target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link>.
+        Typically, a named scalar type will augment an existing scalar base type with further constraints such as a <Term type="term">
+        bound
+      </Term> on the range of allowed values. For example, an inventory manager supervising a stock of computer
+        keyboards might define a
+        <Term type="type">keyboard</Term>
+        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">type</Link>
+        with a <Term type="type">keys</Term> field of a scalar type <Term type="type">keyboard.keys</Term>. The
+        <Term type="type">keyboard.keys</Term>
+        scalar type might be derived from the
+        <Term type="type">Integral</Term>
+        scalar type with a bound of <Term type="expression">[68, 104]</Term>, expressing that keyboard may have as few
+        as <Term type="constant">68</Term> or as many as
+        <Term type="constant">104</Term>
+        keys.
       </Paragraph>
     </Subsection>
-    <Subsection title="Types" id="32d947cf-5f95-4576-b5f7-104a5a3b82f6">
+
+    <Subsection title="Attachments"
+                id="31255944-64ca-4b59-b2fd-e5d31aaad374">
       <Paragraph>
-        A <Term type="term">type</Term> is a label that can be applied to an item that will constrain the
-        <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link> associated with that item.
-        Types are intended to ensure the integrity and quality of metadata associated with items, and allow for
-        more precise searching. A type is essentially a <Term type="term">record type</Term> in the sense that
-        it defines a set of named metadata values along with their types.
-      </Paragraph>
-      <Paragraph>
-        For example, inventory managers might define a <Term type="type">voltage_regulator</Term> type that is
-        applied to electronics components within the inventory that are voltage regulators. The
-        <Term type="type">voltage_regulator</Term> type might be declared to require that metadata includes numeric
-        values <Term type="type">input_voltage</Term> and <Term type="type">output_voltage</Term> that describe
-        the input and output voltages of the regular. Any attempt to update an item that has the
-        <Term type="type">voltage_regulator</Term> type applied without providing values for the
-        <Term type="type">input_voltage</Term> and <Term type="type">output_voltage</Term> metadata will be rejected
-        with a clear error message.
-      </Paragraph>
-      <Paragraph>
-        As mentioned, types are intended to facilitate more precise searching. It is possible to, for example,
-        search for all items in the inventory that have an <Term type="type">output_voltage</Term> metadata value,
-        but this does not imply that all the returned items will be voltage regulators. With a well-designed and
-        well-managed inventory, one can simply search for all items that have the type
-        <Term type="type">voltage_regulator</Term> (and then perhaps narrow down the search by asking for only
-        those items that have an <Term type="type">output_voltage</Term> value equal to <Term type="type">5.0</Term>).
-      </Paragraph>
-    </Subsection>
-    <Subsection title="Attachments" id="31255944-64ca-4b59-b2fd-e5d31aaad374">
-      <Paragraph>
-        Items can have zero or more <Term type="term">attachments</Term>. An attachment is simply a file
-        associated with the item according to a given <Term type="term">relation</Term>. For example, an electronics
-        component might have a PDF datasheet associated with it using a <Term type="expression">datasheet</Term>
-        relation. Relations are entirely user-defined, and it is the responsibility of the inventory manager to
-        use sensible and consistent relations.
+        Items can have zero or more <Term type="term">attachments</Term>. An attachment is simply a file associated with
+        the item according to a given <Term type="term">relation</Term>. For example, an electronics component might
+        have a PDF datasheet associated with it using a
+        <Term type="expression">datasheet</Term>
+        relation. Relations are entirely user-defined, and it is the responsibility of the inventory manager to use
+        sensible and consistent relations.
       </Paragraph>
     </Subsection>
   </Subsection>
 
-  <Subsection title="Locations" id="d5fa706f-6150-4c71-b5be-311e2680b89a">
+  <Subsection title="Locations"
+              id="d5fa706f-6150-4c71-b5be-311e2680b89a">
     <Subsection title="Overview">
       <Paragraph>
         A <Term type="term">location</Term> is an object that tracks
         <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">item counts</Link>. Locations, as a concept, are kept
-        deliberately abstract to allow for a wide range of use-cases. A location might represent a physical storage
-        bin in a warehouse, or it might represent a deployed computer system that has been built using items taken
-        from the inventory. By treating locations as generic containers in this manner, the system is intended to allow
-        for supporting different use cases such as managing retail inventory, or managing the deployment of computer
-        parts in a laboratory. Locations
-        are <Link target="c4dba23a-9e90-4ac0-b5a5-c0a6f16609a4">hierarchical</Link>.
+        deliberately abstract to allow for a wide range of use-cases. A location might represent a physical storage bin
+        in a warehouse, or it might represent a deployed computer system that has been built using items taken from the
+        inventory. By treating locations as generic containers in this manner, the system is intended to allow for
+        supporting different use cases such as managing retail inventory, or managing the deployment of computer parts
+        in a laboratory. Locations are <Link target="c4dba23a-9e90-4ac0-b5a5-c0a6f16609a4">hierarchical</Link>.
       </Paragraph>
     </Subsection>
     <Subsection title="Metadata">
       <Paragraph>
-        Locations carry <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link> in the same manner as
-        items.
+        Locations carry <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link> in the same manner as items.
       </Paragraph>
     </Subsection>
     <Subsection title="Types">
       <Paragraph>
-        Locations can have applied <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link> in the same
-        manner as items.
+        Locations can have applied <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link> in the same manner
+        as items.
       </Paragraph>
     </Subsection>
     <Subsection title="Attachments">
       <Paragraph>
-        Locations can have <Link target="31255944-64ca-4b59-b2fd-e5d31aaad374">attachments</Link> in the same
-        manner as items.
+        Locations can have <Link target="31255944-64ca-4b59-b2fd-e5d31aaad374">attachments</Link> in the same manner as
+        items.
       </Paragraph>
     </Subsection>
-    <Subsection title="Hierarchy" id="c4dba23a-9e90-4ac0-b5a5-c0a6f16609a4">
+    <Subsection title="Hierarchy"
+                id="c4dba23a-9e90-4ac0-b5a5-c0a6f16609a4">
       <Paragraph>
         Locations form a <Term type="term">hierarchy</Term> (specifically, a tree) in that any location may have any
         number of <Term type="term">child locations</Term>, although a location may only have at most one parent.
@@ -168,92 +210,109 @@
       <Paragraph>
         The hierarchical nature of locations can be used to model different kinds of inventory arrangements. For
         example, a manager of computer laboratories might define <Term type="term">Laboratory A</Term> and
-        <Term type="term">Laboratory B</Term> locations. Within those locations, the manager might define locations
+        <Term type="term">Laboratory B</Term>
+        locations. Within those locations, the manager might define locations
         <Term type="term">Computer A1</Term>, <Term type="term">Computer A2</Term>,
-        <Term type="term">Computer A3</Term>, and so on. Within the <Term type="term">Computer A1</Term> location,
-        the manager might place a single motherboard <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">item</Link>,
-        one or more CPU items, and so on, from the inventory. This allows the manager to know what computer parts
-        they have, and the computers in which those parts are being used in the laboratories under their supervision.
-        Additionally, should one assembled computer be moved from one laboratory to another, the manager can simply
-        reparent the computer location to the new laboratory.
+        <Term type="term">Computer A3</Term>, and so on. Within the <Term type="term">Computer A1</Term> location, the
+        manager might place a single motherboard <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">item</Link>, one or
+        more CPU items, and so on, from the inventory. This allows the manager to know what computer parts they have,
+        and the computers in which those parts are being used in the laboratories under their supervision. Additionally,
+        should one assembled computer be moved from one laboratory to another, the manager can simply reparent the
+        computer location to the new laboratory.
       </Paragraph>
       <Paragraph>
         Conversely, a manager of a retail business might define a <Term type="term">Storage Room A</Term> location, and
         then within that location, define <Term type="term">Shelf A01</Term>,
-        <Term type="term">Shelf A02</Term>, <Term type="term">Shelf A03</Term>, etc. The manager can then place
-        items onto those storage shelf locations. This allows the manager to track what stock they have, and exactly
-        where they're keeping each kind of item.
+        <Term type="term">Shelf A02</Term>, <Term type="term">Shelf A03</Term>, etc. The manager can then place items
+        onto those storage shelf locations. This allows the manager to track what stock they have, and exactly where
+        they're keeping each kind of item.
       </Paragraph>
     </Subsection>
-    <Subsection title="Repositing" id="2083cf7c-5550-408c-a12e-d688427d740d">
+    <Subsection title="Repositing"
+                id="2083cf7c-5550-408c-a12e-d688427d740d">
       <Paragraph>
         Items are added to and removed from locations by <Term type="term">repositing</Term>. A
-        <Term type="term">reposit</Term> operation atomically adds zero or more instances of an item to
-        a location, and removes zero or more items from another location in a single step. Mathematically, a
-        <Term type="term">reposit</Term> operation can be modelled as a tuple
-        <Term type="expression">(S,A,T,R,I)</Term>, where <Term type="expression">S</Term> is the location
-        to which <Term type="expression">A</Term> instances of item <Term type="expression">I</Term> will be
-        added, and <Term type="expression">T</Term> is the location from which
-        <Term type="expression">R</Term> instances of item <Term type="expression">I</Term> will be removed.
-        The system automatically enforces integrity constraints such as not removing more item instances from a
-        location than actually exist in that location.
+        <Term type="term">reposit</Term>
+        operation atomically adds zero or more instances of an item to a location, and removes zero or more items from
+        another location in a single step. Mathematically, a
+        <Term type="term">reposit</Term>
+        operation can be modelled as a tuple
+        <Term type="expression">(S,A,T,R,I)</Term>, where <Term type="expression">S</Term> is the location to which <Term type="expression">
+        A
+      </Term> instances of item <Term type="expression">I</Term> will be added, and <Term type="expression">T</Term> is
+        the location from which
+        <Term type="expression">R</Term>
+        instances of item <Term type="expression">I</Term> will be removed. The system automatically enforces integrity
+        constraints such as not removing more item instances from a location than actually exist in that location.
       </Paragraph>
       <Paragraph>
-        For example,
-        adding <Term type="constant">10</Term> newly purchased instances of an item <Term type="expression">I</Term>
+        For example, adding <Term type="constant">10</Term> newly purchased instances of an item
+        <Term type="expression">I</Term>
         to location <Term type="expression">S</Term> can be described by the tuple
         <Term type="expression">(S,10,S,0,I)</Term>. That is, <Term type="constant">10</Term> instances of
-        <Term type="expression">I</Term> are added to <Term type="expression">S</Term>, and
-        <Term type="constant">0</Term> instances of <Term type="expression">I</Term> are removed from
+        <Term type="expression">I</Term>
+        are added to <Term type="expression">S</Term>, and
+        <Term type="constant">0</Term>
+        instances of <Term type="expression">I</Term> are removed from
         <Term type="expression">S</Term>.
       </Paragraph>
       <Paragraph>
-        As another example,
-        selling <Term type="constant">10</Term> instances of an item <Term type="expression">I</Term>
+        As another example, selling <Term type="constant">10</Term> instances of an item
+        <Term type="expression">I</Term>
         that currently resides in location <Term type="expression">S</Term> can be described by the tuple
         <Term type="expression">(S,0,S,10,I)</Term>. That is, <Term type="constant">0</Term> instances of
-        <Term type="expression">I</Term> are added to <Term type="expression">S</Term>, and
-        <Term type="constant">10</Term> instances of <Term type="expression">I</Term> are removed from
+        <Term type="expression">I</Term>
+        are added to <Term type="expression">S</Term>, and
+        <Term type="constant">10</Term>
+        instances of <Term type="expression">I</Term> are removed from
         <Term type="expression">S</Term>.
       </Paragraph>
       <Paragraph>
-        With the right arrangement of locations,
-        reposit operations allow for a primitive form of <LinkExternal
-        target="https://en.wikipedia.org/wiki/Double-entry_bookkeeping">double-entry bookkeeping</LinkExternal>.
+        With the right arrangement of locations, reposit operations allow for a primitive form
+        of <LinkExternal target="https://en.wikipedia.org/wiki/Double-entry_bookkeeping">double-entry
+        bookkeeping</LinkExternal>.
       </Paragraph>
     </Subsection>
   </Subsection>
 
-  <Subsection title="Security" id="bc059ce6-a6c2-42c1-bc20-c84851bd347b">
+  <Subsection title="Security"
+              id="bc059ce6-a6c2-42c1-bc20-c84851bd347b">
     <Subsection title="Overview">
       <Paragraph>
         The <Term type="package">cardant</Term> package uses role-based access control for all operations.
       </Paragraph>
     </Subsection>
-    <Subsection title="Roles" id="04998c79-db74-4769-b649-1bac687f9451">
+    <Subsection title="Roles"
+                id="04998c79-db74-4769-b649-1bac687f9451">
       <Paragraph>
         Each user has a set of
         <Link target="1bb88043-9712-4719-bdb7-829777586149">roles</Link>
-        associated with it. When the user attempts to perform an operation on the server, the account's
-        roles are checked to see if it has permission to perform the action.
+        associated with it. When the user attempts to perform an operation on the server, the account's roles are
+        checked to see if it has permission to perform the action.
       </Paragraph>
       <Paragraph>
         A role <Term type="variable">R</Term> may be <Term type="term">granted</Term> to a user
-        <Term type="variable">A</Term> by user <Term type="variable">B</Term> if <Term type="variable">B</Term>
+        <Term type="variable">A</Term>
+        by user <Term type="variable">B</Term> if
+        <Term type="variable">B</Term>
         has role <Term type="variable">R</Term>. Accordingly, a role <Term type="variable">R</Term> may be
-        <Term type="term">revoked</Term> from a user
-        <Term type="variable">A</Term> by user <Term type="variable">B</Term> if <Term type="variable">B</Term>
+        <Term type="term">revoked</Term>
+        from a user
+        <Term type="variable">A</Term>
+        by user <Term type="variable">B</Term> if
+        <Term type="variable">B</Term>
         has role <Term type="variable">R</Term>.
       </Paragraph>
       <Paragraph id="f57f5739-f60b-4eeb-b31c-99be0efbfde4">
         A user holding the <Term type="expression">inventory.admin</Term> role effectively always has all available
         roles. If new roles are added in future versions of the <Term type="package">cardant</Term> package, users
-        holding the <Term type="expression">inventory.admin</Term> role will be automatically granted the new roles.
-        It is recommended to limit this role to a single user, and to avoid using that user account for day-to-day
+        holding the <Term type="expression">inventory.admin</Term> role will be automatically granted the new roles. It
+        is recommended to limit this role to a single user, and to avoid using that user account for day-to-day
         operations.
       </Paragraph>
     </Subsection>
-    <Subsection title="Defined Roles" id="1bb88043-9712-4719-bdb7-829777586149">
+    <Subsection title="Defined Roles"
+                id="1bb88043-9712-4719-bdb7-829777586149">
       <Paragraph>
         The following roles are available:
       </Paragraph>
@@ -270,11 +329,11 @@
       <Term type="term">audit events</Term>. An <Term type="term">audit event</Term> has an integer
       <Term type="term">id</Term>, an <Term type="term">owner</Term> (represented by an account UUID),
       a <Term type="term">timestamp</Term>, a <Term type="term">type</Term>, and a
-      <Term type="term">message</Term> consisting of a set of key/value pairs.
+      <Term type="term">message</Term>
+      consisting of a set of key/value pairs.
     </Paragraph>
     <Paragraph>
-      Each operation that changes the underlying database typically results in an event being logged
-      to the audit log.
+      Each operation that changes the underlying database typically results in an event being logged to the audit log.
     </Paragraph>
   </Subsection>
 

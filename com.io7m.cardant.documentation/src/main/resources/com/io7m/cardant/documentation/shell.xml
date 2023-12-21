@@ -87,7 +87,7 @@
         The shell provides different formatting options for tabular data.
       </Paragraph>
       <FormalItem title="Formatters">
-        <Table>
+        <Table type="genericTable">
           <Columns>
             <Column>Name</Column>
             <Column>Description</Column>
