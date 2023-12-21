@@ -21,9 +21,6 @@
           <Item>
             Parsing and validation complexity is linear in the size of the parsed message. It is
             not possible to specify a message that will result in an exponentially complex parse.
-            Additionally, the server currently places hard limits on message sizes from clients;
-            <Term type="constant">1048576</Term> octets for commands, and
-            <Term type="constant">1024</Term> octets for login requests.
           </Item>
           <Item>
             Cedarbridge protocols are very strongly-typed, operate under a closed-world
