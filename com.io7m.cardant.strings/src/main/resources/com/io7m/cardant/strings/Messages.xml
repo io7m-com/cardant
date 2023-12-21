@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="Command">Command</entry>
+  <entry key="Expected Content Type">Expected Content Type</entry>
+  <entry key="Expected Hash">Expected Hash</entry>
+  <entry key="Expected Response Type">Expected Response Type</entry>
+  <entry key="HTTP Response Code">HTTP Response Code</entry>
+  <entry key="Hash Algorithm">Hash Algorithm</entry>
+  <entry key="Received Content Type">Received Content Type</entry>
+  <entry key="Received Hash">Received Hash</entry>
+  <entry key="Received Response Type">Received Response Type</entry>
+  <entry key="URI">URI</entry>
+  <entry key="attachment">Attachment</entry>
+  <entry key="attempted_removal">Attempted Removal</entry>
+  <entry key="count">Count</entry>
+  <entry key="count_expected">Count Expected</entry>
+  <entry key="count_received">Count Received</entry>
+  <entry key="error_io">I/O operation failed.</entry>
+  <entry key="error_attachment_missing_data">Cannot update an attachment with missing data.</entry>
+  <entry key="error_close_connection">Failed to close a database connection: {0}.</entry>
+  <entry key="error_command_not_here">This command cannot be executed on this endpoint.</entry>
+  <entry key="error_connection_commit">Failed to commit a transaction on a database connection: {0}.</entry>
+  <entry key="error_connection_rollback">Failed to roll back a transaction on a database connection: {0}.</entry>
+  <entry key="error_create_queries">Failed to create database queries: {0}.</entry>
+  <entry key="error_create_queries_unavailable">No supported database queries of the given type.</entry>
+  <entry key="error_duplicate">Object already exists.</entry>
+  <entry key="error_duplicate_deleted">A previously deleted object exists with this ID.</entry>
+  <entry key="error_expected_command">Expected a command.</entry>
+  <entry key="error_hash_value_mismatch">Hash value did not match.</entry>
+  <entry key="error_http">HTTP server returned an error: {0}</entry>
+  <entry key="error_indexed">Error[{0}]</entry>
+  <entry key="error_item_count_store_invariant">The sum of the stored items does not match the expected item count.</entry>
+  <entry key="error_item_count_too_many_removed">Attempted to remove too many items.</entry>
+  <entry key="error_nonexistent">Object does not exist.</entry>
+  <entry key="error_not_logged_in">Not logged in!</entry>
+  <entry key="error_open_connection">Failed to open a database connection: {0}.</entry>
+  <entry key="error_open_database">Failed to open the database: {0}.</entry>
+  <entry key="error_operation_not_permitted">Operation not permitted.</entry>
+  <entry key="error_parse">Parse error.</entry>
+  <entry key="error_received_unexpected_content_type">Received an unexpected content type.</entry>
+  <entry key="error_received_unexpected_response_type">Received an unexpected response type.</entry>
+  <entry key="error_request_too_large">A request of size {0} exceeds the configured server limits.</entry>
+  <entry key="error_schema_version_table_row">Schema version table '{0}' must contain exactly one row</entry>
+  <entry key="error_search_not_active">No search is currently active.</entry>
+  <entry key="error_server">Received an error from the server.</entry>
+  <entry key="error_server_connect">Could not connect to server.</entry>
+  <entry key="error_shell_options_combination">The options {0} cannot be used in combination.</entry>
+  <entry key="error_type_checking"><![CDATA[Type checking failed.]]></entry>
+  <entry key="error_type_declaration_refers_to_nonexistent_type"><![CDATA[A field in the type declaration refers to a nonexistent type.]]></entry>
+  <entry key="error_type_field_invalid"><![CDATA[A value is of the wrong type and/or does not match the provided type constraint.]]></entry>
+  <entry key="error_type_invalid_pattern"><![CDATA[Invalid pattern in scalar type.]]></entry>
+  <entry key="error_type_missing_required_field"><![CDATA[A required field is missing.]]></entry>
+  <entry key="error_type_scalar_still_referenced"><![CDATA[The given scalar type is still referenced by one or more fields/types, and cannot be removed without first removing those types/fields.]]></entry>
+  <entry key="error_type_still_referenced"><![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
+  <entry key="error_unauthorized">Unauthorized.</entry>
+  <entry key="expected_command">Expected a command.</entry>
+  <entry key="expected_content_type">Expected Content Type</entry>
+  <entry key="expected_count">Expected Count</entry>
+  <entry key="expected_type">Expected Type</entry>
+  <entry key="file">File</entry>
+  <entry key="file_id">File ID</entry>
+  <entry key="item">Item</entry>
+  <entry key="item_id">Item ID</entry>
+  <entry key="item_location">Item Location</entry>
+  <entry key="item_name">Item Name</entry>
+  <entry key="location">Location</entry>
+  <entry key="location_id">Location ID</entry>
+  <entry key="location_name">Location Name</entry>
+  <entry key="metadata_name">Metadata Name</entry>
+  <entry key="metadata_value">Metadata Value</entry>
+  <entry key="new_location_id">New Location ID</entry>
+  <entry key="new_location_name">New Location Name</entry>
+  <entry key="new_location_parent_id">New Location Parent ID</entry>
+  <entry key="object">Object</entry>
+  <entry key="offset">Offset</entry>
+  <entry key="old_location_id">Old Location ID</entry>
+  <entry key="old_location_name">Old Location Name</entry>
+  <entry key="old_location_parent_id">Old Location Parent ID</entry>
+  <entry key="problem">Problem</entry>
+  <entry key="queries_class">Queries class</entry>
+  <entry key="received_content_type">Received Content Type</entry>
+  <entry key="received_count">Received Count</entry>
+  <entry key="received_type">Received Type</entry>
+  <entry key="relation">Relation</entry>
+  <entry key="starting_count">Starting Count</entry>
+  <entry key="tag">Tag</entry>
+  <entry key="tag_id">Tag ID</entry>
+  <entry key="tag_name">Tag Name</entry>
+  <entry key="type">Type</entry>
+  <entry key="user_id">User ID</entry>
+
+  <!--           -->
+  <!-- Locations -->
+  <!--           -->
+
+  <entry key="syntax_location_match_anyname_name">Syntax (any-location)</entry>
+  <entry key="syntax_location_match_anyname">
+    <![CDATA[any-location]]>
+  </entry>
+
+  <entry key="syntax_location_match_exact_name">Syntax (with-location-exact)</entry>
+  <entry key="syntax_location_match_exact">
+    <![CDATA[(with-location-exact <location-id>)]]>
+  </entry>
+
+  <entry key="syntax_location_match_desc_name">Syntax (with-location-or-descendants)</entry>
+  <entry key="syntax_location_match_desc">
+    <![CDATA[(with-location-or-descendants <location-id>)]]>
+  </entry>
+
+  <entry key="syntax_location_match_name">Syntax (name-match)</entry>
+  <entry key="syntax_location_match">
+    <![CDATA[<any-location> | <with-location-exact> | <with-location-or-descendants>]]>
+  </entry>
+
+  <!--       -->
+  <!-- Names -->
+  <!--       -->
+
+  <entry key="syntax_name_match_anyname_name">Syntax (any-name)</entry>
+  <entry key="syntax_name_match_anyname">
+    <![CDATA[any-name]]>
+  </entry>
+
+  <entry key="syntax_name_match_with_name_exact_name">Syntax (with-name-exact)</entry>
+  <entry key="syntax_name_match_with_name_exact">
+    <![CDATA[(with-name-exact <name>)]]>
+  </entry>
+
+  <entry key="syntax_name_match_with_name_search_name">Syntax (with-name-search)</entry>
+  <entry key="syntax_name_match_with_name_search">
+    <![CDATA[(with-name-search <name>)]]>
+  </entry>
+
+  <entry key="syntax_name_match_name">Syntax (name-match)</entry>
+  <entry key="syntax_name_match">
+    <![CDATA[<any-name> | <with-name-exact> | <with-name-search>]]>
+  </entry>
+
+  <!--       -->
+  <!-- Types -->
+  <!--       -->
+
+  <entry key="syntax_type_match_anytype_name">Syntax (any-type)</entry>
+  <entry key="syntax_type_match_anytype">
+    <![CDATA[any-type]]>
+  </entry>
+
+  <entry key="syntax_type_match_all_name">Syntax (all-of)</entry>
+  <entry key="syntax_type_match_all">
+    <![CDATA[(all-of <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_any_name">Syntax (any-of)</entry>
+  <entry key="syntax_type_match_any">
+    <![CDATA[(any-of <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_name">Syntax (type-match)</entry>
+  <entry key="syntax_type_match">
+    <![CDATA[<any-type> | <all-of> | <any-of>]]>
+  </entry>
+
+  <!--          -->
+  <!-- Metadata -->
+  <!--          -->
+
+  <entry key="syntax_metadata_text_name">Syntax (Metadata Text)</entry>
+  <entry key="syntax_metadata_text">
+    <![CDATA[(Text <text>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_time_name">Syntax (Metadata Time)</entry>
+  <entry key="syntax_metadata_time">
+    <![CDATA[(Time <iso-8601-timestamp>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_integer_name">Syntax (Metadata Integer)</entry>
+  <entry key="syntax_metadata_integer">
+    <![CDATA[(Integer <integer>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_real_name">Syntax (Metadata Real)</entry>
+  <entry key="syntax_metadata_real">
+    <![CDATA[(Real <real>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_money_name">Syntax (Metadata Money)</entry>
+  <entry key="syntax_metadata_money">
+    <![CDATA[(Money <real> <currency>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_name">Syntax (Metadata)</entry>
+  <entry key="syntax_metadata">
+    <![CDATA[<metadata-text> | <metadata-time> | <metadata-integer> | <metadata-real> | <metadata-money>]]>
+  </entry>
+
+  <!--                -->
+  <!-- Metadata match -->
+  <!--                -->
+
+  <entry key="syntax_metadata_value_match_integral_range_name">Syntax (within-range-integral)</entry>
+  <entry key="syntax_metadata_value_match_integral_range">
+    <![CDATA[(within-range-integral <integer> <integer>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_value_match_real_range_name">Syntax (within-range-real)</entry>
+  <entry key="syntax_metadata_value_match_real_range">
+    <![CDATA[(within-range-real <real> <real>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_value_match_time_range_name">Syntax (within-range-time)</entry>
+  <entry key="syntax_metadata_value_match_time_range">
+    <![CDATA[(within-range-time <time> <time>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_value_match_money_range_name">Syntax (within-range-money)</entry>
+  <entry key="syntax_metadata_value_match_money_range">
+    <![CDATA[(within-range-money <real> <real>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_value_match_money_currency_name">Syntax (with-currency)</entry>
+  <entry key="syntax_metadata_value_match_money_currency">
+    <![CDATA[(with-currency <currency-code>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_value_match_text_exact_name">Syntax (with-text-exact)</entry>
+  <entry key="syntax_metadata_value_match_text_exact">
+    <![CDATA[(with-text-exact <text>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_value_match_text_search_name">Syntax (with-text-search)</entry>
+  <entry key="syntax_metadata_value_match_text_search">
+    <![CDATA[(with-text-search <text>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_value_match_name">Syntax (metadata-value-match)</entry>
+  <entry key="syntax_metadata_value_match">
+    <![CDATA[any-value | <within-range-integral> | <within-range-real> | <within-range-time> | <within-range-money> | <with-currency> | <with-text-exact> | <with-text-search>]]>
+  </entry>
+
+  <entry key="syntax_metadata_name_match_exact_name">Syntax (with-name-exact)</entry>
+  <entry key="syntax_metadata_name_match_exact">
+    <![CDATA[(with-name-exact <name>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_name_match_search_name">Syntax (with-name-search)</entry>
+  <entry key="syntax_metadata_name_match_search">
+    <![CDATA[(with-name-search <name>)]]>
+  </entry>
+
+  <entry key="syntax_metadata_name_match_name">Syntax (metadata-name-match)</entry>
+  <entry key="syntax_metadata_name_match">
+    <![CDATA[any-name | <with-name-search> | <with-name-exact>]]>
+  </entry>
+
+  <entry key="syntax_metadata_match_name">Syntax (Metadata Match)</entry>
+  <entry key="syntax_metadata_match">
+    <![CDATA[anything | (Match <metadata-name-match> <metadata-value-match>) | (And <metadata-match> <metadata-match>) | (Or <metadata-match> <metadata-match>)]]>
+  </entry>
+
+  <!--        -->
+  <!-- Ranges -->
+  <!--        -->
+
+  <entry key="syntax_integer_range"><![CDATA[(<integer> <integer>)]]></entry>
+  <entry key="syntax_integer_range_example"><![CDATA[[23 1000]]]></entry>
+  <entry key="syntax_integer_range_example_name">Example (Integer Range)</entry>
+  <entry key="syntax_integer_range_name">Syntax (Integer Range)</entry>
+
+  <entry key="syntax_real_range"><![CDATA[(<real> <real>)]]></entry>
+  <entry key="syntax_real_range_example"><![CDATA[(23.0 1000.0)]]></entry>
+  <entry key="syntax_real_range_example_name">Example (Real Range)</entry>
+  <entry key="syntax_real_range_name">Syntax (Real Range)</entry>
+
+  <entry key="syntax_money_range"><![CDATA[(<real> <real>)]]></entry>
+  <entry key="syntax_money_range_example"><![CDATA[(23.0 1000.0)]]></entry>
+  <entry key="syntax_money_range_example_name">Example (Monetary Range)</entry>
+  <entry key="syntax_money_range_name">Syntax (Monetary Range)</entry>
+
+  <entry key="syntax_time_range"><![CDATA[(<iso-8601-timestamp> <iso-8601-timestamp>)]]></entry>
+  <entry key="syntax_time_range_example"><![CDATA[(2023-07-23T12:24:35+00:00 2023-07-24T12:24:35+00:00)]]></entry>
+  <entry key="syntax_time_range_example_name">Example (Time Range)</entry>
+  <entry key="syntax_time_range_name">Syntax (Time Range)</entry>
+
+  <entry key="syntax_iso_timestamp_example">2023-07-23T12:24:35+00:00</entry>
+  <entry key="syntax_iso_timestamp_example_name">Example (ISO 8601 Timestamp)</entry>
+  <entry key="syntax_iso_timestamp_name">Syntax (ISO 8601 Timestamp)</entry>
+  <entry key="syntax_iso_timestamp">See ISO 8601.</entry>
+
+</properties>

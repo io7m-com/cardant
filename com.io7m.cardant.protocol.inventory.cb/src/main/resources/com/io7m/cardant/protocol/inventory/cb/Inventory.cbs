@@ -1,0 +1,1270 @@
+;
+; Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
+;
+; Permission to use, copy, modify, and/or distribute this software for any
+; purpose with or without fee is hereby granted, provided that the above
+; copyright notice and this permission notice appear in all copies.
+;
+; THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+; WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+; MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+; SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+; WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+; ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+; IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+;
+
+[language cedarbridge 1 0]
+
+[package com.io7m.cardant.protocol.inventory.cb]
+
+[import com.io7m.cedarbridge cb]
+[import com.io7m.cedarbridge.time ct]
+
+[variant CAI1ComparisonExact
+  [parameter T]
+  [case Anything]
+  [case IsEqualTo    [field value T]]
+  [case IsNotEqualTo [field value T]]
+]
+
+[variant CAI1ComparisonFuzzy
+  [parameter T]
+  [case Anything]
+  [case IsEqualTo      [field value T]]
+  [case IsNotEqualTo   [field value T]]
+  [case IsSimilarTo    [field value T]]
+  [case IsNotSimilarTo [field value T]]
+]
+
+[variant CAI1ComparisonSet
+  [parameter T]
+  [case Anything]
+  [case IsEqualTo     [field value [cb:List T]]]
+  [case IsNotEqualTo  [field value [cb:List T]]]
+  [case IsSubsetOf    [field value [cb:List T]]]
+  [case IsSupersetOf  [field value [cb:List T]]]
+  [case IsOverlapping [field value [cb:List T]]]
+]
+
+[documentation CAI1Id "An identifier value."]
+[variant CAI1Id
+  [case CAI1FileID     [field id cb:UUID]]
+  [case CAI1ItemID     [field id cb:UUID]]
+  [case CAI1LocationID [field id cb:UUID]]
+  [case CAI1UserID     [field id cb:UUID]]
+]
+
+[documentation CAI1File "A file."]
+[variant CAI1File
+  [case CAI1FileWithoutData
+    [documentation id "The file ID."]
+    [field id cb:UUID]
+    [documentation description "The file description."]
+    [field description cb:String]
+    [documentation mediaType "The media type."]
+    [field mediaType cb:String]
+    [documentation size "The file size."]
+    [field size cb:IntegerUnsigned64]
+    [documentation hashAlgorithm "The hash algorithm name."]
+    [field hashAlgorithm cb:String]
+    [documentation hashValue "The hash value."]
+    [field hashValue cb:String]]
+  [case CAI1FileWithData
+    [documentation id "The file ID."]
+    [field id cb:UUID]
+    [documentation description "The file description."]
+    [field description cb:String]
+    [documentation mediaType "The media type."]
+    [field mediaType cb:String]
+    [documentation size "The file size."]
+    [field size cb:IntegerUnsigned64]
+    [documentation hashAlgorithm "The hash algorithm name."]
+    [field hashAlgorithm cb:String]
+    [documentation hashValue "The hash value."]
+    [field hashValue cb:String]
+    [documentation data "The file data."]
+    [field data cb:ByteArray]]
+]
+
+[documentation CAI1Metadata "A metadata value."]
+[variant CAI1Metadata
+  [case Integral
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:IntegerSigned64]
+  ]
+  [case Text
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:String]
+  ]
+  [case Time
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value ct:OffsetDateTime]
+  ]
+  [case Monetary
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:String]
+    [documentation currency "The metadata currency unit."]
+    [field currency cb:String]
+  ]
+  [case Real
+    [documentation key "The metadata value key."]
+    [field key cb:String]
+    [documentation value "The metadata value."]
+    [field value cb:Float64]
+  ]
+]
+
+[documentation CAI1AttachmentKey "The values that uniquely identify an attachment on an object."]
+[record CAI1AttachmentKey
+  [documentation id "The file ID."]
+  [field id cb:UUID]
+  [documentation relation "The relation."]
+  [field relation cb:String]
+]
+
+[documentation CAI1Attachment "An item attachment."]
+[record CAI1Attachment
+  [documentation file "The file ID."]
+  [field file CAI1File]
+  [documentation relation "The relation."]
+  [field relation cb:String]
+]
+
+[documentation CAI1Item "An item."]
+[record CAI1Item
+  [documentation id "The item ID."]
+  [field id cb:UUID]
+  [documentation name "The item name."]
+  [field name cb:String]
+  [documentation countTotal "The total item count."]
+  [field countTotal cb:IntegerUnsigned64]
+  [documentation countHere "The item count in this location."]
+  [field countHere cb:IntegerUnsigned64]
+  [documentation metadata "The item metadata."]
+  [field metadata [cb:Map cb:String CAI1Metadata]]
+  [documentation attachments "The item attachments."]
+  [field attachments [cb:Map CAI1AttachmentKey CAI1Attachment]]
+  [documentation types "The item types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1ListLocationBehaviour "The behaviour requested for listing items in locations."]
+[variant CAI1ListLocationBehaviour
+  [documentation CAI1ListLocationExact "Only list items within the exact given location."]
+  [case CAI1ListLocationExact
+    [field locationId cb:UUID]]
+  [documentation CAI1ListLocationWithDescendants "List items within the given location and all descendants of the given location."]
+  [case CAI1ListLocationWithDescendants
+    [field locationId cb:UUID]]
+  [documentation CAI1ListLocationsAll "List items within all locations."]
+  [case CAI1ListLocationsAll]
+]
+
+[documentation CAI1ItemLocation "An assertion that there are count instances of item at location."]
+[record CAI1ItemLocation
+  [documentation itemId "The item."]
+  [field itemId cb:UUID]
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation count "The count."]
+  [field count cb:IntegerUnsigned64]
+]
+
+[documentation CAI1ItemLocations "A set of assertions indicating items in locations."]
+[record CAI1ItemLocations
+  [documentation locations "The item locations."]
+  [field locations [cb:Map cb:UUID [cb:Map cb:UUID CAI1ItemLocation]]]
+]
+
+[documentation CAI1ItemReposit "The type of item reposit operations."]
+[variant CAI1ItemReposit
+  [documentation CAI1ItemRepositAdd "An operation that adds a set of items to a storage location."]
+  [case CAI1ItemRepositAdd
+    [documentation itemId "The item."]
+    [field itemId cb:UUID]
+    [documentation locationId "The location ID."]
+    [field locationId cb:UUID]
+    [documentation count "The count."]
+    [field count cb:IntegerUnsigned64]]
+  [documentation CAI1ItemRepositMove "An operation that moves a set of items from one storage location to another."]
+  [case CAI1ItemRepositMove
+    [documentation itemId "The item."]
+    [field itemId cb:UUID]
+    [documentation locationFrom "The from location."]
+    [field locationFrom cb:UUID]
+    [documentation locationTo "The to location."]
+    [field locationTo cb:UUID]
+    [documentation count "The count."]
+    [field count cb:IntegerUnsigned64]]
+  [documentation CAI1ItemRepositRemove "An operation that removes a set of items from a storage location."]
+  [case CAI1ItemRepositRemove
+    [documentation itemId "The item."]
+    [field itemId cb:UUID]
+    [documentation locationId "The location ID."]
+    [field locationId cb:UUID]
+    [documentation count "The count."]
+    [field count cb:IntegerUnsigned64]]
+]
+
+[documentation CAI1LocationSummary "A summary of a location."]
+[record CAI1LocationSummary
+  [field id cb:UUID]
+  [field parent [cb:Option cb:UUID]]
+  [field name cb:String]
+]
+
+[documentation CAI1Location "A location."]
+[record CAI1Location
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation parent "The location parent."]
+  [field parent [cb:Option cb:UUID]]
+  [documentation name "The location name."]
+  [field name cb:String]
+  [documentation metadata "The item metadata."]
+  [field metadata [cb:Map cb:String CAI1Metadata]]
+  [documentation attachments "The item attachments."]
+  [field attachments [cb:Map CAI1AttachmentKey CAI1Attachment]]
+  [documentation types "The item types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1ItemColumn "The item column by which to order results."]
+[variant CAI1ItemColumn
+  [documentation CAI1ById "Order by item ID."]
+  [case CAI1ById]
+  [documentation CAI1ByName "Order by item name."]
+  [case CAI1ByName]
+]
+
+[documentation CAI1ItemColumnOrdering "The item column by which to order results."]
+[record CAI1ItemColumnOrdering
+  [documentation column "The item column."]
+  [field column CAI1ItemColumn]
+  [documentation ascending "Whether results should be in ascending order."]
+  [field ascending cb:Boolean]
+]
+
+[documentation CAI1NameMatch "An expression against which item names are matched."]
+[variant CAI1NameMatch
+  [case CAI1NameMatchAny]
+  [case CAI1NameMatchExact  [field text cb:String]]
+  [case CAI1NameMatchSearch [field query cb:String]]
+]
+
+[documentation CAI1TypeMatch "An expression against which item types are matched."]
+[variant CAI1TypeMatch
+  [case CAI1TypeMatchAny]
+  [case CAI1TypeMatchAnyOf [field types [cb:List cb:String]]]
+  [case CAI1TypeMatchAllOf [field types [cb:List cb:String]]]
+]
+
+[documentation CAI1MetadataValueMatch "An expression against which item metadata values are matched."]
+[variant CAI1MetadataValueMatch
+  [case Anything]
+  [case IntegralWithinRange
+    [field lower cb:IntegerSigned64]
+    [field upper cb:IntegerSigned64]
+  ]
+  [case RealWithinRange
+    [field lower cb:Float64]
+    [field upper cb:Float64]
+  ]
+  [case TimeWithinRange
+    [field lower ct:OffsetDateTime]
+    [field upper ct:OffsetDateTime]
+  ]
+  [case MonetaryWithinRange
+    [field lower cb:String]
+    [field upper cb:String]
+  ]
+  [case MonetaryWithCurrency
+    [field currency cb:String]
+  ]
+  [case TextExact
+    [field exact cb:String]
+  ]
+  [case TextSearch
+    [field search cb:String]
+  ]
+]
+
+[documentation CAI1MetadataNameMatch "An expression against which item metadata names are matched."]
+[variant CAI1MetadataNameMatch
+  [case Anything]
+  [case Exact
+    [field name cb:String]
+  ]
+  [case Search
+    [field search cb:String]
+  ]
+]
+
+[documentation CAI1MetadataElementMatch "An expression against which item metadata is matched."]
+[variant CAI1MetadataElementMatch
+  [case And
+    [field e0 CAI1MetadataElementMatch]
+    [field e1 CAI1MetadataElementMatch]
+  ]
+  [case Or
+    [field e0 CAI1MetadataElementMatch]
+    [field e1 CAI1MetadataElementMatch]
+  ]
+  [case Specific
+    [field name CAI1MetadataNameMatch]
+    [field value CAI1MetadataValueMatch]
+  ]
+]
+
+[documentation CAI1ItemSearchParameters "The item search parameters."]
+[record CAI1ItemSearchParameters
+  [documentation location "The item location search behaviour."]
+  [field location CAI1ListLocationBehaviour]
+  [documentation nameMatch "The item name match expression."]
+  [field nameMatch CAI1NameMatch]
+  [documentation typeMatch "The item type match expression."]
+  [field typeMatch CAI1TypeMatch]
+  [documentation metaMatch "The item metadata match expression."]
+  [field metaMatch CAI1MetadataElementMatch]
+  [documentation order "The item result ordering."]
+  [field order CAI1ItemColumnOrdering]
+  [documentation limit "The item limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
+[documentation CAI1FileColumn "The item column by which to order results."]
+[variant CAI1FileColumn
+  [documentation CAI1ById "Order by file ID."]
+  [case CAI1ById]
+  [documentation CAI1ByDescription "Order by file description."]
+  [case CAI1ByDescription]
+]
+
+[documentation CAI1FileColumnOrdering "The file column by which to order results."]
+[record CAI1FileColumnOrdering
+  [documentation column "The file column."]
+  [field column CAI1FileColumn]
+  [documentation ascending "Whether results should be in ascending order."]
+  [field ascending cb:Boolean]
+]
+
+[documentation CAI1SizeRange "A size range."]
+[record CAI1SizeRange
+  [documentation sizeMinimum "The lower bound (inclusive)."]
+  [field sizeMinimum cb:IntegerUnsigned64]
+  [documentation sizeMaximum "The upper bound (inclusive)."]
+  [field sizeMaximum cb:IntegerUnsigned64]
+]
+
+[documentation CAI1TimeRange "An inclusive time range."]
+[record CAI1TimeRange
+  [field timeLower ct:OffsetDateTime]
+  [field timeUpper ct:OffsetDateTime]
+]
+
+[documentation CAI1FileSearchParameters "The item search parameters."]
+[record CAI1FileSearchParameters
+  [documentation search "The file description search query."]
+  [field search [CAI1ComparisonFuzzy cb:String]]
+  [documentation mediaType "The file media type search query."]
+  [field mediaType [CAI1ComparisonFuzzy cb:String]]
+  [documentation sizeRange "The file size range query."]
+  [field sizeRange CAI1SizeRange]
+  [documentation order "The file result ordering."]
+  [field order CAI1FileColumnOrdering]
+  [documentation limit "The file limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
+[documentation CAI1TypeScalarSearchParameters "The scalar type search parameters."]
+[record CAI1TypeScalarSearchParameters
+  [documentation search "The type description search query."]
+  [field search [cb:Option cb:String]]
+  [documentation limit "The limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
+[documentation CAI1Page "A page of search results."]
+[record CAI1Page
+  [parameter T]
+  [field items [cb:List T]]
+  [field pageIndex cb:IntegerUnsigned32]
+  [field pageCount cb:IntegerUnsigned32]
+  [field pageFirstOffset cb:IntegerUnsigned64]
+]
+
+[documentation CAI1ItemSummary "A summary of an item."]
+[record CAI1ItemSummary
+  [field id cb:UUID]
+  [field name cb:String]
+]
+
+[documentation CAI1TypeScalar "A scalar type."]
+[variant CAI1TypeScalar
+  [case Integral
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower cb:IntegerSigned64]
+    [field rangeUpper cb:IntegerSigned64]
+  ]
+  [case Text
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field pattern cb:String]
+  ]
+  [case Time
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower ct:OffsetDateTime]
+    [field rangeUpper ct:OffsetDateTime]
+  ]
+  [case Monetary
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower cb:String]
+    [field rangeUpper cb:String]
+  ]
+  [case Real
+    [documentation name "The type name."]
+    [field name cb:String]
+    [documentation description "The type description."]
+    [field description cb:String]
+    [field rangeLower cb:Float64]
+    [field rangeUpper cb:Float64]
+  ]
+]
+
+[documentation CAI1TypeField "A field within a type declaration."]
+[record CAI1TypeField
+  [documentation name "The type field name."]
+  [field name cb:String]
+  [documentation description "The type field description."]
+  [field description cb:String]
+  [documentation type "The type of the field."]
+  [field type CAI1TypeScalar]
+  [documentation required "Whether or not the field is required to be present."]
+  [field required cb:Boolean]
+]
+
+[documentation CAI1TypeDeclaration "A type declaration."]
+[record CAI1TypeDeclaration
+  [documentation name "The type declaration name."]
+  [field name cb:String]
+  [documentation description "The type declaration description."]
+  [field description cb:String]
+  [documentation fields "Whether or not the field is required to be present."]
+  [field fields [cb:Map cb:String CAI1TypeField]]
+]
+
+[documentation CAI1TypeDeclarationSummary "A type declaration summary."]
+[record CAI1TypeDeclarationSummary
+  [documentation name "The type declaration name."]
+  [field name cb:String]
+  [documentation description "The type declaration description."]
+  [field description cb:String]
+]
+
+[documentation CAI1TypeDeclarationSearchParameters "The declared type search parameters."]
+[record CAI1TypeDeclarationSearchParameters
+  [documentation search "The type description search query."]
+  [field search [cb:Option cb:String]]
+  [documentation limit "The limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
+[documentation CAI1AuditSearchParameters "The audit search parameters."]
+[record CAI1AuditSearchParameters
+  [documentation owner "Limit to events with the given owner."]
+  [field owner [cb:Option cb:UUID]]
+  [documentation type "Limit to events with the given type."]
+  [field type [CAI1ComparisonExact cb:String]]
+  [documentation timeRange "Limit to events in the given time range."]
+  [field timeRange CAI1TimeRange]
+  [documentation pageSize "The page size."]
+  [field pageSize cb:IntegerUnsigned32]
+]
+
+[documentation CAI1AuditEvent "An audit event."]
+[record CAI1AuditEvent
+  [documentation id "The event ID."]
+  [field id cb:IntegerUnsigned64]
+  [documentation time "The event time."]
+  [field time ct:OffsetDateTime]
+  [documentation owner "The event owner."]
+  [field owner cb:UUID]
+  [documentation type "The event type."]
+  [field type cb:String]
+  [documentation data "The event data."]
+  [field data [cb:Map cb:String cb:String]]
+]
+
+;
+; Commands.
+;
+
+[documentation CAI1CommandLogin "A request to log in."]
+[record CAI1CommandLogin
+  [documentation userName "The username."]
+  [field userName cb:String]
+  [documentation password "The password."]
+  [field password cb:String]
+  [documentation metadata "Extra metadata included with the login request."]
+  [field metadata [cb:Map cb:String cb:String]]
+]
+
+[documentation CAI1CommandFilePut "Add or update files."]
+[record CAI1CommandFilePut
+  [documentation file "The file."]
+  [field file CAI1File]
+]
+
+[documentation CAI1CommandFileRemove "Remove files."]
+[record CAI1CommandFileRemove
+  [documentation id "The file ID."]
+  [field id cb:UUID]
+]
+
+[documentation CAI1CommandItemAttachmentAdd "Add item attachments."]
+[record CAI1CommandItemAttachmentAdd
+  [documentation itemId "The item ID."]
+  [field itemId cb:UUID]
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
+  [documentation relation "The attachment relation."]
+  [field relation cb:String]
+]
+
+[documentation CAI1CommandItemAttachmentRemove "Remove item attachments."]
+[record CAI1CommandItemAttachmentRemove
+  [documentation itemId "The item ID."]
+  [field itemId cb:UUID]
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
+  [documentation relation "The attachment relation."]
+  [field relation cb:String]
+]
+
+[documentation CAI1CommandItemCreate "Create a new item."]
+[record CAI1CommandItemCreate
+  [documentation itemId "The item ID."]
+  [field itemId cb:UUID]
+  [documentation name "The item name."]
+  [field name cb:String]
+]
+
+[documentation CAI1CommandItemGet "Retrieve an item."]
+[record CAI1CommandItemGet
+  [documentation itemId "The item ID."]
+  [field itemId cb:UUID]
+]
+
+[documentation CAI1CommandFileGet "Retrieve a file."]
+[record CAI1CommandFileGet
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
+]
+
+[documentation CAI1CommandItemLocationsList "List all the locations an item is in, and how many times the item is in them."]
+[record CAI1CommandItemLocationsList
+  [documentation itemId "The item ID."]
+  [field itemId cb:UUID]
+]
+
+[documentation CAI1CommandItemMetadataPut "Add or update metadata values in an item."]
+[record CAI1CommandItemMetadataPut
+  [documentation itemId "The item ID."]
+  [field itemId cb:UUID]
+  [documentation metadatas "The item metadatas."]
+  [field metadatas [cb:List CAI1Metadata]]
+]
+
+[documentation CAI1CommandItemMetadataRemove "Remove metadata values from an item."]
+[record CAI1CommandItemMetadataRemove
+  [documentation itemId "The item ID."]
+  [field itemId cb:UUID]
+  [documentation metadatas "The item metadatas."]
+  [field metadatas [cb:List cb:String]]
+]
+
+[documentation CAI1CommandItemReposit "Reposit an item."]
+[record CAI1CommandItemReposit
+  [documentation reposit "The item reposition."]
+  [field reposit CAI1ItemReposit]
+]
+
+[documentation CAI1CommandItemsRemove "Remove items."]
+[record CAI1CommandItemsRemove
+  [documentation items "The items."]
+  [field items [cb:List cb:UUID]]
+]
+
+[documentation CAI1CommandItemSetName "Update the names of items."]
+[record CAI1CommandItemSetName
+  [documentation item "The item ID."]
+  [field item cb:UUID]
+  [documentation name "The item name."]
+  [field name cb:String]
+]
+
+[documentation CAI1CommandLocationGet "Retrieve a location."]
+[record CAI1CommandLocationGet
+  [documentation location "The location ID."]
+  [field location cb:UUID]
+]
+
+[documentation CAI1CommandLocationList "List locations."]
+[record CAI1CommandLocationList]
+
+[documentation CAI1CommandLocationPut "Create or update a location."]
+[record CAI1CommandLocationPut
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1CommandItemSearchBegin "Start searching for items."]
+[record CAI1CommandItemSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1ItemSearchParameters]
+]
+
+[documentation CAI1CommandItemSearchNext "Return the next page of search results."]
+[record CAI1CommandItemSearchNext]
+
+[documentation CAI1CommandItemSearchPrevious "Return the next page of search results."]
+[record CAI1CommandItemSearchPrevious]
+
+[documentation CAI1CommandFileSearchBegin "Start searching for items."]
+[record CAI1CommandFileSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1FileSearchParameters]
+]
+
+[documentation CAI1CommandFileSearchNext "Return the next page of search results."]
+[record CAI1CommandFileSearchNext]
+
+[documentation CAI1CommandFileSearchPrevious "Return the next page of search results."]
+[record CAI1CommandFileSearchPrevious]
+
+[documentation CAI1CommandRolesAssign "Assign a set of roles to a user."]
+[record CAI1CommandRolesAssign
+  [documentation user "The target user."]
+  [field user cb:UUID]
+  [documentation roles "The assigned roles."]
+  [field roles [cb:List cb:String]]
+]
+
+[documentation CAI1CommandRolesRevoke "Revoke a set of roles from a user."]
+[record CAI1CommandRolesRevoke
+  [documentation user "The target user."]
+  [field user cb:UUID]
+  [documentation roles "The roles."]
+  [field roles [cb:List cb:String]]
+]
+
+[documentation CAI1CommandRolesRevoke "Get the roles for a user."]
+[record CAI1CommandRolesGet
+  [documentation user "The target user."]
+  [field user cb:UUID]
+]
+
+[documentation CAI1CommandTypeScalarPut "Create or update scalar types."]
+[record CAI1CommandTypeScalarPut
+  [documentation types "The types."]
+  [field types [cb:List CAI1TypeScalar]]
+]
+
+[documentation CAI1CommandTypeScalarGet "Get a scalar type."]
+[record CAI1CommandTypeScalarGet
+  [documentation name "The type name."]
+  [field name cb:String]
+]
+
+[documentation CAI1CommandTypeScalarRemove "Remove scalar types."]
+[record CAI1CommandTypeScalarRemove
+  [documentation types "The type names."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandTypeScalarSearchBegin "Search for scalar types."]
+[record CAI1CommandTypeScalarSearchBegin
+  [documentation parameters "The parameters."]
+  [field parameters CAI1TypeScalarSearchParameters]
+]
+
+[documentation CAI1CommandTypeScalarSearchNext "Search for scalar types."]
+[record CAI1CommandTypeScalarSearchNext]
+
+[documentation CAI1CommandTypeScalarSearchPrevious "Search for scalar types."]
+[record CAI1CommandTypeScalarSearchPrevious]
+
+[documentation CAI1CommandTypeDeclarationPut "Create or update declared types."]
+[record CAI1CommandTypeDeclarationPut
+  [documentation types "The types."]
+  [field types [cb:List CAI1TypeDeclaration]]
+]
+
+[documentation CAI1CommandTypeDeclarationGet "Get a declared type."]
+[record CAI1CommandTypeDeclarationGet
+  [documentation name "The type name."]
+  [field name cb:String]
+]
+
+[documentation CAI1CommandTypeDeclarationRemove "Remove declared types."]
+[record CAI1CommandTypeDeclarationRemove
+  [documentation types "The type names."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandTypeDeclarationSearchBegin "Search for declared types."]
+[record CAI1CommandTypeDeclarationSearchBegin
+  [documentation parameters "The parameters."]
+  [field parameters CAI1TypeDeclarationSearchParameters]
+]
+
+[documentation CAI1CommandTypeDeclarationSearchNext "Search for declared types."]
+[record CAI1CommandTypeDeclarationSearchNext]
+
+[documentation CAI1CommandTypeDeclarationSearchPrevious "Search for declared types."]
+[record CAI1CommandTypeDeclarationSearchPrevious]
+
+[documentation CAI1CommandItemTypesAssign "Assign a set of types to an item."]
+[record CAI1CommandItemTypesAssign
+  [documentation item "The target item."]
+  [field item cb:UUID]
+  [documentation types "The assigned types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandItemTypesRevoke "Revoke a set of types from an item."]
+[record CAI1CommandItemTypesRevoke
+  [documentation item "The target item."]
+  [field item cb:UUID]
+  [documentation types "The removed types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandLocationMetadataPut "Add or update metadata values in a location."]
+[record CAI1CommandLocationMetadataPut
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation metadatas "The location metadatas."]
+  [field metadatas [cb:List CAI1Metadata]]
+]
+
+[documentation CAI1CommandLocationMetadataRemove "Remove metadata values from a location."]
+[record CAI1CommandLocationMetadataRemove
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation metadatas "The location metadatas."]
+  [field metadatas [cb:List cb:String]]
+]
+
+[documentation CAI1CommandLocationTypesAssign "Assign a set of types to a location."]
+[record CAI1CommandLocationTypesAssign
+  [documentation location "The target location."]
+  [field location cb:UUID]
+  [documentation types "The assigned types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandLocationTypesRevoke "Revoke a set of types from a location."]
+[record CAI1CommandLocationTypesRevoke
+  [documentation location "The target location."]
+  [field location cb:UUID]
+  [documentation types "The removed types."]
+  [field types [cb:List cb:String]]
+]
+
+[documentation CAI1CommandLocationAttachmentAdd "Add location attachments."]
+[record CAI1CommandLocationAttachmentAdd
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
+  [documentation relation "The attachment relation."]
+  [field relation cb:String]
+]
+
+[documentation CAI1CommandLocationAttachmentRemove "Remove location attachments."]
+[record CAI1CommandLocationAttachmentRemove
+  [documentation locationId "The location ID."]
+  [field locationId cb:UUID]
+  [documentation fileId "The file ID."]
+  [field fileId cb:UUID]
+  [documentation relation "The attachment relation."]
+  [field relation cb:String]
+]
+
+[documentation CAI1CommandAuditSearchBegin "Start searching audit events."]
+[record CAI1CommandAuditSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1AuditSearchParameters]
+]
+
+[documentation CAI1CommandAuditSearchNext "Continue searching audit events."]
+[record CAI1CommandAuditSearchNext]
+
+[documentation CAI1CommandAuditSearchPrevious "Continue searching audit events."]
+[record CAI1CommandAuditSearchPrevious]
+
+;
+; Responses.
+;
+
+[documentation CAI1ResponseBlame "A blame assignment."]
+[variant CAI1ResponseBlame
+  [documentation BlameClient "The client sent a bad response."]
+  [case BlameClient]
+  [documentation BlameServer "Something went wrong on the server."]
+  [case BlameServer]
+]
+
+[documentation CAI1ResponseError "An error response."]
+[record CAI1ResponseError
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation errorCode "The error code."]
+  [field errorCode cb:String]
+  [documentation message "The error message."]
+  [field message cb:String]
+  [documentation attributes "The error attributes."]
+  [field attributes [cb:Map cb:String cb:String]]
+  [documentation remediatingAction "The remediating action, if any."]
+  [field remediatingAction [cb:Option cb:String]]
+  [documentation blame "The blame assignment."]
+  [field blame CAI1ResponseBlame]
+]
+
+[documentation CAI1ResponseLogin "A response to CAI1CommandLogin."]
+[record CAI1ResponseLogin
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation userId "The ID of the user that logged in."]
+  [field userId cb:UUID]
+]
+
+[documentation CAI1ResponseFilePut "A response to CAI1CommandFilePut."]
+[record CAI1ResponseFilePut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation file "The file."]
+  [field file CAI1File]
+]
+
+[documentation CAI1ResponseFileRemove "A response to CAI1CommandFileRemove."]
+[record CAI1ResponseFileRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation id "The file ID."]
+  [field id cb:UUID]
+]
+
+[documentation CAI1ResponseItemAttachmentAdd "A response to CAI1CommandItemAttachmentAdd."]
+[record CAI1ResponseItemAttachmentAdd
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemAttachmentRemove "A response to CAI1CommandItemAttachmentRemove."]
+[record CAI1ResponseItemAttachmentRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemCreate "A response to CAI1CommandItemCreate."]
+[record CAI1ResponseItemCreate
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemGet "A response to CAI1CommandItemGet."]
+[record CAI1ResponseItemGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseFileGet "A response to CAI1CommandFileGet."]
+[record CAI1ResponseFileGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation file "The file."]
+  [field file CAI1File]
+]
+
+[documentation CAI1ResponseItemLocationsList "A response to CAI1CommandItemLocationsList."]
+[record CAI1ResponseItemLocationsList
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation itemLocations "The item locations."]
+  [field itemLocations CAI1ItemLocations]
+]
+
+[documentation CAI1ResponseItemMetadataPut "A response to CAI1CommandItemMetadataPut."]
+[record CAI1ResponseItemMetadataPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemMetadataRemove "A response to CAI1CommandItemMetadataRemove."]
+[record CAI1ResponseItemMetadataRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemReposit "A response to CAI1CommandItemReposit."]
+[record CAI1ResponseItemReposit
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemsRemove "A response to CAI1CommandItemsRemove."]
+[record CAI1ResponseItemsRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation items "The items."]
+  [field items [cb:List cb:UUID]]
+]
+
+[documentation CAI1ResponseItemSetName "A response to CAI1CommandItemSetName."]
+[record CAI1ResponseItemSetName
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseLocationGet "A response to CAI1CommandLocationGet."]
+[record CAI1ResponseLocationGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationList "A response to CAI1CommandLocationList."]
+[record CAI1ResponseLocationList
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation locations "The locations."]
+  [field locations [cb:Map cb:UUID CAI1LocationSummary]]
+]
+
+[documentation CAI1ResponseLocationPut "A response to CAI1CommandLocationPut."]
+[record CAI1ResponseLocationPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseItemSearch "A response to CAI1CommandItemSearch."]
+[record CAI1ResponseItemSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1ItemSummary]]
+]
+
+[documentation CAI1ResponseFileSearch "A response to CAI1CommandFileSearch."]
+[record CAI1ResponseFileSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1File]]
+]
+
+[documentation CAI1ResponseRolesAssign "A response to CAI1ResponseRolesAssign."]
+[record CAI1ResponseRolesAssign
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+]
+
+[documentation CAI1ResponseRolesRevoke "A response to CAI1ResponseRolesRevoke."]
+[record CAI1ResponseRolesRevoke
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+]
+
+[documentation CAI1ResponseRolesGet "A response to CAI1ResponseRolesGet."]
+[record CAI1ResponseRolesGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation roles "The roles."]
+  [field roles [cb:List cb:String]]
+]
+
+[documentation CAI1ResponseTypeScalarPut "A response to CAI1CommandTypeScalarPut."]
+[record CAI1ResponseTypeScalarPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation types "The scalar types."]
+  [field types [cb:List CAI1TypeScalar]]
+]
+
+[documentation CAI1ResponseTypeScalarGet "A response to CAI1CommandTypeScalarGet."]
+[record CAI1ResponseTypeScalarGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation type "The scalar type."]
+  [field type CAI1TypeScalar]
+]
+
+[documentation CAI1ResponseTypeScalarRemove "A response to CAI1CommandTypeScalarRemove."]
+[record CAI1ResponseTypeScalarRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+]
+
+[documentation CAI1ResponseTypeScalarSearch "A response to CAI1CommandTypeScalarSearch*."]
+[record CAI1ResponseTypeScalarSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1TypeScalar]]
+]
+
+[documentation CAI1ResponseTypeDeclarationPut "A response to CAI1CommandTypeDeclarationPut."]
+[record CAI1ResponseTypeDeclarationPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation types "The scalar types."]
+  [field types [cb:List CAI1TypeDeclaration]]
+]
+
+[documentation CAI1ResponseTypeDeclarationGet "A response to CAI1CommandTypeDeclarationGet."]
+[record CAI1ResponseTypeDeclarationGet
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation type "The scalar type."]
+  [field type CAI1TypeDeclaration]
+]
+
+[documentation CAI1ResponseTypeDeclarationRemove "A response to CAI1CommandTypeDeclarationRemove."]
+[record CAI1ResponseTypeDeclarationRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+]
+
+[documentation CAI1ResponseTypeDeclarationSearch "A response to CAI1CommandTypeDeclarationSearch*."]
+[record CAI1ResponseTypeDeclarationSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1TypeDeclarationSummary]]
+]
+
+[documentation CAI1ResponseItemTypesAssign "A response to CAI1CommandItemTypesAssign."]
+[record CAI1ResponseItemTypesAssign
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseItemTypesRevoke "A response to CAI1CommandItemTypesRevoke."]
+[record CAI1ResponseItemTypesRevoke
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation item "The item."]
+  [field item CAI1Item]
+]
+
+[documentation CAI1ResponseLocationMetadataPut "A response to CAI1CommandLocationMetadataPut."]
+[record CAI1ResponseLocationMetadataPut
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationMetadataRemove "A response to CAI1CommandLocationMetadataRemove."]
+[record CAI1ResponseLocationMetadataRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationTypesAssign "A response to CAI1CommandLocationTypesAssign."]
+[record CAI1ResponseLocationTypesAssign
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationTypesRevoke "A response to CAI1CommandLocationTypesRevoke."]
+[record CAI1ResponseLocationTypesRevoke
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationAttachmentAdd "A response to CAI1CommandLocationAttachmentAdd."]
+[record CAI1ResponseLocationAttachmentAdd
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationAttachmentRemove "A response to CAI1CommandLocationAttachmentRemove."]
+[record CAI1ResponseLocationAttachmentRemove
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location CAI1Location]
+]
+
+[documentation CAI1ResponseAuditSearch "A response to CAI1CommandAuditSearchBegin."]
+[record CAI1ResponseAuditSearch
+  [documentation messageId "The message ID"]
+  [field messageId cb:UUID]
+  [documentation results "The results"]
+  [field results [CAI1Page CAI1AuditEvent]]
+]
+
+;
+; Events.
+;
+
+[documentation CAI1EventUpdated "Data on the server was updated."]
+[record CAI1EventUpdated
+  [documentation updated "The list of objects that were updated."]
+  [field updated [cb:List CAI1Id]]
+  [documentation removed "The list of objects that were removed."]
+  [field removed [cb:List CAI1Id]]]
+
+;
+; Protocol.
+;
+
+[documentation CAI "The Inventory protocol."]
+[protocol CAI
+  [version 1
+    [types-added
+      CAI1CommandAuditSearchBegin
+      CAI1CommandAuditSearchNext
+      CAI1CommandAuditSearchPrevious
+      CAI1CommandFileGet
+      CAI1CommandFilePut
+      CAI1CommandFileRemove
+      CAI1CommandFileSearchBegin
+      CAI1CommandFileSearchNext
+      CAI1CommandFileSearchPrevious
+      CAI1CommandItemAttachmentAdd
+      CAI1CommandItemAttachmentRemove
+      CAI1CommandItemCreate
+      CAI1CommandItemGet
+      CAI1CommandItemLocationsList
+      CAI1CommandItemMetadataPut
+      CAI1CommandItemMetadataRemove
+      CAI1CommandItemReposit
+      CAI1CommandItemSearchBegin
+      CAI1CommandItemSearchNext
+      CAI1CommandItemSearchPrevious
+      CAI1CommandItemSetName
+      CAI1CommandItemTypesAssign
+      CAI1CommandItemTypesRevoke
+      CAI1CommandItemsRemove
+      CAI1CommandLocationAttachmentAdd
+      CAI1CommandLocationAttachmentRemove
+      CAI1CommandLocationGet
+      CAI1CommandLocationList
+      CAI1CommandLocationMetadataPut
+      CAI1CommandLocationMetadataRemove
+      CAI1CommandLocationPut
+      CAI1CommandLocationTypesAssign
+      CAI1CommandLocationTypesRevoke
+      CAI1CommandLogin
+      CAI1CommandRolesAssign
+      CAI1CommandRolesGet
+      CAI1CommandRolesRevoke
+      CAI1CommandTypeDeclarationGet
+      CAI1CommandTypeDeclarationPut
+      CAI1CommandTypeDeclarationRemove
+      CAI1CommandTypeDeclarationSearchBegin
+      CAI1CommandTypeDeclarationSearchNext
+      CAI1CommandTypeDeclarationSearchPrevious
+      CAI1CommandTypeScalarGet
+      CAI1CommandTypeScalarPut
+      CAI1CommandTypeScalarRemove
+      CAI1CommandTypeScalarSearchBegin
+      CAI1CommandTypeScalarSearchNext
+      CAI1CommandTypeScalarSearchPrevious
+      CAI1EventUpdated
+      CAI1ResponseAuditSearch
+      CAI1ResponseError
+      CAI1ResponseFileGet
+      CAI1ResponseFilePut
+      CAI1ResponseFileRemove
+      CAI1ResponseFileSearch
+      CAI1ResponseItemAttachmentAdd
+      CAI1ResponseItemAttachmentRemove
+      CAI1ResponseItemCreate
+      CAI1ResponseItemGet
+      CAI1ResponseItemLocationsList
+      CAI1ResponseItemMetadataPut
+      CAI1ResponseItemMetadataRemove
+      CAI1ResponseItemReposit
+      CAI1ResponseItemSearch
+      CAI1ResponseItemSetName
+      CAI1ResponseItemTypesAssign
+      CAI1ResponseItemTypesRevoke
+      CAI1ResponseItemsRemove
+      CAI1ResponseLocationAttachmentAdd
+      CAI1ResponseLocationAttachmentRemove
+      CAI1ResponseLocationGet
+      CAI1ResponseLocationList
+      CAI1ResponseLocationMetadataPut
+      CAI1ResponseLocationMetadataRemove
+      CAI1ResponseLocationPut
+      CAI1ResponseLocationTypesAssign
+      CAI1ResponseLocationTypesRevoke
+      CAI1ResponseLogin
+      CAI1ResponseRolesAssign
+      CAI1ResponseRolesGet
+      CAI1ResponseRolesRevoke
+      CAI1ResponseTypeDeclarationGet
+      CAI1ResponseTypeDeclarationPut
+      CAI1ResponseTypeDeclarationRemove
+      CAI1ResponseTypeDeclarationSearch
+      CAI1ResponseTypeScalarGet
+      CAI1ResponseTypeScalarPut
+      CAI1ResponseTypeScalarRemove
+      CAI1ResponseTypeScalarSearch
+    ]
+  ]
+]

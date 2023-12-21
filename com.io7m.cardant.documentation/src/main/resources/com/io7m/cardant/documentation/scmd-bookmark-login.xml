@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="24e4a7a5-1de6-3204-86d1-44910584bf10" title="bookmark-login" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">bookmark-login</Term>
+       - Log in using a bookmark.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">bookmark-login</Term>
+      command logs into a server using a <Link target="01a85d22-da3c-4f18-ba11-d6e700345e4e">bookmark</Link>.
+    </Paragraph>
+    <FormalItem title="Parameters">
+      <Table type="parameterTable">
+        <Columns>
+          <Column>Parameter</Column>
+          <Column>Type</Column>
+          <Column>Cardinality</Column>
+          <Column>Default</Column>
+          <Column>Description</Column>
+        </Columns>
+        <Row>
+          <Cell>
+            <Term type="parameter">--name</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>The name of the bookmark.</Cell>
+        </Row>
+      </Table>
+    </FormalItem>
+  </Subsection>
+</Section>
+

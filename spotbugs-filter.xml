@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FindBugsFilter xmlns="https://github.com/spotbugs/filter/3.0.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+
+  <!--                -->
+  <!-- GLOBAL FILTERS -->
+  <!--                -->
+
+  <!-- We don't care about CRLF injection in logs. -->
+  <Match>
+    <Bug pattern="CRLF_INJECTION_LOGS"/>
+  </Match>
+
+  <!-- We don't care about this kind of "performance" issue. -->
+  <Match>
+    <Bug pattern="SEO_SUBOPTIMAL_EXPRESSION_ORDER"/>
+  </Match>
+
+  <!-- We don't care about types being too specific; it's usually for a good reason. -->
+  <Match>
+    <Bug pattern="OCP_OVERLY_CONCRETE_PARAMETER"/>
+  </Match>
+
+  <!-- Function.identity() != (x -> x) due to invariance. -->
+  <Match>
+    <Bug pattern="FII_USE_FUNCTION_IDENTITY"/>
+  </Match>
+
+  <!-- We don't care about Java serialization at all. -->
+  <Match>
+    <Or>
+      <Bug pattern="SE_NO_SERIALVERSIONID"/>
+      <Bug pattern="SE_BAD_FIELD"/>
+    </Or>
+  </Match>
+
+  <!-- Most exceptions have static message strings, but other information included. -->
+  <Match>
+    <Bug pattern="WEM_WEAK_EXCEPTION_MESSAGING"/>
+  </Match>
+
+  <!-- We use IDE order. -->
+  <Match>
+    <Bug pattern="IMC_IMMATURE_CLASS_WRONG_FIELD_ORDER"/>
+  </Match>
+
+  <!-- Frequently, methods return constants to prevent inlining and ensure binary compatibility. -->
+  <Match>
+    <Bug pattern="MRC_METHOD_RETURNS_CONSTANT"/>
+  </Match>
+
+  <!-- Declaring runtime exceptions is good documentation. -->
+  <Match>
+    <Bug pattern="DRE_DECLARED_RUNTIME_EXCEPTION"/>
+  </Match>
+
+  <!-- Enabling this causes far too many false positives. Consider Objects.requireNonNull() and so on. -->
+  <Match>
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS"/>
+  </Match>
+
+  <!-- Don't really care about the primitive optionals. -->
+  <Match>
+    <Bug pattern="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
+  </Match>
+
+  <!-- We don't use nullable annotations because we don't use null. -->
+  <Match>
+    <Or>
+      <Bug pattern="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
+      <Bug pattern="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
+    </Or>
+  </Match>
+
+  <!--                        -->
+  <!-- com.io7m.cardant.model -->
+  <!--                        -->
+
+  <!-- Record types -->
+  <Match>
+    <Or>
+      <Package name="com.io7m.cardant.model.comparisons"/>
+      <Or>
+        <Class name="com.io7m.cardant.model.CAAttachment"/>
+        <Class name="com.io7m.cardant.model.CAAttachmentKey"/>
+        <Class name="com.io7m.cardant.model.CAAuditEvent"/>
+        <Class name="com.io7m.cardant.model.CAAuditSearchParameters"/>
+        <Class name="com.io7m.cardant.model.CAByteArray"/>
+        <Class name="com.io7m.cardant.model.CAFileID"/>
+        <Class name="com.io7m.cardant.model.CAIds"/>
+        <Class name="com.io7m.cardant.model.CAItem"/>
+        <Class name="com.io7m.cardant.model.CAItemAttachments"/>
+        <Class name="com.io7m.cardant.model.CAItemColumn"/>
+        <Class name="com.io7m.cardant.model.CAItemColumnOrdering"/>
+        <Class name="com.io7m.cardant.model.CAItemID"/>
+        <Class name="com.io7m.cardant.model.CAItemLocation"/>
+        <Class name="com.io7m.cardant.model.CAItemLocations"/>
+        <Class name="com.io7m.cardant.model.CAItemMetadatas"/>
+        <Class name="com.io7m.cardant.model.CAItemRepositAdd"/>
+        <Class name="com.io7m.cardant.model.CAItemRepositMove"/>
+        <Class name="com.io7m.cardant.model.CAItemRepositRemove"/>
+        <Class name="com.io7m.cardant.model.CAItemSearchParameters"/>
+        <Class name="com.io7m.cardant.model.CAItemSummary"/>
+        <Class name="com.io7m.cardant.model.CALocation"/>
+        <Class name="com.io7m.cardant.model.CALocationID"/>
+        <Class name="com.io7m.cardant.model.CALocationSummaries"/>
+        <Class name="com.io7m.cardant.model.CAMetadata"/>
+        <Class name="com.io7m.cardant.model.CAMetadataType$Monetary"/>
+        <Class name="com.io7m.cardant.model.CAMetadataValueMatchType$MonetaryMatchType$WithCurrency"/>
+        <Class name="com.io7m.cardant.model.CAPage"/>
+        <Class name="com.io7m.cardant.model.CATag"/>
+        <Class name="com.io7m.cardant.model.CATagID"/>
+        <Class name="com.io7m.cardant.model.CATags"/>
+        <Class name="com.io7m.cardant.model.CATypeDeclaration"/>
+        <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAllOf"/>
+        <Class name="com.io7m.cardant.model.CATypeMatchType$CATypeMatchAnyOf"/>
+        <Class name="com.io7m.cardant.model.CAUser"/>
+      </Or>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Class name="com.io7m.cardant.model.CATypeChecking"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <!--                              -->
+  <!-- com.io7m.cardant.error_codes -->
+  <!--                              -->
+
+  <!-- Record type! -->
+  <Match>
+    <Class name="com.io7m.cardant.error_codes.CAException"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+
+  <!-- The interface exists to be implemented! -->
+  <Match>
+    <Class name="com.io7m.cardant.error_codes.CAException"/>
+    <Bug pattern="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR"/>
+  </Match>
+
+  <!--                                     -->
+  <!-- com.io7m.cardant.protocol.inventory -->
+  <!--                                     -->
+
+  <!-- Many record types. -->
+  <Match>
+    <Package name="com.io7m.cardant.protocol.inventory"/>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+    </Or>
+  </Match>
+
+  <!--                             -->
+  <!-- com.io7m.cardant.client.api -->
+  <!--                             -->
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Package name="com.io7m.cardant.client.api"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <!-- Many record types. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.client.api.CAClientConfiguration"/>
+      <Class name="com.io7m.cardant.client.api.CAClientCredentials"/>
+      <Class name="com.io7m.cardant.client.api.CAClientEventDataReceived"/>
+      <Class name="com.io7m.cardant.client.api.CAClientEventDataUpdated"/>
+      <Class name="com.io7m.cardant.client.api.CAClientException"/>
+      <Class name="com.io7m.cardant.client.api.CAClientUnit"/>
+      <Class name="com.io7m.cardant.client.api.CAClientTransferStatistics"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!--                                        -->
+  <!-- com.io7m.cardant.protocol.inventory.cb -->
+  <!--                                        -->
+
+  <Match>
+    <Or>
+      <Package name="com.io7m.cardant.protocol.inventory.cb"/>
+      <Package name="com.io7m.cardant.protocol.inventory.cb.internal"/>
+    </Or>
+    <Or>
+      <Bug pattern="BC_UNCONFIRMED_CAST"/>
+      <Bug pattern="BED_BOGUS_EXCEPTION_DECLARATION"/>
+      <Bug pattern="CC_CYCLOMATIC_COMPLEXITY"/>
+      <Bug pattern="CE_CLASS_ENVY"/>
+      <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+      <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+      <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+      <Bug pattern="RI_REDUNDANT_INTERFACES"/>
+      <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
+      <Bug pattern="UP_UNUSED_PARAMETER"/>
+    </Or>
+  </Match>
+
+  <!-- The IOException causing this can't actually happen. -->
+  <Match>
+    <Class name="com.io7m.cardant.protocol.inventory.cb.CAI1Messages"/>
+    <Method name="serialize"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- Unwrapping a deliberate unchecked exception. -->
+  <Match>
+    <Class name="com.io7m.cardant.protocol.inventory.cb.CAI1Validation"/>
+    <Method name="convertFromWire"/>
+    <Bug pattern="LEST_LOST_EXCEPTION_STACK_TRACE"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.protocol.inventory.cb.CAI1Validation"/>
+    <Method name="convertToWire"/>
+    <Bug pattern="LEST_LOST_EXCEPTION_STACK_TRACE"/>
+  </Match>
+
+  <!-- Guaranteed by types. -->
+  <Match>
+    <Class name="com.io7m.cardant.protocol.inventory.cb.internal.ProtocolUncheckedException"/>
+    <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"/>
+  </Match>
+
+  <!--                               -->
+  <!-- com.io7m.cardant.client.basic -->
+  <!--                               -->
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Package name="com.io7m.cardant.client.basic.internal"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.client.basic.internal.CAHandler1"/>
+    <Bug pattern="FCBL_FIELD_COULD_BE_LOCAL"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.client.basic.internal.CAHandler1"/>
+    <Method name="fileDataErrorIO"/>
+    <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.client.basic.internal.CAHandler1"/>
+    <Method name="fileDataServerError"/>
+    <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.client.basic.internal.CAHandler1"/>
+    <Method name="fileDataServerError"/>
+    <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
+  </Match>
+
+  <!--                                         -->
+  <!-- com.io7m.cardant.client.preferences.api -->
+  <!--                                         -->
+
+  <!-- Many record types. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.client.preferences.api.CAPreferences"/>
+      <Class name="com.io7m.cardant.client.preferences.api.CAPreferencesDebuggingEnabled"/>
+      <Class name="com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark"/>
+      <Class name="com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!--                                      -->
+  <!-- com.io7m.cardant.client.transfer.api -->
+  <!--                                      -->
+
+  <!-- Many record types. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.client.transfer.api.CATransferDownloadCancelled"/>
+      <Class name="com.io7m.cardant.client.transfer.api.CATransferDownloadCompleted"/>
+      <Class name="com.io7m.cardant.client.transfer.api.CATransferDownloadFailed"/>
+      <Class name="com.io7m.cardant.client.transfer.api.CATransferDownloading"/>
+      <Class name="com.io7m.cardant.client.transfer.api.CATransferDownloadWaiting"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!--                                             -->
+  <!-- com.io7m.cardant.client.preferences.vanilla -->
+  <!--                                             -->
+
+  <!-- Caught just for logging. -->
+  <Match>
+    <Class name="com.io7m.cardant.client.preferences.vanilla.CAPreferencesService"/>
+    <Bug pattern="REC_CATCH_EXCEPTION"/>
+  </Match>
+
+  <!--                                          -->
+  <!-- com.io7m.cardant.client.transfer.vanilla -->
+  <!--                                          -->
+
+  <!-- Many record types. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.client.transfer.vanilla.internal.CAOctetsPerSecond"/>
+      <Class name="com.io7m.cardant.client.transfer.vanilla.internal.CATransferException"/>
+      <Class name="com.io7m.cardant.client.transfer.vanilla.internal.CATransferOperation"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!-- Combining filters is less readable. -->
+  <Match>
+    <Class name="com.io7m.cardant.client.transfer.vanilla.CATransferService"/>
+    <Bug pattern="FII_COMBINE_FILTERS"/>
+  </Match>
+
+  <!-- Not required. -->
+  <Match>
+    <Class name="com.io7m.cardant.client.transfer.vanilla.internal.CASlowInputStream"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.client.transfer.vanilla.CATransferService"/>
+    <Method name="create"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.client.transfer.vanilla.CATransferService"/>
+    <Method name="fileIsOld"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- Deliberately slowing down code for "slow transfers". -->
+  <Match>
+    <Class name="com.io7m.cardant.client.transfer.vanilla.internal.CATransferOperation"/>
+    <Method name="execute"/>
+    <Bug pattern="MDM_THREAD_YIELD"/>
+  </Match>
+
+  <!--                               -->
+  <!-- com.io7m.cardant.database.api -->
+  <!--                               -->
+
+  <!-- Many record types. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.database.api.CADatabaseConfiguration"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseCreate"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseEventUpdated"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseException"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseIncludeRedacted"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseRole"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseUpgrade"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseUserUpdates"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesRevokeType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesRevokeType$Parameters"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!--                                    -->
+  <!-- com.io7m.cardant.database.postgres -->
+  <!--                                    -->
+
+  <!-- Generated code. -->
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal.tables.records"/>
+  </Match>
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal.enums"/>
+  </Match>
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal.tables"/>
+  </Match>
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.database.postgres.internal.DefaultCatalog"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.DefaultSchema"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.Keys"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.Tables"/>
+    </Or>
+  </Match>
+
+  <!-- This is, depressingly, the only way to use ALTER ROLE. -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Method name="updateWorkerRolePassword"/>
+    <Or>
+      <Bug pattern="SQL_INJECTION_JDBC"/>
+      <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
+    </Or>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Method name="updateReadOnlyRolePassword"/>
+    <Or>
+      <Bug pattern="SQL_INJECTION_JDBC"/>
+      <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
+    </Or>
+  </Match>
+
+  <!-- Queries refer to lots of generated classes for the DSL. -->
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="CE_CLASS_ENVY"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS"/>
+  </Match>
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Method name="publishTrEvent"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <!-- These classes are coupled as part of an API. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabase"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseQueriesFiles"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseQueriesItems"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseQueriesLocations"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseQueriesMaintenance"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseQueriesTags"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseQueriesUsers"/>
+      <Class name="com.io7m.cardant.database.postgres.internal.CADatabaseTransaction"/>
+    </Or>
+    <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY"/>
+  </Match>
+
+  <!-- Necessarily complex due to SQL state codes. -->
+  <Match>
+    <Class name="com.io7m.idstore.database.postgres.internal.IdDatabaseExceptions"/>
+    <Method name="handleDatabaseException"/>
+    <Bug pattern="CC_CYCLOMATIC_COMPLEXITY"/>
+  </Match>
+
+  <!-- IOException -> UncheckedIOException -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.internal.CADatabase"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- IOException -> UncheckedIOException -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.CAPGDatabases"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!--                          -->
+  <!-- com.io7m.cardant.parsers -->
+  <!--                          -->
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="CE_CLASS_ENVY"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!--                             -->
+  <!-- com.io7m.cardant.server.api -->
+  <!--                             -->
+
+  <!-- Many record types. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.server.api.CAServerConfiguration"/>
+      <Class name="com.io7m.cardant.server.api.CAServerConfigurationFile"/>
+      <Class name="com.io7m.cardant.server.api.CAServerConfigurations"/>
+      <Class name="com.io7m.cardant.server.api.CAServerDatabaseConfiguration"/>
+      <Class name="com.io7m.cardant.server.api.CAServerDatabaseKind"/>
+      <Class name="com.io7m.cardant.server.api.CAServerHTTPConfiguration"/>
+      <Class name="com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration"/>
+      <Class name="com.io7m.cardant.server.api.CAServerIdstoreConfiguration"/>
+      <Class name="com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!--                               -->
+  <!-- com.io7m.cardant.server.basic -->
+  <!--                               -->
+
+  <!-- A general catch to record telemetry. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.basic.internal.CAServer"/>
+    <Method name="setUserAsAdmin"/>
+    <Bug pattern="REC_CATCH_EXCEPTION"/>
+  </Match>
+
+  <!--                                          -->
+  <!-- com.io7m.cardant.server.service.sessions -->
+  <!--                                          -->
+
+  <!-- Record type. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.sessions.CASessionSecretIdentifier"/>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!-- getInstanceStrong() should never raise an exception. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.sessions.CASessionSecretIdentifier"/>
+    <Method name="generate"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!--                                       -->
+  <!-- com.io7m.cardant.server.service.clock -->
+  <!--                                       -->
+
+  <!-- It's an API. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.clock.CAServerClock"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!--                                        -->
+  <!-- com.io7m.cardant.server.service.health -->
+  <!--                                        -->
+
+  <!-- It's an API. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.health.CAServerHealth"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!--                                    -->
+  <!-- com.io7m.cardant.server.controller -->
+  <!--                                    -->
+
+  <!-- It's an exception. Don't care about equality. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
+  </Match>
+
+  <!-- We don't have pattern matching until JDK 21 -->
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICommandExecutor"/>
+    <Method name="executeCommand"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <!-- Record type. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.command_exec.CACommandContext"/>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!--                                               -->
+  <!-- com.io7m.cardant.server.service.configuration -->
+  <!--                                               -->
+
+  <!-- Mindless blackthorne code. -->
+  <Match>
+    <Package name="com.io7m.cardant.server.service.configuration.v1"/>
+  </Match>
+
+  <!-- Pattern matching. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationSerializer"/>
+    <Method name="serializeTLS"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
+  <!-- Unavoidable. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationSerializer"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- It's an API. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationFiles"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!-- Translating generated classes to records. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationFiles"/>
+    <Or>
+      <Bug pattern="CE_CLASS_ENVY"/>
+      <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+      <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Or>
+  </Match>
+
+  <!-- Reading paths from a configuration file. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.configuration.CAServerConfigurationFiles"/>
+    <Bug pattern="PATH_TRAVERSAL_IN"/>
+  </Match>
+
+  <!--                              -->
+  <!-- com.io7m.cardant.server.http -->
+  <!--                              -->
+
+  <!-- Record type. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.server.http.CAHTTPResponseFixedSize"/>
+      <Class name="com.io7m.cardant.server.http.CAHTTPResponseRedirect"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!-- Exception types shouldn't care about equality. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.http.CAHTTPErrorStatusException"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
+  </Match>
+
+  <!-- It's an API. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.http.CAHTTPServerRequests"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!-- toString() isn't needed here. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.server.http.CAHTTPHandlerCoreFixedDelay"/>
+      <Class name="com.io7m.cardant.server.http.CAHTTPHandlerCoreInstrumented"/>
+      <Class name="com.io7m.cardant.server.http.CAHandlerHolders"/>
+    </Or>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+  </Match>
+
+  <!-- False positive. The code throws an unchecked exception, it doesn't convert one. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.http.CAHTTPHandlerFunctional"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_HAS_CHECKED"/>
+  </Match>
+
+  <!-- JDK 21 pattern matching required. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.http.CAHTTPHandlerFunctional"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <!-- equals() isn't needed here. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.http.CAHandlerHolder"/>
+    <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
+  </Match>
+
+  <!--                                             -->
+  <!-- com.io7m.cardant.server.service.maintenance -->
+  <!--                                             -->
+
+  <!-- Catching any exception. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.maintenance.CAMaintenanceService"/>
+    <Bug pattern="REC_CATCH_EXCEPTION"/>
+  </Match>
+
+  <!-- False positive; executor is closed and is a virtual thread executor anyway. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.maintenance.CAMaintenanceService"/>
+    <Bug pattern="HES_EXECUTOR_NEVER_SHUTDOWN"/>
+  </Match>
+
+  <!-- It's an API. -->
+  <Match>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!--                                          -->
+  <!-- com.io7m.cardant.server.service.reqlimit -->
+  <!--                                          -->
+
+  <!-- It's an API. -->
+  <Match>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <!-- equals() not needed. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.service.reqlimit.CARequestLimitExceeded"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_EQUALS"/>
+  </Match>
+
+  <!--                                      -->
+  <!-- com.io7m.cardant.server.inventory.v1 -->
+  <!--                                      -->
+
+  <!-- Irrelevant for servlets. -->
+  <Match>
+    <Package name="com.io7m.cardant.server.inventory.v1"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+  </Match>
+
+  <!-- IOException -> UncheckedIOException -->
+  <Match>
+    <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerCommand"/>
+    <Method name="execute"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- IOException -> UncheckedIOException -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerLogin"/>
+      <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerFileUpload"/>
+    </Or>
+    <Method name="execute"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <!-- This string specifically needs to write \r\n\r\n -->
+  <Match>
+    <Class name="com.io7m.cardant.server.inventory.v1.CA1HandlerVersion"/>
+    <Method name="execute"/>
+    <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICommandExecutor"/>
+    <Bug pattern="CC_CYCLOMATIC_COMPLEXITY"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICommandExecutor"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
+  <!--                              -->
+  <!-- com.io7m.cardant.server.main -->
+  <!--                              -->
+
+  <Match>
+    <Class name="com.io7m.cardant.main.CAMain"/>
+    <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.main.CAMain"/>
+    <Bug pattern="UVA_USE_VAR_ARGS"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.main.internal.CMCmdServer"/>
+    <Bug pattern="MDM_THREAD_YIELD"/>
+  </Match>
+  <Match>
+    <Package name="com.io7m.cardant.main.internal"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+  </Match>
+
+  <!--                        -->
+  <!-- com.io7m.cardant.shell -->
+  <!--                        -->
+
+  <!-- Record types. -->
+  <Match>
+    <Or>
+      <Class name="com.io7m.cardant.shell.CAShellConfiguration"/>
+      <Class name="com.io7m.cardant.shell.internal.CAShellOptions"/>
+      <Class name="com.io7m.cardant.shell.internal.CAShellTerminalHolder"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!-- JDK 21 pattern matching required. -->
+  <Match>
+    <Class name="com.io7m.cardant.shell.internal.CAShellCmdHelp"/>
+    <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.shell.internal.CAShellCmdFileSearchBegin"/>
+    <Bug pattern="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.shell.internal"/>
+    <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+  </Match>
+
+  <!--                          -->
+  <!-- com.io7m.cardant.strings -->
+  <!--                          -->
+
+  <!-- Record types. -->
+  <Match>
+    <Class name="com.io7m.cardant.strings.CAStringConstantApplied"/>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+      <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+</FindBugsFilter>

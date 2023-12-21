@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ResponseError xmlns="urn:com.io7m.cardant.inventory:1"
+               message="Error message"
+               status="500">
+  <ResponseErrorDetail message="Detail 1"/>
+  <ResponseErrorDetail message="Detail 2"/>
+  <ResponseErrorDetail message="Detail 3"/>
+</ResponseError>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="37643259-280b-3436-8261-ace5f433e4e9" title="type-scalar-get" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-scalar-get</Term>
+       - Retrieve a scalar type
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-scalar-get</Term>
+       command retrieves a scalar type.
+    </Paragraph>
+    <FormalItem title="Parameters">
+      <Table type="parameterTable">
+        <Columns>
+          <Column>Parameter</Column>
+          <Column>Type</Column>
+          <Column>Cardinality</Column>
+          <Column>Default</Column>
+          <Column>Description</Column>
+        </Columns>
+        <Row>
+          <Cell>
+            <Term type="parameter">--name</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.lanark.core.RDottedName</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[1, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>The type name.</Cell>
+        </Row>
+      </Table>
+    </FormalItem>
+  </Subsection>
+</Section>
+

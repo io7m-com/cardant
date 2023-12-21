@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="1694c9d5-aab8-33d3-b5d5-2da3ecb6b34d" title="type-scalar-put" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-scalar-put</Term>
+       - Create or update a scalar type.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-scalar-put</Term>
+       command creates or updates a scalar type.
+    </Paragraph>
+    <FormalItem title="Parameters">
+      <Table type="parameterTable">
+        <Columns>
+          <Column>Parameter</Column>
+          <Column>Type</Column>
+          <Column>Cardinality</Column>
+          <Column>Default</Column>
+          <Column>Description</Column>
+        </Columns>
+        <Row>
+          <Cell>
+            <Term type="parameter">--base-is-integral</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.jranges.RangeInclusiveL</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant">[-9223372036854775808 9223372036854775807]</Term>
+          </Cell>
+          <Cell>Specify that the base type is integral and provide an inclusive range of values.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--base-is-monetary</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.cardant.model.CAMonetaryRange</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant">[0 1000000000000]</Term>
+          </Cell>
+          <Cell>Specify that the base type is monetary and provide an inclusive range of values.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--base-is-real</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.jranges.RangeInclusiveD</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant">[-1.7976931e+308 1.7976931e+308]</Term>
+          </Cell>
+          <Cell>Specify that the base type is real and provide an inclusive range of values.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--base-is-text</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant">.*</Term>
+          </Cell>
+          <Cell>Specify that the base type is text and provide a validating pattern.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--base-is-time</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.cardant.model.CATimeRange</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant">[1970-01-01T00:00Z ...]</Term>
+          </Cell>
+          <Cell>Specify that the base type is a timestamp and provide an inclusive range of values.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--description</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[1, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>The type description.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--name</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">com.io7m.lanark.core.RDottedName</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[1, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>The type name.</Cell>
+        </Row>
+      </Table>
+    </FormalItem>
+  </Subsection>
+</Section>
+

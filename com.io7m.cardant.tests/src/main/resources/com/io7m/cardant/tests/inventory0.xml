@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Items xmlns="urn:com.io7m.cardant.inventory:1">
+  <Item id="fbebaa76-58a2-4e0b-8e61-a4dbcdc8e2bc"
+        name="item"
+        count="123">
+    <ItemMetadatas>
+      <ItemMetadata name="Example">
+        Was Phileas Fogg rich? Undoubtedly. But those who knew him best could not imagine how he had made his fortune,
+        and Mr. Fogg was the last person to whom to apply for the information. He was not lavish, nor, on the contrary,
+        avaricious; for, whenever he knew that money was needed for a noble, useful, or benevolent purpose, he supplied
+        it quietly and sometimes anonymously. He was, in short, the least communicative of men. He talked very little,
+        and seemed all the more mysterious for his taciturn manner. His daily habits were quite open to observation; but
+        whatever he did was so exactly the same thing that he had always done before, that the wits of the curious were
+        fairly puzzled.
+      </ItemMetadata>
+      <ItemMetadata name="Q">
+        The mansion in Saville Row, though not sumptuous, was exceedingly comfortable. The habits of its occupant were
+        such as to demand but little from the sole domestic, but Phileas Fogg required him to be almost superhumanly
+        prompt and regular. On this very 2nd of October he had dismissed James Forster, because that luckless youth had
+        brought him shaving-water at eighty-four degrees Fahrenheit instead of eighty-six; and he was awaiting his
+        successor, who was due at the house between eleven and half-past.
+      </ItemMetadata>
+    </ItemMetadatas>
+    <Tags>
+      <Tag id="1f68ddf6-2584-4b3c-a212-5ecf37bb7400"
+           name="Control"/>
+      <Tag id="039fe875-ee52-4b83-8a8c-09497d9983af"
+           name="Automation"/>
+      <Tag id="9710ede2-f7f5-4751-a9e2-78d0e7796fd2"
+           name="Current"/>
+    </Tags>
+    <ItemAttachments>
+      <ItemAttachment id="94b649f5-88f1-4c81-baaf-0036df9f2bab"
+                      description="A description."
+                      mediaType="text/plain"
+                      relation="info"
+                      size="505"
+                      hashAlgorithm="SHA-256"
+                      hashValue="5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03">
+        <ItemAttachmentData>
+          VGhlIG1hbnNpb24gaW4gU2F2aWxsZSBSb3csIHRob3VnaCBub3Qgc3VtcHR1b3VzLAp3YXMgZXhj
+          ZWVkaW5nbHkgY29tZm9ydGFibGUuIFRoZSBoYWJpdHMgb2YgaXRzCm9jY3VwYW50IHdlcmUgc3Vj
+          aCBhcyB0byBkZW1hbmQgYnV0IGxpdHRsZSBmcm9tCnRoZSBzb2xlIGRvbWVzdGljLCBidXQgUGhp
+          bGVhcyBGb2dnIHJlcXVpcmVkIGhpbQp0byBiZSBhbG1vc3Qgc3VwZXJodW1hbmx5IHByb21wdCBh
+          bmQgcmVndWxhci4gT24KdGhpcyB2ZXJ5IDJuZCBvZiBPY3RvYmVyIGhlIGhhZCBkaXNtaXNzZWQg
+          SmFtZXMKRm9yc3RlciwgYmVjYXVzZSB0aGF0IGx1Y2tsZXNzIHlvdXRoIGhhZCBicm91Z2h0Cmhp
+          bSBzaGF2aW5nLXdhdGVyIGF0IGVpZ2h0eS1mb3VyIGRlZ3JlZXMgRmFocmVuaGVpdAppbnN0ZWFk
+          IG9mIGVpZ2h0eS1zaXg7IGFuZCBoZSB3YXMgYXdhaXRpbmcgaGlzCnN1Y2Nlc3Nvciwgd2hvIHdh
+          cyBkdWUgYXQgdGhlIGhvdXNlIGJldHdlZW4gZWxldmVuCmFuZCBoYWxmLXBhc3QuCg==
+        </ItemAttachmentData>
+      </ItemAttachment>
+    </ItemAttachments>
+  </Item>
+</Items>
+

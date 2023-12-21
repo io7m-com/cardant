@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Configuration xmlns="com.io7m.cardant:configuration:1"
+               xmlns:ct="com.io7m.cardant:tls:1">
+
+  <InventoryService ListenAddress="[::]"
+                    ListenPort="30000"
+                    SessionExpiration="PT30M"
+                    ExternalAddress="http://cardant.example.com:30000">
+    <ct:TLSDisabled/>
+  </InventoryService>
+
+  <Database Kind="POSTGRESQL"
+            OwnerRoleName="cardant_install"
+            OwnerRolePassword="892a2b68-2ddf-478a-a8ab-37172f6ac2fe"
+            WorkerRolePassword="e61135dc-1d3f-4ab2-85ef-95ef49d66285"
+            ReaderRolePassword="c2026069-97e7-45b1-85c4-a2349bbb847b"
+            Address="db.example.com"
+            Port="5432"
+            Name="cardant"
+            Create="true"
+            Upgrade="true"
+            Language="english"/>
+
+  <Idstore BaseURI="https://idstore.example.com:50000"
+           PasswordResetURI="https://idstore.example.com:50001/reset"/>
+
+  <Limits MaximumFileUploadSizeOctets="10000000"
+          MaximumCommandSizeOctets="10000000"/>
+
+  <Maintenance TLSReloadInterval="PT24H"/>
+
+  <OpenTelemetry LogicalServiceName="cardant01">
+    <Logs Endpoint="http://logs.example.com:4317"
+          Protocol="GRPC"/>
+    <Metrics Endpoint="http://metrics.example.com:4317"
+             Protocol="GRPC"/>
+    <Traces Endpoint="http://traces.example.com:4317"
+            Protocol="GRPC"/>
+  </OpenTelemetry>
+
+</Configuration>

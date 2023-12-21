@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section id="d1b0658f-edbf-422c-8ca7-39328666cdf2"
+         title="Security"
+         xmlns="urn:com.io7m.structural:8:0">
+
+  <Subsection title="Overview">
+    <Paragraph>
+      All command execution in the <Term type="package">cardant</Term> server passes through a
+      single code path that captures <LinkExternal target="https://opentelemetry.io/">OpenTelemetry</LinkExternal>
+      traces and publishes events. Administrators should write alerting rules in their metrics system of choice to
+      watch for instances of the traces, metrics, and events described here; they almost certainly indicate malicious
+      behaviour.
+    </Paragraph>
+    <Paragraph>
+      At the time of writing, <Term type="term">events</Term> are published as part of a containing
+      <Term type="term">trace</Term>, and therefore the server must be
+      <Link target="1e5d55f4-0334-4613-bd0c-8e307de47af7">configured</Link> to publish traces in order
+      for an external monitoring system to be able to observe the events. The
+      reason for this is that the OpenTelemetry Events API specification is not yet stable and so
+      traces are currently the only way to publish events. It is expected that a stable version of the
+      Events API will be released soon, and then the <Term type="package">cardant</Term> server will
+      switch to using that API directly (and this will require only
+      <Link target="dea6eac7-9436-46aa-839a-a018ed497913">log</Link> telemetry to be configured
+      as opposed to full trace collection).
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="Security Policy Violations">
+    <Paragraph>
+      If an operation attempts to violate the server's built-in security policy, an exception
+      will be raised with an <Term type="expression">cardant.errorCode</Term> attribute set to
+      <Term type="expression">error-security-policy-denied</Term>.
+    </Paragraph>
+  </Subsection>
+
+</Section>

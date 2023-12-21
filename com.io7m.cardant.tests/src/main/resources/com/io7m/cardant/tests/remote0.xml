@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Configuration xmlns="urn:com.io7m.cardant.server.configuration:1">
+  <DatabaseRemote host="database.example.com"
+                  port="9999"/>
+  <HTTP port="8080"
+        sessionDirectory="/tmp/store"/>
+  <Limits/>
+</Configuration>

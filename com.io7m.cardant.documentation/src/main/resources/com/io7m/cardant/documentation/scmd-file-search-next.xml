@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="12f6dd12-cb94-3f24-ace9-1599d89e503b" title="file-search-next" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">file-search-next</Term>
+       - Go to the next page of files.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">file-search-next</Term>
+       command goes to the next page of file <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">search</Link> results.
+    </Paragraph>
+  </Subsection>
+</Section>
+

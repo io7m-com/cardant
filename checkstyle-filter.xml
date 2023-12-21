@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE suppressions PUBLIC
+  "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
+  "https://checkstyle.org/dtds/suppressions_1_0.dtd">
+
+<suppressions>
+  <suppress files="CATransferOperation.java"
+            checks="ParameterNumber"/>
+  
+  <suppress files="CA1CommandServlet.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CA1CommandServlet.java"
+            checks="NPathComplexity"/>
+  <suppress files="CA1EventServlet.java"
+            checks="AnonInnerLength"/>
+
+  <suppress files="CAICommandExecutor.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAICommandExecutor.java"
+            checks="ExecutableStatementCount"/>
+  <suppress files="CAICommandExecutor.java"
+            checks="NPathComplexity"/>
+  <suppress files="CAICmdAbstract.java"
+            checks="ThrowsCount"/>
+  <suppress files="CAICommandExecutor.java"
+            checks="ClassDataAbstractionCoupling"/>
+
+  <suppress files="CAUVMessage.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CAUVMessage.java"
+            checks="NPathComplexity"/>
+  <suppress files="CAUVMessage.java"
+            checks="ExecutableStatementCount"/>
+  <suppress files="CAUVMessage.java"
+            checks="JavaNCSS"/>
+  <suppress files="CAUVMessage.java"
+            checks="ClassFanOutComplexity"/>
+
+  <suppress files="CAShells.java"
+            checks="ClassDataAbstractionCoupling"/>
+
+  <suppress files="CADatabaseQueriesItems.java"
+            checks="FileLength"/>
+  
+  <suppress files="CAMetadataElementMatchType.java"
+            checks="InterfaceIsType"/>
+  
+  <suppress files="CATypeChecking.java"
+            checks="CyclomaticComplexity"/>
+  <suppress files="CATypeChecking.java"
+            checks="NPathComplexity"/>
+
+  <suppress files="CAMetadataMatchExpressions.java"
+            checks="NPathComplexity"/>
+  
+  <suppress files="CA1HandlerLogin.java"
+            checks="ParameterNumber"/>
+  
+</suppressions>

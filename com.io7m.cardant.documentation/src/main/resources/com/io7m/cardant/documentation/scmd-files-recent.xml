@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="d59255f3-4dd1-3948-9089-03ab9fc06b49" title="files-recent" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">files-recent</Term>
+       - List the recent files.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">files-recent</Term>
+       command lists the files recently used by shell commands such as
+      <Link target="eb86c157-4e5b-3871-bed1-ddcc45b02958">file-put</Link>.
+    </Paragraph>
+  </Subsection>
+</Section>
+

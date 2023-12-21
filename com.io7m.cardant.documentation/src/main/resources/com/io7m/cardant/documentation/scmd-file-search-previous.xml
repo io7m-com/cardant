@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="f8b9ba5d-2f51-38d0-8a51-821813797b8a" title="file-search-previous" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">file-search-previous</Term>
+       - Go to the previous page of files.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">file-search-previous</Term>
+       command goes to the previous page of file <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">search</Link> results.
+    </Paragraph>
+  </Subsection>
+</Section>
+

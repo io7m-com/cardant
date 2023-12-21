@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="03b67e08-1768-3b64-a602-6d7573f62c9a" title="audit-search-previous" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">audit-search-previous</Term>
+       - Go to the previous page of audit events.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">audit-search-previous</Term>
+       command goes to the previous page of audit events.
+    </Paragraph>
+    <Paragraph>
+      The command can only be used after the associated <Link target="78e8e032-966b-370a-bc2a-74b0199c208c">begin</Link>
+      command.
+    </Paragraph>
+  </Subsection>
+</Section>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="63e3f096-ca39-3b04-9c8d-f60f6a58d01c" title="help" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">help</Term>
+       - Display help for a given command.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">help</Term>
+       command displays help for the given command.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ help file-put
+cardant: usage: file-put [named-arguments ...]
+
+  Upload a file.
+
+  Named parameters:
+    --content-type
+      Description       : The content type (inferred if not specified).
+      Type              : String
+      Cardinality       : [0, 1]; Specify at most once.
+      Syntax            : <any sequence of characters>
+    --description
+      Description       : The file description.
+      Type              : String
+      Cardinality       : [0, 1]; Specify at most once.
+      Syntax            : <any sequence of characters>
+  * --file
+      Description       : The file.
+      Type              : Path
+      Cardinality       : [1]; Specify exactly once.
+      Syntax            : <platform-specific path syntax>
+  * --id
+      Description       : The file ID.
+      Type              : CAFileID
+      Cardinality       : [1]; Specify exactly once.
+      Syntax            : [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
+
+  The command does not accept any positional arguments.
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

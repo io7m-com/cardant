@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="5e693811-d803-385b-a00a-be93c433df55" title="self" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">self</Term>
+       - Return details about the current user.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">self</Term>
+       command returns the current user's ID and roles.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ self
+User ID: c5574d46-7413-43c8-b6db-31001c382ca3
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ Role                                                                           │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ audit.reader                                                                   │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ inventory.admin                                                                │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ inventory.files.reader                                                         │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ inventory.files.writer                                                         │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ inventory.items.reader                                                         │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ inventory.items.writer                                                         │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ inventory.locations.reader                                                     │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ inventory.locations.writer                                                     │
+└────────────────────────────────────────────────────────────────────────────────┘
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+
