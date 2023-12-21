@@ -36,7 +36,6 @@ import com.io7m.repetoir.core.RPServiceDirectoryType;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
@@ -63,15 +62,6 @@ public final class CAShellCmdAuditSearchBegin
       new QConstant("Return audit events earlier than this date."),
       Optional.of(IdTimeRange.largest().timeUpper()),
       OffsetDateTime.class
-    );
-
-  private static final QParameterNamed01<UUID> AGENT =
-    new QParameterNamed01<>(
-      "--agent",
-      List.of(),
-      new QConstant("Filter events by agent."),
-      Optional.empty(),
-      UUID.class
     );
 
   private static final QParameterNamed01<CAUserID> USER =
@@ -136,7 +126,6 @@ public final class CAShellCmdAuditSearchBegin
     return List.of(
       LIMIT,
       USER,
-      AGENT,
       TIME_FROM,
       TIME_TO,
       TYPE_EQUALS,

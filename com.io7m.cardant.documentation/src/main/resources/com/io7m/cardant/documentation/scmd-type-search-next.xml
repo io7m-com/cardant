@@ -13,10 +13,5 @@
        command goes to the next page of types.
     </Paragraph>
   </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
-    </FormalItem>
-  </Subsection>
 </Section>
 

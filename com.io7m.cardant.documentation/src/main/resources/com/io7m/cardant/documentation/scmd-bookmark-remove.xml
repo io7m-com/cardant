@@ -10,7 +10,7 @@
     <Paragraph>
       The 
       <Term type="command">bookmark-remove</Term>
-       command removes a bookmark.
+       command removes a <Link target="01a85d22-da3c-4f18-ba11-d6e700345e4e">bookmark</Link>.
     </Paragraph>
     <FormalItem title="Parameters">
       <Table type="parameterTable">
@@ -37,11 +37,6 @@
           <Cell>The name of the bookmark.</Cell>
         </Row>
       </Table>
-    </FormalItem>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
     </FormalItem>
   </Subsection>
 </Section>

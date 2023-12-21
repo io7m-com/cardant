@@ -10,7 +10,7 @@
     <Paragraph>
       The 
       <Term type="command">type-scalar-search-begin</Term>
-       command starts searching for scalar types.
+       command starts <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">searching</Link> for scalar types.
     </Paragraph>
     <FormalItem title="Parameters">
       <Table type="parameterTable">
@@ -52,11 +52,6 @@
           <Cell>The type search query.</Cell>
         </Row>
       </Table>
-    </FormalItem>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
     </FormalItem>
   </Subsection>
 </Section>

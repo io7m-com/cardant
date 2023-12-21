@@ -8,15 +8,10 @@
   </Subsection>
   <Subsection title="Description">
     <Paragraph>
-      The 
+      The
       <Term type="command">bookmark-list</Term>
-       command lists the local server bookmarks.
+       command lists the local server <Link target="01a85d22-da3c-4f18-ba11-d6e700345e4e">bookmarks</Link>.
     </Paragraph>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
-    </FormalItem>
   </Subsection>
 </Section>
 

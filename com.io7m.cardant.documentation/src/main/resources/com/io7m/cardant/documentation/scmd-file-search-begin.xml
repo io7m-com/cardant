@@ -10,7 +10,7 @@
     <Paragraph>
       The 
       <Term type="command">file-search-begin</Term>
-       command begins searching for files on the server.
+       command begins <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">searching</Link> for files on the server.
     </Paragraph>
     <FormalItem title="Parameters">
       <Table type="parameterTable">
@@ -187,11 +187,6 @@
           <Cell>The minimum file size.</Cell>
         </Row>
       </Table>
-    </FormalItem>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
     </FormalItem>
   </Subsection>
 </Section>

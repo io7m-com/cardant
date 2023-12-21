@@ -10,13 +10,8 @@
     <Paragraph>
       The 
       <Term type="command">file-search-next</Term>
-       command goes to the next page of file search results.
+       command goes to the next page of file <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">search</Link> results.
     </Paragraph>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
-    </FormalItem>
   </Subsection>
 </Section>
 

@@ -18,11 +18,13 @@
 package com.io7m.cardant.server.inventory.v1;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesAuditType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.api.CADatabaseUserUpdates;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandLogin;
@@ -53,6 +55,7 @@ import io.helidon.webserver.http.ServerRequest;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -220,7 +223,10 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
      */
 
     var icUser =
-      new CAUser(new CAUserID(userId), login.userName(), new MSubject(Set.of()));
+      new CAUser(
+        new CAUserID(userId),
+        login.userName(),
+        new MSubject(Set.of()));
 
     try {
       icUser = CADatabaseUserUpdates.userMerge(database, icUser);
@@ -265,6 +271,18 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
       );
 
     try {
+      transaction.queries(CADatabaseQueriesAuditType.EventAddType.class)
+        .execute(new CAAuditEvent(
+          0L,
+          OffsetDateTime.now(),
+          icUser.userId(),
+          "USER_LOGGED_IN",
+          Map.ofEntries(
+            entry("Host", information.remoteAddress()),
+            entry("UserAgent", information.userAgent())
+          )
+        ));
+
       transaction.commit();
     } catch (final CADatabaseException e) {
       return errorResponseOf(

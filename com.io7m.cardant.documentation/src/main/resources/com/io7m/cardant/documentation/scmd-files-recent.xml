@@ -10,13 +10,9 @@
     <Paragraph>
       The 
       <Term type="command">files-recent</Term>
-       command... 
+       command lists the files recently used by shell commands such as
+      <Link target="eb86c157-4e5b-3871-bed1-ddcc45b02958">file-put</Link>.
     </Paragraph>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
-    </FormalItem>
   </Subsection>
 </Section>
 

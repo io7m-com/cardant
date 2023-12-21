@@ -10,7 +10,7 @@
     <Paragraph>
       The 
       <Term type="command">item-search-begin</Term>
-       command begins searching for items.
+       command begins <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">searching</Link> for items.
     </Paragraph>
     <FormalItem title="Parameters">
       <Table type="parameterTable">
@@ -97,11 +97,6 @@
           <Cell>Only include items that have types matching the given expression.</Cell>
         </Row>
       </Table>
-    </FormalItem>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
     </FormalItem>
   </Subsection>
 </Section>
