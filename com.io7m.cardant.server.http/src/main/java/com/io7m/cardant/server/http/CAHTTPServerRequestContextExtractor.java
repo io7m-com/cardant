@@ -22,6 +22,7 @@ import io.helidon.webserver.http.ServerRequest;
 import io.opentelemetry.context.propagation.TextMapGetter;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -76,6 +77,15 @@ public final class CAHTTPServerRequestContextExtractor
     Objects.requireNonNull(request, "request");
     Objects.requireNonNull(name, "name");
 
-    return request.headers().get(HeaderNames.create(name)).get();
+    final var headerName =
+      HeaderNames.create(name);
+    final var headers =
+      request.headers();
+
+    try {
+      return headers.get(headerName).get();
+    } catch (final NoSuchElementException e) {
+      return null;
+    }
   }
 }
