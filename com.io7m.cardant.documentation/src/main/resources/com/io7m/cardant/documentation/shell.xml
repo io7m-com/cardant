@@ -202,6 +202,8 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-item-search-begin.xml"/>
     <xi:include href="scmd-item-search-next.xml"/>
     <xi:include href="scmd-item-search-previous.xml"/>
+    <xi:include href="scmd-item-types-assign.xml"/>
+    <xi:include href="scmd-item-types-revoke.xml"/>
     <xi:include href="scmd-location-attachment-add.xml"/>
     <xi:include href="scmd-location-attachment-remove.xml"/>
     <xi:include href="scmd-location-get.xml"/>

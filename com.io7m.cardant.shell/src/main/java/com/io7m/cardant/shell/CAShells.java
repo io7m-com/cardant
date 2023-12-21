@@ -48,6 +48,8 @@ import com.io7m.cardant.shell.internal.CAShellCmdItemRepositRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdItemTypesAssign;
+import com.io7m.cardant.shell.internal.CAShellCmdItemTypesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentAdd;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationGet;
@@ -179,6 +181,8 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemSearchBegin(services),
         new CAShellCmdItemSearchNext(services),
         new CAShellCmdItemSearchPrevious(services),
+        new CAShellCmdItemTypesAssign(services),
+        new CAShellCmdItemTypesRevoke(services),
         new CAShellCmdLocationAttachmentAdd(services),
         new CAShellCmdLocationAttachmentRemove(services),
         new CAShellCmdLocationGet(services),
