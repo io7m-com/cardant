@@ -14,68 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.model;
 
+import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.lanark.core.RDottedName;
 
 import java.util.Objects;
 
 /**
- * Expressions that match metadata names.
+ * A wrapper for a set comparison.
+ *
+ * @param expression The expression
  */
 
-sealed public interface CAMetadataNameMatchType
+public record CATypeMatch(
+  CAComparisonSetType<RDottedName> expression)
 {
   /**
-   * Match any name.
-   */
-
-  enum AnyName implements CAMetadataNameMatchType
-  {
-    /**
-     * Match any name.
-     */
-
-    ANY_NAME
-  }
-
-  /**
-   * Match metadata names exactly.
+   * A wrapper for a set comparison.
    *
-   * @param name The name
+   * @param expression The expression
    */
 
-  record ExactName(
-    RDottedName name)
-    implements CAMetadataNameMatchType
+  public CATypeMatch
   {
-    /**
-     * Match metadata names exactly.
-     */
-
-    public ExactName
-    {
-      Objects.requireNonNull(name, "name");
-    }
-  }
-
-  /**
-   * Match metadata names according to the given search query.
-   *
-   * @param query The query
-   */
-
-  record SearchName(
-    String query)
-    implements CAMetadataNameMatchType
-  {
-    /**
-     * Match metadata names according to the given search query.
-     */
-
-    public SearchName
-    {
-      Objects.requireNonNull(query, "query");
-    }
+    Objects.requireNonNull(expression, "expression");
   }
 }

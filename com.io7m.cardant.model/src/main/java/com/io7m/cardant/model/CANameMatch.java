@@ -15,19 +15,29 @@
  */
 
 
-package com.io7m.cardant.tests.arbitraries.model;
+package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.CANameMatchType.Any;
-import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import net.jqwik.api.Arbitraries;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 
-public final class CAArbNameMatchAny extends CAArbAbstract<Any>
+import java.util.Objects;
+
+/**
+ * A wrapper for a fuzzy comparison.
+ *
+ * @param expression The expression
+ */
+
+public record CANameMatch(
+  CAComparisonFuzzyType<String> expression)
 {
-  public CAArbNameMatchAny()
+  /**
+   * A wrapper for a fuzzy comparison.
+   *
+   * @param expression The expression
+   */
+
+  public CANameMatch
   {
-    super(
-      Any.class,
-      () -> Arbitraries.create(() -> Any.ANY_NAME)
-    );
+    Objects.requireNonNull(expression, "expression");
   }
 }

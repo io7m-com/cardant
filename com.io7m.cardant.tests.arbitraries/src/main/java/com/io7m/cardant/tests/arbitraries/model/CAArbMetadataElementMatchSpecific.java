@@ -18,7 +18,6 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CAMetadataNameMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
@@ -32,7 +31,7 @@ public final class CAArbMetadataElementMatchSpecific
     super(
       CAMetadataElementMatchType.Specific.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAMetadataNameMatchType.class),
+        CAArbComparisons.fuzzy(Arbitraries.strings()),
         Arbitraries.defaultFor(CAMetadataValueMatchType.class)
       ).as(CAMetadataElementMatchType.Specific::new)
     );

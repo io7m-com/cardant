@@ -26,9 +26,9 @@ import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CANameMatchType.Any;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -69,11 +69,12 @@ public final class CAICmdItemSearchBeginTest
   private static final CAItemSearchParameters PARAMETERS =
     new CAItemSearchParameters(
       new CAItemLocationMatchType.CAItemLocationsAll(),
-      Any.ANY_NAME,
-      CATypeMatchAny.ANY,
+      new CAComparisonFuzzyType.Anything<>(),
+      new CAComparisonFuzzyType.Anything<>(),
+      new CAComparisonSetType.Anything<>(),
       CAMetadataElementMatchType.ANYTHING,
       new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-      100
+      100L
     );
 
   /**

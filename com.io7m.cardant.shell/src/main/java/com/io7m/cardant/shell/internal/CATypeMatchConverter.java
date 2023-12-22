@@ -19,7 +19,8 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CATypeMatchType;
+import com.io7m.cardant.model.CATypeMatch;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.parsers.CATypeMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.lanark.core.RDottedName;
@@ -34,7 +35,7 @@ import java.util.Set;
  */
 
 public final class CATypeMatchConverter
-  implements QValueConverterType<CATypeMatchType>
+  implements QValueConverterType<CATypeMatch>
 {
   private final CAStrings strings;
 
@@ -51,7 +52,7 @@ public final class CATypeMatchConverter
   }
 
   @Override
-  public CATypeMatchType convertFromString(
+  public CATypeMatch convertFromString(
     final String text)
     throws QException
   {
@@ -64,7 +65,7 @@ public final class CATypeMatchConverter
 
   @Override
   public String convertToString(
-    final CATypeMatchType value)
+    final CATypeMatch value)
     throws QException
   {
     try {
@@ -76,12 +77,14 @@ public final class CATypeMatchConverter
   }
 
   @Override
-  public CATypeMatchType exampleValue()
+  public CATypeMatch exampleValue()
   {
-    return new CATypeMatchType.CATypeMatchAnyOf(
-      Set.of(
-        new RDottedName("x.y"),
-        new RDottedName("y.z")
+    return new CATypeMatch(
+      new CAComparisonSetType.IsOverlapping<>(
+        Set.of(
+          new RDottedName("x.y"),
+          new RDottedName("y.z")
+        )
       )
     );
   }
@@ -93,8 +96,8 @@ public final class CATypeMatchConverter
   }
 
   @Override
-  public Class<CATypeMatchType> convertedClass()
+  public Class<CATypeMatch> convertedClass()
   {
-    return CATypeMatchType.class;
+    return CATypeMatch.class;
   }
 }

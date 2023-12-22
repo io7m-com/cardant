@@ -16,6 +16,7 @@
         command. The shell supports basic tab-completion and history accessed with the up and down arrows.
       </Paragraph>
     </Subsection>
+
     <Subsection title="Tab Completion">
       <Paragraph>
         When running on an appropriate terminal, the shell supports tab completion for command and most
@@ -29,6 +30,7 @@
         <Image source="term1.png" width="495" height="314">Argument completion.</Image>
       </FormalItem>
     </Subsection>
+
     <Subsection title="History">
       <Paragraph>
         When running on an appropriate terminal, the command shell stores the history of commands in memory (the
@@ -36,6 +38,7 @@
         executed commands.
       </Paragraph>
     </Subsection>
+
     <Subsection title="Quoting">
       <Paragraph>
         Arguments to shell commands may be quoted using the <Term type="constant">"</Term> or
@@ -46,6 +49,7 @@
         <Image source="term2.png" width="495" height="314">Quoting.</Image>
       </FormalItem>
     </Subsection>
+
     <Subsection title="Newlines">
       <Paragraph>
         Typically, the <Term type="expression">ENTER</Term> key ends the current line. This will cause the shell to
@@ -60,25 +64,6 @@
         When in this mode, the cursor can be moved around freely with the arrow keys to allow for editing lines.
         Pressing the <Term type="expression">ENTER</Term> key ends the multiline editing mode and executes the
         command.
-      </Paragraph>
-    </Subsection>
-
-    <Subsection title="Search Pagination" id="a14610db-3fbe-46b2-91a6-23d861f8d454">
-      <Paragraph>
-        All <Term type="term">search</Term> commands in the <Term type="package">cardant</Term> package
-        provide automatic <Term type="term">pagination</Term>. Searches are performed by beginning a search
-        with a <Term type="term">begin</Term> command which will yield the first page of results. Searches
-        are then continued with <Term type="term">next</Term> and <Term type="term">previous</Term> commands which
-        will return the next and previous pages of results, respectively. It is an error to try to execute a
-        <Term type="term">next</Term> or <Term type="term">previous</Term> command without first having executed
-        a <Term type="term">begin</Term> command.
-      </Paragraph>
-      <Paragraph>
-        Each page of search results includes the number of the current page, and the number of pages of search
-        results available. Attempting to seek beyond the end of the set of pages with a <Term type="term">next</Term>
-        command is not an error; the server will simply repeatedly return the last page in the set. Similarly,
-        attempting to seek before the first page of results with a <Term type="term">previous</Term> command
-        will simply return the first page of results, repeatedly.
       </Paragraph>
     </Subsection>
 
@@ -172,6 +157,353 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
 ]]>
         </Verbatim>
       </FormalItem>
+    </Subsection>
+
+    <Subsection title="Searching">
+      <Subsection title="Description" id="a14610db-3fbe-46b2-91a6-23d861f8d454">
+        <Paragraph>
+          The <Term type="package">cardant</Term> package exposes many commands for searching the database.
+        </Paragraph>
+        <Paragraph>
+          All <Term type="term">search</Term> commands in the <Term type="package">cardant</Term> package
+          provide automatic <Term type="term">pagination</Term>. Searches are performed by beginning a search
+          with a <Term type="term">begin</Term> command which will yield the first page of results. Searches
+          are then continued with <Term type="term">next</Term> and <Term type="term">previous</Term> commands which
+          will return the next and previous pages of results, respectively. It is an error to try to execute a
+          <Term type="term">next</Term> or <Term type="term">previous</Term> command without first having executed
+          a <Term type="term">begin</Term> command.
+        </Paragraph>
+        <Paragraph>
+          Each page of search results includes the number of the current page, and the number of pages of search
+          results available. Attempting to seek beyond the end of the set of pages with a <Term type="term">next</Term>
+          command is not an error; the server will simply repeatedly return the last page in the set. Similarly,
+          attempting to seek before the first page of results with a <Term type="term">previous</Term> command
+          will simply return the first page of results, repeatedly.
+        </Paragraph>
+      </Subsection>
+
+      <Subsection title="Name Matching" id="733cf6a3-dedc-4a3c-ae1c-b8301066ece3">
+        <Paragraph>
+          A <Term type="term">name match expression</Term> is an expression used to filter search results. The
+          expression is evaluated using the object's name as input and the object is included in search results
+          if the expression evaluates to <Term type="constant">true</Term>.
+        </Paragraph>
+        <Paragraph>
+          A name match expression takes one of the following forms:
+        </Paragraph>
+        <FormalItem title="Forms">
+          <ListUnordered>
+            <Item>
+              <Term type="expression">with-any-name</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-name-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-name-not-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-name-similar-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-name-not-similar-to n)</Term>
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Expressions have the following semantics, given in terms of a
+          <Term type="expression">match_name_evaluate</Term>
+          function:
+        </Paragraph>
+        <FormalItem title="Semantics">
+          <Verbatim><xi:include href="sem-match-name.txt" parse="text"/></Verbatim>
+        </FormalItem>
+        <FormalItem title="Semantics Explanation">
+          <ListUnordered>
+            <Item>
+              An expression <Term type="expression">with-any-name</Term> always evaluates to
+              <Term type="constant">true</Term>.
+            </Item>
+            <Item>
+              For all names <Term type="expression">m</Term>,
+              <Term type="expression">(with-name-equal-to n) m</Term> evaluates to <Term type="constant">true</Term>
+              iff <Term type="constant">m = n</Term>.
+            </Item>
+            <Item>
+              For all names <Term type="expression">m</Term>,
+              <Term type="expression">(with-name-not-equal-to n) m</Term> evaluates to <Term type="constant">true</Term>
+              iff <Term type="constant">m ≠ n</Term>.
+            </Item>
+            <Item>
+              For all names <Term type="expression">m</Term>,
+              <Term type="expression">(with-name-similar-to n) m</Term> evaluates to <Term type="constant">true</Term>
+              iff <Term type="constant">m</Term> is sufficiently similar to <Term type="constant">n</Term> according
+              to an implementation-defined, language-specific similarity function.
+            </Item>
+            <Item>
+              For all names <Term type="expression">m</Term>,
+              <Term type="expression">(with-name-not-similar-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m</Term> is not sufficiently similar to <Term type="constant">n</Term> according
+              to an implementation-defined, language-specific similarity function.
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Specifically, the "similarity" function is currently implemented in terms of 
+          <LinkExternal target="https://www.postgresql.org/docs/current/textsearch-intro.html#TEXTSEARCH-MATCHING">
+            PostgreSQL's full text search functionality
+          </LinkExternal>.
+        </Paragraph>
+        <FormalItem title="Syntax">
+          <Verbatim><xi:include href="syn-match-name.txt" parse="text"/></Verbatim>
+        </FormalItem>
+      </Subsection>
+
+      <Subsection title="Type Matching" id="846b4339-eeb4-43e6-8bde-4a40332df205">
+        <Paragraph>
+          A <Term type="term">type match expression</Term> is an expression used to filter search results. The
+          expression is evaluated using the object's set of types as input and the object is included in search results
+          if the expression evaluates to <Term type="constant">true</Term>.
+        </Paragraph>
+        <Paragraph>
+          A type match expression takes one of the following forms:
+        </Paragraph>
+        <FormalItem title="Forms">
+          <ListUnordered>
+            <Item>
+              <Term type="expression">with-any-types</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-types-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-types-not-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-types-superset-of n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-types-subset-of n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-types-overlapping n)</Term>
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Expressions have the following semantics, given in terms of a
+          <Term type="expression">match_type_evaluate</Term> function:
+        </Paragraph>
+        <FormalItem title="Semantics">
+          <Verbatim><xi:include href="sem-match-type.txt" parse="text"/></Verbatim>
+        </FormalItem>
+        <FormalItem title="Semantics Explanation">
+          <ListUnordered>
+            <Item>
+              An expression <Term type="expression">with-any-types</Term> always evaluates to
+              <Term type="constant">true</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">s</Term>,
+              <Term type="expression">(with-types-equal-to t) s</Term> evaluates to <Term type="constant">true</Term>
+              iff <Term type="constant">t = s</Term>. Note that sets are not ordered.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">s</Term>,
+              <Term type="expression">(with-types-not-equal-to t) s</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">s ≠ t</Term>. Note that sets are not ordered.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">s</Term>,
+              <Term type="expression">(with-types-subset-of t) s</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">s</Term> is a subset of <Term type="constant">t</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">s</Term>,
+              <Term type="expression">(with-types-superset-of t) s</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">s</Term> is a superset of <Term type="constant">t</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">s</Term>,
+              <Term type="expression">(with-types-overlapping t) s</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff there exists some element
+              <Term type="constant">e</Term>
+              that is present in both
+              <Term type="constant">s</Term> and <Term type="constant">t</Term>.
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <FormalItem title="Syntax">
+          <Verbatim><xi:include href="syn-match-type.txt" parse="text"/></Verbatim>
+        </FormalItem>
+      </Subsection>
+
+      <Subsection title="Description Matching" id="29c4727f-4858-480b-a137-b2328428cbe3">
+        <Paragraph>
+          A <Term type="term">description match expression</Term> is an expression used to filter search results. The
+          expression is evaluated using the object's description as input and the object is included in search results
+          if the expression evaluates to <Term type="constant">true</Term>.
+        </Paragraph>
+        <Paragraph>
+          A description match expression takes one of the following forms:
+        </Paragraph>
+        <FormalItem title="Forms">
+          <ListUnordered>
+            <Item>
+              <Term type="expression">with-any-description</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-description-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-description-not-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-description-similar-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-description-not-similar-to n)</Term>
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Expressions have the following semantics, given in terms of a
+          <Term type="expression">match_description_evaluate</Term>
+          function:
+        </Paragraph>
+        <FormalItem title="Semantics">
+          <Verbatim><xi:include href="sem-match-description.txt" parse="text"/></Verbatim>
+        </FormalItem>
+        <FormalItem title="Semantics Explanation">
+          <ListUnordered>
+            <Item>
+              An expression <Term type="expression">with-any-description</Term> always evaluates to
+              <Term type="constant">true</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-description-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m = n</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-description-not-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m ≠ n</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-description-similar-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m</Term> is sufficiently similar to <Term type="constant">n</Term> according
+              to an implementation-defined, language-specific similarity function.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-description-not-similar-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m</Term> is not sufficiently similar to <Term type="constant">n</Term> according
+              to an implementation-defined, language-specific similarity function.
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Specifically, the "similarity" function is currently implemented in terms of
+          <LinkExternal target="https://www.postgresql.org/docs/current/textsearch-intro.html#TEXTSEARCH-MATCHING">
+            PostgreSQL's full text search functionality
+          </LinkExternal>.
+        </Paragraph>
+        <FormalItem title="Syntax">
+          <Verbatim><xi:include href="syn-match-description.txt" parse="text"/></Verbatim>
+        </FormalItem>
+      </Subsection>
+
+      <Subsection title="Media Type Matching" id="6b7b3069-2658-464c-8c4b-3425e35ef8df">
+        <Paragraph>
+          A <Term type="term">media type match expression</Term> is an expression used to filter search results. The
+          expression is evaluated using the object's media type as input and the object is included in search results
+          if the expression evaluates to <Term type="constant">true</Term>.
+        </Paragraph>
+        <Paragraph>
+          A media type match expression takes one of the following forms:
+        </Paragraph>
+        <FormalItem title="Forms">
+          <ListUnordered>
+            <Item>
+              <Term type="expression">with-any-mediatype</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-mediatype-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-mediatype-not-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-mediatype-similar-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-mediatype-not-similar-to n)</Term>
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Expressions have the following semantics, given in terms of a
+          <Term type="expression">match_mediatype_evaluate</Term> function:
+        </Paragraph>
+        <FormalItem title="Semantics">
+          <Verbatim><xi:include href="sem-match-mediatype.txt" parse="text"/></Verbatim>
+        </FormalItem>
+        <FormalItem title="Semantics Explanation">
+          <ListUnordered>
+            <Item>
+              An expression <Term type="expression">with-any-mediatype</Term> always evaluates to
+              <Term type="constant">true</Term>.
+            </Item>
+            <Item>
+              For all media types <Term type="expression">m</Term>,
+              <Term type="expression">(with-mediatype-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m = n</Term>.
+            </Item>
+            <Item>
+              For all media types <Term type="expression">m</Term>,
+              <Term type="expression">(with-mediatype-not-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m ≠ n</Term>.
+            </Item>
+            <Item>
+              For all media types <Term type="expression">m</Term>,
+              <Term type="expression">(with-mediatype-similar-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m</Term> is sufficiently similar to <Term type="constant">n</Term> according
+              to an implementation-defined, language-specific similarity function.
+            </Item>
+            <Item>
+              For all media types <Term type="expression">m</Term>,
+              <Term type="expression">(with-mediatype-not-similar-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m</Term> is not sufficiently similar to
+              <Term type="constant">n</Term> according
+              to an implementation-defined, language-specific similarity function.
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Specifically, the "similarity" function is currently implemented in terms of
+          <LinkExternal target="https://www.postgresql.org/docs/current/textsearch-intro.html#TEXTSEARCH-MATCHING">
+            PostgreSQL's full text search functionality
+          </LinkExternal>.
+        </Paragraph>
+        <FormalItem title="Syntax">
+          <Verbatim><xi:include href="syn-match-mediatype.txt" parse="text"/></Verbatim>
+        </FormalItem>
+      </Subsection>
     </Subsection>
   </Section>
 

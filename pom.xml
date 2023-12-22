@@ -449,6 +449,16 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>com.io7m.idstore</groupId>
+        <artifactId>com.io7m.idstore.server.service.configuration</artifactId>
+        <version>${com.io7m.idstore.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.idstore</groupId>
+        <artifactId>com.io7m.idstore.server.api</artifactId>
+        <version>${com.io7m.idstore.version}</version>
+      </dependency>
 
       <!-- Cedarbridge -->
       <dependency>

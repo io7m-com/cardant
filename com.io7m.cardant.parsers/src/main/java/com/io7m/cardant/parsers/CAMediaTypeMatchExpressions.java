@@ -18,7 +18,7 @@
 package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CAMediaTypeMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.Anything;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsEqualTo;
@@ -38,51 +38,51 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
 import static java.util.Map.entry;
 
 /**
- * Expression parsers for name match expressions.
+ * Expression parsers for mediatype match expressions.
  */
 
-public final class CANameMatchExpressions extends CAExpressions
+public final class CAMediaTypeMatchExpressions extends CAExpressions
 {
   private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
     Map.ofEntries(
       entry(
-        SYNTAX_NAME_MATCH_ANYNAME_NAME,
-        SYNTAX_NAME_MATCH_ANYNAME),
+        SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE_NAME,
+        SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO),
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO),
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO),
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO)
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO)
     );
 
   /**
-   * Expression parsers for name match expressions.
+   * Expression parsers for mediatype match expressions.
    *
    * @param inStrings The string resources
    */
 
-  public CANameMatchExpressions(
+  public CAMediaTypeMatchExpressions(
     final CAStrings inStrings)
   {
     super(inStrings);
@@ -95,7 +95,7 @@ public final class CANameMatchExpressions extends CAExpressions
   }
 
   /**
-   * Parse a match expression for names.
+   * Parse a match expression for mediatypes.
    *
    * @param text The input text
    *
@@ -104,15 +104,15 @@ public final class CANameMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public CANameMatch nameMatch(
+  public CAMediaTypeMatch mediatypeMatch(
     final String text)
     throws CAException
   {
-    return this.nameMatch(CAExpressions.parse(text));
+    return this.mediatypeMatch(CAExpressions.parse(text));
   }
 
   /**
-   * Parse a match expression for names.
+   * Parse a match expression for mediatypes.
    *
    * @param e The input expression
    *
@@ -121,20 +121,20 @@ public final class CANameMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public CANameMatch nameMatch(
+  public CAMediaTypeMatch mediatypeMatch(
     final SExpressionType e)
     throws CAException
   {
-    return new CANameMatch(this.nameMatchExpr(e));
+    return new CAMediaTypeMatch(this.mediatypeMatchExpr(e));
   }
 
-  private CAComparisonFuzzyType<String> nameMatchExpr(
+  private CAComparisonFuzzyType<String> mediatypeMatchExpr(
     final SExpressionType e)
     throws CAException
   {
     return switch (e) {
       case final SAtomType a
-        when "WITH-ANY-NAME".equals(a.text().toUpperCase(Locale.ROOT)) -> {
+        when "WITH-ANY-MEDIATYPE".equals(a.text().toUpperCase(Locale.ROOT)) -> {
         yield new Anything<>();
       }
       case final SListType xs
@@ -142,16 +142,16 @@ public final class CANameMatchExpressions extends CAExpressions
           && xs.get(0) instanceof final SAtomType head
           && xs.get(1) instanceof final SAtomType value -> {
         yield switch (head.text().toUpperCase(Locale.ROOT)) {
-          case "WITH-NAME-EQUAL-TO" -> {
+          case "WITH-MEDIATYPE-EQUAL-TO" -> {
             yield new IsEqualTo<>(value.text());
           }
-          case "WITH-NAME-NOT-EQUAL-TO" -> {
+          case "WITH-MEDIATYPE-NOT-EQUAL-TO" -> {
             yield new IsNotEqualTo<>(value.text());
           }
-          case "WITH-NAME-SIMILAR-TO" -> {
+          case "WITH-MEDIATYPE-SIMILAR-TO" -> {
             yield new IsSimilarTo<>(value.text());
           }
-          case "WITH-NAME-NOT-SIMILAR-TO" -> {
+          case "WITH-MEDIATYPE-NOT-SIMILAR-TO" -> {
             yield new IsNotSimilarTo<>(value.text());
           }
           default -> {
@@ -175,11 +175,11 @@ public final class CANameMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public String nameMatchSerializeToString(
-    final CANameMatch value)
+  public String mediatypeMatchSerializeToString(
+    final CAMediaTypeMatch value)
     throws CAException
   {
-    return CAExpressions.serialize(this.nameMatchSerialize(value.expression()));
+    return CAExpressions.serialize(this.mediatypeMatchSerialize(value.expression()));
   }
 
   /**
@@ -190,12 +190,12 @@ public final class CANameMatchExpressions extends CAExpressions
    * @return The serialized expression
    */
 
-  public SExpressionType nameMatchSerialize(
+  public SExpressionType mediatypeMatchSerialize(
     final CAComparisonFuzzyType<String> expression)
   {
     return switch (expression) {
       case final Anything<String> ignored -> {
-        yield new SSymbol(zero(), "with-any-name");
+        yield new SSymbol(zero(), "with-any-mediatype");
       }
 
       case final IsEqualTo<String> e -> {
@@ -203,7 +203,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-equal-to"),
+            new SSymbol(zero(), "with-mediatype-equal-to"),
             new SQuotedString(zero(), e.value())
           )
         );
@@ -214,7 +214,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-not-equal-to"),
+            new SSymbol(zero(), "with-mediatype-not-equal-to"),
             new SQuotedString(zero(), e.value())
           )
         );
@@ -225,7 +225,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-not-similar-to"),
+            new SSymbol(zero(), "with-mediatype-not-similar-to"),
             new SQuotedString(zero(), e.value())
           )
         );
@@ -236,7 +236,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-similar-to"),
+            new SSymbol(zero(), "with-mediatype-similar-to"),
             new SQuotedString(zero(), e.value())
           )
         );

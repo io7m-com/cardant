@@ -41,18 +41,13 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
-import com.io7m.cardant.model.CAMetadataNameMatchType.ExactName;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.ExactTextValue;
-import com.io7m.cardant.model.CANameMatchType;
-import com.io7m.cardant.model.CANameMatchType.Any;
-import com.io7m.cardant.model.CANameMatchType.Search;
 import com.io7m.cardant.model.CATypeDeclaration;
-import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAllOf;
-import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
-import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAnyOf;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -268,8 +263,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationWithDescendants(loc0.id()),
-          Any.ANY_NAME,
-          CATypeMatchAny.ANY,
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonSetType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
@@ -316,8 +312,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationWithDescendants(loc1.id()),
-          Any.ANY_NAME,
-          CATypeMatchAny.ANY,
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonSetType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
@@ -364,8 +361,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationWithDescendants(loc2.id()),
-          Any.ANY_NAME,
-          CATypeMatchAny.ANY,
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonSetType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
@@ -497,8 +495,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationExact(loc0.id()),
-          Any.ANY_NAME,
-          CATypeMatchAny.ANY,
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonSetType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
@@ -545,8 +544,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationExact(loc1.id()),
-          Any.ANY_NAME,
-          CATypeMatchAny.ANY,
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonSetType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
@@ -593,8 +593,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationExact(loc2.id()),
-          Any.ANY_NAME,
-          CATypeMatchAny.ANY,
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonSetType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
@@ -726,8 +727,9 @@ public final class CADatabaseItemsSearchTest
       final var search =
         this.searchQuery.execute(new CAItemSearchParameters(
           new CAItemLocationsAll(),
-          Any.ANY_NAME,
-          CATypeMatchAny.ANY,
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonSetType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
           100
@@ -774,7 +776,7 @@ public final class CADatabaseItemsSearchTest
    */
 
   @Test
-  public void testItemSearchByName(
+  public void testItemSearchByNameSimilarTo(
     final @TempDir Path directory)
     throws Exception
   {
@@ -784,8 +786,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        new Search("join"),
-        CATypeMatchAny.ANY,
+        new CAComparisonFuzzyType.IsSimilarTo<>("join"),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -805,7 +808,7 @@ public final class CADatabaseItemsSearchTest
   }
 
   /**
-   * Searching for items by full text search works.
+   * Searching for items by exact match works.
    *
    * @throws Exception On errors
    */
@@ -824,8 +827,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        new CANameMatchType.Exact(itemName),
-        CATypeMatchAny.ANY,
+        new CAComparisonFuzzyType.IsEqualTo<>(itemName),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -873,14 +877,15 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        Any.ANY_NAME,
-        CATypeMatchAny.ANY,
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.Anything<>(),
         new CAMetadataElementMatchType.And(
           new CAMetadataElementMatchType.And(
-            new Specific(new ExactName(name0), ANY_VALUE),
-            new Specific(new ExactName(name1), ANY_VALUE)
+            new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name0.value()), ANY_VALUE),
+            new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name1.value()), ANY_VALUE)
           ),
-          new Specific(new ExactName(name2), ANY_VALUE)
+          new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name2.value()), ANY_VALUE)
         ),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -923,9 +928,10 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        Any.ANY_NAME,
-        CATypeMatchAny.ANY,
-        new Specific(new ExactName(name0), new ExactTextValue("explanation")),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.Anything<>(),
+        new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name0.value()), new ExactTextValue("explanation")),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -963,8 +969,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        Any.ANY_NAME,
-        new CATypeMatchAnyOf(
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.IsOverlapping<>(
           Set.of(new RDottedName("t0"), new RDottedName("t1"))
         ),
         CAMetadataElementMatchType.ANYTHING,
@@ -1009,8 +1016,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        Any.ANY_NAME,
-        new CATypeMatchAllOf(
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.IsEqualTo<>(
           Set.of(new RDottedName("t0"), new RDottedName("t1"))
         ),
         CAMetadataElementMatchType.ANYTHING,

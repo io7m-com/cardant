@@ -17,20 +17,20 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAnyOf;
+import com.io7m.cardant.model.CADescriptionMatch;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbTypeMatchAnyOf extends CAArbAbstract<CATypeMatchAnyOf>
+public final class CAArbDescriptionMatch extends CAArbAbstract<CADescriptionMatch>
 {
-  public CAArbTypeMatchAnyOf()
+  public CAArbDescriptionMatch()
   {
     super(
-      CATypeMatchAnyOf.class,
-      () -> Arbitraries.defaultFor(RDottedName.class)
-        .set()
-        .map(CATypeMatchAnyOf::new)
+      CADescriptionMatch.class,
+      () -> {
+        return CAArbComparisons.fuzzy(Arbitraries.strings())
+          .map(CADescriptionMatch::new);
+      }
     );
   }
 }

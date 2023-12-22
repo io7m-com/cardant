@@ -34,6 +34,7 @@ import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
 import com.io7m.jqpage.core.JQOrder;
+import com.io7m.lanark.core.RDottedName;
 import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.EnumType;
@@ -107,20 +108,16 @@ public final class CADBQItemSearch
      */
 
     final var nameCondition =
-      CADBMatch.ofNameMatch(
-        new CADBMatch.NameFields(
-          ITEM_SEARCH_VIEW.ITEM_NAME,
-          ITEM_NAME_SEARCH
-        ),
-        parameters.nameMatch()
+      CADBComparisons.createFuzzyMatchQuery(
+        parameters.nameMatch(),
+        ITEM_SEARCH_VIEW.ITEM_NAME,
+        ITEM_NAME_SEARCH.getName()
       );
 
     final var typeCondition =
-      CADBMatch.ofTypeMatch(
-        new CADBMatch.TypeFields(
-          ITEM_SEARCH_VIEW.ISV_MTR_NAMES
-        ),
-        parameters.typeMatch()
+      CADBComparisons.createSetMatchQueryString(
+        parameters.typeMatch().map(RDottedName::value),
+        ITEM_SEARCH_VIEW.ISV_MTR_NAMES
       );
 
     final var locationCondition =

@@ -17,10 +17,12 @@
 
 package com.io7m.cardant.shell;
 
+import com.io7m.cardant.shell.internal.CADescriptionMatchConverter;
 import com.io7m.cardant.shell.internal.CAFileIdConverter;
 import com.io7m.cardant.shell.internal.CAItemIdConverter;
 import com.io7m.cardant.shell.internal.CAItemLocationMatchConverter;
 import com.io7m.cardant.shell.internal.CALocationIdConverter;
+import com.io7m.cardant.shell.internal.CAMediaTypeMatchConverter;
 import com.io7m.cardant.shell.internal.CAMetadataConverter;
 import com.io7m.cardant.shell.internal.CAMetadataMatchConverter;
 import com.io7m.cardant.shell.internal.CAMonetaryRangeConverter;
@@ -58,10 +60,12 @@ public final class CAShellValueConverters
     final CAStrings strings)
   {
     return QValueConverterDirectory.core()
+      .with(new CADescriptionMatchConverter(strings))
       .with(new CAFileIdConverter())
       .with(new CAItemIdConverter())
       .with(new CAItemLocationMatchConverter(strings))
       .with(new CALocationIdConverter())
+      .with(new CAMediaTypeMatchConverter(strings))
       .with(new CAMetadataConverter(strings))
       .with(new CAMetadataMatchConverter(strings))
       .with(new CAMonetaryRangeConverter(strings))

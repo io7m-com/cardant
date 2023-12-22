@@ -1,0 +1,7 @@
+match_mediatype ::=
+    "with-any-mediatype"
+  | "(" "with-mediatype-equal-to" <mediatype> ")"
+  | "(" "with-mediatype-not-equal-to" <mediatype> ")"
+  | "(" "with-mediatype-similar-to" <string> ")"
+  | "(" "with-mediatype-not-similar-to" <string> ")"
+  ;

@@ -40,6 +40,7 @@ import com.io7m.cardant.tls.CATLSDisabled;
 import com.io7m.ervilla.api.EContainerSpec;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.api.EContainerType;
+import com.io7m.ervilla.api.EPortProtocol;
 import com.io7m.ervilla.api.EPortPublish;
 import com.io7m.ervilla.api.EVolumeMount;
 import com.io7m.ervilla.postgres.EPgSpecs;
@@ -53,12 +54,27 @@ import com.io7m.idstore.model.IdPasswordAlgorithmPBKDF2HmacSHA256;
 import com.io7m.idstore.model.IdRealName;
 import com.io7m.idstore.protocol.admin.IdACommandUserCreate;
 import com.io7m.idstore.protocol.admin.IdAResponseUserCreate;
+import com.io7m.idstore.server.api.IdServerBrandingConfiguration;
+import com.io7m.idstore.server.api.IdServerConfigurationFile;
+import com.io7m.idstore.server.api.IdServerDatabaseConfiguration;
+import com.io7m.idstore.server.api.IdServerDatabaseKind;
+import com.io7m.idstore.server.api.IdServerHTTPConfiguration;
+import com.io7m.idstore.server.api.IdServerHTTPServiceConfiguration;
+import com.io7m.idstore.server.api.IdServerHistoryConfiguration;
+import com.io7m.idstore.server.api.IdServerMailConfiguration;
+import com.io7m.idstore.server.api.IdServerMailTransportSMTP;
+import com.io7m.idstore.server.api.IdServerMaintenanceConfiguration;
+import com.io7m.idstore.server.api.IdServerPasswordExpirationConfiguration;
+import com.io7m.idstore.server.api.IdServerRateLimitConfiguration;
+import com.io7m.idstore.server.api.IdServerSessionConfiguration;
+import com.io7m.idstore.server.service.configuration.IdServerConfigurationSerializers;
+import com.io7m.idstore.tls.IdTLSDisabled;
 import io.opentelemetry.api.OpenTelemetry;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
@@ -67,10 +83,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-import static com.io7m.ervilla.api.EPortProtocol.TCP;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.util.Optional.empty;
 
 public final class CATestContainers
@@ -79,6 +93,9 @@ public final class CATestContainers
     new CAPGDatabases();
   private static final CAServerFactoryType SERVERS =
     new CAServers();
+
+  private static final String OWNER_ROLE =
+    "postgres";
 
   private CATestContainers()
   {
@@ -135,7 +152,7 @@ public final class CATestContainers
           "dropdb",
           "-w",
           "-U",
-          "cardant_install",
+          OWNER_ROLE,
           "cardant"
         )
       );
@@ -145,11 +162,22 @@ public final class CATestContainers
           "createdb",
           "-w",
           "-U",
-          "cardant_install",
+          OWNER_ROLE,
           "cardant"
         )
       );
     }
+  }
+
+  public static String primaryIP()
+  {
+    final var socket = new Socket();
+    try {
+      socket.connect(new InetSocketAddress("www.example.com", 80));
+    } catch (final IOException e) {
+      // Don't care
+    }
+    return socket.getLocalAddress().getHostAddress();
   }
 
   public static CADatabaseFixture createDatabase(
@@ -161,21 +189,21 @@ public final class CATestContainers
       supervisor.start(
         EPgSpecs.builderFromDockerIO(
           CATestProperties.POSTGRESQL_VERSION,
-          Optional.empty(),
+          Optional.of("[::]"),
           port,
           "cardant",
-          "cardant_install",
+          OWNER_ROLE,
           "12345678"
         ).build()
       );
 
     final var configuration =
       new CADatabaseConfiguration(
-        "cardant_install",
+        OWNER_ROLE,
         "12345678",
         "12345678",
         Optional.of("12345678"),
-        "localhost",
+        primaryIP(),
         port,
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
@@ -204,21 +232,21 @@ public final class CATestContainers
       supervisor.start(
         EPgSpecs.builderFromDockerIO(
           CATestProperties.POSTGRESQL_VERSION,
-          Optional.empty(),
+          Optional.of("[::]"),
           port,
           "cardant",
-          "cardant_install",
+          OWNER_ROLE,
           ownerRolePassword
         ).build()
       );
 
     final var configuration =
       new CADatabaseConfiguration(
-        "cardant_install",
+        OWNER_ROLE,
         ownerRolePassword,
         workerRolePassword,
         Optional.of(readerRolePassword),
-        "localhost",
+        primaryIP(),
         port,
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
@@ -236,7 +264,7 @@ public final class CATestContainers
 
   public record CAIdstoreFixture(
     EContainerType serverContainer,
-    EContainerType databaseContainer,
+    CADatabaseFixture databaseFixture,
     UUID adminId,
     String adminName,
     String adminPassword,
@@ -255,22 +283,22 @@ public final class CATestContainers
     {
       this.serverContainer.stop();
 
-      this.databaseContainer.executeAndWaitIndefinitely(
+      this.databaseFixture.container.executeAndWaitIndefinitely(
         List.of(
           "dropdb",
           "-w",
           "-U",
-          "idstore_install",
+          OWNER_ROLE,
           "idstore"
         )
       );
 
-      this.databaseContainer.executeAndWaitIndefinitely(
+      this.databaseFixture.container.executeAndWaitIndefinitely(
         List.of(
           "createdb",
           "-w",
           "-U",
-          "idstore_install",
+          OWNER_ROLE,
           "idstore"
         )
       );
@@ -316,14 +344,14 @@ public final class CATestContainers
             this.adminName,
             this.adminPassword,
             URI.create(
-              "http://localhost:%d".formatted(Integer.valueOf(this.adminAPIPort))
+              "http://" + primaryIP() + ":%d".formatted(Integer.valueOf(this.adminAPIPort))
             ),
             Map.of()
           ),
           IdAClientException::ofError
         );
 
-        final IdAResponseUserCreate response =
+        final var response =
           (IdAResponseUserCreate) client.executeOrElseThrow(
             new IdACommandUserCreate(
               empty(),
@@ -343,43 +371,95 @@ public final class CATestContainers
 
   public static CAIdstoreFixture createIdstore(
     final EContainerSupervisorType supervisor,
+    final CADatabaseFixture databaseFixture,
     final Path configurationDirectory,
-    final int databasePort,
+    final String databaseName,
     final int adminAPIPort,
     final int userAPIPort,
     final int userViewPort)
-    throws IOException, InterruptedException
+    throws Exception
   {
-    final var pod =
-      supervisor.createPod(List.of(
-        new EPortPublish(empty(), databasePort, 5432, TCP),
-        new EPortPublish(empty(), adminAPIPort, 51000, TCP),
-        new EPortPublish(empty(), userAPIPort, 50000, TCP),
-        new EPortPublish(empty(), userViewPort, 50001, TCP)
-      ));
-
-    final var databaseContainer =
-      pod.start(
-        EPgSpecs.builderFromDockerIO(
-          CATestProperties.POSTGRESQL_VERSION,
-          Optional.empty(),
-          databasePort,
-          "idstore",
-          "idstore_install",
-          "12345678"
-        ).build()
+    final var idstoreConfiguration =
+      new IdServerConfigurationFile(
+        new IdServerBrandingConfiguration("idstore", empty(), empty(), empty()),
+        new IdServerMailConfiguration(
+          new IdServerMailTransportSMTP("localhost", 25),
+          empty(),
+          "sender@example.com",
+          Duration.ofHours(1L)
+        ),
+        new IdServerHTTPConfiguration(
+          new IdServerHTTPServiceConfiguration(
+            "[::]",
+            adminAPIPort,
+            URI.create("http://[::]:" + adminAPIPort + "/"),
+            IdTLSDisabled.TLS_DISABLED
+          ),
+          new IdServerHTTPServiceConfiguration(
+            "[::]",
+            userAPIPort,
+            URI.create("http://[::]:" + userAPIPort + "/"),
+            IdTLSDisabled.TLS_DISABLED
+          ),
+          new IdServerHTTPServiceConfiguration(
+            "[::]",
+            userViewPort,
+            URI.create("http://[::]:" + userViewPort + "/"),
+            IdTLSDisabled.TLS_DISABLED
+          )
+        ),
+        new IdServerDatabaseConfiguration(
+          IdServerDatabaseKind.POSTGRESQL,
+          OWNER_ROLE,
+          "12345678",
+          "12345678",
+          empty(),
+          primaryIP(),
+          databaseFixture.configuration.port(),
+          databaseName,
+          true,
+          true
+        ),
+        new IdServerHistoryConfiguration(1, 1),
+        new IdServerSessionConfiguration(
+          Duration.ofHours(1000L),
+          Duration.ofHours(1000L)),
+        new IdServerRateLimitConfiguration(
+          Duration.ofSeconds(1L),
+          Duration.ofSeconds(1L),
+          Duration.ofSeconds(1L),
+          Duration.ofSeconds(0L),
+          Duration.ofSeconds(1L),
+          Duration.ofSeconds(0L)
+        ),
+        new IdServerPasswordExpirationConfiguration(
+          empty(),
+          empty()
+        ),
+        new IdServerMaintenanceConfiguration(empty()),
+        empty()
       );
 
-    Files.writeString(
-      configurationDirectory.resolve("server.xml"),
-      IDSTORE_CONFIGURATION_TEMPLATE.trim(),
-      StandardCharsets.UTF_8,
-      CREATE,
-      TRUNCATE_EXISTING
+    new IdServerConfigurationSerializers()
+      .serializeFile(
+        configurationDirectory.resolve("server.xml"),
+        idstoreConfiguration
+      );
+
+    databaseFixture.container.executeAndWait(
+      List.of(
+        "createdb",
+        "-w",
+        "-U",
+        OWNER_ROLE,
+        databaseName
+      ),
+      1L,
+      TimeUnit.SECONDS
     );
 
     final var serverContainer =
-      pod.start(
+      supervisor.start(
         EContainerSpec.builder(
             "quay.io",
             "io7mcom/idstore",
@@ -388,19 +468,37 @@ public final class CATestContainers
             new EVolumeMount(
               configurationDirectory, "/idstore/etc")
           )
+          .addPublishPort(new EPortPublish(
+            Optional.of("[::]"),
+            userAPIPort,
+            userAPIPort,
+            EPortProtocol.TCP
+          ))
+          .addPublishPort(new EPortPublish(
+            Optional.of("[::]"),
+            userViewPort,
+            userViewPort,
+            EPortProtocol.TCP
+          ))
+          .addPublishPort(new EPortPublish(
+            Optional.of("[::]"),
+            adminAPIPort,
+            adminAPIPort,
+            EPortProtocol.TCP
+          ))
           .addArgument("server")
           .addArgument("--verbose")
           .addArgument("debug")
           .addArgument("--configuration")
           .addArgument("/idstore/etc/server.xml")
-          .setReadyCheck(new CAIdstoreHealthcheck("localhost", 51000))
+          .setReadyCheck(new CAIdstoreHealthcheck("[::]", adminAPIPort))
           .build()
       );
 
     final var fixture =
       new CAIdstoreFixture(
         serverContainer,
-        databaseContainer,
+        databaseFixture,
         UUID.randomUUID(),
         "admin",
         "12345678",
@@ -411,37 +509,6 @@ public final class CATestContainers
     fixture.initialAdmin();
     return fixture;
   }
-
-  private static final String IDSTORE_CONFIGURATION_TEMPLATE = """
-    <?xml version="1.0" encoding="UTF-8" ?>
-    <Configuration xmlns="urn:com.io7m.idstore:configuration:1">
-      <Branding ProductTitle="idstore"/>
-      <Database Name="idstore"
-                Kind="POSTGRESQL"
-                OwnerRoleName="idstore_install"
-                OwnerRolePassword="12345678"
-                WorkerRolePassword="12345678"
-                Address="localhost"
-                Port="5432"
-                Create="true"
-                Upgrade="true"/>
-      <HTTPServices>
-        <HTTPServiceAdminAPI ListenAddress="[::]" ListenPort="51000" ExternalURI="http://[::]:51000/"/>
-        <HTTPServiceUserAPI ListenAddress="[::]" ListenPort="50000" ExternalURI="http://[::]:50000/"/>
-        <HTTPServiceUserView ListenAddress="[::]" ListenPort="50001" ExternalURI="http://[::]:50001/"/>
-      </HTTPServices>
-      <History UserLoginHistoryLimit="10" AdminLoginHistoryLimit="100"/>
-      <Mail SenderAddress="cardant@example.com" VerificationExpiration="PT24H">
-        <SMTP Host="localhost" Port="25"/>
-      </Mail>
-      <RateLimiting EmailVerificationRateLimit="PT1M"
-                    UserLoginRateLimit="PT0S"
-                    AdminLoginRateLimit="PT0S"
-                    PasswordResetRateLimit="PT1M"/>
-      <Sessions UserSessionExpiration="PT60M"
-                AdminSessionExpiration="PT60M"/>
-    </Configuration>
-    """;
 
   public record CAServerFixture(
     CAServerType server)
@@ -469,7 +536,7 @@ public final class CATestContainers
     final int apiPort)
     throws IOException, CAServerException
   {
-    final CAServerConfiguration configuration =
+    final var configuration =
       new CAServerConfiguration(
         Locale.ROOT,
         Clock.systemUTC(),
@@ -477,22 +544,22 @@ public final class CATestContainers
         DATABASES,
         databaseFixture.configuration,
         new CAServerHTTPServiceConfiguration(
-          "localhost",
+          primaryIP(),
           apiPort,
-          URI.create("http://localhost:" + apiPort),
+          URI.create("http://" + primaryIP() + ":" + apiPort),
           Optional.of(Duration.ofHours(1L)),
           CATLSDisabled.TLS_DISABLED
         ),
         new CAServerIdstoreConfiguration(
-          URI.create("http://localhost:" + idstoreFixture.userAPIPort),
-          URI.create("http://localhost:" + idstoreFixture.userAPIPort)
+          URI.create("http://" + primaryIP() + ":" + idstoreFixture.userAPIPort),
+          URI.create("http://" + primaryIP() + ":" + idstoreFixture.userAPIPort)
         ),
         new CAServerLimitsConfiguration(
           10_000_000L,
           1_000_000L
         ),
         new CAServerMaintenanceConfiguration(
-          Optional.empty()
+          empty()
         ),
         empty()
       );

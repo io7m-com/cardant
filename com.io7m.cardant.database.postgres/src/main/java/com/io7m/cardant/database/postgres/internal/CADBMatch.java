@@ -26,16 +26,12 @@ import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CAMetadataNameMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
-import com.io7m.cardant.model.CANameMatchType;
-import com.io7m.cardant.model.CATypeMatchType;
-import com.io7m.lanark.core.RDottedName;
 import org.jooq.Condition;
 import org.jooq.EnumType;
 import org.jooq.Field;
@@ -149,47 +145,6 @@ public final class CADBMatch
 
   }
 
-  static Condition ofTypeMatch(
-    final TypeFields fields,
-    final CATypeMatchType match)
-  {
-    if (match instanceof CATypeMatchType.CATypeMatchAny) {
-      return DSL.trueCondition();
-    }
-
-    if (match instanceof final CATypeMatchType.CATypeMatchAllOf all) {
-      final var types =
-        all.types()
-          .stream()
-          .map(RDottedName::value)
-          .toArray(String[]::new);
-
-      return DSL.condition(
-        "? <@ ?",
-        DSL.array(types),
-        fields.types
-      );
-    }
-
-    if (match instanceof final CATypeMatchType.CATypeMatchAnyOf any) {
-      final var types =
-        any.types()
-          .stream()
-          .map(RDottedName::value)
-          .toArray(String[]::new);
-
-      return DSL.condition(
-        "? && ?",
-        fields.types,
-        DSL.array(types)
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized match type: %s".formatted(match)
-    );
-  }
-
   record MetaFields(
     NameFields nameFields,
     Field<EnumType> metaValueType,
@@ -209,56 +164,6 @@ public final class CADBMatch
     Field<?> nameSearch)
   {
 
-  }
-
-  static Condition ofNameMatch(
-    final NameFields nameFields,
-    final CANameMatchType match)
-  {
-    if (match instanceof CANameMatchType.Any) {
-      return DSL.trueCondition();
-    }
-
-    if (match instanceof final CANameMatchType.Exact exact) {
-      return nameFields.name.eq(exact.text());
-    }
-
-    if (match instanceof final CANameMatchType.Search search) {
-      return DSL.condition(
-        "? @@ websearch_to_tsquery(?)",
-        nameFields.nameSearch.getQualifiedName(),
-        DSL.inline(search.query())
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized match type: %s".formatted(match)
-    );
-  }
-
-  static Condition ofMetaNameMatch(
-    final NameFields fields,
-    final CAMetadataNameMatchType match)
-  {
-    if (match instanceof CAMetadataNameMatchType.AnyName) {
-      return DSL.trueCondition();
-    }
-
-    if (match instanceof final CAMetadataNameMatchType.ExactName exact) {
-      return DSL.field(fields.name).eq(exact.name().value());
-    }
-
-    if (match instanceof final CAMetadataNameMatchType.SearchName search) {
-      return DSL.condition(
-        "? @@ websearch_to_tsquery(?)",
-        fields.nameSearch.getQualifiedName(),
-        DSL.inline(search.query())
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized match type: %s".formatted(match)
-    );
   }
 
   static Condition ofMetaValueMatch(
@@ -314,7 +219,11 @@ public final class CADBMatch
 
     if (match instanceof final CAMetadataElementMatchType.Specific specific) {
       return new QuerySetCondition(DSL.and(
-        ofMetaNameMatch(fields.nameFields, specific.name()),
+        CADBComparisons.createFuzzyMatchQuery(
+          specific.name(),
+          fields.nameFields.name,
+          fields.nameFields.nameSearch.getName()
+        ),
         ofMetaValueMatch(fields, specific.value())
       ));
     }

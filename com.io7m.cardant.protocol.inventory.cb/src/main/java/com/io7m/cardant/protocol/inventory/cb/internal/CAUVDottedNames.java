@@ -15,23 +15,41 @@
  */
 
 
-package com.io7m.cardant.tests.arbitraries.model;
+package com.io7m.cardant.protocol.inventory.cb.internal;
 
-import com.io7m.cardant.model.CAMetadataNameMatchType;
-import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import net.jqwik.api.Arbitraries;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cedarbridge.runtime.api.CBString;
+import com.io7m.lanark.core.RDottedName;
 
-public final class CAArbMetadataNameMatch
-  extends CAArbAbstract<CAMetadataNameMatchType>
+import static com.io7m.cedarbridge.runtime.api.CBCore.string;
+
+/**
+ * A validator.
+ */
+
+public enum CAUVDottedNames
+  implements CAProtocolMessageValidatorType<RDottedName, CBString>
 {
-  public CAArbMetadataNameMatch()
+  /**
+   * A validator.
+   */
+
+  DOTTED_NAMES;
+
+  @Override
+  public CBString convertToWire(
+    final RDottedName message)
+    throws CAProtocolException
   {
-    super(
-      CAMetadataNameMatchType.class,
-      () -> Arbitraries.oneOf(
-        Arbitraries.defaultFor(CAMetadataNameMatchType.AnyName.class),
-        Arbitraries.defaultFor(CAMetadataNameMatchType.SearchName.class),
-        Arbitraries.defaultFor(CAMetadataNameMatchType.ExactName.class))
-    );
+    return string(message.value());
+  }
+
+  @Override
+  public RDottedName convertFromWire(
+    final CBString message)
+    throws CAProtocolException
+  {
+    return new RDottedName(message.value());
   }
 }

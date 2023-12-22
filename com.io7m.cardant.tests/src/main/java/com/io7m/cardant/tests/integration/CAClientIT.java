@@ -107,8 +107,9 @@ public final class CAClientIT
     IDSTORE =
       CATestContainers.createIdstore(
         supervisor,
+        DATABASE,
         DIRECTORY,
-        15432,
+        "idstore",
         51000,
         50000,
         50001
@@ -175,17 +176,7 @@ public final class CAClientIT
   {
     final var ex =
       assertThrows(CAClientException.class, () -> {
-        this.client.loginOrElseThrow(
-          new CAClientCredentials(
-            "localhost",
-            30000,
-            false,
-            new IdName("nonexistent"),
-            "12345678",
-            Map.of()
-          ),
-          CAClientException::ofError
-        );
+        this.login(new IdName("nonexistent"));
       });
 
     assertEquals(CAStandardErrorCodes.errorAuthentication(), ex.errorCode());

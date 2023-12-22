@@ -92,8 +92,9 @@ public final class CAShellIT
     IDSTORE =
       CATestContainers.createIdstore(
         supervisor,
+        DATABASE,
         DIRECTORY,
-        15432,
+        "idstore",
         51000,
         50000,
         50001
@@ -649,15 +650,15 @@ public final class CAShellIT
         "--base-is-monetary '[23 24]'"
     );
     w.println("type-scalar-get --name com.x");
-    w.println("type-scalar-search-begin --query things");
+    w.println("type-scalar-search-begin");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
     w.println("type-scalar-remove --name com.x");
-    w.println("type-scalar-search-begin --query things");
+    w.println("type-scalar-search-begin");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
     w.println("set --formatter RAW");
-    w.println("type-scalar-search-begin --query things");
+    w.println("type-scalar-search-begin");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
     w.println("logout");
@@ -721,11 +722,11 @@ public final class CAShellIT
       "type-field-remove --type com.y --field-name a"
     );
     w.println("type-get --name com.y");
-    w.println("type-search-begin --query type");
+    w.println("type-search-begin");
     w.println("type-search-next");
     w.println("type-search-previous");
     w.println("set --formatter RAW");
-    w.println("type-search-begin --query type");
+    w.println("type-search-begin");
     w.println("type-search-next");
     w.println("type-search-previous");
     w.println("logout");

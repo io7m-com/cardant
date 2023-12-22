@@ -363,16 +363,16 @@ public final class CAParsersTest
       "anything",
       "[and anything anything]",
       "[or anything anything]",
-      "[match any-name any-value]",
-      "[match [with-name-exact x] any-value]",
-      "[match [with-name-search x] any-value]",
-      "[match any-name [within-range-integral 0 100]]",
-      "[match any-name [within-range-real 0 100]]",
-      "[match any-name [within-range-time 2023-07-23T14:26:46+00:00 2023-07-23T14:26:46+00:00]]",
-      "[match any-name [within-range-monetary 0 100]]",
-      "[match any-name [with-currency EUR]]",
-      "[match any-name [with-text-exact x]]",
-      "[match any-name [with-text-search y]]"
+      "[match with-any-name any-value]",
+      "[match [with-name-equal-to x] any-value]",
+      "[match [with-name-similar-to x] any-value]",
+      "[match with-any-name [within-range-integral 0 100]]",
+      "[match with-any-name [within-range-real 0 100]]",
+      "[match with-any-name [within-range-time 2023-07-23T14:26:46+00:00 2023-07-23T14:26:46+00:00]]",
+      "[match with-any-name [within-range-monetary 0 100]]",
+      "[match with-any-name [with-currency EUR]]",
+      "[match with-any-name [with-text-exact x]]",
+      "[match with-any-name [with-text-search y]]"
     ).map(text -> {
       return dynamicTest("testMetaMatchParseIdentity_%s".formatted(text), () -> {
         final var p0 =
@@ -459,9 +459,12 @@ public final class CAParsersTest
   public Stream<DynamicTest> testTypeMatchParseIdentity()
   {
     return Stream.of(
-      "any-type",
-      "[all-of x y z]",
-      "[any-of x y z]"
+      "with-any-type",
+      "[with-types-equal-to x y z]",
+      "[with-types-not-equal-to x y z]",
+      "[with-types-overlapping x y z]",
+      "[with-types-subset-of x y z]",
+      "[with-types-superset-of x y z]"
     ).map(text -> {
       return dynamicTest("testTypeMatchParseIdentity_%s".formatted(text), () -> {
         final var p0 =
@@ -503,9 +506,11 @@ public final class CAParsersTest
   public Stream<DynamicTest> testNameMatchParseIdentity()
   {
     return Stream.of(
-      "any-name",
-      "[with-name-exact x]",
-      "[with-name-search y]"
+      "with-any-name",
+      "[with-name-equal-to x]",
+      "[with-name-similar-to y]",
+      "[with-name-not-equal-to x]",
+      "[with-name-not-similar-to y]"
     ).map(text -> {
       return dynamicTest("testNameMatchParseIdentity_%s".formatted(text), () -> {
         final var p0 =

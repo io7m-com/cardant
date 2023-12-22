@@ -111,7 +111,7 @@
     <![CDATA[(with-location-or-descendants <location-id>)]]>
   </entry>
 
-  <entry key="syntax_location_match_name">Syntax (name-match)</entry>
+  <entry key="syntax_location_match_name">Syntax (location-match)</entry>
   <entry key="syntax_location_match">
     <![CDATA[<any-location> | <with-location-exact> | <with-location-or-descendants>]]>
   </entry>
@@ -120,48 +120,126 @@
   <!-- Names -->
   <!--       -->
 
-  <entry key="syntax_name_match_anyname_name">Syntax (any-name)</entry>
+  <entry key="syntax_name_match_anyname_name">Syntax (with-any-name)</entry>
   <entry key="syntax_name_match_anyname">
-    <![CDATA[any-name]]>
+    <![CDATA[with-any-name]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_exact_name">Syntax (with-name-exact)</entry>
-  <entry key="syntax_name_match_with_name_exact">
-    <![CDATA[(with-name-exact <name>)]]>
+  <entry key="syntax_name_match_with_name_equal_to_name">Syntax (with-name-equal-to)</entry>
+  <entry key="syntax_name_match_with_name_equal_to">
+    <![CDATA[(with-name-equal-to <name>)]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_search_name">Syntax (with-name-search)</entry>
-  <entry key="syntax_name_match_with_name_search">
-    <![CDATA[(with-name-search <name>)]]>
+  <entry key="syntax_name_match_with_name_not_equal_to_name">Syntax (with-name-not-equal-to)</entry>
+  <entry key="syntax_name_match_with_name_not_equal_to">
+    <![CDATA[(with-name-not-equal-to <name>)]]>
   </entry>
 
-  <entry key="syntax_name_match_name">Syntax (name-match)</entry>
-  <entry key="syntax_name_match">
-    <![CDATA[<any-name> | <with-name-exact> | <with-name-search>]]>
+  <entry key="syntax_name_match_with_name_similar_to_name">Syntax (with-name-similar-to)</entry>
+  <entry key="syntax_name_match_with_name_similar_to">
+    <![CDATA[(with-name-similar-to <name>)]]>
+  </entry>
+
+  <entry key="syntax_name_match_with_name_not_similar_to_name">Syntax (with-name-not-similar-to)</entry>
+  <entry key="syntax_name_match_with_name_not_similar_to">
+    <![CDATA[(with-name-not-similar-to <name>)]]>
+  </entry>
+
+  <!--             -->
+  <!-- Description -->
+  <!--             -->
+
+  <entry key="syntax_description_match_anydescription_name">Syntax (with-any-description)</entry>
+  <entry key="syntax_description_match_anydescription">
+    <![CDATA[with-any-description]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_equal_to_name">Syntax (with-description-equal-to)</entry>
+  <entry key="syntax_description_match_with_description_equal_to">
+    <![CDATA[(with-description-equal-to <description>)]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_not_equal_to_name">Syntax (with-description-not-equal-to)</entry>
+  <entry key="syntax_description_match_with_description_not_equal_to">
+    <![CDATA[(with-description-not-equal-to <description>)]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_similar_to_name">Syntax (with-description-similar-to)</entry>
+  <entry key="syntax_description_match_with_description_similar_to">
+    <![CDATA[(with-description-similar-to <description>)]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_not_similar_to_name">Syntax (with-description-not-similar-to)</entry>
+  <entry key="syntax_description_match_with_description_not_similar_to">
+    <![CDATA[(with-description-not-similar-to <description>)]]>
+  </entry>
+
+  <!--            -->
+  <!-- Media Type -->
+  <!--            -->
+
+  <entry key="syntax_mediatype_match_anymediatype_name">Syntax (with-any-mediatype)</entry>
+  <entry key="syntax_mediatype_match_anymediatype">
+    <![CDATA[with-any-mediatype]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_equal_to_name">Syntax (with-mediatype-equal-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_equal_to">
+    <![CDATA[(with-mediatype-equal-to <mediatype>)]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_not_equal_to_name">Syntax (with-mediatype-not-equal-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_not_equal_to">
+    <![CDATA[(with-mediatype-not-equal-to <mediatype>)]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_similar_to_name">Syntax (with-mediatype-similar-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_similar_to">
+    <![CDATA[(with-mediatype-similar-to <mediatype>)]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_not_similar_to_name">Syntax (with-mediatype-not-similar-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_not_similar_to">
+    <![CDATA[(with-mediatype-not-similar-to <mediatype>)]]>
   </entry>
 
   <!--       -->
   <!-- Types -->
   <!--       -->
 
-  <entry key="syntax_type_match_anytype_name">Syntax (any-type)</entry>
+  <entry key="syntax_type_match_anytype_name">Syntax (with-any-type)</entry>
   <entry key="syntax_type_match_anytype">
     <![CDATA[any-type]]>
   </entry>
 
-  <entry key="syntax_type_match_all_name">Syntax (all-of)</entry>
-  <entry key="syntax_type_match_all">
-    <![CDATA[(all-of <type> <type> ...)]]>
+  <entry key="syntax_type_match_equal_to_name">Syntax (with-types-equal-to)</entry>
+  <entry key="syntax_type_match_equal_to">
+    <![CDATA[(with-types-equal-to <type> <type> ...)]]>
   </entry>
 
-  <entry key="syntax_type_match_any_name">Syntax (any-of)</entry>
-  <entry key="syntax_type_match_any">
-    <![CDATA[(any-of <type> <type> ...)]]>
+  <entry key="syntax_type_match_not_equal_to_name">Syntax (with-types-not-equal-to)</entry>
+  <entry key="syntax_type_match_not_equal_to">
+    <![CDATA[(with-types-not-equal-to <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_overlapping_name">Syntax (with-types-overlapping)</entry>
+  <entry key="syntax_type_match_overlapping_to">
+    <![CDATA[(with-types-overlapping <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_subsetof_name">Syntax (with-types-subset-of)</entry>
+  <entry key="syntax_type_match_subsetof_to">
+    <![CDATA[(with-types-subset-of <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_supersetof_name">Syntax (with-types-superset-of)</entry>
+  <entry key="syntax_type_match_supersetof_to">
+    <![CDATA[(with-types-superset-of <type> <type> ...)]]>
   </entry>
 
   <entry key="syntax_type_match_name">Syntax (type-match)</entry>
   <entry key="syntax_type_match">
-    <![CDATA[<any-type> | <all-of> | <any-of>]]>
+    <![CDATA[<with-any-type> | <with-types-equal-to> | <with-types-not-equal-to> | <with-types-overlapping> | <with-types-subset-of> | <with-types-superset-of> ]]>
   </entry>
 
   <!--          -->

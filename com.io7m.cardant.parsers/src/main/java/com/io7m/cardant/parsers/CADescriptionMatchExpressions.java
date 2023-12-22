@@ -18,7 +18,7 @@
 package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CADescriptionMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.Anything;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsEqualTo;
@@ -38,51 +38,51 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
 import static java.util.Map.entry;
 
 /**
- * Expression parsers for name match expressions.
+ * Expression parsers for description match expressions.
  */
 
-public final class CANameMatchExpressions extends CAExpressions
+public final class CADescriptionMatchExpressions extends CAExpressions
 {
   private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
     Map.ofEntries(
       entry(
-        SYNTAX_NAME_MATCH_ANYNAME_NAME,
-        SYNTAX_NAME_MATCH_ANYNAME),
+        SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION_NAME,
+        SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO),
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO),
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO),
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO),
       entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO)
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO)
     );
 
   /**
-   * Expression parsers for name match expressions.
+   * Expression parsers for description match expressions.
    *
    * @param inStrings The string resources
    */
 
-  public CANameMatchExpressions(
+  public CADescriptionMatchExpressions(
     final CAStrings inStrings)
   {
     super(inStrings);
@@ -95,7 +95,7 @@ public final class CANameMatchExpressions extends CAExpressions
   }
 
   /**
-   * Parse a match expression for names.
+   * Parse a match expression for descriptions.
    *
    * @param text The input text
    *
@@ -104,15 +104,15 @@ public final class CANameMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public CANameMatch nameMatch(
+  public CADescriptionMatch descriptionMatch(
     final String text)
     throws CAException
   {
-    return this.nameMatch(CAExpressions.parse(text));
+    return this.descriptionMatch(CAExpressions.parse(text));
   }
 
   /**
-   * Parse a match expression for names.
+   * Parse a match expression for descriptions.
    *
    * @param e The input expression
    *
@@ -121,20 +121,20 @@ public final class CANameMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public CANameMatch nameMatch(
+  public CADescriptionMatch descriptionMatch(
     final SExpressionType e)
     throws CAException
   {
-    return new CANameMatch(this.nameMatchExpr(e));
+    return new CADescriptionMatch(this.descriptionMatchExpr(e));
   }
 
-  private CAComparisonFuzzyType<String> nameMatchExpr(
+  private CAComparisonFuzzyType<String> descriptionMatchExpr(
     final SExpressionType e)
     throws CAException
   {
     return switch (e) {
       case final SAtomType a
-        when "WITH-ANY-NAME".equals(a.text().toUpperCase(Locale.ROOT)) -> {
+        when "WITH-ANY-DESCRIPTION".equals(a.text().toUpperCase(Locale.ROOT)) -> {
         yield new Anything<>();
       }
       case final SListType xs
@@ -142,16 +142,16 @@ public final class CANameMatchExpressions extends CAExpressions
           && xs.get(0) instanceof final SAtomType head
           && xs.get(1) instanceof final SAtomType value -> {
         yield switch (head.text().toUpperCase(Locale.ROOT)) {
-          case "WITH-NAME-EQUAL-TO" -> {
+          case "WITH-DESCRIPTION-EQUAL-TO" -> {
             yield new IsEqualTo<>(value.text());
           }
-          case "WITH-NAME-NOT-EQUAL-TO" -> {
+          case "WITH-DESCRIPTION-NOT-EQUAL-TO" -> {
             yield new IsNotEqualTo<>(value.text());
           }
-          case "WITH-NAME-SIMILAR-TO" -> {
+          case "WITH-DESCRIPTION-SIMILAR-TO" -> {
             yield new IsSimilarTo<>(value.text());
           }
-          case "WITH-NAME-NOT-SIMILAR-TO" -> {
+          case "WITH-DESCRIPTION-NOT-SIMILAR-TO" -> {
             yield new IsNotSimilarTo<>(value.text());
           }
           default -> {
@@ -175,11 +175,11 @@ public final class CANameMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public String nameMatchSerializeToString(
-    final CANameMatch value)
+  public String descriptionMatchSerializeToString(
+    final CADescriptionMatch value)
     throws CAException
   {
-    return CAExpressions.serialize(this.nameMatchSerialize(value.expression()));
+    return CAExpressions.serialize(this.descriptionMatchSerialize(value.expression()));
   }
 
   /**
@@ -190,12 +190,12 @@ public final class CANameMatchExpressions extends CAExpressions
    * @return The serialized expression
    */
 
-  public SExpressionType nameMatchSerialize(
+  public SExpressionType descriptionMatchSerialize(
     final CAComparisonFuzzyType<String> expression)
   {
     return switch (expression) {
       case final Anything<String> ignored -> {
-        yield new SSymbol(zero(), "with-any-name");
+        yield new SSymbol(zero(), "with-any-description");
       }
 
       case final IsEqualTo<String> e -> {
@@ -203,7 +203,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-equal-to"),
+            new SSymbol(zero(), "with-description-equal-to"),
             new SQuotedString(zero(), e.value())
           )
         );
@@ -214,7 +214,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-not-equal-to"),
+            new SSymbol(zero(), "with-description-not-equal-to"),
             new SQuotedString(zero(), e.value())
           )
         );
@@ -225,7 +225,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-not-similar-to"),
+            new SSymbol(zero(), "with-description-not-similar-to"),
             new SQuotedString(zero(), e.value())
           )
         );
@@ -236,7 +236,7 @@ public final class CANameMatchExpressions extends CAExpressions
           zero(),
           true,
           List.of(
-            new SSymbol(zero(), "with-name-similar-to"),
+            new SSymbol(zero(), "with-description-similar-to"),
             new SQuotedString(zero(), e.value())
           )
         );

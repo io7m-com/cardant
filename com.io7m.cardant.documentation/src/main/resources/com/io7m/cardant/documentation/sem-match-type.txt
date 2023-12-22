@@ -1,0 +1,6 @@
+match_name_evaluate with-any-type s                 ⇒ true
+match_name_evaluate (with-types-to t) s             ⇒ s = t
+match_name_evaluate (with-types-not-equal-to t) s   ⇒ s ≠ t
+match_name_evaluate (with-types-superset-of t) s    ⇒ s ⊆ t
+match_name_evaluate (with-types-subset-of t) s      ⇒ s ⊇ t
+match_name_evaluate (with-types-overlapping t) s    ⇒ ∃ e. e ∈ t ∧ e ∈ s

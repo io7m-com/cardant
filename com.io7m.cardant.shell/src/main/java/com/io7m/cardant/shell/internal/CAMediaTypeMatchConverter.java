@@ -19,9 +19,9 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CAMediaTypeMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
-import com.io7m.cardant.parsers.CANameMatchExpressions;
+import com.io7m.cardant.parsers.CAMediaTypeMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterType;
@@ -29,11 +29,11 @@ import com.io7m.quarrel.core.QValueConverterType;
 import java.util.Objects;
 
 /**
- * A value converter for name match expressions.
+ * A value converter for type match expressions.
  */
 
-public final class CANameMatchConverter
-  implements QValueConverterType<CANameMatch>
+public final class CAMediaTypeMatchConverter
+  implements QValueConverterType<CAMediaTypeMatch>
 {
   private final CAStrings strings;
 
@@ -43,19 +43,19 @@ public final class CANameMatchConverter
    * @param inStrings The string resources
    */
 
-  public CANameMatchConverter(
+  public CAMediaTypeMatchConverter(
     final CAStrings inStrings)
   {
     this.strings = Objects.requireNonNull(inStrings, "strings");
   }
 
   @Override
-  public CANameMatch convertFromString(
+  public CAMediaTypeMatch convertFromString(
     final String text)
     throws QException
   {
     try {
-      return new CANameMatchExpressions(this.strings).nameMatch(text);
+      return new CAMediaTypeMatchExpressions(this.strings).mediatypeMatch(text);
     } catch (final CAException e) {
       throw QException.adapt(e, CAErrorCode::id);
     }
@@ -63,34 +63,34 @@ public final class CANameMatchConverter
 
   @Override
   public String convertToString(
-    final CANameMatch value)
+    final CAMediaTypeMatch value)
     throws QException
   {
     try {
-      return new CANameMatchExpressions(this.strings)
-        .nameMatchSerializeToString(value);
+      return new CAMediaTypeMatchExpressions(this.strings)
+        .mediatypeMatchSerializeToString(value);
     } catch (final CAException e) {
       throw QException.adapt(e, CAErrorCode::id);
     }
   }
 
   @Override
-  public CANameMatch exampleValue()
+  public CAMediaTypeMatch exampleValue()
   {
-    return new CANameMatch(
-      new CAComparisonFuzzyType.IsEqualTo<>("x")
+    return new CAMediaTypeMatch(
+      new CAComparisonFuzzyType.IsEqualTo<>("text/plain")
     );
   }
 
   @Override
   public String syntax()
   {
-    return "<name-match>";
+    return "<media-type-match>";
   }
 
   @Override
-  public Class<CANameMatch> convertedClass()
+  public Class<CAMediaTypeMatch> convertedClass()
   {
-    return CANameMatch.class;
+    return CAMediaTypeMatch.class;
   }
 }

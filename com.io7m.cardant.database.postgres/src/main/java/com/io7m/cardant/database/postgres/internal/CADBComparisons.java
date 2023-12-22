@@ -22,6 +22,7 @@ import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import org.jooq.Condition;
+import org.jooq.Field;
 import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
@@ -49,7 +50,7 @@ public final class CADBComparisons
 
   public static <T> Condition createFuzzyMatchQuery(
     final CAComparisonFuzzyType<T> query,
-    final TableField<org.jooq.Record, T> fieldExact,
+    final Field<T> fieldExact,
     final String fieldSearch)
   {
     if (query instanceof CAComparisonFuzzyType.Anything<T>) {
@@ -62,59 +63,6 @@ public final class CADBComparisons
 
     if (query instanceof final CAComparisonFuzzyType.IsNotEqualTo<T> isNotEqualTo) {
       return fieldExact.notEqual(isNotEqualTo.value());
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsSimilarTo<T> isSimilarTo) {
-      return DSL.condition(
-        "%s @@ websearch_to_tsquery(?)".formatted(fieldSearch),
-        isSimilarTo.value()
-      );
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsNotSimilarTo<T> isNotSimilarTo) {
-      return DSL.condition(
-        "NOT (%s @@ websearch_to_tsquery(?))".formatted(fieldSearch),
-        isNotSimilarTo.value()
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized name query: %s".formatted(query)
-    );
-  }
-
-  /**
-   * Create a fuzzy match expression.
-   *
-   * @param query       The query
-   * @param fieldExact  The "exact" field
-   * @param fieldSearch The search field
-   * @param <T>         The type of compared values
-   *
-   * @return A fuzzy match condition
-   */
-
-  public static <T> Condition createFuzzyMatchArrayQuery(
-    final CAComparisonFuzzyType<T> query,
-    final TableField<org.jooq.Record, T[]> fieldExact,
-    final String fieldSearch)
-  {
-    if (query instanceof CAComparisonFuzzyType.Anything<T>) {
-      return DSL.trueCondition();
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsEqualTo<T> isEqualTo) {
-      return DSL.condition(
-        "%s && CAST (ARRAY[?] AS TEXT[])".formatted(fieldExact.getName()),
-        isEqualTo.value()
-      );
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsNotEqualTo<T> isNotEqualTo) {
-      return DSL.condition(
-        "NOT (%s && CAST (ARRAY[?] AS TEXT[]))".formatted(fieldExact.getName()),
-        isNotEqualTo.value()
-      );
     }
 
     if (query instanceof final CAComparisonFuzzyType.IsSimilarTo<T> isSimilarTo) {
@@ -190,7 +138,7 @@ public final class CADBComparisons
       set.toArray(values);
 
       return DSL.condition(
-        "(? <@ cast (? as text[])) AND (? @> cast (? as text[]))",
+        "(cast (? as text[]) <@ cast (? as text[])) AND (cast (? as text[]) @> cast (? as text[]))",
         field,
         DSL.array(values),
         field,
@@ -204,7 +152,7 @@ public final class CADBComparisons
       set.toArray(values);
 
       return DSL.condition(
-        "NOT ((? <@ cast (? as text[])) AND (? @> cast (? as text[])))",
+        "NOT ((cast (? as text[]) <@ cast (? as text[])) AND (cast (? as text[]) @> cast (? as text[])))",
         field,
         DSL.array(values),
         field,
@@ -218,7 +166,7 @@ public final class CADBComparisons
       set.toArray(values);
 
       return DSL.condition(
-        "? <@ cast (? as text[])",
+        "cast (? as text[]) <@ cast (? as text[])",
         field,
         DSL.array(values)
       );
@@ -230,7 +178,7 @@ public final class CADBComparisons
       set.toArray(values);
 
       return DSL.condition(
-        "? @> cast (? as text[])",
+        "cast (? as text[]) @> cast (? as text[])",
         field,
         DSL.array(values)
       );
@@ -242,7 +190,7 @@ public final class CADBComparisons
       set.toArray(values);
 
       return DSL.condition(
-        "? && cast (? as text[])",
+        "cast (? as text[]) && cast (? as text[])",
         field,
         DSL.array(values)
       );

@@ -17,11 +17,13 @@
 
 package com.io7m.cardant.tests.shell;
 
+import com.io7m.cardant.model.CADescriptionMatch;
 import com.io7m.cardant.model.CAItemLocationMatchType;
+import com.io7m.cardant.model.CAMediaTypeMatch;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CANameMatchType;
-import com.io7m.cardant.model.CATypeMatchType;
+import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CATypeMatch;
 import com.io7m.cardant.shell.CAShellValueConverters;
 import com.io7m.cardant.strings.CAStrings;
 import net.jqwik.api.ForAll;
@@ -35,13 +37,13 @@ public final class CAConverterTests
 {
   @Property
   public void testTypeMatch(
-    final @ForAll CATypeMatchType match)
+    final @ForAll CATypeMatch match)
     throws Exception
   {
     final var d =
       CAShellValueConverters.create(CAStrings.create(Locale.ROOT));
     final var c =
-      d.converterFor(CATypeMatchType.class)
+      d.converterFor(CATypeMatch.class)
         .orElseThrow();
 
     assertEquals(
@@ -57,13 +59,57 @@ public final class CAConverterTests
 
   @Property
   public void testNameMatch(
-    final @ForAll CANameMatchType match)
+    final @ForAll CANameMatch match)
     throws Exception
   {
     final var d =
       CAShellValueConverters.create(CAStrings.create(Locale.ROOT));
     final var c =
-      d.converterFor(CANameMatchType.class)
+      d.converterFor(CANameMatch.class)
+        .orElseThrow();
+
+    assertEquals(
+      match,
+      c.convertFromString(c.convertToString(match))
+    );
+    final var ex = c.exampleValue();
+    assertEquals(
+      ex,
+      c.convertFromString(c.convertToString(ex))
+    );
+  }
+
+  @Property
+  public void testDescriptionMatch(
+    final @ForAll CADescriptionMatch match)
+    throws Exception
+  {
+    final var d =
+      CAShellValueConverters.create(CAStrings.create(Locale.ROOT));
+    final var c =
+      d.converterFor(CADescriptionMatch.class)
+        .orElseThrow();
+
+    assertEquals(
+      match,
+      c.convertFromString(c.convertToString(match))
+    );
+    final var ex = c.exampleValue();
+    assertEquals(
+      ex,
+      c.convertFromString(c.convertToString(ex))
+    );
+  }
+
+  @Property
+  public void testMediaTypeMatch(
+    final @ForAll CAMediaTypeMatch match)
+    throws Exception
+  {
+    final var d =
+      CAShellValueConverters.create(CAStrings.create(Locale.ROOT));
+    final var c =
+      d.converterFor(CAMediaTypeMatch.class)
         .orElseThrow();
 
     assertEquals(

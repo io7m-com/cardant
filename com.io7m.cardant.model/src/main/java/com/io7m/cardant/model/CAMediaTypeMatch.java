@@ -17,65 +17,27 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+
 import java.util.Objects;
 
 /**
- * The expression used to match against object names.
+ * A wrapper for a fuzzy comparison.
+ *
+ * @param expression The expression
  */
 
-public sealed interface CANameMatchType
+public record CAMediaTypeMatch(
+  CAComparisonFuzzyType<String> expression)
 {
   /**
-   * Match any object name.
-   */
-
-  enum Any implements CANameMatchType
-  {
-    /**
-     * Match any object name.
-     */
-
-    ANY_NAME
-  }
-
-  /**
-   * Match objects with the exact given name.
+   * A wrapper for a fuzzy comparison.
    *
-   * @param text The name
+   * @param expression The expression
    */
 
-  record Exact(
-    String text)
-    implements CANameMatchType
+  public CAMediaTypeMatch
   {
-    /**
-     * Match objects with the exact given name.
-     */
-
-    public Exact
-    {
-      Objects.requireNonNull(text, "text");
-      text = text.trim();
-    }
-  }
-
-  /**
-   * Match object names against the given search query.
-   *
-   * @param query The query
-   */
-
-  record Search(
-    String query)
-    implements CANameMatchType
-  {
-    /**
-     * Match object names against the given search query.
-     */
-
-    public Search
-    {
-      Objects.requireNonNull(query, "query");
-    }
+    Objects.requireNonNull(expression, "expression");
   }
 }

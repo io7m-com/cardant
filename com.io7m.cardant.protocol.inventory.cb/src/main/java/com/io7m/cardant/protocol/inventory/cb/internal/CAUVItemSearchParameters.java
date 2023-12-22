@@ -21,12 +21,14 @@ import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSearchParameters;
+import com.io7m.cedarbridge.runtime.api.CBString;
+import com.io7m.lanark.core.RDottedName;
 
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVDottedNames.DOTTED_NAMES;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemColumnOrdering.ITEM_COLUMN_ORDERING;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemLocationMatch.ITEM_LOCATION_MATCH;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemNameMatch.ITEM_NAME_MATCH;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemTypeMatch.ITEM_TYPE_MATCH;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVMetadataElementMatch.METADATA_MATCH;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVStrings.STRINGS;
 import static com.io7m.cedarbridge.runtime.api.CBCore.unsigned32;
 
 /**
@@ -42,6 +44,12 @@ public enum CAUVItemSearchParameters
 
   ITEM_SEARCH_PARAMETERS;
 
+  private static final CAUVComparisonsFuzzy<String, CBString> FUZZY_VALIDATOR =
+    new CAUVComparisonsFuzzy<>(STRINGS);
+
+  private static final CAUVComparisonsSet<RDottedName, CBString> SET_VALIDATOR =
+    new CAUVComparisonsSet<>(DOTTED_NAMES);
+
   @Override
   public CAI1ItemSearchParameters convertToWire(
     final CAItemSearchParameters parameters)
@@ -49,8 +57,9 @@ public enum CAUVItemSearchParameters
   {
     return new CAI1ItemSearchParameters(
       ITEM_LOCATION_MATCH.convertToWire(parameters.locationMatch()),
-      ITEM_NAME_MATCH.convertToWire(parameters.nameMatch()),
-      ITEM_TYPE_MATCH.convertToWire(parameters.typeMatch()),
+      FUZZY_VALIDATOR.convertToWire(parameters.nameMatch()),
+      FUZZY_VALIDATOR.convertToWire(parameters.descriptionMatch()),
+      SET_VALIDATOR.convertToWire(parameters.typeMatch()),
       METADATA_MATCH.convertToWire(parameters.metadataMatch()),
       ITEM_COLUMN_ORDERING.convertToWire(parameters.ordering()),
       unsigned32(parameters.pageSize())
@@ -64,8 +73,9 @@ public enum CAUVItemSearchParameters
   {
     return new CAItemSearchParameters(
       ITEM_LOCATION_MATCH.convertFromWire(parameters.fieldLocation()),
-      ITEM_NAME_MATCH.convertFromWire(parameters.fieldNameMatch()),
-      ITEM_TYPE_MATCH.convertFromWire(parameters.fieldTypeMatch()),
+      FUZZY_VALIDATOR.convertFromWire(parameters.fieldNameMatch()),
+      FUZZY_VALIDATOR.convertFromWire(parameters.fieldDescriptionMatch()),
+      SET_VALIDATOR.convertFromWire(parameters.fieldTypeMatch()),
       METADATA_MATCH.convertFromWire(parameters.fieldMetaMatch()),
       ITEM_COLUMN_ORDERING.convertFromWire(parameters.fieldOrder()),
       parameters.fieldLimit().value()

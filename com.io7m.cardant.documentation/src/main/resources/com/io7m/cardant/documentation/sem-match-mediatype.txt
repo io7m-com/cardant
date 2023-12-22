@@ -1,0 +1,5 @@
+match_mediatype_evaluate with-any-mediatype n                 ⇒ true
+match_mediatype_evaluate (with-mediatype-equal-to m) n        ⇒ n = m
+match_mediatype_evaluate (with-mediatype-not-equal-to m) n    ⇒ n ≠ m
+match_mediatype_evaluate (with-mediatype-similar-to m) n      ⇒ n ≃ m
+match_mediatype_evaluate (with-mediatype-not-similar-to m) n  ⇒ not (n ≃ m)

@@ -254,20 +254,6 @@
   [field ascending cb:Boolean]
 ]
 
-[documentation CAI1NameMatch "An expression against which item names are matched."]
-[variant CAI1NameMatch
-  [case CAI1NameMatchAny]
-  [case CAI1NameMatchExact  [field text cb:String]]
-  [case CAI1NameMatchSearch [field query cb:String]]
-]
-
-[documentation CAI1TypeMatch "An expression against which item types are matched."]
-[variant CAI1TypeMatch
-  [case CAI1TypeMatchAny]
-  [case CAI1TypeMatchAnyOf [field types [cb:List cb:String]]]
-  [case CAI1TypeMatchAllOf [field types [cb:List cb:String]]]
-]
-
 [documentation CAI1MetadataValueMatch "An expression against which item metadata values are matched."]
 [variant CAI1MetadataValueMatch
   [case Anything]
@@ -298,17 +284,6 @@
   ]
 ]
 
-[documentation CAI1MetadataNameMatch "An expression against which item metadata names are matched."]
-[variant CAI1MetadataNameMatch
-  [case Anything]
-  [case Exact
-    [field name cb:String]
-  ]
-  [case Search
-    [field search cb:String]
-  ]
-]
-
 [documentation CAI1MetadataElementMatch "An expression against which item metadata is matched."]
 [variant CAI1MetadataElementMatch
   [case And
@@ -320,7 +295,7 @@
     [field e1 CAI1MetadataElementMatch]
   ]
   [case Specific
-    [field name CAI1MetadataNameMatch]
+    [field name [CAI1ComparisonFuzzy cb:String]]
     [field value CAI1MetadataValueMatch]
   ]
 ]
@@ -330,9 +305,11 @@
   [documentation location "The item location search behaviour."]
   [field location CAI1ListLocationBehaviour]
   [documentation nameMatch "The item name match expression."]
-  [field nameMatch CAI1NameMatch]
+  [field nameMatch [CAI1ComparisonFuzzy cb:String]]
+  [documentation descriptionMatch "The item description match expression."]
+  [field descriptionMatch [CAI1ComparisonFuzzy cb:String]]
   [documentation typeMatch "The item type match expression."]
-  [field typeMatch CAI1TypeMatch]
+  [field typeMatch [CAI1ComparisonSet cb:String]]
   [documentation metaMatch "The item metadata match expression."]
   [field metaMatch CAI1MetadataElementMatch]
   [documentation order "The item result ordering."]
@@ -371,7 +348,7 @@
   [field timeUpper ct:OffsetDateTime]
 ]
 
-[documentation CAI1FileSearchParameters "The item search parameters."]
+[documentation CAI1FileSearchParameters "The file search parameters."]
 [record CAI1FileSearchParameters
   [documentation search "The file description search query."]
   [field search [CAI1ComparisonFuzzy cb:String]]

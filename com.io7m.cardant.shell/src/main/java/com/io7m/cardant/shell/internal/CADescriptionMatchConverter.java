@@ -19,9 +19,9 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CADescriptionMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
-import com.io7m.cardant.parsers.CANameMatchExpressions;
+import com.io7m.cardant.parsers.CADescriptionMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterType;
@@ -32,8 +32,8 @@ import java.util.Objects;
  * A value converter for name match expressions.
  */
 
-public final class CANameMatchConverter
-  implements QValueConverterType<CANameMatch>
+public final class CADescriptionMatchConverter
+  implements QValueConverterType<CADescriptionMatch>
 {
   private final CAStrings strings;
 
@@ -43,19 +43,20 @@ public final class CANameMatchConverter
    * @param inStrings The string resources
    */
 
-  public CANameMatchConverter(
+  public CADescriptionMatchConverter(
     final CAStrings inStrings)
   {
     this.strings = Objects.requireNonNull(inStrings, "strings");
   }
 
   @Override
-  public CANameMatch convertFromString(
+  public CADescriptionMatch convertFromString(
     final String text)
     throws QException
   {
     try {
-      return new CANameMatchExpressions(this.strings).nameMatch(text);
+      return new CADescriptionMatchExpressions(this.strings)
+        .descriptionMatch(text);
     } catch (final CAException e) {
       throw QException.adapt(e, CAErrorCode::id);
     }
@@ -63,21 +64,21 @@ public final class CANameMatchConverter
 
   @Override
   public String convertToString(
-    final CANameMatch value)
+    final CADescriptionMatch value)
     throws QException
   {
     try {
-      return new CANameMatchExpressions(this.strings)
-        .nameMatchSerializeToString(value);
+      return new CADescriptionMatchExpressions(this.strings)
+        .descriptionMatchSerializeToString(value);
     } catch (final CAException e) {
       throw QException.adapt(e, CAErrorCode::id);
     }
   }
 
   @Override
-  public CANameMatch exampleValue()
+  public CADescriptionMatch exampleValue()
   {
-    return new CANameMatch(
+    return new CADescriptionMatch(
       new CAComparisonFuzzyType.IsEqualTo<>("x")
     );
   }
@@ -85,12 +86,12 @@ public final class CANameMatchConverter
   @Override
   public String syntax()
   {
-    return "<name-match>";
+    return "<description-match>";
   }
 
   @Override
-  public Class<CANameMatch> convertedClass()
+  public Class<CADescriptionMatch> convertedClass()
   {
-    return CANameMatch.class;
+    return CADescriptionMatch.class;
   }
 }

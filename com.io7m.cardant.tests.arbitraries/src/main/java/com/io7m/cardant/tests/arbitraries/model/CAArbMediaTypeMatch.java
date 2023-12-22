@@ -17,20 +17,20 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAMetadataNameMatchType;
+import com.io7m.cardant.model.CAMediaTypeMatch;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbMetadataNameMatchExact
-  extends CAArbAbstract<CAMetadataNameMatchType.ExactName>
+public final class CAArbMediaTypeMatch extends CAArbAbstract<CAMediaTypeMatch>
 {
-  public CAArbMetadataNameMatchExact()
+  public CAArbMediaTypeMatch()
   {
     super(
-      CAMetadataNameMatchType.ExactName.class,
-      () -> Arbitraries.defaultFor(RDottedName.class)
-        .map(CAMetadataNameMatchType.ExactName::new)
+      CAMediaTypeMatch.class,
+      () -> {
+        return CAArbComparisons.fuzzy(Arbitraries.strings())
+          .map(CAMediaTypeMatch::new);
+      }
     );
   }
 }

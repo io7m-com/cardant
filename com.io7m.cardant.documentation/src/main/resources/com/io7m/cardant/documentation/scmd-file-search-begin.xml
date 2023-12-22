@@ -12,6 +12,14 @@
       <Term type="command">file-search-begin</Term>
        command begins <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">searching</Link> for files on the server.
     </Paragraph>
+    <Paragraph>
+      Files can be filtered based on matching their media types against a given
+      <Link target="6b7b3069-2658-464c-8c4b-3425e35ef8df">media type match</Link> expression.
+    </Paragraph>
+    <Paragraph>
+      Files can be filtered based on matching their descriptions against a given
+      <Link target="29c4727f-4858-480b-a137-b2328428cbe3">description match</Link> expression.
+    </Paragraph>
     <FormalItem title="Parameters">
       <Table type="parameterTable">
         <Columns>
@@ -23,63 +31,18 @@
         </Columns>
         <Row>
           <Cell>
-            <Term type="parameter">--description-equal-to</Term>
+            <Term type="parameter">--description-match</Term>
           </Cell>
           <Cell>
-            <Term type="type">java.lang.String</Term>
+            <Term type="type">com.io7m.cardant.model.CADescriptionMatch</Term>
           </Cell>
           <Cell>
-            <Term type="expression">[0, 1]</Term>
+            <Term type="expression">[1, 1]</Term>
           </Cell>
           <Cell>
-            <Term type="constant"/>
+            <Term type="constant">with-any-description</Term>
           </Cell>
-          <Cell>Filter files by description.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--description-not-equal-to</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[0, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>Filter files by description.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--description-not-similar-to</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[0, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>Filter files by description.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--description-similar-to</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[0, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>Filter files by description.</Cell>
+          <Cell>Only include files that have descriptions matching the given expression.</Cell>
         </Row>
         <Row>
           <Cell>
@@ -98,63 +61,18 @@
         </Row>
         <Row>
           <Cell>
-            <Term type="parameter">--media-equal-to</Term>
+            <Term type="parameter">--mediatype-match</Term>
           </Cell>
           <Cell>
-            <Term type="type">java.lang.String</Term>
+            <Term type="type">com.io7m.cardant.model.CAMediaTypeMatch</Term>
           </Cell>
           <Cell>
-            <Term type="expression">[0, 1]</Term>
+            <Term type="expression">[1, 1]</Term>
           </Cell>
           <Cell>
-            <Term type="constant"/>
+            <Term type="constant">with-any-mediatype</Term>
           </Cell>
-          <Cell>Filter files by media type.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--media-not-equal-to</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[0, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>Filter files by media type.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--media-not-similar-to</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[0, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>Filter files by media type.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--media-similar-to</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[0, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>Filter files by media type.</Cell>
+          <Cell>Only include files that have media types matching the given expression.</Cell>
         </Row>
         <Row>
           <Cell>

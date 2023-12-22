@@ -514,6 +514,16 @@
     <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
   </Match>
 
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="BC_UNCONFIRMED_CAST"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
   <!--                             -->
   <!-- com.io7m.cardant.server.api -->
   <!--                             -->
