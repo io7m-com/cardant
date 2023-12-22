@@ -19,6 +19,7 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarSearch;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -42,11 +43,74 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 public final class CAShellCmdTypeScalarSearchBegin
   extends CAShellCmdAbstractCR<CAICommandTypeScalarSearchBegin, CAIResponseTypeScalarSearch>
 {
-  private static final QParameterNamed01<String> SEARCH =
+  private static final QParameterNamed01<String> NAME_EQUALS =
     new QParameterNamed01<>(
-      "--query",
+      "--name-equal-to",
       List.of(),
-      new QConstant("The type search query."),
+      new QConstant("Filter types by name."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> NAME_NEQUALS =
+    new QParameterNamed01<>(
+      "--name-not-equal-to",
+      List.of(),
+      new QConstant("Filter types by name."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> NAME_SIMILAR =
+    new QParameterNamed01<>(
+      "--name-similar-to",
+      List.of(),
+      new QConstant("Filter types by name."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> NAME_NOT_SIMILAR =
+    new QParameterNamed01<>(
+      "--name-not-similar-to",
+      List.of(),
+      new QConstant("Filter types by name."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> DESCRIPTION_EQUALS =
+    new QParameterNamed01<>(
+      "--description-equal-to",
+      List.of(),
+      new QConstant("Filter types by description."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> DESCRIPTION_NEQUALS =
+    new QParameterNamed01<>(
+      "--description-not-equal-to",
+      List.of(),
+      new QConstant("Filter types by description."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> DESCRIPTION_SIMILAR =
+    new QParameterNamed01<>(
+      "--description-similar-to",
+      List.of(),
+      new QConstant("Filter types by description."),
+      Optional.empty(),
+      String.class
+    );
+
+  private static final QParameterNamed01<String> DESCRIPTION_NOT_SIMILAR =
+    new QParameterNamed01<>(
+      "--description-not-similar-to",
+      List.of(),
+      new QConstant("Filter types by description."),
       Optional.empty(),
       String.class
     );
@@ -84,7 +148,17 @@ public final class CAShellCmdTypeScalarSearchBegin
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(SEARCH, LIMIT);
+    return List.of(
+      DESCRIPTION_EQUALS,
+      DESCRIPTION_NEQUALS,
+      DESCRIPTION_SIMILAR,
+      DESCRIPTION_NOT_SIMILAR,
+      NAME_EQUALS,
+      NAME_NEQUALS,
+      NAME_SIMILAR,
+      NAME_NOT_SIMILAR,
+      LIMIT
+    );
   }
 
   @Override
@@ -95,15 +169,63 @@ public final class CAShellCmdTypeScalarSearchBegin
     final var client =
       this.client();
 
-    final var search =
-      context.parameterValue(SEARCH);
+    final var descriptionEquals =
+      context.parameterValue(DESCRIPTION_EQUALS)
+        .map(CAComparisonFuzzyType.IsEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionNequals =
+      context.parameterValue(DESCRIPTION_NEQUALS)
+        .map(CAComparisonFuzzyType.IsNotEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionSimilar =
+      context.parameterValue(DESCRIPTION_SIMILAR)
+        .map(CAComparisonFuzzyType.IsSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionNotSimilar =
+      context.parameterValue(DESCRIPTION_NOT_SIMILAR)
+        .map(CAComparisonFuzzyType.IsNotSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var descriptionMatch =
+      descriptionEquals
+        .or(() -> descriptionNequals)
+        .or(() -> descriptionSimilar)
+        .or(() -> descriptionNotSimilar)
+        .orElseGet(CAComparisonFuzzyType.Anything::new);
+
+    final var nameEquals =
+      context.parameterValue(NAME_EQUALS)
+        .map(CAComparisonFuzzyType.IsEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var nameNequals =
+      context.parameterValue(NAME_NEQUALS)
+        .map(CAComparisonFuzzyType.IsNotEqualTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var nameSimilar =
+      context.parameterValue(NAME_SIMILAR)
+        .map(CAComparisonFuzzyType.IsSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var nameNotSimilar =
+      context.parameterValue(NAME_NOT_SIMILAR)
+        .map(CAComparisonFuzzyType.IsNotSimilarTo::new)
+        .map(x -> (CAComparisonFuzzyType<String>) x);
+    final var nameMatch =
+      nameEquals
+        .or(() -> nameNequals)
+        .or(() -> nameSimilar)
+        .or(() -> nameNotSimilar)
+        .orElseGet(CAComparisonFuzzyType.Anything::new);
+
     final var limit =
       context.parameterValue(LIMIT);
 
     final var type =
       ((CAIResponseTypeScalarSearch) client.executeOrElseThrow(
         new CAICommandTypeScalarSearchBegin(
-          new CATypeScalarSearchParameters(search, limit.intValue())
+          new CATypeScalarSearchParameters(
+            nameMatch,
+            descriptionMatch,
+            limit.intValue()
+          )
         ),
         CAClientException::ofError
       )).data();

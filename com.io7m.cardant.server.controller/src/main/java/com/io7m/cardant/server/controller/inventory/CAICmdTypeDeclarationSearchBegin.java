@@ -58,11 +58,7 @@ public final class CAICmdTypeDeclarationSearchBegin
       transaction.queries(TypeDeclarationsSearchType.class);
 
     final var search =
-      searchQuery.execute(
-        command.parameters()
-          .search()
-          .orElse("")
-      );
+      searchQuery.execute(command.parameters());
 
     context.session()
       .setProperty(CADatabaseTypeDeclarationSearchType.class, search);

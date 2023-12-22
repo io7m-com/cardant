@@ -30,7 +30,8 @@ public final class CAArbTypeScalarSearchParameters
     super(
       CATypeScalarSearchParameters.class,
       () -> Combinators.combine(
-        Arbitraries.strings().optional(),
+        CAArbComparisons.fuzzy(Arbitraries.strings()),
+        CAArbComparisons.fuzzy(Arbitraries.strings()),
         Arbitraries.integers().between(1, 1000)
       ).as(CATypeScalarSearchParameters::new)
     );

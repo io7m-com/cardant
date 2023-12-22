@@ -35,9 +35,6 @@ import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -76,7 +73,7 @@ public final class CAShellCmdTypeScalarPut
       List.of(),
       new QConstant(
         "Specify that the base type is integral and provide an inclusive range of values."),
-      Optional.of(RangeInclusiveL.of(Long.MIN_VALUE, Long.MAX_VALUE)),
+      Optional.empty(),
       RangeInclusiveL.class
     );
 
@@ -86,7 +83,7 @@ public final class CAShellCmdTypeScalarPut
       List.of(),
       new QConstant(
         "Specify that the base type is real and provide an inclusive range of values."),
-      Optional.of(RangeInclusiveD.of(-Double.MAX_VALUE, Double.MAX_VALUE)),
+      Optional.empty(),
       RangeInclusiveD.class
     );
 
@@ -96,10 +93,7 @@ public final class CAShellCmdTypeScalarPut
       List.of(),
       new QConstant(
         "Specify that the base type is a timestamp and provide an inclusive range of values."),
-      Optional.of(new CATimeRange(
-        OffsetDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC),
-        OffsetDateTime.now()
-      )),
+      Optional.empty(),
       CATimeRange.class
     );
 
@@ -109,7 +103,7 @@ public final class CAShellCmdTypeScalarPut
       List.of(),
       new QConstant(
         "Specify that the base type is monetary and provide an inclusive range of values."),
-      Optional.of(new CAMonetaryRange(BigDecimal.ZERO, new BigDecimal("1000000000000"))),
+      Optional.empty(),
       CAMonetaryRange.class
     );
 
@@ -119,7 +113,7 @@ public final class CAShellCmdTypeScalarPut
       List.of(),
       new QConstant(
         "Specify that the base type is text and provide a validating pattern."),
-      Optional.of(".*"),
+      Optional.empty(),
       String.class
     );
 

@@ -16,31 +16,36 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * The immutable parameters required to search scalar types.
  *
- * @param search   The search query
- * @param pageSize The page size
+ * @param nameQuery        The search query
+ * @param descriptionQuery The description search query
+ * @param pageSize         The page size
  */
 
 public record CATypeScalarSearchParameters(
-  Optional<String> search,
+  CAComparisonFuzzyType<String> nameQuery,
+  CAComparisonFuzzyType<String> descriptionQuery,
   long pageSize)
   implements CASearchParametersType
 {
   /**
    * The immutable parameters required to search scalar types.
    *
-   * @param search   The search query
-   * @param pageSize The page size
+   * @param nameQuery        The search query
+   * @param descriptionQuery The description search query
+   * @param pageSize         The page size
    */
 
   public CATypeScalarSearchParameters
   {
-    Objects.requireNonNull(search, "search");
+    Objects.requireNonNull(nameQuery, "search");
+    Objects.requireNonNull(descriptionQuery, "descriptionQuery");
     pageSize = CAPageSizes.clampPageSize(pageSize);
   }
 }

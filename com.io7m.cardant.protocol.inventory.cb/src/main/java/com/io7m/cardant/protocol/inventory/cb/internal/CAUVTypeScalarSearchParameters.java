@@ -18,11 +18,13 @@
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalarSearchParameters;
 import com.io7m.cedarbridge.runtime.api.CBCore;
-import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBString;
+
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVStrings.STRINGS;
 
 /**
  * A validator.
@@ -37,12 +39,17 @@ public enum CAUVTypeScalarSearchParameters
 
   TYPE_SCALAR_SEARCH_PARAMETERS;
 
+  private static final CAUVComparisonsFuzzy<String, CBString> FUZZY_VALIDATOR =
+    new CAUVComparisonsFuzzy<>(STRINGS);
+
   @Override
   public CAI1TypeScalarSearchParameters convertToWire(
     final CATypeScalarSearchParameters parameters)
+    throws CAProtocolException
   {
     return new CAI1TypeScalarSearchParameters(
-      CBOptionType.fromOptional(parameters.search().map(CBString::new)),
+      FUZZY_VALIDATOR.convertToWire(parameters.nameQuery()),
+      FUZZY_VALIDATOR.convertToWire(parameters.descriptionQuery()),
       CBCore.unsigned32(parameters.pageSize())
     );
   }
@@ -50,9 +57,11 @@ public enum CAUVTypeScalarSearchParameters
   @Override
   public CATypeScalarSearchParameters convertFromWire(
     final CAI1TypeScalarSearchParameters p)
+    throws CAProtocolException
   {
     return new CATypeScalarSearchParameters(
-      p.fieldSearch().asOptional().map(CBString::value),
+      FUZZY_VALIDATOR.convertFromWire(p.fieldNameSearch()),
+      FUZZY_VALIDATOR.convertFromWire(p.fieldDescriptionSearch()),
       p.fieldLimit().value()
     );
   }

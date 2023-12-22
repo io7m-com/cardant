@@ -188,7 +188,10 @@ CREATE TABLE metadata_types_records (
 
   -- [jooq ignore start]
   mtr_description_search TSVECTOR NOT NULL
-    GENERATED ALWAYS AS (to_tsvector(%S, mtr_description)) STORED,
+    GENERATED ALWAYS AS (to_tsvector(%1$S, mtr_description)) STORED,
+
+  mtr_name_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%1$S, tokenize_dotted_name (mtr_description))) STORED,
   -- [jooq ignore stop]
 
   CONSTRAINT metadata_types_records_primary_key
@@ -240,7 +243,10 @@ CREATE TABLE metadata_types_scalar (
 
   -- [jooq ignore start]
   mts_description_search TSVECTOR NOT NULL
-    GENERATED ALWAYS AS (to_tsvector(%S, mts_description)) STORED,
+    GENERATED ALWAYS AS (to_tsvector(%1$S, mts_description)) STORED,
+
+  mts_name_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%1$S, tokenize_dotted_name (mts_description))) STORED,
   -- [jooq ignore stop]
 
   mts_base_type       metadata_scalar_base_type_t NOT NULL,

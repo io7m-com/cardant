@@ -19,6 +19,7 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationsSearchType;
 import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
+import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
@@ -35,11 +36,11 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
  */
 
 public final class CADBQTypeDeclsSearch
-  extends CADBQAbstract<String, CADatabaseTypeDeclarationSearchType>
+  extends CADBQAbstract<CATypeDeclarationSearchParameters, CADatabaseTypeDeclarationSearchType>
   implements TypeDeclarationsSearchType
 {
   private static final CADBQueryProviderType.Service<
-    String,
+    CATypeDeclarationSearchParameters,
     CADatabaseTypeDeclarationSearchType,
     TypeDeclarationsSearchType> SERVICE =
     new CADBQueryProviderType.Service<>(
@@ -73,25 +74,33 @@ public final class CADBQTypeDeclsSearch
   protected CADatabaseTypeDeclarationSearchType
   onExecute(
     final DSLContext context,
-    final String query)
+    final CATypeDeclarationSearchParameters query)
   {
-    final var tableSource =
-      METADATA_TYPES_RECORDS;
+    final var nameCondition =
+      CADBComparisons.createFuzzyMatchQuery(
+        query.nameQuery(),
+        METADATA_TYPES_RECORDS.MTR_NAME,
+        "METADATA_TYPES_RECORDS.MTR_NAME_SEARCH"
+      );
+
+    final var descriptionCondition =
+      CADBComparisons.createFuzzyMatchQuery(
+        query.descriptionQuery(),
+        METADATA_TYPES_RECORDS.MTR_DESCRIPTION,
+        "METADATA_TYPES_RECORDS.MTR_DESCRIPTION_SEARCH"
+      );
 
     final var searchCondition =
-      DSL.condition(
-        "METADATA_TYPES_RECORDS.mtr_description_search @@ websearch_to_tsquery(?)",
-        DSL.inline(query)
-      );
+      DSL.and(nameCondition, descriptionCondition);
 
     final var orderField =
       new JQField(METADATA_TYPES_RECORDS.MTR_NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
-      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
+      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_TYPES_RECORDS)
         .addSortField(orderField)
         .addWhereCondition(searchCondition)
-        .setPageSize(10L)
+        .setPageSize(query.pageSize())
         .setStatementListener(statement -> {
           Span.current().setAttribute(DB_STATEMENT, statement.toString());
         }).build();

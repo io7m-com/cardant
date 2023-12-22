@@ -387,8 +387,10 @@
 
 [documentation CAI1TypeScalarSearchParameters "The scalar type search parameters."]
 [record CAI1TypeScalarSearchParameters
-  [documentation search "The type description search query."]
-  [field search [cb:Option cb:String]]
+  [documentation nameSearch "The type description search query."]
+  [field nameSearch [CAI1ComparisonFuzzy cb:String]]
+  [documentation descriptionSearch "The type description search query."]
+  [field descriptionSearch [CAI1ComparisonFuzzy cb:String]]
   [documentation limit "The limit."]
   [field limit cb:IntegerUnsigned32]
 ]
@@ -483,8 +485,10 @@
 
 [documentation CAI1TypeDeclarationSearchParameters "The declared type search parameters."]
 [record CAI1TypeDeclarationSearchParameters
-  [documentation search "The type description search query."]
-  [field search [cb:Option cb:String]]
+  [documentation nameSearch "The type description search query."]
+  [field nameSearch [CAI1ComparisonFuzzy cb:String]]
+  [documentation descriptionSearch "The type description search query."]
+  [field descriptionSearch [CAI1ComparisonFuzzy cb:String]]
   [documentation limit "The limit."]
   [field limit cb:IntegerUnsigned32]
 ]

@@ -406,7 +406,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(this.softTableWidth(3))
+        .setWidthConstraint(this.softTableWidth(4))
         .declareColumn("Type", atLeastContentOrHeader())
         .declareColumn("Description", atLeastContent())
         .declareColumn("Base", atLeastContentOrHeader())

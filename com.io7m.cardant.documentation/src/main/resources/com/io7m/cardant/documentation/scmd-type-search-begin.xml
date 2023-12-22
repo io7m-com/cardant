@@ -23,6 +23,66 @@
         </Columns>
         <Row>
           <Cell>
+            <Term type="parameter">--description-equal-to</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>Filter types by description.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--description-not-equal-to</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>Filter types by description.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--description-not-similar-to</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>Filter types by description.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--description-similar-to</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>Filter types by description.</Cell>
+        </Row>
+        <Row>
+          <Cell>
             <Term type="parameter">--limit</Term>
           </Cell>
           <Cell>
@@ -38,7 +98,7 @@
         </Row>
         <Row>
           <Cell>
-            <Term type="parameter">--query</Term>
+            <Term type="parameter">--name-equal-to</Term>
           </Cell>
           <Cell>
             <Term type="type">java.lang.String</Term>
@@ -49,7 +109,52 @@
           <Cell>
             <Term type="constant"/>
           </Cell>
-          <Cell>The type search query.</Cell>
+          <Cell>Filter types by name.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--name-not-equal-to</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>Filter types by name.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--name-not-similar-to</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>Filter types by name.</Cell>
+        </Row>
+        <Row>
+          <Cell>
+            <Term type="parameter">--name-similar-to</Term>
+          </Cell>
+          <Cell>
+            <Term type="type">java.lang.String</Term>
+          </Cell>
+          <Cell>
+            <Term type="expression">[0, 1]</Term>
+          </Cell>
+          <Cell>
+            <Term type="constant"/>
+          </Cell>
+          <Cell>Filter types by name.</Cell>
         </Row>
       </Table>
     </FormalItem>

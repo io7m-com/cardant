@@ -28,10 +28,13 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeScalarSearchParameters;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
@@ -323,7 +326,13 @@ public final class CADatabaseTypesTest
 
     {
       final var search =
-        this.tdSearch.execute("battery");
+        this.tdSearch.execute(
+          new CATypeDeclarationSearchParameters(
+            new CAComparisonFuzzyType.IsEqualTo<>("com.io7m.battery"),
+            new CAComparisonFuzzyType.Anything<>(),
+            100L
+          )
+        );
       final var page =
         search.pageCurrent(this.transaction);
       assertEquals(typeDeclaration.name(), page.items().get(0).name());
@@ -553,8 +562,12 @@ public final class CADatabaseTypesTest
     this.tsPut.execute(voltage);
 
     final var page =
-      this.tsSearch.execute("measurement")
-        .pageCurrent(this.transaction);
+      this.tsSearch.execute(
+        new CATypeScalarSearchParameters(
+          new CAComparisonFuzzyType.Anything<>(),
+          new CAComparisonFuzzyType.IsSimilarTo<>("measurement"),
+          100L
+        )).pageCurrent(this.transaction);
 
     assertEquals(List.of(voltage), page.items());
   }

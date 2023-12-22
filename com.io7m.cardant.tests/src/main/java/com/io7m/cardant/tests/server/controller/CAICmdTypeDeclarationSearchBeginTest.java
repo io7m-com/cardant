@@ -22,6 +22,7 @@ import com.io7m.cardant.database.api.CADatabaseTypeDeclarationSearchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -36,7 +37,6 @@ import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
@@ -61,7 +61,8 @@ public final class CAICmdTypeDeclarationSearchBeginTest
 {
   private static final CATypeDeclarationSearchParameters PARAMETERS =
     new CATypeDeclarationSearchParameters(
-      Optional.empty(),
+      new CAComparisonFuzzyType.Anything<>(),
+      new CAComparisonFuzzyType.Anything<>(),
       100
     );
 
@@ -161,7 +162,7 @@ public final class CAICmdTypeDeclarationSearchBeginTest
     verify(transaction)
       .queries(CADatabaseQueriesTypesType.TypeDeclarationsSearchType.class);
     verify(items)
-      .execute("");
+      .execute(PARAMETERS);
     verify(itemSearch)
       .pageCurrent(transaction);
 
