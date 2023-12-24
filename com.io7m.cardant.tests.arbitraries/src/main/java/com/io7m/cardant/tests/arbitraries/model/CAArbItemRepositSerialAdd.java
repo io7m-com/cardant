@@ -14,35 +14,29 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
 
-import java.util.Objects;
+package com.io7m.cardant.tests.arbitraries.model;
 
-/**
- * An operation that removes a set of items from a storage location.
- *
- * @param item     The item
- * @param location The storage location
- * @param count    The item count
- */
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemRepositSerialAdd;
+import com.io7m.cardant.model.CAItemSerial;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-public record CAItemRepositRemove(
-  CAItemID item,
-  CALocationID location,
-  long count)
-  implements CAItemRepositType
+public final class CAArbItemRepositSerialAdd
+  extends CAArbAbstract<CAItemRepositSerialAdd>
 {
-  /**
-   * An operation that removes a set of items from a storage location.
-   *
-   * @param item     The item
-   * @param location The storage location
-   * @param count    The item count
-   */
-
-  public CAItemRepositRemove
+  public CAArbItemRepositSerialAdd()
   {
-    Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(location, "location");
+    super(
+      CAItemRepositSerialAdd.class,
+      () -> Combinators.combine(
+        Arbitraries.defaultFor(CAItemID.class),
+        Arbitraries.defaultFor(CALocationID.class),
+        Arbitraries.strings().map(CAItemSerial::new)
+      ).as(CAItemRepositSerialAdd::new)
+    );
   }
 }

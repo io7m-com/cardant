@@ -14,29 +14,42 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
+
+package com.io7m.cardant.protocol.inventory.cb.internal;
+
+import com.io7m.cardant.model.CAItemSerial;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cedarbridge.runtime.api.CBString;
+
+import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
 /**
- * The type of item reposit operations.
+ * A validator.
  */
 
-public sealed interface CAItemRepositType
-  permits CAItemRepositSerialAdd,
-  CAItemRepositSerialMove,
-  CAItemRepositSerialRemove,
-  CAItemRepositSetAdd,
-  CAItemRepositSetMove,
-  CAItemRepositSetRemove
+public enum CAUVItemSerials
+  implements CAProtocolMessageValidatorType<CAItemSerial, CBString>
 {
   /**
-   * @return The item ID
+   * A validator.
    */
 
-  CAItemID item();
+  ITEM_SERIALS;
 
-  /**
-   * @return The item count
-   */
+  @Override
+  public CBString convertToWire(
+    final CAItemSerial message)
+    throws CAProtocolException
+  {
+    return string(message.value());
+  }
 
-  long count();
+  @Override
+  public CAItemSerial convertFromWire(
+    final CBString message)
+    throws CAProtocolException
+  {
+    return new CAItemSerial(message.value());
+  }
 }

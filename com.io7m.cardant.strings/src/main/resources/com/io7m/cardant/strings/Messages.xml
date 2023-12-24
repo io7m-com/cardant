@@ -3,22 +3,6 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 
 <properties>
-  <entry key="Command">Command</entry>
-  <entry key="Expected Content Type">Expected Content Type</entry>
-  <entry key="Expected Hash">Expected Hash</entry>
-  <entry key="Expected Response Type">Expected Response Type</entry>
-  <entry key="HTTP Response Code">HTTP Response Code</entry>
-  <entry key="Hash Algorithm">Hash Algorithm</entry>
-  <entry key="Received Content Type">Received Content Type</entry>
-  <entry key="Received Hash">Received Hash</entry>
-  <entry key="Received Response Type">Received Response Type</entry>
-  <entry key="URI">URI</entry>
-  <entry key="attachment">Attachment</entry>
-  <entry key="attempted_removal">Attempted Removal</entry>
-  <entry key="count">Count</entry>
-  <entry key="count_expected">Count Expected</entry>
-  <entry key="count_received">Count Received</entry>
-  <entry key="error_io">I/O operation failed.</entry>
   <entry key="error_attachment_missing_data">Cannot update an attachment with missing data.</entry>
   <entry key="error_close_connection">Failed to close a database connection: {0}.</entry>
   <entry key="error_command_not_here">This command cannot be executed on this endpoint.</entry>
@@ -32,8 +16,10 @@
   <entry key="error_hash_value_mismatch">Hash value did not match.</entry>
   <entry key="error_http">HTTP server returned an error: {0}</entry>
   <entry key="error_indexed">Error[{0}]</entry>
+  <entry key="error_io">I/O operation failed.</entry>
   <entry key="error_item_count_store_invariant">The sum of the stored items does not match the expected item count.</entry>
   <entry key="error_item_count_too_many_removed">Attempted to remove too many items.</entry>
+  <entry key="error_item_reposit_remove_identified">The remaining items have serial numbers and therefore must be removed individually and not as part of a set.</entry>
   <entry key="error_nonexistent">Object does not exist.</entry>
   <entry key="error_not_logged_in">Not logged in!</entry>
   <entry key="error_open_connection">Failed to open a database connection: {0}.</entry>
@@ -56,6 +42,22 @@
   <entry key="error_type_scalar_still_referenced"><![CDATA[The given scalar type is still referenced by one or more fields/types, and cannot be removed without first removing those types/fields.]]></entry>
   <entry key="error_type_still_referenced"><![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
   <entry key="error_unauthorized">Unauthorized.</entry>
+
+  <entry key="Command">Command</entry>
+  <entry key="Expected Content Type">Expected Content Type</entry>
+  <entry key="Expected Hash">Expected Hash</entry>
+  <entry key="Expected Response Type">Expected Response Type</entry>
+  <entry key="HTTP Response Code">HTTP Response Code</entry>
+  <entry key="Hash Algorithm">Hash Algorithm</entry>
+  <entry key="Received Content Type">Received Content Type</entry>
+  <entry key="Received Hash">Received Hash</entry>
+  <entry key="Received Response Type">Received Response Type</entry>
+  <entry key="URI">URI</entry>
+  <entry key="attachment">Attachment</entry>
+  <entry key="attempted_removal">Attempted Removal</entry>
+  <entry key="count">Count</entry>
+  <entry key="count_expected">Count Expected</entry>
+  <entry key="count_received">Count Received</entry>
   <entry key="expected_command">Expected a command.</entry>
   <entry key="expected_content_type">Expected Content Type</entry>
   <entry key="expected_count">Expected Count</entry>
@@ -66,6 +68,7 @@
   <entry key="item_id">Item ID</entry>
   <entry key="item_location">Item Location</entry>
   <entry key="item_name">Item Name</entry>
+  <entry key="item_serial">Item Serial Number</entry>
   <entry key="location">Location</entry>
   <entry key="location_id">Location ID</entry>
   <entry key="location_name">Location Name</entry>
@@ -143,6 +146,25 @@
   <entry key="syntax_name_match_with_name_not_similar_to_name">Syntax (with-name-not-similar-to)</entry>
   <entry key="syntax_name_match_with_name_not_similar_to">
     <![CDATA[(with-name-not-similar-to <name>)]]>
+  </entry>
+
+  <!--         -->
+  <!-- Serials -->
+  <!--         -->
+
+  <entry key="syntax_serial_match_anyserial_name">Syntax (with-any-serial)</entry>
+  <entry key="syntax_serial_match_anyserial">
+    <![CDATA[with-any-serial]]>
+  </entry>
+
+  <entry key="syntax_serial_match_with_serial_equal_to_name">Syntax (with-serial-equal-to)</entry>
+  <entry key="syntax_serial_match_with_serial_equal_to">
+    <![CDATA[(with-serial-equal-to <serial>)]]>
+  </entry>
+
+  <entry key="syntax_serial_match_with_serial_not_equal_to_name">Syntax (with-serial-not-equal-to)</entry>
+  <entry key="syntax_serial_match_with_serial_not_equal_to">
+    <![CDATA[(with-serial-not-equal-to <serial>)]]>
   </entry>
 
   <!--             -->

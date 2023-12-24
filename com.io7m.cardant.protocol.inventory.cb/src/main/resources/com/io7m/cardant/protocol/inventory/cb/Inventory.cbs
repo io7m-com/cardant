@@ -187,16 +187,17 @@
 
 [documentation CAI1ItemReposit "The type of item reposit operations."]
 [variant CAI1ItemReposit
-  [documentation CAI1ItemRepositAdd "An operation that adds a set of items to a storage location."]
-  [case CAI1ItemRepositAdd
+  [documentation CAI1ItemRepositSetAdd "An operation that adds a set of items to a storage location."]
+  [case CAI1ItemRepositSetAdd
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
     [field locationId cb:UUID]
     [documentation count "The count."]
     [field count cb:IntegerUnsigned64]]
-  [documentation CAI1ItemRepositMove "An operation that moves a set of items from one storage location to another."]
-  [case CAI1ItemRepositMove
+
+  [documentation CAI1ItemRepositSetMove "An operation that moves a set of items from one storage location to another."]
+  [case CAI1ItemRepositSetMove
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationFrom "The from location."]
@@ -205,14 +206,44 @@
     [field locationTo cb:UUID]
     [documentation count "The count."]
     [field count cb:IntegerUnsigned64]]
-  [documentation CAI1ItemRepositRemove "An operation that removes a set of items from a storage location."]
-  [case CAI1ItemRepositRemove
+
+  [documentation CAI1ItemRepositSetRemove "An operation that removes a set of items from a storage location."]
+  [case CAI1ItemRepositSetRemove
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
     [field locationId cb:UUID]
     [documentation count "The count."]
     [field count cb:IntegerUnsigned64]]
+
+  [documentation CAI1ItemRepositSerialAdd "An operation that adds a single identified item to a storage location."]
+  [case CAI1ItemRepositSerialAdd
+    [documentation itemId "The item."]
+    [field itemId cb:UUID]
+    [documentation locationId "The location ID."]
+    [field locationId cb:UUID]
+    [documentation serial "The serial number."]
+    [field serial cb:String]]
+
+  [documentation CAI1ItemRepositSerialMove "An operation that moves a single identified item from one storage location to another."]
+  [case CAI1ItemRepositSerialMove
+    [documentation itemId "The item."]
+    [field itemId cb:UUID]
+    [documentation locationFrom "The from location."]
+    [field locationFrom cb:UUID]
+    [documentation locationTo "The to location."]
+    [field locationTo cb:UUID]
+    [documentation serial "The serial number."]
+    [field serial cb:String]]
+
+  [documentation CAI1ItemRepositSerialRemove "An operation that removes a single identified item from a storage location."]
+  [case CAI1ItemRepositSerialRemove
+    [documentation itemId "The item."]
+    [field itemId cb:UUID]
+    [documentation locationId "The location ID."]
+    [field locationId cb:UUID]
+    [documentation serial "The serial number."]
+    [field serial cb:String]]
 ]
 
 [documentation CAI1LocationSummary "A summary of a location."]
@@ -310,6 +341,8 @@
   [field descriptionMatch [CAI1ComparisonFuzzy cb:String]]
   [documentation typeMatch "The item type match expression."]
   [field typeMatch [CAI1ComparisonSet cb:String]]
+  [documentation serialMatch "The item serial match expression."]
+  [field serialMatch [CAI1ComparisonExact cb:String]]
   [documentation metaMatch "The item metadata match expression."]
   [field metaMatch CAI1MetadataElementMatch]
   [documentation order "The item result ordering."]

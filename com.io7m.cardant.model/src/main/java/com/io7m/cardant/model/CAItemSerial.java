@@ -15,26 +15,40 @@
  */
 
 
-package com.io7m.cardant.tests.arbitraries.model;
+package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositRemove;
-import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
+import java.util.Objects;
 
-public final class CAArbItemRepositRemove extends CAArbAbstract<CAItemRepositRemove>
+/**
+ * A serial number.
+ *
+ * @param value The value
+ */
+
+public record CAItemSerial(String value)
+  implements Comparable<CAItemSerial>
 {
-  public CAArbItemRepositRemove()
+  /**
+   * A serial number.
+   *
+   * @param value The value
+   */
+
+  public CAItemSerial
   {
-    super(
-      CAItemRepositRemove.class,
-      () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.longs().between(0L, 10000L)
-      ).as(CAItemRepositRemove::new)
-    );
+    Objects.requireNonNull(value, "value");
+  }
+
+  @Override
+  public String toString()
+  {
+    return this.value;
+  }
+
+  @Override
+  public int compareTo(
+    final CAItemSerial other)
+  {
+    return this.value.compareTo(other.value);
   }
 }

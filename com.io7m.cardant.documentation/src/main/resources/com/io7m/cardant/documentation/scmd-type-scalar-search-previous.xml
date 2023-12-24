@@ -12,11 +12,10 @@
       <Term type="command">type-scalar-search-previous</Term>
        command goes to the previous page of types.
     </Paragraph>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
-    </FormalItem>
+    <Paragraph>
+      The command can only be used after the associated <Link target="146dd8b9-d8ad-36f2-be58-f597d749a69c">begin</Link>
+      command.
+    </Paragraph>
   </Subsection>
 </Section>
 

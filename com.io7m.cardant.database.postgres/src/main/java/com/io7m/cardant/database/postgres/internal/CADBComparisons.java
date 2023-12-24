@@ -53,35 +53,29 @@ public final class CADBComparisons
     final Field<T> fieldExact,
     final String fieldSearch)
   {
-    if (query instanceof CAComparisonFuzzyType.Anything<T>) {
-      return DSL.trueCondition();
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsEqualTo<T> isEqualTo) {
-      return fieldExact.equal(isEqualTo.value());
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsNotEqualTo<T> isNotEqualTo) {
-      return fieldExact.notEqual(isNotEqualTo.value());
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsSimilarTo<T> isSimilarTo) {
-      return DSL.condition(
-        "%s @@ websearch_to_tsquery(?)".formatted(fieldSearch),
-        isSimilarTo.value()
-      );
-    }
-
-    if (query instanceof final CAComparisonFuzzyType.IsNotSimilarTo<T> isNotSimilarTo) {
-      return DSL.condition(
-        "NOT (%s @@ websearch_to_tsquery(?))".formatted(fieldSearch),
-        isNotSimilarTo.value()
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized name query: %s".formatted(query)
-    );
+    return switch (query) {
+      case final CAComparisonFuzzyType.Anything<T> e -> {
+        yield DSL.trueCondition();
+      }
+      case final CAComparisonFuzzyType.IsEqualTo<T> isEqualTo -> {
+        yield fieldExact.equal(isEqualTo.value());
+      }
+      case final CAComparisonFuzzyType.IsNotEqualTo<T> isNotEqualTo -> {
+        yield fieldExact.notEqual(isNotEqualTo.value());
+      }
+      case final CAComparisonFuzzyType.IsSimilarTo<T> isSimilarTo -> {
+        yield DSL.condition(
+          "%s @@ websearch_to_tsquery(?)".formatted(fieldSearch),
+          isSimilarTo.value()
+        );
+      }
+      case final CAComparisonFuzzyType.IsNotSimilarTo<T> isNotSimilarTo -> {
+        yield DSL.condition(
+          "NOT (%s @@ websearch_to_tsquery(?))".formatted(fieldSearch),
+          isNotSimilarTo.value()
+        );
+      }
+    };
   }
 
   /**
@@ -98,21 +92,17 @@ public final class CADBComparisons
     final CAComparisonExactType<T> query,
     final TableField<org.jooq.Record, T> fieldExact)
   {
-    if (query instanceof CAComparisonExactType.Anything<T>) {
-      return DSL.trueCondition();
-    }
-
-    if (query instanceof final CAComparisonExactType.IsEqualTo<T> isEqualTo) {
-      return fieldExact.equal(isEqualTo.value());
-    }
-
-    if (query instanceof final CAComparisonExactType.IsNotEqualTo<T> isNotEqualTo) {
-      return fieldExact.notEqual(isNotEqualTo.value());
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized name query: %s".formatted(query)
-    );
+    return switch (query) {
+      case final CAComparisonExactType.Anything<T> e -> {
+        yield DSL.trueCondition();
+      }
+      case final CAComparisonExactType.IsEqualTo<T> isEqualTo -> {
+        yield fieldExact.equal(isEqualTo.value());
+      }
+      case final CAComparisonExactType.IsNotEqualTo<T> isNotEqualTo -> {
+        yield fieldExact.notEqual(isNotEqualTo.value());
+      }
+    };
   }
 
   /**
@@ -128,77 +118,70 @@ public final class CADBComparisons
     final CAComparisonSetType<String> query,
     final TableField<org.jooq.Record, String[]> field)
   {
-    if (query instanceof CAComparisonSetType.Anything<String>) {
-      return DSL.trueCondition();
+    switch (query) {
+      case CAComparisonSetType.Anything<String> e -> {
+        return DSL.trueCondition();
+      }
+      case final CAComparisonSetType.IsEqualTo<String> isEqualTo -> {
+        final var set = isEqualTo.value();
+        final var values = new String[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "(cast (? as text[]) <@ cast (? as text[])) AND (cast (? as text[]) @> cast (? as text[]))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsNotEqualTo<String> isNotEqualTo -> {
+        final var set = isNotEqualTo.value();
+        final var values = new String[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "NOT ((cast (? as text[]) <@ cast (? as text[])) AND (cast (? as text[]) @> cast (? as text[])))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsSubsetOf<String> isSubsetOf -> {
+        final var set = isSubsetOf.value();
+        final var values = new String[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as text[]) <@ cast (? as text[])",
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsSupersetOf<String> isSupersetOf -> {
+        final var set = isSupersetOf.value();
+        final var values = new String[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as text[]) @> cast (? as text[])",
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsOverlapping<String> isOverlapping -> {
+        final var set = isOverlapping.value();
+        final var values = new String[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as text[]) && cast (? as text[])",
+          field,
+          DSL.array(values)
+        );
+      }
     }
-
-    if (query instanceof final CAComparisonSetType.IsEqualTo<String> isEqualTo) {
-      final var set = isEqualTo.value();
-      final var values = new String[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "(cast (? as text[]) <@ cast (? as text[])) AND (cast (? as text[]) @> cast (? as text[]))",
-        field,
-        DSL.array(values),
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsNotEqualTo<String> isNotEqualTo) {
-      final var set = isNotEqualTo.value();
-      final var values = new String[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "NOT ((cast (? as text[]) <@ cast (? as text[])) AND (cast (? as text[]) @> cast (? as text[])))",
-        field,
-        DSL.array(values),
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsSubsetOf<String> isSubsetOf) {
-      final var set = isSubsetOf.value();
-      final var values = new String[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "cast (? as text[]) <@ cast (? as text[])",
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsSupersetOf<String> isSupersetOf) {
-      final var set = isSupersetOf.value();
-      final var values = new String[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "cast (? as text[]) @> cast (? as text[])",
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsOverlapping<String> isOverlapping) {
-      final var set = isOverlapping.value();
-      final var values = new String[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "cast (? as text[]) && cast (? as text[])",
-        field,
-        DSL.array(values)
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized set query: %s".formatted(query)
-    );
   }
 
   /**
@@ -214,76 +197,74 @@ public final class CADBComparisons
     final CAComparisonSetType<Long> query,
     final TableField<org.jooq.Record, Long[]> field)
   {
-    if (query instanceof CAComparisonSetType.Anything<Long>) {
-      return DSL.trueCondition();
+    switch (query) {
+      case CAComparisonSetType.Anything<Long> e -> {
+        return DSL.trueCondition();
+      }
+
+      case final CAComparisonSetType.IsEqualTo<Long> isEqualTo -> {
+        final var set = isEqualTo.value();
+        final var values = new Long[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "(? <@ cast (? as bigint[])) AND (? @> cast (? as bigint[]))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+
+      case final CAComparisonSetType.IsNotEqualTo<Long> isNotEqualTo -> {
+        final var set = isNotEqualTo.value();
+        final var values = new Long[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "NOT ((? <@ cast (? as bigint[])) AND (? @> cast (? as bigint[])))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+
+      case final CAComparisonSetType.IsSubsetOf<Long> isSubsetOf -> {
+        final var set = isSubsetOf.value();
+        final var values = new Long[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "? <@ cast (? as bigint[])",
+          field,
+          DSL.array(values)
+        );
+      }
+
+      case final CAComparisonSetType.IsSupersetOf<Long> isSupersetOf -> {
+        final var set = isSupersetOf.value();
+        final var values = new Long[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "? @> cast (? as bigint[])",
+          field,
+          DSL.array(values)
+        );
+      }
+
+      case final CAComparisonSetType.IsOverlapping<Long> isOverlapping -> {
+        final var set = isOverlapping.value();
+        final var values = new Long[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "? && cast (? as bigint[])",
+          field,
+          DSL.array(values)
+        );
+      }
     }
-
-    if (query instanceof final CAComparisonSetType.IsEqualTo<Long> isEqualTo) {
-      final var set = isEqualTo.value();
-      final var values = new Long[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "(? <@ cast (? as bigint[])) AND (? @> cast (? as bigint[]))",
-        field,
-        DSL.array(values),
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsNotEqualTo<Long> isNotEqualTo) {
-      final var set = isNotEqualTo.value();
-      final var values = new Long[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "NOT ((? <@ cast (? as bigint[])) AND (? @> cast (? as bigint[])))",
-        field,
-        DSL.array(values),
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsSubsetOf<Long> isSubsetOf) {
-      final var set = isSubsetOf.value();
-      final var values = new Long[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "? <@ cast (? as bigint[])",
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsSupersetOf<Long> isSupersetOf) {
-      final var set = isSupersetOf.value();
-      final var values = new Long[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "? @> cast (? as bigint[])",
-        field,
-        DSL.array(values)
-      );
-    }
-
-    if (query instanceof final CAComparisonSetType.IsOverlapping<Long> isOverlapping) {
-      final var set = isOverlapping.value();
-      final var values = new Long[set.size()];
-      set.toArray(values);
-
-      return DSL.condition(
-        "? && cast (? as bigint[])",
-        field,
-        DSL.array(values)
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized set query: %s".formatted(query)
-    );
   }
 }

@@ -23,9 +23,11 @@ import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAItemSerialMatch;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CANameMatch;
 import com.io7m.cardant.model.CATypeMatch;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
@@ -111,6 +113,16 @@ public final class CAShellCmdItemSearchBegin
       CAMetadataElementMatchType.class
     );
 
+  private static final QParameterNamed1<CAItemSerialMatch> SERIAL_MATCH =
+    new QParameterNamed1<>(
+      "--serial-match",
+      List.of(),
+      new QConstant(
+        "Only include items with serial numbers matching the given expression."),
+      Optional.of(new CAItemSerialMatch(new CAComparisonExactType.Anything<>())),
+      CAItemSerialMatch.class
+    );
+
   /**
    * Construct a command.
    *
@@ -138,6 +150,7 @@ public final class CAShellCmdItemSearchBegin
       LIMIT,
       LOCATION_MATCH,
       DESCRIPTION_MATCH,
+      SERIAL_MATCH,
       METADATA_MATCH,
       NAME_MATCH,
       TYPE_MATCH
@@ -162,6 +175,8 @@ public final class CAShellCmdItemSearchBegin
       context.parameterValue(TYPE_MATCH);
     final var metaMatch =
       context.parameterValue(METADATA_MATCH);
+    final var serialMatch =
+      context.parameterValue(SERIAL_MATCH);
 
     final var parameters =
       new CAItemSearchParameters(
@@ -169,6 +184,7 @@ public final class CAShellCmdItemSearchBegin
         nameMatch.expression(),
         descriptionMatch.expression(),
         typeMatch.expression(),
+        serialMatch.expression(),
         metaMatch,
         new CAItemColumnOrdering(BY_NAME, true),
         context.parameterValue(LIMIT).longValue()

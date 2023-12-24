@@ -14,29 +14,19 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
 
-/**
- * The type of item reposit operations.
- */
+package com.io7m.cardant.tests.arbitraries.model;
 
-public sealed interface CAItemRepositType
-  permits CAItemRepositSerialAdd,
-  CAItemRepositSerialMove,
-  CAItemRepositSerialRemove,
-  CAItemRepositSetAdd,
-  CAItemRepositSetMove,
-  CAItemRepositSetRemove
+import com.io7m.cardant.model.CAItemSerial;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
+
+import java.util.UUID;
+
+public final class CAArbItemSerial extends CAArbAbstract<CAItemSerial>
 {
-  /**
-   * @return The item ID
-   */
-
-  CAItemID item();
-
-  /**
-   * @return The item count
-   */
-
-  long count();
+  public CAArbItemSerial()
+  {
+    super(CAItemSerial.class, () -> Arbitraries.create(UUID::randomUUID).map(x -> new CAItemSerial(x.toString())));
+  }
 }

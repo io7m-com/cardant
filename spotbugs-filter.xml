@@ -460,6 +460,18 @@
     <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
   </Match>
 
+  <!-- Pattern matching unused variables. -->
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
+  <!-- Pattern matching casts. -->
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="BC_UNCONFIRMED_CAST"/>
+  </Match>
+
   <!-- These classes are coupled as part of an API. -->
   <Match>
     <Or>

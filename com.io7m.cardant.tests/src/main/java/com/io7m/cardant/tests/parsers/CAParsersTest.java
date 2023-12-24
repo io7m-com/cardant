@@ -21,7 +21,10 @@ import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.parsers.CAConstraintExpressions;
+import com.io7m.cardant.parsers.CADescriptionMatchExpressions;
 import com.io7m.cardant.parsers.CAItemLocationMatchExpressions;
+import com.io7m.cardant.parsers.CAItemSerialMatchExpressions;
+import com.io7m.cardant.parsers.CAMediaTypeMatchExpressions;
 import com.io7m.cardant.parsers.CAMetadataExpressions;
 import com.io7m.cardant.parsers.CAMetadataMatchExpressions;
 import com.io7m.cardant.parsers.CANameMatchExpressions;
@@ -571,6 +574,159 @@ public final class CAParsersTest
         final var p1 =
           new CAItemLocationMatchExpressions(this.strings)
             .locationMatch(s);
+
+        assertEquals(p0, p1);
+      });
+    });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testSerialMatchErrors()
+  {
+    return Stream.of(
+      "23",
+      "[]",
+      "[with-something x]",
+      "[with-serial-equal-to x y]",
+      "[with-serial-equal-to [2]]",
+      "[with-serial-equal-to]",
+      "[with-serial-not-equal-to]"
+    ).map(text -> {
+      return dynamicTest("testSerialMatchErrors_%s".formatted(text), () -> {
+        final var ex =
+          assertThrows(CAException.class, () -> {
+            new CAItemSerialMatchExpressions(this.strings)
+              .serialMatch(text);
+          });
+        assertEquals(errorParse(), ex.errorCode());
+      });
+    });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testSerialMatchParseIdentity()
+  {
+    return Stream.of(
+      "with-any-serial",
+      "[with-serial-equal-to x]",
+      "[with-serial-not-equal-to x]"
+    ).map(text -> {
+      return dynamicTest("testSerialMatchParseIdentity_%s".formatted(text), () -> {
+        final var p0 =
+          new CAItemSerialMatchExpressions(this.strings)
+            .serialMatch(text);
+        final var s =
+          new CAItemSerialMatchExpressions(this.strings)
+            .serialMatchSerializeToString(p0);
+        final var p1 =
+          new CAItemSerialMatchExpressions(this.strings)
+            .serialMatch(s);
+
+        assertEquals(p0, p1);
+      });
+    });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testMediatypeMatchErrors()
+  {
+    return Stream.of(
+      "23",
+      "[]",
+      "[with-something x]",
+      "[with-mediatype-equal-to x y]",
+      "[with-mediatype-equal-to [2]]",
+      "[with-mediatype-equal-to]",
+      "[with-mediatype-not-equal-to]",
+      "[with-mediatype-similar-to x y]",
+      "[with-mediatype-similar-to [2]]",
+      "[with-mediatype-similar-to]",
+      "[with-mediatype-not-similar-to]"
+    ).map(text -> {
+      return dynamicTest("testMediatypeMatchErrors_%s".formatted(text), () -> {
+        final var ex =
+          assertThrows(CAException.class, () -> {
+            new CAMediaTypeMatchExpressions(this.strings)
+              .mediatypeMatch(text);
+          });
+        assertEquals(errorParse(), ex.errorCode());
+      });
+    });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testMediatypeMatchParseIdentity()
+  {
+    return Stream.of(
+      "with-any-mediatype",
+      "[with-mediatype-equal-to x]",
+      "[with-mediatype-not-equal-to x]",
+      "[with-mediatype-similar-to x]",
+      "[with-mediatype-not-similar-to x]"
+    ).map(text -> {
+      return dynamicTest("testMediatypeMatchParseIdentity_%s".formatted(text), () -> {
+        final var p0 =
+          new CAMediaTypeMatchExpressions(this.strings)
+            .mediatypeMatch(text);
+        final var s =
+          new CAMediaTypeMatchExpressions(this.strings)
+            .mediatypeMatchSerializeToString(p0);
+        final var p1 =
+          new CAMediaTypeMatchExpressions(this.strings)
+            .mediatypeMatch(s);
+
+        assertEquals(p0, p1);
+      });
+    });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testDescriptionMatchErrors()
+  {
+    return Stream.of(
+      "23",
+      "[]",
+      "[with-something x]",
+      "[with-description-equal-to x y]",
+      "[with-description-equal-to [2]]",
+      "[with-description-equal-to]",
+      "[with-description-not-equal-to]",
+      "[with-description-similar-to x y]",
+      "[with-description-similar-to [2]]",
+      "[with-description-similar-to]",
+      "[with-description-not-similar-to]"
+    ).map(text -> {
+      return dynamicTest("testDescriptionMatchErrors_%s".formatted(text), () -> {
+        final var ex =
+          assertThrows(CAException.class, () -> {
+            new CADescriptionMatchExpressions(this.strings)
+              .descriptionMatch(text);
+          });
+        assertEquals(errorParse(), ex.errorCode());
+      });
+    });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testDescriptionMatchParseIdentity()
+  {
+    return Stream.of(
+      "with-any-description",
+      "[with-description-equal-to x]",
+      "[with-description-not-equal-to x]",
+      "[with-description-similar-to x]",
+      "[with-description-not-similar-to x]"
+    ).map(text -> {
+      return dynamicTest("testDescriptionMatchParseIdentity_%s".formatted(text), () -> {
+        final var p0 =
+          new CADescriptionMatchExpressions(this.strings)
+            .descriptionMatch(text);
+        final var s =
+          new CADescriptionMatchExpressions(this.strings)
+            .descriptionMatchSerializeToString(p0);
+        final var p1 =
+          new CADescriptionMatchExpressions(this.strings)
+            .descriptionMatch(s);
 
         assertEquals(p0, p1);
       });

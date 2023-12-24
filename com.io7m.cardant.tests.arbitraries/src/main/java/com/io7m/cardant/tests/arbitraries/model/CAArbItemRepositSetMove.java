@@ -18,23 +18,24 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositSetMove;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
-public final class CAArbItemRepositAdd extends CAArbAbstract<CAItemRepositAdd>
+public final class CAArbItemRepositSetMove extends CAArbAbstract<CAItemRepositSetMove>
 {
-  public CAArbItemRepositAdd()
+  public CAArbItemRepositSetMove()
   {
     super(
-      CAItemRepositAdd.class,
+      CAItemRepositSetMove.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(CAItemID.class),
         Arbitraries.defaultFor(CALocationID.class),
+        Arbitraries.defaultFor(CALocationID.class),
         Arbitraries.longs().between(0L, 10000L)
-      ).as(CAItemRepositAdd::new)
+      ).as(CAItemRepositSetMove::new)
     );
   }
 }

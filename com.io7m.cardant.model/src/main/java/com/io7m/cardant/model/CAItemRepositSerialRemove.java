@@ -19,34 +19,37 @@ package com.io7m.cardant.model;
 import java.util.Objects;
 
 /**
- * An operation that moves a set of items from one storage location to another.
+ * An operation that removes an item with a serial number from a storage location.
  *
- * @param item         The item
- * @param fromLocation The source storage location
- * @param toLocation   The target storage location
- * @param count        The item count
+ * @param item     The item
+ * @param location The storage location
+ * @param serial   The item serial number
  */
 
-public record CAItemRepositMove(
+public record CAItemRepositSerialRemove(
   CAItemID item,
-  CALocationID fromLocation,
-  CALocationID toLocation,
-  long count)
+  CALocationID location,
+  CAItemSerial serial)
   implements CAItemRepositType
 {
   /**
-   * An operation that moves a set of items from one storage location to another.
+   * An operation that removes an item with a serial number from a storage location.
    *
-   * @param item         The item
-   * @param fromLocation The source storage location
-   * @param toLocation   The target storage location
-   * @param count        The item count
+   * @param item     The item
+   * @param location The storage location
+   * @param serial   The item serial number
    */
 
-  public CAItemRepositMove
+  public CAItemRepositSerialRemove
   {
     Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(fromLocation, "fromLocation");
-    Objects.requireNonNull(toLocation, "toLocation");
+    Objects.requireNonNull(location, "location");
+    Objects.requireNonNull(serial, "serial");
+  }
+
+  @Override
+  public long count()
+  {
+    return 1L;
   }
 }

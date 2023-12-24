@@ -42,9 +42,12 @@ import com.io7m.cardant.shell.internal.CAShellCmdItemCreate;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositMove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialMove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetMove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchPrevious;
@@ -175,9 +178,12 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemGet(services),
         new CAShellCmdItemMetadataPut(services),
         new CAShellCmdItemMetadataRemove(services),
-        new CAShellCmdItemRepositAdd(services),
-        new CAShellCmdItemRepositMove(services),
-        new CAShellCmdItemRepositRemove(services),
+        new CAShellCmdItemRepositSerialAdd(services),
+        new CAShellCmdItemRepositSerialMove(services),
+        new CAShellCmdItemRepositSerialRemove(services),
+        new CAShellCmdItemRepositSetAdd(services),
+        new CAShellCmdItemRepositSetMove(services),
+        new CAShellCmdItemRepositSetRemove(services),
         new CAShellCmdItemSearchBegin(services),
         new CAShellCmdItemSearchNext(services),
         new CAShellCmdItemSearchPrevious(services),

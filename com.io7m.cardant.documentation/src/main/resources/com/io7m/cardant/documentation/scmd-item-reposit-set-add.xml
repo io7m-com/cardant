@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Section id="43b17960-3405-3341-bf72-33157e3a7b64" title="item-reposit-remove" xmlns="urn:com.io7m.structural:8:0">
+<Section id="3feaa590-c86c-3e07-ac82-fcc51df1c092" title="item-reposit-set-add" xmlns="urn:com.io7m.structural:8:0">
   <Subsection title="Name">
     <Paragraph>
-      <Term type="command">item-reposit-remove</Term>
-       - Remove instances of items from locations.
+      <Term type="command">item-reposit-set-add</Term>
+       - Add sets of items to locations.
     </Paragraph>
   </Subsection>
   <Subsection title="Description">
     <Paragraph>
       The 
-      <Term type="command">item-reposit-remove</Term>
-       command removes instances of an item from a location.
+      <Term type="command">item-reposit-set-add</Term>
+       command adds sets of items to a location.
     </Paragraph>
     <FormalItem title="Parameters">
       <Table type="parameterTable">
@@ -34,7 +34,7 @@
           <Cell>
             <Term type="constant"/>
           </Cell>
-          <Cell>The number of instances of the item to remove.</Cell>
+          <Cell>The number of instances of the item to add.</Cell>
         </Row>
         <Row>
           <Cell>

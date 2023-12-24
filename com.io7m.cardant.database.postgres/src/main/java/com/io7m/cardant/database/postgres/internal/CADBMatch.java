@@ -25,6 +25,7 @@ import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType;
@@ -32,6 +33,7 @@ import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import org.jooq.Condition;
 import org.jooq.EnumType;
 import org.jooq.Field;
@@ -56,6 +58,23 @@ public final class CADBMatch
   private CADBMatch()
   {
 
+  }
+
+  static Condition ofSerialMatch(
+    final Field<String[]> fields,
+    final CAComparisonExactType<CAItemSerial> match)
+  {
+    return switch (match) {
+      case final CAComparisonExactType.Anything<CAItemSerial> e -> {
+        yield DSL.trueCondition();
+      }
+      case final CAComparisonExactType.IsEqualTo<CAItemSerial> e -> {
+        yield DSL.condition("? && ARRAY[?]", fields, e.value().value());
+      }
+      case final CAComparisonExactType.IsNotEqualTo<CAItemSerial> e -> {
+        yield DSL.condition("NOT (? && ARRAY[?])", fields, e.value().value());
+      }
+    };
   }
 
   /**
@@ -118,25 +137,21 @@ public final class CADBMatch
     final LocationFields fields,
     final CAItemLocationMatchType match)
   {
-    if (match instanceof CAItemLocationsAll) {
-      return DSL.trueCondition();
-    }
-
-    if (match instanceof final CAItemLocationExact exact) {
-      return fields.locationId.eq(DSL.array(exact.location().id()));
-    }
-
-    if (match instanceof final CAItemLocationWithDescendants descendants) {
-      return DSL.condition(
-        "? && (select array(select location_descendants(?)))",
-        fields.locationId,
-        descendants.location().id()
-      );
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized match type: %s".formatted(match)
-    );
+    return switch (match) {
+      case final CAItemLocationsAll e -> {
+        yield DSL.trueCondition();
+      }
+      case final CAItemLocationExact exact -> {
+        yield fields.locationId.eq(DSL.array(exact.location().id()));
+      }
+      case final CAItemLocationWithDescendants descendants -> {
+        yield DSL.condition(
+          "? && (select array(select location_descendants(?)))",
+          fields.locationId,
+          descendants.location().id()
+        );
+      }
+    };
   }
 
   record TypeFields(
@@ -170,67 +185,56 @@ public final class CADBMatch
     final MetaFields fields,
     final CAMetadataValueMatchType match)
   {
-    if (match instanceof CAMetadataValueMatchType.AnyValue) {
-      return DSL.trueCondition();
-    }
-
-    if (match instanceof final IntegralMatchType intM) {
-      return ofMetaValueMatchIntegral(fields, intM);
-    }
-
-    if (match instanceof final MonetaryMatchType moneyM) {
-      return ofMetaValueMatchMonetary(fields, moneyM);
-    }
-
-    if (match instanceof final RealMatchType realM) {
-      return ofMetaValueMatchReal(fields, realM);
-    }
-
-    if (match instanceof final TextMatchType textM) {
-      return ofMetaValueMatchText(fields, textM);
-    }
-
-    if (match instanceof final TimeMatchType timeM) {
-      return ofMetaValueMatchTime(fields, timeM);
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized match type: %s".formatted(match)
-    );
+    return switch (match) {
+      case final CAMetadataValueMatchType.AnyValue e -> {
+        yield DSL.trueCondition();
+      }
+      case final IntegralMatchType intM -> {
+        yield ofMetaValueMatchIntegral(fields, intM);
+      }
+      case final MonetaryMatchType moneyM -> {
+        yield ofMetaValueMatchMonetary(fields, moneyM);
+      }
+      case final RealMatchType realM -> {
+        yield ofMetaValueMatchReal(fields, realM);
+      }
+      case final TextMatchType textM -> {
+        yield ofMetaValueMatchText(fields, textM);
+      }
+      case final TimeMatchType timeM -> {
+        yield ofMetaValueMatchTime(fields, timeM);
+      }
+    };
   }
 
   static QuerySetType ofMetaElementMatch(
     final MetaFields fields,
     final CAMetadataElementMatchType match)
   {
-    if (match instanceof final CAMetadataElementMatchType.And and) {
-      return new QuerySetIntersection(
-        ofMetaElementMatch(fields, and.e0()),
-        ofMetaElementMatch(fields, and.e1())
-      );
-    }
-
-    if (match instanceof final CAMetadataElementMatchType.Or or) {
-      return new QuerySetUnion(
-        ofMetaElementMatch(fields, or.e0()),
-        ofMetaElementMatch(fields, or.e1())
-      );
-    }
-
-    if (match instanceof final CAMetadataElementMatchType.Specific specific) {
-      return new QuerySetCondition(DSL.and(
-        CADBComparisons.createFuzzyMatchQuery(
-          specific.name(),
-          fields.nameFields.name,
-          fields.nameFields.nameSearch.getName()
-        ),
-        ofMetaValueMatch(fields, specific.value())
-      ));
-    }
-
-    throw new IllegalStateException(
-      "Unrecognized match type: %s".formatted(match)
-    );
+    return switch (match) {
+      case final CAMetadataElementMatchType.And and -> {
+        yield new QuerySetIntersection(
+          ofMetaElementMatch(fields, and.e0()),
+          ofMetaElementMatch(fields, and.e1())
+        );
+      }
+      case final CAMetadataElementMatchType.Or or -> {
+        yield new QuerySetUnion(
+          ofMetaElementMatch(fields, or.e0()),
+          ofMetaElementMatch(fields, or.e1())
+        );
+      }
+      case final CAMetadataElementMatchType.Specific specific -> {
+        yield new QuerySetCondition(DSL.and(
+          CADBComparisons.createFuzzyMatchQuery(
+            specific.name(),
+            fields.nameFields.name,
+            fields.nameFields.nameSearch.getName()
+          ),
+          ofMetaValueMatch(fields, specific.value())
+        ));
+      }
+    };
   }
 
   private static Condition ofMetaValueMatchTime(

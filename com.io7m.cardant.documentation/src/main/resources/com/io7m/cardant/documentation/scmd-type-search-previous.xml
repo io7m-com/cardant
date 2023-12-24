@@ -12,6 +12,10 @@
       <Term type="command">type-search-previous</Term>
        command goes to the previous page of types.
     </Paragraph>
+    <Paragraph>
+      The command can only be used after the associated <Link target="5bd64820-cc42-304e-8fc6-6daa8a44ce42">begin</Link>
+      command.
+    </Paragraph>
   </Subsection>
 </Section>
 

@@ -16,27 +16,33 @@
 
 package com.io7m.cardant.model;
 
+import java.util.Objects;
+
 /**
- * The type of item reposit operations.
+ * An operation that removes a set of items from a storage location.
+ *
+ * @param item     The item
+ * @param location The storage location
+ * @param count    The item count
  */
 
-public sealed interface CAItemRepositType
-  permits CAItemRepositSerialAdd,
-  CAItemRepositSerialMove,
-  CAItemRepositSerialRemove,
-  CAItemRepositSetAdd,
-  CAItemRepositSetMove,
-  CAItemRepositSetRemove
+public record CAItemRepositSetRemove(
+  CAItemID item,
+  CALocationID location,
+  long count)
+  implements CAItemRepositType
 {
   /**
-   * @return The item ID
+   * An operation that removes a set of items from a storage location.
+   *
+   * @param item     The item
+   * @param location The storage location
+   * @param count    The item count
    */
 
-  CAItemID item();
-
-  /**
-   * @return The item count
-   */
-
-  long count();
+  public CAItemRepositSetRemove
+  {
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(location, "location");
+  }
 }

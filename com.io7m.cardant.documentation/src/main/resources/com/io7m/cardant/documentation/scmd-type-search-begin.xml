@@ -77,10 +77,5 @@
       </Table>
     </FormalItem>
   </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
-    </FormalItem>
-  </Subsection>
 </Section>
 

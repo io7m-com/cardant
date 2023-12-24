@@ -430,17 +430,17 @@ public final class CAShellIT
                 "--metadata '[integer gauge 20]'");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--key gauge");
-    w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+    w.println("item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
                 "--count 100");
-    w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+    w.println("item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
                 "--count 50");
-    w.println("item-reposit-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+    w.println("item-reposit-set-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
                 "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
                 "--count 15");
-    w.println("item-reposit-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+    w.println("item-reposit-set-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
                 "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
                 "--count 2");
     w.println("item-get --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4");

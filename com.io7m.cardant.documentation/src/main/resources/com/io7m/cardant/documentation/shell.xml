@@ -504,6 +504,67 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           <Verbatim><xi:include href="syn-match-mediatype.txt" parse="text"/></Verbatim>
         </FormalItem>
       </Subsection>
+
+      <Subsection title="Serial Matching" id="c96fddb3-1a8b-4aa5-8a3c-7365fd31021d">
+        <Paragraph>
+          A <Term type="term">serial match expression</Term> is an expression used to filter search results. The
+          expression is evaluated using the object's serial number as input and the object is included in search results
+          if the expression evaluates to <Term type="constant">true</Term>.
+        </Paragraph>
+        <Paragraph>
+          A description match expression takes one of the following forms:
+        </Paragraph>
+        <FormalItem title="Forms">
+          <ListUnordered>
+            <Item>
+              <Term type="expression">with-any-serial</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-serial-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-serial-not-equal-to n)</Term>
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Expressions have the following semantics, given in terms of a
+          <Term type="expression">match_description_evaluate</Term>
+          function:
+        </Paragraph>
+        <FormalItem title="Semantics">
+          <Verbatim><xi:include href="sem-match-serial.txt" parse="text"/></Verbatim>
+        </FormalItem>
+        <FormalItem title="Semantics Explanation">
+          <ListUnordered>
+            <Item>
+              An expression <Term type="expression">with-any-serial</Term> always evaluates to
+              <Term type="constant">true</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-serial-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m = n</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-serial-not-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m ≠ n</Term>.
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Specifically, the "similarity" function is currently implemented in terms of
+          <LinkExternal target="https://www.postgresql.org/docs/current/textsearch-intro.html#TEXTSEARCH-MATCHING">
+            PostgreSQL's full text search functionality
+          </LinkExternal>.
+        </Paragraph>
+        <FormalItem title="Syntax">
+          <Verbatim><xi:include href="syn-match-serial.txt" parse="text"/></Verbatim>
+        </FormalItem>
+      </Subsection>
     </Subsection>
   </Section>
 
@@ -528,9 +589,12 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-item-get.xml"/>
     <xi:include href="scmd-item-metadata-put.xml"/>
     <xi:include href="scmd-item-metadata-remove.xml"/>
-    <xi:include href="scmd-item-reposit-add.xml"/>
-    <xi:include href="scmd-item-reposit-move.xml"/>
-    <xi:include href="scmd-item-reposit-remove.xml"/>
+    <xi:include href="scmd-item-reposit-serial-add.xml"/>
+    <xi:include href="scmd-item-reposit-serial-move.xml"/>
+    <xi:include href="scmd-item-reposit-serial-remove.xml"/>
+    <xi:include href="scmd-item-reposit-set-add.xml"/>
+    <xi:include href="scmd-item-reposit-set-move.xml"/>
+    <xi:include href="scmd-item-reposit-set-remove.xml"/>
     <xi:include href="scmd-item-search-begin.xml"/>
     <xi:include href="scmd-item-search-next.xml"/>
     <xi:include href="scmd-item-search-previous.xml"/>

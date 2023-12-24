@@ -785,14 +785,34 @@ CREATE TABLE location_attachments (
       GRANT SELECT ON location_attachments TO cardant_read_only
     </Statement>
 
+    <Comment>
+      The item_locations table associates items with locations. There are two types of associations: set associations
+      and serial associations. A set association associates a non-zero count of items with a location. The items
+      within the set have no distinguishable identities. A serial association associates exactly one item with
+      a location, and includes a serial number that uniquely identifies the item. Below this table, some indexes
+      are used to disallow having multiple set associations for the same item and location.
+    </Comment>
+
     <Statement><![CDATA[
 CREATE TABLE item_locations (
-  item_location_item  UUID   NOT NULL,
-  item_location       UUID   NOT NULL,
-  item_location_count BIGINT NOT NULL,
+  item_location_item    UUID           NOT NULL,
+  item_location         UUID           NOT NULL,
+  item_location_count   BIGINT         NOT NULL,
+  item_location_serial  VARCHAR(1024),
 
-  CONSTRAINT item_locations_primary_key
-    PRIMARY KEY (item_location_item, item_location),
+  -- [jooq ignore start]
+  CONSTRAINT item_locations_assertion_type_values_present CHECK (
+    CASE
+      WHEN item_location_serial IS NOT NULL THEN
+        item_location_count = 1
+      ELSE
+        't'::boolean
+    END
+  ),
+
+  CONSTRAINT item_locations_unique
+    UNIQUE NULLS NOT DISTINCT (item_location_item, item_location, item_location_serial),
+  -- [jooq ignore stop]
 
   CONSTRAINT item_id_exists
     FOREIGN KEY (item_location_item) REFERENCES items (item_id),
@@ -800,7 +820,8 @@ CREATE TABLE item_locations (
   CONSTRAINT item_location_exists
     FOREIGN KEY (item_location) REFERENCES locations (location_id),
 
-  CONSTRAINT CHECK_item_location_COUNT CHECK (item_location_count >= 0)
+  CONSTRAINT check_item_location_count
+    CHECK (item_location_count >= 0)
 )
 ]]></Statement>
 
@@ -941,8 +962,9 @@ CREATE VIEW item_search_view AS
     item_metadata.item_meta_value_money,
     item_metadata.item_meta_value_money_currency,
     item_metadata.item_meta_value_real,
-    array_agg(metadata_types_records.mtr_name) AS isv_mtr_names,
-    array_agg(item_locations.item_location)    AS isv_item_locations
+    array_agg(metadata_types_records.mtr_name)     AS isv_mtr_names,
+    array_agg(item_locations.item_location)        AS isv_item_locations,
+    array_agg(item_locations.item_location_serial) AS isv_item_serials
   FROM
     items
   LEFT JOIN item_types

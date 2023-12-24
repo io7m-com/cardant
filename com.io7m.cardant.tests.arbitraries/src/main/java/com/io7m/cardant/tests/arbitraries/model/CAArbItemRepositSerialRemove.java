@@ -17,33 +17,26 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemColumnOrdering;
-import com.io7m.cardant.model.CAItemLocationMatchType;
-import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemRepositSerialRemove;
 import com.io7m.cardant.model.CAItemSerial;
-import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
-public final class CAArbItemSearchParameters
-  extends CAArbAbstract<CAItemSearchParameters>
+public final class CAArbItemRepositSerialRemove
+  extends CAArbAbstract<CAItemRepositSerialRemove>
 {
-  public CAArbItemSearchParameters()
+  public CAArbItemRepositSerialRemove()
   {
     super(
-      CAItemSearchParameters.class,
+      CAItemRepositSerialRemove.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemLocationMatchType.class),
-        CAArbComparisons.fuzzy(Arbitraries.strings()),
-        CAArbComparisons.fuzzy(Arbitraries.strings()),
-        CAArbComparisons.set(Arbitraries.defaultFor(RDottedName.class)),
-        CAArbComparisons.exact(Arbitraries.defaultFor(CAItemSerial.class)),
-        Arbitraries.defaultFor(CAMetadataElementMatchType.class),
-        Arbitraries.defaultFor(CAItemColumnOrdering.class),
-        Arbitraries.integers().between(1, 1000)
-      ).as(CAItemSearchParameters::new)
+        Arbitraries.defaultFor(CAItemID.class),
+        Arbitraries.defaultFor(CALocationID.class),
+        Arbitraries.strings().map(CAItemSerial::new)
+      ).as(CAItemRepositSerialRemove::new)
     );
   }
 }

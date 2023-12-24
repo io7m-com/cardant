@@ -16,27 +16,40 @@
 
 package com.io7m.cardant.model;
 
+import java.util.Objects;
+
 /**
- * The type of item reposit operations.
+ * An operation that adds a single item with a serial number to a storage location.
+ *
+ * @param item     The item
+ * @param location The storage location
+ * @param serial   The item serial number
  */
 
-public sealed interface CAItemRepositType
-  permits CAItemRepositSerialAdd,
-  CAItemRepositSerialMove,
-  CAItemRepositSerialRemove,
-  CAItemRepositSetAdd,
-  CAItemRepositSetMove,
-  CAItemRepositSetRemove
+public record CAItemRepositSerialAdd(
+  CAItemID item,
+  CALocationID location,
+  CAItemSerial serial)
+  implements CAItemRepositType
 {
   /**
-   * @return The item ID
+   * An operation that adds a single item with a serial number to a storage location.
+   *
+   * @param item     The item
+   * @param location The storage location
+   * @param serial   The item serial number
    */
 
-  CAItemID item();
+  public CAItemRepositSerialAdd
+  {
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(location, "location");
+    Objects.requireNonNull(serial, "serial");
+  }
 
-  /**
-   * @return The item count
-   */
-
-  long count();
+  @Override
+  public long count()
+  {
+    return 1L;
+  }
 }

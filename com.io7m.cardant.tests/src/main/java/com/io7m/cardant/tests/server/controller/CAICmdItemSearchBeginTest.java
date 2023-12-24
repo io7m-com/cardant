@@ -27,6 +27,7 @@ import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
@@ -72,6 +73,7 @@ public final class CAICmdItemSearchBeginTest
       new CAComparisonFuzzyType.Anything<>(),
       new CAComparisonFuzzyType.Anything<>(),
       new CAComparisonSetType.Anything<>(),
+      new CAComparisonExactType.Anything<>(),
       CAMetadataElementMatchType.ANYTHING,
       new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
       100L

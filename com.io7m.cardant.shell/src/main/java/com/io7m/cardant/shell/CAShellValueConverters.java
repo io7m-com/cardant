@@ -21,6 +21,7 @@ import com.io7m.cardant.shell.internal.CADescriptionMatchConverter;
 import com.io7m.cardant.shell.internal.CAFileIdConverter;
 import com.io7m.cardant.shell.internal.CAItemIdConverter;
 import com.io7m.cardant.shell.internal.CAItemLocationMatchConverter;
+import com.io7m.cardant.shell.internal.CAItemSerialMatchConverter;
 import com.io7m.cardant.shell.internal.CALocationIdConverter;
 import com.io7m.cardant.shell.internal.CAMediaTypeMatchConverter;
 import com.io7m.cardant.shell.internal.CAMetadataConverter;
@@ -64,6 +65,7 @@ public final class CAShellValueConverters
       .with(new CAFileIdConverter())
       .with(new CAItemIdConverter())
       .with(new CAItemLocationMatchConverter(strings))
+      .with(new CAItemSerialMatchConverter(strings))
       .with(new CALocationIdConverter())
       .with(new CAMediaTypeMatchConverter(strings))
       .with(new CAMetadataConverter(strings))

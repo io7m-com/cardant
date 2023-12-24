@@ -15,27 +15,29 @@
  */
 
 
-package com.io7m.cardant.tests.arbitraries.model;
+package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositMove;
-import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 
-public final class CAArbItemRepositMove extends CAArbAbstract<CAItemRepositMove>
+import java.util.Objects;
+
+/**
+ * A wrapper for an exact comparison.
+ *
+ * @param expression The expression
+ */
+
+public record CAItemSerialMatch(
+  CAComparisonExactType<CAItemSerial> expression)
 {
-  public CAArbItemRepositMove()
+  /**
+   * A wrapper for an exact comparison.
+   *
+   * @param expression The expression
+   */
+
+  public CAItemSerialMatch
   {
-    super(
-      CAItemRepositMove.class,
-      () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.longs().between(0L, 10000L)
-      ).as(CAItemRepositMove::new)
-    );
+    Objects.requireNonNull(expression, "expression");
   }
 }

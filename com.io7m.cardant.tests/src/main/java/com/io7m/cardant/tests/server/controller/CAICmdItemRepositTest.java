@@ -20,7 +20,7 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositSetAdd;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
@@ -97,7 +97,7 @@ public final class CAICmdItemRepositTest
         handler.execute(
           context,
           new CAICommandItemReposit(
-            new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L)));
+            new CAItemRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L)));
       });
 
     /* Assert. */
@@ -162,7 +162,7 @@ public final class CAICmdItemRepositTest
     handler.execute(
       context,
       new CAICommandItemReposit(
-        new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L))
+        new CAItemRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L))
     );
 
     /* Assert. */
@@ -174,7 +174,7 @@ public final class CAICmdItemRepositTest
     verify(transaction)
       .setUserId(context.session().userId());
     verify(itemReposit)
-      .execute(new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L));
+      .execute(new CAItemRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L));
     verify(itemGet)
       .execute(ITEM_ID);
 

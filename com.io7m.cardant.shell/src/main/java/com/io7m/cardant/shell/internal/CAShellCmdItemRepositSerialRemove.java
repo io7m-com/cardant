@@ -19,7 +19,8 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CAItemRepositSerialRemove;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
@@ -37,10 +38,10 @@ import java.util.Optional;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "item-reposit-remove"
+ * "item-reposit-serial-remove"
  */
 
-public final class CAShellCmdItemRepositRemove
+public final class CAShellCmdItemRepositSerialRemove
   extends CAShellCmdAbstractCR<CAICommandItemReposit, CAIResponseItemReposit>
 {
   private static final QParameterNamed1<CAItemID> ITEM =
@@ -61,13 +62,13 @@ public final class CAShellCmdItemRepositRemove
       CALocationID.class
     );
 
-  private static final QParameterNamed1<Long> COUNT =
+  private static final QParameterNamed1<String> SERIAL =
     new QParameterNamed1<>(
-      "--count",
+      "--serial",
       List.of(),
-      new QConstant("The number of instances of the item to remove."),
+      new QConstant("The item serial number."),
       Optional.empty(),
-      Long.class
+      String.class
     );
 
   /**
@@ -76,14 +77,14 @@ public final class CAShellCmdItemRepositRemove
    * @param inServices The context
    */
 
-  public CAShellCmdItemRepositRemove(
+  public CAShellCmdItemRepositSerialRemove(
     final RPServiceDirectoryType inServices)
   {
     super(
       inServices,
       new QCommandMetadata(
-        "item-reposit-remove",
-        new QConstant("Remove instances of items from locations."),
+        "item-reposit-serial-remove",
+        new QConstant("Remove an instance of an item from a location."),
         Optional.empty()
       ),
       CAICommandItemReposit.class
@@ -93,7 +94,7 @@ public final class CAShellCmdItemRepositRemove
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ITEM, LOCATION, COUNT);
+    return List.of(ITEM, LOCATION, SERIAL);
   }
 
   @Override
@@ -108,13 +109,17 @@ public final class CAShellCmdItemRepositRemove
       context.parameterValue(ITEM);
     final var locationID =
       context.parameterValue(LOCATION);
-    final var count =
-      context.parameterValue(COUNT);
+    final var serial =
+      context.parameterValue(SERIAL);
 
     final var item =
       ((CAIResponseItemReposit) client.executeOrElseThrow(
         new CAICommandItemReposit(
-          new CAItemRepositRemove(itemID, locationID, count.longValue())
+          new CAItemRepositSerialRemove(
+            itemID,
+            locationID,
+            new CAItemSerial(serial)
+          )
         ),
         CAClientException::ofError
       )).data();

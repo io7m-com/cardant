@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.lanark.core.RDottedName;
@@ -29,6 +30,7 @@ import java.util.Objects;
  * @param nameMatch        The name match expression
  * @param descriptionMatch The description match expression
  * @param typeMatch        The type match expression
+ * @param serialMatch      The serial number match expression
  * @param metadataMatch    The metadata match expression
  * @param ordering         The ordering specification
  * @param pageSize         The page size
@@ -39,6 +41,7 @@ public record CAItemSearchParameters(
   CAComparisonFuzzyType<String> nameMatch,
   CAComparisonFuzzyType<String> descriptionMatch,
   CAComparisonSetType<RDottedName> typeMatch,
+  CAComparisonExactType<CAItemSerial> serialMatch,
   CAMetadataElementMatchType metadataMatch,
   CAItemColumnOrdering ordering,
   long pageSize)
@@ -51,6 +54,7 @@ public record CAItemSearchParameters(
    * @param nameMatch        The name match expression
    * @param descriptionMatch The description match expression
    * @param typeMatch        The type match expression
+   * @param serialMatch      The serial number match expression
    * @param metadataMatch    The metadata match expression
    * @param ordering         The ordering specification
    * @param pageSize         The page size
@@ -63,6 +67,7 @@ public record CAItemSearchParameters(
     Objects.requireNonNull(nameMatch, "nameMatch");
     Objects.requireNonNull(descriptionMatch, "descriptionMatch");
     Objects.requireNonNull(metadataMatch, "metadataMatch");
+    Objects.requireNonNull(serialMatch, "serialMatch");
     Objects.requireNonNull(ordering, "ordering");
     pageSize = CAPageSizes.clampPageSize(pageSize);
   }
