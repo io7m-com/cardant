@@ -31,6 +31,7 @@ import com.io7m.cardant.type_packages.CATypePackageCheckerResultType;
 import com.io7m.cardant.type_packages.CATypePackageCheckerSuccess;
 import com.io7m.cardant.type_packages.CATypePackageCheckerType;
 import com.io7m.cardant.type_packages.CATypePackageResolverType;
+import com.io7m.jaffirm.core.Invariants;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.seltzer.api.SStructuredError;
 import com.io7m.verona.core.VersionRange;
@@ -51,10 +52,7 @@ import static com.io7m.cardant.strings.CAStringConstants.PACKAGE;
 import static com.io7m.cardant.strings.CAStringConstants.TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.TYPECHECKER_NAME_QUALIFIED_INVALID;
 import static com.io7m.cardant.strings.CAStringConstants.TYPECHECKER_NO_SUCH_PACKAGE;
-import static com.io7m.cardant.strings.CAStringConstants.TYPECHECKER_RECORD_DUPLICATE;
-import static com.io7m.cardant.strings.CAStringConstants.TYPECHECKER_RECORD_FIELD_DUPLICATE;
 import static com.io7m.cardant.strings.CAStringConstants.TYPECHECKER_RECORD_FIELD_TYPE_NONEXISTENT;
-import static com.io7m.cardant.strings.CAStringConstants.TYPECHECKER_SCALAR_DUPLICATE;
 import static com.io7m.cardant.strings.CAStringConstants.VERSION_RANGE;
 
 /**
@@ -177,21 +175,19 @@ public final class CATypePackageChecker
             fDecl.isRequired()
           );
 
-        if (this.typeRecordFieldsUnqualified.containsKey(fName)) {
-          this.errors.add(
-            this.errorTypeFieldDuplicate(name, fName, fDecl.type())
-          );
-          continue;
-        }
+        Invariants.checkInvariantV(
+          !this.typeRecordFieldsUnqualified.containsKey(fName),
+          "Record field cannot already exist."
+        );
 
         this.typeRecordFields.put(fieldNameQual, field);
         this.typeRecordFieldsUnqualified.put(fName, field);
       }
 
-      if (this.typeRecords.containsKey(typeNameQual)) {
-        this.errors.add(this.errorTypeRecordDuplicate(name));
-        continue;
-      }
+      Invariants.checkInvariantV(
+        !this.typeRecords.containsKey(typeNameQual),
+        "Record type cannot already exist."
+      );
 
       final var typeRecord =
         new CATypeRecord(
@@ -220,40 +216,6 @@ public final class CATypePackageChecker
       Map.copyOf(m),
       Optional.empty(),
       Optional.of(ex)
-    );
-  }
-
-  private SStructuredError<String> errorTypeRecordDuplicate(
-    final CANameUnqualified typeName)
-  {
-    final var m = new HashMap<String, String>();
-    m.put(this.strings.format(TYPE), typeName.value());
-
-    return new SStructuredError<>(
-      "error-type-record-duplicate",
-      this.strings.format(TYPECHECKER_RECORD_DUPLICATE),
-      Map.copyOf(m),
-      Optional.empty(),
-      Optional.empty()
-    );
-  }
-
-  private SStructuredError<String> errorTypeFieldDuplicate(
-    final CANameUnqualified typeName,
-    final CANameUnqualified fieldName,
-    final CANameType fieldType)
-  {
-    final var m = new HashMap<String, String>();
-    m.put(this.strings.format(TYPE), typeName.value());
-    m.put(this.strings.format(FIELD_NAME), fieldName.value());
-    m.put(this.strings.format(FIELD_TYPE), fieldType.toString());
-
-    return new SStructuredError<>(
-      "error-type-record-field-duplicate",
-      this.strings.format(TYPECHECKER_RECORD_FIELD_DUPLICATE),
-      Map.copyOf(m),
-      Optional.empty(),
-      Optional.empty()
     );
   }
 
@@ -306,29 +268,14 @@ public final class CATypePackageChecker
       final var typeQual =
         type.withName(typeNameQual);
 
-      if (this.typeScalars.containsKey(typeNameQual)) {
-        this.errors.add(this.errorTypeScalarDuplicate(name.value()));
-        continue;
-      }
+      Invariants.checkInvariantV(
+        !this.typeScalars.containsKey(typeNameQual),
+        "Scalar type cannot already exist."
+      );
 
       this.typeScalars.put(typeNameQual, typeQual);
       this.typeScalarsUnqualified.put(name, typeQual);
     }
-  }
-
-  private SStructuredError<String> errorTypeScalarDuplicate(
-    final String name)
-  {
-    final var m = new HashMap<String, String>();
-    m.put(this.strings.format(TYPE), name);
-
-    return new SStructuredError<>(
-      "error-type-scalar-duplicate",
-      this.strings.format(TYPECHECKER_SCALAR_DUPLICATE),
-      Map.copyOf(m),
-      Optional.empty(),
-      Optional.empty()
-    );
   }
 
   private CATypePackageCheckerResultType buildPackage()

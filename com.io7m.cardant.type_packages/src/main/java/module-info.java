@@ -29,6 +29,7 @@ module com.io7m.cardant.type_packages
   requires com.io7m.anethum.api;
   requires com.io7m.blackthorne.core;
   requires com.io7m.blackthorne.jxe;
+  requires com.io7m.jaffirm.core;
   requires com.io7m.jxe.core;
   requires com.io7m.seltzer.api;
   requires org.slf4j;
