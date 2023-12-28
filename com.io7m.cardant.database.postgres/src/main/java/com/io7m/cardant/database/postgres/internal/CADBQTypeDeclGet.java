@@ -20,7 +20,7 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
@@ -38,10 +38,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_
  */
 
 public final class CADBQTypeDeclGet
-  extends CADBQAbstract<RDottedName, Optional<CATypeDeclaration>>
+  extends CADBQAbstract<RDottedName, Optional<CATypeRecord>>
   implements TypeDeclarationGetType
 {
-  private static final Service<RDottedName, Optional<CATypeDeclaration>, TypeDeclarationGetType> SERVICE =
+  private static final Service<RDottedName, Optional<CATypeRecord>, TypeDeclarationGetType> SERVICE =
     new Service<>(TypeDeclarationGetType.class, CADBQTypeDeclGet::new);
 
   /**
@@ -66,7 +66,7 @@ public final class CADBQTypeDeclGet
   }
 
   @Override
-  protected Optional<CATypeDeclaration> onExecute(
+  protected Optional<CATypeRecord> onExecute(
     final DSLContext context,
     final RDottedName name)
     throws CADatabaseException
@@ -135,7 +135,7 @@ public final class CADBQTypeDeclGet
     }
 
     return Optional.of(
-      new CATypeDeclaration(
+      new CATypeRecord(
         name,
         description,
         fields

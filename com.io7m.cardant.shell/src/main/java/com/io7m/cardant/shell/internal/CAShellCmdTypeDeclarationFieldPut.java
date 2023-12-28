@@ -18,7 +18,7 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
@@ -166,7 +166,7 @@ public final class CAShellCmdTypeDeclarationFieldPut
     fields.put(fieldName, newField);
 
     final var newDeclaration =
-      new CATypeDeclaration(
+      new CATypeRecord(
         existing.name(),
         existing.description(),
         Map.copyOf(fields)

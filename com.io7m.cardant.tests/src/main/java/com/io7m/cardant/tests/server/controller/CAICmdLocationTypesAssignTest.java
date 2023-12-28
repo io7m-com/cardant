@@ -23,7 +23,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesAssignT
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
@@ -135,7 +135,7 @@ public final class CAICmdLocationTypesAssignTest
 
     when(typeGet.execute(any()))
       .thenReturn(List.of(
-        new CATypeDeclaration(
+        new CATypeRecord(
           new RDottedName("t"),
           "A type",
           Map.of()
@@ -222,7 +222,7 @@ public final class CAICmdLocationTypesAssignTest
 
     when(typeGet.execute(any()))
       .thenReturn(List.of(
-        new CATypeDeclaration(
+        new CATypeRecord(
           new RDottedName("t"),
           "A type",
           Map.of(

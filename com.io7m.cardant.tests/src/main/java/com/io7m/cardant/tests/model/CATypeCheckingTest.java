@@ -20,7 +20,7 @@ package com.io7m.cardant.tests.model;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATypeChecking;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.strings.CAStrings;
@@ -58,7 +58,7 @@ public final class CATypeCheckingTest
   public void testMissingRequiredField()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -101,7 +101,7 @@ public final class CATypeCheckingTest
   public void testFieldWithUnparseablePattern()
   {
     assertThrows(PatternSyntaxException.class, () -> {
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -131,7 +131,7 @@ public final class CATypeCheckingTest
   public void testFieldInvalid()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -171,7 +171,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckSuccess0()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -212,7 +212,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckSuccess1()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -253,7 +253,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckSuccess2()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -294,7 +294,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckSuccess3()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -338,7 +338,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckSuccess4()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -378,7 +378,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckFails0()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -419,7 +419,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckFails1()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -460,7 +460,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckFails2()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -501,7 +501,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckFails3()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -545,7 +545,7 @@ public final class CATypeCheckingTest
   public void testTypeCheckFails4()
   {
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         NAME_EX,
         "An example type.",
         Map.ofEntries(

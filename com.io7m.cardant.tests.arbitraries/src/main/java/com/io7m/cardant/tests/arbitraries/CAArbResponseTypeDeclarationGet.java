@@ -15,7 +15,7 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationGet;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
@@ -30,7 +30,7 @@ public final class CAArbResponseTypeDeclarationGet extends CAArbAbstract<CAIResp
       CAIResponseTypeDeclarationGet.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
-        Arbitraries.defaultFor(CATypeDeclaration.class)
+        Arbitraries.defaultFor(CATypeRecord.class)
       ).as(CAIResponseTypeDeclarationGet::new)
     );
   }

@@ -15,38 +15,40 @@
  */
 
 
-package com.io7m.cardant.model;
+package com.io7m.cardant.model.type_package;
 
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.jaffirm.core.Preconditions;
 
-import java.util.Map;
 import java.util.Objects;
 
 /**
- * A type declaration.
+ * The type of unqualified names.
  *
- * @param name        The type name
- * @param description The description
- * @param fields      The set of fields
+ * @param value The name
  */
 
-public record CATypeDeclaration(
-  RDottedName name,
-  String description,
-  Map<RDottedName, CATypeField> fields)
+public record CANameUnqualified(String value)
+  implements CANameType
 {
   /**
-   * A type declaration.
+   * The type of unqualified names.
    *
-   * @param name        The type name
-   * @param description The description
-   * @param fields      The set of fields
+   * @param value The name
    */
 
-  public CATypeDeclaration
+  public CANameUnqualified
   {
-    Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(description, "description");
-    Objects.requireNonNull(fields, "fields");
+    Objects.requireNonNull(value, "value");
+
+    Preconditions.checkPreconditionV(
+      !value.contains("."),
+      "Unqualified names cannot contain '.'"
+    );
+  }
+
+  @Override
+  public String toString()
+  {
+    return this.value;
   }
 }

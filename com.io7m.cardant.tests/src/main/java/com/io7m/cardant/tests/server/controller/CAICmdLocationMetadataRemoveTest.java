@@ -25,7 +25,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationG
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
@@ -417,7 +417,7 @@ public final class CAICmdLocationMetadataRemoveTest
       ));
 
     final var type =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("t"),
         "T",
         Map.ofEntries(

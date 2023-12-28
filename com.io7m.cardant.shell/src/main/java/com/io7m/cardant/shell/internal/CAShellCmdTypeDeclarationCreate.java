@@ -18,7 +18,7 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationPut;
@@ -123,7 +123,7 @@ public final class CAShellCmdTypeDeclarationCreate
 
     client.executeOrElseThrow(
       new CAICommandTypeDeclarationPut(
-        Set.of(new CATypeDeclaration(typeName, description, Map.of()))
+        Set.of(new CATypeRecord(typeName, description, Map.of()))
       ),
       CAClientException::ofError
     );

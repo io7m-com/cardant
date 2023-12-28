@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -31,7 +31,7 @@ import java.util.UUID;
 
 public record CAIResponseTypeDeclarationGet(
   UUID requestId,
-  CATypeDeclaration type)
+  CATypeRecord type)
   implements CAIResponseType
 {
   /**

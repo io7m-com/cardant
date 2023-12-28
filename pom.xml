@@ -58,6 +58,7 @@
     <module>com.io7m.cardant.tests.arbitraries</module>
     <module>com.io7m.cardant.tests</module>
     <module>com.io7m.cardant.tls</module>
+    <module>com.io7m.cardant.type_packages</module>
   </modules>
 
   <properties>
@@ -264,6 +265,11 @@
         <groupId>org.joda</groupId>
         <artifactId>joda-money</artifactId>
         <version>1.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.verona</groupId>
+        <artifactId>com.io7m.verona.core</artifactId>
+        <version>1.0.0</version>
       </dependency>
 
       <!-- Server security -->

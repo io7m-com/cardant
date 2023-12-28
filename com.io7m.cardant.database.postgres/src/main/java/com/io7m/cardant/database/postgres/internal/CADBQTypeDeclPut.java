@@ -21,7 +21,7 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationPutType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.impl.DSL;
@@ -41,10 +41,10 @@ import static com.io7m.cardant.strings.CAStringConstants.TYPE;
  */
 
 public final class CADBQTypeDeclPut
-  extends CADBQAbstract<CATypeDeclaration, CADatabaseUnit>
+  extends CADBQAbstract<CATypeRecord, CADatabaseUnit>
   implements TypeDeclarationPutType
 {
-  private static final Service<CATypeDeclaration, CADatabaseUnit, TypeDeclarationPutType> SERVICE =
+  private static final Service<CATypeRecord, CADatabaseUnit, TypeDeclarationPutType> SERVICE =
     new Service<>(TypeDeclarationPutType.class, CADBQTypeDeclPut::new);
 
   /**
@@ -71,7 +71,7 @@ public final class CADBQTypeDeclPut
   @Override
   protected CADatabaseUnit onExecute(
     final DSLContext context,
-    final CATypeDeclaration declaration)
+    final CATypeRecord declaration)
     throws CADatabaseException
   {
     final var typeName =

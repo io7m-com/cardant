@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeDeclaration;
 import com.io7m.cedarbridge.runtime.convenience.CBMaps;
@@ -31,7 +31,7 @@ import static com.io7m.cedarbridge.runtime.api.CBCore.string;
  */
 
 public enum CAUVTypeDeclaration
-  implements CAProtocolMessageValidatorType<CATypeDeclaration, CAI1TypeDeclaration>
+  implements CAProtocolMessageValidatorType<CATypeRecord, CAI1TypeDeclaration>
 {
   /**
    * A validator.
@@ -41,7 +41,7 @@ public enum CAUVTypeDeclaration
 
   @Override
   public CAI1TypeDeclaration convertToWire(
-    final CATypeDeclaration message)
+    final CATypeRecord message)
   {
     return new CAI1TypeDeclaration(
       string(message.name().value()),
@@ -55,10 +55,10 @@ public enum CAUVTypeDeclaration
   }
 
   @Override
-  public CATypeDeclaration convertFromWire(
+  public CATypeRecord convertFromWire(
     final CAI1TypeDeclaration message)
   {
-    return new CATypeDeclaration(
+    return new CATypeRecord(
       new RDottedName(message.fieldName().value()),
       message.fieldDescription().value(),
       CBMaps.toMap(

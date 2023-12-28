@@ -54,6 +54,7 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.shell;
   requires com.io7m.cardant.tests.arbitraries;
   requires com.io7m.cardant.tls;
+  requires com.io7m.cardant.type_packages;
 
   uses ArbitraryProvider;
   uses CADBQueryProviderType;

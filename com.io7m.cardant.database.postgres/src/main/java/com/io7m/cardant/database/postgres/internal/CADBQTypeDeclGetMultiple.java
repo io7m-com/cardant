@@ -20,7 +20,7 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.DSLContext;
@@ -42,10 +42,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_
  */
 
 public final class CADBQTypeDeclGetMultiple
-  extends CADBQAbstract<Set<RDottedName>, List<CATypeDeclaration>>
+  extends CADBQAbstract<Set<RDottedName>, List<CATypeRecord>>
   implements TypeDeclarationGetMultipleType
 {
-  private static final Service<Set<RDottedName>, List<CATypeDeclaration>, TypeDeclarationGetMultipleType> SERVICE =
+  private static final Service<Set<RDottedName>, List<CATypeRecord>, TypeDeclarationGetMultipleType> SERVICE =
     new Service<>(TypeDeclarationGetMultipleType.class, CADBQTypeDeclGetMultiple::new);
 
   /**
@@ -70,7 +70,7 @@ public final class CADBQTypeDeclGetMultiple
   }
 
   @Override
-  protected List<CATypeDeclaration> onExecute(
+  protected List<CATypeRecord> onExecute(
     final DSLContext context,
     final Set<RDottedName> names)
     throws CADatabaseException
@@ -140,16 +140,16 @@ public final class CADBQTypeDeclGetMultiple
       fieldsByTypeName.put(typeName, fields);
     }
 
-    final var results = new ArrayList<CATypeDeclaration>(names.size());
+    final var results = new ArrayList<CATypeRecord>(names.size());
     for (final var typeName : names) {
       final var description =
         descriptionsByTypeName.get(typeName);
       final var fields =
         fieldsByTypeName.get(typeName);
-      results.add(new CATypeDeclaration(typeName, description, fields));
+      results.add(new CATypeRecord(typeName, description, fields));
     }
 
-    results.sort(Comparator.comparing(CATypeDeclaration::name));
+    results.sort(Comparator.comparing(CATypeRecord::name));
     return List.copyOf(results);
   }
 }

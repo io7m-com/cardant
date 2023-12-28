@@ -70,6 +70,14 @@ public sealed interface CATypeScalarType
   }
 
   /**
+   * @param newName The new name
+   *
+   * @return This type with a new name
+   */
+
+  CATypeScalarType withName(RDottedName newName);
+
+  /**
    * @return The type name
    */
 
@@ -117,6 +125,18 @@ public sealed interface CATypeScalarType
     {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(description, "description");
+    }
+
+    @Override
+    public CATypeScalarType withName(
+      final RDottedName newName)
+    {
+      return new Integral(
+        newName,
+        this.description,
+        this.rangeLower,
+        this.rangeUpper
+      );
     }
 
     @Override
@@ -183,6 +203,17 @@ public sealed interface CATypeScalarType
     }
 
     @Override
+    public CATypeScalarType withName(
+      final RDottedName newName)
+    {
+      return new Text(
+        newName,
+        this.description,
+        this.pattern
+      );
+    }
+
+    @Override
     public String showConstraint()
     {
       return String.format("∀x, x ~= %s", this.pattern);
@@ -238,6 +269,18 @@ public sealed interface CATypeScalarType
     }
 
     @Override
+    public CATypeScalarType withName(
+      final RDottedName newName)
+    {
+      return new Time(
+        newName,
+        this.description,
+        this.rangeLower,
+        this.rangeUpper
+      );
+    }
+
+    @Override
     public String showConstraint()
     {
       return String.format(
@@ -257,7 +300,7 @@ public sealed interface CATypeScalarType
       final OffsetDateTime value)
     {
       return value.compareTo(this.rangeLower) >= 0
-        && value.compareTo(this.rangeUpper) <= 0;
+             && value.compareTo(this.rangeUpper) <= 0;
     }
   }
 
@@ -290,6 +333,18 @@ public sealed interface CATypeScalarType
     }
 
     @Override
+    public CATypeScalarType withName(
+      final RDottedName newName)
+    {
+      return new Monetary(
+        newName,
+        this.description,
+        this.rangeLower,
+        this.rangeUpper
+      );
+    }
+
+    @Override
     public String showConstraint()
     {
       return String.format(
@@ -315,7 +370,7 @@ public sealed interface CATypeScalarType
       final BigDecimal value)
     {
       return value.compareTo(this.rangeLower) >= 0
-        && value.compareTo(this.rangeUpper) <= 0;
+             && value.compareTo(this.rangeUpper) <= 0;
     }
   }
 
@@ -343,6 +398,18 @@ public sealed interface CATypeScalarType
     {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(description, "description");
+    }
+
+    @Override
+    public CATypeScalarType withName(
+      final RDottedName newName)
+    {
+      return new Real(
+        newName,
+        this.description,
+        this.rangeLower,
+        this.rangeUpper
+      );
     }
 
     @Override

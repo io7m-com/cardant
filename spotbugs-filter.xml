@@ -888,4 +888,25 @@
     </Or>
   </Match>
 
+  <!--                                -->
+  <!-- com.io7m.cardant.type_packages -->
+  <!--                                -->
+
+  <!-- Unnecessary. -->
+  <Match>
+    <Or>
+      <Package name="com.io7m.cardant.type_packages"/>
+      <Package name="com.io7m.cardant.type_packages.internal"/>
+    </Or>
+    <Or>
+      <Bug pattern="CE_CLASS_ENVY"/>
+      <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+    </Or>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.type_packages.internal.CATypePackageSerializer"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
 </FindBugsFilter>

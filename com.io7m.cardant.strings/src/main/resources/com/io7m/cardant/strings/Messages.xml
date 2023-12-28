@@ -62,6 +62,8 @@
   <entry key="expected_content_type">Expected Content Type</entry>
   <entry key="expected_count">Expected Count</entry>
   <entry key="expected_type">Expected Type</entry>
+  <entry key="field_name">Field Name</entry>
+  <entry key="field_type">Field Type</entry>
   <entry key="file">File</entry>
   <entry key="file_id">File ID</entry>
   <entry key="item">Item</entry>
@@ -74,6 +76,8 @@
   <entry key="location_name">Location Name</entry>
   <entry key="metadata_name">Metadata Name</entry>
   <entry key="metadata_value">Metadata Value</entry>
+  <entry key="name">Name</entry>
+  <entry key="name_base">Base Name</entry>
   <entry key="new_location_id">New Location ID</entry>
   <entry key="new_location_name">New Location Name</entry>
   <entry key="new_location_parent_id">New Location Parent ID</entry>
@@ -82,6 +86,7 @@
   <entry key="old_location_id">Old Location ID</entry>
   <entry key="old_location_name">Old Location Name</entry>
   <entry key="old_location_parent_id">Old Location Parent ID</entry>
+  <entry key="package">Package</entry>
   <entry key="problem">Problem</entry>
   <entry key="queries_class">Queries class</entry>
   <entry key="received_content_type">Received Content Type</entry>
@@ -94,6 +99,7 @@
   <entry key="tag_name">Tag Name</entry>
   <entry key="type">Type</entry>
   <entry key="user_id">User ID</entry>
+  <entry key="version_range">Version Range</entry>
 
   <!--           -->
   <!-- Locations -->
@@ -390,5 +396,16 @@
   <entry key="syntax_iso_timestamp_example_name">Example (ISO 8601 Timestamp)</entry>
   <entry key="syntax_iso_timestamp_name">Syntax (ISO 8601 Timestamp)</entry>
   <entry key="syntax_iso_timestamp">See ISO 8601.</entry>
+
+  <!--               -->
+  <!-- Type checking -->
+  <!--               -->
+
+  <entry key="typechecker_no_such_package">No suitable package exists for the given name and version range.</entry>
+  <entry key="typechecker_scalar_duplicate">A scalar type with the given name already exists.</entry>
+  <entry key="typechecker_record_field_type_nonexistent">A record field refers to a nonexistent scalar type.</entry>
+  <entry key="typechecker_record_field_duplicate">A record field with the given name already exists.</entry>
+  <entry key="typechecker_record_duplicate">A record type with the given name already exists.</entry>
+  <entry key="typechecker_name_qualified_invalid">Attempting to qualify the given name would result in an invalid qualified name.</entry>
 
 </properties>

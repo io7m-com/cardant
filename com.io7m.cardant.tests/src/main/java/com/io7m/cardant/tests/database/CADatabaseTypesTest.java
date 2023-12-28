@@ -27,7 +27,7 @@ import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMoney;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
@@ -310,7 +310,7 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -401,7 +401,7 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration0 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery1"),
         "A battery 1.",
         Map.ofEntries(
@@ -411,7 +411,7 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration1 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery2"),
         "A battery 2.",
         Map.ofEntries(
@@ -482,7 +482,7 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -526,7 +526,7 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -607,7 +607,7 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var typeDeclaration =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.of()
@@ -672,7 +672,7 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -685,7 +685,7 @@ public final class CADatabaseTypesTest
     this.transaction.commit();
 
     final var typeDeclarationAfter =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -732,21 +732,21 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration0 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery0"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))
       );
 
     final var typeDeclaration1 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery1"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))
       );
 
     final var typeDeclaration2 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery2"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))
@@ -801,7 +801,7 @@ public final class CADatabaseTypesTest
       );
 
     final var typeDeclaration0 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("com.io7m.battery0"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))

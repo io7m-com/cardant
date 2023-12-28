@@ -30,7 +30,7 @@ import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarType;
@@ -440,7 +440,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
   @Override
   public void formatTypeDeclaration(
-    final CATypeDeclaration type)
+    final CATypeRecord type)
     throws Exception
   {
     {

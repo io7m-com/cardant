@@ -23,7 +23,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarType.Integral;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
@@ -135,7 +135,7 @@ public final class CAICmdItemTypesAssignTest
 
     when(typeGet.execute(any()))
       .thenReturn(List.of(
-        new CATypeDeclaration(
+        new CATypeRecord(
           new RDottedName("t"),
           "A type",
           Map.of()
@@ -223,7 +223,7 @@ public final class CAICmdItemTypesAssignTest
 
     when(typeGet.execute(any()))
       .thenReturn(List.of(
-        new CATypeDeclaration(
+        new CATypeRecord(
           new RDottedName("t"),
           "A type",
           Map.of(

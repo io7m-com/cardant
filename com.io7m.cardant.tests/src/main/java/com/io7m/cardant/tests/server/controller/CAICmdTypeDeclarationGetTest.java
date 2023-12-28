@@ -18,7 +18,7 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
@@ -92,8 +92,8 @@ public final class CAICmdTypeDeclarationGetTest
       true
     );
 
-  static final CATypeDeclaration TYPE_DECLARATION =
-    new CATypeDeclaration(
+  static final CATypeRecord TYPE_DECLARATION =
+    new CATypeRecord(
       new RDottedName("a.b.c"),
       "a",
       Map.ofEntries(

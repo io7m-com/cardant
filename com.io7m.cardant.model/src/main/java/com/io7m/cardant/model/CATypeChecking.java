@@ -39,12 +39,12 @@ import java.util.Set;
 public final class CATypeChecking
 {
   private final CAStrings strings;
-  private final Set<CATypeDeclaration> typeDeclarations;
+  private final Set<CATypeRecord> typeDeclarations;
   private final Set<CAMetadataType> metadata;
 
   private CATypeChecking(
     final CAStrings inStrings,
-    final Set<CATypeDeclaration> inTypeDeclarations,
+    final Set<CATypeRecord> inTypeDeclarations,
     final Set<CAMetadataType> inMetadata)
   {
     this.strings =
@@ -67,7 +67,7 @@ public final class CATypeChecking
 
   public static CATypeChecking create(
     final CAStrings inStrings,
-    final Set<CATypeDeclaration> inTypeDeclarations,
+    final Set<CATypeRecord> inTypeDeclarations,
     final Set<CAMetadataType> inMetadata)
   {
     return new CATypeChecking(inStrings, inTypeDeclarations, inMetadata);
@@ -92,7 +92,7 @@ public final class CATypeChecking
   }
 
   private Collection<SStructuredError<CAErrorCode>> executeFor(
-    final CATypeDeclaration typeDeclaration)
+    final CATypeRecord typeDeclaration)
   {
     final var errors =
       new ArrayList<SStructuredError<CAErrorCode>>();

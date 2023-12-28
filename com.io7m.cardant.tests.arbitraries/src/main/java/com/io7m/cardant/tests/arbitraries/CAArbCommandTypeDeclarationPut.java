@@ -15,7 +15,7 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
 import net.jqwik.api.Arbitraries;
 
@@ -25,7 +25,7 @@ public final class CAArbCommandTypeDeclarationPut extends CAArbAbstract<CAIComma
   {
     super(
       CAICommandTypeDeclarationPut.class,
-      () -> Arbitraries.defaultFor(CATypeDeclaration.class)
+      () -> Arbitraries.defaultFor(CATypeRecord.class)
         .set()
         .map(CAICommandTypeDeclarationPut::new)
     );

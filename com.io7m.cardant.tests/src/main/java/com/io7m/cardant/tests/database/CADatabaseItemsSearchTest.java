@@ -45,7 +45,7 @@ import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.ExactTextValue;
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
@@ -1082,10 +1082,10 @@ public final class CADatabaseItemsSearchTest
     final var rng = new Random(1000L);
 
     final var type0 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("t0"), "A type.", Map.of());
     final var type1 =
-      new CATypeDeclaration(
+      new CATypeRecord(
         new RDottedName("t1"), "A type.", Map.of());
 
     this.typePut.execute(type0);
