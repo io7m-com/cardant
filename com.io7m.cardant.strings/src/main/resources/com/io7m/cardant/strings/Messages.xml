@@ -87,6 +87,7 @@
   <entry key="old_location_name">Old Location Name</entry>
   <entry key="old_location_parent_id">Old Location Parent ID</entry>
   <entry key="package">Package</entry>
+  <entry key="package_version">Package Version</entry>
   <entry key="problem">Problem</entry>
   <entry key="queries_class">Queries class</entry>
   <entry key="received_content_type">Received Content Type</entry>

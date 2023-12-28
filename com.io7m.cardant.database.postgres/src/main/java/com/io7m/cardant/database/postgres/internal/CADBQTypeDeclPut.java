@@ -29,6 +29,7 @@ import org.jooq.impl.DSL;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.OptionalInt;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
@@ -74,20 +75,47 @@ public final class CADBQTypeDeclPut
     final CATypeRecord declaration)
     throws CADatabaseException
   {
+    final var transaction =
+      this.transaction();
+
+    this.setAttribute(TYPE, declaration.name().value());
+
+    final var batches =
+      putTypeRecord(transaction, context, OptionalInt.empty(), declaration);
+
+    context.batch(batches).execute();
+    return CADatabaseUnit.UNIT;
+  }
+
+  private static Integer box(
+    final OptionalInt id)
+  {
+    if (id.isEmpty()) {
+      return null;
+    }
+    return Integer.valueOf(id.getAsInt());
+  }
+
+  static ArrayList<Query> putTypeRecord(
+    final CADatabaseTransaction transaction,
+    final DSLContext context,
+    final OptionalInt packageDbID,
+    final CATypeRecord declaration)
+  {
     final var typeName =
       declaration.name().value();
     final var description =
       declaration.description();
 
-    this.setAttribute(TYPE, typeName);
-
     final var typeId =
       context.insertInto(METADATA_TYPES_RECORDS)
         .set(METADATA_TYPES_RECORDS.MTR_NAME, typeName)
+        .set(METADATA_TYPES_RECORDS.MTR_PACKAGE, box(packageDbID))
         .set(METADATA_TYPES_RECORDS.MTR_DESCRIPTION, description)
         .onConflict(METADATA_TYPES_RECORDS.MTR_NAME)
         .doUpdate()
         .set(METADATA_TYPES_RECORDS.MTR_NAME, typeName)
+        .set(METADATA_TYPES_RECORDS.MTR_PACKAGE, box(packageDbID))
         .set(METADATA_TYPES_RECORDS.MTR_DESCRIPTION, description)
         .returning(METADATA_TYPES_RECORDS.MTR_ID)
         .execute();
@@ -146,7 +174,6 @@ public final class CADBQTypeDeclPut
       );
     }
 
-    final var transaction = this.transaction();
     batches.add(
       auditEvent(
         context,
@@ -156,8 +183,6 @@ public final class CADBQTypeDeclPut
         Map.entry("Type", typeName)
       )
     );
-
-    context.batch(batches).execute();
-    return CADatabaseUnit.UNIT;
+    return batches;
   }
 }

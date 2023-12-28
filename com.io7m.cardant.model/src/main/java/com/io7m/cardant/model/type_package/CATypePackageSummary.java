@@ -14,23 +14,32 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
+package com.io7m.cardant.model.type_package;
+
+import java.util.Objects;
+
 /**
- * Inventory system (Server API).
+ * A summary of a package.
+ *
+ * @param identifier  The package identifier
+ * @param description The package description
  */
 
-module com.io7m.cardant.server.api
+public record CATypePackageSummary(
+  CATypePackageIdentifier identifier,
+  String description)
 {
-  uses com.io7m.cardant.database.api.CADatabaseFactoryType;
+  /**
+   * A summary of a package.
+   *
+   * @param identifier  The package identifier
+   * @param description The package description
+   */
 
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
-
-  requires com.io7m.cardant.database.api;
-  requires com.io7m.cardant.error_codes;
-  requires com.io7m.cardant.model;
-  requires com.io7m.cardant.tls;
-
-  requires java.net.http;
-
-  exports com.io7m.cardant.server.api;
+  public CATypePackageSummary
+  {
+    Objects.requireNonNull(identifier, "identifier");
+    Objects.requireNonNull(description, "description");
+  }
 }

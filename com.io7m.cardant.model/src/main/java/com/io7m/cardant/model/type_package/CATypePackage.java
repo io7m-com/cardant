@@ -76,4 +76,16 @@ public record CATypePackage(
       );
     }
   }
+
+  /**
+   * @return A summary of this package
+   */
+
+  public CATypePackageSummary summary()
+  {
+    return new CATypePackageSummary(
+      this.identifier,
+      this.description
+    );
+  }
 }

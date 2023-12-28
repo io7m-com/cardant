@@ -221,6 +221,15 @@ public final class CADatabaseExceptions
         .orElse("");
 
     return switch (constraint) {
+      case "metadata_type_packages_mtp_name_key" -> {
+        yield new CADatabaseException(
+          "A version of the given package is already installed.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
       case "files_primary_key" -> {
         yield new CADatabaseException(
           "File already exists.",

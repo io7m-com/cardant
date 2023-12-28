@@ -31,6 +31,7 @@ module com.io7m.cardant.database.postgres
   requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.strings;
+  requires com.io7m.cardant.type_packages;
 
   requires com.io7m.anethum.api;
   requires com.io7m.jmulticlose.core;
@@ -48,6 +49,7 @@ module com.io7m.cardant.database.postgres
   requires org.jooq;
   requires org.postgresql.jdbc;
   requires org.slf4j;
+  requires com.io7m.cardant.model;
 
   exports com.io7m.cardant.database.postgres.internal.tables
     to org.jooq;
@@ -96,6 +98,11 @@ module com.io7m.cardant.database.postgres
     com.io7m.cardant.database.postgres.internal.CADBQTypeDeclRemove,
     com.io7m.cardant.database.postgres.internal.CADBQTypeDeclsReferencingScalar,
     com.io7m.cardant.database.postgres.internal.CADBQTypeDeclsSearch,
+    com.io7m.cardant.database.postgres.internal.CADBQTypePackageGetText,
+    com.io7m.cardant.database.postgres.internal.CADBQTypePackageInstall,
+    com.io7m.cardant.database.postgres.internal.CADBQTypePackageSatisfying,
+    com.io7m.cardant.database.postgres.internal.CADBQTypePackageSearch,
+    com.io7m.cardant.database.postgres.internal.CADBQTypePackageUninstall,
     com.io7m.cardant.database.postgres.internal.CADBQTypeScalarGet,
     com.io7m.cardant.database.postgres.internal.CADBQTypeScalarPut,
     com.io7m.cardant.database.postgres.internal.CADBQTypeScalarRemove,

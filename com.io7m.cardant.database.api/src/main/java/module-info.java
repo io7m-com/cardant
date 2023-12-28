@@ -23,11 +23,12 @@ module com.io7m.cardant.database.api
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.cardant.strings;
-  requires transitive com.io7m.cardant.model;
-  requires transitive com.io7m.cardant.error_codes;
+  requires com.io7m.cardant.error_codes;
+  requires com.io7m.cardant.model;
+  requires com.io7m.cardant.strings;
+  requires com.io7m.cardant.type_packages;
 
-  requires transitive com.io7m.repetoir.core;
+  requires com.io7m.repetoir.core;
   requires io.opentelemetry.api;
 
   exports com.io7m.cardant.database.api;

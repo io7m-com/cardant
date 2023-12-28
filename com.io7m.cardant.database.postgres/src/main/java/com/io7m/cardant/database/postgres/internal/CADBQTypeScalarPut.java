@@ -22,10 +22,13 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CATypeScalarType;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
@@ -67,220 +70,248 @@ public final class CADBQTypeScalarPut
     return () -> SERVICE;
   }
 
+  private static Query onExecuteTime(
+    final DSLContext context,
+    final OptionalInt packageDbID,
+    final CATypeScalarType.Time t)
+  {
+    return context.insertInto(METADATA_TYPES_SCALAR)
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TIME)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, t.rangeLower())
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, t.rangeUpper())
+      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
+      .doUpdate()
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TIME)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, t.rangeLower())
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, t.rangeUpper());
+  }
+
+  private static Integer box(
+    final OptionalInt id)
+  {
+    if (id.isEmpty()) {
+      return null;
+    }
+    return Integer.valueOf(id.getAsInt());
+  }
+
+  private static Query onExecuteReal(
+    final DSLContext context,
+    final OptionalInt packageDbID,
+    final CATypeScalarType.Real t)
+  {
+    return context.insertInto(METADATA_TYPES_SCALAR)
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_REAL)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, Double.valueOf(t.rangeLower()))
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, Double.valueOf(t.rangeUpper()))
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
+      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
+      .doUpdate()
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_REAL)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, Double.valueOf(t.rangeLower()))
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, Double.valueOf(t.rangeUpper()))
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null);
+  }
+
+  private static Query onExecuteIntegral(
+    final DSLContext context,
+    final OptionalInt packageDbID,
+    final CATypeScalarType.Integral t)
+  {
+    return context.insertInto(METADATA_TYPES_SCALAR)
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_INTEGRAL)
+      .set(
+        METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER,
+        Long.valueOf(t.rangeLower()))
+      .set(
+        METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER,
+        Long.valueOf(t.rangeUpper()))
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
+      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
+      .doUpdate()
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_INTEGRAL)
+      .set(
+        METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER,
+        Long.valueOf(t.rangeLower()))
+      .set(
+        METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER,
+        Long.valueOf(t.rangeUpper()))
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null);
+  }
+
+  private static Query onExecuteText(
+    final DSLContext context,
+    final OptionalInt packageDbID,
+    final CATypeScalarType.Text t)
+  {
+    return context.insertInto(METADATA_TYPES_SCALAR)
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TEXT)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, t.pattern())
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
+      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
+      .doUpdate()
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TEXT)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, t.pattern())
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null);
+  }
+
+  private static Query onExecuteMonetary(
+    final DSLContext context,
+    final OptionalInt packageDbID,
+    final CATypeScalarType.Monetary t)
+  {
+    return context.insertInto(METADATA_TYPES_SCALAR)
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_MONEY)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, t.rangeLower())
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, t.rangeUpper())
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
+      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
+      .doUpdate()
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
+      .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
+      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_MONEY)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, t.rangeLower())
+      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, t.rangeUpper())
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
+      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null);
+  }
+
   @Override
   protected CADatabaseUnit onExecute(
     final DSLContext context,
     final CATypeScalarType scalar)
   {
-    switch (scalar) {
-      case final CATypeScalarType.Monetary t -> {
-        onExecuteMonetary(context, scalar, t);
-      }
-      case final CATypeScalarType.Text t -> {
-        onExecuteText(context, scalar, t);
-      }
-      case final CATypeScalarType.Integral t -> {
-        onExecuteIntegral(context, scalar, t);
-      }
-      case final CATypeScalarType.Real t -> {
-        onExecuteReal(context, scalar, t);
-      }
-      case final CATypeScalarType.Time t -> {
-        onExecuteTime(context, scalar, t);
-      }
-    }
-
-    final var transaction = this.transaction();
-    auditEvent(
-      context,
-      OffsetDateTime.now(transaction.clock()),
-      transaction.userId(),
-      "TYPE_SCALAR_UPDATED",
-      Map.entry("Type", scalar.name().value())
+    context.batch(
+      insertType(this.transaction(), context, OptionalInt.empty(), scalar)
     ).execute();
     return CADatabaseUnit.UNIT;
   }
 
-  private static void onExecuteTime(
+  static List<Query> insertType(
+    final CADatabaseTransaction transaction,
     final DSLContext context,
-    final CATypeScalarType scalar,
-    final CATypeScalarType.Time t)
+    final OptionalInt packageDbID,
+    final CATypeScalarType scalar)
   {
-    context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TIME)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, t.rangeLower())
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, t.rangeUpper())
-      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
-      .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TIME)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, t.rangeLower())
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, t.rangeUpper())
-      .execute();
-  }
+    final var query =
+      switch (scalar) {
+        case final CATypeScalarType.Monetary t -> {
+          yield onExecuteMonetary(context, packageDbID, t);
+        }
+        case final CATypeScalarType.Text t -> {
+          yield onExecuteText(context, packageDbID, t);
+        }
+        case final CATypeScalarType.Integral t -> {
+          yield onExecuteIntegral(context, packageDbID, t);
+        }
+        case final CATypeScalarType.Real t -> {
+          yield onExecuteReal(context, packageDbID, t);
+        }
+        case final CATypeScalarType.Time t -> {
+          yield onExecuteTime(context, packageDbID, t);
+        }
+      };
 
-  private static void onExecuteReal(
-    final DSLContext context,
-    final CATypeScalarType scalar,
-    final CATypeScalarType.Real t)
-  {
-    context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_REAL)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, Double.valueOf(t.rangeLower()))
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, Double.valueOf(t.rangeUpper()))
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
-      .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_REAL)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, Double.valueOf(t.rangeLower()))
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, Double.valueOf(t.rangeUpper()))
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .execute();
-  }
+    final var auditQuery =
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "TYPE_SCALAR_UPDATED",
+        Map.entry("Type", scalar.name().value())
+      );
 
-  private static void onExecuteIntegral(
-    final DSLContext context,
-    final CATypeScalarType scalar,
-    final CATypeScalarType.Integral t)
-  {
-    context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_INTEGRAL)
-      .set(
-        METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER,
-        Long.valueOf(t.rangeLower()))
-      .set(
-        METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER,
-        Long.valueOf(t.rangeUpper()))
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
-      .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_INTEGRAL)
-      .set(
-        METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER,
-        Long.valueOf(t.rangeLower()))
-      .set(
-        METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER,
-        Long.valueOf(t.rangeUpper()))
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .execute();
-  }
-
-  private static void onExecuteText(
-    final DSLContext context,
-    final CATypeScalarType scalar,
-    final CATypeScalarType.Text t)
-  {
-    context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TEXT)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, t.pattern())
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
-      .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TEXT)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, (BigDecimal) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, t.pattern())
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .execute();
-  }
-
-  private static void onExecuteMonetary(
-    final DSLContext context,
-    final CATypeScalarType scalar,
-    final CATypeScalarType.Monetary t)
-  {
-    context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_MONEY)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, t.rangeLower())
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, t.rangeUpper())
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
-      .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, scalar.description())
-      .set(METADATA_TYPES_SCALAR.MTS_NAME, scalar.name().value())
-      .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_MONEY)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER, (Long) null)
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER, t.rangeLower())
-      .set(METADATA_TYPES_SCALAR.MTS_MONEY_UPPER, t.rangeUpper())
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_LOWER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_REAL_UPPER, (Double) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN, (String) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_LOWER, (OffsetDateTime) null)
-      .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
-      .execute();
+    return List.of(query, auditQuery);
   }
 }

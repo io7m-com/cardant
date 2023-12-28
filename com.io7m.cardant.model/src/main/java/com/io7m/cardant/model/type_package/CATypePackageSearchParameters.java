@@ -14,41 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.database.api;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+package com.io7m.cardant.model.type_package;
 
-import static java.time.ZoneOffset.UTC;
+import com.io7m.cardant.model.CAPageSizes;
+import com.io7m.cardant.model.CASearchParametersType;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+
+import java.util.Objects;
 
 /**
- * The base type of query interfaces.
+ * Search parameters for packages.
+ *
+ * @param descriptionMatch The description match expression
+ * @param pageSize         The page size
  */
 
-public sealed interface CADatabaseQueriesType
-  permits CADatabaseQueriesAuditType,
-  CADatabaseQueriesFilesType,
-  CADatabaseQueriesItemsType,
-  CADatabaseQueriesLocationsType,
-  CADatabaseQueriesMaintenanceType,
-  CADatabaseQueriesTypePackagesType,
-  CADatabaseQueriesTypesType,
-  CADatabaseQueriesUsersType
+public record CATypePackageSearchParameters(
+  CAComparisonFuzzyType<String> descriptionMatch,
+  long pageSize)
+  implements CASearchParametersType
 {
   /**
-   * The earliest possible time considered by the server
+   * Search parameters for packages.
+   *
+   * @param descriptionMatch The description match expression
+   * @param pageSize         The page size
    */
 
-  OffsetDateTime EARLIEST =
-    LocalDateTime.ofEpochSecond(0L, 0, UTC)
-      .atOffset(UTC);
-
-  /**
-   * @return The earliest possible time considered by the server
-   */
-
-  static OffsetDateTime earliest()
+  public CATypePackageSearchParameters
   {
-    return EARLIEST;
+    Objects.requireNonNull(descriptionMatch, "descriptionMatch");
+    pageSize = CAPageSizes.clampPageSize(pageSize);
   }
 }

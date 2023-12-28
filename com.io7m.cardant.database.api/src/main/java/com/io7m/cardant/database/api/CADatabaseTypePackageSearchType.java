@@ -14,23 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
+package com.io7m.cardant.database.api;
+
+import com.io7m.cardant.model.type_package.CATypePackageSummary;
+
 /**
- * Inventory system (Server API).
+ * The type of type package searches.
  */
 
-module com.io7m.cardant.server.api
+public interface CADatabaseTypePackageSearchType
+  extends CADatabasePagedQueryType<CATypePackageSummary>
 {
-  uses com.io7m.cardant.database.api.CADatabaseFactoryType;
 
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
-
-  requires com.io7m.cardant.database.api;
-  requires com.io7m.cardant.error_codes;
-  requires com.io7m.cardant.model;
-  requires com.io7m.cardant.tls;
-
-  requires java.net.http;
-
-  exports com.io7m.cardant.server.api;
 }
