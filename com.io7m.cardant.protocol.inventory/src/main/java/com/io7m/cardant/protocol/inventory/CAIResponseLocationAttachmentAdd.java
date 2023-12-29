@@ -40,6 +40,7 @@ public record CAIResponseLocationAttachmentAdd(
 
   public CAIResponseLocationAttachmentAdd
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "location");
   }
 }

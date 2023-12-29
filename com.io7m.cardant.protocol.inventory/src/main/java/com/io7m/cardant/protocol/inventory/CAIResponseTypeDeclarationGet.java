@@ -41,5 +41,6 @@ public record CAIResponseTypeDeclarationGet(
   public CAIResponseTypeDeclarationGet
   {
     Objects.requireNonNull(requestId, "requestId");
+    Objects.requireNonNull(type, "type");
   }
 }

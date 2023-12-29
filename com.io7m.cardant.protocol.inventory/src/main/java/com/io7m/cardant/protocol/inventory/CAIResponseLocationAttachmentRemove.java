@@ -40,6 +40,7 @@ public record CAIResponseLocationAttachmentRemove(
 
   public CAIResponseLocationAttachmentRemove
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "location");
   }
 }

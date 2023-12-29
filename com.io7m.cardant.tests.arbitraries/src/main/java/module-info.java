@@ -82,6 +82,12 @@ module com.io7m.cardant.tests.arbitraries
       com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationSearchBegin,
       com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationSearchNext,
       com.io7m.cardant.tests.arbitraries.CAArbCommandTypeDeclarationSearchPrevious,
+      com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageGetText,
+      com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageInstall,
+      com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageSearchBegin,
+      com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageSearchNext,
+      com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageSearchPrevious,
+      com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageUninstall,
       com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarGet,
       com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarPut,
       com.io7m.cardant.tests.arbitraries.CAArbCommandTypeScalarRemove,
@@ -125,6 +131,10 @@ module com.io7m.cardant.tests.arbitraries
       com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationPut,
       com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationRemove,
       com.io7m.cardant.tests.arbitraries.CAArbResponseTypeDeclarationSearch,
+      com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageGetText,
+      com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageInstall,
+      com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageSearch,
+      com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageUninstall,
       com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarGet,
       com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarPut,
       com.io7m.cardant.tests.arbitraries.CAArbResponseTypeScalarRemove,
@@ -201,6 +211,9 @@ module com.io7m.cardant.tests.arbitraries
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSummary,
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeField,
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeMatch,
+      com.io7m.cardant.tests.arbitraries.model.CAArbTypePackageIdentifier,
+      com.io7m.cardant.tests.arbitraries.model.CAArbTypePackageSearchParameters,
+      com.io7m.cardant.tests.arbitraries.model.CAArbTypePackageSummary,
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalar,
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarIntegral,
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarMonetary,
@@ -208,6 +221,7 @@ module com.io7m.cardant.tests.arbitraries
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarSearchParameters,
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarText,
       com.io7m.cardant.tests.arbitraries.model.CAArbTypeScalarTime,
-      com.io7m.cardant.tests.arbitraries.model.CAArbUserID
+      com.io7m.cardant.tests.arbitraries.model.CAArbUserID,
+      com.io7m.cardant.tests.arbitraries.model.CAArbVersion
     ;
 }

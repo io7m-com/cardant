@@ -41,6 +41,7 @@ public record CAIResponseTypeScalarSearch(
 
   public CAIResponseTypeScalarSearch
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "items");
   }
 }

@@ -529,6 +529,42 @@
   [field data [cb:Map cb:String cb:String]]
 ]
 
+[documentation CAI1TypePackageSearchParameters "The type package search parameters."]
+[record CAI1TypePackageSearchParameters
+  [documentation descriptionMatch "The type package description match expression."]
+  [field descriptionMatch [CAI1ComparisonFuzzy cb:String]]
+  [documentation limit "The item limit."]
+  [field limit cb:IntegerUnsigned32]
+]
+
+[documentation CAI1Version "A version number."]
+[record CAI1Version
+  [documentation versionMajor "The major version."]
+  [field versionMajor cb:IntegerUnsigned32]
+  [documentation versionMinor "The minor version."]
+  [field versionMinor cb:IntegerUnsigned32]
+  [documentation versionPatch "The patch version."]
+  [field versionPatch cb:IntegerUnsigned32]
+  [documentation versionQualifier "The version qualifier."]
+  [field versionQualifier [cb:Option cb:String]]
+]
+
+[documentation CAI1TypePackageIdentifier "The type package identifier."]
+[record CAI1TypePackageIdentifier
+  [documentation name "The package name."]
+  [field name cb:String]
+  [documentation version "The package version."]
+  [field version CAI1Version]
+]
+
+[documentation CAI1TypePackageSummary "The type package summary."]
+[record CAI1TypePackageSummary
+  [documentation identifier "The package identifier."]
+  [field identifier CAI1TypePackageIdentifier]
+  [documentation description "The package description."]
+  [field description cb:String]
+]
+
 ;
 ; Commands.
 ;
@@ -837,6 +873,36 @@
 
 [documentation CAI1CommandAuditSearchPrevious "Continue searching audit events."]
 [record CAI1CommandAuditSearchPrevious]
+
+[documentation CAI1CommandTypePackageSearchBegin "Start searching type packages."]
+[record CAI1CommandTypePackageSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1TypePackageSearchParameters]
+]
+
+[documentation CAI1CommandTypePackageSearchNext "Continue searching type packages."]
+[record CAI1CommandTypePackageSearchNext]
+
+[documentation CAI1CommandTypePackageSearchPrevious "Continue searching type packages."]
+[record CAI1CommandTypePackageSearchPrevious]
+
+[documentation CAI1CommandTypePackageGetText "Get a type package."]
+[record CAI1CommandTypePackageGetText
+  [documentation identifier "The type package identifier."]
+  [field identifier CAI1TypePackageIdentifier]
+]
+
+[documentation CAI1CommandTypePackageInstall "Install a type package."]
+[record CAI1CommandTypePackageInstall
+  [documentation text "The type package text."]
+  [field text cb:String]
+]
+
+[documentation CAI1CommandTypePackageUninstall "Uninstall a type package."]
+[record CAI1CommandTypePackageUninstall
+  [documentation identifier "The type package identifier."]
+  [field identifier CAI1TypePackageIdentifier]
+]
 
 ;
 ; Responses.
@@ -1164,10 +1230,40 @@
 
 [documentation CAI1ResponseAuditSearch "A response to CAI1CommandAuditSearchBegin."]
 [record CAI1ResponseAuditSearch
-  [documentation messageId "The message ID"]
-  [field messageId cb:UUID]
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
   [documentation results "The results"]
   [field results [CAI1Page CAI1AuditEvent]]
+]
+
+[documentation CAI1ResponseTypePackageSearch "A response to CAI1CommandTypePackageSearch."]
+[record CAI1ResponseTypePackageSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1TypePackageSummary]]
+]
+
+[documentation CAI1ResponseTypePackageGetText "A response to CAI1CommandTypePackageGetText."]
+[record CAI1ResponseTypePackageGetText
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results cb:String]
+]
+
+[documentation CAI1ResponseTypePackageInstall "A response to CAI1CommandTypePackageInstall."]
+[record CAI1ResponseTypePackageInstall
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation identifier "The identifier."]
+  [field identifier CAI1TypePackageIdentifier]
+]
+
+[documentation CAI1ResponseTypePackageUninstall "A response to CAI1CommandTypePackageUninstall."]
+[record CAI1ResponseTypePackageUninstall
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
 ]
 
 ;
@@ -1232,6 +1328,12 @@
       CAI1CommandTypeDeclarationSearchBegin
       CAI1CommandTypeDeclarationSearchNext
       CAI1CommandTypeDeclarationSearchPrevious
+      CAI1CommandTypePackageGetText
+      CAI1CommandTypePackageInstall
+      CAI1CommandTypePackageSearchBegin
+      CAI1CommandTypePackageSearchNext
+      CAI1CommandTypePackageSearchPrevious
+      CAI1CommandTypePackageUninstall
       CAI1CommandTypeScalarGet
       CAI1CommandTypeScalarPut
       CAI1CommandTypeScalarRemove
@@ -1275,6 +1377,10 @@
       CAI1ResponseTypeDeclarationPut
       CAI1ResponseTypeDeclarationRemove
       CAI1ResponseTypeDeclarationSearch
+      CAI1ResponseTypePackageGetText
+      CAI1ResponseTypePackageInstall
+      CAI1ResponseTypePackageSearch
+      CAI1ResponseTypePackageUninstall
       CAI1ResponseTypeScalarGet
       CAI1ResponseTypeScalarPut
       CAI1ResponseTypeScalarRemove

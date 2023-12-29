@@ -40,6 +40,7 @@ public record CAIResponseLocationMetadataPut(
 
   public CAIResponseLocationMetadataPut
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "location");
   }
 }

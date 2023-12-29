@@ -62,6 +62,12 @@ import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchPrevious;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchPrevious;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
@@ -270,6 +276,24 @@ public final class CAICommandExecutor
       }
       case final CAICommandLogin m -> {
         throw new IllegalStateException();
+      }
+      case final CAICommandTypePackageSearchBegin m -> {
+        throw new IllegalStateException("Unimplemented code.");
+      }
+      case final CAICommandTypePackageSearchNext m -> {
+        throw new IllegalStateException("Unimplemented code.");
+      }
+      case final CAICommandTypePackageSearchPrevious m -> {
+        throw new IllegalStateException("Unimplemented code.");
+      }
+      case final CAICommandTypePackageGetText m -> {
+        throw new IllegalStateException("Unimplemented code.");
+      }
+      case final CAICommandTypePackageInstall m -> {
+        throw new IllegalStateException("Unimplemented code.");
+      }
+      case final CAICommandTypePackageUninstall m -> {
+        throw new IllegalStateException("Unimplemented code.");
       }
     };
   }

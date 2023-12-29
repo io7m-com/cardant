@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
-import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.lanark.core.RDottedName;
@@ -40,7 +39,6 @@ public enum CAUVDottedNames
   @Override
   public CBString convertToWire(
     final RDottedName message)
-    throws CAProtocolException
   {
     return string(message.value());
   }
@@ -48,7 +46,6 @@ public enum CAUVDottedNames
   @Override
   public RDottedName convertFromWire(
     final CBString message)
-    throws CAProtocolException
   {
     return new RDottedName(message.value());
   }

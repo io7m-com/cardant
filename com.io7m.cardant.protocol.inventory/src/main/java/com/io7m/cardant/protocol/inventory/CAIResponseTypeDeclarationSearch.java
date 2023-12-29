@@ -41,6 +41,7 @@ public record CAIResponseTypeDeclarationSearch(
 
   public CAIResponseTypeDeclarationSearch
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "items");
   }
 }

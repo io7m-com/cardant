@@ -53,7 +53,7 @@ public enum CAUVResponseAuditSearch
     final CAI1ResponseAuditSearch c)
   {
     return new CAIResponseAuditSearch(
-      c.fieldMessageId().value(),
+      c.fieldRequestId().value(),
       CAUVPage.pageFromWire(c.fieldResults(), AUDIT_EVENT::convertFromWire)
     );
   }

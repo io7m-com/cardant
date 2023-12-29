@@ -40,6 +40,7 @@ public record CAIResponseItemsRemove(
 
   public CAIResponseItemsRemove
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "id");
   }
 }
