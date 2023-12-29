@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="b5088db2-dd8e-3c7b-9c7f-e5b53bf41a4e" title="type-package-search-previous" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-package-search-previous</Term>
+       - Go to the previous page of type packages.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-package-search-previous</Term>
+      command goes to the previous page of type packages.
+    </Paragraph>
+    <Paragraph>
+      The command can only be used after the associated <Link target="d202d992-d75a-37f9-a96d-6378e296b912">begin</Link>
+      command.
+    </Paragraph>
+  </Subsection>
+</Section>
+

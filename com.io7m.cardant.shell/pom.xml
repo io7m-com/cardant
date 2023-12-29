@@ -61,6 +61,10 @@
     </dependency>
 
     <dependency>
+      <groupId>com.io7m.verona</groupId>
+      <artifactId>com.io7m.verona.core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.io7m.medrina</groupId>
       <artifactId>com.io7m.medrina.api</artifactId>
     </dependency>

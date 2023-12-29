@@ -13,7 +13,8 @@
 
   <Subsection title="Description">
     <Paragraph>
-      The <Term type="command">server</Term> command starts the shell.
+      The <Term type="command">server</Term> command starts the
+      <Link target="80d0af5f-505b-4dee-b733-296a6f3970a4">shell</Link>.
     </Paragraph>
     <FormalItem title="Parameters">
       <xi:include href="CACmdShell.xml"/>

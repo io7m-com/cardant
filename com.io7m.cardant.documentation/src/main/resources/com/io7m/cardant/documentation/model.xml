@@ -82,6 +82,12 @@
         <Term type="type">output_voltage</Term>
         value equal to <Term type="type">5.0</Term>).
       </Paragraph>
+      <Paragraph id="50cf733c-5437-4115-b4bb-7669499d9853">
+        Each type, whether <Link target="e0f0dda3-ecba-4571-8464-2a0f81ed25c6">scalar</Link> or
+        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">record</Link>, has a unique fully-qualified name.
+        Specifically, each type has a name that confirms to the
+        <LinkExternal target="https://www.io7m.com/software/lanark/">Lanark</LinkExternal> name specification.
+      </Paragraph>
     </Subsection>
 
     <Subsection title="Scalar Types"
@@ -332,6 +338,53 @@ type Reposit =
           are executed in one atomic step.
         </Paragraph>
       </Subsection>
+    </Subsection>
+  </Subsection>
+
+  <Subsection title="Type Packages" id="0f4b9332-c2d2-4460-9fb5-f2594b854219">
+    <Subsection title="Overview">
+      <Paragraph>
+        Sets of <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link> can be installed into
+        a running <Term type="package">cardant</Term> server using <Term type="term">type packages</Term>.
+        A <Term type="term">type package</Term> is simply a named, versioned container of types that can
+        be uploaded and installed into the server's database atomically.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Names" id="56df9b58-93ac-4444-b76e-aacacd0e88ce">
+      <Paragraph>
+        Type packages are identified by their <Term type="term">name</Term> and <Term type="term">version</Term>.
+        It is not permitted to have two packages with the same name but different versions installed at the same
+        time. A type package name is a
+        <LinkExternal target="https://www.io7m.com/software/lanark/">Lanark</LinkExternal> dotted name (such
+        as <Term type="expression">com.io7m.example</Term>) and the types declared within the package have their
+        names derived by concatenating their unqualified names onto the end of the package name. So, for example,
+        a package <Term type="expression">com.io7m.example</Term> that contains a scalar type named
+        <Term type="expression">t</Term> will cause the scalar type <Term type="expression">com.io7m.example.t</Term>
+        to be created on the server when the package is installed.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Imports">
+      <Paragraph>
+        A type package may <Term type="term">import</Term> other type packages. An <Term type="term">import</Term>
+        consists of a <Link target="56df9b58-93ac-4444-b76e-aacacd0e88ce">package name</Link> and
+        a <Term type="term">version range</Term>. When a user tries to install a type package
+        <Term type="expression">p</Term>, each import <Term type="expression">i</Term> declared by
+        <Term type="expression">p</Term> is examined, and the server inspects its own set of installed
+        packages and verifies that a package is installed with both a name that matches <Term type="expression">i</Term>
+        and a version that falls within the range declared by <Term type="expression">i</Term>. If no such package
+        exists, the type package installation is rejected and the system is left untouched.
+      </Paragraph>
+      <Paragraph>
+        For the sake of simplicity, and because the number of installed type packages is expected to be small
+        and not change particularly often, imports are merely an install-time check. It is possible (but heavily
+        discouraged) for type packages to refer to types in packages that they have not imported.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Serialization">
+      <Paragraph>
+        Type packages are serialized using the given
+        <Link target="85488da3-174a-43f9-8f93-8d59bfab2846">XML schema</Link>.
+      </Paragraph>
     </Subsection>
   </Subsection>
 

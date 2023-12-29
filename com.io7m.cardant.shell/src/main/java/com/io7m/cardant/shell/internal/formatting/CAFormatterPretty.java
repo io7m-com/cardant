@@ -30,10 +30,11 @@ import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackageSummary;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
@@ -46,6 +47,7 @@ import com.io7m.tabla.core.TTableWidthConstraintRange;
 import com.io7m.tabla.core.Tabla;
 import org.jline.terminal.Terminal;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -541,7 +543,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(this.softTableWidth(2))
+        .setWidthConstraint(this.softTableWidth(5))
         .declareColumn("ID", atLeastContentOrHeader())
         .declareColumn("Owner", atLeastContent())
         .declareColumn("Type", atLeastContent())
@@ -555,6 +557,55 @@ public final class CAFormatterPretty implements CAFormatterType
         .addCell(event.type())
         .addCell(event.time().toString())
         .addCell(event.data().toString());
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void print(
+    final String text)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.print(text);
+  }
+
+  @Override
+  public void printLine(
+    final String text)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.println(text);
+  }
+
+  @Override
+  public void formatTypePackagePage(
+    final CAPage<CATypePackageSummary> page)
+    throws Exception
+  {
+    this.terminal.writer()
+      .printf(
+        "Search results: Page %d of %d%n",
+        Integer.valueOf(page.pageIndex()),
+        Integer.valueOf(page.pageCount())
+      );
+
+    if (page.items().isEmpty()) {
+      return;
+    }
+
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(3))
+        .declareColumn("Package", atLeastContentOrHeader())
+        .declareColumn("Version", atLeastContentOrHeader())
+        .declareColumn("Description", atLeastContent());
+
+    for (final var item : page.items()) {
+      tableBuilder.addRow()
+        .addCell(item.identifier().name().value())
+        .addCell(item.identifier().version().toString())
+        .addCell(item.description());
     }
 
     this.renderTable(tableBuilder.build());

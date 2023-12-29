@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="8be3c347-cc42-3881-8544-1d3ce1f3b9c4" title="type-package-search-next" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-package-search-next</Term>
+       - Go to the next page of type packages.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-package-search-next</Term>
+      command goes to the next page of type packages.
+    </Paragraph>
+    <Paragraph>
+      The command can only be used after the associated <Link target="d202d992-d75a-37f9-a96d-6378e296b912">begin</Link>
+      command.
+    </Paragraph>
+  </Subsection>
+</Section>
+

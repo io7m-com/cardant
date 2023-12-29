@@ -171,7 +171,8 @@ OK]]></Verbatim>
 
   <Subsection title="Running The Shell">
     <Paragraph>
-      Run <Term type="expression">cardant shell</Term> <LinkFootnote target="6ea0d34a-dac7-4a03-bdb7-d8fd04b213d0"/>.
+      Run <Term type="expression">cardant shell</Term> <LinkFootnote target="6ea0d34a-dac7-4a03-bdb7-d8fd04b213d0"/>
+      to start the <Link target="80d0af5f-505b-4dee-b733-296a6f3970a4">shell</Link>:
     </Paragraph>
     <FormalItem title="Shell">
       <Verbatim>

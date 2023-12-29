@@ -616,6 +616,12 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-type-field-put.xml"/>
     <xi:include href="scmd-type-field-remove.xml"/>
     <xi:include href="scmd-type-get.xml"/>
+    <xi:include href="scmd-type-package-get-text.xml"/>
+    <xi:include href="scmd-type-package-install.xml"/>
+    <xi:include href="scmd-type-package-search-begin.xml"/>
+    <xi:include href="scmd-type-package-search-next.xml"/>
+    <xi:include href="scmd-type-package-search-previous.xml"/>
+    <xi:include href="scmd-type-package-uninstall.xml"/>
     <xi:include href="scmd-type-scalar-get.xml"/>
     <xi:include href="scmd-type-scalar-put.xml"/>
     <xi:include href="scmd-type-scalar-remove.xml"/>
