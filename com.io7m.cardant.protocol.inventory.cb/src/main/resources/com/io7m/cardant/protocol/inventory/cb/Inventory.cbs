@@ -565,6 +565,18 @@
   [field description cb:String]
 ]
 
+[documentation CAI1Error "An error response."]
+[record CAI1Error
+  [documentation errorCode "The error code."]
+  [field errorCode cb:String]
+  [documentation message "The error message."]
+  [field message cb:String]
+  [documentation attributes "The error attributes."]
+  [field attributes [cb:Map cb:String cb:String]]
+  [documentation remediatingAction "The remediating action, if any."]
+  [field remediatingAction [cb:Option cb:String]]
+]
+
 ;
 ; Commands.
 ;
@@ -930,6 +942,8 @@
   [field remediatingAction [cb:Option cb:String]]
   [documentation blame "The blame assignment."]
   [field blame CAI1ResponseBlame]
+  [documentation extras "The extra errors."]
+  [field extras [cb:List CAI1Error]]
 ]
 
 [documentation CAI1ResponseLogin "A response to CAI1CommandLogin."]

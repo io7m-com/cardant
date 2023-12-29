@@ -24,8 +24,8 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationG
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.security.CASecurity;

@@ -639,6 +639,13 @@
     </Or>
   </Match>
 
+  <!-- Unavoidable from pattern matching. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICmdTypePackageInstall"/>
+    <Method name="executeActual"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
   <!--                                               -->
   <!-- com.io7m.cardant.server.service.configuration -->
   <!--                                               -->

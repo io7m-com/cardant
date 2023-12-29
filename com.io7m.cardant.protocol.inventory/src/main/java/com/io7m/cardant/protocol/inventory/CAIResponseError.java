@@ -17,8 +17,10 @@
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.seltzer.api.SStructuredError;
 import com.io7m.seltzer.api.SStructuredErrorType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,6 +36,7 @@ import java.util.UUID;
  * @param attributes        The error attributes
  * @param exception         The exception associated with the error, if any
  * @param blame             The blame assignment
+ * @param extras            The extra error messages
  */
 
 public record CAIResponseError(
@@ -43,7 +46,8 @@ public record CAIResponseError(
   Map<String, String> attributes,
   Optional<String> remediatingAction,
   Optional<Throwable> exception,
-  CAIResponseBlame blame)
+  CAIResponseBlame blame,
+  List<SStructuredError<CAErrorCode>> extras)
   implements CAIResponseType, SStructuredErrorType<CAErrorCode>
 {
   /**
@@ -56,6 +60,7 @@ public record CAIResponseError(
    * @param attributes        The error attributes
    * @param exception         The exception associated with the error, if any
    * @param blame             The blame assignment
+   * @param extras            The extra error messages
    */
 
   public CAIResponseError
@@ -67,5 +72,6 @@ public record CAIResponseError(
     Objects.requireNonNull(message, "summary");
     Objects.requireNonNull(attributes, "attributes");
     Objects.requireNonNull(blame, "blame");
+    Objects.requireNonNull(extras, "extras");
   }
 }

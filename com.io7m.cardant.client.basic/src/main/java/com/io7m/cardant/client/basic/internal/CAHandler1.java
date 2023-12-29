@@ -83,16 +83,13 @@ import static com.io7m.cardant.protocol.inventory.CAIResponseBlame.BLAME_SERVER;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_HASH_VALUE_MISMATCH;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_RECEIVED_UNEXPECTED_CONTENT_TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_RECEIVED_UNEXPECTED_RESPONSE_TYPE;
-import static com.io7m.cardant.strings.CAStringConstants.ERROR_SERVER;
 import static com.io7m.cardant.strings.CAStringConstants.EXPECTED_CONTENT_TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.EXPECTED_HASH;
 import static com.io7m.cardant.strings.CAStringConstants.EXPECTED_RESPONSE_TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.HASH_ALGORITHM;
-import static com.io7m.cardant.strings.CAStringConstants.HTTP_RESPONSE_CODE;
 import static com.io7m.cardant.strings.CAStringConstants.RECEIVED_CONTENT_TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.RECEIVED_HASH;
 import static com.io7m.cardant.strings.CAStringConstants.RECEIVED_RESPONSE_TYPE;
-import static com.io7m.cardant.strings.CAStringConstants.URI;
 import static java.lang.Integer.toUnsignedString;
 import static java.net.http.HttpResponse.BodyHandlers.ofByteArray;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -169,50 +166,6 @@ public final class CAHandler1 extends CAHandlerAbstract
   private static String userAgent()
   {
     return "com.io7m.cardant.client/%s".formatted(CAVersion.MAIN_VERSION);
-  }
-
-  private HBResultFailure<InputStream, CAIResponseError> fileDataServerError(
-    final URI uri,
-    final HttpResponse<InputStream> response)
-  {
-    final var attributes = new HashMap<String, String>();
-    attributes.put(
-      this.local(HTTP_RESPONSE_CODE),
-      Integer.toString(response.statusCode())
-    );
-    attributes.put(this.local(URI), uri.toString());
-
-    return new HBResultFailure<>(
-      new CAIResponseError(
-        nullUUID(),
-        this.local(ERROR_SERVER),
-        errorIo(),
-        attributes,
-        Optional.empty(),
-        Optional.empty(),
-        BLAME_SERVER
-      )
-    );
-  }
-
-  private HBResultFailure<InputStream, CAIResponseError> fileDataErrorIO(
-    final URI uri,
-    final IOException e)
-  {
-    final var attributes = new HashMap<String, String>();
-    attributes.put(this.local(URI), uri.toString());
-
-    return new HBResultFailure<>(
-      new CAIResponseError(
-        nullUUID(),
-        e.getMessage(),
-        errorIo(),
-        attributes,
-        Optional.empty(),
-        Optional.of(e),
-        BLAME_SERVER
-      )
-    );
   }
 
   private HBResultType<CAIResponseLogin, CAIResponseError> sendLogin(
@@ -296,7 +249,8 @@ public final class CAHandler1 extends CAHandlerAbstract
           e.attributes(),
           e.remediatingAction(),
           Optional.of(e),
-          BLAME_SERVER
+          BLAME_SERVER,
+          List.of()
         )
       );
     } catch (final IOException e) {
@@ -427,7 +381,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         attributes,
         Optional.empty(),
         Optional.empty(),
-        BLAME_SERVER
+        BLAME_SERVER,
+        List.of()
       )
     );
   }
@@ -455,7 +410,8 @@ public final class CAHandler1 extends CAHandlerAbstract
         attributes,
         Optional.empty(),
         Optional.empty(),
-        BLAME_SERVER
+        BLAME_SERVER,
+        List.of()
       )
     );
   }
@@ -734,7 +690,8 @@ public final class CAHandler1 extends CAHandlerAbstract
               ),
               Optional.empty(),
               Optional.empty(),
-              BLAME_CLIENT
+              BLAME_CLIENT,
+              List.of()
             )
           );
         }
@@ -821,7 +778,8 @@ public final class CAHandler1 extends CAHandlerAbstract
       Map.of(),
       Optional.empty(),
       Optional.of(e),
-      BLAME_CLIENT
+      BLAME_CLIENT,
+      List.of()
     );
   }
 
@@ -890,7 +848,8 @@ public final class CAHandler1 extends CAHandlerAbstract
           Map.of("x", "y"),
           Optional.empty(),
           Optional.empty(),
-          BLAME_CLIENT
+          BLAME_CLIENT,
+          List.of()
         ));
 
       final var request =

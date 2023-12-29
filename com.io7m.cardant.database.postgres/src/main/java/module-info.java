@@ -29,6 +29,7 @@ module com.io7m.cardant.database.postgres
   requires static org.osgi.annotation.versioning;
 
   requires com.io7m.cardant.database.api;
+  requires com.io7m.cardant.model;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.strings;
   requires com.io7m.cardant.type_packages;
@@ -49,7 +50,6 @@ module com.io7m.cardant.database.postgres
   requires org.jooq;
   requires org.postgresql.jdbc;
   requires org.slf4j;
-  requires com.io7m.cardant.model;
 
   exports com.io7m.cardant.database.postgres.internal.tables
     to org.jooq;

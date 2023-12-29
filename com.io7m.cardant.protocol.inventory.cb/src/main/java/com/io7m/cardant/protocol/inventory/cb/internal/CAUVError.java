@@ -19,63 +19,52 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cardant.protocol.inventory.CAIResponseError;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseError;
+import com.io7m.cardant.protocol.inventory.cb.CAI1Error;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBString;
-import com.io7m.cedarbridge.runtime.api.CBUUID;
-import com.io7m.cedarbridge.runtime.convenience.CBLists;
 import com.io7m.cedarbridge.runtime.convenience.CBMaps;
+import com.io7m.seltzer.api.SStructuredError;
 
 import java.util.Optional;
-
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVError.ERROR;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseBlame.RESPONSE_BLAME;
 
 /**
  * A validator.
  */
 
-public enum CAUVResponseError
+public enum CAUVError
   implements CAProtocolMessageValidatorType<
-  CAIResponseError, CAI1ResponseError>
+  SStructuredError<CAErrorCode>, CAI1Error>
 {
   /**
    * A validator.
    */
 
-  RESPONSE_ERROR;
+  ERROR;
 
   @Override
-  public CAI1ResponseError convertToWire(
-    final CAIResponseError c)
+  public CAI1Error convertToWire(
+    final SStructuredError<CAErrorCode> c)
   {
-    return new CAI1ResponseError(
-      new CBUUID(c.requestId()),
+    return new CAI1Error(
       new CBString(c.errorCode().id()),
       new CBString(c.message()),
       CBMaps.ofMapString(c.attributes()),
-      CBOptionType.fromOptional(c.remediatingAction().map(CBString::new)),
-      RESPONSE_BLAME.convertToWire(c.blame()),
-      CBLists.ofCollection(c.extras(), ERROR::convertToWire)
+      CBOptionType.fromOptional(c.remediatingAction().map(CBString::new))
     );
   }
 
   @Override
-  public CAIResponseError convertFromWire(
-    final CAI1ResponseError m)
+  public SStructuredError<CAErrorCode> convertFromWire(
+    final CAI1Error m)
   {
-    return new CAIResponseError(
-      m.fieldRequestId().value(),
-      m.fieldMessage().value(),
+    return new SStructuredError<>(
       new CAErrorCode(m.fieldErrorCode().value()),
+      m.fieldMessage().value(),
       CBMaps.toMapString(m.fieldAttributes()),
       m.fieldRemediatingAction()
         .asOptional()
         .map(CBString::value),
-      Optional.empty(),
-      RESPONSE_BLAME.convertFromWire(m.fieldBlame()),
-      CBLists.toList(m.fieldExtras(), ERROR::convertFromWire)
+      Optional.empty()
     );
   }
 }

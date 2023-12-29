@@ -13,41 +13,33 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
-import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
-import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.seltzer.api.SStructuredError;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public final class CAArbResponseError extends CAArbAbstract<CAIResponseError>
+public final class CAArbSStructuredError
 {
-  public CAArbResponseError()
+  private CAArbSStructuredError()
   {
-    super(
-      CAIResponseError.class,
-      () -> {
-        return Combinators.combine(
-          Arbitraries.create(UUID::randomUUID),
-          Arbitraries.strings(),
-          Arbitraries.defaultFor(CAErrorCode.class),
-          Arbitraries.maps(Arbitraries.strings(), Arbitraries.strings()),
-          Arbitraries.strings().optional(),
-          exceptions(),
-          Arbitraries.defaultFor(CAIResponseBlame.class),
-          CAArbSStructuredError.errors().list()
-        ).as(CAIResponseError::new);
-      }
-    );
+
   }
 
-  private static Arbitrary<Optional<Throwable>> exceptions()
+  public static Arbitrary<SStructuredError<CAErrorCode>> errors()
   {
-    return Arbitraries.create(Optional::empty);
+    return Combinators.combine(
+      Arbitraries.defaultFor(CAErrorCode.class),
+      Arbitraries.strings(),
+      Arbitraries.maps(Arbitraries.strings(), Arbitraries.strings()),
+      Arbitraries.strings().optional(),
+      Arbitraries.<Optional<Throwable>>create(Optional::empty)
+    ).as(SStructuredError::new);
   }
 }

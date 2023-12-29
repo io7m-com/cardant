@@ -43,6 +43,9 @@
   <entry key="error_type_still_referenced"><![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
   <entry key="error_unauthorized">Unauthorized.</entry>
 
+  <entry key="error_parse_indexed">Parse error {0}</entry>
+  <entry key="error_type_indexed">Type error {0}</entry>
+
   <entry key="Command">Command</entry>
   <entry key="Expected Content Type">Expected Content Type</entry>
   <entry key="Expected Hash">Expected Hash</entry>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+
+  <p:PackageInfo Name="com.io7m.example"
+                 Version="1.0.0"
+                 Description="An example."/>
+
+  <p:Import Package="com.io7m.other">
+    <p:VersionRange VersionLower="1.0.0"
+                    VersionLowerInclusive="true"
+                    VersionUpper="2.0.0"
+                    VersionUpperInclusive="false"/>
+  </p:Import>
+
+  <p:TypeScalarMonetary Name="t0"
+                        Description="A monetary type."
+                        RangeLower="0"
+                        RangeUpper="1000000.0"/>
+
+  <p:TypeScalarIntegral Name="t1"
+                        Description="An integral type."
+                        RangeLower="0"
+                        RangeUpper="1000"/>
+
+  <p:TypeScalarReal Name="t2"
+                    Description="A real type."
+                    RangeLower="0.0"
+                    RangeUpper="100.0"/>
+
+  <p:TypeScalarText Name="t3"
+                    Description="A text type."
+                    Pattern=".*"/>
+
+  <p:TypeScalarTime Name="t4"
+                    Description="A time type."
+                    RangeLower="2000-01-01T00:00:00+00:00"
+                    RangeUpper="9999-01-01T00:00:00+00:00"/>
+
+  <p:TypeRecord Name="t5"
+                Description="A record type.">
+    <p:Field Name="q"
+             Description="A Q field."
+             Type="t0"/>
+    <p:Field Name="s"
+             Description="An S field."
+             Type="t0"
+             Required="false"/>
+  </p:TypeRecord>
+
+</p:Package>

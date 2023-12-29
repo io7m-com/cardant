@@ -17,14 +17,12 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.server.controller.inventory.CAICmdTypeDeclarationGet;
+import com.io7m.cardant.server.controller.inventory.CAICmdTypePackageGetText;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MMatchActionType.MMatchActionWithName;
 import com.io7m.medrina.api.MMatchObjectType.MMatchObjectWithType;
@@ -32,10 +30,10 @@ import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,57 +52,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * @see CAICmdTypeDeclarationGet
+ * @see CAICmdTypePackageGetText
  */
 
-public final class CAICmdTypeDeclarationGetTest
+public final class CAICmdTypePackageGetTextTest
   extends CACmdAbstractContract
 {
-  private static final CATypeScalarType.Integral TYPE_SCALAR =
-    new CATypeScalarType.Integral(
-      new RDottedName("a"),
-      "b",
-      23L,
-      1000L
-    );
-
-  static final CATypeField TYPE_FIELD_0 =
-    new CATypeField(
-      new RDottedName("x"),
-      "xd",
-      TYPE_SCALAR,
-      true
-    );
-
-  static final CATypeField TYPE_FIELD_1 =
-    new CATypeField(
-      new RDottedName("y"),
-      "yd",
-      TYPE_SCALAR,
-      true
-    );
-
-  static final CATypeField TYPE_FIELD_2 =
-    new CATypeField(
-      new RDottedName("z"),
-      "zd",
-      TYPE_SCALAR,
-      true
-    );
-
-  static final CATypeRecord TYPE_DECLARATION =
-    new CATypeRecord(
-      new RDottedName("a.b.c"),
-      "a",
-      Map.ofEntries(
-        Map.entry(TYPE_FIELD_0.name(), TYPE_FIELD_0),
-        Map.entry(TYPE_FIELD_1.name(), TYPE_FIELD_1),
-        Map.entry(TYPE_FIELD_2.name(), TYPE_FIELD_2)
-      )
-    );
-
   /**
-   * Retrieving an item requires the permission to READ to INVENTORY_ITEMS.
+   * Retrieving a type package requires the permission to READ to INVENTORY_ITEMS.
    *
    * @throws Exception On errors
    */
@@ -121,12 +76,17 @@ public final class CAICmdTypeDeclarationGetTest
     /* Act. */
 
     final var handler =
-      new CAICmdTypeDeclarationGet();
+      new CAICmdTypePackageGetText();
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
           context,
-          new CAICommandTypeDeclarationGet(new RDottedName("a.b.c")));
+          new CAICommandTypePackageGetText(
+            new CATypePackageIdentifier(
+              new RDottedName("a.b.c"),
+              Version.of(1, 0, 0)
+            )
+          ));
       });
 
     /* Assert. */
@@ -135,7 +95,7 @@ public final class CAICmdTypeDeclarationGetTest
   }
 
   /**
-   * Retrieving an item works.
+   * Retrieving a type package works.
    *
    * @throws Exception On errors
    */
@@ -147,14 +107,14 @@ public final class CAICmdTypeDeclarationGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
+      mock(TypePackageGetTextType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class))
+    when(transaction.queries(TypePackageGetTextType.class))
       .thenReturn(itemGet);
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(TYPE_DECLARATION));
+      .thenReturn(Optional.of("TEXT!"));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -174,17 +134,27 @@ public final class CAICmdTypeDeclarationGetTest
 
     /* Act. */
 
-    final var handler = new CAICmdTypeDeclarationGet();
+    final var handler = new CAICmdTypePackageGetText();
     handler.execute(
       context,
-      new CAICommandTypeDeclarationGet(new RDottedName("a.b.c")));
+      new CAICommandTypePackageGetText(
+        new CATypePackageIdentifier(
+          new RDottedName("a.b.c"),
+          Version.of(1, 0, 0)
+        )
+      ));
 
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
+      .queries(TypePackageGetTextType.class);
     verify(itemGet)
-      .execute(new RDottedName("a.b.c"));
+      .execute(
+        new CATypePackageIdentifier(
+          new RDottedName("a.b.c"),
+          Version.of(1, 0, 0)
+        )
+      );
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(itemGet);
@@ -203,11 +173,11 @@ public final class CAICmdTypeDeclarationGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
+      mock(TypePackageGetTextType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class))
+    when(transaction.queries(TypePackageGetTextType.class))
       .thenReturn(itemGet);
 
     when(itemGet.execute(any()))
@@ -231,13 +201,18 @@ public final class CAICmdTypeDeclarationGetTest
 
     /* Act. */
 
-    final var handler = new CAICmdTypeDeclarationGet();
+    final var handler = new CAICmdTypePackageGetText();
 
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
           context,
-          new CAICommandTypeDeclarationGet(new RDottedName("a.b.c")));
+          new CAICommandTypePackageGetText(
+            new CATypePackageIdentifier(
+              new RDottedName("a.b.c"),
+              Version.of(1, 0, 0)
+            )
+          ));
       });
 
     /* Assert. */

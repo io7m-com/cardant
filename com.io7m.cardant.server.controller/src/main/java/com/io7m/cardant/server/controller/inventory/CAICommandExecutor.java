@@ -278,22 +278,22 @@ public final class CAICommandExecutor
         throw new IllegalStateException();
       }
       case final CAICommandTypePackageSearchBegin m -> {
-        throw new IllegalStateException("Unimplemented code.");
+        yield new CAICmdTypePackageSearchBegin().execute(context, m);
       }
       case final CAICommandTypePackageSearchNext m -> {
-        throw new IllegalStateException("Unimplemented code.");
+        yield new CAICmdTypePackageSearchNext().execute(context, m);
       }
       case final CAICommandTypePackageSearchPrevious m -> {
-        throw new IllegalStateException("Unimplemented code.");
+        yield new CAICmdTypePackageSearchPrevious().execute(context, m);
       }
       case final CAICommandTypePackageGetText m -> {
-        throw new IllegalStateException("Unimplemented code.");
+        yield new CAICmdTypePackageGetText().execute(context, m);
       }
       case final CAICommandTypePackageInstall m -> {
-        throw new IllegalStateException("Unimplemented code.");
+        yield new CAICmdTypePackageInstall().execute(context, m);
       }
       case final CAICommandTypePackageUninstall m -> {
-        throw new IllegalStateException("Unimplemented code.");
+        yield new CAICmdTypePackageUninstall().execute(context, m);
       }
     };
   }

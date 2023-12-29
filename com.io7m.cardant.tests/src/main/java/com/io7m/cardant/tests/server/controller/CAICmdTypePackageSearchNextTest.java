@@ -17,14 +17,15 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSearchType;
+import com.io7m.cardant.database.api.CADatabaseTypePackageSearchType;
+import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.model.type_package.CATypePackageSummary;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchNext;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.server.controller.inventory.CAICmdTypeDeclarationGet;
+import com.io7m.cardant.server.controller.inventory.CAICmdTypePackageSearchNext;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MMatchActionType.MMatchActionWithName;
 import com.io7m.medrina.api.MMatchObjectType.MMatchObjectWithType;
@@ -32,14 +33,13 @@ import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
@@ -54,57 +54,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * @see CAICmdTypeDeclarationGet
+ * @see CAICmdTypePackageSearchNext
  */
 
-public final class CAICmdTypeDeclarationGetTest
+public final class CAICmdTypePackageSearchNextTest
   extends CACmdAbstractContract
 {
-  private static final CATypeScalarType.Integral TYPE_SCALAR =
-    new CATypeScalarType.Integral(
-      new RDottedName("a"),
-      "b",
-      23L,
-      1000L
-    );
-
-  static final CATypeField TYPE_FIELD_0 =
-    new CATypeField(
-      new RDottedName("x"),
-      "xd",
-      TYPE_SCALAR,
-      true
-    );
-
-  static final CATypeField TYPE_FIELD_1 =
-    new CATypeField(
-      new RDottedName("y"),
-      "yd",
-      TYPE_SCALAR,
-      true
-    );
-
-  static final CATypeField TYPE_FIELD_2 =
-    new CATypeField(
-      new RDottedName("z"),
-      "zd",
-      TYPE_SCALAR,
-      true
-    );
-
-  static final CATypeRecord TYPE_DECLARATION =
-    new CATypeRecord(
-      new RDottedName("a.b.c"),
-      "a",
-      Map.ofEntries(
-        Map.entry(TYPE_FIELD_0.name(), TYPE_FIELD_0),
-        Map.entry(TYPE_FIELD_1.name(), TYPE_FIELD_1),
-        Map.entry(TYPE_FIELD_2.name(), TYPE_FIELD_2)
-      )
-    );
-
   /**
-   * Retrieving an item requires the permission to READ to INVENTORY_ITEMS.
+   * Searching requires the permission to READ to INVENTORY_ITEMS.
    *
    * @throws Exception On errors
    */
@@ -121,12 +78,12 @@ public final class CAICmdTypeDeclarationGetTest
     /* Act. */
 
     final var handler =
-      new CAICmdTypeDeclarationGet();
+      new CAICmdTypePackageSearchNext();
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
           context,
-          new CAICommandTypeDeclarationGet(new RDottedName("a.b.c")));
+          new CAICommandTypePackageSearchNext());
       });
 
     /* Assert. */
@@ -135,26 +92,38 @@ public final class CAICmdTypeDeclarationGetTest
   }
 
   /**
-   * Retrieving an item works.
+   * Searching works.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testGets()
+  public void testSearch()
     throws Exception
   {
     /* Arrange. */
 
-    final var itemGet =
-      mock(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
+    final var itemSearch =
+      mock(CADatabaseTypePackageSearchType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class))
-      .thenReturn(itemGet);
-    when(itemGet.execute(any()))
-      .thenReturn(Optional.of(TYPE_DECLARATION));
+    final var page =
+      new CAPage<>(
+        List.of(
+          new CATypePackageSummary(new CATypePackageIdentifier(
+            new RDottedName("a.b.c"),
+            Version.of(1, 0, 0)
+          ), "x")
+        ),
+        0,
+        1,
+        0L
+      );
+
+    when(itemSearch.pageNext(any()))
+      .thenReturn(page);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -171,47 +140,51 @@ public final class CAICmdTypeDeclarationGetTest
 
     final var context =
       this.createContext();
+    final var session =
+      context.session();
+
+    session.setProperty(CADatabaseTypePackageSearchType.class, itemSearch);
 
     /* Act. */
 
-    final var handler = new CAICmdTypeDeclarationGet();
-    handler.execute(
-      context,
-      new CAICommandTypeDeclarationGet(new RDottedName("a.b.c")));
+    final var handler = new CAICmdTypePackageSearchNext();
+    handler.execute(context, new CAICommandTypePackageSearchNext());
 
     /* Assert. */
 
-    verify(transaction)
-      .queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
-    verify(itemGet)
-      .execute(new RDottedName("a.b.c"));
+    verify(itemSearch)
+      .pageNext(transaction);
 
+    verifyNoMoreInteractions(itemSearch);
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(itemGet);
   }
 
   /**
-   * Getting a nonexistent item fails.
+   * Searching works.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testGetNonexistent()
+  public void testSearchMustBegin()
     throws Exception
   {
     /* Arrange. */
 
-    final var itemGet =
-      mock(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
+    final var items =
+      mock(TypePackageSearchType.class);
+    final var itemSearch =
+      mock(CADatabaseTypePackageSearchType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class))
-      .thenReturn(itemGet);
+    when(transaction.queries(
+      TypePackageSearchType.class))
+      .thenReturn(items);
 
-    when(itemGet.execute(any()))
-      .thenReturn(Optional.empty());
+    when(items.execute(any()))
+      .thenReturn(itemSearch);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -231,17 +204,15 @@ public final class CAICmdTypeDeclarationGetTest
 
     /* Act. */
 
-    final var handler = new CAICmdTypeDeclarationGet();
+    final var handler = new CAICmdTypePackageSearchNext();
 
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
-        handler.execute(
-          context,
-          new CAICommandTypeDeclarationGet(new RDottedName("a.b.c")));
+        handler.execute(context, new CAICommandTypePackageSearchNext());
       });
 
     /* Assert. */
 
-    assertEquals(errorNonexistent(), ex.errorCode());
+    assertEquals(errorApiMisuse(), ex.errorCode());
   }
 }

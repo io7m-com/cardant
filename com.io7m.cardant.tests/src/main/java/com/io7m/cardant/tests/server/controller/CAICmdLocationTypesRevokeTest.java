@@ -23,8 +23,8 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesRevokeT
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
 import com.io7m.cardant.security.CASecurity;
