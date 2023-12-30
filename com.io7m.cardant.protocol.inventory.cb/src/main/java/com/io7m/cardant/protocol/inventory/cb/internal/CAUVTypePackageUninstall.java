@@ -17,44 +17,47 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
+import com.io7m.cardant.model.type_package.CATypePackageUninstall;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypePackageUninstall;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypePackageUninstall;
 
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageUninstall.TYPE_PACKAGE_UNINSTALL;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageIdentifier.TYPE_PACKAGE_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageUninstallBehavior.TYPE_PACKAGE_UNINSTALL_BEHAVIOR;
 
 /**
  * A validator.
  */
 
-public enum CAUVCommandTypePackageUninstall
+public enum CAUVTypePackageUninstall
   implements CAProtocolMessageValidatorType<
-  CAICommandTypePackageUninstall, CAI1CommandTypePackageUninstall>
+  CATypePackageUninstall, CAI1TypePackageUninstall>
 {
   /**
    * A validator.
    */
 
-  COMMAND_TYPE_PACKAGE_UNINSTALL;
+  TYPE_PACKAGE_UNINSTALL;
 
   @Override
-  public CAI1CommandTypePackageUninstall convertToWire(
-    final CAICommandTypePackageUninstall c)
+  public CAI1TypePackageUninstall convertToWire(
+    final CATypePackageUninstall c)
     throws CAProtocolException
   {
-    return new CAI1CommandTypePackageUninstall(
-      TYPE_PACKAGE_UNINSTALL.convertToWire(c.uninstall())
+    return new CAI1TypePackageUninstall(
+      TYPE_PACKAGE_UNINSTALL_BEHAVIOR.convertToWire(c.behavior()),
+      TYPE_PACKAGE_IDENTIFIER.convertToWire(c.packageIdentifier())
     );
   }
 
   @Override
-  public CAICommandTypePackageUninstall convertFromWire(
-    final CAI1CommandTypePackageUninstall m)
+  public CATypePackageUninstall convertFromWire(
+    final CAI1TypePackageUninstall m)
     throws CAProtocolException
   {
-    return new CAICommandTypePackageUninstall(
-      TYPE_PACKAGE_UNINSTALL.convertFromWire(m.fieldParameters())
+    return new CATypePackageUninstall(
+      TYPE_PACKAGE_UNINSTALL_BEHAVIOR.convertFromWire(m.fieldBehavior()),
+      TYPE_PACKAGE_IDENTIFIER.convertFromWire(m.fieldIdentifier())
     );
   }
 }

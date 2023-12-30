@@ -16,30 +16,28 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.model.type_package.CATypePackageUninstall;
 
 import java.util.Objects;
 
 /**
  * Uninstall a type package.
  *
- * @param identifier The identifier
+ * @param uninstall The uninstall parameters
  */
 
-public record CAICommandTypePackageUninstall(
-  CATypePackageIdentifier identifier)
+public record CAICommandTypePackageUninstall(CATypePackageUninstall uninstall)
   implements CAICommandType<CAIResponseTypePackageUninstall>
 {
   /**
    * Uninstall a type package.
    *
-   * @param identifier The identifier
+   * @param uninstall The uninstall parameters
    */
 
   public CAICommandTypePackageUninstall
   {
-    Objects.requireNonNull(identifier, "identifier");
+    Objects.requireNonNull(uninstall, "uninstall");
   }
 
   @Override

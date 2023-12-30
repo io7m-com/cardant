@@ -21,7 +21,7 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageUninstallType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.model.type_package.CATypePackageUninstall;
 import com.io7m.cardant.strings.CAStringConstants;
 import com.io7m.verona.core.VersionQualifier;
 import org.jooq.Condition;
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
@@ -48,10 +49,13 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent
  */
 
 public final class CADBQTypePackageUninstall
-  extends CADBQAbstract<CATypePackageIdentifier, CADatabaseUnit>
+  extends CADBQAbstract<CATypePackageUninstall, CADatabaseUnit>
   implements TypePackageUninstallType
 {
-  private static final Service<CATypePackageIdentifier, CADatabaseUnit, TypePackageUninstallType> SERVICE =
+  private static final Service<
+    CATypePackageUninstall,
+    CADatabaseUnit,
+    TypePackageUninstallType> SERVICE =
     new Service<>(
       TypePackageUninstallType.class,
       CADBQTypePackageUninstall::new);
@@ -80,9 +84,11 @@ public final class CADBQTypePackageUninstall
   @Override
   protected CADatabaseUnit onExecute(
     final DSLContext context,
-    final CATypePackageIdentifier packageId)
+    final CATypePackageUninstall parameters)
     throws CADatabaseException
   {
+    final var packageId =
+      parameters.packageIdentifier();
     final var version =
       packageId.version();
 
@@ -119,6 +125,27 @@ public final class CADBQTypePackageUninstall
             Optional.empty()
           );
         });
+
+    /*
+     * The user can request that referenced types simply be revoked rather
+     * than preventing the uninstallation of the package.
+     */
+
+    switch (parameters.behavior()) {
+      case UNINSTALL_FAIL_IF_TYPES_REFERENCED -> {
+        break;
+      }
+      case UNINSTALL_REVOKE_TYPES -> {
+        batch.add(
+          context.deleteFrom(ITEM_TYPES)
+            .where(ITEM_TYPES.IT_TYPE.in(
+              context.select(METADATA_TYPES_RECORDS.MTR_ID)
+                .from(METADATA_TYPES_RECORDS)
+                .where(METADATA_TYPES_RECORDS.MTR_PACKAGE.eq(packageDbID))
+            ))
+        );
+      }
+    }
 
     batch.add(
       context.deleteFrom(METADATA_TYPES_RECORD_FIELDS)

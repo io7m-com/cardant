@@ -15,20 +15,24 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
-import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
+import com.io7m.cardant.model.type_package.CATypePackageUninstallBehavior;
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
-public final class CAArbCommandTypePackageUninstall
-  extends CAArbAbstract<CAICommandTypePackageUninstall>
+public final class CAArbTypePackageUninstall
+  extends CAArbAbstract<CATypePackageUninstall>
 {
-  public CAArbCommandTypePackageUninstall()
+  public CAArbTypePackageUninstall()
   {
     super(
-      CAICommandTypePackageUninstall.class,
+      CATypePackageUninstall.class,
       () -> {
-        return Arbitraries.defaultFor(CATypePackageUninstall.class)
-          .map(CAICommandTypePackageUninstall::new);
+        return Combinators.combine(
+          Arbitraries.defaultFor(CATypePackageUninstallBehavior.class),
+          Arbitraries.defaultFor(CATypePackageIdentifier.class)
+        ).as(CATypePackageUninstall::new);
       }
     );
   }

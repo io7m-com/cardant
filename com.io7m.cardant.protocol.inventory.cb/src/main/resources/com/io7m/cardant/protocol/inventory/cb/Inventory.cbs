@@ -577,6 +577,18 @@
   [field remediatingAction [cb:Option cb:String]]
 ]
 
+[documentation CAI1TypePackageUninstallBehavior "The type package uninstall behavior."]
+[variant CAI1TypePackageUninstallBehavior
+  [case UninstallFailIfTypesReferenced]
+  [case UninstallRevokeTypes]
+]
+
+[documentation CAI1TypePackageUninstall "The type package uninstall parameters."]
+[record CAI1TypePackageUninstall
+  [field behavior CAI1TypePackageUninstallBehavior]
+  [field identifier CAI1TypePackageIdentifier]
+]
+
 ;
 ; Commands.
 ;
@@ -912,8 +924,8 @@
 
 [documentation CAI1CommandTypePackageUninstall "Uninstall a type package."]
 [record CAI1CommandTypePackageUninstall
-  [documentation identifier "The type package identifier."]
-  [field identifier CAI1TypePackageIdentifier]
+  [documentation parameters "The uninstall parameters."]
+  [field parameters CAI1TypePackageUninstall]
 ]
 
 ;

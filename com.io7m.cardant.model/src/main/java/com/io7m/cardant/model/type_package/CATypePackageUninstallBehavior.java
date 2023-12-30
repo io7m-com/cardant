@@ -13,23 +13,26 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.type_package.CATypePackageUninstall;
-import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
-import net.jqwik.api.Arbitraries;
 
-public final class CAArbCommandTypePackageUninstall
-  extends CAArbAbstract<CAICommandTypePackageUninstall>
+package com.io7m.cardant.model.type_package;
+
+/**
+ * The uninstall behavior for a package.
+ */
+
+public enum CATypePackageUninstallBehavior
 {
-  public CAArbCommandTypePackageUninstall()
-  {
-    super(
-      CAICommandTypePackageUninstall.class,
-      () -> {
-        return Arbitraries.defaultFor(CATypePackageUninstall.class)
-          .map(CAICommandTypePackageUninstall::new);
-      }
-    );
-  }
+  /**
+   * Refuse to uninstall the package if items still refer to types declared
+   * by the package.
+   */
+
+  UNINSTALL_FAIL_IF_TYPES_REFERENCED,
+
+  /**
+   * Revoke the types in the package from all items and uninstall it.
+   */
+
+  UNINSTALL_REVOKE_TYPES
 }

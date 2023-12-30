@@ -20,6 +20,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageSearchParameters;
+import com.io7m.cardant.model.type_package.CATypePackageUninstall;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.verona.core.VersionRange;
 
@@ -49,7 +50,7 @@ public sealed interface CADatabaseQueriesTypePackagesType
    */
 
   non-sealed interface TypePackageUninstallType
-    extends CADatabaseQueryType<CATypePackageIdentifier, CADatabaseUnit>,
+    extends CADatabaseQueryType<CATypePackageUninstall, CADatabaseUnit>,
     CADatabaseQueriesTypePackagesType
   {
 

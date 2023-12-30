@@ -66,10 +66,10 @@ public final class CAICmdTypePackageUninstall
     final var uninstall =
       transaction.queries(TypePackageUninstallType.class);
     final var identifier =
-      command.identifier();
+      command.uninstall().packageIdentifier();
 
     try {
-      uninstall.execute(identifier);
+      uninstall.execute(command.uninstall());
     } catch (final CADatabaseException e) {
       if (Objects.equals(e.errorCode(), errorNonexistent())) {
         throw context.failFormatted(

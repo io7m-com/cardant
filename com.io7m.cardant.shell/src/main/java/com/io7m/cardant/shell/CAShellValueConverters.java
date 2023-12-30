@@ -35,6 +35,7 @@ import com.io7m.cardant.shell.internal.CARangeInclusiveLConverter;
 import com.io7m.cardant.shell.internal.CARoleNameConverter;
 import com.io7m.cardant.shell.internal.CATimeRangeConverter;
 import com.io7m.cardant.shell.internal.CATypeMatchConverter;
+import com.io7m.cardant.shell.internal.CATypePackageUninstallBehaviorConverter;
 import com.io7m.cardant.shell.internal.CAUserIdConverter;
 import com.io7m.cardant.shell.internal.CAVersionConverter;
 import com.io7m.cardant.strings.CAStrings;
@@ -62,6 +63,7 @@ public final class CAShellValueConverters
     final CAStrings strings)
   {
     return QValueConverterDirectory.core()
+      .with(new CATypePackageUninstallBehaviorConverter())
       .with(new CAVersionConverter())
       .with(new CADescriptionMatchConverter(strings))
       .with(new CAFileIdConverter())

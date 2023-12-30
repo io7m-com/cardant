@@ -50,6 +50,8 @@ import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageSearchParameters;
 import com.io7m.cardant.model.type_package.CATypePackageSummary;
+import com.io7m.cardant.model.type_package.CATypePackageUninstall;
+import com.io7m.cardant.model.type_package.CATypePackageUninstallBehavior;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
@@ -234,6 +236,7 @@ public final class CADatabaseTypePackagesTest
       );
 
     this.tpInstall.execute(p0);
+    this.assertIsInstalled(p0);
     this.transaction.commit();
 
     {
@@ -302,6 +305,7 @@ public final class CADatabaseTypePackagesTest
       );
 
     this.tpInstall.execute(p0);
+    this.assertIsInstalled(p0);
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> this.tpInstall.execute(p1));
@@ -351,14 +355,22 @@ public final class CADatabaseTypePackagesTest
       );
 
     this.tpInstall.execute(p0);
+    this.assertIsInstalled(p0);
     this.transaction.commit();
-    this.tpUninstall.execute(p0.identifier());
+    this.tpUninstall.execute(
+      new CATypePackageUninstall(
+        CATypePackageUninstallBehavior.UNINSTALL_FAIL_IF_TYPES_REFERENCED,
+        p0.identifier()
+      )
+    );
+    this.assertIsNotInstalled(p0);
     this.transaction.commit();
     this.tpInstall.execute(p1);
+    this.assertIsInstalled(p1);
   }
 
   /**
-   * Type packages cannot be installed if types are still referenced.
+   * Type packages cannot be uninstalled if types are still referenced.
    *
    * @throws Exception On errors
    */
@@ -401,6 +413,8 @@ public final class CADatabaseTypePackagesTest
       );
 
     this.tpInstall.execute(p0);
+    this.assertIsInstalled(p0);
+    this.transaction.commit();
 
     final var itemId = CAItemID.random();
     this.iCreate.execute(itemId);
@@ -410,9 +424,115 @@ public final class CADatabaseTypePackagesTest
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
-        this.tpUninstall.execute(p0.identifier());
+        this.tpUninstall.execute(
+          new CATypePackageUninstall(
+            CATypePackageUninstallBehavior.UNINSTALL_FAIL_IF_TYPES_REFERENCED,
+            p0.identifier()
+          )
+        );
       });
     assertEquals(errorTypeReferenced(), ex.errorCode());
+
+    this.transaction.rollback();
+    this.assertIsInstalled(p0);
+  }
+
+  /**
+   * Type packages can be uninstalled if types are revoked.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypePackageUninstallReferenced1()
+    throws Exception
+  {
+    final var t0 =
+      new Integral(
+        new RDottedName("x.t0"), "T0", 0L, 100L);
+
+    final var t1 =
+      new CATypeRecord(
+        new RDottedName("x.t1"),
+        "T1",
+        Map.ofEntries(
+          Map.entry(
+            new RDottedName("x.t1.f"),
+            new CATypeField(
+              new RDottedName("x.t1.f"),
+              "F0",
+              t0,
+              true
+            )
+          )
+        )
+      );
+
+    final var p0 =
+      new CATypePackage(
+        new CATypePackageIdentifier(
+          new RDottedName("x"),
+          Version.of(1, 0, 0)
+        ),
+        "P0",
+        Set.of(),
+        Map.ofEntries(Map.entry(t0.name(), t0)),
+        Map.ofEntries(Map.entry(t1.name(), t1))
+      );
+
+    this.tpInstall.execute(p0);
+    this.assertIsInstalled(p0);
+
+    final var itemId = CAItemID.random();
+    this.iCreate.execute(itemId);
+    this.iTypeAssign.execute(
+      new ItemTypesAssignType.Parameters(itemId, Set.of(t1.name()))
+    );
+    this.tpUninstall.execute(
+      new CATypePackageUninstall(
+        CATypePackageUninstallBehavior.UNINSTALL_REVOKE_TYPES,
+        p0.identifier()
+      )
+    );
+    this.assertIsNotInstalled(p0);
+  }
+
+  private void assertIsNotInstalled(
+    final CATypePackage p)
+    throws CADatabaseException
+  {
+    final var identifier = p.identifier();
+    assertEquals(
+      Optional.empty(),
+      this.tpSatisfying.execute(new TypePackageSatisfyingType.Parameters(
+        identifier.name(),
+        new VersionRange(
+          identifier.version(),
+          true,
+          identifier.version(),
+          true
+        )
+      ))
+    );
+  }
+
+  private void assertIsInstalled(
+    final CATypePackage p)
+    throws CADatabaseException
+  {
+    final var identifier = p.identifier();
+    assertEquals(
+      identifier,
+      this.tpSatisfying.execute(new TypePackageSatisfyingType.Parameters(
+        identifier.name(),
+        new VersionRange(
+          identifier.version(),
+          true,
+          identifier.version(),
+          true
+        )
+      )).orElseThrow()
+    );
   }
 
   /**

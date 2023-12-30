@@ -36,6 +36,7 @@ module com.io7m.cardant.tests.arbitraries
 
   provides ArbitraryProvider
     with
+      com.io7m.cardant.tests.arbitraries.CAArbTypePackageUninstall,
       com.io7m.cardant.tests.arbitraries.CAArbCommand,
       com.io7m.cardant.tests.arbitraries.CAArbCommandAuditSearchBegin,
       com.io7m.cardant.tests.arbitraries.CAArbCommandAuditSearchNext,
