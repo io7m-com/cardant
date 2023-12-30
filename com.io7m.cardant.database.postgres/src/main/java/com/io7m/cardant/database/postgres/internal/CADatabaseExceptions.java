@@ -315,31 +315,35 @@ public final class CADatabaseExceptions
     final SortedMap<String, String> attributes,
     final String m)
   {
-    if (e.getCause() instanceof final PSQLException actual) {
-      final var constraint =
-        Optional.ofNullable(actual.getServerErrorMessage())
-          .flatMap(x -> Optional.ofNullable(x.getConstraint()))
-          .orElse("");
+    var cause = e.getCause();
+    while (cause != null) {
+      if (cause instanceof final PSQLException actual) {
+        final var constraint =
+          Optional.ofNullable(actual.getServerErrorMessage())
+            .flatMap(x -> Optional.ofNullable(x.getConstraint()))
+            .orElse("");
 
-      if (Objects.equals(constraint, "metadata_types_record_fields_scalar_exists")) {
-        return new CADatabaseException(
-          transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
-          e,
-          errorTypeScalarReferenced(),
-          attributes,
-          Optional.empty()
-        );
-      }
+        if (Objects.equals(constraint, "metadata_types_record_fields_scalar_exists")) {
+          return new CADatabaseException(
+            transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
+            e,
+            errorTypeScalarReferenced(),
+            attributes,
+            Optional.empty()
+          );
+        }
 
-      if (Objects.equals(constraint, "item_types_record_type_exists")) {
-        return new CADatabaseException(
-          transaction.localize(ERROR_TYPE_STILL_REFERENCED),
-          e,
-          errorTypeReferenced(),
-          attributes,
-          Optional.empty()
-        );
+        if (Objects.equals(constraint, "item_types_record_type_exists")) {
+          return new CADatabaseException(
+            transaction.localize(ERROR_TYPE_STILL_REFERENCED),
+            e,
+            errorTypeReferenced(),
+            attributes,
+            Optional.empty()
+          );
+        }
       }
+      cause = cause.getCause();
     }
 
     return new CADatabaseException(

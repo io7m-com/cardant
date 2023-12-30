@@ -54,7 +54,7 @@ public final class CAICmdItemsRemove extends CAICmdAbstract<CAICommandItemsRemov
 
     final var delete =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
+        .queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
 
     delete.execute(command.ids());
     return new CAIResponseItemsRemove(

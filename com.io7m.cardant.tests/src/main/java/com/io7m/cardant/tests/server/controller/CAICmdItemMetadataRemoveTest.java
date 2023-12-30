@@ -19,8 +19,8 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -120,18 +120,18 @@ public final class CAICmdItemMetadataRemoveTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(ItemMetadataRemoveType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(ItemMetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -179,9 +179,9 @@ public final class CAICmdItemMetadataRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(MetadataRemoveType.class);
+      .queries(ItemMetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
@@ -219,9 +219,9 @@ public final class CAICmdItemMetadataRemoveTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(ItemMetadataRemoveType.class);
 
     doThrow(
       new CADatabaseException(
@@ -235,9 +235,9 @@ public final class CAICmdItemMetadataRemoveTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(ItemMetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
 
     doThrow(new CADatabaseException(
@@ -296,9 +296,9 @@ public final class CAICmdItemMetadataRemoveTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(ItemMetadataRemoveType.class);
 
     doThrow(
       new CADatabaseException(
@@ -312,9 +312,9 @@ public final class CAICmdItemMetadataRemoveTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(ItemMetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
 
     when(itemGet.execute(any()))
@@ -368,18 +368,18 @@ public final class CAICmdItemMetadataRemoveTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(ItemMetadataRemoveType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(ItemMetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -475,9 +475,9 @@ public final class CAICmdItemMetadataRemoveTest
     assertEquals(errorTypeCheckFailed(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+      .queries(ItemMetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
@@ -486,7 +486,7 @@ public final class CAICmdItemMetadataRemoveTest
     verify(itemGet)
       .execute(ITEM_ID);
     verify(itemMetaRemove)
-      .execute(new MetadataRemoveType.Parameters(ITEM_ID, Set.of(meta0.name())));
+      .execute(new ItemMetadataRemoveType.Parameters(ITEM_ID, Set.of(meta0.name())));
 
     verifyNoMoreInteractions(itemGet);
     verifyNoMoreInteractions(itemMetaRemove);

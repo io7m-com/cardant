@@ -118,15 +118,15 @@ public final class CAICmdItemRepositTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemReposit =
-      mock(CADatabaseQueriesItemsType.RepositType.class);
+      mock(CADatabaseQueriesItemsType.ItemRepositType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.RepositType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class))
       .thenReturn(itemReposit);
 
     when(itemGet.execute(any()))
@@ -168,9 +168,9 @@ public final class CAICmdItemRepositTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.RepositType.class);
+      .queries(CADatabaseQueriesItemsType.ItemRepositType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(itemReposit)

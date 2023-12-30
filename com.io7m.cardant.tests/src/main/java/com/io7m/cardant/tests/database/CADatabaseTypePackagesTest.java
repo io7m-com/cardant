@@ -18,9 +18,9 @@ package com.io7m.cardant.tests.database;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.CreateType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesRevokeType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageInstallType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSearchType;
@@ -39,6 +39,9 @@ import com.io7m.cardant.database.api.CADatabaseQueriesUsersType.PutType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeScalarType.Integral;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
@@ -85,6 +88,7 @@ import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -107,9 +111,9 @@ public final class CADatabaseTypePackagesTest
   private TypeScalarRemoveType tsRemove;
   private TypeScalarSearchType tsSearch;
   private TypeScalarGetType tsGet;
-  private CreateType iCreate;
-  private TypesAssignType tAssign;
-  private TypesRevokeType tRevoke;
+  private ItemCreateType iCreate;
+  private ItemTypesAssignType tAssign;
+  private ItemTypesRevokeType tRevoke;
   private TypePackageInstallType tpInstall;
   private TypePackageUninstallType tpUninstall;
   private CATypePackageParsers parsers;
@@ -118,6 +122,7 @@ public final class CADatabaseTypePackagesTest
   private CATypePackageResolverType resolver;
   private TypePackageSatisfyingType tpSatisfying;
   private TypePackageSearchType tpSearch;
+  private ItemTypesAssignType iTypeAssign;
 
   @BeforeAll
   public static void setupOnce(
@@ -156,7 +161,9 @@ public final class CADatabaseTypePackagesTest
     this.transaction.setUserId(userId);
 
     this.iCreate =
-      this.transaction.queries(CreateType.class);
+      this.transaction.queries(ItemCreateType.class);
+    this.iTypeAssign =
+      this.transaction.queries(ItemTypesAssignType.class);
 
     this.tsPut =
       this.transaction.queries(TypeScalarPutType.class);
@@ -190,9 +197,9 @@ public final class CADatabaseTypePackagesTest
       this.transaction.queries(TypePackageSearchType.class);
 
     this.tAssign =
-      this.transaction.queries(TypesAssignType.class);
+      this.transaction.queries(ItemTypesAssignType.class);
     this.tRevoke =
-      this.transaction.queries(TypesRevokeType.class);
+      this.transaction.queries(ItemTypesRevokeType.class);
 
     this.resolver =
       CADatabaseTypePackageResolver.create(this.transaction);
@@ -351,6 +358,64 @@ public final class CADatabaseTypePackagesTest
   }
 
   /**
+   * Type packages cannot be installed if types are still referenced.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypePackageUninstallReferenced0()
+    throws Exception
+  {
+    final var t0 =
+      new Integral(
+        new RDottedName("x.t0"), "T0", 0L, 100L);
+
+    final var t1 =
+      new CATypeRecord(
+        new RDottedName("x.t1"),
+        "T1",
+        Map.ofEntries(
+          Map.entry(
+            new RDottedName("x.t1.f"),
+            new CATypeField(
+              new RDottedName("x.t1.f"),
+              "F0",
+              t0,
+              true
+            )
+          )
+        )
+      );
+
+    final var p0 =
+      new CATypePackage(
+        new CATypePackageIdentifier(
+          new RDottedName("x"),
+          Version.of(1, 0, 0)
+        ),
+        "P0",
+        Set.of(),
+        Map.ofEntries(Map.entry(t0.name(), t0)),
+        Map.ofEntries(Map.entry(t1.name(), t1))
+      );
+
+    this.tpInstall.execute(p0);
+
+    final var itemId = CAItemID.random();
+    this.iCreate.execute(itemId);
+    this.iTypeAssign.execute(
+      new ItemTypesAssignType.Parameters(itemId, Set.of(t1.name()))
+    );
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.tpUninstall.execute(p0.identifier());
+      });
+    assertEquals(errorTypeReferenced(), ex.errorCode());
+  }
+
+  /**
    * Searching for packages works.
    *
    * @throws Exception On errors
@@ -377,7 +442,9 @@ public final class CADatabaseTypePackagesTest
     final var received =
       page.items()
         .stream()
-        .collect(Collectors.toMap(CATypePackageSummary::identifier, Function.identity()));
+        .collect(Collectors.toMap(
+          CATypePackageSummary::identifier,
+          Function.identity()));
 
     for (final var itemSummary : received.values()) {
       assertTrue(itemSummary.description().contains("join"));

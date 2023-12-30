@@ -130,11 +130,11 @@ public final class CAICmdLocationGetTest
     /* Arrange. */
 
     final var locGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locGet);
 
     when(locGet.execute(any()))
@@ -164,7 +164,7 @@ public final class CAICmdLocationGetTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(locGet)
       .execute(LOCATION_0.id());
 
@@ -185,11 +185,11 @@ public final class CAICmdLocationGetTest
     /* Arrange. */
 
     final var locGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locGet);
 
     when(locGet.execute(any()))
@@ -225,7 +225,7 @@ public final class CAICmdLocationGetTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(locGet)
       .execute(LOCATION_0.id());
 

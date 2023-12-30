@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataPut;
@@ -58,9 +58,9 @@ public final class CAICmdLocationMetadataPut
     transaction.setUserId(context.session().userId());
 
     final var metaPut =
-      transaction.queries(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var typeGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

@@ -20,11 +20,11 @@ import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentAddType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentAddType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
@@ -93,17 +93,17 @@ public final class CADatabaseItemsTest
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private CADatabaseQueriesItemsType.CreateType itemCreate;
-  private CADatabaseQueriesItemsType.SetNameType setName;
-  private CADatabaseQueriesItemsType.GetType get;
-  private CADatabaseQueriesItemsType.DeleteMarkOnlyType deleteMark;
-  private CADatabaseQueriesLocationsType.PutType locPut;
-  private CADatabaseQueriesItemsType.RepositType repositQuery;
-  private CADatabaseQueriesItemsType.SearchType searchQuery;
-  private CADatabaseQueriesItemsType.DeleteType delete;
-  private CADatabaseQueriesItemsType.GetType itemGet;
-  private MetadataPutType metaAdd;
-  private MetadataRemoveType metaRemove;
+  private CADatabaseQueriesItemsType.ItemCreateType itemCreate;
+  private CADatabaseQueriesItemsType.ItemSetNameType setName;
+  private CADatabaseQueriesItemsType.ItemGetType get;
+  private CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType deleteMark;
+  private CADatabaseQueriesLocationsType.LocationPutType locPut;
+  private CADatabaseQueriesItemsType.ItemRepositType repositQuery;
+  private CADatabaseQueriesItemsType.ItemSearchType searchQuery;
+  private CADatabaseQueriesItemsType.ItemDeleteType delete;
+  private CADatabaseQueriesItemsType.ItemGetType itemGet;
+  private ItemMetadataPutType metaAdd;
+  private ItemMetadataRemoveType metaRemove;
 
   @BeforeAll
   public static void setupOnce(
@@ -135,27 +135,27 @@ public final class CADatabaseItemsTest
     this.transaction.setUserId(userId);
 
     this.itemCreate =
-      this.transaction.queries(CADatabaseQueriesItemsType.CreateType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
     this.itemGet =
-      this.transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
     this.setName =
-      this.transaction.queries(CADatabaseQueriesItemsType.SetNameType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
     this.get =
-      this.transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
     this.deleteMark =
-      this.transaction.queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
     this.delete =
-      this.transaction.queries(CADatabaseQueriesItemsType.DeleteType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteType.class);
     this.locPut =
-      this.transaction.queries(CADatabaseQueriesLocationsType.PutType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.LocationPutType.class);
     this.repositQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.RepositType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
     this.searchQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.SearchType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class);
     this.metaAdd =
-      this.transaction.queries(MetadataPutType.class);
+      this.transaction.queries(ItemMetadataPutType.class);
     this.metaRemove =
-      this.transaction.queries(MetadataRemoveType.class);
+      this.transaction.queries(ItemMetadataRemoveType.class);
   }
 
   /**
@@ -565,7 +565,7 @@ public final class CADatabaseItemsTest
       );
 
     this.metaAdd.execute(
-      new MetadataPutType.Parameters(
+      new ItemMetadataPutType.Parameters(
         id0,
         Set.of(meta0, meta1, meta2, meta3, meta4)
       )
@@ -581,7 +581,7 @@ public final class CADatabaseItemsTest
     }
 
     this.metaRemove.execute(
-      new MetadataRemoveType.Parameters(id0, Set.of(meta1.name()))
+      new ItemMetadataRemoveType.Parameters(id0, Set.of(meta1.name()))
     );
 
     {
@@ -593,7 +593,7 @@ public final class CADatabaseItemsTest
     }
 
     this.metaRemove.execute(
-      new MetadataRemoveType.Parameters(
+      new ItemMetadataRemoveType.Parameters(
         id0,
         Set.of(
           meta0.name(),
@@ -629,10 +629,10 @@ public final class CADatabaseItemsTest
         CADatabaseQueriesFilesType.PutType.class);
     final var itemAttachmentAdd =
       this.transaction.queries(
-        AttachmentAddType.class);
+        ItemAttachmentAddType.class);
     final var itemAttachmentRemove =
       this.transaction.queries(
-        AttachmentRemoveType.class);
+        ItemAttachmentRemoveType.class);
 
     final var file =
       new CAFileWithData(
@@ -646,7 +646,7 @@ public final class CADatabaseItemsTest
     fileAdd.execute(file);
 
     itemAttachmentAdd.execute(
-      new AttachmentAddType.Parameters(id0, file.id(), "misc"));
+      new ItemAttachmentAddType.Parameters(id0, file.id(), "misc"));
 
     {
       final var a =
@@ -664,7 +664,7 @@ public final class CADatabaseItemsTest
     }
 
     itemAttachmentRemove.execute(
-      new AttachmentRemoveType.Parameters(id0, file.id(), "misc"));
+      new ItemAttachmentRemoveType.Parameters(id0, file.id(), "misc"));
 
     {
       final var a =

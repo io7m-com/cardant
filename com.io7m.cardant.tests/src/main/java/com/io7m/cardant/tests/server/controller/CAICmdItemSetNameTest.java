@@ -19,7 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
@@ -108,16 +108,16 @@ public final class CAICmdItemSetNameTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var setName =
-      mock(CADatabaseQueriesItemsType.SetNameType.class);
+      mock(CADatabaseQueriesItemsType.ItemSetNameType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.SetNameType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class))
       .thenReturn(setName);
 
     when(itemGet.execute(any()))
@@ -155,9 +155,9 @@ public final class CAICmdItemSetNameTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.SetNameType.class);
+      .queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
     verify(setName)
       .execute(new Parameters(ITEM_ID, "Item"));
     verify(itemGet)
@@ -180,16 +180,16 @@ public final class CAICmdItemSetNameTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var setName =
-      mock(CADatabaseQueriesItemsType.SetNameType.class);
+      mock(CADatabaseQueriesItemsType.ItemSetNameType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.SetNameType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class))
       .thenReturn(setName);
 
     doThrow(new CADatabaseException("X", errorNonexistent(), Map.of(), Optional.empty()))

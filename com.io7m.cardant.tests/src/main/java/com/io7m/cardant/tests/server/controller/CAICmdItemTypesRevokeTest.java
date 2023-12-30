@@ -18,8 +18,8 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.GetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesRevokeType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -118,17 +118,17 @@ public final class CAICmdItemTypesRevokeTest
     /* Arrange. */
 
     final var itemTypeRevoke =
-      mock(TypesRevokeType.class);
+      mock(ItemTypesRevokeType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
     final var itemGet =
-      mock(GetType.class);
+      mock(ItemGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(TypesRevokeType.class))
+    when(transaction.queries(ItemTypesRevokeType.class))
       .thenReturn(itemTypeRevoke);
-    when(transaction.queries(GetType.class))
+    when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -181,11 +181,11 @@ public final class CAICmdItemTypesRevokeTest
     /* Assert. */
 
     verify(transaction)
-      .queries(GetType.class);
+      .queries(ItemGetType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
-      .queries(TypesRevokeType.class);
+      .queries(ItemTypesRevokeType.class);
     verify(itemGet)
       .execute(ITEM_ID);
 
@@ -206,17 +206,17 @@ public final class CAICmdItemTypesRevokeTest
     /* Arrange. */
 
     final var itemTypeRevoke =
-      mock(TypesRevokeType.class);
+      mock(ItemTypesRevokeType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
     final var itemGet =
-      mock(GetType.class);
+      mock(ItemGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(TypesRevokeType.class))
+    when(transaction.queries(ItemTypesRevokeType.class))
       .thenReturn(itemTypeRevoke);
-    when(transaction.queries(GetType.class))
+    when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -284,11 +284,11 @@ public final class CAICmdItemTypesRevokeTest
     assertEquals(errorTypeCheckFailed(), ex.errorCode());
 
     verify(transaction)
-      .queries(GetType.class);
+      .queries(ItemGetType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
-      .queries(TypesRevokeType.class);
+      .queries(ItemTypesRevokeType.class);
     verify(itemGet)
       .execute(ITEM_ID);
 
@@ -309,15 +309,15 @@ public final class CAICmdItemTypesRevokeTest
     /* Arrange. */
 
     final var itemTypeRevoke =
-      mock(TypesRevokeType.class);
+      mock(ItemTypesRevokeType.class);
     final var itemGet =
-      mock(GetType.class);
+      mock(ItemGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(TypesRevokeType.class))
+    when(transaction.queries(ItemTypesRevokeType.class))
       .thenReturn(itemTypeRevoke);
-    when(transaction.queries(GetType.class))
+    when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
 
     doThrow(

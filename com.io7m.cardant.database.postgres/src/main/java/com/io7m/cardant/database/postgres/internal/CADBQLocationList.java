@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.ListType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationListType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CALocationID;
@@ -39,10 +39,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 
 public final class CADBQLocationList
   extends CADBQAbstract<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>
-  implements ListType
+  implements LocationListType
 {
-  private static final Service<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>, ListType> SERVICE =
-    new Service<>(ListType.class, CADBQLocationList::new);
+  private static final Service<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>, LocationListType> SERVICE =
+    new Service<>(LocationListType.class, CADBQLocationList::new);
 
   /**
    * Construct a query.

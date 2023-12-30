@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
@@ -60,9 +60,9 @@ public final class CAICmdItemMetadataRemove
     transaction.setUserId(context.session().userId());
 
     final var metaRemove =
-      transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemMetadataRemoveType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
     final var typeGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

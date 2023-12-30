@@ -54,7 +54,7 @@ public final class CAICmdItemSearchBegin extends CAICmdAbstract<CAICommandItemSe
     final var transaction =
       context.transaction();
     final var searchQuery =
-      transaction.queries(CADatabaseQueriesItemsType.SearchType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class);
 
     final var search =
       searchQuery.execute(command.parameters());

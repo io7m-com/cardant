@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CALocationID;
@@ -48,10 +48,10 @@ import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 public final class CADBQLocationMetadataPut
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements MetadataPutType
+  implements LocationMetadataPutType
 {
-  private static final Service<Parameters, CADatabaseUnit, MetadataPutType> SERVICE =
-    new Service<>(MetadataPutType.class, CADBQLocationMetadataPut::new);
+  private static final Service<Parameters, CADatabaseUnit, LocationMetadataPutType> SERVICE =
+    new Service<>(LocationMetadataPutType.class, CADBQLocationMetadataPut::new);
 
   /**
    * Construct a query.

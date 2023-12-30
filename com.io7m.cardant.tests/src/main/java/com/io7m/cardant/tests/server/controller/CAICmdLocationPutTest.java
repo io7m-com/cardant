@@ -128,11 +128,11 @@ public final class CAICmdLocationPutTest
     /* Arrange. */
 
     final var locPut =
-      mock(CADatabaseQueriesLocationsType.PutType.class);
+      mock(CADatabaseQueriesLocationsType.LocationPutType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.PutType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationPutType.class))
       .thenReturn(locPut);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -163,7 +163,7 @@ public final class CAICmdLocationPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.PutType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationPutType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(locPut)

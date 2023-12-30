@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -41,10 +41,10 @@ import static com.io7m.cardant.strings.CAStringConstants.ITEM_NAME;
 
 public final class CADBQItemSetName
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements SetNameType
+  implements ItemSetNameType
 {
-  private static final Service<Parameters, CADatabaseUnit, SetNameType> SERVICE =
-    new Service<>(SetNameType.class, CADBQItemSetName::new);
+  private static final Service<Parameters, CADatabaseUnit, ItemSetNameType> SERVICE =
+    new Service<>(ItemSetNameType.class, CADBQItemSetName::new);
 
   /**
    * Construct a query.

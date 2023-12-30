@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesRevokeType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesRevoke;
@@ -55,9 +55,9 @@ public final class CAICmdLocationTypesRevoke extends CAICmdAbstract<CAICommandLo
     final var transaction =
       context.transaction();
     final var get =
-      transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var revoke =
-      transaction.queries(CADatabaseQueriesLocationsType.TypesRevokeType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationTypesRevokeType.class);
     final var typeMultiGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

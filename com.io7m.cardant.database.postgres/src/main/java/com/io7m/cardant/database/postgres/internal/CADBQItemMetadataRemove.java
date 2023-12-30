@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,10 +40,10 @@ import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 public final class CADBQItemMetadataRemove
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements MetadataRemoveType
+  implements ItemMetadataRemoveType
 {
-  private static final Service<Parameters, CADatabaseUnit, MetadataRemoveType> SERVICE =
-    new Service<>(MetadataRemoveType.class, CADBQItemMetadataRemove::new);
+  private static final Service<Parameters, CADatabaseUnit, ItemMetadataRemoveType> SERVICE =
+    new Service<>(ItemMetadataRemoveType.class, CADBQItemMetadataRemove::new);
 
   /**
    * Construct a query.

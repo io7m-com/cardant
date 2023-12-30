@@ -381,14 +381,14 @@
       <Class name="com.io7m.cardant.database.api.CADatabaseRole"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseUpgrade"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseUserUpdates"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataPutType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataRemoveType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesAssignType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesRevokeType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataPutType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataRemoveType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesAssignType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesRevokeType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemMetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemMetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemTypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemTypesRevokeType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationMetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationMetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationTypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationTypesRevokeType$Parameters"/>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>

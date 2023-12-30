@@ -57,10 +57,10 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
 
 public final class CADBQItemSearch
   extends CADBQAbstract<CAItemSearchParameters, CADatabaseItemSearchType>
-  implements CADatabaseQueriesItemsType.SearchType
+  implements CADatabaseQueriesItemsType.ItemSearchType
 {
-  private static final Service<CAItemSearchParameters, CADatabaseItemSearchType, SearchType> SERVICE =
-    new Service<>(SearchType.class, CADBQItemSearch::new);
+  private static final Service<CAItemSearchParameters, CADatabaseItemSearchType, ItemSearchType> SERVICE =
+    new Service<>(ItemSearchType.class, CADBQItemSearch::new);
 
   private static final Field<Object> ITEM_NAME_SEARCH =
     DSL.field(DSL.name(ITEM_SEARCH_VIEW.getName(), "ITEM_NAME_SEARCH"));

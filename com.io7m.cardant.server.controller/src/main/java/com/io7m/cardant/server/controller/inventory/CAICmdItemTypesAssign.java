@@ -17,9 +17,9 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.GetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
@@ -56,9 +56,9 @@ public final class CAICmdItemTypesAssign extends CAICmdAbstract<CAICommandItemTy
     final var transaction =
       context.transaction();
     final var get =
-      transaction.queries(GetType.class);
+      transaction.queries(ItemGetType.class);
     final var assign =
-      transaction.queries(TypesAssignType.class);
+      transaction.queries(ItemTypesAssignType.class);
     final var typeMultiGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

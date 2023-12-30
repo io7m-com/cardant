@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentAddType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentAddType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,10 +40,10 @@ import static com.io7m.cardant.strings.CAStringConstants.RELATION;
 
 public final class CADBQLocationAttachmentAdd
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements AttachmentAddType
+  implements LocationAttachmentAddType
 {
-  private static final Service<Parameters, CADatabaseUnit, AttachmentAddType> SERVICE =
-    new Service<>(AttachmentAddType.class, CADBQLocationAttachmentAdd::new);
+  private static final Service<Parameters, CADatabaseUnit, LocationAttachmentAddType> SERVICE =
+    new Service<>(LocationAttachmentAddType.class, CADBQLocationAttachmentAdd::new);
 
   /**
    * Construct a query.

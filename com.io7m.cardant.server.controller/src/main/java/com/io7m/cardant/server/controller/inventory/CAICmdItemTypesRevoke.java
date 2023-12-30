@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesRevokeType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke;
@@ -55,9 +55,9 @@ public final class CAICmdItemTypesRevoke extends CAICmdAbstract<CAICommandItemTy
     final var transaction =
       context.transaction();
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
     final var revoke =
-      transaction.queries(CADatabaseQueriesItemsType.TypesRevokeType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemTypesRevokeType.class);
     final var typeMultiGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

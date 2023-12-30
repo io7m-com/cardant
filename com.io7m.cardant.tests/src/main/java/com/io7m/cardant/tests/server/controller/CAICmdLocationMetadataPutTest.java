@@ -19,7 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -122,18 +122,18 @@ public final class CAICmdLocationMetadataPutTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaPut =
-      mock(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      mock(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class))
       .thenReturn(locationMetaPut);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -191,9 +191,9 @@ public final class CAICmdLocationMetadataPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
@@ -226,9 +226,9 @@ public final class CAICmdLocationMetadataPutTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaPut =
-      mock(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      mock(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
 
     doThrow(
       new CADatabaseException(
@@ -242,9 +242,9 @@ public final class CAICmdLocationMetadataPutTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class))
       .thenReturn(locationMetaPut);
 
     when(locationGet.execute(any()))
@@ -325,9 +325,9 @@ public final class CAICmdLocationMetadataPutTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaPut =
-      mock(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      mock(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
@@ -343,9 +343,9 @@ public final class CAICmdLocationMetadataPutTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class))
       .thenReturn(locationMetaPut);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -399,9 +399,9 @@ public final class CAICmdLocationMetadataPutTest
     assertEquals(errorNonexistent(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
@@ -437,18 +437,18 @@ public final class CAICmdLocationMetadataPutTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaPut =
-      mock(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      mock(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class))
       .thenReturn(locationMetaPut);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -543,9 +543,9 @@ public final class CAICmdLocationMetadataPutTest
     assertEquals(errorTypeCheckFailed(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.MetadataPutType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)

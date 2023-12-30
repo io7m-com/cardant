@@ -19,7 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -122,18 +122,18 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.MetadataPutType.class);
+      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -192,9 +192,9 @@ public final class CAICmdItemMetadataPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
+      .queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
@@ -227,9 +227,9 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.MetadataPutType.class);
+      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
 
     doThrow(
       new CADatabaseException(
@@ -243,9 +243,9 @@ public final class CAICmdItemMetadataPutTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
@@ -327,9 +327,9 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.MetadataPutType.class);
+      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
@@ -345,9 +345,9 @@ public final class CAICmdItemMetadataPutTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -401,9 +401,9 @@ public final class CAICmdItemMetadataPutTest
     assertEquals(errorNonexistent(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
+      .queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
@@ -439,18 +439,18 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.MetadataPutType.class);
+      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -545,9 +545,9 @@ public final class CAICmdItemMetadataPutTest
     assertEquals(errorTypeCheckFailed(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.MetadataPutType.class);
+      .queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)

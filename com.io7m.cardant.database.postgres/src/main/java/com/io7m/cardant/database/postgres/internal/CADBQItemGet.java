@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.GetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAAttachmentKey;
@@ -55,10 +55,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_
 
 public final class CADBQItemGet
   extends CADBQAbstract<CAItemID, Optional<CAItem>>
-  implements GetType
+  implements ItemGetType
 {
-  private static final Service<CAItemID, Optional<CAItem>, GetType> SERVICE =
-    new Service<>(GetType.class, CADBQItemGet::new);
+  private static final Service<CAItemID, Optional<CAItem>, ItemGetType> SERVICE =
+    new Service<>(ItemGetType.class, CADBQItemGet::new);
 
   private static final Long ZERO =
     Long.valueOf(0L);

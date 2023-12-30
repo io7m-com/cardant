@@ -38,7 +38,7 @@ public sealed interface CADatabaseQueriesLocationsType
    * Create or update the given location.
    */
 
-  non-sealed interface PutType
+  non-sealed interface LocationPutType
     extends CADatabaseQueryType<CALocation, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
@@ -49,7 +49,7 @@ public sealed interface CADatabaseQueriesLocationsType
    * Retrieve a location.
    */
 
-  non-sealed interface GetType
+  non-sealed interface LocationGetType
     extends CADatabaseQueryType<CALocationID, Optional<CALocation>>,
     CADatabaseQueriesLocationsType
   {
@@ -60,7 +60,7 @@ public sealed interface CADatabaseQueriesLocationsType
    * List locations.
    */
 
-  non-sealed interface ListType
+  non-sealed interface LocationListType
     extends CADatabaseQueryType<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>,
     CADatabaseQueriesLocationsType
   {
@@ -71,8 +71,8 @@ public sealed interface CADatabaseQueriesLocationsType
    * Add or update metadata on a location.
    */
 
-  non-sealed interface MetadataPutType
-    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.MetadataPutType.Parameters, CADatabaseUnit>,
+  non-sealed interface LocationMetadataPutType
+    extends CADatabaseQueryType<LocationMetadataPutType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
     /**
@@ -94,8 +94,8 @@ public sealed interface CADatabaseQueriesLocationsType
    * Remove metadata from a location.
    */
 
-  non-sealed interface MetadataRemoveType
-    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.MetadataRemoveType.Parameters, CADatabaseUnit>,
+  non-sealed interface LocationMetadataRemoveType
+    extends CADatabaseQueryType<LocationMetadataRemoveType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
     /**
@@ -117,8 +117,8 @@ public sealed interface CADatabaseQueriesLocationsType
    * Add an attachment to the given location.
    */
 
-  non-sealed interface AttachmentAddType
-    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.AttachmentAddType.Parameters, CADatabaseUnit>,
+  non-sealed interface LocationAttachmentAddType
+    extends CADatabaseQueryType<LocationAttachmentAddType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
     /**
@@ -142,8 +142,8 @@ public sealed interface CADatabaseQueriesLocationsType
    * Remove an attachment from the given location.
    */
 
-  non-sealed interface AttachmentRemoveType
-    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.AttachmentRemoveType.Parameters, CADatabaseUnit>,
+  non-sealed interface LocationAttachmentRemoveType
+    extends CADatabaseQueryType<LocationAttachmentRemoveType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
     /**
@@ -167,8 +167,8 @@ public sealed interface CADatabaseQueriesLocationsType
    * Assign types to the given location.
    */
 
-  non-sealed interface TypesAssignType
-    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.TypesAssignType.Parameters, CADatabaseUnit>,
+  non-sealed interface LocationTypesAssignType
+    extends CADatabaseQueryType<LocationTypesAssignType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
     /**
@@ -190,8 +190,8 @@ public sealed interface CADatabaseQueriesLocationsType
    * Revoke types from the given location.
    */
 
-  non-sealed interface TypesRevokeType
-    extends CADatabaseQueryType<CADatabaseQueriesLocationsType.TypesRevokeType.Parameters, CADatabaseUnit>,
+  non-sealed interface LocationTypesRevokeType
+    extends CADatabaseQueryType<LocationTypesRevokeType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
     /**

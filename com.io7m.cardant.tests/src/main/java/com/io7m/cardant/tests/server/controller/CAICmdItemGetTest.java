@@ -104,11 +104,11 @@ public final class CAICmdItemGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
@@ -145,7 +145,7 @@ public final class CAICmdItemGetTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(itemGet)
       .execute(ITEM_ID);
 
@@ -166,11 +166,11 @@ public final class CAICmdItemGetTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
 
     when(itemGet.execute(any()))

@@ -19,8 +19,8 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -120,18 +120,18 @@ public final class CAICmdLocationMetadataRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(LocationMetadataRemoveType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(LocationMetadataRemoveType.class))
       .thenReturn(locationMetaRemove);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -178,9 +178,9 @@ public final class CAICmdLocationMetadataRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
-      .queries(MetadataRemoveType.class);
+      .queries(LocationMetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
@@ -218,9 +218,9 @@ public final class CAICmdLocationMetadataRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(LocationMetadataRemoveType.class);
 
     doThrow(
       new CADatabaseException(
@@ -234,9 +234,9 @@ public final class CAICmdLocationMetadataRemoveTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(LocationMetadataRemoveType.class))
       .thenReturn(locationMetaRemove);
 
     doThrow(new CADatabaseException(
@@ -295,9 +295,9 @@ public final class CAICmdLocationMetadataRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(LocationMetadataRemoveType.class);
 
     doThrow(
       new CADatabaseException(
@@ -311,9 +311,9 @@ public final class CAICmdLocationMetadataRemoveTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(LocationMetadataRemoveType.class))
       .thenReturn(locationMetaRemove);
 
     when(locationGet.execute(any()))
@@ -367,18 +367,18 @@ public final class CAICmdLocationMetadataRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationMetaRemove =
-      mock(MetadataRemoveType.class);
+      mock(LocationMetadataRemoveType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(MetadataRemoveType.class))
+    when(transaction.queries(LocationMetadataRemoveType.class))
       .thenReturn(locationMetaRemove);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -473,9 +473,9 @@ public final class CAICmdLocationMetadataRemoveTest
     assertEquals(errorTypeCheckFailed(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
-      .queries(MetadataRemoveType.class);
+      .queries(LocationMetadataRemoveType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)

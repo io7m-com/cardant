@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.LocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemLocationsType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemLocations;
@@ -35,10 +35,10 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 
 public final class CADBQItemLocations
   extends CADBQAbstract<CAItemID, CAItemLocations>
-  implements LocationsType
+  implements ItemLocationsType
 {
-  private static final Service<CAItemID, CAItemLocations, LocationsType> SERVICE =
-    new Service<>(LocationsType.class, CADBQItemLocations::new);
+  private static final Service<CAItemID, CAItemLocations, ItemLocationsType> SERVICE =
+    new Service<>(ItemLocationsType.class, CADBQItemLocations::new);
 
   /**
    * Construct a query.

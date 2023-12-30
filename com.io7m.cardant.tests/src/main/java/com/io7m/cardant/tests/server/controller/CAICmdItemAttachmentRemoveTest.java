@@ -18,7 +18,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentRemoveType.Parameters;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -112,15 +112,15 @@ public final class CAICmdItemAttachmentRemoveTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemAttachRemove =
-      mock(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
+      mock(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class))
       .thenReturn(itemAttachRemove);
 
     when(itemGet.execute(any()))
@@ -161,9 +161,9 @@ public final class CAICmdItemAttachmentRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
+      .queries(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(itemAttachRemove)
@@ -189,15 +189,15 @@ public final class CAICmdItemAttachmentRemoveTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemAttachRemove =
-      mock(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
+      mock(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class))
       .thenReturn(itemAttachRemove);
 
     doThrow(new CADatabaseException(
@@ -254,15 +254,15 @@ public final class CAICmdItemAttachmentRemoveTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemAttachRemove =
-      mock(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
+      mock(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class))
       .thenReturn(itemAttachRemove);
 
     when(itemGet.execute(any()))

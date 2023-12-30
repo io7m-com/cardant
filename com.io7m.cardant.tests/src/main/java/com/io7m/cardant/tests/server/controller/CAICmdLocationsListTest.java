@@ -133,15 +133,15 @@ public final class CAICmdLocationsListTest
     /* Arrange. */
 
     final var locPut =
-      mock(CADatabaseQueriesLocationsType.PutType.class);
+      mock(CADatabaseQueriesLocationsType.LocationPutType.class);
     final var locList =
-      mock(CADatabaseQueriesLocationsType.ListType.class);
+      mock(CADatabaseQueriesLocationsType.LocationListType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.PutType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationPutType.class))
       .thenReturn(locPut);
-    when(transaction.queries(CADatabaseQueriesLocationsType.ListType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationListType.class))
       .thenReturn(locList);
 
     when(locList.execute(UNIT))
@@ -179,7 +179,7 @@ public final class CAICmdLocationsListTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.ListType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationListType.class);
     verify(locList)
       .execute(UNIT);
 

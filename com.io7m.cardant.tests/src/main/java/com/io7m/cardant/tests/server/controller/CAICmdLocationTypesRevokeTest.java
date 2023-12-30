@@ -18,8 +18,8 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.GetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesRevokeType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -118,17 +118,17 @@ public final class CAICmdLocationTypesRevokeTest
     /* Arrange. */
 
     final var locationTypeRevoke =
-      mock(TypesRevokeType.class);
+      mock(LocationTypesRevokeType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
     final var locationGet =
-      mock(GetType.class);
+      mock(LocationGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(TypesRevokeType.class))
+    when(transaction.queries(LocationTypesRevokeType.class))
       .thenReturn(locationTypeRevoke);
-    when(transaction.queries(GetType.class))
+    when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -180,11 +180,11 @@ public final class CAICmdLocationTypesRevokeTest
     /* Assert. */
 
     verify(transaction)
-      .queries(GetType.class);
+      .queries(LocationGetType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
-      .queries(TypesRevokeType.class);
+      .queries(LocationTypesRevokeType.class);
     verify(locationGet)
       .execute(LOCATION_ID);
 
@@ -205,17 +205,17 @@ public final class CAICmdLocationTypesRevokeTest
     /* Arrange. */
 
     final var locationTypeRevoke =
-      mock(TypesRevokeType.class);
+      mock(LocationTypesRevokeType.class);
     final var typeGet =
       mock(TypeDeclarationGetMultipleType.class);
     final var locationGet =
-      mock(GetType.class);
+      mock(LocationGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(TypesRevokeType.class))
+    when(transaction.queries(LocationTypesRevokeType.class))
       .thenReturn(locationTypeRevoke);
-    when(transaction.queries(GetType.class))
+    when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
     when(transaction.queries(TypeDeclarationGetMultipleType.class))
       .thenReturn(typeGet);
@@ -282,11 +282,11 @@ public final class CAICmdLocationTypesRevokeTest
     assertEquals(errorTypeCheckFailed(), ex.errorCode());
 
     verify(transaction)
-      .queries(GetType.class);
+      .queries(LocationGetType.class);
     verify(transaction)
       .queries(TypeDeclarationGetMultipleType.class);
     verify(transaction)
-      .queries(TypesRevokeType.class);
+      .queries(LocationTypesRevokeType.class);
     verify(locationGet)
       .execute(LOCATION_ID);
 
@@ -307,15 +307,15 @@ public final class CAICmdLocationTypesRevokeTest
     /* Arrange. */
 
     final var locationTypeRevoke =
-      mock(TypesRevokeType.class);
+      mock(LocationTypesRevokeType.class);
     final var locationGet =
-      mock(GetType.class);
+      mock(LocationGetType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(TypesRevokeType.class))
+    when(transaction.queries(LocationTypesRevokeType.class))
       .thenReturn(locationTypeRevoke);
-    when(transaction.queries(GetType.class))
+    when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
 
     doThrow(

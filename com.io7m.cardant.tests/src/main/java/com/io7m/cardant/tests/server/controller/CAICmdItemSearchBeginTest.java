@@ -123,7 +123,7 @@ public final class CAICmdItemSearchBeginTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemsType.SearchType.class);
+      mock(CADatabaseQueriesItemsType.ItemSearchType.class);
     final var itemSearch =
       mock(CADatabaseItemSearchType.class);
 
@@ -138,7 +138,7 @@ public final class CAICmdItemSearchBeginTest
         0L
       );
 
-    when(transaction.queries(CADatabaseQueriesItemsType.SearchType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class))
       .thenReturn(items);
     when(items.execute(any()))
       .thenReturn(itemSearch);
@@ -170,7 +170,7 @@ public final class CAICmdItemSearchBeginTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.SearchType.class);
+      .queries(CADatabaseQueriesItemsType.ItemSearchType.class);
     verify(items)
       .execute(PARAMETERS);
     verify(itemSearch)

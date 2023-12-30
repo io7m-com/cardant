@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,10 +40,10 @@ import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 public final class CADBQLocationMetadataRemove
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements MetadataRemoveType
+  implements LocationMetadataRemoveType
 {
-  private static final Service<Parameters, CADatabaseUnit, MetadataRemoveType> SERVICE =
-    new Service<>(MetadataRemoveType.class, CADBQLocationMetadataRemove::new);
+  private static final Service<Parameters, CADatabaseUnit, LocationMetadataRemoveType> SERVICE =
+    new Service<>(LocationMetadataRemoveType.class, CADBQLocationMetadataRemove::new);
 
   /**
    * Construct a query.

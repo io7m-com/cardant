@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.RepositType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemRepositType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAItemID;
@@ -64,10 +64,10 @@ import static java.lang.Long.toUnsignedString;
 
 public final class CADBQItemReposit
   extends CADBQAbstract<CAItemRepositType, CADatabaseUnit>
-  implements RepositType
+  implements ItemRepositType
 {
-  private static final Service<CAItemRepositType, CADatabaseUnit, RepositType> SERVICE =
-    new Service<>(RepositType.class, CADBQItemReposit::new);
+  private static final Service<CAItemRepositType, CADatabaseUnit, ItemRepositType> SERVICE =
+    new Service<>(ItemRepositType.class, CADBQItemReposit::new);
 
   /**
    * Construct a query.

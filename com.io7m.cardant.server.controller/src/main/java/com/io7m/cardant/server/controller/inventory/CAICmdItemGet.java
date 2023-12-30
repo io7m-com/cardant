@@ -57,7 +57,7 @@ public final class CAICmdItemGet extends CAICmdAbstract<CAICommandItemGet>
 
     final var get =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.GetType.class);
+        .queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemID = command.id();
     final var itemOpt = get.execute(itemID);

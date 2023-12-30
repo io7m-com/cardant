@@ -53,7 +53,7 @@ public final class CAICmdLocationsList extends CAICmdAbstract<CAICommandLocation
 
     final var list =
       context.transaction()
-        .queries(CADatabaseQueriesLocationsType.ListType.class);
+        .queries(CADatabaseQueriesLocationsType.LocationListType.class);
 
     final var locations =
       list.execute(UNIT);

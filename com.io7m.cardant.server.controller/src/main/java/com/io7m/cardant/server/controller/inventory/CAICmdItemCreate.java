@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemCreate;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -55,11 +55,11 @@ public final class CAICmdItemCreate extends CAICmdAbstract<CAICommandItemCreate>
     transaction.setUserId(context.session().userId());
 
     final var create =
-      transaction.queries(CADatabaseQueriesItemsType.CreateType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
     final var setName =
-      transaction.queries(CADatabaseQueriesItemsType.SetNameType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemId = command.id();
     create.execute(itemId);

@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataRemove;
@@ -60,9 +60,9 @@ public final class CAICmdLocationMetadataRemove
     transaction.setUserId(context.session().userId());
 
     final var metaRemove =
-      transaction.queries(CADatabaseQueriesLocationsType.MetadataRemoveType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataRemoveType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var typeGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

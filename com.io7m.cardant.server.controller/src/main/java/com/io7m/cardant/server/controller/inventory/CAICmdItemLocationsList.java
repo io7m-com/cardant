@@ -54,7 +54,7 @@ public final class CAICmdItemLocationsList
 
     final var locationsQuery =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.LocationsType.class);
+        .queries(CADatabaseQueriesItemsType.ItemLocationsType.class);
 
     return new CAIResponseItemLocationsList(
       context.requestId(),

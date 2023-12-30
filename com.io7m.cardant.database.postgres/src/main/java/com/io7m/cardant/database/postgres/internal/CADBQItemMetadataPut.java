@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAItemID;
@@ -48,10 +48,10 @@ import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 public final class CADBQItemMetadataPut
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements MetadataPutType
+  implements ItemMetadataPutType
 {
-  private static final Service<Parameters, CADatabaseUnit, MetadataPutType> SERVICE =
-    new Service<>(MetadataPutType.class, CADBQItemMetadataPut::new);
+  private static final Service<Parameters, CADatabaseUnit, ItemMetadataPutType> SERVICE =
+    new Service<>(ItemMetadataPutType.class, CADBQItemMetadataPut::new);
 
   /**
    * Construct a query.

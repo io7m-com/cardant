@@ -19,17 +19,17 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesRevokeType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMoney;
-import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.CAUser;
@@ -82,9 +82,9 @@ public final class CADatabaseTypesTest
   private CADatabaseQueriesTypesType.TypeScalarRemoveType tsRemove;
   private CADatabaseQueriesTypesType.TypeScalarSearchType tsSearch;
   private CADatabaseQueriesTypesType.TypeScalarGetType tsGet;
-  private CADatabaseQueriesItemsType.CreateType iCreate;
-  private CADatabaseQueriesItemsType.TypesAssignType tAssign;
-  private TypesRevokeType tRevoke;
+  private CADatabaseQueriesItemsType.ItemCreateType iCreate;
+  private CADatabaseQueriesItemsType.ItemTypesAssignType tAssign;
+  private ItemTypesRevokeType tRevoke;
 
   @BeforeAll
   public static void setupOnce(
@@ -116,7 +116,7 @@ public final class CADatabaseTypesTest
     this.transaction.setUserId(userId);
 
     this.iCreate =
-      this.transaction.queries(CADatabaseQueriesItemsType.CreateType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
 
     this.tsPut =
       this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
@@ -141,9 +141,9 @@ public final class CADatabaseTypesTest
       this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationsReferencingScalarType.class);
 
     this.tAssign =
-      this.transaction.queries(CADatabaseQueriesItemsType.TypesAssignType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemTypesAssignType.class);
     this.tRevoke =
-      this.transaction.queries(TypesRevokeType.class);
+      this.transaction.queries(ItemTypesRevokeType.class);
   }
 
   /**
@@ -831,7 +831,7 @@ public final class CADatabaseTypesTest
      */
 
     this.tRevoke.execute(
-      new TypesRevokeType.Parameters(item, Set.of(typeDeclaration0.name()))
+      new ItemTypesRevokeType.Parameters(item, Set.of(typeDeclaration0.name()))
     );
 
     this.tdRemove.execute(typeDeclaration0.name());

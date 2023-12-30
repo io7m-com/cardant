@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
@@ -58,9 +58,9 @@ public final class CAICmdItemMetadataPut
     transaction.setUserId(context.session().userId());
 
     final var metaPut =
-      transaction.queries(CADatabaseQueriesItemsType.MetadataPutType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
     final var typeGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

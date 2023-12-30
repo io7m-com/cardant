@@ -17,9 +17,9 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.GetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesAssignType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesAssignType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesAssignType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesAssign;
@@ -56,9 +56,9 @@ public final class CAICmdLocationTypesAssign extends CAICmdAbstract<CAICommandLo
     final var transaction =
       context.transaction();
     final var get =
-      transaction.queries(GetType.class);
+      transaction.queries(LocationGetType.class);
     final var assign =
-      transaction.queries(TypesAssignType.class);
+      transaction.queries(LocationTypesAssignType.class);
     final var typeMultiGet =
       transaction.queries(TypeDeclarationGetMultipleType.class);
 

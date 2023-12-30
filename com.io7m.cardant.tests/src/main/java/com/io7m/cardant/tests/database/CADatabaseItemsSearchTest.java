@@ -19,10 +19,10 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.SetNameType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
@@ -103,20 +103,20 @@ public final class CADatabaseItemsSearchTest
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private CADatabaseQueriesItemsType.CreateType itemCreate;
-  private CADatabaseQueriesItemsType.SetNameType setName;
-  private CADatabaseQueriesItemsType.GetType get;
-  private CADatabaseQueriesItemsType.DeleteMarkOnlyType deleteMark;
-  private CADatabaseQueriesLocationsType.PutType locPut;
-  private CADatabaseQueriesItemsType.RepositType repositQuery;
-  private CADatabaseQueriesItemsType.SearchType searchQuery;
-  private CADatabaseQueriesItemsType.DeleteType delete;
-  private CADatabaseQueriesItemsType.GetType itemGet;
-  private MetadataPutType metaAdd;
-  private MetadataRemoveType metaRemove;
+  private CADatabaseQueriesItemsType.ItemCreateType itemCreate;
+  private CADatabaseQueriesItemsType.ItemSetNameType setName;
+  private CADatabaseQueriesItemsType.ItemGetType get;
+  private CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType deleteMark;
+  private CADatabaseQueriesLocationsType.LocationPutType locPut;
+  private CADatabaseQueriesItemsType.ItemRepositType repositQuery;
+  private CADatabaseQueriesItemsType.ItemSearchType searchQuery;
+  private CADatabaseQueriesItemsType.ItemDeleteType delete;
+  private CADatabaseQueriesItemsType.ItemGetType itemGet;
+  private ItemMetadataPutType metaAdd;
+  private ItemMetadataRemoveType metaRemove;
   private TypeDeclarationPutType typePut;
-  private TypesAssignType itemTypeAssign;
-  private CADatabaseQueriesItemsType.RepositType reposit;
+  private ItemTypesAssignType itemTypeAssign;
+  private CADatabaseQueriesItemsType.ItemRepositType reposit;
 
   @BeforeAll
   public static void setupOnce(
@@ -148,31 +148,31 @@ public final class CADatabaseItemsSearchTest
     this.transaction.setUserId(userId);
 
     this.itemCreate =
-      this.transaction.queries(CADatabaseQueriesItemsType.CreateType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
     this.itemGet =
-      this.transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
     this.itemTypeAssign =
-      this.transaction.queries(TypesAssignType.class);
+      this.transaction.queries(ItemTypesAssignType.class);
     this.setName =
-      this.transaction.queries(CADatabaseQueriesItemsType.SetNameType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
     this.get =
-      this.transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
     this.deleteMark =
-      this.transaction.queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
     this.delete =
-      this.transaction.queries(CADatabaseQueriesItemsType.DeleteType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteType.class);
     this.locPut =
-      this.transaction.queries(CADatabaseQueriesLocationsType.PutType.class);
+      this.transaction.queries(CADatabaseQueriesLocationsType.LocationPutType.class);
     this.repositQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.RepositType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
     this.searchQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.SearchType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class);
     this.reposit =
-      this.transaction.queries(CADatabaseQueriesItemsType.RepositType.class);
+      this.transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
     this.metaAdd =
-      this.transaction.queries(MetadataPutType.class);
+      this.transaction.queries(ItemMetadataPutType.class);
     this.metaRemove =
-      this.transaction.queries(MetadataRemoveType.class);
+      this.transaction.queries(ItemMetadataRemoveType.class);
     this.typePut =
       this.transaction.queries(TypeDeclarationPutType.class);
   }
@@ -1121,21 +1121,21 @@ public final class CADatabaseItemsSearchTest
          */
 
         if (metaValue.toUpperCase().startsWith("O")) {
-          this.itemTypeAssign.execute(new TypesAssignType.Parameters(
+          this.itemTypeAssign.execute(new ItemTypesAssignType.Parameters(
             itemId,
             Set.of(type0.name())
           ));
         }
 
         if (metaValue.toUpperCase().startsWith("I")) {
-          this.itemTypeAssign.execute(new TypesAssignType.Parameters(
+          this.itemTypeAssign.execute(new ItemTypesAssignType.Parameters(
             itemId,
             Set.of(type1.name())
           ));
         }
       }
 
-      this.metaAdd.execute(new MetadataPutType.Parameters(itemId, meta));
+      this.metaAdd.execute(new ItemMetadataPutType.Parameters(itemId, meta));
       items.add(itemId);
     }
 
