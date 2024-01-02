@@ -15,24 +15,24 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CATypeDeclarationSummary;
-import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationSearch;
+import com.io7m.cardant.model.CATypeRecordSummary;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeRecordSearch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbPage;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
 import java.util.UUID;
 
-public final class CAArbResponseTypeDeclarationSearch extends CAArbAbstract<CAIResponseTypeDeclarationSearch>
+public final class CAArbResponseTypeDeclarationSearch extends CAArbAbstract<CAIResponseTypeRecordSearch>
 {
   public CAArbResponseTypeDeclarationSearch()
   {
     super(
-      CAIResponseTypeDeclarationSearch.class,
+      CAIResponseTypeRecordSearch.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
-        CAArbPage.of(Arbitraries.defaultFor(CATypeDeclarationSummary.class))
-      ).as(CAIResponseTypeDeclarationSearch::new)
+        CAArbPage.of(Arbitraries.defaultFor(CATypeRecordSummary.class))
+      ).as(CAIResponseTypeRecordSearch::new)
     );
   }
 }

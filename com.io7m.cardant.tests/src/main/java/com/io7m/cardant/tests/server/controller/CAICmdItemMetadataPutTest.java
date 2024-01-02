@@ -18,15 +18,18 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.CATypeScalarType.Text;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -38,6 +41,7 @@ import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -71,6 +75,12 @@ import static org.mockito.Mockito.when;
 public final class CAICmdItemMetadataPutTest
   extends CACmdAbstractContract
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
   private static final CAItemID ITEM_ID = CAItemID.random();
 
   /**
@@ -122,24 +132,19 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.ItemGetType.class);
+      mock(ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
+      mock(ItemMetadataPutType.class);
     final var typeGet =
-      mock(TypeDeclarationGetMultipleType.class);
+      mock(TypeRecordGetType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+    when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
+    when(transaction.queries(ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
-    when(transaction.queries(TypeDeclarationGetMultipleType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(List.of());
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
@@ -192,11 +197,9 @@ public final class CAICmdItemMetadataPutTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      .queries(ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
-    verify(transaction)
-      .queries(TypeDeclarationGetMultipleType.class);
+      .queries(ItemMetadataPutType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(itemMetaPut)
@@ -227,9 +230,9 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.ItemGetType.class);
+      mock(ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
+      mock(ItemMetadataPutType.class);
 
     doThrow(
       new CADatabaseException(
@@ -243,9 +246,9 @@ public final class CAICmdItemMetadataPutTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+    when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
+    when(transaction.queries(ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
@@ -327,11 +330,11 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.ItemGetType.class);
+      mock(ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
+      mock(ItemMetadataPutType.class);
     final var typeGet =
-      mock(TypeDeclarationGetMultipleType.class);
+      mock(TypeRecordGetType.class);
 
     doThrow(
       new CADatabaseException(
@@ -345,11 +348,11 @@ public final class CAICmdItemMetadataPutTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+    when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
+    when(transaction.queries(ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
-    when(transaction.queries(TypeDeclarationGetMultipleType.class))
+    when(transaction.queries(TypeRecordGetType.class))
       .thenReturn(typeGet);
 
     when(itemGet.execute(any()))
@@ -401,11 +404,9 @@ public final class CAICmdItemMetadataPutTest
     assertEquals(errorNonexistent(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      .queries(ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
-    verify(transaction)
-      .queries(TypeDeclarationGetMultipleType.class);
+      .queries(ItemMetadataPutType.class);
     verify(transaction)
       .setUserId(context.session().userId());
 
@@ -439,20 +440,20 @@ public final class CAICmdItemMetadataPutTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.ItemGetType.class);
+      mock(ItemGetType.class);
     final var itemMetaPut =
-      mock(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
+      mock(ItemMetadataPutType.class);
     final var typeGet =
-      mock(TypeDeclarationGetMultipleType.class);
+      mock(TypeRecordGetType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+    when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class))
+    when(transaction.queries(ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
-    when(transaction.queries(TypeDeclarationGetMultipleType.class))
+    when(transaction.queries(TypeRecordGetType.class))
       .thenReturn(typeGet);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -491,6 +492,7 @@ public final class CAICmdItemMetadataPutTest
 
     final var type =
       new CATypeRecord(
+        P,
         new RDottedName("t"),
         "T",
         Map.ofEntries(
@@ -499,7 +501,8 @@ public final class CAICmdItemMetadataPutTest
             new CATypeField(
               new RDottedName("a"),
               "Field A",
-              new CATypeScalarType.Integral(
+              new Integral(
+                P,
                 new RDottedName("ts0"),
                 "Number",
                 23L, 1000L
@@ -512,7 +515,8 @@ public final class CAICmdItemMetadataPutTest
             new CATypeField(
               new RDottedName("b"),
               "Field B",
-              new CATypeScalarType.Text(
+              new Text(
+                P,
                 new RDottedName("ts0"),
                 "Anything",
                 ".*"
@@ -524,7 +528,7 @@ public final class CAICmdItemMetadataPutTest
       );
 
     when(typeGet.execute(any()))
-      .thenReturn(List.of(type));
+      .thenReturn(Optional.of(type));
 
     /* Act. */
 
@@ -545,11 +549,11 @@ public final class CAICmdItemMetadataPutTest
     assertEquals(errorTypeCheckFailed(), ex.errorCode());
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      .queries(ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
+      .queries(ItemMetadataPutType.class);
     verify(transaction)
-      .queries(TypeDeclarationGetMultipleType.class);
+      .queries(TypeRecordGetType.class);
     verify(transaction)
       .setUserId(context.session().userId());
 

@@ -30,12 +30,14 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNotPermitted;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeFieldTypeNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeScalarReferenced;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_SCALAR_STILL_REFERENCED;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_STILL_REFERENCED;
@@ -168,6 +170,16 @@ public final class CADatabaseExceptions
         .orElse("");
 
     return switch (column.toUpperCase(Locale.ROOT)) {
+      case "MTRF_DECLARATION" -> {
+        yield new CADatabaseException(
+          transaction.localize(ERROR_NONEXISTENT),
+          e,
+          errorNonexistent(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
       case "MTRF_SCALAR_TYPE" -> {
         yield new CADatabaseException(
           transaction.localize(ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE),

@@ -57,7 +57,7 @@ abstract class CADBQAbstract<P, R>
     return this.transaction;
   }
 
-  private CAStrings messages()
+  protected final CAStrings messages()
   {
     return this.transaction.connection()
       .database()

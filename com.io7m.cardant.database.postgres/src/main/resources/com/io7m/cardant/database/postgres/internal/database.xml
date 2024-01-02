@@ -218,7 +218,7 @@ CREATE TABLE metadata_type_packages (
       <Text><![CDATA[
 CREATE TABLE metadata_types_records (
   mtr_id          INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
-  mtr_package     INTEGER,
+  mtr_package     INTEGER       NOT NULL,
   mtr_name        VARCHAR(1024) NOT NULL UNIQUE,
   mtr_description VARCHAR(1024) NOT NULL,
 
@@ -276,7 +276,7 @@ CREATE TYPE metadata_scalar_base_type_t AS ENUM(
       <Text><![CDATA[
 CREATE TABLE metadata_types_scalar (
   mts_id          INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
-  mts_package     INTEGER,
+  mts_package     INTEGER       NOT NULL,
   mts_name        VARCHAR(1024) NOT NULL UNIQUE,
   mts_description VARCHAR(1024) NOT NULL,
 
@@ -387,6 +387,9 @@ CREATE TABLE metadata_types_record_fields (
 
   CONSTRAINT metadata_types_record_fields_primary_key
     PRIMARY KEY (mtrf_declaration, mtrf_name),
+
+  CONSTRAINT metadata_types_record_fields_unique
+    UNIQUE (mtrf_name),
 
   CONSTRAINT metadata_types_record_fields_name_valid
     CHECK (mtrf_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),

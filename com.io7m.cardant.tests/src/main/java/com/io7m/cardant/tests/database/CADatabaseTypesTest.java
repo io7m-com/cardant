@@ -18,24 +18,52 @@ package com.io7m.cardant.tests.database;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
-import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageInstallType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordFieldRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordFieldUpdateType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsReferencingScalarType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsSearchType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarSearchType;
+import com.io7m.cardant.database.api.CADatabaseQueriesUsersType.PutType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMoney;
-import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldUpdate;
+import com.io7m.cardant.model.CATypeRecordRemoval;
+import com.io7m.cardant.model.CATypeRecordSearchParameters;
+import com.io7m.cardant.model.CATypeScalarRemoval;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
-import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.CATypeScalarType.Monetary;
+import com.io7m.cardant.model.CATypeScalarType.Real;
+import com.io7m.cardant.model.CATypeScalarType.Text;
+import com.io7m.cardant.model.CATypeScalarType.Time;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
-import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.Anything;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsEqualTo;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsSimilarTo;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
+import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerSuccess;
+import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
+import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
@@ -43,48 +71,73 @@ import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MSubject;
+import com.io7m.verona.core.Version;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeFieldTypeNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeScalarReferenced;
+import static com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseTypesTest
 {
-  private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+    </p:Package>
+    """;
+
+  private static CADatabaseFixture DATABASE_FIXTURE;
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private CADatabaseQueriesTypesType.TypeScalarPutType tsPut;
-  private CADatabaseQueriesTypesType.TypeDeclarationPutType tdPut;
-  private CADatabaseQueriesTypesType.TypeDeclarationsSearchType tdSearch;
-  private CADatabaseQueriesTypesType.TypeDeclarationGetType tdGet;
-  private CADatabaseQueriesTypesType.TypeDeclarationRemoveType tdRemove;
-  private CADatabaseQueriesTypesType.TypeDeclarationsReferencingScalarType tdRefSearch;
-  private CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType tdGetMulti;
-  private CADatabaseQueriesTypesType.TypeScalarRemoveType tsRemove;
-  private CADatabaseQueriesTypesType.TypeScalarSearchType tsSearch;
-  private CADatabaseQueriesTypesType.TypeScalarGetType tsGet;
-  private CADatabaseQueriesItemsType.ItemCreateType iCreate;
-  private CADatabaseQueriesItemsType.ItemTypesAssignType tAssign;
+  private TypeScalarPutType tsPut;
+  private TypeRecordPutType tdPut;
+  private TypeRecordsSearchType tdSearch;
+  private TypeRecordGetType tdGet;
+  private TypeRecordRemoveType tdRemove;
+  private TypeRecordsReferencingScalarType tdRefSearch;
+  private TypeScalarRemoveType tsRemove;
+  private TypeScalarSearchType tsSearch;
+  private TypeScalarGetType tsGet;
+  private ItemCreateType iCreate;
+  private ItemTypesAssignType tAssign;
   private ItemTypesRevokeType tRevoke;
+  private TypeRecordFieldRemoveType trfRemove;
+  private TypeRecordFieldUpdateType trfUpdate;
 
   @BeforeAll
   public static void setupOnce(
@@ -110,40 +163,74 @@ public final class CADatabaseTypesTest
       closeables.addPerTestResource(this.connection.openTransaction());
 
     final var userId = CAUserID.random();
-    this.transaction.queries(CADatabaseQueriesUsersType.PutType.class)
+    this.transaction.queries(PutType.class)
       .execute(new CAUser(userId, new IdName("x"), new MSubject(Set.of())));
     this.transaction.commit();
     this.transaction.setUserId(userId);
 
     this.iCreate =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
+      this.transaction.queries(ItemCreateType.class);
 
     this.tsPut =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarPutType.class);
+      this.transaction.queries(TypeScalarPutType.class);
     this.tsGet =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarGetType.class);
+      this.transaction.queries(TypeScalarGetType.class);
     this.tsRemove =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarRemoveType.class);
+      this.transaction.queries(TypeScalarRemoveType.class);
     this.tsSearch =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeScalarSearchType.class);
+      this.transaction.queries(TypeScalarSearchType.class);
 
     this.tdPut =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationPutType.class);
+      this.transaction.queries(TypeRecordPutType.class);
     this.tdGet =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetType.class);
-    this.tdGetMulti =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType.class);
+      this.transaction.queries(TypeRecordGetType.class);
     this.tdRemove =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationRemoveType.class);
+      this.transaction.queries(TypeRecordRemoveType.class);
     this.tdSearch =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationsSearchType.class);
+      this.transaction.queries(TypeRecordsSearchType.class);
     this.tdRefSearch =
-      this.transaction.queries(CADatabaseQueriesTypesType.TypeDeclarationsReferencingScalarType.class);
+      this.transaction.queries(TypeRecordsReferencingScalarType.class);
+
+    this.trfRemove =
+      this.transaction.queries(TypeRecordFieldRemoveType.class);
+    this.trfUpdate =
+      this.transaction.queries(TypeRecordFieldUpdateType.class);
 
     this.tAssign =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemTypesAssignType.class);
+      this.transaction.queries(ItemTypesAssignType.class);
     this.tRevoke =
       this.transaction.queries(ItemTypesRevokeType.class);
+
+    installTestTypePackage(this.transaction);
+  }
+
+  static void installTestTypePackage(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var parsers =
+      new CATypePackageParsers();
+    final var checkers =
+      new CATypePackageCheckers();
+
+    final var packageDeclaration =
+      parsers.parse(
+        URI.create("urn:in"),
+        new ByteArrayInputStream(P_TEXT.getBytes(StandardCharsets.UTF_8))
+      );
+
+    final var packageV =
+      ((CATypePackageCheckerSuccess)
+        checkers.createChecker(
+          CAStrings.create(Locale.ROOT),
+          Mockito.mock(CATypePackageResolverType.class),
+          packageDeclaration
+        ).execute())
+        .typePackage();
+
+    transaction.queries(TypePackageInstallType.class)
+      .execute(packageV);
+    transaction.commit();
   }
 
   /**
@@ -157,7 +244,8 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -165,9 +253,11 @@ public final class CADatabaseTypesTest
       );
 
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
   }
 
   /**
@@ -181,7 +271,8 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Integral(
+      new Integral(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000L,
@@ -189,9 +280,11 @@ public final class CADatabaseTypesTest
       );
 
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
   }
 
   /**
@@ -205,7 +298,8 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Monetary(
+      new Monetary(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         CAMoney.money("-1000.0"),
@@ -213,9 +307,11 @@ public final class CADatabaseTypesTest
       );
 
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
   }
 
   /**
@@ -229,7 +325,8 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Time(
+      new Time(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         OffsetDateTime.parse("2000-01-01T00:00:00+00:00"),
@@ -237,9 +334,11 @@ public final class CADatabaseTypesTest
       );
 
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
   }
 
   /**
@@ -253,16 +352,19 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Text(
+      new Text(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         ".*"
       );
 
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
     this.tsPut.execute(voltage);
-    this.tsRemove.execute(voltage.name());
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
   }
 
   /**
@@ -272,11 +374,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationPut()
+  public void testTypeRecordPut()
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -284,7 +387,8 @@ public final class CADatabaseTypesTest
       );
 
     final var size =
-      new CATypeScalarType.Text(
+      new Text(
+        P,
         new RDottedName("com.io7m.battery.size"),
         "A specification of battery size.",
         "^.*$"
@@ -311,6 +415,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -327,9 +432,9 @@ public final class CADatabaseTypesTest
     {
       final var search =
         this.tdSearch.execute(
-          new CATypeDeclarationSearchParameters(
-            new CAComparisonFuzzyType.IsEqualTo<>("com.io7m.battery"),
-            new CAComparisonFuzzyType.Anything<>(),
+          new CATypeRecordSearchParameters(
+            new IsEqualTo<>("com.io7m.battery"),
+            new Anything<>(),
             100L
           )
         );
@@ -352,105 +457,13 @@ public final class CADatabaseTypesTest
 
     assertEquals(typeDeclaration, received);
 
-    this.tdRemove.execute(typeDeclaration.name());
+    this.tdRemove.execute(
+      new CATypeRecordRemoval(
+        typeDeclaration,
+        TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED
+      )
+    );
     assertEquals(empty(), this.tdGet.execute(typeDeclaration.name()));
-  }
-
-  /**
-   * Multiple type declarations can be fetched.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testTypeDeclarationMultiGet()
-    throws Exception
-  {
-    final var voltage =
-      new CATypeScalarType.Real(
-        new RDottedName("com.io7m.voltage"),
-        "A measurement of voltage.",
-        -1000.0,
-        1000.0
-      );
-
-    final var size =
-      new CATypeScalarType.Text(
-        new RDottedName("com.io7m.battery.size"),
-        "A specification of battery size.",
-        "^.*$"
-      );
-
-    this.tsPut.execute(voltage);
-    this.tsPut.execute(size);
-
-    final var voltageField =
-      new CATypeField(
-        new RDottedName("com.io7m.battery.voltage"),
-        "A measurement of battery voltage.",
-        voltage,
-        true
-      );
-
-    final var sizeField =
-      new CATypeField(
-        new RDottedName("com.io7m.battery.size"),
-        "A battery size (such as AA, AAA, etc).",
-        size,
-        true
-      );
-
-    final var typeDeclaration0 =
-      new CATypeRecord(
-        new RDottedName("com.io7m.battery1"),
-        "A battery 1.",
-        Map.ofEntries(
-          Map.entry(voltageField.name(), voltageField),
-          Map.entry(sizeField.name(), sizeField)
-        )
-      );
-
-    final var typeDeclaration1 =
-      new CATypeRecord(
-        new RDottedName("com.io7m.battery2"),
-        "A battery 2.",
-        Map.ofEntries(
-          Map.entry(voltageField.name(), voltageField),
-          Map.entry(sizeField.name(), sizeField)
-        )
-      );
-
-    this.tdPut.execute(typeDeclaration0);
-    this.tdPut.execute(typeDeclaration1);
-
-    this.transaction.commit();
-
-    final var received =
-      this.tdGetMulti.execute(
-        Set.of(typeDeclaration0.name(), typeDeclaration1.name())
-      );
-
-    {
-      final var r = received.get(0);
-      assertEquals(r.name(), typeDeclaration0.name());
-      assertEquals(r.description(), typeDeclaration0.description());
-
-      for (final var f : typeDeclaration0.fields().values()) {
-        final var rf = r.fields().get(f.name());
-        assertEquals(f, rf);
-      }
-    }
-
-    {
-      final var r = received.get(1);
-      assertEquals(r.name(), typeDeclaration1.name());
-      assertEquals(r.description(), typeDeclaration1.description());
-
-      for (final var f : typeDeclaration1.fields().values()) {
-        final var rf = r.fields().get(f.name());
-        assertEquals(f, rf);
-      }
-    }
   }
 
   /**
@@ -460,11 +473,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationRemoveScalar()
+  public void testTypeRecordRemoveScalar()
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -483,6 +497,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -494,7 +509,11 @@ public final class CADatabaseTypesTest
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
-        this.tsRemove.execute(voltage.name());
+        this.tsRemove.execute(
+          new CATypeScalarRemoval(
+            voltage,
+            TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED)
+        );
       });
     assertEquals(errorTypeScalarReferenced(), ex.errorCode());
   }
@@ -506,11 +525,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationPutScalarNonexistent()
+  public void testTypeRecordPutScalarNonexistent()
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -527,6 +547,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -548,11 +569,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationSearchScalar()
+  public void testTypeRecordSearchScalar()
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -564,8 +586,8 @@ public final class CADatabaseTypesTest
     final var page =
       this.tsSearch.execute(
         new CATypeScalarSearchParameters(
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.IsSimilarTo<>("measurement"),
+          new Anything<>(),
+          new IsSimilarTo<>("measurement"),
           100L
         )).pageCurrent(this.transaction);
 
@@ -579,11 +601,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationGetScalar()
+  public void testTypeRecordGetScalar()
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -592,8 +615,9 @@ public final class CADatabaseTypesTest
 
     this.tsPut.execute(voltage);
     assertEquals(Optional.of(voltage), this.tsGet.execute(voltage.name()));
-    this.tsRemove.execute(voltage.name());
-    assertEquals(Optional.empty(), this.tsGet.execute(voltage.name()));
+    this.tsRemove.execute(
+      new CATypeScalarRemoval(voltage, TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED));
+    assertEquals(empty(), this.tsGet.execute(voltage.name()));
   }
 
   /**
@@ -603,11 +627,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationFieldless()
+  public void testTypeRecordFieldless()
     throws Exception
   {
     final var typeDeclaration =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.of()
@@ -623,7 +648,12 @@ public final class CADatabaseTypesTest
 
     assertEquals(typeDeclaration, received);
 
-    this.tdRemove.execute(typeDeclaration.name());
+    this.tdRemove.execute(
+      new CATypeRecordRemoval(
+        typeDeclaration,
+        TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED
+      )
+    );
     assertEquals(empty(), this.tdGet.execute(typeDeclaration.name()));
   }
 
@@ -634,11 +664,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationPutRemovesField()
+  public void testTypeRecordPutRemovesField()
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -646,7 +677,8 @@ public final class CADatabaseTypesTest
       );
 
     final var size =
-      new CATypeScalarType.Text(
+      new Text(
+        P,
         new RDottedName("com.io7m.battery.size"),
         "A specification of battery size.",
         "^.*$"
@@ -673,6 +705,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -686,6 +719,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclarationAfter =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery"),
         "A battery.",
         Map.ofEntries(
@@ -710,11 +744,12 @@ public final class CADatabaseTypesTest
    */
 
   @Test
-  public void testTypeDeclarationRemoveSafe()
+  public void testTypeRecordRemoveSafe()
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -733,6 +768,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration0 =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery0"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))
@@ -740,6 +776,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration1 =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery1"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))
@@ -747,6 +784,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration2 =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery2"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))
@@ -757,15 +795,20 @@ public final class CADatabaseTypesTest
     this.tdPut.execute(typeDeclaration2);
     this.transaction.commit();
 
+    this.tdRemove.execute(
+      new CATypeRecordRemoval(
+        typeDeclaration1,
+        TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED
+      )
+    );
 
-    this.tdRemove.execute(typeDeclaration1.name());
     this.transaction.commit();
 
     this.tdGet.execute(typeDeclaration0.name())
       .orElseThrow();
 
     assertEquals(
-      Optional.empty(),
+      empty(),
       this.tdGet.execute(typeDeclaration1.name()));
 
     this.tdGet.execute(typeDeclaration2.name())
@@ -783,7 +826,8 @@ public final class CADatabaseTypesTest
     throws Exception
   {
     final var voltage =
-      new CATypeScalarType.Real(
+      new Real(
+        P,
         new RDottedName("com.io7m.voltage"),
         "A measurement of voltage.",
         -1000.0,
@@ -802,6 +846,7 @@ public final class CADatabaseTypesTest
 
     final var typeDeclaration0 =
       new CATypeRecord(
+        P,
         new RDottedName("com.io7m.battery0"),
         "A battery.",
         Map.ofEntries(Map.entry(voltageField.name(), voltageField))
@@ -821,7 +866,12 @@ public final class CADatabaseTypesTest
     {
       final var ex =
         assertThrows(CADatabaseException.class, () -> {
-          this.tdRemove.execute(typeDeclaration0.name());
+          this.tdRemove.execute(
+            new CATypeRecordRemoval(
+              typeDeclaration0,
+              TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED
+            )
+          );
         });
       assertEquals(ex.errorCode(), errorTypeReferenced());
     }
@@ -834,6 +884,154 @@ public final class CADatabaseTypesTest
       new ItemTypesRevokeType.Parameters(item, Set.of(typeDeclaration0.name()))
     );
 
-    this.tdRemove.execute(typeDeclaration0.name());
+    this.tdRemove.execute(
+      new CATypeRecordRemoval(
+        typeDeclaration0,
+        TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED
+      )
+    );
+  }
+
+  /**
+   * Removing a record field works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeRecordFieldRemoval()
+    throws Exception
+  {
+    final var voltage =
+      new Real(
+        P,
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        -1000.0,
+        1000.0
+      );
+
+    final var size =
+      new Text(
+        P,
+        new RDottedName("com.io7m.battery.size"),
+        "A specification of battery size.",
+        "^.*$"
+      );
+
+    this.tsPut.execute(voltage);
+    this.tsPut.execute(size);
+
+    final var voltageField =
+      new CATypeField(
+        new RDottedName("com.io7m.battery.voltage"),
+        "A measurement of battery voltage.",
+        voltage,
+        true
+      );
+
+    final var sizeField =
+      new CATypeField(
+        new RDottedName("com.io7m.battery.size"),
+        "A battery size (such as AA, AAA, etc).",
+        size,
+        true
+      );
+
+    final var typeDeclaration =
+      new CATypeRecord(
+        P,
+        new RDottedName("com.io7m.battery"),
+        "A battery.",
+        Map.ofEntries(
+          Map.entry(voltageField.name(), voltageField),
+          Map.entry(sizeField.name(), sizeField)
+        )
+      );
+
+    this.tdPut.execute(typeDeclaration);
+    this.transaction.commit();
+    this.trfRemove.execute(voltageField.name());
+
+    {
+      final var tr =
+        this.tdGet.execute(new RDottedName("com.io7m.battery"))
+          .orElseThrow();
+
+      final var trFields = tr.fields();
+      assertEquals(1, trFields.size());
+      assertEquals(sizeField, trFields.get(sizeField.name()));
+      assertNull(trFields.get(voltageField.name()));
+    }
+
+    this.trfUpdate.execute(
+      new CATypeRecordFieldUpdate(typeDeclaration.name(), voltageField)
+    );
+
+    {
+      final var tr =
+        this.tdGet.execute(new RDottedName("com.io7m.battery"))
+          .orElseThrow();
+
+      final var trFields = tr.fields();
+      assertEquals(2, trFields.size());
+      assertEquals(sizeField, trFields.get(sizeField.name()));
+      assertEquals(voltageField, trFields.get(voltageField.name()));
+    }
+
+    this.trfUpdate.execute(
+      new CATypeRecordFieldUpdate(typeDeclaration.name(), voltageField)
+    );
+
+    {
+      final var tr =
+        this.tdGet.execute(new RDottedName("com.io7m.battery"))
+          .orElseThrow();
+
+      final var trFields = tr.fields();
+      assertEquals(2, trFields.size());
+      assertEquals(sizeField, trFields.get(sizeField.name()));
+      assertEquals(voltageField, trFields.get(voltageField.name()));
+    }
+  }
+
+  /**
+   * A field cannot be updated for a nonexistent record type.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypeRecordFieldUpdateNonexistent()
+    throws Exception
+  {
+    final var voltage =
+      new Real(
+        P,
+        new RDottedName("com.io7m.voltage"),
+        "A measurement of voltage.",
+        -1000.0,
+        1000.0
+      );
+
+    this.tsPut.execute(voltage);
+
+    final var voltageField =
+      new CATypeField(
+        new RDottedName("com.io7m.battery.voltage"),
+        "A measurement of battery voltage.",
+        voltage,
+        true
+      );
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.trfUpdate.execute(new CATypeRecordFieldUpdate(
+          new RDottedName("nonexistent"),
+          voltageField
+        ));
+      });
+
+    assertEquals(errorNonexistent(), ex.errorCode());
   }
 }

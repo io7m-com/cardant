@@ -32,7 +32,7 @@ module com.io7m.cardant.database.postgres
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.strings;
-  requires com.io7m.cardant.type_packages;
+  requires com.io7m.cardant.type_packages.parser.api;
 
   requires com.io7m.anethum.api;
   requires com.io7m.jmulticlose.core;
@@ -92,17 +92,19 @@ module com.io7m.cardant.database.postgres
     com.io7m.cardant.database.postgres.internal.CADBQLocationTypesAssign,
     com.io7m.cardant.database.postgres.internal.CADBQLocationTypesRevoke,
     com.io7m.cardant.database.postgres.internal.CADBQMaintenance,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeDeclGet,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeDeclGetMultiple,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeDeclPut,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeDeclRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeDeclsReferencingScalar,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeDeclsSearch,
     com.io7m.cardant.database.postgres.internal.CADBQTypePackageGetText,
     com.io7m.cardant.database.postgres.internal.CADBQTypePackageInstall,
     com.io7m.cardant.database.postgres.internal.CADBQTypePackageSatisfying,
     com.io7m.cardant.database.postgres.internal.CADBQTypePackageSearch,
+    com.io7m.cardant.database.postgres.internal.CADBQTypePackageSetVersion,
     com.io7m.cardant.database.postgres.internal.CADBQTypePackageUninstall,
+    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordFieldRemove,
+    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordFieldUpdate,
+    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordGet,
+    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordPut,
+    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordRemove,
+    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordsReferencingScalar,
+    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordsSearch,
     com.io7m.cardant.database.postgres.internal.CADBQTypeScalarGet,
     com.io7m.cardant.database.postgres.internal.CADBQTypeScalarPut,
     com.io7m.cardant.database.postgres.internal.CADBQTypeScalarRemove,

@@ -30,14 +30,17 @@ module com.io7m.cardant.server.controller
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.strings;
-  requires com.io7m.cardant.type_packages;
+  requires com.io7m.cardant.type_packages.compiler.api;
+  requires com.io7m.cardant.type_packages.resolver.api;
+  requires com.io7m.cardant.type_packages.upgrades.api;
+  requires com.io7m.cardant.type_packages.upgrades;
 
+  requires com.io7m.anethum.api;
   requires com.io7m.medrina.api;
   requires com.io7m.repetoir.core;
   requires io.opentelemetry.api;
   requires io.opentelemetry.context;
   requires org.slf4j;
-  requires com.io7m.anethum.api;
 
   exports com.io7m.cardant.server.controller.command_exec;
   exports com.io7m.cardant.server.controller.inventory;

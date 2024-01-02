@@ -71,14 +71,25 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.type_packages</artifactId>
+      <artifactId>com.io7m.cardant.type_packages.upgrades.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.type_packages.upgrades</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.type_packages.compiler.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.type_packages.resolver.api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.io7m.anethum</groupId>
-      <artifactId>com.io7m.anethum.api</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.io7m.verona</groupId>
       <artifactId>com.io7m.verona.core</artifactId>

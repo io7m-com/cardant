@@ -131,11 +131,11 @@ public final class CADBQTypePackageUninstall
      * than preventing the uninstallation of the package.
      */
 
-    switch (parameters.behavior()) {
-      case UNINSTALL_FAIL_IF_TYPES_REFERENCED -> {
+    switch (parameters.typeRemovalBehavior()) {
+      case TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED -> {
         break;
       }
-      case UNINSTALL_REVOKE_TYPES -> {
+      case TYPE_REMOVAL_REVOKE_TYPES -> {
         batch.add(
           context.deleteFrom(ITEM_TYPES)
             .where(ITEM_TYPES.IT_TYPE.in(

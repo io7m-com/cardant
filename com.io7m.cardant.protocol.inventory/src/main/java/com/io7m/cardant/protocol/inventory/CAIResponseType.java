@@ -58,17 +58,14 @@ public sealed interface CAIResponseType
   CAIResponseRolesAssign,
   CAIResponseRolesGet,
   CAIResponseRolesRevoke,
-  CAIResponseTypeDeclarationGet,
-  CAIResponseTypeDeclarationPut,
-  CAIResponseTypeDeclarationRemove,
-  CAIResponseTypeDeclarationSearch,
   CAIResponseTypePackageGetText,
   CAIResponseTypePackageInstall,
   CAIResponseTypePackageSearch,
   CAIResponseTypePackageUninstall,
+  CAIResponseTypePackageUpgrade,
+  CAIResponseTypeRecordGet,
+  CAIResponseTypeRecordSearch,
   CAIResponseTypeScalarGet,
-  CAIResponseTypeScalarPut,
-  CAIResponseTypeScalarRemove,
   CAIResponseTypeScalarSearch
 {
   /**

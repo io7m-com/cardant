@@ -423,6 +423,7 @@
 [documentation CAI1TypeScalar "A scalar type."]
 [variant CAI1TypeScalar
   [case Integral
+    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
     [field name cb:String]
     [documentation description "The type description."]
@@ -431,6 +432,7 @@
     [field rangeUpper cb:IntegerSigned64]
   ]
   [case Text
+    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
     [field name cb:String]
     [documentation description "The type description."]
@@ -438,6 +440,7 @@
     [field pattern cb:String]
   ]
   [case Time
+    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
     [field name cb:String]
     [documentation description "The type description."]
@@ -446,6 +449,7 @@
     [field rangeUpper ct:OffsetDateTime]
   ]
   [case Monetary
+    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
     [field name cb:String]
     [documentation description "The type description."]
@@ -454,6 +458,7 @@
     [field rangeUpper cb:String]
   ]
   [case Real
+    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
     [field name cb:String]
     [documentation description "The type description."]
@@ -475,8 +480,9 @@
   [field required cb:Boolean]
 ]
 
-[documentation CAI1TypeDeclaration "A type declaration."]
-[record CAI1TypeDeclaration
+[documentation CAI1TypeRecord "A type declaration."]
+[record CAI1TypeRecord
+  [field packageIdentifier CAI1TypePackageIdentifier]
   [documentation name "The type declaration name."]
   [field name cb:String]
   [documentation description "The type declaration description."]
@@ -485,16 +491,17 @@
   [field fields [cb:Map cb:String CAI1TypeField]]
 ]
 
-[documentation CAI1TypeDeclarationSummary "A type declaration summary."]
-[record CAI1TypeDeclarationSummary
+[documentation CAI1TypeRecordSummary "A type declaration summary."]
+[record CAI1TypeRecordSummary
+  [field packageIdentifier CAI1TypePackageIdentifier]
   [documentation name "The type declaration name."]
   [field name cb:String]
   [documentation description "The type declaration description."]
   [field description cb:String]
 ]
 
-[documentation CAI1TypeDeclarationSearchParameters "The declared type search parameters."]
-[record CAI1TypeDeclarationSearchParameters
+[documentation CAI1TypeRecordSearchParameters "The declared type search parameters."]
+[record CAI1TypeRecordSearchParameters
   [documentation nameSearch "The type description search query."]
   [field nameSearch [CAI1ComparisonFuzzy cb:String]]
   [documentation descriptionSearch "The type description search query."]
@@ -577,15 +584,21 @@
   [field remediatingAction [cb:Option cb:String]]
 ]
 
-[documentation CAI1TypePackageUninstallBehavior "The type package uninstall behavior."]
-[variant CAI1TypePackageUninstallBehavior
-  [case UninstallFailIfTypesReferenced]
-  [case UninstallRevokeTypes]
+[documentation CAI1TypePackageTypeRemovalBehavior "The type package type removal behavior."]
+[variant CAI1TypePackageTypeRemovalBehavior
+  [case FailIfTypesReferenced]
+  [case RevokeTypes]
+]
+
+[documentation CAI1TypePackageVersionBehavior "The type package version behavior."]
+[variant CAI1TypePackageVersionBehavior
+  [case AllowDowngrades]
+  [case DisallowDowngrades]
 ]
 
 [documentation CAI1TypePackageUninstall "The type package uninstall parameters."]
 [record CAI1TypePackageUninstall
-  [field behavior CAI1TypePackageUninstallBehavior]
+  [field typeRemovalBehavior CAI1TypePackageTypeRemovalBehavior]
   [field identifier CAI1TypePackageIdentifier]
 ]
 
@@ -758,22 +771,10 @@
   [field user cb:UUID]
 ]
 
-[documentation CAI1CommandTypeScalarPut "Create or update scalar types."]
-[record CAI1CommandTypeScalarPut
-  [documentation types "The types."]
-  [field types [cb:List CAI1TypeScalar]]
-]
-
 [documentation CAI1CommandTypeScalarGet "Get a scalar type."]
 [record CAI1CommandTypeScalarGet
   [documentation name "The type name."]
   [field name cb:String]
-]
-
-[documentation CAI1CommandTypeScalarRemove "Remove scalar types."]
-[record CAI1CommandTypeScalarRemove
-  [documentation types "The type names."]
-  [field types [cb:List cb:String]]
 ]
 
 [documentation CAI1CommandTypeScalarSearchBegin "Search for scalar types."]
@@ -788,35 +789,23 @@
 [documentation CAI1CommandTypeScalarSearchPrevious "Search for scalar types."]
 [record CAI1CommandTypeScalarSearchPrevious]
 
-[documentation CAI1CommandTypeDeclarationPut "Create or update declared types."]
-[record CAI1CommandTypeDeclarationPut
-  [documentation types "The types."]
-  [field types [cb:List CAI1TypeDeclaration]]
-]
-
-[documentation CAI1CommandTypeDeclarationGet "Get a declared type."]
-[record CAI1CommandTypeDeclarationGet
+[documentation CAI1CommandTypeRecordGet "Get a declared type."]
+[record CAI1CommandTypeRecordGet
   [documentation name "The type name."]
   [field name cb:String]
 ]
 
-[documentation CAI1CommandTypeDeclarationRemove "Remove declared types."]
-[record CAI1CommandTypeDeclarationRemove
-  [documentation types "The type names."]
-  [field types [cb:List cb:String]]
-]
-
-[documentation CAI1CommandTypeDeclarationSearchBegin "Search for declared types."]
-[record CAI1CommandTypeDeclarationSearchBegin
+[documentation CAI1CommandTypeRecordSearchBegin "Search for declared types."]
+[record CAI1CommandTypeRecordSearchBegin
   [documentation parameters "The parameters."]
-  [field parameters CAI1TypeDeclarationSearchParameters]
+  [field parameters CAI1TypeRecordSearchParameters]
 ]
 
-[documentation CAI1CommandTypeDeclarationSearchNext "Search for declared types."]
-[record CAI1CommandTypeDeclarationSearchNext]
+[documentation CAI1CommandTypeRecordSearchNext "Search for declared types."]
+[record CAI1CommandTypeRecordSearchNext]
 
-[documentation CAI1CommandTypeDeclarationSearchPrevious "Search for declared types."]
-[record CAI1CommandTypeDeclarationSearchPrevious]
+[documentation CAI1CommandTypeRecordSearchPrevious "Search for declared types."]
+[record CAI1CommandTypeRecordSearchPrevious]
 
 [documentation CAI1CommandItemTypesAssign "Assign a set of types to an item."]
 [record CAI1CommandItemTypesAssign
@@ -926,6 +915,16 @@
 [record CAI1CommandTypePackageUninstall
   [documentation parameters "The uninstall parameters."]
   [field parameters CAI1TypePackageUninstall]
+]
+
+[documentation CAI1CommandTypePackageUpgrade "Upgrade a type package."]
+[record CAI1CommandTypePackageUpgrade
+  [documentation typeRemovalBehavior "The type removal behavior."]
+  [field typeRemovalBehavior CAI1TypePackageTypeRemovalBehavior]
+  [documentation versionBehavior "The version behavior."]
+  [field versionBehavior CAI1TypePackageVersionBehavior]
+  [documentation text "The type package text."]
+  [field text cb:String]
 ]
 
 ;
@@ -1130,26 +1129,12 @@
   [field roles [cb:List cb:String]]
 ]
 
-[documentation CAI1ResponseTypeScalarPut "A response to CAI1CommandTypeScalarPut."]
-[record CAI1ResponseTypeScalarPut
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation types "The scalar types."]
-  [field types [cb:List CAI1TypeScalar]]
-]
-
 [documentation CAI1ResponseTypeScalarGet "A response to CAI1CommandTypeScalarGet."]
 [record CAI1ResponseTypeScalarGet
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation type "The scalar type."]
   [field type CAI1TypeScalar]
-]
-
-[documentation CAI1ResponseTypeScalarRemove "A response to CAI1CommandTypeScalarRemove."]
-[record CAI1ResponseTypeScalarRemove
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
 ]
 
 [documentation CAI1ResponseTypeScalarSearch "A response to CAI1CommandTypeScalarSearch*."]
@@ -1160,34 +1145,20 @@
   [field results [CAI1Page CAI1TypeScalar]]
 ]
 
-[documentation CAI1ResponseTypeDeclarationPut "A response to CAI1CommandTypeDeclarationPut."]
-[record CAI1ResponseTypeDeclarationPut
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation types "The scalar types."]
-  [field types [cb:List CAI1TypeDeclaration]]
-]
-
-[documentation CAI1ResponseTypeDeclarationGet "A response to CAI1CommandTypeDeclarationGet."]
-[record CAI1ResponseTypeDeclarationGet
+[documentation CAI1ResponseTypeRecordGet "A response to CAI1CommandTypeRecordGet."]
+[record CAI1ResponseTypeRecordGet
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation type "The scalar type."]
-  [field type CAI1TypeDeclaration]
+  [field type CAI1TypeRecord]
 ]
 
-[documentation CAI1ResponseTypeDeclarationRemove "A response to CAI1CommandTypeDeclarationRemove."]
-[record CAI1ResponseTypeDeclarationRemove
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-]
-
-[documentation CAI1ResponseTypeDeclarationSearch "A response to CAI1CommandTypeDeclarationSearch*."]
-[record CAI1ResponseTypeDeclarationSearch
+[documentation CAI1ResponseTypeRecordSearch "A response to CAI1CommandTypeRecordSearch*."]
+[record CAI1ResponseTypeRecordSearch
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation results "The results."]
-  [field results [CAI1Page CAI1TypeDeclarationSummary]]
+  [field results [CAI1Page CAI1TypeRecordSummary]]
 ]
 
 [documentation CAI1ResponseItemTypesAssign "A response to CAI1CommandItemTypesAssign."]
@@ -1292,6 +1263,14 @@
   [field requestId cb:UUID]
 ]
 
+[documentation CAI1ResponseTypePackageUpgrade "A response to CAI1CommandTypePackageUpgrade."]
+[record CAI1ResponseTypePackageUpgrade
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation identifier "The identifier."]
+  [field identifier CAI1TypePackageIdentifier]
+]
+
 ;
 ; Events.
 ;
@@ -1348,21 +1327,18 @@
       CAI1CommandRolesAssign
       CAI1CommandRolesGet
       CAI1CommandRolesRevoke
-      CAI1CommandTypeDeclarationGet
-      CAI1CommandTypeDeclarationPut
-      CAI1CommandTypeDeclarationRemove
-      CAI1CommandTypeDeclarationSearchBegin
-      CAI1CommandTypeDeclarationSearchNext
-      CAI1CommandTypeDeclarationSearchPrevious
       CAI1CommandTypePackageGetText
       CAI1CommandTypePackageInstall
       CAI1CommandTypePackageSearchBegin
       CAI1CommandTypePackageSearchNext
       CAI1CommandTypePackageSearchPrevious
       CAI1CommandTypePackageUninstall
+      CAI1CommandTypePackageUpgrade
+      CAI1CommandTypeRecordGet
+      CAI1CommandTypeRecordSearchBegin
+      CAI1CommandTypeRecordSearchNext
+      CAI1CommandTypeRecordSearchPrevious
       CAI1CommandTypeScalarGet
-      CAI1CommandTypeScalarPut
-      CAI1CommandTypeScalarRemove
       CAI1CommandTypeScalarSearchBegin
       CAI1CommandTypeScalarSearchNext
       CAI1CommandTypeScalarSearchPrevious
@@ -1399,17 +1375,14 @@
       CAI1ResponseRolesAssign
       CAI1ResponseRolesGet
       CAI1ResponseRolesRevoke
-      CAI1ResponseTypeDeclarationGet
-      CAI1ResponseTypeDeclarationPut
-      CAI1ResponseTypeDeclarationRemove
-      CAI1ResponseTypeDeclarationSearch
       CAI1ResponseTypePackageGetText
       CAI1ResponseTypePackageInstall
       CAI1ResponseTypePackageSearch
       CAI1ResponseTypePackageUninstall
+      CAI1ResponseTypePackageUpgrade
+      CAI1ResponseTypeRecordGet
+      CAI1ResponseTypeRecordSearch
       CAI1ResponseTypeScalarGet
-      CAI1ResponseTypeScalarPut
-      CAI1ResponseTypeScalarRemove
       CAI1ResponseTypeScalarSearch
     ]
   ]

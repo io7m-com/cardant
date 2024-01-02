@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="5905b3bb-ab45-3bf9-ba18-4fe720232e4a" title="type-record-search-next" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-record-search-next</Term>
+       - Go to the next page of types.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-record-search-next</Term>
+       command goes to the next page of types.
+    </Paragraph>
+    <Paragraph>
+      The command can only be used after the associated <Link target="5bd64820-cc42-304e-8fc6-6daa8a44ce42">begin</Link>
+      command.
+    </Paragraph>
+  </Subsection>
+</Section>
+

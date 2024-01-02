@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
@@ -69,7 +68,13 @@ public final class CADBQTypePackageGetText
   protected Optional<String> onExecute(
     final DSLContext context,
     final CATypePackageIdentifier parameters)
-    throws CADatabaseException
+  {
+    return getText(context, parameters);
+  }
+
+  static Optional<String> getText(
+    final DSLContext context,
+    final CATypePackageIdentifier parameters)
   {
     final var version =
       parameters.version();

@@ -20,11 +20,13 @@ package com.io7m.cardant.tests.model;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATypeChecking;
-import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.lanark.core.RDottedName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
@@ -49,6 +51,11 @@ public final class CATypeCheckingTest
     new RDottedName("com.io7m.ex");
   private static final RDottedName NAME_T =
     new RDottedName("com.io7m.t");
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
 
   /**
    * Missing but required fields are caught.
@@ -59,6 +66,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -68,6 +76,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Text(
+                P,
                 NAME_T,
                 "A t.",
                 "^.*$"
@@ -102,6 +111,7 @@ public final class CATypeCheckingTest
   {
     assertThrows(PatternSyntaxException.class, () -> {
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -111,6 +121,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Text(
+                P,
                 NAME_T,
                 "A t.",
                 "^\\x"
@@ -132,6 +143,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -141,6 +153,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Text(
+                P,
                 NAME_T,
                 "A t.",
                 "[0-9]"
@@ -172,6 +185,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -181,6 +195,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Integral(
+                P,
                 NAME_T,
                 "A t.",
                 0L,
@@ -213,6 +228,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -222,6 +238,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Real(
+                P,
                 NAME_T,
                 "A t.",
                 0.0,
@@ -254,6 +271,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -263,6 +281,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Monetary(
+                P,
                 NAME_T,
                 "A t.",
                 CAMoney.money("0.0"),
@@ -295,6 +314,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -304,6 +324,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Time(
+                P,
                 NAME_T,
                 "A t.",
                 OffsetDateTime.parse("2001-01-01T00:00:00+00:00"),
@@ -339,6 +360,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -348,6 +370,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Text(
+                P,
                 NAME_T,
                 "A t.",
                 "[a-z]+"
@@ -379,6 +402,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -388,6 +412,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Integral(
+                P,
                 NAME_T,
                 "A t.",
                 0L,
@@ -420,6 +445,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -429,6 +455,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Real(
+                P,
                 NAME_T,
                 "A t.",
                 0.0,
@@ -461,6 +488,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -470,6 +498,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Monetary(
+                P,
                 NAME_T,
                 "A t.",
                 CAMoney.money("0.0"),
@@ -502,6 +531,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -511,6 +541,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Time(
+                P,
                 NAME_T,
                 "A t.",
                 OffsetDateTime.parse("2001-01-01T00:00:00+00:00"),
@@ -546,6 +577,7 @@ public final class CATypeCheckingTest
   {
     final var type =
       new CATypeRecord(
+        P,
         NAME_EX,
         "An example type.",
         Map.ofEntries(
@@ -555,6 +587,7 @@ public final class CATypeCheckingTest
               NAME_X,
               "A x.",
               new CATypeScalarType.Text(
+                P,
                 NAME_T,
                 "A t.",
                 "[0-9]+"

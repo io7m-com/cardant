@@ -20,8 +20,11 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.anethum.api.SerializationException;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.model.type_package.CATypePackage;
-import com.io7m.cardant.type_packages.CATypePackageSerializerFactoryType;
-import com.io7m.cardant.type_packages.CATypePackageSerializers;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.type_packages.parser.api.CATypePackageSerializerFactoryType;
+import com.io7m.verona.core.Version;
+import org.jooq.Condition;
+import org.jooq.impl.DSL;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,25 +34,53 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 
 final class CADBTypePackages
 {
-  private static final CATypePackageSerializerFactoryType PACKAGE_SERIALIZERS =
-    new CATypePackageSerializers();
-
   private CADBTypePackages()
   {
 
   }
 
+  public static Condition packageMatch(
+    final CATypePackageIdentifier packageIdentifier)
+  {
+    final var packageName =
+      packageIdentifier.name();
+    final var packageVersion =
+      packageIdentifier.version();
+
+    return DSL.and(
+        METADATA_TYPE_PACKAGES.MTP_NAME
+          .eq(packageName.value()),
+        METADATA_TYPE_PACKAGES.MTP_VERSION_MAJOR
+          .eq(Integer.valueOf(packageVersion.major())),
+        METADATA_TYPE_PACKAGES.MTP_VERSION_MINOR
+          .eq(Integer.valueOf(packageVersion.minor())),
+        METADATA_TYPE_PACKAGES.MTP_VERSION_PATCH
+          .eq(Integer.valueOf(packageVersion.patch())),
+        packageQualifierMatch(packageVersion)
+    );
+  }
+
+  private static Condition packageQualifierMatch(
+    final Version packageVersion)
+  {
+    return packageVersion.qualifier()
+      .map(x -> METADATA_TYPE_PACKAGES.MTP_VERSION_QUALIFIER.eq(x.text()))
+      .orElseGet(METADATA_TYPE_PACKAGES.MTP_VERSION_QUALIFIER::isNull);
+  }
+
   public static String serialize(
+    final CATypePackageSerializerFactoryType typePackageSerializers,
     final CATypePackage typePackage,
     final Map<String, String> attributes)
     throws CADatabaseException
   {
     try (var outputStream = new ByteArrayOutputStream()) {
-      PACKAGE_SERIALIZERS.serialize(
+      typePackageSerializers.serialize(
         URI.create("urn:stdout"),
         outputStream,
         typePackage

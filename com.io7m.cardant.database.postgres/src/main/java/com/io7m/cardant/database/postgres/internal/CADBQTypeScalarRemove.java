@@ -21,25 +21,30 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarRemoveType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CATypeScalarRemoval;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 
 import java.time.OffsetDateTime;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
 
 /**
- * Remove a scalar type declaration. Fails if any type declarations still
- * refer to this type.
+ * Remove a scalar type declaration.
  */
 
 public final class CADBQTypeScalarRemove
-  extends CADBQAbstract<RDottedName, CADatabaseUnit>
+  extends CADBQAbstract<CATypeScalarRemoval, CADatabaseUnit>
   implements TypeScalarRemoveType
 {
-  private static final Service<RDottedName, CADatabaseUnit, TypeScalarRemoveType> SERVICE =
+  private static final Service<
+    CATypeScalarRemoval,
+    CADatabaseUnit,
+    TypeScalarRemoveType> SERVICE =
     new Service<>(TypeScalarRemoveType.class, CADBQTypeScalarRemove::new);
 
   /**
@@ -66,23 +71,51 @@ public final class CADBQTypeScalarRemove
   @Override
   protected CADatabaseUnit onExecute(
     final DSLContext context,
-    final RDottedName name)
+    final CATypeScalarRemoval removal)
     throws CADatabaseException
   {
-    final var typeName = name.value();
+    final var typeScalar =
+      removal.typeScalar();
+    final var typeName =
+      typeScalar.name();
 
-    context.deleteFrom(METADATA_TYPES_SCALAR)
-      .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(typeName))
-      .execute();
+    final var batch =
+      new LinkedList<Query>();
+
+    switch (removal.typeRemovalBehavior()) {
+      case TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED -> {
+
+      }
+      case TYPE_REMOVAL_REVOKE_TYPES -> {
+        final var scalarId =
+          context.select(METADATA_TYPES_SCALAR.MTS_ID)
+            .from(METADATA_TYPES_SCALAR)
+            .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(typeName.value()));
+
+        batch.add(
+          context.deleteFrom(METADATA_TYPES_RECORD_FIELDS)
+            .where(METADATA_TYPES_RECORD_FIELDS.MTRF_SCALAR_TYPE.eq(scalarId))
+        );
+      }
+    }
+
+    batch.add(
+      context.deleteFrom(METADATA_TYPES_SCALAR)
+        .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(typeName.value()))
+    );
 
     final var transaction = this.transaction();
-    auditEvent(
-      context,
-      OffsetDateTime.now(transaction.clock()),
-      transaction.userId(),
-      "TYPE_SCALAR_REMOVED",
-      Map.entry("Type", name.value())
-    ).execute();
+    batch.add(
+      auditEvent(
+        context,
+        OffsetDateTime.now(transaction.clock()),
+        transaction.userId(),
+        "TYPE_SCALAR_REMOVED",
+        Map.entry("Type", typeName.value())
+      )
+    );
+
+    context.batch(batch).execute();
     return CADatabaseUnit.UNIT;
   }
 }

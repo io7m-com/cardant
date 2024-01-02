@@ -19,12 +19,13 @@ package com.io7m.cardant.server.controller.inventory;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -54,6 +55,11 @@ public final class CAICmdLocationMetadataPut
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction = context.transaction();
     transaction.setUserId(context.session().userId());
 
@@ -61,8 +67,6 @@ public final class CAICmdLocationMetadataPut
       transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     final var get =
       transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
-    final var typeGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
 
     final var locationId = command.location();
     context.setAttribute(ITEM_ID, locationId.displayId());
@@ -70,8 +74,11 @@ public final class CAICmdLocationMetadataPut
     final var metadatas = command.metadatas();
     metaPut.execute(new Parameters(locationId, metadatas));
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var location = get.execute(locationId).orElseThrow();
-    CAITypeChecking.checkTypes(context, typeGet, location);
+    CAITypeChecking.checkTypes(context, resolver, location);
     return new CAIResponseLocationMetadataPut(context.requestId(), location);
   }
 }

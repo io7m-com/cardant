@@ -20,12 +20,13 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -37,6 +38,7 @@ import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -69,6 +71,12 @@ import static org.mockito.Mockito.when;
 public final class CAICmdLocationTypesAssignTest
   extends CACmdAbstractContract
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
   private static final CALocationID LOCATION_ID = CALocationID.random();
 
   /**
@@ -120,7 +128,7 @@ public final class CAICmdLocationTypesAssignTest
     final var locationTypeAssign =
       mock(LocationTypesAssignType.class);
     final var typeGet =
-      mock(TypeDeclarationGetMultipleType.class);
+      mock(TypeRecordGetType.class);
     final var locationGet =
       mock(LocationGetType.class);
     final var transaction =
@@ -130,12 +138,13 @@ public final class CAICmdLocationTypesAssignTest
       .thenReturn(locationTypeAssign);
     when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(TypeDeclarationGetMultipleType.class))
+    when(transaction.queries(TypeRecordGetType.class))
       .thenReturn(typeGet);
 
     when(typeGet.execute(any()))
-      .thenReturn(List.of(
+      .thenReturn(Optional.of(
         new CATypeRecord(
+          P,
           new RDottedName("t"),
           "A type",
           Map.of()
@@ -182,7 +191,7 @@ public final class CAICmdLocationTypesAssignTest
     verify(transaction)
       .queries(LocationGetType.class);
     verify(transaction)
-      .queries(TypeDeclarationGetMultipleType.class);
+      .queries(TypeRecordGetType.class);
     verify(transaction)
       .queries(LocationTypesAssignType.class);
     verify(locationGet)
@@ -207,7 +216,7 @@ public final class CAICmdLocationTypesAssignTest
     final var locationTypeAssign =
       mock(LocationTypesAssignType.class);
     final var typeGet =
-      mock(TypeDeclarationGetMultipleType.class);
+      mock(TypeRecordGetType.class);
     final var locationGet =
       mock(LocationGetType.class);
     final var transaction =
@@ -217,12 +226,13 @@ public final class CAICmdLocationTypesAssignTest
       .thenReturn(locationTypeAssign);
     when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(TypeDeclarationGetMultipleType.class))
+    when(transaction.queries(TypeRecordGetType.class))
       .thenReturn(typeGet);
 
     when(typeGet.execute(any()))
-      .thenReturn(List.of(
+      .thenReturn(Optional.of(
         new CATypeRecord(
+          P,
           new RDottedName("t"),
           "A type",
           Map.of(
@@ -230,7 +240,7 @@ public final class CAICmdLocationTypesAssignTest
             new CATypeField(
               new RDottedName("a"),
               "A field",
-              new CATypeScalarType.Integral(new RDottedName("z"), "x", 23L, 1000L),
+              new Integral(P, new RDottedName("z"), "x", 23L, 1000L),
               true
             )
           )
@@ -284,7 +294,7 @@ public final class CAICmdLocationTypesAssignTest
     verify(transaction)
       .queries(LocationGetType.class);
     verify(transaction)
-      .queries(TypeDeclarationGetMultipleType.class);
+      .queries(TypeRecordGetType.class);
     verify(transaction)
       .queries(LocationTypesAssignType.class);
     verify(locationGet)

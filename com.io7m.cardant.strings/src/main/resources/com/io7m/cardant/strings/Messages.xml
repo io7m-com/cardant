@@ -40,8 +40,13 @@
   <entry key="error_type_invalid_pattern"><![CDATA[Invalid pattern in scalar type.]]></entry>
   <entry key="error_type_missing_required_field"><![CDATA[A required field is missing.]]></entry>
   <entry key="error_type_scalar_still_referenced"><![CDATA[The given scalar type is still referenced by one or more fields/types, and cannot be removed without first removing those types/fields.]]></entry>
+  <entry key="error_type_scalar_still_referenced_suggest">Use TYPE_REMOVAL_REVOKE_TYPES to forcefully revoke types.</entry>
   <entry key="error_type_still_referenced"><![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
   <entry key="error_unauthorized">Unauthorized.</entry>
+  <entry key="error_package_downgrade">Package downgrades are not permitted.</entry>
+  <entry key="error_package_downgrade_suggest">Use VERSION_ALLOW_DOWNGRADES to permit downgrades.</entry>
+  <entry key="error_type_exists_wrong_package">A type with the given name is already provided by a different package.</entry>
+  <entry key="error_type_exists_wrong_package_suggest">Use TYPE_ADDITION_REPLACE_TYPES to forcefully replace types.</entry>
 
   <entry key="error_parse_indexed">Parse error {0}</entry>
   <entry key="error_type_indexed">Type error {0}</entry>
@@ -91,6 +96,8 @@
   <entry key="old_location_parent_id">Old Location Parent ID</entry>
   <entry key="package">Package</entry>
   <entry key="package_version">Package Version</entry>
+  <entry key="package_installed">Package (Installed)</entry>
+  <entry key="package_installed_version">Package Version (Installed)</entry>
   <entry key="problem">Problem</entry>
   <entry key="queries_class">Queries class</entry>
   <entry key="received_content_type">Received Content Type</entry>

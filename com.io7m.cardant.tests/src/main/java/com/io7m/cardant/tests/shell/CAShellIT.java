@@ -615,50 +615,25 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellTypeScalarsWorkflow()
+  public void testShellTypeScalarsWorkflow(
+    final @TempDir Path directory)
     throws Exception
   {
     this.startShell();
+
+    final var file =
+      CATestDirectories.resourceOf(
+        CAShellIT.class,
+        directory,
+        "tpack2.xml"
+      );
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println(
-      "type-scalar-put " +
-      "--name com.x " +
-      "--description 'A description of things.' " +
-      "--base-is-text '.*'"
-    );
-    w.println(
-      "type-scalar-put " +
-      "--name com.y " +
-      "--description 'A description of things.' " +
-      "--base-is-integral '[23 24]'"
-    );
-    w.println(
-      "type-scalar-put " +
-      "--name com.z " +
-      "--description 'A description of things.' " +
-      "--base-is-real '[23 24]'"
-    );
-    w.println(
-      "type-scalar-put " +
-      "--name com.a " +
-      "--description 'A description of things.' " +
-      "--base-is-time '[2023-01-01T00:00:00+00:00 2023-03-01T00:00:00+00:00]'"
-    );
-    w.println(
-      "type-scalar-put " +
-      "--name com.b " +
-      "--description 'A description of things.' " +
-      "--base-is-monetary '[23 24]'"
-    );
-    w.println("type-scalar-get --name com.x");
-    w.println("type-scalar-search-begin");
-    w.println("type-scalar-search-next");
-    w.println("type-scalar-search-previous");
-    w.println("type-scalar-remove --name com.x");
+    w.println("type-package-install --file '%s'".formatted(file));
+    w.println("type-scalar-get --name com.io7m.example.t0");
     w.println("type-scalar-search-begin");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
@@ -675,65 +650,32 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellTypeDeclarationWorkflow()
+  public void testShellTypeDeclarationWorkflow(
+    final @TempDir Path directory)
     throws Exception
   {
     this.startShell();
+
+    final var file =
+      CATestDirectories.resourceOf(
+        CAShellIT.class,
+        directory,
+        "tpack2.xml"
+      );
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println(
-      "type-scalar-put " +
-      "--name com.x " +
-      "--description 'A description of things.' " +
-      "--base-is-text '.*'"
-    );
-    w.println("type-create --name com.y --description 'A type'");
-    w.println(
-      "type-field-put " +
-      "--type com.y " +
-      "--field-name x " +
-      "--field-type com.x " +
-      "--field-description 'A field' " +
-      "--field-required true"
-    );
-    w.println(
-      "type-field-put " +
-      "--type com.y " +
-      "--field-name y " +
-      "--field-type com.x " +
-      "--field-description 'Another field' " +
-      "--field-required true"
-    );
-    w.println(
-      "type-field-put " +
-      "--type com.y " +
-      "--field-name z " +
-      "--field-type com.x " +
-      "--field-description 'Yet another field' " +
-      "--field-required false"
-    );
-    w.println(
-      "type-field-put " +
-      "--type com.y " +
-      "--field-name a " +
-      "--field-type com.x " +
-      "--field-description 'A wrong field' " +
-      "--field-required true"
-    );
-    w.println(
-      "type-field-remove --type com.y --field-name a"
-    );
-    w.println("type-get --name com.y");
-    w.println("type-search-begin");
-    w.println("type-search-next");
-    w.println("type-search-previous");
+    w.println("type-package-install --file '%s'".formatted(file));
+    w.println("type-record-get --name com.io7m.example.t5");
+    w.println("type-record-search-begin");
+    w.println("type-record-search-next");
+    w.println("type-record-search-previous");
     w.println("set --formatter RAW");
-    w.println("type-search-begin");
-    w.println("type-search-next");
-    w.println("type-search-previous");
+    w.println("type-record-search-begin");
+    w.println("type-record-search-next");
+    w.println("type-record-search-previous");
     w.println("logout");
     w.flush();
     w.close();
@@ -743,21 +685,24 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellAuditWorkflow()
+  public void testShellAuditWorkflow(
+    final @TempDir Path directory)
     throws Exception
   {
     this.startShell();
+
+    final var file =
+      CATestDirectories.resourceOf(
+        CAShellIT.class,
+        directory,
+        "tpack2.xml"
+      );
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println(
-      "type-scalar-put " +
-      "--name com.x " +
-      "--description 'A description of things.' " +
-      "--base-is-text '.*'"
-    );
+    w.println("type-package-install --file '%s'".formatted(file));
     w.println("audit-search-begin");
     w.println("audit-search-next");
     w.println("audit-search-previous");

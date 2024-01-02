@@ -397,6 +397,15 @@
     </Or>
   </Match>
 
+  <!-- Matching -->
+  <Match>
+    <Class name="com.io7m.cardant.database.api.CADatabaseTypePackageResolver"/>
+    <Or>
+      <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED"/>
+    </Or>
+  </Match>
+
   <!--                                    -->
   <!-- com.io7m.cardant.database.postgres -->
   <!--                                    -->
@@ -644,6 +653,16 @@
     <Class name="com.io7m.cardant.server.controller.inventory.CAICmdTypePackageInstall"/>
     <Method name="executeActual"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAITypePackages"/>
+    <Method name="compile"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICmdTypePackageInstall"/>
+    <Method name="executeActual"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
   </Match>
 
   <!--                                               -->
@@ -895,15 +914,16 @@
     </Or>
   </Match>
 
-  <!--                                -->
-  <!-- com.io7m.cardant.type_packages -->
-  <!--                                -->
+  <!--                                  -->
+  <!-- com.io7m.cardant.type_packages.* -->
+  <!--                                  -->
 
   <!-- Unnecessary. -->
   <Match>
     <Or>
-      <Package name="com.io7m.cardant.type_packages"/>
-      <Package name="com.io7m.cardant.type_packages.internal"/>
+      <Package name="com.io7m.cardant.type_packages.checkers.internal"/>
+      <Package name="com.io7m.cardant.type_packages.compilers.internal"/>
+      <Package name="com.io7m.cardant.type_packages.parsers.internal"/>
     </Or>
     <Or>
       <Bug pattern="CE_CLASS_ENVY"/>
@@ -912,8 +932,16 @@
   </Match>
 
   <Match>
-    <Class name="com.io7m.cardant.type_packages.internal.CATypePackageSerializer"/>
+    <Class name="com.io7m.cardant.type_packages.parsers.internal.CATypePackageSerializer"/>
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.type_packages.compilers.internal.CATypePackageCompiler"/>
+    <Or>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_HAS_CHECKED"/>
+    </Or>
   </Match>
 
 </FindBugsFilter>

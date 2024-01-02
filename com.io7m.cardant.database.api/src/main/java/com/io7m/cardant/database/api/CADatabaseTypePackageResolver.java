@@ -17,17 +17,24 @@
 
 package com.io7m.cardant.database.api;
 
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
 import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
-import com.io7m.cardant.type_packages.CATypePackageResolverType;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileCheckingFailed;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileOK;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileParsingFailed;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
+import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.verona.core.VersionRange;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -38,11 +45,15 @@ import java.util.Optional;
 public final class CADatabaseTypePackageResolver
   implements CATypePackageResolverType
 {
+  private final CATypePackageCompilerFactoryType compilers;
   private final CADatabaseTransactionType transaction;
 
   private CADatabaseTypePackageResolver(
+    final CATypePackageCompilerFactoryType inCompilers,
     final CADatabaseTransactionType inTransaction)
   {
+    this.compilers =
+      Objects.requireNonNull(inCompilers, "inCompilers");
     this.transaction =
       Objects.requireNonNull(inTransaction, "transaction");
   }
@@ -50,15 +61,20 @@ public final class CADatabaseTypePackageResolver
   /**
    * A database type package resolver.
    *
+   * @param inCompilers   The compilers
    * @param inTransaction The transaction
    *
    * @return A resolver
    */
 
   public static CATypePackageResolverType create(
+    final CATypePackageCompilerFactoryType inCompilers,
     final CADatabaseTransactionType inTransaction)
   {
-    return new CADatabaseTypePackageResolver(inTransaction);
+    return new CADatabaseTypePackageResolver(
+      inCompilers,
+      inTransaction
+    );
   }
 
   @Override
@@ -78,7 +94,7 @@ public final class CADatabaseTypePackageResolver
     final RDottedName name)
   {
     try {
-      return this.transaction.queries(TypeDeclarationGetType.class)
+      return this.transaction.queries(TypeRecordGetType.class)
         .execute(name);
     } catch (final CADatabaseException e) {
       return Optional.empty();
@@ -86,7 +102,7 @@ public final class CADatabaseTypePackageResolver
   }
 
   @Override
-  public Optional<CATypePackageIdentifier> findTypePackage(
+  public Optional<CATypePackageIdentifier> findTypePackageId(
     final RDottedName name,
     final VersionRange versionRange)
   {
@@ -94,6 +110,38 @@ public final class CADatabaseTypePackageResolver
       return this.transaction.queries(TypePackageSatisfyingType.class)
         .execute(new Parameters(name, versionRange));
     } catch (final CADatabaseException e) {
+      return Optional.empty();
+    }
+  }
+
+  @Override
+  public Optional<CATypePackage> findTypePackage(
+    final CATypePackageIdentifier identifier)
+  {
+    try {
+      final var textOpt =
+        this.transaction.queries(TypePackageGetTextType.class)
+          .execute(identifier);
+
+      if (textOpt.isEmpty()) {
+        return Optional.empty();
+      }
+
+      final var compiler =
+        this.compilers.createCompiler(this);
+
+      return switch (compiler.execute(textOpt.get())) {
+        case final CATypePackageCompileCheckingFailed f -> {
+          yield Optional.empty();
+        }
+        case final CATypePackageCompileOK ok -> {
+          yield Optional.of(ok.typePackage());
+        }
+        case final CATypePackageCompileParsingFailed f -> {
+          yield Optional.empty();
+        }
+      };
+    } catch (final CADatabaseException | IOException e) {
       return Optional.empty();
     }
   }

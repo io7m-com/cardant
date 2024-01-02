@@ -19,8 +19,8 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
-import com.io7m.cardant.model.type_package.CATypePackageUninstallBehavior;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUninstall;
 import com.io7m.lanark.core.RDottedName;
@@ -63,13 +63,13 @@ public final class CAShellCmdTypePackageUninstall
       Version.class
     );
 
-  private static final QParameterNamed1<CATypePackageUninstallBehavior> BEHAVIOR =
+  private static final QParameterNamed1<CATypePackageTypeRemovalBehavior> BEHAVIOR =
     new QParameterNamed1<>(
       "--behavior",
       List.of(),
       new QConstant("The uninstall behavior."),
-      Optional.of(CATypePackageUninstallBehavior.UNINSTALL_FAIL_IF_TYPES_REFERENCED),
-      CATypePackageUninstallBehavior.class
+      Optional.of(CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED),
+      CATypePackageTypeRemovalBehavior.class
     );
 
   /**

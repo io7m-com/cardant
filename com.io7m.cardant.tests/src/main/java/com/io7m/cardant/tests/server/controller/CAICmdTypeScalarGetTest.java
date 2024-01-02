@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -30,6 +31,7 @@ import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -57,6 +59,12 @@ import static org.mockito.Mockito.when;
 public final class CAICmdTypeScalarGetTest
   extends CACmdAbstractContract
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
   /**
    * Retrieving an item requires the permission to READ to INVENTORY_ITEMS.
    *
@@ -109,6 +117,7 @@ public final class CAICmdTypeScalarGetTest
       .thenReturn(itemGet);
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new Integral(
+        P,
         new RDottedName("a.b.c"),
         "a",
         23L, 91L

@@ -22,7 +22,7 @@ import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CANameUnqualified;
 import com.io7m.cardant.model.type_package.CATypeRecordDeclaration;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.type_packages.CATypePackageParsers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

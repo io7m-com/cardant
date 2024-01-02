@@ -24,7 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemo
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -51,6 +51,7 @@ import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -60,6 +61,7 @@ import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MSubject;
+import com.io7m.verona.core.Version;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
 import org.junit.jupiter.api.BeforeAll;
@@ -96,6 +98,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseItemsSearchTest
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+    </p:Package>
+    """;
+
   private static final Logger LOG =
     LoggerFactory.getLogger(CADatabaseItemsSearchTest.class);
 
@@ -114,7 +131,7 @@ public final class CADatabaseItemsSearchTest
   private CADatabaseQueriesItemsType.ItemGetType itemGet;
   private ItemMetadataPutType metaAdd;
   private ItemMetadataRemoveType metaRemove;
-  private TypeDeclarationPutType typePut;
+  private TypeRecordPutType typePut;
   private ItemTypesAssignType itemTypeAssign;
   private CADatabaseQueriesItemsType.ItemRepositType reposit;
 
@@ -174,7 +191,9 @@ public final class CADatabaseItemsSearchTest
     this.metaRemove =
       this.transaction.queries(ItemMetadataRemoveType.class);
     this.typePut =
-      this.transaction.queries(TypeDeclarationPutType.class);
+      this.transaction.queries(TypeRecordPutType.class);
+
+    CADatabaseTypesTest.installTestTypePackage(this.transaction);
   }
 
   /**
@@ -255,7 +274,10 @@ public final class CADatabaseItemsSearchTest
       final var locationId = entry.getKey();
       final var locationItems = entry.getValue();
       for (final var item : locationItems) {
-        this.repositQuery.execute(new CAItemRepositSetAdd(item, locationId, 1L));
+        this.repositQuery.execute(new CAItemRepositSetAdd(
+          item,
+          locationId,
+          1L));
       }
     }
 
@@ -490,7 +512,10 @@ public final class CADatabaseItemsSearchTest
       final var locationId = entry.getKey();
       final var locationItems = entry.getValue();
       for (final var item : locationItems) {
-        this.repositQuery.execute(new CAItemRepositSetAdd(item, locationId, 1L));
+        this.repositQuery.execute(new CAItemRepositSetAdd(
+          item,
+          locationId,
+          1L));
       }
     }
 
@@ -725,7 +750,10 @@ public final class CADatabaseItemsSearchTest
       final var locationId = entry.getKey();
       final var locationItems = entry.getValue();
       for (final var item : locationItems) {
-        this.repositQuery.execute(new CAItemRepositSetAdd(item, locationId, 1L));
+        this.repositQuery.execute(new CAItemRepositSetAdd(
+          item,
+          locationId,
+          1L));
       }
     }
 
@@ -898,10 +926,16 @@ public final class CADatabaseItemsSearchTest
         new CAComparisonExactType.Anything<>(),
         new CAMetadataElementMatchType.And(
           new CAMetadataElementMatchType.And(
-            new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name0.value()), ANY_VALUE),
-            new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name1.value()), ANY_VALUE)
+            new Specific(
+              new CAComparisonFuzzyType.IsEqualTo<>(name0.value()),
+              ANY_VALUE),
+            new Specific(
+              new CAComparisonFuzzyType.IsEqualTo<>(name1.value()),
+              ANY_VALUE)
           ),
-          new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name2.value()), ANY_VALUE)
+          new Specific(
+            new CAComparisonFuzzyType.IsEqualTo<>(name2.value()),
+            ANY_VALUE)
         ),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -953,7 +987,9 @@ public final class CADatabaseItemsSearchTest
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonSetType.Anything<>(),
         new CAComparisonExactType.Anything<>(),
-        new Specific(new CAComparisonFuzzyType.IsEqualTo<>(name0.value()), new ExactTextValue("explanation")),
+        new Specific(
+          new CAComparisonFuzzyType.IsEqualTo<>(name0.value()),
+          new ExactTextValue("explanation")),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -1082,11 +1118,11 @@ public final class CADatabaseItemsSearchTest
     final var rng = new Random(1000L);
 
     final var type0 =
-      new CATypeRecord(
-        new RDottedName("t0"), "A type.", Map.of());
+      new CATypeRecord(P,
+                       new RDottedName("t0"), "A type.", Map.of());
     final var type1 =
-      new CATypeRecord(
-        new RDottedName("t1"), "A type.", Map.of());
+      new CATypeRecord(P,
+                       new RDottedName("t1"), "A type.", Map.of());
 
     this.typePut.execute(type0);
     this.typePut.execute(type1);

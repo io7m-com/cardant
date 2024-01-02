@@ -15,19 +15,19 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
+import com.io7m.cardant.model.CATypeRecordSearchParameters;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordSearchBegin;
 import net.jqwik.api.Arbitraries;
 
 public final class CAArbCommandTypeDeclarationSearchBegin
-  extends CAArbAbstract<CAICommandTypeDeclarationSearchBegin>
+  extends CAArbAbstract<CAICommandTypeRecordSearchBegin>
 {
   public CAArbCommandTypeDeclarationSearchBegin()
   {
     super(
-      CAICommandTypeDeclarationSearchBegin.class,
-      () -> Arbitraries.defaultFor(CATypeDeclarationSearchParameters.class)
-        .map(CAICommandTypeDeclarationSearchBegin::new)
+      CAICommandTypeRecordSearchBegin.class,
+      () -> Arbitraries.defaultFor(CATypeRecordSearchParameters.class)
+        .map(CAICommandTypeRecordSearchBegin::new)
     );
   }
 }

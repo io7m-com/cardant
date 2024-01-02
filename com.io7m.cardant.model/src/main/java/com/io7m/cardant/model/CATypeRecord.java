@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.lanark.core.RDottedName;
 
 import java.util.Map;
@@ -25,12 +26,14 @@ import java.util.Objects;
 /**
  * A record type.
  *
- * @param name        The type name
- * @param description The description
- * @param fields      The set of fields
+ * @param packageIdentifier The package that owns the type
+ * @param name              The type name
+ * @param description       The description
+ * @param fields            The set of fields
  */
 
 public record CATypeRecord(
+  CATypePackageIdentifier packageIdentifier,
   RDottedName name,
   String description,
   Map<RDottedName, CATypeField> fields)
@@ -38,13 +41,15 @@ public record CATypeRecord(
   /**
    * A record type.
    *
-   * @param name        The type name
-   * @param description The description
-   * @param fields      The set of fields
+   * @param packageIdentifier The package that owns the type
+   * @param name              The type name
+   * @param description       The description
+   * @param fields            The set of fields
    */
 
   public CATypeRecord
   {
+    Objects.requireNonNull(packageIdentifier, "packageIdentifier");
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(description, "description");
     Objects.requireNonNull(fields, "fields");

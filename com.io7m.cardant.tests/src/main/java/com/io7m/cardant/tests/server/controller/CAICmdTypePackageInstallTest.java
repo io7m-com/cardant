@@ -19,7 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageInstallType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
@@ -288,7 +288,7 @@ public final class CAICmdTypePackageInstallTest
     final var typeScalar =
       mock(TypeScalarGetType.class);
     final var typeRecord =
-      mock(TypeDeclarationGetType.class);
+      mock(TypeRecordGetType.class);
 
     final var transaction =
       this.transaction();
@@ -299,7 +299,7 @@ public final class CAICmdTypePackageInstallTest
       .thenReturn(install);
     when(transaction.queries(TypeScalarGetType.class))
       .thenReturn(typeScalar);
-    when(transaction.queries(TypeDeclarationGetType.class))
+    when(transaction.queries(TypeRecordGetType.class))
       .thenReturn(typeRecord);
 
     when(satisfy.execute(any()))

@@ -25,12 +25,11 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageUninstallType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationsReferencingScalarType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationsSearchType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsReferencingScalarType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarRemoveType;
@@ -50,15 +49,17 @@ import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageSearchParameters;
 import com.io7m.cardant.model.type_package.CATypePackageSummary;
+import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
-import com.io7m.cardant.model.type_package.CATypePackageUninstallBehavior;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
-import com.io7m.cardant.type_packages.CATypePackageCheckers;
-import com.io7m.cardant.type_packages.CATypePackageParsers;
-import com.io7m.cardant.type_packages.CATypePackageResolverType;
-import com.io7m.cardant.type_packages.CATypePackageSerializers;
+import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.compilers.CATypePackageCompilers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageSerializers;
+import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
@@ -81,6 +82,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -99,17 +101,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseTypePackagesTest
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("x"),
+      Version.of(1, 0, 0)
+    );
+
   private static CADatabaseFixture DATABASE_FIXTURE;
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
   private TypeScalarPutType tsPut;
-  private TypeDeclarationPutType tdPut;
-  private TypeDeclarationsSearchType tdSearch;
-  private TypeDeclarationGetType tdGet;
-  private TypeDeclarationRemoveType tdRemove;
-  private TypeDeclarationsReferencingScalarType tdRefSearch;
-  private TypeDeclarationGetMultipleType tdGetMulti;
+  private TypeRecordPutType tdPut;
+  private TypeRecordsSearchType tdSearch;
+  private TypeRecordGetType tdGet;
+  private TypeRecordRemoveType tdRemove;
+  private TypeRecordsReferencingScalarType tdRefSearch;
   private TypeScalarRemoveType tsRemove;
   private TypeScalarSearchType tsSearch;
   private TypeScalarGetType tsGet;
@@ -177,17 +184,15 @@ public final class CADatabaseTypePackagesTest
       this.transaction.queries(TypeScalarSearchType.class);
 
     this.tdPut =
-      this.transaction.queries(TypeDeclarationPutType.class);
+      this.transaction.queries(TypeRecordPutType.class);
     this.tdGet =
-      this.transaction.queries(TypeDeclarationGetType.class);
-    this.tdGetMulti =
-      this.transaction.queries(TypeDeclarationGetMultipleType.class);
+      this.transaction.queries(TypeRecordGetType.class);
     this.tdRemove =
-      this.transaction.queries(TypeDeclarationRemoveType.class);
+      this.transaction.queries(TypeRecordRemoveType.class);
     this.tdSearch =
-      this.transaction.queries(TypeDeclarationsSearchType.class);
+      this.transaction.queries(TypeRecordsSearchType.class);
     this.tdRefSearch =
-      this.transaction.queries(TypeDeclarationsReferencingScalarType.class);
+      this.transaction.queries(TypeRecordsReferencingScalarType.class);
 
     this.tpInstall =
       this.transaction.queries(TypePackageInstallType.class);
@@ -204,7 +209,14 @@ public final class CADatabaseTypePackagesTest
       this.transaction.queries(ItemTypesRevokeType.class);
 
     this.resolver =
-      CADatabaseTypePackageResolver.create(this.transaction);
+      CADatabaseTypePackageResolver.create(
+        CATypePackageCompilers.create(
+          CAStrings.create(Locale.ROOT),
+          new CATypePackageParsers(),
+          new CATypePackageCheckers()
+        ),
+        this.transaction
+      );
   }
 
   /**
@@ -219,14 +231,12 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
+        P,
         new RDottedName("x.t0"), "T0", 0L, 100L);
 
     final var p0 =
       new CATypePackage(
-        new CATypePackageIdentifier(
-          new RDottedName("p"),
-          Version.of(1, 0, 0)
-        ),
+        P,
         "P0",
         Set.of(),
         Map.ofEntries(
@@ -274,14 +284,12 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
+        P,
         new RDottedName("x.t0"), "T0", 0L, 100L);
 
     final var p0 =
       new CATypePackage(
-        new CATypePackageIdentifier(
-          new RDottedName("p"),
-          Version.of(1, 0, 0)
-        ),
+        P,
         "P0",
         Set.of(),
         Map.ofEntries(
@@ -293,7 +301,7 @@ public final class CADatabaseTypePackagesTest
     final var p1 =
       new CATypePackage(
         new CATypePackageIdentifier(
-          new RDottedName("p"),
+          P.name(),
           Version.of(2, 0, 0)
         ),
         "P0",
@@ -324,14 +332,12 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
+        P,
         new RDottedName("x.t0"), "T0", 0L, 100L);
 
     final var p0 =
       new CATypePackage(
-        new CATypePackageIdentifier(
-          new RDottedName("p"),
-          Version.of(1, 0, 0)
-        ),
+        P,
         "P0",
         Set.of(),
         Map.ofEntries(
@@ -343,7 +349,7 @@ public final class CADatabaseTypePackagesTest
     final var p1 =
       new CATypePackage(
         new CATypePackageIdentifier(
-          new RDottedName("p"),
+          P.name(),
           Version.of(2, 0, 0)
         ),
         "P0",
@@ -359,7 +365,7 @@ public final class CADatabaseTypePackagesTest
     this.transaction.commit();
     this.tpUninstall.execute(
       new CATypePackageUninstall(
-        CATypePackageUninstallBehavior.UNINSTALL_FAIL_IF_TYPES_REFERENCED,
+        CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED,
         p0.identifier()
       )
     );
@@ -381,10 +387,12 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
+        P,
         new RDottedName("x.t0"), "T0", 0L, 100L);
 
     final var t1 =
       new CATypeRecord(
+        P,
         new RDottedName("x.t1"),
         "T1",
         Map.ofEntries(
@@ -402,10 +410,7 @@ public final class CADatabaseTypePackagesTest
 
     final var p0 =
       new CATypePackage(
-        new CATypePackageIdentifier(
-          new RDottedName("x"),
-          Version.of(1, 0, 0)
-        ),
+        P,
         "P0",
         Set.of(),
         Map.ofEntries(Map.entry(t0.name(), t0)),
@@ -426,7 +431,7 @@ public final class CADatabaseTypePackagesTest
       assertThrows(CADatabaseException.class, () -> {
         this.tpUninstall.execute(
           new CATypePackageUninstall(
-            CATypePackageUninstallBehavior.UNINSTALL_FAIL_IF_TYPES_REFERENCED,
+            CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED,
             p0.identifier()
           )
         );
@@ -449,10 +454,12 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
+        P,
         new RDottedName("x.t0"), "T0", 0L, 100L);
 
     final var t1 =
       new CATypeRecord(
+        P,
         new RDottedName("x.t1"),
         "T1",
         Map.ofEntries(
@@ -470,10 +477,7 @@ public final class CADatabaseTypePackagesTest
 
     final var p0 =
       new CATypePackage(
-        new CATypePackageIdentifier(
-          new RDottedName("x"),
-          Version.of(1, 0, 0)
-        ),
+        P,
         "P0",
         Set.of(),
         Map.ofEntries(Map.entry(t0.name(), t0)),
@@ -490,7 +494,7 @@ public final class CADatabaseTypePackagesTest
     );
     this.tpUninstall.execute(
       new CATypePackageUninstall(
-        CATypePackageUninstallBehavior.UNINSTALL_REVOKE_TYPES,
+        CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_REVOKE_TYPES,
         p0.identifier()
       )
     );

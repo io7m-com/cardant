@@ -20,26 +20,26 @@ package com.io7m.cardant.model.type_package;
 import java.util.Objects;
 
 /**
- * An uninstall request.
+ * The parameters required to uninstall a type package.
  *
- * @param behavior          The behavior
- * @param packageIdentifier The package identifier
+ * @param typeRemovalBehavior The type removal behavior
+ * @param packageIdentifier   The package identifier
  */
 
 public record CATypePackageUninstall(
-  CATypePackageUninstallBehavior behavior,
+  CATypePackageTypeRemovalBehavior typeRemovalBehavior,
   CATypePackageIdentifier packageIdentifier)
 {
   /**
-   * An uninstall request.
+   * The parameters required to uninstall a type package.
    *
-   * @param behavior          The behavior
-   * @param packageIdentifier The package identifier
+   * @param typeRemovalBehavior The type removal behavior
+   * @param packageIdentifier   The package identifier
    */
 
   public CATypePackageUninstall
   {
-    Objects.requireNonNull(behavior, "behavior");
+    Objects.requireNonNull(typeRemovalBehavior, "behavior");
     Objects.requireNonNull(packageIdentifier, "packageIdentifier");
   }
 }

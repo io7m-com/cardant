@@ -26,7 +26,10 @@ module com.io7m.cardant.database.api
   requires com.io7m.cardant.error_codes;
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.strings;
-  requires com.io7m.cardant.type_packages;
+  requires com.io7m.cardant.type_packages.compiler.api;
+  requires com.io7m.cardant.type_packages.parser.api;
+  requires com.io7m.cardant.type_packages.resolver.api;
+  requires com.io7m.cardant.type_packages.upgrades.api;
 
   requires com.io7m.repetoir.core;
   requires io.opentelemetry.api;

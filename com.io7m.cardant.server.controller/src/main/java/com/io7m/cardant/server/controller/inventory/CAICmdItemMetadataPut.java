@@ -19,12 +19,13 @@ package com.io7m.cardant.server.controller.inventory;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -54,6 +55,11 @@ public final class CAICmdItemMetadataPut
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction = context.transaction();
     transaction.setUserId(context.session().userId());
 
@@ -61,8 +67,6 @@ public final class CAICmdItemMetadataPut
       transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     final var get =
       transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
-    final var typeGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
 
     final var itemId = command.item();
     context.setAttribute(ITEM_ID, itemId.displayId());
@@ -70,8 +74,11 @@ public final class CAICmdItemMetadataPut
     final var metadatas = command.metadatas();
     metaPut.execute(new Parameters(itemId, metadatas));
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var item = get.execute(itemId).orElseThrow();
-    CAITypeChecking.checkTypes(context, typeGet, item);
+    CAITypeChecking.checkTypes(context, resolver, item);
     return new CAIResponseItemMetadataPut(context.requestId(), item);
   }
 }

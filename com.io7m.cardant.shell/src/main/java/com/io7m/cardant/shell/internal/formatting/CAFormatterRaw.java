@@ -24,8 +24,8 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeDeclarationSummary;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CATypePackageSummary;
 import com.io7m.medrina.api.MRoleName;
@@ -290,7 +290,7 @@ public final class CAFormatterRaw implements CAFormatterType
 
   @Override
   public void formatTypeDeclarationPage(
-    final CAPage<CATypeDeclarationSummary> types)
+    final CAPage<CATypeRecordSummary> types)
   {
     final PrintWriter w = this.terminal.writer();
     w.printf(

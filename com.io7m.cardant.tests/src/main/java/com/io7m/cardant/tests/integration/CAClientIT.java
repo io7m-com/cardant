@@ -32,8 +32,8 @@ import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageSearchParameters;
+import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
-import com.io7m.cardant.model.type_package.CATypePackageUninstallBehavior;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
@@ -684,7 +684,7 @@ public final class CAClientIT
         this.client.executeOrElseThrow(
           new CAICommandTypePackageUninstall(
             new CATypePackageUninstall(
-              CATypePackageUninstallBehavior.UNINSTALL_FAIL_IF_TYPES_REFERENCED,
+              CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED,
               new CATypePackageIdentifier(
                 new RDottedName("com.io7m.example"),
                 Version.of(1,0,0)

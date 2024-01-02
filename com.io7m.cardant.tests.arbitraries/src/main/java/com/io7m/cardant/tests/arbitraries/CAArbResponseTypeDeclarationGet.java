@@ -16,22 +16,22 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.protocol.inventory.CAIResponseTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypeRecordGet;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
 import java.util.UUID;
 
-public final class CAArbResponseTypeDeclarationGet extends CAArbAbstract<CAIResponseTypeDeclarationGet>
+public final class CAArbResponseTypeDeclarationGet extends CAArbAbstract<CAIResponseTypeRecordGet>
 {
   public CAArbResponseTypeDeclarationGet()
   {
     super(
-      CAIResponseTypeDeclarationGet.class,
+      CAIResponseTypeRecordGet.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
         Arbitraries.defaultFor(CATypeRecord.class)
-      ).as(CAIResponseTypeDeclarationGet::new)
+      ).as(CAIResponseTypeRecordGet::new)
     );
   }
 }

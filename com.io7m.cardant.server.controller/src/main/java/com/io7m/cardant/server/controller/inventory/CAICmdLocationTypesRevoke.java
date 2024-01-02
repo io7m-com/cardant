@@ -19,12 +19,13 @@ package com.io7m.cardant.server.controller.inventory;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -52,19 +53,25 @@ public final class CAICmdLocationTypesRevoke extends CAICmdAbstract<CAICommandLo
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction =
       context.transaction();
     final var get =
       transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var revoke =
       transaction.queries(CADatabaseQueriesLocationsType.LocationTypesRevokeType.class);
-    final var typeMultiGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
 
     revoke.execute(new Parameters(command.location(), command.types()));
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var location = get.execute(command.location()).orElseThrow();
-    CAITypeChecking.checkTypes(context, typeMultiGet, location);
+    CAITypeChecking.checkTypes(context, resolver, location);
     return new CAIResponseLocationTypesRevoke(context.requestId(), location);
   }
 }

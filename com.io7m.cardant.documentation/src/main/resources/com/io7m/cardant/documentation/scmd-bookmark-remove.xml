@@ -1,43 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Section id="ac62a03a-b8d0-314f-9d47-2d3148f03389" title="bookmark-remove" xmlns="urn:com.io7m.structural:8:0">
+<Section id="ac62a03a-b8d0-314f-9d47-2d3148f03389"
+         title="bookmark-remove"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
   <Subsection title="Name">
     <Paragraph>
       <Term type="command">bookmark-remove</Term>
-       - Remove a server bookmark.
+      - Remove a server bookmark.
     </Paragraph>
   </Subsection>
   <Subsection title="Description">
     <Paragraph>
-      The 
+      The
       <Term type="command">bookmark-remove</Term>
-       command removes a <Link target="01a85d22-da3c-4f18-ba11-d6e700345e4e">bookmark</Link>.
+      command removes a <Link target="01a85d22-da3c-4f18-ba11-d6e700345e4e">bookmark</Link>.
     </Paragraph>
-    <FormalItem title="Parameters">
-      <Table type="parameterTable">
-        <Columns>
-          <Column>Parameter</Column>
-          <Column>Type</Column>
-          <Column>Cardinality</Column>
-          <Column>Default</Column>
-          <Column>Description</Column>
-        </Columns>
-        <Row>
-          <Cell>
-            <Term type="parameter">--name</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>The name of the bookmark.</Cell>
-        </Row>
-      </Table>
-    </FormalItem>
   </Subsection>
+  <xi:include href="scmd-bookmark-remove-parameters.xml"/>
 </Section>
 

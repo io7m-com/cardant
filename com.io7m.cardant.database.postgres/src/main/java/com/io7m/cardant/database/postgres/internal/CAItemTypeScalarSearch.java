@@ -28,6 +28,7 @@ import java.util.List;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 final class CAItemTypeScalarSearch
@@ -57,6 +58,11 @@ final class CAItemTypeScalarSearch
         page.queryFields(
           context,
           List.of(
+            METADATA_TYPE_PACKAGES.MTP_NAME,
+            METADATA_TYPE_PACKAGES.MTP_VERSION_MAJOR,
+            METADATA_TYPE_PACKAGES.MTP_VERSION_MINOR,
+            METADATA_TYPE_PACKAGES.MTP_VERSION_PATCH,
+            METADATA_TYPE_PACKAGES.MTP_VERSION_QUALIFIER,
             METADATA_TYPES_SCALAR.MTS_DESCRIPTION,
             METADATA_TYPES_SCALAR.MTS_NAME,
             METADATA_TYPES_SCALAR.MTS_BASE_TYPE,

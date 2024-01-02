@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Section id="a24be340-15b2-32ce-ad47-c7a807cef8d1" title="item-reposit-serial-remove" xmlns="urn:com.io7m.structural:8:0">
+<Section id="a24be340-15b2-32ce-ad47-c7a807cef8d1"
+         title="item-reposit-serial-remove"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
   <Subsection title="Name">
     <Paragraph>
       <Term type="command">item-reposit-serial-remove</Term>
@@ -12,62 +15,7 @@
       <Term type="command">item-reposit-serial-remove</Term>
        command removes a single instance of an item with a specified serial number from a location.
     </Paragraph>
-    <FormalItem title="Parameters">
-      <Table type="parameterTable">
-        <Columns>
-          <Column>Parameter</Column>
-          <Column>Type</Column>
-          <Column>Cardinality</Column>
-          <Column>Default</Column>
-          <Column>Description</Column>
-        </Columns>
-        <Row>
-          <Cell>
-            <Term type="parameter">--item</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">com.io7m.cardant.model.CAItemID</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>The item ID.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--location</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">com.io7m.cardant.model.CALocationID</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>The location ID.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--serial</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.String</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant"/>
-          </Cell>
-          <Cell>The item serial number.</Cell>
-        </Row>
-      </Table>
-    </FormalItem>
   </Subsection>
+  <xi:include href="scmd-item-reposit-serial-remove-parameters.xml"/>
 </Section>
 

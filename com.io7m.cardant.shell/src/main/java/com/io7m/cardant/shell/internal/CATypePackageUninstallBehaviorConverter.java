@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.model.type_package.CATypePackageUninstallBehavior;
+import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.lanark.core.RDottedNamePatterns;
 import com.io7m.quarrel.core.QValueConverterType;
 
@@ -26,7 +26,7 @@ import com.io7m.quarrel.core.QValueConverterType;
  */
 
 public final class CATypePackageUninstallBehaviorConverter
-  implements QValueConverterType<CATypePackageUninstallBehavior>
+  implements QValueConverterType<CATypePackageTypeRemovalBehavior>
 {
   /**
    * Construct a converter.
@@ -38,23 +38,23 @@ public final class CATypePackageUninstallBehaviorConverter
   }
 
   @Override
-  public CATypePackageUninstallBehavior convertFromString(
+  public CATypePackageTypeRemovalBehavior convertFromString(
     final String text)
   {
-    return CATypePackageUninstallBehavior.valueOf(text);
+    return CATypePackageTypeRemovalBehavior.valueOf(text);
   }
 
   @Override
   public String convertToString(
-    final CATypePackageUninstallBehavior value)
+    final CATypePackageTypeRemovalBehavior value)
   {
     return value.toString();
   }
 
   @Override
-  public CATypePackageUninstallBehavior exampleValue()
+  public CATypePackageTypeRemovalBehavior exampleValue()
   {
-    return CATypePackageUninstallBehavior.UNINSTALL_FAIL_IF_TYPES_REFERENCED;
+    return CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED;
   }
 
   @Override
@@ -64,8 +64,8 @@ public final class CATypePackageUninstallBehaviorConverter
   }
 
   @Override
-  public Class<CATypePackageUninstallBehavior> convertedClass()
+  public Class<CATypePackageTypeRemovalBehavior> convertedClass()
   {
-    return CATypePackageUninstallBehavior.class;
+    return CATypePackageTypeRemovalBehavior.class;
   }
 }

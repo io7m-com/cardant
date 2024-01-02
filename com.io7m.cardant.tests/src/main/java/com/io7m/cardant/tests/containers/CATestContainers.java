@@ -37,6 +37,7 @@ import com.io7m.cardant.server.basic.CAServers;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestProperties;
 import com.io7m.cardant.tls.CATLSDisabled;
+import com.io7m.cardant.type_packages.parsers.CATypePackageSerializers;
 import com.io7m.ervilla.api.EContainerSpec;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.api.EContainerType;
@@ -210,7 +211,8 @@ public final class CATestContainers
         CADatabaseUpgrade.UPGRADE_DATABASE,
         "english",
         Clock.systemUTC(),
-        CAStrings.create(Locale.ROOT)
+        CAStrings.create(Locale.ROOT),
+        new CATypePackageSerializers()
       );
 
     return new CADatabaseFixture(
@@ -253,7 +255,8 @@ public final class CATestContainers
         CADatabaseUpgrade.UPGRADE_DATABASE,
         "english",
         Clock.systemUTC(),
-        CAStrings.create(Locale.ROOT)
+        CAStrings.create(Locale.ROOT),
+        new CATypePackageSerializers()
       );
 
     return new CADatabaseFixture(

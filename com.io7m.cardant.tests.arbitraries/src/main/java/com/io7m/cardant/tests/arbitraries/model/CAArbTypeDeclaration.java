@@ -17,8 +17,9 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeField;
+import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
@@ -35,6 +36,7 @@ public final class CAArbTypeDeclaration extends CAArbAbstract<CATypeRecord>
     super(
       CATypeRecord.class,
       () -> Combinators.combine(
+        Arbitraries.defaultFor(CATypePackageIdentifier.class),
         Arbitraries.defaultFor(RDottedName.class),
         Arbitraries.strings(),
         fields()

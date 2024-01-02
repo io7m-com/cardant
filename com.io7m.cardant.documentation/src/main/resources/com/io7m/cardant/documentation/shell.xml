@@ -612,25 +612,21 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-roles-revoke.xml"/>
     <xi:include href="scmd-self.xml"/>
     <xi:include href="scmd-set.xml"/>
-    <xi:include href="scmd-type-create.xml"/>
-    <xi:include href="scmd-type-field-put.xml"/>
-    <xi:include href="scmd-type-field-remove.xml"/>
-    <xi:include href="scmd-type-get.xml"/>
     <xi:include href="scmd-type-package-get-text.xml"/>
     <xi:include href="scmd-type-package-install.xml"/>
+    <xi:include href="scmd-type-package-schema.xml"/>
     <xi:include href="scmd-type-package-search-begin.xml"/>
     <xi:include href="scmd-type-package-search-next.xml"/>
     <xi:include href="scmd-type-package-search-previous.xml"/>
     <xi:include href="scmd-type-package-uninstall.xml"/>
+    <xi:include href="scmd-type-record-get.xml"/>
+    <xi:include href="scmd-type-record-search-begin.xml"/>
+    <xi:include href="scmd-type-record-search-next.xml"/>
+    <xi:include href="scmd-type-record-search-previous.xml"/>
     <xi:include href="scmd-type-scalar-get.xml"/>
-    <xi:include href="scmd-type-scalar-put.xml"/>
-    <xi:include href="scmd-type-scalar-remove.xml"/>
     <xi:include href="scmd-type-scalar-search-begin.xml"/>
     <xi:include href="scmd-type-scalar-search-next.xml"/>
     <xi:include href="scmd-type-scalar-search-previous.xml"/>
-    <xi:include href="scmd-type-search-begin.xml"/>
-    <xi:include href="scmd-type-search-next.xml"/>
-    <xi:include href="scmd-type-search-previous.xml"/>
     <xi:include href="scmd-version.xml"/>
   </Section>
 

@@ -11,7 +11,7 @@
   </Paragraph>
 
   <FormalItem title="Type Package 1.0">
-    <Verbatim><xi:include href="com/io7m/cardant/type_packages/type_packages-1.xsd" parse="text"/></Verbatim>
+    <Verbatim><xi:include href="com/io7m/cardant/type_packages/parsers/type_packages-1.xsd" parse="text"/></Verbatim>
   </FormalItem>
 
 </Section>

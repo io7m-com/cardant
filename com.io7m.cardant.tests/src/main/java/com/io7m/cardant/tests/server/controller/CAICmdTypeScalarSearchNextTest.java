@@ -21,6 +21,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchNext;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -32,6 +33,7 @@ import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -58,6 +60,12 @@ import static org.mockito.Mockito.when;
 public final class CAICmdTypeScalarSearchNextTest
   extends CACmdAbstractContract
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
   /**
    * Searching requires the permission to READ to INVENTORY_ITEMS.
    *
@@ -110,7 +118,7 @@ public final class CAICmdTypeScalarSearchNextTest
     final var page =
       new CAPage<CATypeScalarType>(
         List.of(
-          new CATypeScalarType.Text(new RDottedName("a.b.c"), "x", "a")
+          new CATypeScalarType.Text(P, new RDottedName("a.b.c"), "x", "a")
         ),
         0,
         1,

@@ -29,7 +29,6 @@ import org.jooq.Query;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.OptionalInt;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
@@ -44,7 +43,10 @@ public final class CADBQTypePackageInstall
   extends CADBQAbstract<CATypePackage, CADatabaseUnit>
   implements TypePackageInstallType
 {
-  private static final Service<CATypePackage, CADatabaseUnit, TypePackageInstallType> SERVICE =
+  private static final Service<
+    CATypePackage,
+    CADatabaseUnit,
+    TypePackageInstallType> SERVICE =
     new Service<>(TypePackageInstallType.class, CADBQTypePackageInstall::new);
 
   /**
@@ -106,7 +108,13 @@ public final class CADBQTypePackageInstall
     final var version =
       packageId.version();
     final var text =
-      CADBTypePackages.serialize(typePackage, attributes);
+      CADBTypePackages.serialize(
+        transaction.connection()
+          .database()
+          .typePackageSerializers(),
+        typePackage,
+        attributes
+      );
 
     final var packageDbID =
       context.insertInto(METADATA_TYPE_PACKAGES)
@@ -142,16 +150,17 @@ public final class CADBQTypePackageInstall
         CADBQTypeScalarPut.insertType(
           transaction,
           context,
-          OptionalInt.of(packageDbID),
+          packageDbID,
           e.getValue()
         )
       );
     }
     for (final var e : typePackage.recordTypes().entrySet()) {
       batch.addAll(
-        CADBQTypeDeclPut.putTypeRecord(
-          transaction, context,
-          OptionalInt.of(packageDbID),
+        CADBQTypeRecordPut.putTypeRecord(
+          transaction,
+          context,
+          packageDbID,
           e.getValue()
         )
       );

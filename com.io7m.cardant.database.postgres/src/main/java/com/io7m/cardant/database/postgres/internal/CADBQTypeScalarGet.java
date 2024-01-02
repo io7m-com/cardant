@@ -21,12 +21,16 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.lanark.core.RDottedName;
+import com.io7m.verona.core.Version;
+import com.io7m.verona.core.VersionQualifier;
 import org.jooq.DSLContext;
 
 import java.util.Optional;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.strings.CAStringConstants.TYPE;
 
 /**
@@ -81,9 +85,16 @@ public final class CADBQTypeScalarGet
         METADATA_TYPES_SCALAR.MTS_REAL_UPPER,
         METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN,
         METADATA_TYPES_SCALAR.MTS_TIME_LOWER,
-        METADATA_TYPES_SCALAR.MTS_TIME_UPPER
+        METADATA_TYPES_SCALAR.MTS_TIME_UPPER,
+        METADATA_TYPE_PACKAGES.MTP_NAME,
+        METADATA_TYPE_PACKAGES.MTP_VERSION_MAJOR,
+        METADATA_TYPE_PACKAGES.MTP_VERSION_MINOR,
+        METADATA_TYPE_PACKAGES.MTP_VERSION_PATCH,
+        METADATA_TYPE_PACKAGES.MTP_VERSION_QUALIFIER
       )
-      .from(METADATA_TYPES_SCALAR)
+      .from(
+        METADATA_TYPES_SCALAR.join(METADATA_TYPE_PACKAGES)
+          .on(METADATA_TYPES_SCALAR.MTS_PACKAGE.eq(METADATA_TYPE_PACKAGES.MTP_ID)))
       .where(METADATA_TYPES_SCALAR.MTS_NAME.eq(name.value()))
       .fetchOptional()
       .map(CADBQTypeScalarGet::mapRecord);
@@ -95,14 +106,16 @@ public final class CADBQTypeScalarGet
     return switch (record.get(METADATA_TYPES_SCALAR.MTS_BASE_TYPE)) {
       case SCALAR_INTEGRAL -> {
         yield new CATypeScalarType.Integral(
+          packageIdentifier(record),
           new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
           record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
-          record.get(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER),
-          record.get(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER)
+          record.<Long>get(METADATA_TYPES_SCALAR.MTS_INTEGRAL_LOWER).longValue(),
+          record.<Long>get(METADATA_TYPES_SCALAR.MTS_INTEGRAL_UPPER).longValue()
         );
       }
       case SCALAR_MONEY -> {
         yield new CATypeScalarType.Monetary(
+          packageIdentifier(record),
           new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
           record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
           record.get(METADATA_TYPES_SCALAR.MTS_MONEY_LOWER),
@@ -111,14 +124,16 @@ public final class CADBQTypeScalarGet
       }
       case SCALAR_REAL -> {
         yield new CATypeScalarType.Real(
+          packageIdentifier(record),
           new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
           record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
-          record.get(METADATA_TYPES_SCALAR.MTS_REAL_LOWER),
-          record.get(METADATA_TYPES_SCALAR.MTS_REAL_UPPER)
+          record.<Double>get(METADATA_TYPES_SCALAR.MTS_REAL_LOWER).doubleValue(),
+          record.<Double>get(METADATA_TYPES_SCALAR.MTS_REAL_UPPER).doubleValue()
         );
       }
       case SCALAR_TEXT -> {
         yield new CATypeScalarType.Text(
+          packageIdentifier(record),
           new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
           record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
           record.get(METADATA_TYPES_SCALAR.MTS_TEXT_PATTERN)
@@ -126,6 +141,7 @@ public final class CADBQTypeScalarGet
       }
       case SCALAR_TIME -> {
         yield new CATypeScalarType.Time(
+          packageIdentifier(record),
           new RDottedName(record.get(METADATA_TYPES_SCALAR.MTS_NAME)),
           record.get(METADATA_TYPES_SCALAR.MTS_DESCRIPTION),
           record.get(METADATA_TYPES_SCALAR.MTS_TIME_LOWER),
@@ -139,5 +155,24 @@ public final class CADBQTypeScalarGet
         );
       }
     };
+  }
+
+  static CATypePackageIdentifier packageIdentifier(
+    final org.jooq.Record record)
+  {
+    return new CATypePackageIdentifier(
+      new RDottedName(record.get(METADATA_TYPE_PACKAGES.MTP_NAME)),
+      new Version(
+        record.<Integer>get(METADATA_TYPE_PACKAGES.MTP_VERSION_MAJOR)
+          .intValue(),
+        record.<Integer>get(METADATA_TYPE_PACKAGES.MTP_VERSION_MINOR)
+          .intValue(),
+        record.<Integer>get(METADATA_TYPE_PACKAGES.MTP_VERSION_PATCH)
+          .intValue(),
+        Optional.ofNullable(
+          record.get(METADATA_TYPE_PACKAGES.MTP_VERSION_QUALIFIER)
+        ).map(VersionQualifier::new)
+      )
+    );
   }
 }

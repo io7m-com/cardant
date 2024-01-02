@@ -30,7 +30,7 @@ public record CAICommandTypePackageInstall(
   implements CAICommandType<CAIResponseTypePackageInstall>
 {
   /**
-   * Get the text of a type package.
+   * Install a type package.
    *
    * @param text The text
    */

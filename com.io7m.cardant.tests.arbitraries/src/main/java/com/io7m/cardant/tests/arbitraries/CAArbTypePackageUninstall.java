@@ -16,8 +16,8 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
-import com.io7m.cardant.model.type_package.CATypePackageUninstallBehavior;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -30,7 +30,7 @@ public final class CAArbTypePackageUninstall
       CATypePackageUninstall.class,
       () -> {
         return Combinators.combine(
-          Arbitraries.defaultFor(CATypePackageUninstallBehavior.class),
+          Arbitraries.defaultFor(CATypePackageTypeRemovalBehavior.class),
           Arbitraries.defaultFor(CATypePackageIdentifier.class)
         ).as(CATypePackageUninstall::new);
       }

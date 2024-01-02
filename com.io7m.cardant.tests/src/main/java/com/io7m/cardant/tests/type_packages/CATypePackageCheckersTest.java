@@ -27,13 +27,13 @@ import com.io7m.cardant.model.type_package.CATypePackageImport;
 import com.io7m.cardant.model.type_package.CATypeRecordDeclaration;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.type_packages.CATypePackageCheckerFailure;
-import com.io7m.cardant.type_packages.CATypePackageCheckerResultType;
-import com.io7m.cardant.type_packages.CATypePackageCheckerSuccess;
-import com.io7m.cardant.type_packages.CATypePackageCheckers;
-import com.io7m.cardant.type_packages.CATypePackageParsers;
-import com.io7m.cardant.type_packages.CATypePackageResolverType;
-import com.io7m.cardant.type_packages.CATypePackageSerializers;
+import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerFailure;
+import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerResultType;
+import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerSuccess;
+import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageSerializers;
+import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.verona.core.Version;
 import com.io7m.verona.core.VersionRange;
@@ -56,6 +56,12 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public final class CATypePackageCheckersTest
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
   private static final Logger LOG =
     LoggerFactory.getLogger(CATypePackageCheckersTest.class);
 
@@ -134,6 +140,7 @@ public final class CATypePackageCheckersTest
         Map.of(
           new CANameUnqualified("x"),
           new CATypeScalarType.Integral(
+            P,
             new RDottedName("x"),
             "X",
             0L,
@@ -254,6 +261,7 @@ public final class CATypePackageCheckersTest
         Map.of(
           new CANameUnqualified("x"),
           new CATypeScalarType.Integral(
+            P,
             new RDottedName("x"),
             "X",
             0L,
@@ -308,7 +316,7 @@ public final class CATypePackageCheckersTest
     final var packDecl =
       this.parsers.parseFile(file);
 
-    Mockito.when(this.resolver.findTypePackage(
+    Mockito.when(this.resolver.findTypePackageId(
       new RDottedName("com.io7m.other"),
       new VersionRange(
         Version.of(1, 0, 0),
@@ -330,6 +338,7 @@ public final class CATypePackageCheckersTest
     )).thenReturn(
       Optional.of(
         new CATypeScalarType.Integral(
+          P,
           new RDottedName("com.io7m.exa.t"),
           "A type",
           0L,

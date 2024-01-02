@@ -20,12 +20,13 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -53,19 +54,25 @@ public final class CAICmdItemTypesAssign extends CAICmdAbstract<CAICommandItemTy
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction =
       context.transaction();
     final var get =
       transaction.queries(ItemGetType.class);
     final var assign =
       transaction.queries(ItemTypesAssignType.class);
-    final var typeMultiGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
 
     assign.execute(new Parameters(command.item(), command.types()));
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var item = get.execute(command.item()).orElseThrow();
-    CAITypeChecking.checkTypes(context, typeMultiGet, item);
+    CAITypeChecking.checkTypes(context, resolver, item);
     return new CAIResponseItemTypesAssign(context.requestId(), item);
   }
 }

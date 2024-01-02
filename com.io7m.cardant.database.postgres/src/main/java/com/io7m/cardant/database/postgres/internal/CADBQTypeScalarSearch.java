@@ -30,6 +30,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
@@ -72,6 +73,11 @@ public final class CADBQTypeScalarSearch
     final DSLContext context,
     final CATypeScalarSearchParameters query)
   {
+    final var tableSource =
+      METADATA_TYPES_SCALAR
+        .join(METADATA_TYPE_PACKAGES)
+        .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES_SCALAR.MTS_PACKAGE));
+
     final var nameCondition =
       CADBComparisons.createFuzzyMatchQuery(
         query.nameQuery(),
@@ -93,7 +99,7 @@ public final class CADBQTypeScalarSearch
       new JQField(METADATA_TYPES_SCALAR.MTS_NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
-      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_TYPES_SCALAR)
+      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
         .addSortField(orderField)
         .addWhereCondition(searchCondition)
         .setPageSize(10L)

@@ -100,25 +100,71 @@ public final class CAShellCommandsDocumentation
           final var parser =
             parsers.create(parserConfig);
 
-          final var textWriter =
-            new StringWriter();
-          final var writer =
-            new PrintWriter(textWriter);
+          {
+            final var textWriter =
+              new StringWriter();
+            final var writer =
+              new PrintWriter(textWriter);
 
-          final var context =
-            parser.execute(byName, writer, xs, List.of(name));
+            final var paramsInclude =
+              "scmd-%s-parameters.xml".formatted(name);
 
-          context.execute();
-          writer.println();
-          writer.flush();
+            final var context =
+              parser.execute(
+                byName,
+                writer,
+                xs,
+                List.of(
+                  "--type",
+                  "main",
+                  "--parameters-include",
+                  paramsInclude,
+                  name
+                )
+              );
 
-          final var path =
-            Paths.get("/shared-tmp/scmd-%s.xml".formatted(name));
+            context.execute();
+            writer.println();
+            writer.flush();
 
-          Files.writeString(
-            path,
-            textWriter.toString(),
-            StandardCharsets.UTF_8);
+            final var mainFile =
+              Paths.get("/shared-tmp/scmd-%s.xml".formatted(name));
+
+            Files.writeString(
+              mainFile,
+              textWriter.toString(),
+              StandardCharsets.UTF_8
+            );
+          }
+
+          {
+            final var textWriter =
+              new StringWriter();
+            final var writer =
+              new PrintWriter(textWriter);
+
+            final var context =
+              parser.execute(
+                byName,
+                writer,
+                xs,
+                List.of("--type", "parameters", name)
+              );
+
+            context.execute();
+            writer.println();
+            writer.flush();
+
+            final var paramsFile =
+              Paths.get("/shared-tmp/scmd-%s-parameters.xml".formatted(name));
+
+            Files.writeString(
+              paramsFile,
+              textWriter.toString(),
+              StandardCharsets.UTF_8
+            );
+          }
+
         } catch (final Exception e) {
           e.printStackTrace();
         }

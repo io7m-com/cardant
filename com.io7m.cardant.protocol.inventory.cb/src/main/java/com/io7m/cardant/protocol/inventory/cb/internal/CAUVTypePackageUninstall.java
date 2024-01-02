@@ -23,7 +23,7 @@ import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypePackageUninstall;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageIdentifier.TYPE_PACKAGE_IDENTIFIER;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageUninstallBehavior.TYPE_PACKAGE_UNINSTALL_BEHAVIOR;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageTypeRemovalBehavior.TYPE_PACKAGE_TYPE_REMOVAL_BEHAVIOR;
 
 /**
  * A validator.
@@ -45,8 +45,10 @@ public enum CAUVTypePackageUninstall
     throws CAProtocolException
   {
     return new CAI1TypePackageUninstall(
-      TYPE_PACKAGE_UNINSTALL_BEHAVIOR.convertToWire(c.behavior()),
-      TYPE_PACKAGE_IDENTIFIER.convertToWire(c.packageIdentifier())
+      TYPE_PACKAGE_TYPE_REMOVAL_BEHAVIOR
+        .convertToWire(c.typeRemovalBehavior()),
+      TYPE_PACKAGE_IDENTIFIER
+        .convertToWire(c.packageIdentifier())
     );
   }
 
@@ -56,8 +58,10 @@ public enum CAUVTypePackageUninstall
     throws CAProtocolException
   {
     return new CATypePackageUninstall(
-      TYPE_PACKAGE_UNINSTALL_BEHAVIOR.convertFromWire(m.fieldBehavior()),
-      TYPE_PACKAGE_IDENTIFIER.convertFromWire(m.fieldIdentifier())
+      TYPE_PACKAGE_TYPE_REMOVAL_BEHAVIOR
+        .convertFromWire(m.fieldTypeRemovalBehavior()),
+      TYPE_PACKAGE_IDENTIFIER
+        .convertFromWire(m.fieldIdentifier())
     );
   }
 }

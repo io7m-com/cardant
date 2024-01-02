@@ -17,9 +17,11 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
+import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarPutType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CATypeScalarType;
 import org.jooq.DSLContext;
 import org.jooq.Query;
@@ -28,15 +30,20 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
+import java.util.Optional;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_REAL;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_TEXT;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_TIME;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
+import static com.io7m.cardant.strings.CAStringConstants.PACKAGE;
+import static com.io7m.cardant.strings.CAStringConstants.PACKAGE_VERSION;
+import static com.io7m.cardant.strings.CAStringConstants.TYPE;
 
 /**
  * Create or update a scalar type declaration.
@@ -72,11 +79,11 @@ public final class CADBQTypeScalarPut
 
   private static Query onExecuteTime(
     final DSLContext context,
-    final OptionalInt packageDbID,
+    final int packageId,
     final CATypeScalarType.Time t)
   {
     return context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TIME)
@@ -91,7 +98,7 @@ public final class CADBQTypeScalarPut
       .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, t.rangeUpper())
       .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
       .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TIME)
@@ -106,22 +113,13 @@ public final class CADBQTypeScalarPut
       .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, t.rangeUpper());
   }
 
-  private static Integer box(
-    final OptionalInt id)
-  {
-    if (id.isEmpty()) {
-      return null;
-    }
-    return Integer.valueOf(id.getAsInt());
-  }
-
   private static Query onExecuteReal(
     final DSLContext context,
-    final OptionalInt packageDbID,
+    final int packageId,
     final CATypeScalarType.Real t)
   {
     return context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_REAL)
@@ -136,7 +134,7 @@ public final class CADBQTypeScalarPut
       .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
       .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
       .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_REAL)
@@ -153,11 +151,11 @@ public final class CADBQTypeScalarPut
 
   private static Query onExecuteIntegral(
     final DSLContext context,
-    final OptionalInt packageDbID,
+    final int packageId,
     final CATypeScalarType.Integral t)
   {
     return context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_INTEGRAL)
@@ -176,7 +174,7 @@ public final class CADBQTypeScalarPut
       .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
       .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
       .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_INTEGRAL)
@@ -197,11 +195,11 @@ public final class CADBQTypeScalarPut
 
   private static Query onExecuteText(
     final DSLContext context,
-    final OptionalInt packageDbID,
+    final int packageId,
     final CATypeScalarType.Text t)
   {
     return context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TEXT)
@@ -216,7 +214,7 @@ public final class CADBQTypeScalarPut
       .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
       .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
       .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_TEXT)
@@ -233,11 +231,11 @@ public final class CADBQTypeScalarPut
 
   private static Query onExecuteMonetary(
     final DSLContext context,
-    final OptionalInt packageDbID,
+    final int packageId,
     final CATypeScalarType.Monetary t)
   {
     return context.insertInto(METADATA_TYPES_SCALAR)
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_MONEY)
@@ -252,7 +250,7 @@ public final class CADBQTypeScalarPut
       .set(METADATA_TYPES_SCALAR.MTS_TIME_UPPER, (OffsetDateTime) null)
       .onConflict(METADATA_TYPES_SCALAR.MTS_NAME)
       .doUpdate()
-      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, box(packageDbID))
+      .set(METADATA_TYPES_SCALAR.MTS_PACKAGE, packageId)
       .set(METADATA_TYPES_SCALAR.MTS_DESCRIPTION, t.description())
       .set(METADATA_TYPES_SCALAR.MTS_NAME, t.name().value())
       .set(METADATA_TYPES_SCALAR.MTS_BASE_TYPE, SCALAR_MONEY)
@@ -271,17 +269,45 @@ public final class CADBQTypeScalarPut
   protected CADatabaseUnit onExecute(
     final DSLContext context,
     final CATypeScalarType scalar)
+    throws CADatabaseException
   {
+    final var packageIdentifier =
+      scalar.packageIdentifier();
+
+    this.setAttribute(PACKAGE, packageIdentifier.name().value());
+    this.setAttribute(PACKAGE_VERSION, packageIdentifier.version().toString());
+    this.setAttribute(TYPE, scalar.name().value());
+
+    final var match =
+      CADBTypePackages.packageMatch(packageIdentifier);
+    final var id =
+      context.select(METADATA_TYPE_PACKAGES.MTP_ID)
+        .from(METADATA_TYPE_PACKAGES)
+        .where(match)
+        .fetchOptional(METADATA_TYPE_PACKAGES.MTP_ID)
+        .orElseThrow(this::errorNonexistent)
+        .intValue();
+
     context.batch(
-      insertType(this.transaction(), context, OptionalInt.empty(), scalar)
+      insertType(this.transaction(), context, id, scalar)
     ).execute();
     return CADatabaseUnit.UNIT;
+  }
+
+  private CADatabaseException errorNonexistent()
+  {
+    return new CADatabaseException(
+      this.local(ERROR_NONEXISTENT),
+      CAStandardErrorCodes.errorNonexistent(),
+      this.attributes(),
+      Optional.empty()
+    );
   }
 
   static List<Query> insertType(
     final CADatabaseTransaction transaction,
     final DSLContext context,
-    final OptionalInt packageDbID,
+    final int packageDbID,
     final CATypeScalarType scalar)
   {
     final var query =

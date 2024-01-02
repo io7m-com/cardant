@@ -19,6 +19,7 @@ package com.io7m.cardant.server.api;
 import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseFactoryType;
 import com.io7m.cardant.strings.CAStrings;
+import com.io7m.cardant.type_packages.parser.api.CATypePackageSerializerFactoryType;
 
 import java.time.Clock;
 import java.util.ArrayList;
@@ -47,9 +48,10 @@ public final class CAServerConfigurations
   /**
    * Read a server configuration from the given file.
    *
-   * @param locale The locale
-   * @param clock  The clock
-   * @param file   The file
+   * @param locale      The locale
+   * @param clock       The clock
+   * @param file        The file
+   * @param serializers The serializers
    *
    * @return A server configuration
    */
@@ -57,11 +59,13 @@ public final class CAServerConfigurations
   public static CAServerConfiguration ofFile(
     final Locale locale,
     final Clock clock,
+    final CATypePackageSerializerFactoryType serializers,
     final CAServerConfigurationFile file)
   {
     Objects.requireNonNull(locale, "locale");
     Objects.requireNonNull(clock, "clock");
     Objects.requireNonNull(file, "file");
+    Objects.requireNonNull(serializers, "serializers");
 
     final var strings =
       CAStrings.create(locale);
@@ -82,7 +86,8 @@ public final class CAServerConfigurations
         fileDbConfig.upgrade() ? UPGRADE_DATABASE : DO_NOT_UPGRADE_DATABASE,
         fileDbConfig.databaseLanguage(),
         clock,
-        strings
+        strings,
+        serializers
       );
 
     final var databaseFactories =
