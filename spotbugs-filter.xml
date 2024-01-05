@@ -944,4 +944,9 @@
     </Or>
   </Match>
 
+  <Match>
+    <Package name="com.io7m.cardant.type_packages.standard"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED"/>
+  </Match>
+
 </FindBugsFilter>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Package xmlns="com.io7m.cardant:type_packages:1">
+
+  <PackageInfo Name="cardant.product"
+               Version="${project.version}"
+               Description="Manufactured products."/>
+
+  <TypeScalarText Name="manufacturer"
+                  Description="A product manufacturer."
+                  Pattern=".*"/>
+
+  <TypeScalarText Name="model_number"
+                  Description="A model number."
+                  Pattern=".*"/>
+
+  <TypeRecord Name="product"
+              Description="A manufactured product.">
+    <Field Name="model_number"
+           Description="The product's model number."
+           Type="model_number"/>
+    <Field Name="manufacturer"
+           Description="The product's manufacturer."
+           Type="manufacturer"/>
+  </TypeRecord>
+
+</Package>

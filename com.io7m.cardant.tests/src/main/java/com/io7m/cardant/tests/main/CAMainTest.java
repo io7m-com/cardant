@@ -17,26 +17,92 @@
 package com.io7m.cardant.tests.main;
 
 import com.io7m.cardant.main.CAMain;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class CAMainTest
 {
+  private PrintStream savedOutput;
+  private ByteArrayOutputStream outBuffer;
+
+  @BeforeEach
+  public void setup()
+  {
+    this.savedOutput = System.out;
+    this.outBuffer = new ByteArrayOutputStream();
+    System.setOut(new PrintStream(this.outBuffer));
+  }
+
+  @AfterEach
+  public void tearDown()
+  {
+    System.setOut(this.savedOutput);
+    System.out.println(
+      new String(this.outBuffer.toString(StandardCharsets.UTF_8))
+    );
+  }
+
   @TestFactory
   public Stream<DynamicTest> testHelp()
   {
-    return Stream.of("initialize", "server", "shell", "help")
-      .map(name -> {
-        return DynamicTest.dynamicTest(name, () -> {
+    final var names =
+      List.of(
+        List.of("initialize"),
+        List.of("server"),
+        List.of("shell"),
+        List.of("help"),
+        List.of("package", "get"),
+        List.of("package", "list")
+      );
+
+    return names.stream()
+      .map(args -> {
+        return DynamicTest.dynamicTest("help " + args, () -> {
+          final var argArray = new String[1 + args.size()];
+          argArray[0] = "help";
+          for (int index = 0; index < args.size(); ++index) {
+            argArray[index + 1] = args.get(index);
+          }
           assertEquals(
             0,
-            CAMain.mainExitless(new String[]{"help", name})
+            CAMain.mainExitless(argArray)
           );
         });
       });
+  }
+
+  @Test
+  public void testPackageList()
+  {
+    final var r = CAMain.mainExitless(new String[]{
+      "package",
+      "list"
+    });
+    assertEquals(0, r);
+  }
+
+  @Test
+  public void testPackageGet()
+  {
+    final var r = CAMain.mainExitless(new String[]{
+      "package",
+      "get",
+      "--name",
+      "cardant.product",
+      "--version",
+      "1.0.0-SNAPSHOT"
+    });
+    assertEquals(0, r);
   }
 }

@@ -16,10 +16,9 @@
       The <Term type="command">server</Term> command starts the
       <Link target="80d0af5f-505b-4dee-b733-296a6f3970a4">shell</Link>.
     </Paragraph>
-    <FormalItem title="Parameters">
-      <xi:include href="CACmdShell.xml"/>
-    </FormalItem>
   </Subsection>
+
+  <xi:include href="mcmd-shell-parameters.xml"/>
 
   <Subsection title="Examples">
     <FormalItem title="Example" type="example">

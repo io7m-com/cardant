@@ -17,43 +17,23 @@
 
 package com.io7m.cardant.model.type_package;
 
-import com.io7m.lanark.core.RDottedName;
-import com.io7m.verona.core.Version;
-
-import java.util.Comparator;
-import java.util.Objects;
+import java.io.InputStream;
 
 /**
- * A package identifier.
- *
- * @param name    The name
- * @param version The version
+ * A provider of type packages.
  */
 
-public record CATypePackageIdentifier(
-  RDottedName name,
-  Version version)
-  implements Comparable<CATypePackageIdentifier>
+public interface CATypePackageProviderType
 {
   /**
-   * A package identifier.
-   *
-   * @param name    The name
-   * @param version The version
+   * @return The type package identifier
    */
 
-  public CATypePackageIdentifier
-  {
-    Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(version, "version");
-  }
+  CATypePackageIdentifier identifier();
 
-  @Override
-  public int compareTo(
-    final CATypePackageIdentifier other)
-  {
-    return Comparator.comparing(CATypePackageIdentifier::name)
-      .thenComparing(CATypePackageIdentifier::version)
-      .compare(this, other);
-  }
+  /**
+   * @return A stream providing the raw package text
+   */
+
+  InputStream packageText();
 }

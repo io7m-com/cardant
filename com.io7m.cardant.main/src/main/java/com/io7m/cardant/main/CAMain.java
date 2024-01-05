@@ -17,6 +17,8 @@
 package com.io7m.cardant.main;
 
 import com.io7m.cardant.main.internal.CMCmdInitialize;
+import com.io7m.cardant.main.internal.CMCmdPackageGet;
+import com.io7m.cardant.main.internal.CMCmdPackageList;
 import com.io7m.cardant.main.internal.CMCmdServer;
 import com.io7m.cardant.main.internal.CMCmdShell;
 import com.io7m.cardant.model.CAVersion;
@@ -25,6 +27,8 @@ import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QApplication;
 import com.io7m.quarrel.core.QApplicationMetadata;
 import com.io7m.quarrel.core.QApplicationType;
+import com.io7m.quarrel.core.QCommandMetadata;
+import com.io7m.quarrel.core.QStringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +80,22 @@ public final class CAMain implements Runnable
     builder.addCommand(new CMCmdInitialize());
     builder.addCommand(new CMCmdServer());
     builder.addCommand(new CMCmdShell());
+
+    {
+      final var group =
+        builder.createCommandGroup(
+          new QCommandMetadata(
+            "package",
+            new QStringType.QConstant(
+              "Commands for listing and retrieving local type packages."
+            ),
+            Optional.empty()
+          )
+        );
+
+      group.addCommand(new CMCmdPackageList());
+      group.addCommand(new CMCmdPackageGet());
+    }
 
     this.application = builder.build();
     this.exitCode = 0;

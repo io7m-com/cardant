@@ -14,10 +14,9 @@
     <Paragraph>
       The <Term type="command">server</Term> command starts the server.
     </Paragraph>
-    <FormalItem title="Parameters">
-      <xi:include href="CACmdServer.xml"/>
-    </FormalItem>
   </Subsection>
+
+  <xi:include href="mcmd-server-parameters.xml"/>
 
   <Subsection title="Examples">
     <FormalItem title="Example" type="example">
