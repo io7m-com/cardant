@@ -104,11 +104,6 @@
         </Table>
       </FormalItem>
       <Paragraph>
-        Most metrics are labelled with various attributes that allow for distinguishing between
-        requests that occurred as part of the user service, or part of the admin service. Metrics
-        involving the mail system typically include the destination address as an attribute.
-      </Paragraph>
-      <Paragraph>
         The package <Term type="term">may</Term> produce other metrics, however these are undocumented and
         should not be relied upon.
       </Paragraph>
