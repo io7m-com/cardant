@@ -17,10 +17,13 @@
 
 package com.io7m.cardant.shell;
 
+import com.io7m.cardant.shell.internal.CADescriptionMatchConverter;
 import com.io7m.cardant.shell.internal.CAFileIdConverter;
 import com.io7m.cardant.shell.internal.CAItemIdConverter;
 import com.io7m.cardant.shell.internal.CAItemLocationMatchConverter;
+import com.io7m.cardant.shell.internal.CAItemSerialMatchConverter;
 import com.io7m.cardant.shell.internal.CALocationIdConverter;
+import com.io7m.cardant.shell.internal.CAMediaTypeMatchConverter;
 import com.io7m.cardant.shell.internal.CAMetadataConverter;
 import com.io7m.cardant.shell.internal.CAMetadataMatchConverter;
 import com.io7m.cardant.shell.internal.CAMonetaryRangeConverter;
@@ -32,7 +35,9 @@ import com.io7m.cardant.shell.internal.CARangeInclusiveLConverter;
 import com.io7m.cardant.shell.internal.CARoleNameConverter;
 import com.io7m.cardant.shell.internal.CATimeRangeConverter;
 import com.io7m.cardant.shell.internal.CATypeMatchConverter;
+import com.io7m.cardant.shell.internal.CATypePackageUninstallBehaviorConverter;
 import com.io7m.cardant.shell.internal.CAUserIdConverter;
+import com.io7m.cardant.shell.internal.CAVersionConverter;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QValueConverterDirectory;
 import com.io7m.quarrel.core.QValueConverterDirectoryType;
@@ -58,10 +63,15 @@ public final class CAShellValueConverters
     final CAStrings strings)
   {
     return QValueConverterDirectory.core()
+      .with(new CATypePackageUninstallBehaviorConverter())
+      .with(new CAVersionConverter())
+      .with(new CADescriptionMatchConverter(strings))
       .with(new CAFileIdConverter())
       .with(new CAItemIdConverter())
       .with(new CAItemLocationMatchConverter(strings))
+      .with(new CAItemSerialMatchConverter(strings))
       .with(new CALocationIdConverter())
+      .with(new CAMediaTypeMatchConverter(strings))
       .with(new CAMetadataConverter(strings))
       .with(new CAMetadataMatchConverter(strings))
       .with(new CAMonetaryRangeConverter(strings))

@@ -56,12 +56,17 @@
 {
 
 }
+.parameterTable thead
+{
+  visibility:   collapse;
+}
 .parameterTable th
 {
   text-align:   left;
   padding:      0.5em;
   border-top:   1px solid #eee;
   border-right: 1px solid #eee;
+  visibility:   collapse;
 }
 .parameterTable td
 {
@@ -73,7 +78,9 @@
 }
 .parameterTable td:nth-child(1)
 {
-  hyphens: none;
+  hyphens:     none;
+  width:       12em;
+  font-weight: bold;
 }
 .parameterTable td:nth-child(2)
 {

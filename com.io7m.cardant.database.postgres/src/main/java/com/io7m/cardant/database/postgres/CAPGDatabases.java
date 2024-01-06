@@ -211,6 +211,7 @@ public final class CAPGDatabases implements CADatabaseFactoryType
       configuration.strings(),
       configuration.clock(),
       dataSource,
+      configuration.typePackageSerializers(),
       resources
     );
   }

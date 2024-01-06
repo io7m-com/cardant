@@ -18,6 +18,7 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
@@ -31,6 +32,7 @@ public final class CAArbTypeScalarText
     super(
       CATypeScalarType.Text.class,
       () -> Combinators.combine(
+        Arbitraries.defaultFor(CATypePackageIdentifier.class),
         Arbitraries.defaultFor(RDottedName.class),
         Arbitraries.strings(),
         Arbitraries.of(".*")

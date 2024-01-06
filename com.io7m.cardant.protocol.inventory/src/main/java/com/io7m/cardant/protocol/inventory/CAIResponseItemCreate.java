@@ -40,6 +40,7 @@ public record CAIResponseItemCreate(
 
   public CAIResponseItemCreate
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "item");
   }
 }

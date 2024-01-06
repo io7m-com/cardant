@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,10 +40,10 @@ import static com.io7m.cardant.strings.CAStringConstants.RELATION;
 
 public final class CADBQItemAttachmentRemove
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements AttachmentRemoveType
+  implements ItemAttachmentRemoveType
 {
-  private static final Service<Parameters, CADatabaseUnit, AttachmentRemoveType> SERVICE =
-    new Service<>(AttachmentRemoveType.class, CADBQItemAttachmentRemove::new);
+  private static final Service<Parameters, CADatabaseUnit, ItemAttachmentRemoveType> SERVICE =
+    new Service<>(ItemAttachmentRemoveType.class, CADBQItemAttachmentRemove::new);
 
   /**
    * Construct a query.

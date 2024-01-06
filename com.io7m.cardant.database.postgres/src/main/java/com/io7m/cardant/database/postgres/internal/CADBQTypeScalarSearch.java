@@ -20,6 +20,7 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarSearchType;
 import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
+import com.io7m.cardant.model.CATypeScalarSearchParameters;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
@@ -29,6 +30,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
@@ -36,10 +38,13 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
  */
 
 public final class CADBQTypeScalarSearch
-  extends CADBQAbstract<String, CADatabaseTypeScalarSearchType>
+  extends CADBQAbstract<CATypeScalarSearchParameters, CADatabaseTypeScalarSearchType>
   implements TypeScalarSearchType
 {
-  private static final Service<String, CADatabaseTypeScalarSearchType, TypeScalarSearchType> SERVICE =
+  private static final Service<
+    CATypeScalarSearchParameters,
+    CADatabaseTypeScalarSearchType,
+    TypeScalarSearchType> SERVICE =
     new Service<>(TypeScalarSearchType.class, CADBQTypeScalarSearch::new);
 
   /**
@@ -66,19 +71,35 @@ public final class CADBQTypeScalarSearch
   @Override
   protected CADatabaseTypeScalarSearchType onExecute(
     final DSLContext context,
-    final String query)
+    final CATypeScalarSearchParameters query)
   {
-    final var searchCondition =
-      DSL.condition(
-        "METADATA_TYPES_SCALAR.mts_description_search @@ websearch_to_tsquery(?)",
-        DSL.inline(query)
+    final var tableSource =
+      METADATA_TYPES_SCALAR
+        .join(METADATA_TYPE_PACKAGES)
+        .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES_SCALAR.MTS_PACKAGE));
+
+    final var nameCondition =
+      CADBComparisons.createFuzzyMatchQuery(
+        query.nameQuery(),
+        METADATA_TYPES_SCALAR.MTS_NAME,
+        "METADATA_TYPES_SCALAR.MTS_NAME_SEARCH"
       );
+
+    final var descriptionCondition =
+      CADBComparisons.createFuzzyMatchQuery(
+        query.nameQuery(),
+        METADATA_TYPES_SCALAR.MTS_DESCRIPTION,
+        "METADATA_TYPES_SCALAR.MTS_DESCRIPTION_SEARCH"
+      );
+
+    final var searchCondition =
+      DSL.and(nameCondition, descriptionCondition);
 
     final var orderField =
       new JQField(METADATA_TYPES_SCALAR.MTS_NAME, JQOrder.ASCENDING);
 
     final var pageParameters =
-      JQKeysetRandomAccessPaginationParameters.forTable(METADATA_TYPES_SCALAR)
+      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
         .addSortField(orderField)
         .addWhereCondition(searchCondition)
         .setPageSize(10L)

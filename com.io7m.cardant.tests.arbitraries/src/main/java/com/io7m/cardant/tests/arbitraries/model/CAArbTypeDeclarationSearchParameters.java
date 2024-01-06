@@ -17,22 +17,23 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CATypeDeclarationSearchParameters;
+import com.io7m.cardant.model.CATypeRecordSearchParameters;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
 public final class CAArbTypeDeclarationSearchParameters
-  extends CAArbAbstract<CATypeDeclarationSearchParameters>
+  extends CAArbAbstract<CATypeRecordSearchParameters>
 {
   public CAArbTypeDeclarationSearchParameters()
   {
     super(
-      CATypeDeclarationSearchParameters.class,
+      CATypeRecordSearchParameters.class,
       () -> Combinators.combine(
-        Arbitraries.strings().optional(),
+        CAArbComparisons.fuzzy(Arbitraries.strings()),
+        CAArbComparisons.fuzzy(Arbitraries.strings()),
         Arbitraries.integers().between(1, 1000)
-      ).as(CATypeDeclarationSearchParameters::new)
+      ).as(CATypeRecordSearchParameters::new)
     );
   }
 }

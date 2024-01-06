@@ -17,21 +17,20 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CANameMatchType;
+import com.io7m.cardant.model.CANameMatch;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbNameMatch extends CAArbAbstract<CANameMatchType>
+public final class CAArbNameMatch extends CAArbAbstract<CANameMatch>
 {
   public CAArbNameMatch()
   {
     super(
-      CANameMatchType.class,
-      () -> Arbitraries.oneOf(
-        Arbitraries.defaultFor(CANameMatchType.Any.class),
-        Arbitraries.defaultFor(CANameMatchType.Search.class),
-        Arbitraries.defaultFor(CANameMatchType.Exact.class)
-      )
+      CANameMatch.class,
+      () -> {
+        return CAArbComparisons.fuzzy(Arbitraries.strings())
+          .map(CANameMatch::new);
+      }
     );
   }
 }

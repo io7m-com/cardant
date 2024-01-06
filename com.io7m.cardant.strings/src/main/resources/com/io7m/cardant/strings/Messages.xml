@@ -3,22 +3,6 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 
 <properties>
-  <entry key="Command">Command</entry>
-  <entry key="Expected Content Type">Expected Content Type</entry>
-  <entry key="Expected Hash">Expected Hash</entry>
-  <entry key="Expected Response Type">Expected Response Type</entry>
-  <entry key="HTTP Response Code">HTTP Response Code</entry>
-  <entry key="Hash Algorithm">Hash Algorithm</entry>
-  <entry key="Received Content Type">Received Content Type</entry>
-  <entry key="Received Hash">Received Hash</entry>
-  <entry key="Received Response Type">Received Response Type</entry>
-  <entry key="URI">URI</entry>
-  <entry key="attachment">Attachment</entry>
-  <entry key="attempted_removal">Attempted Removal</entry>
-  <entry key="count">Count</entry>
-  <entry key="count_expected">Count Expected</entry>
-  <entry key="count_received">Count Received</entry>
-  <entry key="error_io">I/O operation failed.</entry>
   <entry key="error_attachment_missing_data">Cannot update an attachment with missing data.</entry>
   <entry key="error_close_connection">Failed to close a database connection: {0}.</entry>
   <entry key="error_command_not_here">This command cannot be executed on this endpoint.</entry>
@@ -32,8 +16,10 @@
   <entry key="error_hash_value_mismatch">Hash value did not match.</entry>
   <entry key="error_http">HTTP server returned an error: {0}</entry>
   <entry key="error_indexed">Error[{0}]</entry>
+  <entry key="error_io">I/O operation failed.</entry>
   <entry key="error_item_count_store_invariant">The sum of the stored items does not match the expected item count.</entry>
   <entry key="error_item_count_too_many_removed">Attempted to remove too many items.</entry>
+  <entry key="error_item_reposit_remove_identified">The remaining items have serial numbers and therefore must be removed individually and not as part of a set.</entry>
   <entry key="error_nonexistent">Object does not exist.</entry>
   <entry key="error_not_logged_in">Not logged in!</entry>
   <entry key="error_open_connection">Failed to open a database connection: {0}.</entry>
@@ -54,23 +40,52 @@
   <entry key="error_type_invalid_pattern"><![CDATA[Invalid pattern in scalar type.]]></entry>
   <entry key="error_type_missing_required_field"><![CDATA[A required field is missing.]]></entry>
   <entry key="error_type_scalar_still_referenced"><![CDATA[The given scalar type is still referenced by one or more fields/types, and cannot be removed without first removing those types/fields.]]></entry>
+  <entry key="error_type_scalar_still_referenced_suggest">Use TYPE_REMOVAL_REVOKE_TYPES to forcefully revoke types.</entry>
   <entry key="error_type_still_referenced"><![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
   <entry key="error_unauthorized">Unauthorized.</entry>
+  <entry key="error_package_downgrade">Package downgrades are not permitted.</entry>
+  <entry key="error_package_downgrade_suggest">Use VERSION_ALLOW_DOWNGRADES to permit downgrades.</entry>
+  <entry key="error_type_exists_wrong_package">A type with the given name is already provided by a different package.</entry>
+  <entry key="error_type_exists_wrong_package_suggest">Use TYPE_ADDITION_REPLACE_TYPES to forcefully replace types.</entry>
+
+  <entry key="error_parse_indexed">Parse error {0}</entry>
+  <entry key="error_type_indexed">Type error {0}</entry>
+
+  <entry key="Command">Command</entry>
+  <entry key="Expected Content Type">Expected Content Type</entry>
+  <entry key="Expected Hash">Expected Hash</entry>
+  <entry key="Expected Response Type">Expected Response Type</entry>
+  <entry key="HTTP Response Code">HTTP Response Code</entry>
+  <entry key="Hash Algorithm">Hash Algorithm</entry>
+  <entry key="Received Content Type">Received Content Type</entry>
+  <entry key="Received Hash">Received Hash</entry>
+  <entry key="Received Response Type">Received Response Type</entry>
+  <entry key="URI">URI</entry>
+  <entry key="attachment">Attachment</entry>
+  <entry key="attempted_removal">Attempted Removal</entry>
+  <entry key="count">Count</entry>
+  <entry key="count_expected">Count Expected</entry>
+  <entry key="count_received">Count Received</entry>
   <entry key="expected_command">Expected a command.</entry>
   <entry key="expected_content_type">Expected Content Type</entry>
   <entry key="expected_count">Expected Count</entry>
   <entry key="expected_type">Expected Type</entry>
+  <entry key="field_name">Field Name</entry>
+  <entry key="field_type">Field Type</entry>
   <entry key="file">File</entry>
   <entry key="file_id">File ID</entry>
   <entry key="item">Item</entry>
   <entry key="item_id">Item ID</entry>
   <entry key="item_location">Item Location</entry>
   <entry key="item_name">Item Name</entry>
+  <entry key="item_serial">Item Serial Number</entry>
   <entry key="location">Location</entry>
   <entry key="location_id">Location ID</entry>
   <entry key="location_name">Location Name</entry>
   <entry key="metadata_name">Metadata Name</entry>
   <entry key="metadata_value">Metadata Value</entry>
+  <entry key="name">Name</entry>
+  <entry key="name_base">Base Name</entry>
   <entry key="new_location_id">New Location ID</entry>
   <entry key="new_location_name">New Location Name</entry>
   <entry key="new_location_parent_id">New Location Parent ID</entry>
@@ -79,6 +94,10 @@
   <entry key="old_location_id">Old Location ID</entry>
   <entry key="old_location_name">Old Location Name</entry>
   <entry key="old_location_parent_id">Old Location Parent ID</entry>
+  <entry key="package">Package</entry>
+  <entry key="package_version">Package Version</entry>
+  <entry key="package_installed">Package (Installed)</entry>
+  <entry key="package_installed_version">Package Version (Installed)</entry>
   <entry key="problem">Problem</entry>
   <entry key="queries_class">Queries class</entry>
   <entry key="received_content_type">Received Content Type</entry>
@@ -91,6 +110,7 @@
   <entry key="tag_name">Tag Name</entry>
   <entry key="type">Type</entry>
   <entry key="user_id">User ID</entry>
+  <entry key="version_range">Version Range</entry>
 
   <!--           -->
   <!-- Locations -->
@@ -111,7 +131,7 @@
     <![CDATA[(with-location-or-descendants <location-id>)]]>
   </entry>
 
-  <entry key="syntax_location_match_name">Syntax (name-match)</entry>
+  <entry key="syntax_location_match_name">Syntax (location-match)</entry>
   <entry key="syntax_location_match">
     <![CDATA[<any-location> | <with-location-exact> | <with-location-or-descendants>]]>
   </entry>
@@ -120,48 +140,145 @@
   <!-- Names -->
   <!--       -->
 
-  <entry key="syntax_name_match_anyname_name">Syntax (any-name)</entry>
+  <entry key="syntax_name_match_anyname_name">Syntax (with-any-name)</entry>
   <entry key="syntax_name_match_anyname">
-    <![CDATA[any-name]]>
+    <![CDATA[with-any-name]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_exact_name">Syntax (with-name-exact)</entry>
-  <entry key="syntax_name_match_with_name_exact">
-    <![CDATA[(with-name-exact <name>)]]>
+  <entry key="syntax_name_match_with_name_equal_to_name">Syntax (with-name-equal-to)</entry>
+  <entry key="syntax_name_match_with_name_equal_to">
+    <![CDATA[(with-name-equal-to <name>)]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_search_name">Syntax (with-name-search)</entry>
-  <entry key="syntax_name_match_with_name_search">
-    <![CDATA[(with-name-search <name>)]]>
+  <entry key="syntax_name_match_with_name_not_equal_to_name">Syntax (with-name-not-equal-to)</entry>
+  <entry key="syntax_name_match_with_name_not_equal_to">
+    <![CDATA[(with-name-not-equal-to <name>)]]>
   </entry>
 
-  <entry key="syntax_name_match_name">Syntax (name-match)</entry>
-  <entry key="syntax_name_match">
-    <![CDATA[<any-name> | <with-name-exact> | <with-name-search>]]>
+  <entry key="syntax_name_match_with_name_similar_to_name">Syntax (with-name-similar-to)</entry>
+  <entry key="syntax_name_match_with_name_similar_to">
+    <![CDATA[(with-name-similar-to <name>)]]>
+  </entry>
+
+  <entry key="syntax_name_match_with_name_not_similar_to_name">Syntax (with-name-not-similar-to)</entry>
+  <entry key="syntax_name_match_with_name_not_similar_to">
+    <![CDATA[(with-name-not-similar-to <name>)]]>
+  </entry>
+
+  <!--         -->
+  <!-- Serials -->
+  <!--         -->
+
+  <entry key="syntax_serial_match_anyserial_name">Syntax (with-any-serial)</entry>
+  <entry key="syntax_serial_match_anyserial">
+    <![CDATA[with-any-serial]]>
+  </entry>
+
+  <entry key="syntax_serial_match_with_serial_equal_to_name">Syntax (with-serial-equal-to)</entry>
+  <entry key="syntax_serial_match_with_serial_equal_to">
+    <![CDATA[(with-serial-equal-to <serial>)]]>
+  </entry>
+
+  <entry key="syntax_serial_match_with_serial_not_equal_to_name">Syntax (with-serial-not-equal-to)</entry>
+  <entry key="syntax_serial_match_with_serial_not_equal_to">
+    <![CDATA[(with-serial-not-equal-to <serial>)]]>
+  </entry>
+
+  <!--             -->
+  <!-- Description -->
+  <!--             -->
+
+  <entry key="syntax_description_match_anydescription_name">Syntax (with-any-description)</entry>
+  <entry key="syntax_description_match_anydescription">
+    <![CDATA[with-any-description]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_equal_to_name">Syntax (with-description-equal-to)</entry>
+  <entry key="syntax_description_match_with_description_equal_to">
+    <![CDATA[(with-description-equal-to <description>)]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_not_equal_to_name">Syntax (with-description-not-equal-to)</entry>
+  <entry key="syntax_description_match_with_description_not_equal_to">
+    <![CDATA[(with-description-not-equal-to <description>)]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_similar_to_name">Syntax (with-description-similar-to)</entry>
+  <entry key="syntax_description_match_with_description_similar_to">
+    <![CDATA[(with-description-similar-to <description>)]]>
+  </entry>
+
+  <entry key="syntax_description_match_with_description_not_similar_to_name">Syntax (with-description-not-similar-to)</entry>
+  <entry key="syntax_description_match_with_description_not_similar_to">
+    <![CDATA[(with-description-not-similar-to <description>)]]>
+  </entry>
+
+  <!--            -->
+  <!-- Media Type -->
+  <!--            -->
+
+  <entry key="syntax_mediatype_match_anymediatype_name">Syntax (with-any-mediatype)</entry>
+  <entry key="syntax_mediatype_match_anymediatype">
+    <![CDATA[with-any-mediatype]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_equal_to_name">Syntax (with-mediatype-equal-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_equal_to">
+    <![CDATA[(with-mediatype-equal-to <mediatype>)]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_not_equal_to_name">Syntax (with-mediatype-not-equal-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_not_equal_to">
+    <![CDATA[(with-mediatype-not-equal-to <mediatype>)]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_similar_to_name">Syntax (with-mediatype-similar-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_similar_to">
+    <![CDATA[(with-mediatype-similar-to <mediatype>)]]>
+  </entry>
+
+  <entry key="syntax_mediatype_match_with_mediatype_not_similar_to_name">Syntax (with-mediatype-not-similar-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_not_similar_to">
+    <![CDATA[(with-mediatype-not-similar-to <mediatype>)]]>
   </entry>
 
   <!--       -->
   <!-- Types -->
   <!--       -->
 
-  <entry key="syntax_type_match_anytype_name">Syntax (any-type)</entry>
+  <entry key="syntax_type_match_anytype_name">Syntax (with-any-type)</entry>
   <entry key="syntax_type_match_anytype">
     <![CDATA[any-type]]>
   </entry>
 
-  <entry key="syntax_type_match_all_name">Syntax (all-of)</entry>
-  <entry key="syntax_type_match_all">
-    <![CDATA[(all-of <type> <type> ...)]]>
+  <entry key="syntax_type_match_equal_to_name">Syntax (with-types-equal-to)</entry>
+  <entry key="syntax_type_match_equal_to">
+    <![CDATA[(with-types-equal-to <type> <type> ...)]]>
   </entry>
 
-  <entry key="syntax_type_match_any_name">Syntax (any-of)</entry>
-  <entry key="syntax_type_match_any">
-    <![CDATA[(any-of <type> <type> ...)]]>
+  <entry key="syntax_type_match_not_equal_to_name">Syntax (with-types-not-equal-to)</entry>
+  <entry key="syntax_type_match_not_equal_to">
+    <![CDATA[(with-types-not-equal-to <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_overlapping_name">Syntax (with-types-overlapping)</entry>
+  <entry key="syntax_type_match_overlapping_to">
+    <![CDATA[(with-types-overlapping <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_subsetof_name">Syntax (with-types-subset-of)</entry>
+  <entry key="syntax_type_match_subsetof_to">
+    <![CDATA[(with-types-subset-of <type> <type> ...)]]>
+  </entry>
+
+  <entry key="syntax_type_match_supersetof_name">Syntax (with-types-superset-of)</entry>
+  <entry key="syntax_type_match_supersetof_to">
+    <![CDATA[(with-types-superset-of <type> <type> ...)]]>
   </entry>
 
   <entry key="syntax_type_match_name">Syntax (type-match)</entry>
   <entry key="syntax_type_match">
-    <![CDATA[<any-type> | <all-of> | <any-of>]]>
+    <![CDATA[<with-any-type> | <with-types-equal-to> | <with-types-not-equal-to> | <with-types-overlapping> | <with-types-subset-of> | <with-types-superset-of> ]]>
   </entry>
 
   <!--          -->
@@ -290,5 +407,16 @@
   <entry key="syntax_iso_timestamp_example_name">Example (ISO 8601 Timestamp)</entry>
   <entry key="syntax_iso_timestamp_name">Syntax (ISO 8601 Timestamp)</entry>
   <entry key="syntax_iso_timestamp">See ISO 8601.</entry>
+
+  <!--               -->
+  <!-- Type checking -->
+  <!--               -->
+
+  <entry key="typechecker_no_such_package">No suitable package exists for the given name and version range.</entry>
+  <entry key="typechecker_scalar_duplicate">A scalar type with the given name already exists.</entry>
+  <entry key="typechecker_record_field_type_nonexistent">A record field refers to a nonexistent scalar type.</entry>
+  <entry key="typechecker_record_field_duplicate">A record field with the given name already exists.</entry>
+  <entry key="typechecker_record_duplicate">A record type with the given name already exists.</entry>
+  <entry key="typechecker_name_qualified_invalid">Attempting to qualify the given name would result in an invalid qualified name.</entry>
 
 </properties>

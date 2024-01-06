@@ -40,7 +40,7 @@ public sealed interface CADatabaseQueriesItemsType
    * Retrieve the item with the given ID, if one exists.
    */
 
-  non-sealed interface GetType
+  non-sealed interface ItemGetType
     extends CADatabaseQueryType<CAItemID, Optional<CAItem>>,
     CADatabaseQueriesItemsType
   {
@@ -51,7 +51,7 @@ public sealed interface CADatabaseQueriesItemsType
    * Create an item with the given ID.
    */
 
-  non-sealed interface CreateType
+  non-sealed interface ItemCreateType
     extends CADatabaseQueryType<CAItemID, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
@@ -62,8 +62,8 @@ public sealed interface CADatabaseQueriesItemsType
    * Set the name for the given item.
    */
 
-  non-sealed interface SetNameType
-    extends CADatabaseQueryType<SetNameType.Parameters, CADatabaseUnit>,
+  non-sealed interface ItemSetNameType
+    extends CADatabaseQueryType<ItemSetNameType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
     /**
@@ -85,7 +85,7 @@ public sealed interface CADatabaseQueriesItemsType
    * Delete the given items.
    */
 
-  non-sealed interface DeleteType
+  non-sealed interface ItemDeleteType
     extends CADatabaseQueryType<Collection<CAItemID>, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
@@ -96,7 +96,7 @@ public sealed interface CADatabaseQueriesItemsType
    * Mark the given items as deleted.
    */
 
-  non-sealed interface DeleteMarkOnlyType
+  non-sealed interface ItemDeleteMarkOnlyType
     extends CADatabaseQueryType<Collection<CAItemID>, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
@@ -107,8 +107,8 @@ public sealed interface CADatabaseQueriesItemsType
    * Add or update metadata on an item.
    */
 
-  non-sealed interface MetadataPutType
-    extends CADatabaseQueryType<MetadataPutType.Parameters, CADatabaseUnit>,
+  non-sealed interface ItemMetadataPutType
+    extends CADatabaseQueryType<ItemMetadataPutType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
     /**
@@ -130,8 +130,8 @@ public sealed interface CADatabaseQueriesItemsType
    * Remove metadata from an item.
    */
 
-  non-sealed interface MetadataRemoveType
-    extends CADatabaseQueryType<MetadataRemoveType.Parameters, CADatabaseUnit>,
+  non-sealed interface ItemMetadataRemoveType
+    extends CADatabaseQueryType<ItemMetadataRemoveType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
     /**
@@ -153,8 +153,8 @@ public sealed interface CADatabaseQueriesItemsType
    * Add an attachment to the given item.
    */
 
-  non-sealed interface AttachmentAddType
-    extends CADatabaseQueryType<AttachmentAddType.Parameters, CADatabaseUnit>,
+  non-sealed interface ItemAttachmentAddType
+    extends CADatabaseQueryType<ItemAttachmentAddType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
     /**
@@ -178,8 +178,8 @@ public sealed interface CADatabaseQueriesItemsType
    * Remove an attachment from the given item.
    */
 
-  non-sealed interface AttachmentRemoveType
-    extends CADatabaseQueryType<AttachmentRemoveType.Parameters, CADatabaseUnit>,
+  non-sealed interface ItemAttachmentRemoveType
+    extends CADatabaseQueryType<ItemAttachmentRemoveType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
     /**
@@ -203,7 +203,7 @@ public sealed interface CADatabaseQueriesItemsType
    * Reposit items.
    */
 
-  non-sealed interface RepositType
+  non-sealed interface ItemRepositType
     extends CADatabaseQueryType<CAItemRepositType, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
@@ -214,7 +214,7 @@ public sealed interface CADatabaseQueriesItemsType
    * Retrieve the locations of the given item.
    */
 
-  non-sealed interface LocationsType
+  non-sealed interface ItemLocationsType
     extends CADatabaseQueryType<CAItemID, CAItemLocations>,
     CADatabaseQueriesItemsType
   {
@@ -225,7 +225,7 @@ public sealed interface CADatabaseQueriesItemsType
    * Start searching for items.
    */
 
-  non-sealed interface SearchType
+  non-sealed interface ItemSearchType
     extends CADatabaseQueryType<CAItemSearchParameters, CADatabaseItemSearchType>,
     CADatabaseQueriesItemsType
   {
@@ -236,8 +236,8 @@ public sealed interface CADatabaseQueriesItemsType
    * Assign types to the given item.
    */
 
-  non-sealed interface TypesAssignType
-    extends CADatabaseQueryType<TypesAssignType.Parameters, CADatabaseUnit>,
+  non-sealed interface ItemTypesAssignType
+    extends CADatabaseQueryType<ItemTypesAssignType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
     /**
@@ -259,8 +259,8 @@ public sealed interface CADatabaseQueriesItemsType
    * Revoke types from the given item.
    */
 
-  non-sealed interface TypesRevokeType
-    extends CADatabaseQueryType<TypesRevokeType.Parameters, CADatabaseUnit>,
+  non-sealed interface ItemTypesRevokeType
+    extends CADatabaseQueryType<ItemTypesRevokeType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
     /**

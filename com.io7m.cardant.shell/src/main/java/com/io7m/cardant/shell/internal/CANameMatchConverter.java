@@ -19,7 +19,8 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CANameMatchType;
+import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.parsers.CANameMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QException;
@@ -32,7 +33,7 @@ import java.util.Objects;
  */
 
 public final class CANameMatchConverter
-  implements QValueConverterType<CANameMatchType>
+  implements QValueConverterType<CANameMatch>
 {
   private final CAStrings strings;
 
@@ -49,7 +50,7 @@ public final class CANameMatchConverter
   }
 
   @Override
-  public CANameMatchType convertFromString(
+  public CANameMatch convertFromString(
     final String text)
     throws QException
   {
@@ -62,7 +63,7 @@ public final class CANameMatchConverter
 
   @Override
   public String convertToString(
-    final CANameMatchType value)
+    final CANameMatch value)
     throws QException
   {
     try {
@@ -74,10 +75,10 @@ public final class CANameMatchConverter
   }
 
   @Override
-  public CANameMatchType exampleValue()
+  public CANameMatch exampleValue()
   {
-    return new CANameMatchType.Exact(
-      "x"
+    return new CANameMatch(
+      new CAComparisonFuzzyType.IsEqualTo<>("x")
     );
   }
 
@@ -88,8 +89,8 @@ public final class CANameMatchConverter
   }
 
   @Override
-  public Class<CANameMatchType> convertedClass()
+  public Class<CANameMatch> convertedClass()
   {
-    return CANameMatchType.class;
+    return CANameMatch.class;
   }
 }

@@ -68,7 +68,8 @@ public final class CAHandlerDisconnected
         Map.of(),
         Optional.empty(),
         Optional.empty(),
-        CAIResponseBlame.BLAME_CLIENT
+        CAIResponseBlame.BLAME_CLIENT,
+        List.of()
       )
     );
   }
@@ -119,7 +120,8 @@ public final class CAHandlerDisconnected
           e.attributes(),
           e.remediatingAction(),
           Optional.of(e),
-          CAIResponseBlame.BLAME_CLIENT
+          CAIResponseBlame.BLAME_CLIENT,
+          List.of()
         )
       );
     }

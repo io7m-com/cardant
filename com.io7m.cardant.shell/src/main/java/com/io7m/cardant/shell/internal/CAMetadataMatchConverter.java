@@ -22,18 +22,16 @@ import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataElementMatchType.And;
 import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
-import com.io7m.cardant.model.CAMetadataNameMatchType.ExactName;
 import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType.WithCurrency;
 import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType.WithinRange;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.parsers.CAMetadataMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterType;
 
 import java.util.Objects;
 
-import static com.io7m.cardant.model.CAMetadataNameMatchType.AnyName.ANY_NAME;
 import static org.joda.money.CurrencyUnit.EUR;
 
 /**
@@ -87,10 +85,10 @@ public final class CAMetadataMatchConverter
   {
     return new And(
       new Specific(
-        new ExactName(new RDottedName("x.y")),
+        new CAComparisonFuzzyType.IsEqualTo<>("x.y"),
         new WithinRange(23.0, 200.0)
       ),
-      new Specific(ANY_NAME, new WithCurrency(EUR))
+      new Specific(new CAComparisonFuzzyType.Anything<>(), new WithCurrency(EUR))
     );
   }
 

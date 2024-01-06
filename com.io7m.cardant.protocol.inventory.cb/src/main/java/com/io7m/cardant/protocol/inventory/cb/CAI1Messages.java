@@ -38,6 +38,7 @@ import java.io.UncheckedIOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -162,7 +163,8 @@ public final class CAI1Messages
             Map.of("X", "Y"),
             Optional.of("Avoid sending this."),
             Optional.empty(),
-            BLAME_CLIENT
+            BLAME_CLIENT,
+            List.of()
           ))
         );
       } else if (message instanceof CAICommandDebugRandom) {

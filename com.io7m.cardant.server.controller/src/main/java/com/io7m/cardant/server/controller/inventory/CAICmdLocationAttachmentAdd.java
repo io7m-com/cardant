@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentAddType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -61,9 +61,9 @@ public final class CAICmdLocationAttachmentAdd
     transaction.setUserId(context.session().userId());
 
     final var attachmentAdd =
-      transaction.queries(CADatabaseQueriesLocationsType.AttachmentAddType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
 
     final var locationID = command.location();
     attachmentAdd.execute(

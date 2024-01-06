@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:p="com.io7m.cardant:type_packages:1"
+            targetNamespace="com.io7m.cardant:type_packages:1">
+
+  <xsd:simpleType name="UnqualifiedNameType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of unqualified names.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-z][a-z0-9_-]{0,62}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="QualifiedNameType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of Lanark dotted names.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="PackageVersionType">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type of package versions.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-9]+)\.([0-9]+)\.([0-9]+)(-(.+))?"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="PackageInfo">
+    <xsd:complexType>
+      <xsd:attribute name="Name"
+                     type="p:QualifiedNameType"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The name of the package.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="Version"
+                     type="p:PackageVersionType"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The version of the package.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="Description"
+                     type="xsd:string"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The description of the package.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="VersionRange">
+    <xsd:complexType>
+      <xsd:attribute name="VersionLower"
+                     type="p:PackageVersionType"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The lower bound on the versions of the imported package.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="VersionLowerInclusive"
+                     type="xsd:boolean"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The lower bound is inclusive.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="VersionUpper"
+                     type="p:PackageVersionType"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The upper bound on the versions of the imported package.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="VersionUpperInclusive"
+                     type="xsd:boolean"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The upper bound is inclusive.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Import">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="p:VersionRange"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="Package"
+                     type="p:QualifiedNameType"
+                     use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            The name of the imported package.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="TypeDeclarationType"
+                   abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        The base type of type declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="Name"
+                   type="p:UnqualifiedNameType"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          The name of the type.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Description"
+                   type="xsd:string"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          The humanly-readable description of the type.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="TypeScalarType"
+                   abstract="true">
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeDeclarationType">
+        <xsd:annotation>
+          <xsd:documentation>
+            A declaration of a scalar type.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="TypeScalarTextType">
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeScalarType">
+        <xsd:annotation>
+          <xsd:documentation>
+            A declaration of a scalar text type.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="Pattern"
+                       type="xsd:string"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The pattern that constrains text values.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="TypeScalarText"
+               type="p:TypeScalarTextType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A declaration of a scalar text type.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="TypeScalarIntegralType">
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeScalarType">
+        <xsd:annotation>
+          <xsd:documentation>
+            A declaration of a scalar integral type.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="RangeLower"
+                       type="xsd:long"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The lower inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="RangeUpper"
+                       type="xsd:long"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The upper inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="TypeScalarIntegral"
+               type="p:TypeScalarIntegralType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A declaration of a scalar integral type.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="TypeScalarRealType">
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeScalarType">
+        <xsd:annotation>
+          <xsd:documentation>
+            A declaration of a scalar real type.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="RangeLower"
+                       type="xsd:double"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The lower inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="RangeUpper"
+                       type="xsd:double"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The upper inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="TypeScalarReal"
+               type="p:TypeScalarRealType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A declaration of a scalar real type.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="TypeScalarTimeType">
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeScalarType">
+        <xsd:annotation>
+          <xsd:documentation>
+            A declaration of a scalar time type.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="RangeLower"
+                       type="xsd:dateTime"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The lower inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="RangeUpper"
+                       type="xsd:dateTime"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The upper inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="TypeScalarTime"
+               type="p:TypeScalarTimeType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A declaration of a scalar time type.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="TypeScalarMonetaryType">
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeScalarType">
+        <xsd:annotation>
+          <xsd:documentation>
+            A declaration of a scalar monetary type.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="RangeLower"
+                       type="xsd:decimal"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The lower inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="RangeUpper"
+                       type="xsd:decimal"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              The upper inclusive bound.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="TypeScalarMonetary"
+               type="p:TypeScalarMonetaryType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A declaration of a scalar monetary type.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="TypeFieldType"
+                   abstract="true">
+    <xsd:attribute name="Name"
+                   type="p:UnqualifiedNameType"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          The name of the record field.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Required"
+                   type="xsd:boolean"
+                   default="true">
+      <xsd:annotation>
+        <xsd:documentation>
+          Whether the record field is required to be present.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Description"
+                   type="xsd:string"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          A description of the record field.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="TypeFieldLocalType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A field that refers to a type within this package.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeFieldType">
+        <xsd:attribute name="Type"
+                       use="required"
+                       type="p:UnqualifiedNameType">
+          <xsd:annotation>
+            <xsd:documentation>
+              The scalar type of the field.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Field"
+               type="p:TypeFieldLocalType"/>
+
+  <xsd:complexType name="TypeFieldWithExternalTypeType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A field that refers to a type within another package.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="p:TypeFieldType">
+        <xsd:attribute name="Type"
+                       use="required"
+                       type="p:QualifiedNameType">
+          <xsd:annotation>
+            <xsd:documentation>
+              The scalar type of the field.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="FieldWithExternalType"
+               type="p:TypeFieldWithExternalTypeType"/>
+
+  <xsd:group name="TypeFieldGroup">
+    <xsd:choice>
+      <xsd:element ref="p:Field"/>
+      <xsd:element ref="p:FieldWithExternalType"/>
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:element name="TypeRecord">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          A declaration of a record type.
+        </xsd:documentation>
+      </xsd:annotation>
+
+      <xsd:complexContent>
+        <xsd:extension base="p:TypeDeclarationType">
+          <xsd:group ref="p:TypeFieldGroup"
+                     minOccurs="0"
+                     maxOccurs="unbounded"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:unique name="TypeRecordFieldsUnique">
+      <xsd:selector xpath="p:Field|p:FieldWithExternalType"/>
+      <xsd:field xpath="@Name"/>
+    </xsd:unique>
+  </xsd:element>
+
+  <xsd:group name="TypeDeclarationGroup">
+    <xsd:choice>
+      <xsd:element ref="p:TypeRecord"/>
+      <xsd:element ref="p:TypeScalarIntegral"/>
+      <xsd:element ref="p:TypeScalarMonetary"/>
+      <xsd:element ref="p:TypeScalarReal"/>
+      <xsd:element ref="p:TypeScalarText"/>
+      <xsd:element ref="p:TypeScalarTime"/>
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:element name="Package">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="p:PackageInfo"/>
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="p:Import"/>
+        </xsd:sequence>
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:group ref="p:TypeDeclarationGroup"/>
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:key name="TypeScalarsUnique">
+      <xsd:annotation>
+        <xsd:documentation>
+          Scalar types must be uniquely named within a package.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:selector xpath="p:TypeScalarIntegral|p:TypeScalarMonetary|p:TypeScalarReal|p:TypeScalarText|p:TypeScalarTime"/>
+      <xsd:field xpath="@Name"/>
+    </xsd:key>
+
+    <xsd:key name="TypeRecordsUnique">
+      <xsd:annotation>
+        <xsd:documentation>
+          Record types must be uniquely named within a package.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:selector xpath="p:TypeRecord"/>
+      <xsd:field xpath="@Name"/>
+    </xsd:key>
+
+    <xsd:key name="ImportsUnique">
+      <xsd:annotation>
+        <xsd:documentation>
+          Imports must be unique within a package.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:selector xpath="p:Import"/>
+      <xsd:field xpath="@Package"/>
+    </xsd:key>
+  </xsd:element>
+
+</xsd:schema>

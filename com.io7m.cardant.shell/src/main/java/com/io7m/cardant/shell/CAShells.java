@@ -42,9 +42,12 @@ import com.io7m.cardant.shell.internal.CAShellCmdItemCreate;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositMove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialMove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetMove;
+import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchPrevious;
@@ -63,16 +66,18 @@ import com.io7m.cardant.shell.internal.CAShellCmdRolesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdSelf;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
 import com.io7m.cardant.shell.internal.CAShellCmdType;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationCreate;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationFieldPut;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationFieldRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationGet;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationSearchBegin;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationSearchNext;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeDeclarationSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageGetText;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageInstall;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSchema;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchBegin;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchNext;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageUninstall;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordGet;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchBegin;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchNext;
+import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarGet;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarPut;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchPrevious;
@@ -175,9 +180,12 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemGet(services),
         new CAShellCmdItemMetadataPut(services),
         new CAShellCmdItemMetadataRemove(services),
-        new CAShellCmdItemRepositAdd(services),
-        new CAShellCmdItemRepositMove(services),
-        new CAShellCmdItemRepositRemove(services),
+        new CAShellCmdItemRepositSerialAdd(services),
+        new CAShellCmdItemRepositSerialMove(services),
+        new CAShellCmdItemRepositSerialRemove(services),
+        new CAShellCmdItemRepositSetAdd(services),
+        new CAShellCmdItemRepositSetMove(services),
+        new CAShellCmdItemRepositSetRemove(services),
         new CAShellCmdItemSearchBegin(services),
         new CAShellCmdItemSearchNext(services),
         new CAShellCmdItemSearchPrevious(services),
@@ -195,16 +203,18 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdRolesRevoke(services),
         new CAShellCmdSelf(services),
         new CAShellCmdSet(services),
-        new CAShellCmdTypeDeclarationCreate(services),
-        new CAShellCmdTypeDeclarationFieldPut(services),
-        new CAShellCmdTypeDeclarationFieldRemove(services),
-        new CAShellCmdTypeDeclarationGet(services),
-        new CAShellCmdTypeDeclarationSearchBegin(services),
-        new CAShellCmdTypeDeclarationSearchNext(services),
-        new CAShellCmdTypeDeclarationSearchPrevious(services),
+        new CAShellCmdTypePackageGetText(services),
+        new CAShellCmdTypePackageInstall(services),
+        new CAShellCmdTypePackageSchema(services),
+        new CAShellCmdTypePackageSearchBegin(services),
+        new CAShellCmdTypePackageSearchNext(services),
+        new CAShellCmdTypePackageSearchPrevious(services),
+        new CAShellCmdTypePackageUninstall(services),
+        new CAShellCmdTypeRecordGet(services),
+        new CAShellCmdTypeRecordSearchBegin(services),
+        new CAShellCmdTypeRecordSearchNext(services),
+        new CAShellCmdTypeRecordSearchPrevious(services),
         new CAShellCmdTypeScalarGet(services),
-        new CAShellCmdTypeScalarPut(services),
-        new CAShellCmdTypeScalarRemove(services),
         new CAShellCmdTypeScalarSearchBegin(services),
         new CAShellCmdTypeScalarSearchNext(services),
         new CAShellCmdTypeScalarSearchPrevious(services),

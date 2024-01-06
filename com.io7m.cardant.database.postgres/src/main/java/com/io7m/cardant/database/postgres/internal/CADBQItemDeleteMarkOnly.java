@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.DeleteMarkOnlyType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAItemID;
@@ -40,10 +40,10 @@ import static java.lang.Boolean.TRUE;
 
 public final class CADBQItemDeleteMarkOnly
   extends CADBQAbstract<Collection<CAItemID>, CADatabaseUnit>
-  implements DeleteMarkOnlyType
+  implements ItemDeleteMarkOnlyType
 {
-  private static final Service<Collection<CAItemID>, CADatabaseUnit, DeleteMarkOnlyType> SERVICE =
-    new Service<>(DeleteMarkOnlyType.class, CADBQItemDeleteMarkOnly::new);
+  private static final Service<Collection<CAItemID>, CADatabaseUnit, ItemDeleteMarkOnlyType> SERVICE =
+    new Service<>(ItemDeleteMarkOnlyType.class, CADBQItemDeleteMarkOnly::new);
 
   /**
    * Construct a query.

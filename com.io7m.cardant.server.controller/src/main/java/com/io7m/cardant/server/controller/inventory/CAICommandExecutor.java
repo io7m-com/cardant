@@ -56,15 +56,18 @@ import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationPut;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationRemove;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchNext;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationSearchPrevious;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchPrevious;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUpgrade;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordGet;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarPut;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchPrevious;
@@ -202,32 +205,20 @@ public final class CAICommandExecutor
       case final CAICommandTypeScalarSearchBegin m -> {
         yield new CAICmdTypeScalarSearchBegin().execute(context, m);
       }
-      case final CAICommandTypeScalarPut m -> {
-        yield new CAICmdTypeScalarPut().execute(context, m);
-      }
       case final CAICommandTypeScalarGet m -> {
         yield new CAICmdTypeScalarGet().execute(context, m);
       }
-      case final CAICommandTypeScalarRemove m -> {
-        yield new CAICmdTypeScalarRemove().execute(context, m);
+      case final CAICommandTypeRecordSearchNext m -> {
+        yield new CAICmdTypeRecordSearchNext().execute(context, m);
       }
-      case final CAICommandTypeDeclarationSearchNext m -> {
-        yield new CAICmdTypeDeclarationSearchNext().execute(context, m);
+      case final CAICommandTypeRecordSearchPrevious m -> {
+        yield new CAICmdTypeRecordSearchPrevious().execute(context, m);
       }
-      case final CAICommandTypeDeclarationSearchPrevious m -> {
-        yield new CAICmdTypeDeclarationSearchPrevious().execute(context, m);
+      case final CAICommandTypeRecordSearchBegin m -> {
+        yield new CAICmdTypeRecordSearchBegin().execute(context, m);
       }
-      case final CAICommandTypeDeclarationSearchBegin m -> {
-        yield new CAICmdTypeDeclarationSearchBegin().execute(context, m);
-      }
-      case final CAICommandTypeDeclarationPut m -> {
-        yield new CAICmdTypeDeclarationPut().execute(context, m);
-      }
-      case final CAICommandTypeDeclarationGet m -> {
-        yield new CAICmdTypeDeclarationGet().execute(context, m);
-      }
-      case final CAICommandTypeDeclarationRemove m -> {
-        yield new CAICmdTypeDeclarationRemove().execute(context, m);
+      case final CAICommandTypeRecordGet m -> {
+        yield new CAICmdTypeRecordGet().execute(context, m);
       }
       case final CAICommandItemTypesAssign m -> {
         yield new CAICmdItemTypesAssign().execute(context, m);
@@ -270,6 +261,27 @@ public final class CAICommandExecutor
       }
       case final CAICommandLogin m -> {
         throw new IllegalStateException();
+      }
+      case final CAICommandTypePackageSearchBegin m -> {
+        yield new CAICmdTypePackageSearchBegin().execute(context, m);
+      }
+      case final CAICommandTypePackageSearchNext m -> {
+        yield new CAICmdTypePackageSearchNext().execute(context, m);
+      }
+      case final CAICommandTypePackageSearchPrevious m -> {
+        yield new CAICmdTypePackageSearchPrevious().execute(context, m);
+      }
+      case final CAICommandTypePackageGetText m -> {
+        yield new CAICmdTypePackageGetText().execute(context, m);
+      }
+      case final CAICommandTypePackageInstall m -> {
+        yield new CAICmdTypePackageInstall().execute(context, m);
+      }
+      case final CAICommandTypePackageUninstall m -> {
+        yield new CAICmdTypePackageUninstall().execute(context, m);
+      }
+      case final CAICommandTypePackageUpgrade m -> {
+        yield new CAICmdTypePackageUpgrade().execute(context, m);
       }
     };
   }

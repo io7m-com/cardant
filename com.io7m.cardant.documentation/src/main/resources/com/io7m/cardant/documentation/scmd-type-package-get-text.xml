@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="8d5ce3ba-376b-3e4f-8e68-d5ecadc2b146"
+         title="type-package-get-text"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-package-get-text</Term>
+       - Retrieve the text of a type package.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-package-get-text</Term>
+       command retrieves the raw text of an installed type package.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-type-package-get-text-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ type-package-get-text --name com.io7m.example --version 1.0.0 --output file.xml
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

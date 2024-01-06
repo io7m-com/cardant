@@ -16,9 +16,10 @@
 
 package com.io7m.cardant.model;
 
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+
 import java.util.Objects;
 
-import static com.io7m.cardant.model.CAMetadataNameMatchType.AnyName.ANY_NAME;
 import static com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue.ANY_VALUE;
 
 /**
@@ -32,7 +33,7 @@ public sealed interface CAMetadataElementMatchType
    */
 
   CAMetadataElementMatchType ANYTHING =
-    new Specific(ANY_NAME, ANY_VALUE);
+    new Specific(new CAComparisonFuzzyType.Anything<>(), ANY_VALUE);
 
   /**
    * The conjunction of {@code e0} and {@code e1}. The resulting set of
@@ -94,7 +95,7 @@ public sealed interface CAMetadataElementMatchType
    */
 
   record Specific(
-    CAMetadataNameMatchType name,
+    CAComparisonFuzzyType<String> name,
     CAMetadataValueMatchType value)
     implements CAMetadataElementMatchType
   {

@@ -101,11 +101,11 @@ public final class CAICmdItemsRemoveTest
     /* Arrange. */
 
     final var delete =
-      mock(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
+      mock(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class))
       .thenReturn(delete);
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -132,7 +132,7 @@ public final class CAICmdItemsRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.DeleteMarkOnlyType.class);
+      .queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
     verify(delete)
       .execute(Set.of(ITEM_ID));
 

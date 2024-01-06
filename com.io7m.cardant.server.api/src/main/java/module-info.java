@@ -27,7 +27,10 @@ module com.io7m.cardant.server.api
 
   requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.error_codes;
+  requires com.io7m.cardant.model;
   requires com.io7m.cardant.tls;
+  requires com.io7m.cardant.type_packages.parser.api;
+
   requires java.net.http;
 
   exports com.io7m.cardant.server.api;

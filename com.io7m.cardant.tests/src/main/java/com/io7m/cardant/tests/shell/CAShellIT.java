@@ -37,6 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,8 +93,9 @@ public final class CAShellIT
     IDSTORE =
       CATestContainers.createIdstore(
         supervisor,
+        DATABASE,
         DIRECTORY,
-        15432,
+        "idstore",
         51000,
         50000,
         50001
@@ -352,25 +354,25 @@ public final class CAShellIT
 
     w.println(
       "location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-        "--name 'Location 0'"
+      "--name 'Location 0'"
     );
     w.println(
       "location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-        "--name 'Location 0 (A)'"
+      "--name 'Location 0 (A)'"
     );
     w.println(
       "location-put --id e892e153-6487-46eb-9042-4cf6c21953a4 " +
-        "--name 'Location 1'"
+      "--name 'Location 1'"
     );
     w.println(
       "location-put " +
-        "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
-        "--parent e892e153-6487-46eb-9042-4cf6c21953a4 "
+      "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--parent e892e153-6487-46eb-9042-4cf6c21953a4 "
     );
     w.println(
       "location-put " +
-        "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
-        "--detach true "
+      "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--detach true "
     );
 
     w.println("location-list");
@@ -394,10 +396,10 @@ public final class CAShellIT
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println(
       "location-put " +
-        "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
-        "--name 'Location 0' " +
-        "--parent 2d566517-195f-4e4e-9a3d-f86b6b876f46 " +
-        "--detach true"
+      "--id 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--name 'Location 0' " +
+      "--parent 2d566517-195f-4e4e-9a3d-f86b6b876f46 " +
+      "--detach true"
     );
     w.flush();
     w.close();
@@ -416,32 +418,36 @@ public final class CAShellIT
     w.println("set --terminate-on-errors true");
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println("location-put --id 9f87685b-121e-4209-b864-80b0752132b5 " +
-                "--name 'Location 0'");
+              "--name 'Location 0'");
     w.println("location-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-                "--name 'Location 1'");
+              "--name 'Location 1'");
     w.println("item-create --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--name 'Battery'");
+              "--name 'Battery'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--metadata '[integer voltage 9]'");
+              "--metadata '[integer voltage 9]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--metadata '[integer size 23]'");
+              "--metadata '[integer size 23]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--metadata '[integer gauge 20]'");
+              "--metadata '[integer gauge 20]'");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--key gauge");
-    w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
-                "--count 100");
-    w.println("item-reposit-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-                "--count 50");
-    w.println("item-reposit-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
-                "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-                "--count 15");
-    w.println("item-reposit-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-                "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-                "--count 2");
+              "--key gauge");
+    w.println(
+      "item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--count 100");
+    w.println(
+      "item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "--count 50");
+    w.println(
+      "item-reposit-set-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "--count 15");
+    w.println(
+      "item-reposit-set-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "--count 2");
     w.println("item-get --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4");
     w.println("item-search-begin");
     w.println("item-search-next");
@@ -524,11 +530,11 @@ public final class CAShellIT
 
     w.println(
       "file-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --file "
-        + fileNameUp.toAbsolutePath());
+      + fileNameUp.toAbsolutePath());
 
     w.println(
       "file-get --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --download-to "
-        + fileNameDown.toAbsolutePath());
+      + fileNameDown.toAbsolutePath());
 
     w.println("logout");
     w.flush();
@@ -557,7 +563,7 @@ public final class CAShellIT
 
     w.println(
       "file-put --id 544c6447-b5dd-4df9-a5c5-78e70b486fcf --file "
-        + fileNameUp.toAbsolutePath());
+      + fileNameUp.toAbsolutePath());
 
     w.println("file-search-begin");
     w.println("file-search-next");
@@ -585,10 +591,10 @@ public final class CAShellIT
 
     w.printf(
       "bookmark-put --name b1 " +
-        "--hostname %s " +
-        "--port %s " +
-        "--user %s " +
-        "--password %s%n",
+      "--hostname %s " +
+      "--port %s " +
+      "--user %s " +
+      "--password %s%n",
       this.host(),
       this.port(),
       "someone-admin",
@@ -609,55 +615,30 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellTypeScalarsWorkflow()
+  public void testShellTypeScalarsWorkflow(
+    final @TempDir Path directory)
     throws Exception
   {
     this.startShell();
+
+    final var file =
+      CATestDirectories.resourceOf(
+        CAShellIT.class,
+        directory,
+        "tpack2.xml"
+      );
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println(
-      "type-scalar-put " +
-        "--name com.x " +
-        "--description 'A description of things.' " +
-        "--base-is-text '.*'"
-    );
-    w.println(
-      "type-scalar-put " +
-        "--name com.y " +
-        "--description 'A description of things.' " +
-        "--base-is-integral '[23 24]'"
-    );
-    w.println(
-      "type-scalar-put " +
-        "--name com.z " +
-        "--description 'A description of things.' " +
-        "--base-is-real '[23 24]'"
-    );
-    w.println(
-      "type-scalar-put " +
-        "--name com.a " +
-        "--description 'A description of things.' " +
-        "--base-is-time '[2023-01-01T00:00:00+00:00 2023-03-01T00:00:00+00:00]'"
-    );
-    w.println(
-      "type-scalar-put " +
-        "--name com.b " +
-        "--description 'A description of things.' " +
-        "--base-is-monetary '[23 24]'"
-    );
-    w.println("type-scalar-get --name com.x");
-    w.println("type-scalar-search-begin --query things");
-    w.println("type-scalar-search-next");
-    w.println("type-scalar-search-previous");
-    w.println("type-scalar-remove --name com.x");
-    w.println("type-scalar-search-begin --query things");
+    w.println("type-package-install --file '%s'".formatted(file));
+    w.println("type-scalar-get --name com.io7m.example.t0");
+    w.println("type-scalar-search-begin");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
     w.println("set --formatter RAW");
-    w.println("type-scalar-search-begin --query things");
+    w.println("type-scalar-search-begin");
     w.println("type-scalar-search-next");
     w.println("type-scalar-search-previous");
     w.println("logout");
@@ -669,65 +650,32 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellTypeDeclarationWorkflow()
+  public void testShellTypeDeclarationWorkflow(
+    final @TempDir Path directory)
     throws Exception
   {
     this.startShell();
+
+    final var file =
+      CATestDirectories.resourceOf(
+        CAShellIT.class,
+        directory,
+        "tpack2.xml"
+      );
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println(
-      "type-scalar-put " +
-        "--name com.x " +
-        "--description 'A description of things.' " +
-        "--base-is-text '.*'"
-    );
-    w.println("type-create --name com.y --description 'A type'");
-    w.println(
-      "type-field-put " +
-        "--type com.y " +
-        "--field-name x " +
-        "--field-type com.x " +
-        "--field-description 'A field' " +
-        "--field-required true"
-    );
-    w.println(
-      "type-field-put " +
-        "--type com.y " +
-        "--field-name y " +
-        "--field-type com.x " +
-        "--field-description 'Another field' " +
-        "--field-required true"
-    );
-    w.println(
-      "type-field-put " +
-        "--type com.y " +
-        "--field-name z " +
-        "--field-type com.x " +
-        "--field-description 'Yet another field' " +
-        "--field-required false"
-    );
-    w.println(
-      "type-field-put " +
-        "--type com.y " +
-        "--field-name a " +
-        "--field-type com.x " +
-        "--field-description 'A wrong field' " +
-        "--field-required true"
-    );
-    w.println(
-      "type-field-remove --type com.y --field-name a"
-    );
-    w.println("type-get --name com.y");
-    w.println("type-search-begin --query type");
-    w.println("type-search-next");
-    w.println("type-search-previous");
+    w.println("type-package-install --file '%s'".formatted(file));
+    w.println("type-record-get --name com.io7m.example.t5");
+    w.println("type-record-search-begin");
+    w.println("type-record-search-next");
+    w.println("type-record-search-previous");
     w.println("set --formatter RAW");
-    w.println("type-search-begin --query type");
-    w.println("type-search-next");
-    w.println("type-search-previous");
+    w.println("type-record-search-begin");
+    w.println("type-record-search-next");
+    w.println("type-record-search-previous");
     w.println("logout");
     w.flush();
     w.close();
@@ -737,21 +685,24 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellAuditWorkflow()
+  public void testShellAuditWorkflow(
+    final @TempDir Path directory)
     throws Exception
   {
     this.startShell();
+
+    final var file =
+      CATestDirectories.resourceOf(
+        CAShellIT.class,
+        directory,
+        "tpack2.xml"
+      );
 
     final var w = this.terminal.sendInputToTerminalWriter();
     w.println("set --terminate-on-errors true");
 
     w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println(
-      "type-scalar-put " +
-      "--name com.x " +
-      "--description 'A description of things.' " +
-      "--base-is-text '.*'"
-    );
+    w.println("type-package-install --file '%s'".formatted(file));
     w.println("audit-search-begin");
     w.println("audit-search-next");
     w.println("audit-search-previous");
@@ -779,14 +730,57 @@ public final class CAShellIT
     w.printf("login %s someone-admin 12345678%n", this.uri());
     w.println(
       "roles-assign " +
-        "--user " + USER.displayId() + " " +
-        "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
+      "--user " + USER.displayId() + " " +
+      "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
     );
     w.println(
       "roles-revoke " +
-        "--user " + USER.displayId() + " " +
-        "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
+      "--user " + USER.displayId() + " " +
+      "--role " + CASecurityPolicy.ROLE_INVENTORY_FILES_READER.value() + " "
     );
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellTypePackageWorkflow(
+    final @TempDir Path directory)
+    throws Exception
+  {
+    this.startShell();
+
+    final var file =
+      CATestDirectories.resourceOf(
+        CAShellIT.class,
+        directory,
+        "tpack2.xml"
+      );
+
+    final var out =
+      directory.resolve("out.xml");
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    w.println("type-package-install --file '%s'".formatted(file));
+    w.println("type-package-get-text --name com.io7m.example --version 1.0.0");
+    w.println("type-package-get-text --name com.io7m.example --version 1.0.0 --output '%s'".formatted(out));
+    w.println("type-package-search-begin");
+    w.println("type-package-search-next");
+    w.println("type-package-search-previous");
+    w.println("set --formatter RAW");
+    w.println("type-package-search-begin");
+    w.println("type-package-search-next");
+    w.println("type-package-search-previous");
+    w.println("type-package-uninstall --name com.io7m.example --version 1.0.0");
+    w.println("type-package-search-begin");
+    w.println("type-package-search-next");
+    w.println("type-package-search-previous");
+    w.println("logout");
     w.flush();
     w.close();
 

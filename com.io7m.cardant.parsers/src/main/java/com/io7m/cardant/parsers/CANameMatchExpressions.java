@@ -18,12 +18,19 @@
 package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CANameMatchType;
+import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.Anything;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsEqualTo;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsNotEqualTo;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsNotSimilarTo;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsSimilarTo;
 import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
+import com.io7m.jsx.SExpressionType.SListType;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
 
@@ -31,15 +38,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.io7m.cardant.model.CANameMatchType.Any.ANY_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EXACT;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EXACT_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SEARCH;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SEARCH_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
 import static java.util.Map.entry;
 
@@ -52,17 +60,20 @@ public final class CANameMatchExpressions extends CAExpressions
   private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
     Map.ofEntries(
       entry(
-        SYNTAX_NAME_MATCH_NAME,
-        SYNTAX_NAME_MATCH),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_EXACT_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_EXACT),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_SEARCH_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_SEARCH),
-      entry(
         SYNTAX_NAME_MATCH_ANYNAME_NAME,
-        SYNTAX_NAME_MATCH_ANYNAME)
+        SYNTAX_NAME_MATCH_ANYNAME),
+      entry(
+        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME,
+        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO),
+      entry(
+        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME,
+        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO),
+      entry(
+        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME,
+        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO),
+      entry(
+        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME,
+        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO)
     );
 
   /**
@@ -93,136 +104,143 @@ public final class CANameMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public CANameMatchType nameMatch(
+  public CANameMatch nameMatch(
     final String text)
     throws CAException
   {
-    return this.nameMatchExpr(CAExpressions.parse(text));
-  }
-
-  private CANameMatchType nameMatchExpr(
-    final SExpressionType expression)
-    throws CAException
-  {
-    if (expression instanceof final SAtomType atom) {
-      return switch (atom.text().toUpperCase(Locale.ROOT)) {
-        case "ANY-NAME" -> {
-          yield ANY_NAME;
-        }
-        default -> {
-          throw this.createParseError(expression);
-        }
-      };
-    }
-
-    if (expression instanceof final SList list
-      && list.size() >= 2
-      && list.get(0) instanceof final SAtomType head) {
-
-      return switch (head.text().toUpperCase(Locale.ROOT)) {
-        case "WITH-NAME-EXACT" -> {
-          yield this.nameMatchExprExact(list);
-        }
-        case "WITH-NAME-SEARCH" -> {
-          yield this.nameMatchExprSearch(list);
-        }
-        default -> throw this.createParseError(head);
-      };
-    }
-
-    throw this.createParseError(expression);
-  }
-
-  private CANameMatchType nameMatchExprSearch(
-    final SList list)
-    throws CAException
-  {
-    if (list.size() == 2) {
-      return new CANameMatchType.Search(
-        this.text(list.get(1))
-      );
-    }
-    throw this.createParseError(list);
-  }
-
-  private CANameMatchType nameMatchExprExact(
-    final SList list)
-    throws CAException
-  {
-    if (list.size() == 2) {
-      return new CANameMatchType.Exact(
-        this.text(list.get(1))
-      );
-    }
-    throw this.createParseError(list);
-  }
-
-  private String text(
-    final SExpressionType expr)
-    throws CAException
-  {
-    if (expr instanceof final SAtomType atom) {
-      return atom.text();
-    }
-
-    throw this.createParseError(expr);
+    return this.nameMatch(CAExpressions.parse(text));
   }
 
   /**
-   * Serialize a match expression for names.
+   * Parse a match expression for names.
    *
-   * @param match The input match
-   *
-   * @return A match expression
-   *
-   */
-
-  public SExpressionType nameMatchSerialize(
-    final CANameMatchType match)
-  {
-    if (match == ANY_NAME) {
-      return new SSymbol(zero(), "any-name");
-    }
-
-    if (match instanceof final CANameMatchType.Exact exact) {
-      return new SList(
-        zero(),
-        true,
-        List.of(
-          new SSymbol(zero(), "with-name-exact"),
-          new SQuotedString(zero(), exact.text())
-        )
-      );
-    }
-
-    if (match instanceof final CANameMatchType.Search search) {
-      return new SList(
-        zero(),
-        true,
-        List.of(
-          new SSymbol(zero(), "with-name-search"),
-          new SQuotedString(zero(), search.query())
-        )
-      );
-    }
-
-    throw new IllegalStateException();
-  }
-
-  /**
-   * Serialize a match expression for names.
-   *
-   * @param match The input match
+   * @param e The input expression
    *
    * @return A match expression
    *
    * @throws CAException On errors
    */
 
-  public String nameMatchSerializeToString(
-    final CANameMatchType match)
+  public CANameMatch nameMatch(
+    final SExpressionType e)
     throws CAException
   {
-    return CAExpressions.serialize(this.nameMatchSerialize(match));
+    return new CANameMatch(this.nameMatchExpr(e));
+  }
+
+  private CAComparisonFuzzyType<String> nameMatchExpr(
+    final SExpressionType e)
+    throws CAException
+  {
+    return switch (e) {
+      case final SAtomType a
+        when "WITH-ANY-NAME".equals(a.text().toUpperCase(Locale.ROOT)) -> {
+        yield new Anything<>();
+      }
+      case final SListType xs
+        when xs.size() == 2
+          && xs.get(0) instanceof final SAtomType head
+          && xs.get(1) instanceof final SAtomType value -> {
+        yield switch (head.text().toUpperCase(Locale.ROOT)) {
+          case "WITH-NAME-EQUAL-TO" -> {
+            yield new IsEqualTo<>(value.text());
+          }
+          case "WITH-NAME-NOT-EQUAL-TO" -> {
+            yield new IsNotEqualTo<>(value.text());
+          }
+          case "WITH-NAME-SIMILAR-TO" -> {
+            yield new IsSimilarTo<>(value.text());
+          }
+          case "WITH-NAME-NOT-SIMILAR-TO" -> {
+            yield new IsNotSimilarTo<>(value.text());
+          }
+          default -> {
+            throw this.createParseError(e);
+          }
+        };
+      }
+      default -> {
+        throw this.createParseError(e);
+      }
+    };
+  }
+
+  /**
+   * Serialize a match expression to a string.
+   *
+   * @param value The expression
+   *
+   * @return The serialized text
+   *
+   * @throws CAException On errors
+   */
+
+  public String nameMatchSerializeToString(
+    final CANameMatch value)
+    throws CAException
+  {
+    return CAExpressions.serialize(this.nameMatchSerialize(value.expression()));
+  }
+
+  /**
+   * Serialize a match expression.
+   *
+   * @param expression The expression
+   *
+   * @return The serialized expression
+   */
+
+  public SExpressionType nameMatchSerialize(
+    final CAComparisonFuzzyType<String> expression)
+  {
+    return switch (expression) {
+      case final Anything<String> ignored -> {
+        yield new SSymbol(zero(), "with-any-name");
+      }
+
+      case final IsEqualTo<String> e -> {
+        yield new SList(
+          zero(),
+          true,
+          List.of(
+            new SSymbol(zero(), "with-name-equal-to"),
+            new SQuotedString(zero(), e.value())
+          )
+        );
+      }
+
+      case final IsNotEqualTo<String> e -> {
+        yield new SList(
+          zero(),
+          true,
+          List.of(
+            new SSymbol(zero(), "with-name-not-equal-to"),
+            new SQuotedString(zero(), e.value())
+          )
+        );
+      }
+
+      case final IsNotSimilarTo<String> e -> {
+        yield new SList(
+          zero(),
+          true,
+          List.of(
+            new SSymbol(zero(), "with-name-not-similar-to"),
+            new SQuotedString(zero(), e.value())
+          )
+        );
+      }
+
+      case final IsSimilarTo<String> e -> {
+        yield new SList(
+          zero(),
+          true,
+          List.of(
+            new SSymbol(zero(), "with-name-similar-to"),
+            new SQuotedString(zero(), e.value())
+          )
+        );
+      }
+    };
   }
 }

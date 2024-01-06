@@ -27,6 +27,12 @@ import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryNoOp;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CAFakeClock;
+import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerFactoryType;
+import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
+import com.io7m.cardant.type_packages.compilers.CATypePackageCompilers;
+import com.io7m.cardant.type_packages.parser.api.CATypePackageParserFactoryType;
+import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
 import com.io7m.idstore.model.IdName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.medrina.api.MSubject;
@@ -51,6 +57,8 @@ public abstract class CACmdAbstractContract
   private OffsetDateTime timeStart;
   private CAUser user;
   private CAICommandContext context;
+  private CATypePackageParsers typePackageParsers;
+  private CATypePackageCheckers typePackageCheckers;
 
   protected final OffsetDateTime timeStart()
   {
@@ -82,8 +90,31 @@ public abstract class CACmdAbstractContract
         new MSubject(Set.of())
       );
 
-    this.services.register(CAServerClock.class, this.serverClock);
-    this.services.register(CAStrings.class, this.strings);
+    this.typePackageParsers =
+      new CATypePackageParsers();
+    this.typePackageCheckers =
+      new CATypePackageCheckers();
+
+    this.services.register(
+      CATypePackageParserFactoryType.class,
+      this.typePackageParsers);
+    this.services.register(
+      CATypePackageCheckerFactoryType.class,
+      this.typePackageCheckers);
+    this.services.register(
+      CATypePackageCompilerFactoryType.class,
+      CATypePackageCompilers.create(
+        this.strings,
+        this.typePackageParsers,
+        this.typePackageCheckers
+      )
+    );
+    this.services.register(
+      CAServerClock.class,
+      this.serverClock);
+    this.services.register(
+      CAStrings.class,
+      this.strings);
     this.services.register(
       CAServerTelemetryServiceType.class,
       CAServerTelemetryNoOp.noop());

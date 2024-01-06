@@ -17,14 +17,16 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesRevokeType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -52,19 +54,25 @@ public final class CAICmdItemTypesRevoke extends CAICmdAbstract<CAICommandItemTy
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction =
       context.transaction();
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      transaction.queries(ItemGetType.class);
     final var revoke =
-      transaction.queries(CADatabaseQueriesItemsType.TypesRevokeType.class);
-    final var typeMultiGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
+      transaction.queries(ItemTypesRevokeType.class);
 
     revoke.execute(new Parameters(command.item(), command.types()));
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var item = get.execute(command.item()).orElseThrow();
-    CAITypeChecking.checkTypes(context, typeMultiGet, item);
+    CAITypeChecking.checkTypes(context, resolver, item);
     return new CAIResponseItemTypesRevoke(context.requestId(), item);
   }
 }

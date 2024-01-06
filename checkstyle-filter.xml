@@ -57,4 +57,7 @@
   <suppress files="CA1HandlerLogin.java"
             checks="ParameterNumber"/>
   
+  <suppress files="CAShellCmdTypePackageSchema.java"
+            checks="IllegalInstantiation"/>
+
 </suppressions>

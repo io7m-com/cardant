@@ -57,7 +57,7 @@ public final class CAICmdLocationGet extends CAICmdAbstract<CAICommandLocationGe
 
     final var get =
       context.transaction()
-        .queries(CADatabaseQueriesLocationsType.GetType.class);
+        .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
 
     final var locationID =
       command.id();

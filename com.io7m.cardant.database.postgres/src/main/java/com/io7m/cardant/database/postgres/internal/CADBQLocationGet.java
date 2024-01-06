@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.GetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAAttachmentKey;
@@ -49,10 +49,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_
 
 public final class CADBQLocationGet
   extends CADBQAbstract<CALocationID, Optional<CALocation>>
-  implements GetType
+  implements LocationGetType
 {
-  private static final Service<CALocationID, Optional<CALocation>, GetType> SERVICE =
-    new Service<>(GetType.class, CADBQLocationGet::new);
+  private static final Service<CALocationID, Optional<CALocation>, LocationGetType> SERVICE =
+    new Service<>(LocationGetType.class, CADBQLocationGet::new);
 
   /**
    * Construct a query.

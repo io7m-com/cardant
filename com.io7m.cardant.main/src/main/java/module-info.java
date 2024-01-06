@@ -20,6 +20,7 @@
 
 open module com.io7m.cardant.main
 {
+  uses com.io7m.cardant.model.type_package.CATypePackageProviderType;
   uses com.io7m.cardant.server.api.CAServerFactoryType;
   uses com.io7m.cardant.shell.CAShellFactoryType;
 
@@ -47,6 +48,8 @@ open module com.io7m.cardant.main
   requires com.io7m.cardant.server.service.telemetry.otp;
   requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
+  requires com.io7m.cardant.type_packages.parsers;
+  requires com.io7m.cardant.type_packages.standard;
 
   requires com.io7m.canonmill.core;
   requires com.io7m.quarrel.core;
@@ -60,7 +63,7 @@ open module com.io7m.cardant.main
   requires com.io7m.anethum.slf4j;
 
   exports com.io7m.cardant.main.internal
-    to com.io7m.cardant.documentation;
+    to com.io7m.cardant.documentation, com.io7m.cardant.tests;
 
   exports com.io7m.cardant.main;
 }

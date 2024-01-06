@@ -41,5 +41,6 @@ public record CAIResponseTypeScalarGet(
   public CAIResponseTypeScalarGet
   {
     Objects.requireNonNull(requestId, "requestId");
+    Objects.requireNonNull(type, "type");
   }
 }

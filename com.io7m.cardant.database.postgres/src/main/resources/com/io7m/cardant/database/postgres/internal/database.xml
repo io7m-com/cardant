@@ -9,8 +9,8 @@
 
   <Schema versionCurrent="0">
     <Comment>
-      The cardant role is a least-privilege role that can perform only those
-      operations required to run the system and no others.
+      The cardant role is a least-privilege role that can perform only those operations required to run the system and
+      no others.
     </Comment>
 
     <Statement><![CDATA[
@@ -21,8 +21,7 @@ CREATE ROLE cardant WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOLOGIN;
 ]]></Statement>
 
     <Comment>
-      The cardant_none role is a no-privilege role that cannot perform any
-      actions.
+      The cardant_none role is a no-privilege role that cannot perform any actions.
     </Comment>
 
     <Statement><![CDATA[
@@ -33,8 +32,7 @@ CREATE ROLE cardant_none WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOLO
 ]]></Statement>
 
     <Comment>
-      The cardant_read_only role is a read-only role that cannot write to
-      anything.
+      The cardant_read_only role is a read-only role that cannot write to anything.
     </Comment>
 
     <Statement><![CDATA[
@@ -45,10 +43,9 @@ CREATE ROLE cardant_read_only WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT
 ]]></Statement>
 
     <Comment>
-      The schema version table stores the current version of the database
-      schema. Implementations are expected to query this table on connecting to
-      the database in order to ensure that the calling code is compatible with
-      the tables in the database.
+      The schema version table stores the current version of the database schema. Implementations are expected to query
+      this table on connecting to the database in order to ensure that the calling code is compatible with the tables in
+      the database.
     </Comment>
 
     <Statement><![CDATA[
@@ -107,9 +104,8 @@ $$ LANGUAGE SQL IMMUTABLE;
 ]]></Statement>
 
     <Comment>
-      The users table stores the current set of users. The name field is neither
-      authoritative, nor expected to be unique, because the external identity
-      server is the authoritative source for names.
+      The users table stores the current set of users. The name field is neither authoritative, nor expected to be
+      unique, because the external identity server is the authoritative source for names.
     </Comment>
 
     <Statement><![CDATA[
@@ -170,9 +166,48 @@ CREATE TABLE files (
     </Statement>
 
     <Comment>
-      The metadata_types_records table contains record type declarations. A
-      record type declaration essentially consists of a set of scalar-typed
-      fields.
+      The metadata_type_packages table contains the installed metadata type packages.
+    </Comment>
+
+    <StatementParameterized parameterInterpolation="STRING_FORMATTING">
+      <ParameterReferences>
+        <ParameterReference order="0"
+                            name="search.language"/>
+      </ParameterReferences>
+      <Text>
+        <![CDATA[
+CREATE TABLE metadata_type_packages (
+  mtp_id                 INTEGER           NOT NULL GENERATED ALWAYS AS IDENTITY,
+  mtp_name               VARCHAR(1024)     NOT NULL UNIQUE,
+  mtp_version_major      INTEGER           NOT NULL,
+  mtp_version_minor      INTEGER           NOT NULL,
+  mtp_version_patch      INTEGER           NOT NULL,
+  mtp_version_qualifier  VARCHAR(1024),
+  mtp_description        VARCHAR(1024)     NOT NULL,
+
+  -- [jooq ignore start]
+  mtp_description_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%1$S, mtp_description)) STORED,
+  -- [jooq ignore stop]
+
+  mtp_text               VARCHAR(10000000) NOT NULL,
+
+  CONSTRAINT metadata_type_packages_primary_key
+    PRIMARY KEY (mtp_id)
+)
+]]></Text>
+    </StatementParameterized>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_type_packages TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON metadata_type_packages TO cardant_read_only
+    </Statement>
+
+    <Comment>
+      The metadata_types_records table contains record type declarations. A record type declaration essentially consists
+      of a set of scalar-typed fields.
     </Comment>
 
     <StatementParameterized parameterInterpolation="STRING_FORMATTING">
@@ -183,13 +218,20 @@ CREATE TABLE files (
       <Text><![CDATA[
 CREATE TABLE metadata_types_records (
   mtr_id          INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
+  mtr_package     INTEGER       NOT NULL,
   mtr_name        VARCHAR(1024) NOT NULL UNIQUE,
   mtr_description VARCHAR(1024) NOT NULL,
 
   -- [jooq ignore start]
   mtr_description_search TSVECTOR NOT NULL
-    GENERATED ALWAYS AS (to_tsvector(%S, mtr_description)) STORED,
+    GENERATED ALWAYS AS (to_tsvector(%1$S, mtr_description)) STORED,
+
+  mtr_name_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%1$S, tokenize_dotted_name (mtr_description))) STORED,
   -- [jooq ignore stop]
+
+  CONSTRAINT metadata_types_records_package_key
+    FOREIGN KEY (mtr_package) REFERENCES metadata_type_packages (mtp_id),
 
   CONSTRAINT metadata_types_records_primary_key
     PRIMARY KEY (mtr_id),
@@ -208,8 +250,7 @@ CREATE TABLE metadata_types_records (
     </Statement>
 
     <Comment>
-      The metadata_scalar_base_type_t type represents the available base types
-      for scalar values.
+      The metadata_scalar_base_type_t type represents the available base types for scalar values.
     </Comment>
 
     <Statement><![CDATA[
@@ -223,8 +264,8 @@ CREATE TYPE metadata_scalar_base_type_t AS ENUM(
 ]]></Statement>
 
     <Comment>
-      The metadata_types_scalar table stores the set of scalar type declarations
-      that can be used to constrain the types of the fields of record types.
+      The metadata_types_scalar table stores the set of scalar type declarations that can be used to constrain the types
+      of the fields of record types.
     </Comment>
 
     <StatementParameterized parameterInterpolation="STRING_FORMATTING">
@@ -235,13 +276,20 @@ CREATE TYPE metadata_scalar_base_type_t AS ENUM(
       <Text><![CDATA[
 CREATE TABLE metadata_types_scalar (
   mts_id          INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
+  mts_package     INTEGER       NOT NULL,
   mts_name        VARCHAR(1024) NOT NULL UNIQUE,
   mts_description VARCHAR(1024) NOT NULL,
 
   -- [jooq ignore start]
   mts_description_search TSVECTOR NOT NULL
-    GENERATED ALWAYS AS (to_tsvector(%S, mts_description)) STORED,
+    GENERATED ALWAYS AS (to_tsvector(%1$S, mts_description)) STORED,
+
+  mts_name_search TSVECTOR NOT NULL
+    GENERATED ALWAYS AS (to_tsvector(%1$S, tokenize_dotted_name (mts_description))) STORED,
   -- [jooq ignore stop]
+
+  CONSTRAINT metadata_types_scalar_package_key
+    FOREIGN KEY (mts_package) REFERENCES metadata_type_packages (mtp_id),
 
   mts_base_type       metadata_scalar_base_type_t NOT NULL,
   mts_integral_lower  BIGINT,
@@ -315,8 +363,7 @@ CREATE TABLE metadata_types_scalar (
     </Statement>
 
     <Comment>
-      The metadata_types_record_fields table associates fields with record type
-      declarations.
+      The metadata_types_record_fields table associates fields with record type declarations.
     </Comment>
 
     <StatementParameterized parameterInterpolation="STRING_FORMATTING">
@@ -341,6 +388,9 @@ CREATE TABLE metadata_types_record_fields (
   CONSTRAINT metadata_types_record_fields_primary_key
     PRIMARY KEY (mtrf_declaration, mtrf_name),
 
+  CONSTRAINT metadata_types_record_fields_unique
+    UNIQUE (mtrf_name),
+
   CONSTRAINT metadata_types_record_fields_name_valid
     CHECK (mtrf_name ~ '^([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}$'),
 
@@ -354,8 +404,7 @@ CREATE TABLE metadata_types_record_fields (
     </StatementParameterized>
 
     <Statement>
-      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_types_record_fields TO
-      cardant
+      GRANT SELECT, INSERT, UPDATE, DELETE ON metadata_types_record_fields TO cardant
     </Statement>
     <Statement>
       GRANT SELECT ON metadata_types_record_fields TO cardant_read_only
@@ -396,8 +445,7 @@ CREATE TABLE items (
     </Statement>
 
     <Comment>
-      The item_types table assigns types to items. An item can have zero or more
-      types.
+      The item_types table assigns types to items. An item can have zero or more types.
     </Comment>
 
     <Statement><![CDATA[
@@ -779,14 +827,34 @@ CREATE TABLE location_attachments (
       GRANT SELECT ON location_attachments TO cardant_read_only
     </Statement>
 
+    <Comment>
+      The item_locations table associates items with locations. There are two types of associations: set associations
+      and serial associations. A set association associates a non-zero count of items with a location. The items within
+      the set have no distinguishable identities. A serial association associates exactly one item with a location, and
+      includes a serial number that uniquely identifies the item. Below this table, some indexes are used to disallow
+      having multiple set associations for the same item and location.
+    </Comment>
+
     <Statement><![CDATA[
 CREATE TABLE item_locations (
-  item_location_item  UUID   NOT NULL,
-  item_location       UUID   NOT NULL,
-  item_location_count BIGINT NOT NULL,
+  item_location_item    UUID           NOT NULL,
+  item_location         UUID           NOT NULL,
+  item_location_count   BIGINT         NOT NULL,
+  item_location_serial  VARCHAR(1024),
 
-  CONSTRAINT item_locations_primary_key
-    PRIMARY KEY (item_location_item, item_location),
+  -- [jooq ignore start]
+  CONSTRAINT item_locations_assertion_type_values_present CHECK (
+    CASE
+      WHEN item_location_serial IS NOT NULL THEN
+        item_location_count = 1
+      ELSE
+        't'::boolean
+    END
+  ),
+
+  CONSTRAINT item_locations_unique
+    UNIQUE NULLS NOT DISTINCT (item_location_item, item_location, item_location_serial),
+  -- [jooq ignore stop]
 
   CONSTRAINT item_id_exists
     FOREIGN KEY (item_location_item) REFERENCES items (item_id),
@@ -794,7 +862,8 @@ CREATE TABLE item_locations (
   CONSTRAINT item_location_exists
     FOREIGN KEY (item_location) REFERENCES locations (location_id),
 
-  CONSTRAINT CHECK_item_location_COUNT CHECK (item_location_count >= 0)
+  CONSTRAINT check_item_location_count
+    CHECK (item_location_count >= 0)
 )
 ]]></Statement>
 
@@ -822,8 +891,8 @@ CREATE VIEW item_locations_summed (item_id, item_count) AS
     </Statement>
 
     <Comment>
-      The location_descendants function returns the descendants of a given
-      location. The location itself is included in the results.
+      The location_descendants function returns the descendants of a given location. The location itself is included in
+      the results.
     </Comment>
 
     <Statement><![CDATA[
@@ -858,8 +927,8 @@ $$
 ]]></Statement>
 
     <Comment>
-      The location_descendants function returns the descendants of a given
-      location. The location itself is not included in the results.
+      The location_descendants function returns the descendants of a given location. The location itself is not included
+      in the results.
     </Comment>
 
     <Statement><![CDATA[
@@ -888,8 +957,7 @@ $$
 ]]></Statement>
 
     <Comment>
-      The location_is_descendant_of function returns true if x is a descendant
-      of y in terms of the locations table.
+      The location_is_descendant_of function returns true if x is a descendant of y in terms of the locations table.
     </Comment>
 
     <Statement><![CDATA[
@@ -935,8 +1003,9 @@ CREATE VIEW item_search_view AS
     item_metadata.item_meta_value_money,
     item_metadata.item_meta_value_money_currency,
     item_metadata.item_meta_value_real,
-    array_agg(metadata_types_records.mtr_name) AS isv_mtr_names,
-    array_agg(item_locations.item_location)    AS isv_item_locations
+    array_agg(metadata_types_records.mtr_name)     AS isv_mtr_names,
+    array_agg(item_locations.item_location)        AS isv_item_locations,
+    array_agg(item_locations.item_location_serial) AS isv_item_serials
   FROM
     items
   LEFT JOIN item_types
@@ -1018,8 +1087,7 @@ CREATE VIEW location_search_view AS
     </Statement>
 
     <Comment>
-      The audit table stores a list of auditable events. Who did it? What did
-      they do? When did they do it?
+      The audit table stores a list of auditable events. Who did it? What did they do? When did they do it?
     </Comment>
 
     <Statement><![CDATA[

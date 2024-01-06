@@ -30,12 +30,14 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorOperationNotPermitted;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSql;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeFieldTypeNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeScalarReferenced;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_SCALAR_STILL_REFERENCED;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_STILL_REFERENCED;
@@ -168,6 +170,16 @@ public final class CADatabaseExceptions
         .orElse("");
 
     return switch (column.toUpperCase(Locale.ROOT)) {
+      case "MTRF_DECLARATION" -> {
+        yield new CADatabaseException(
+          transaction.localize(ERROR_NONEXISTENT),
+          e,
+          errorNonexistent(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
       case "MTRF_SCALAR_TYPE" -> {
         yield new CADatabaseException(
           transaction.localize(ERROR_TYPE_DECLARATION_REFERS_TO_NONEXISTENT_TYPE),
@@ -221,6 +233,15 @@ public final class CADatabaseExceptions
         .orElse("");
 
     return switch (constraint) {
+      case "metadata_type_packages_mtp_name_key" -> {
+        yield new CADatabaseException(
+          "A version of the given package is already installed.",
+          errorDuplicate(),
+          attributes,
+          Optional.empty()
+        );
+      }
+
       case "files_primary_key" -> {
         yield new CADatabaseException(
           "File already exists.",
@@ -306,31 +327,35 @@ public final class CADatabaseExceptions
     final SortedMap<String, String> attributes,
     final String m)
   {
-    if (e.getCause() instanceof final PSQLException actual) {
-      final var constraint =
-        Optional.ofNullable(actual.getServerErrorMessage())
-          .flatMap(x -> Optional.ofNullable(x.getConstraint()))
-          .orElse("");
+    var cause = e.getCause();
+    while (cause != null) {
+      if (cause instanceof final PSQLException actual) {
+        final var constraint =
+          Optional.ofNullable(actual.getServerErrorMessage())
+            .flatMap(x -> Optional.ofNullable(x.getConstraint()))
+            .orElse("");
 
-      if (Objects.equals(constraint, "metadata_types_record_fields_scalar_exists")) {
-        return new CADatabaseException(
-          transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
-          e,
-          errorTypeScalarReferenced(),
-          attributes,
-          Optional.empty()
-        );
-      }
+        if (Objects.equals(constraint, "metadata_types_record_fields_scalar_exists")) {
+          return new CADatabaseException(
+            transaction.localize(ERROR_TYPE_SCALAR_STILL_REFERENCED),
+            e,
+            errorTypeScalarReferenced(),
+            attributes,
+            Optional.empty()
+          );
+        }
 
-      if (Objects.equals(constraint, "item_types_record_type_exists")) {
-        return new CADatabaseException(
-          transaction.localize(ERROR_TYPE_STILL_REFERENCED),
-          e,
-          errorTypeReferenced(),
-          attributes,
-          Optional.empty()
-        );
+        if (Objects.equals(constraint, "item_types_record_type_exists")) {
+          return new CADatabaseException(
+            transaction.localize(ERROR_TYPE_STILL_REFERENCED),
+            e,
+            errorTypeReferenced(),
+            attributes,
+            Optional.empty()
+          );
+        }
       }
+      cause = cause.getCause();
     }
 
     return new CADatabaseException(

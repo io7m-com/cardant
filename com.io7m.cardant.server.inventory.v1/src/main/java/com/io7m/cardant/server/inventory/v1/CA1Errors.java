@@ -26,6 +26,7 @@ import com.io7m.cardant.server.http.CAHTTPRequestInformation;
 import com.io7m.cardant.server.http.CAHTTPResponseFixedSize;
 import com.io7m.cardant.server.http.CAHTTPResponseType;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,7 +63,8 @@ public final class CA1Errors
       exception.attributes(),
       exception.remediatingAction(),
       Optional.of(exception),
-      blame
+      blame,
+      List.of()
     );
   }
 

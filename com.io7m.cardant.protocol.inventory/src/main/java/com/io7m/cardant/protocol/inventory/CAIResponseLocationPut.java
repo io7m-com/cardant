@@ -40,6 +40,7 @@ public record CAIResponseLocationPut(
 
   public CAIResponseLocationPut
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "location");
   }
 }

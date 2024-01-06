@@ -22,6 +22,7 @@ import com.io7m.canonmill.core.CMKeyStoreProvider;
 import com.io7m.cardant.server.api.CAServerConfigurations;
 import com.io7m.cardant.server.api.CAServerFactoryType;
 import com.io7m.cardant.server.service.configuration.CAServerConfigurationParsers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageSerializers;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -114,6 +115,8 @@ public final class CMCmdServer implements QCommandType
 
     final var parsers =
       new CAServerConfigurationParsers();
+    final var typePackageSerializers =
+      new CATypePackageSerializers();
 
     final var configFile =
       parsers.parseFile(
@@ -125,6 +128,7 @@ public final class CMCmdServer implements QCommandType
       CAServerConfigurations.ofFile(
         Locale.getDefault(),
         Clock.systemUTC(),
+        typePackageSerializers,
         configFile
       );
 

@@ -12,11 +12,10 @@
       <Term type="command">item-search-next</Term>
        command goes to the next page of item <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">search</Link> results.
     </Paragraph>
-  </Subsection>
-  <Subsection title="Examples">
-    <FormalItem title="Example" type="example">
-      <Verbatim>...</Verbatim>
-    </FormalItem>
+    <Paragraph>
+      The command can only be used after the associated <Link target="3901ba62-5a01-3b4f-8987-4f9ac1866074">begin</Link>
+      command.
+    </Paragraph>
   </Subsection>
 </Section>
 

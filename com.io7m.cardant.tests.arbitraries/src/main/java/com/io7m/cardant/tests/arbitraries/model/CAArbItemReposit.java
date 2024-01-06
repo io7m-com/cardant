@@ -17,9 +17,12 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemRepositAdd;
-import com.io7m.cardant.model.CAItemRepositMove;
-import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CAItemRepositSerialAdd;
+import com.io7m.cardant.model.CAItemRepositSerialMove;
+import com.io7m.cardant.model.CAItemRepositSerialRemove;
+import com.io7m.cardant.model.CAItemRepositSetAdd;
+import com.io7m.cardant.model.CAItemRepositSetMove;
+import com.io7m.cardant.model.CAItemRepositSetRemove;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
@@ -33,15 +36,21 @@ public final class CAArbItemReposit extends CAArbAbstract<CAItemRepositType>
       CAItemRepositType.class,
 
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemRepositAdd.class),
-        Arbitraries.defaultFor(CAItemRepositMove.class),
-        Arbitraries.defaultFor(CAItemRepositRemove.class),
-        Arbitraries.integers().between(0, 2)
-      ).as((add, move, remove, which) -> {
+        Arbitraries.defaultFor(CAItemRepositSetAdd.class),
+        Arbitraries.defaultFor(CAItemRepositSetMove.class),
+        Arbitraries.defaultFor(CAItemRepositSetRemove.class),
+        Arbitraries.defaultFor(CAItemRepositSerialAdd.class),
+        Arbitraries.defaultFor(CAItemRepositSerialMove.class),
+        Arbitraries.defaultFor(CAItemRepositSerialRemove.class),
+        Arbitraries.integers().between(0, 5)
+      ).as((add0, move0, remove0, add1, move1, remove1, which) -> {
         return switch (which) {
-          case 0 -> add;
-          case 1 -> move;
-          case 2 -> remove;
+          case 0 -> add0;
+          case 1 -> move0;
+          case 2 -> remove0;
+          case 3 -> add1;
+          case 4 -> move1;
+          case 5 -> remove1;
           default -> throw new IllegalStateException();
         };
       })

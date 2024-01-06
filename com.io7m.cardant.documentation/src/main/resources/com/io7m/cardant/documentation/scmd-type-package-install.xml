@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="e91f0f3a-68c7-36e8-b256-15bf2a2974d6"
+         title="type-package-install"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-package-install</Term>
+       - Install a type package.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-package-install</Term>
+       command installs a type package from a file.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-type-package-install-parameters.xml"/>
+</Section>
+

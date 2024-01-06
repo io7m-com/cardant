@@ -22,6 +22,8 @@ import com.io7m.cardant.database.api.CADatabaseTypeScalarSearchType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -33,10 +35,10 @@ import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
 import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
@@ -59,10 +61,17 @@ import static org.mockito.Mockito.when;
 public final class CAICmdTypeScalarSearchBeginTest
   extends CACmdAbstractContract
 {
+  private static final CATypePackageIdentifier P =
+    new CATypePackageIdentifier(
+      new RDottedName("com.io7m"),
+      Version.of(1, 0, 0)
+    );
+
   private static final CATypeScalarSearchParameters PARAMETERS =
     new CATypeScalarSearchParameters(
-      Optional.empty(),
-      100
+      new CAComparisonFuzzyType.Anything<>(),
+      new CAComparisonFuzzyType.Anything<>(),
+      100L
     );
 
   /**
@@ -119,7 +128,7 @@ public final class CAICmdTypeScalarSearchBeginTest
     final var page =
       new CAPage<CATypeScalarType>(
         List.of(
-          new CATypeScalarType.Text(new RDottedName("a.b.c"), "x", "a")
+          new CATypeScalarType.Text(P, new RDottedName("a.b.c"), "x", "a")
         ),
         0,
         1,
@@ -161,7 +170,7 @@ public final class CAICmdTypeScalarSearchBeginTest
     verify(transaction)
       .queries(CADatabaseQueriesTypesType.TypeScalarSearchType.class);
     verify(items)
-      .execute("");
+      .execute(PARAMETERS);
     verify(itemSearch)
       .pageCurrent(transaction);
 

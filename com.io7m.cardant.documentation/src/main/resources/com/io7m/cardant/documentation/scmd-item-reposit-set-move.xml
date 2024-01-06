@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="6c26ab70-93b6-366d-a314-7ccc065b9fa0"
+         title="item-reposit-set-move"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">item-reposit-set-move</Term>
+       - Move sets of items between locations.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">item-reposit-set-move</Term>
+       command moves sets items between locations.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-item-reposit-set-move-parameters.xml"/>
+</Section>
+

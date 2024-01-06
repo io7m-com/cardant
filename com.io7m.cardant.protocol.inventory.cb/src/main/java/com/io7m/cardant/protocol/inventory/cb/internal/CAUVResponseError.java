@@ -24,10 +24,12 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseError;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
+import com.io7m.cedarbridge.runtime.convenience.CBLists;
 import com.io7m.cedarbridge.runtime.convenience.CBMaps;
 
 import java.util.Optional;
 
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVError.ERROR;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseBlame.RESPONSE_BLAME;
 
 /**
@@ -54,7 +56,8 @@ public enum CAUVResponseError
       new CBString(c.message()),
       CBMaps.ofMapString(c.attributes()),
       CBOptionType.fromOptional(c.remediatingAction().map(CBString::new)),
-      RESPONSE_BLAME.convertToWire(c.blame())
+      RESPONSE_BLAME.convertToWire(c.blame()),
+      CBLists.ofCollection(c.extras(), ERROR::convertToWire)
     );
   }
 
@@ -71,7 +74,8 @@ public enum CAUVResponseError
         .asOptional()
         .map(CBString::value),
       Optional.empty(),
-      RESPONSE_BLAME.convertFromWire(m.fieldBlame())
+      RESPONSE_BLAME.convertFromWire(m.fieldBlame()),
+      CBLists.toList(m.fieldExtras(), ERROR::convertFromWire)
     );
   }
 }

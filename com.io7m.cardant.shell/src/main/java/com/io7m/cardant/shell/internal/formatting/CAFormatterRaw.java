@@ -24,9 +24,10 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeDeclaration;
-import com.io7m.cardant.model.CATypeDeclarationSummary;
+import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackageSummary;
 import com.io7m.medrina.api.MRoleName;
 import org.apache.commons.io.FileUtils;
 import org.jline.terminal.Terminal;
@@ -253,7 +254,7 @@ public final class CAFormatterRaw implements CAFormatterType
 
   @Override
   public void formatTypeDeclaration(
-    final CATypeDeclaration type)
+    final CATypeRecord type)
   {
     final PrintWriter w = this.terminal.writer();
     final var main = new TreeMap<String, String>();
@@ -289,7 +290,7 @@ public final class CAFormatterRaw implements CAFormatterType
 
   @Override
   public void formatTypeDeclarationPage(
-    final CAPage<CATypeDeclarationSummary> types)
+    final CAPage<CATypeRecordSummary> types)
   {
     final PrintWriter w = this.terminal.writer();
     w.printf(
@@ -385,6 +386,47 @@ public final class CAFormatterRaw implements CAFormatterType
         event.type(),
         event.time(),
         event.data()
+      );
+    }
+  }
+
+  @Override
+  public void print(
+    final String text)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.print(text);
+  }
+
+  @Override
+  public void printLine(
+    final String text)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.println(text);
+  }
+
+  @Override
+  public void formatTypePackagePage(
+    final CAPage<CATypePackageSummary> page)
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.printf(
+      "# Search results: Page %d of %d%n",
+      Integer.valueOf(page.pageIndex()),
+      Integer.valueOf(page.pageCount())
+    );
+    w.println(
+      "#--------------------------------"
+    );
+
+    final var items = page.items();
+    for (final var item : items) {
+      w.printf(
+        "%s %s %s%n",
+        item.identifier().name(),
+        item.identifier().version(),
+        item.description()
       );
     }
   }

@@ -19,15 +19,20 @@ package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CAMetadataNameMatchType;
+import com.io7m.cardant.model.CAMetadataElementMatchType.And;
+import com.io7m.cardant.model.CAMetadataElementMatchType.Or;
+import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
 import com.io7m.cardant.model.CAMetadataValueMatchType;
-import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue;
 import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType.WithinRange;
 import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType.WithCurrency;
 import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType;
-import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.ExactTextValue;
+import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.Search;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
 import com.io7m.cardant.model.CAMoney;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.Anything;
 import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
@@ -35,7 +40,6 @@ import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
-import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
@@ -44,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.io7m.cardant.model.CAMetadataNameMatchType.AnyName.ANY_NAME;
 import static com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue.ANY_VALUE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_NAME;
@@ -114,6 +117,8 @@ public final class CAMetadataMatchExpressions extends CAExpressions
         SYNTAX_METADATA_MATCH)
     );
 
+  private final CANameMatchExpressions names;
+
   /**
    * Expression parsers for metadata match expressions.
    *
@@ -124,6 +129,140 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
+
+    this.names = new CANameMatchExpressions(inStrings);
+  }
+
+  private static SExpressionType metadataMatchValueSerialize(
+    final CAMetadataValueMatchType value)
+  {
+    return switch (value) {
+      case final AnyValue ignored -> {
+        yield new SSymbol(zero(), "any-value");
+      }
+      case final WithCurrency w -> {
+        yield metadataValueMatchSerializeWithCurrency(w);
+      }
+      case final MonetaryMatchType.WithinRange w -> {
+        yield metadataValueMatchSerializeWithinRangeMonetary(w);
+      }
+      case final WithinRange w -> {
+        yield metadataValueMatchSerializeWithinRangeIntegral(w);
+      }
+      case final RealMatchType.WithinRange w -> {
+        yield metadataValueMatchSerializeWithinRangeReal(w);
+      }
+      case final TimeMatchType.WithinRange w -> {
+        yield metadataValueMatchSerializeWithinRangeTime(w);
+      }
+      case final ExactTextValue w -> {
+        yield metadataValueMatchSerializeTextExact(w);
+      }
+      case final Search w -> {
+        yield metadataValueMatchSerializeTextSearch(w);
+      }
+    };
+  }
+
+  private static SList metadataValueMatchSerializeTextSearch(
+    final Search w)
+  {
+    return new SList(
+      zero(),
+      true,
+      List.of(
+        new SSymbol(zero(), "with-text-search"),
+        new SQuotedString(zero(), w.query())
+      )
+    );
+  }
+
+  private static SList metadataValueMatchSerializeTextExact(
+    final ExactTextValue w)
+  {
+    return new SList(
+      zero(),
+      true,
+      List.of(
+        new SSymbol(zero(), "with-text-exact"),
+        new SQuotedString(zero(), w.text())
+      )
+    );
+  }
+
+  private static SList metadataValueMatchSerializeWithinRangeTime(
+    final TimeMatchType.WithinRange w)
+  {
+    return new SList(
+      zero(),
+      true,
+      List.of(
+        new SSymbol(zero(), "within-range-time"),
+        new SSymbol(zero(), w.lower().toString()),
+        new SSymbol(zero(), w.upper().toString())
+      )
+    );
+  }
+
+  private static SList metadataValueMatchSerializeWithinRangeReal(
+    final RealMatchType.WithinRange w)
+  {
+    return new SList(
+      zero(),
+      true,
+      List.of(
+        new SSymbol(zero(), "within-range-real"),
+        new SSymbol(zero(), Double.toString(w.lower())),
+        new SSymbol(zero(), Double.toString(w.upper()))
+      )
+    );
+  }
+
+  private static SList metadataValueMatchSerializeWithinRangeIntegral(
+    final WithinRange w)
+  {
+    return new SList(
+      zero(),
+      true,
+      List.of(
+        new SSymbol(zero(), "within-range-integral"),
+        new SSymbol(zero(), Long.toString(w.lower())),
+        new SSymbol(zero(), Long.toString(w.upper()))
+      )
+    );
+  }
+
+  private static SList metadataValueMatchSerializeWithinRangeMonetary(
+    final MonetaryMatchType.WithinRange w)
+  {
+    return new SList(
+      zero(),
+      true,
+      List.of(
+        new SSymbol(zero(), "within-range-monetary"),
+        new SSymbol(zero(), w.lower().toString()),
+        new SSymbol(zero(), w.upper().toString())
+      )
+    );
+  }
+
+  private static SList metadataValueMatchSerializeWithCurrency(
+    final WithCurrency w)
+  {
+    return new SList(
+      zero(),
+      true,
+      List.of(
+        new SSymbol(zero(), "with-currency"),
+        new SSymbol(zero(), w.currency().getCode())
+      )
+    );
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[CAMetadataMatchExpressions]";
   }
 
   @Override
@@ -165,8 +304,8 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     }
 
     if (expression instanceof final SList list
-      && list.size() >= 2
-      && list.get(0) instanceof final SAtomType head) {
+        && list.size() >= 2
+        && list.get(0) instanceof final SAtomType head) {
 
       return switch (head.text().toUpperCase(Locale.ROOT)) {
         case "AND" -> {
@@ -178,7 +317,9 @@ public final class CAMetadataMatchExpressions extends CAExpressions
         case "MATCH" -> {
           yield this.metadataMatchExprSpecific(list);
         }
-        default -> throw this.createParseError(head);
+        default -> {
+          throw this.createParseError(head);
+        }
       };
     }
 
@@ -190,66 +331,10 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     throws CAException
   {
     if (list.size() == 3) {
-      return new CAMetadataElementMatchType.Specific(
-        this.metadataNameMatchExpr(list.get(1)),
+      final SExpressionType e = list.get(1);
+      return new Specific(
+        this.names.nameMatch(e).expression(),
         this.metadataValueMatchExpr(list.get(2))
-      );
-    }
-    throw this.createParseError(list);
-  }
-
-  private CAMetadataNameMatchType metadataNameMatchExpr(
-    final SExpressionType expression)
-    throws CAException
-  {
-    if (expression instanceof final SAtomType atom) {
-      return switch (atom.text().toUpperCase(Locale.ROOT)) {
-        case "ANY-NAME" -> {
-          yield ANY_NAME;
-        }
-        default -> {
-          throw this.createParseError(expression);
-        }
-      };
-    }
-
-    if (expression instanceof final SList list
-      && list.size() >= 2
-      && list.get(0) instanceof final SAtomType head) {
-
-      return switch (head.text().toUpperCase(Locale.ROOT)) {
-        case "WITH-NAME-EXACT" -> {
-          yield this.metadataNameMatchExprExact(list);
-        }
-        case "WITH-NAME-SEARCH" -> {
-          yield this.metadataNameMatchExprSearch(list);
-        }
-        default -> throw this.createParseError(head);
-      };
-    }
-
-    throw this.createParseError(expression);
-  }
-
-  private CAMetadataNameMatchType metadataNameMatchExprSearch(
-    final SList list)
-    throws CAException
-  {
-    if (list.size() == 2) {
-      return new CAMetadataNameMatchType.SearchName(
-        this.text(list.get(1))
-      );
-    }
-    throw this.createParseError(list);
-  }
-
-  private CAMetadataNameMatchType metadataNameMatchExprExact(
-    final SList list)
-    throws CAException
-  {
-    if (list.size() == 2) {
-      return new CAMetadataNameMatchType.ExactName(
-        new RDottedName(this.text(list.get(1)))
       );
     }
     throw this.createParseError(list);
@@ -260,7 +345,7 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     throws CAException
   {
     if (list.size() == 3) {
-      return new CAMetadataElementMatchType.And(
+      return new And(
         this.metadataMatchExpr(list.get(1)),
         this.metadataMatchExpr(list.get(2))
       );
@@ -273,7 +358,7 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     throws CAException
   {
     if (list.size() == 3) {
-      return new CAMetadataElementMatchType.Or(
+      return new Or(
         this.metadataMatchExpr(list.get(1)),
         this.metadataMatchExpr(list.get(2))
       );
@@ -314,8 +399,8 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     }
 
     if (expression instanceof final SList list
-      && list.size() >= 2
-      && list.get(0) instanceof final SAtomType head) {
+        && list.size() >= 2
+        && list.get(0) instanceof final SAtomType head) {
 
       return switch (head.text().toUpperCase(Locale.ROOT)) {
         case "WITHIN-RANGE-INTEGRAL" -> {
@@ -339,7 +424,9 @@ public final class CAMetadataMatchExpressions extends CAExpressions
         case "WITH-TEXT-SEARCH" -> {
           yield this.metadataValueMatchExprWithTextSearch(list);
         }
-        default -> throw this.createParseError(head);
+        default -> {
+          throw this.createParseError(head);
+        }
       };
     }
 
@@ -351,7 +438,7 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     throws CAException
   {
     if (list.size() == 2) {
-      return new TextMatchType.ExactTextValue(
+      return new ExactTextValue(
         this.text(list.get(1))
       );
     }
@@ -363,7 +450,7 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     throws CAException
   {
     if (list.size() == 2) {
-      return new TextMatchType.Search(
+      return new Search(
         this.text(list.get(1))
       );
     }
@@ -386,7 +473,7 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     throws CAException
   {
     if (list.size() == 2) {
-      return new MonetaryMatchType.WithCurrency(
+      return new WithCurrency(
         this.currency(list.get(1))
       );
     }
@@ -548,223 +635,46 @@ public final class CAMetadataMatchExpressions extends CAExpressions
   public SExpressionType metadataMatchSerialize(
     final CAMetadataElementMatchType value)
   {
-    if (value instanceof final CAMetadataElementMatchType.Specific specific) {
-      if (specific.value() == ANY_VALUE && specific.name() == ANY_NAME) {
-        return new SSymbol(zero(), "anything");
+    switch (value) {
+      case final Specific specific -> {
+        if (specific.value() == ANY_VALUE
+            && specific.name() instanceof Anything<String>) {
+          return new SSymbol(zero(), "anything");
+        }
+        return new SList(
+          zero(),
+          true,
+          List.of(
+            new SSymbol(zero(), "match"),
+            this.names.nameMatchSerialize(specific.name()),
+            metadataMatchValueSerialize(specific.value())
+          )
+        );
       }
 
-      return new SList(
-        zero(),
-        true,
-        List.of(
-          new SSymbol(zero(), "match"),
-          metadataMatchNameSerialize(specific.name()),
-          metadataMatchValueSerialize(specific.value())
-        )
-      );
+      case final Or or -> {
+        return new SList(
+          zero(),
+          true,
+          List.of(
+            new SSymbol(zero(), "or"),
+            this.metadataMatchSerialize(or.e0()),
+            this.metadataMatchSerialize(or.e1())
+          )
+        );
+      }
+
+      case final And and -> {
+        return new SList(
+          zero(),
+          true,
+          List.of(
+            new SSymbol(zero(), "and"),
+            this.metadataMatchSerialize(and.e0()),
+            this.metadataMatchSerialize(and.e1())
+          )
+        );
+      }
     }
-
-    if (value instanceof final CAMetadataElementMatchType.Or or) {
-      return new SList(
-        zero(),
-        true,
-        List.of(
-          new SSymbol(zero(), "or"),
-          this.metadataMatchSerialize(or.e0()),
-          this.metadataMatchSerialize(or.e1())
-        )
-      );
-    }
-
-    if (value instanceof final CAMetadataElementMatchType.And and) {
-      return new SList(
-        zero(),
-        true,
-        List.of(
-          new SSymbol(zero(), "and"),
-          this.metadataMatchSerialize(and.e0()),
-          this.metadataMatchSerialize(and.e1())
-        )
-      );
-    }
-
-    throw new IllegalStateException();
-  }
-
-  private static SExpressionType metadataMatchValueSerialize(
-    final CAMetadataValueMatchType value)
-  {
-    if (value instanceof CAMetadataValueMatchType.AnyValue) {
-      return new SSymbol(zero(), "any-value");
-    }
-
-    if (value instanceof final MonetaryMatchType.WithCurrency w) {
-      return metadataValueMatchSerializeWithCurrency(w);
-    }
-
-    if (value instanceof final MonetaryMatchType.WithinRange w) {
-      return metadataValueMatchSerializeWithinRangeMonetary(w);
-    }
-
-    if (value instanceof final IntegralMatchType.WithinRange w) {
-      return metadataValueMatchSerializeWithinRangeIntegral(w);
-    }
-
-    if (value instanceof final RealMatchType.WithinRange w) {
-      return metadataValueMatchSerializeWithinRangeReal(w);
-    }
-
-    if (value instanceof final TimeMatchType.WithinRange w) {
-      return metadataValueMatchSerializeWithinRangeTime(w);
-    }
-
-    if (value instanceof final TextMatchType.ExactTextValue w) {
-      return metadataValueMatchSerializeTextExact(w);
-    }
-
-    if (value instanceof final TextMatchType.Search w) {
-      return metadataValueMatchSerializeTextSearch(w);
-    }
-
-    throw new IllegalStateException();
-  }
-
-  private static SList metadataValueMatchSerializeTextSearch(
-    final TextMatchType.Search w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "with-text-search"),
-        new SQuotedString(zero(), w.query())
-      )
-    );
-  }
-
-  private static SList metadataValueMatchSerializeTextExact(
-    final TextMatchType.ExactTextValue w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "with-text-exact"),
-        new SQuotedString(zero(), w.text())
-      )
-    );
-  }
-
-  private static SList metadataValueMatchSerializeWithinRangeTime(
-    final TimeMatchType.WithinRange w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "within-range-time"),
-        new SSymbol(zero(), w.lower().toString()),
-        new SSymbol(zero(), w.upper().toString())
-      )
-    );
-  }
-
-  private static SList metadataValueMatchSerializeWithinRangeReal(
-    final RealMatchType.WithinRange w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "within-range-real"),
-        new SSymbol(zero(), Double.toString(w.lower())),
-        new SSymbol(zero(), Double.toString(w.upper()))
-      )
-    );
-  }
-
-  private static SList metadataValueMatchSerializeWithinRangeIntegral(
-    final WithinRange w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "within-range-integral"),
-        new SSymbol(zero(), Long.toString(w.lower())),
-        new SSymbol(zero(), Long.toString(w.upper()))
-      )
-    );
-  }
-
-  private static SList metadataValueMatchSerializeWithinRangeMonetary(
-    final MonetaryMatchType.WithinRange w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "within-range-monetary"),
-        new SSymbol(zero(), w.lower().toString()),
-        new SSymbol(zero(), w.upper().toString())
-      )
-    );
-  }
-
-  private static SList metadataValueMatchSerializeWithCurrency(
-    final MonetaryMatchType.WithCurrency w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "with-currency"),
-        new SSymbol(zero(), w.currency().getCode())
-      )
-    );
-  }
-
-  private static SExpressionType metadataMatchNameSerialize(
-    final CAMetadataNameMatchType name)
-  {
-    if (name instanceof CAMetadataNameMatchType.AnyName) {
-      return new SSymbol(zero(), "any-name");
-    }
-
-    if (name instanceof final CAMetadataNameMatchType.ExactName w) {
-      return metadataMatchNameSerializeExact(w);
-    }
-
-    if (name instanceof final CAMetadataNameMatchType.SearchName w) {
-      return metadataMatchNameSerializeSearch(w);
-    }
-
-    throw new IllegalStateException();
-  }
-
-  private static SList metadataMatchNameSerializeSearch(
-    final CAMetadataNameMatchType.SearchName w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "with-name-search"),
-        new SQuotedString(zero(), w.query())
-      )
-    );
-  }
-
-  private static SList metadataMatchNameSerializeExact(
-    final CAMetadataNameMatchType.ExactName w)
-  {
-    return new SList(
-      zero(),
-      true,
-      List.of(
-        new SSymbol(zero(), "with-name-exact"),
-        new SQuotedString(zero(), w.name().value())
-      )
-    );
   }
 }

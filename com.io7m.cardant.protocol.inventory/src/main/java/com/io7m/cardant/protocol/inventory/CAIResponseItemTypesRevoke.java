@@ -40,6 +40,7 @@ public record CAIResponseItemTypesRevoke(
 
   public CAIResponseItemTypesRevoke
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "item");
   }
 }

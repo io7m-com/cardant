@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.TypesAssignType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,10 +40,10 @@ import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 public final class CADBQItemTypesAssign
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements TypesAssignType
+  implements ItemTypesAssignType
 {
-  private static final Service<Parameters, CADatabaseUnit, TypesAssignType> SERVICE =
-    new Service<>(TypesAssignType.class, CADBQItemTypesAssign::new);
+  private static final Service<Parameters, CADatabaseUnit, ItemTypesAssignType> SERVICE =
+    new Service<>(ItemTypesAssignType.class, CADBQItemTypesAssign::new);
 
   /**
    * Construct a query.

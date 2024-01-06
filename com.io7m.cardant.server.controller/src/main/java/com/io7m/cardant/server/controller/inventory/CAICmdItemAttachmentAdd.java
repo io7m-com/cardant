@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentAddType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentAddType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -61,9 +61,9 @@ public final class CAICmdItemAttachmentAdd
     transaction.setUserId(context.session().userId());
 
     final var attachmentAdd =
-      transaction.queries(CADatabaseQueriesItemsType.AttachmentAddType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemID = command.item();
     attachmentAdd.execute(

@@ -38,6 +38,7 @@ import com.io7m.cardant.strings.CAStrings;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.helidon.webserver.http.ServerRequest;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -166,7 +167,8 @@ public final class CA1HandlerCoreAuthenticated
           Map.of(),
           Optional.empty(),
           Optional.empty(),
-          BLAME_CLIENT
+          BLAME_CLIENT,
+          List.of()
         )
       )
     );

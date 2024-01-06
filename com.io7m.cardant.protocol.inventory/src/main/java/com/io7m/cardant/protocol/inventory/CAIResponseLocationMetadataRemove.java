@@ -39,6 +39,7 @@ public record CAIResponseLocationMetadataRemove(
 
   public CAIResponseLocationMetadataRemove
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "location");
   }
 }

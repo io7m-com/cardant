@@ -1,0 +1,5 @@
+match_serial ::=
+    "with-any-serial"
+  | "(" "with-serial-equal-to" <serial> ")"
+  | "(" "with-serial-not-equal-to" <serial> ")"
+  ;

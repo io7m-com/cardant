@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesRevokeType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesRevokeType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,10 +40,10 @@ import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 public final class CADBQLocationTypesRevoke
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements TypesRevokeType
+  implements LocationTypesRevokeType
 {
-  private static final Service<Parameters, CADatabaseUnit, TypesRevokeType> SERVICE =
-    new Service<>(TypesRevokeType.class, CADBQLocationTypesRevoke::new);
+  private static final Service<Parameters, CADatabaseUnit, LocationTypesRevokeType> SERVICE =
+    new Service<>(LocationTypesRevokeType.class, CADBQLocationTypesRevoke::new);
 
   /**
    * Construct a query.

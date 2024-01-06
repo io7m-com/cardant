@@ -167,14 +167,14 @@ public final class CAICmdItemSearchNextTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemsType.SearchType.class);
+      mock(CADatabaseQueriesItemsType.ItemSearchType.class);
     final var itemSearch =
       mock(CADatabaseItemSearchType.class);
 
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.SearchType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class))
       .thenReturn(items);
 
     when(items.execute(any()))

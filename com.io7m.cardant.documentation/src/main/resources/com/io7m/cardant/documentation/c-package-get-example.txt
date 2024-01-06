@@ -1,0 +1,10 @@
+$ cardant package get --name cardant.product --version 1.0.0
+<?xml version="1.0" encoding="UTF-8" ?>
+<Package xmlns="com.io7m.cardant:type_packages:1">
+  <PackageInfo Name="cardant.product"
+               Version="1.0.0"
+               Description="Manufactured products."/>
+  <TypeScalarText Name="manufacturer"
+...
+
+$ cardant package get --name cardant.product --version 1.0.0 --output out.xml

@@ -26,9 +26,10 @@ import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CANameMatchType.Any;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -69,11 +70,13 @@ public final class CAICmdItemSearchBeginTest
   private static final CAItemSearchParameters PARAMETERS =
     new CAItemSearchParameters(
       new CAItemLocationMatchType.CAItemLocationsAll(),
-      Any.ANY_NAME,
-      CATypeMatchAny.ANY,
+      new CAComparisonFuzzyType.Anything<>(),
+      new CAComparisonFuzzyType.Anything<>(),
+      new CAComparisonSetType.Anything<>(),
+      new CAComparisonExactType.Anything<>(),
       CAMetadataElementMatchType.ANYTHING,
       new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-      100
+      100L
     );
 
   /**
@@ -120,7 +123,7 @@ public final class CAICmdItemSearchBeginTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemsType.SearchType.class);
+      mock(CADatabaseQueriesItemsType.ItemSearchType.class);
     final var itemSearch =
       mock(CADatabaseItemSearchType.class);
 
@@ -135,7 +138,7 @@ public final class CAICmdItemSearchBeginTest
         0L
       );
 
-    when(transaction.queries(CADatabaseQueriesItemsType.SearchType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class))
       .thenReturn(items);
     when(items.execute(any()))
       .thenReturn(itemSearch);
@@ -167,7 +170,7 @@ public final class CAICmdItemSearchBeginTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.SearchType.class);
+      .queries(CADatabaseQueriesItemsType.ItemSearchType.class);
     verify(items)
       .execute(PARAMETERS);
     verify(itemSearch)

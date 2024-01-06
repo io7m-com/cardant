@@ -19,14 +19,14 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentAddType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentRemoveType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.GetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.ListType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.PutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationListType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -77,11 +77,11 @@ public final class CADatabaseLocationsTest
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private GetType locationGet;
-  private PutType locationPut;
-  private ListType locationList;
-  private MetadataPutType metaPut;
-  private MetadataRemoveType metaRemove;
+  private LocationGetType locationGet;
+  private LocationPutType locationPut;
+  private LocationListType locationList;
+  private LocationMetadataPutType metaPut;
+  private LocationMetadataRemoveType metaRemove;
 
   @BeforeAll
   public static void setupOnce(
@@ -113,16 +113,16 @@ public final class CADatabaseLocationsTest
     this.transaction.setUserId(userId);
 
     this.locationPut =
-      this.transaction.queries(PutType.class);
+      this.transaction.queries(LocationPutType.class);
     this.locationList =
-      this.transaction.queries(ListType.class);
+      this.transaction.queries(LocationListType.class);
     this.locationGet =
-      this.transaction.queries(GetType.class);
+      this.transaction.queries(LocationGetType.class);
 
     this.metaPut =
-      this.transaction.queries(MetadataPutType.class);
+      this.transaction.queries(LocationMetadataPutType.class);
     this.metaRemove =
-      this.transaction.queries(MetadataRemoveType.class);
+      this.transaction.queries(LocationMetadataRemoveType.class);
   }
 
   /**
@@ -194,9 +194,9 @@ public final class CADatabaseLocationsTest
     throws Exception
   {
     final var put =
-      this.transaction.queries(PutType.class);
+      this.transaction.queries(LocationPutType.class);
     final var list =
-      this.transaction.queries(ListType.class);
+      this.transaction.queries(LocationListType.class);
 
     final var loc0 =
       new CALocation(
@@ -329,7 +329,7 @@ public final class CADatabaseLocationsTest
       new CAMetadataType.Text(new RDottedName("x.y.a2"), "ghi");
 
     this.metaPut.execute(
-      new MetadataPutType.Parameters(
+      new LocationMetadataPutType.Parameters(
         id0,
         Set.of(meta0,
                meta1,
@@ -344,7 +344,7 @@ public final class CADatabaseLocationsTest
     }
 
     this.metaRemove.execute(
-      new MetadataRemoveType.Parameters(
+      new LocationMetadataRemoveType.Parameters(
         id0,
         Set.of(meta1.name()))
     );
@@ -356,7 +356,7 @@ public final class CADatabaseLocationsTest
     }
 
     this.metaRemove.execute(
-      new MetadataRemoveType.Parameters(
+      new LocationMetadataRemoveType.Parameters(
         id0,
         Set.of(
           meta0.name(),
@@ -399,10 +399,10 @@ public final class CADatabaseLocationsTest
         CADatabaseQueriesFilesType.PutType.class);
     final var locationAttachmentAdd =
       this.transaction.queries(
-        AttachmentAddType.class);
+        LocationAttachmentAddType.class);
     final var locationAttachmentRemove =
       this.transaction.queries(
-        AttachmentRemoveType.class);
+        LocationAttachmentRemoveType.class);
 
     final var file =
       new CAFileWithData(
@@ -416,7 +416,7 @@ public final class CADatabaseLocationsTest
     fileAdd.execute(file);
 
     locationAttachmentAdd.execute(
-      new AttachmentAddType.Parameters(
+      new LocationAttachmentAddType.Parameters(
         id0,
         file.id(),
         "misc"));

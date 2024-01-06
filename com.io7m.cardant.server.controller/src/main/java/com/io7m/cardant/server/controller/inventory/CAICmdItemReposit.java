@@ -54,9 +54,9 @@ public final class CAICmdItemReposit
     transaction.setUserId(context.session().userId());
 
     final var repositQuery =
-      transaction.queries(CADatabaseQueriesItemsType.RepositType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var reposit = command.reposit();
     repositQuery.execute(reposit);

@@ -63,8 +63,9 @@ public final class CAI1ServerTest
     IDSTORE =
       CATestContainers.createIdstore(
         supervisor,
+        DATABASE,
         DIRECTORY,
-        15432,
+        "idstore",
         51000,
         50000,
         50001

@@ -29,6 +29,11 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.model.type_package.CATypePackageSearchParameters;
+import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
+import com.io7m.cardant.model.type_package.CATypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
@@ -39,9 +44,16 @@ import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchPrevious;
+import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.cardant.tests.server.controller.CAICmdTypePackageInstallTest;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
@@ -49,6 +61,7 @@ import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
+import com.io7m.verona.core.Version;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
 import org.junit.jupiter.api.BeforeAll;
@@ -61,6 +74,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -107,8 +121,9 @@ public final class CAClientIT
     IDSTORE =
       CATestContainers.createIdstore(
         supervisor,
+        DATABASE,
         DIRECTORY,
-        15432,
+        "idstore",
         51000,
         50000,
         50001
@@ -175,17 +190,7 @@ public final class CAClientIT
   {
     final var ex =
       assertThrows(CAClientException.class, () -> {
-        this.client.loginOrElseThrow(
-          new CAClientCredentials(
-            "localhost",
-            30000,
-            false,
-            new IdName("nonexistent"),
-            "12345678",
-            Map.of()
-          ),
-          CAClientException::ofError
-        );
+        this.login(new IdName("nonexistent"));
       });
 
     assertEquals(CAStandardErrorCodes.errorAuthentication(), ex.errorCode());
@@ -627,6 +632,66 @@ public final class CAClientIT
         this.client.executeOrElseThrow(new CAICommandLocationGet(id));
       final var m = r.data().attachments();
       assertEquals(0, m.size());
+    }
+  }
+
+  /**
+   * Creating and modifying locations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypePackageWorkflow(
+    final @TempDir Path directory)
+    throws Exception
+  {
+    this.login(new IdName("someone-admin"));
+
+    final var text =
+      new String(
+        CAICmdTypePackageInstallTest.class.getResourceAsStream(
+            "/com/io7m/cardant/tests/tpack2.xml")
+          .readAllBytes(),
+        StandardCharsets.UTF_8
+      );
+
+    this.client.executeOrElseThrow(new CAICommandTypePackageInstall(text));
+
+    {
+      final var r =
+        this.client.executeOrElseThrow(new CAICommandTypePackageGetText(
+          new CATypePackageIdentifier(
+            new RDottedName("com.io7m.example"),
+            Version.of(1,0,0)
+          )
+        ));
+    }
+
+    {
+      this.client.executeOrElseThrow(new CAICommandTypePackageSearchBegin(
+        new CATypePackageSearchParameters(
+          new CAComparisonFuzzyType.Anything<>(),
+          100L
+        )
+      ));
+      this.client.executeOrElseThrow(new CAICommandTypePackageSearchNext());
+      this.client.executeOrElseThrow(new CAICommandTypePackageSearchPrevious());
+    }
+
+    {
+      final var r =
+        this.client.executeOrElseThrow(
+          new CAICommandTypePackageUninstall(
+            new CATypePackageUninstall(
+              CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED,
+              new CATypePackageIdentifier(
+                new RDottedName("com.io7m.example"),
+                Version.of(1,0,0)
+              )
+            )
+          )
+        );
     }
   }
 

@@ -381,19 +381,28 @@
       <Class name="com.io7m.cardant.database.api.CADatabaseRole"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseUpgrade"/>
       <Class name="com.io7m.cardant.database.api.CADatabaseUserUpdates"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataPutType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$MetadataRemoveType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesAssignType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$TypesRevokeType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataPutType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$MetadataRemoveType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesAssignType$Parameters"/>
-      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$TypesRevokeType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemMetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemMetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemTypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesItemsType$ItemTypesRevokeType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationMetadataPutType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationMetadataRemoveType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationTypesAssignType$Parameters"/>
+      <Class name="com.io7m.cardant.database.api.CADatabaseQueriesLocationsType$LocationTypesRevokeType$Parameters"/>
     </Or>
     <Or>
       <Bug pattern="EI_EXPOSE_REP"/>
       <Bug pattern="EI_EXPOSE_REP2"/>
       <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+    </Or>
+  </Match>
+
+  <!-- Matching -->
+  <Match>
+    <Class name="com.io7m.cardant.database.api.CADatabaseTypePackageResolver"/>
+    <Or>
+      <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED"/>
     </Or>
   </Match>
 
@@ -460,6 +469,18 @@
     <Bug pattern="ITC_INHERITANCE_TYPE_CHECKING"/>
   </Match>
 
+  <!-- Pattern matching unused variables. -->
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+  </Match>
+
+  <!-- Pattern matching casts. -->
+  <Match>
+    <Package name="com.io7m.cardant.database.postgres.internal"/>
+    <Bug pattern="BC_UNCONFIRMED_CAST"/>
+  </Match>
+
   <!-- These classes are coupled as part of an API. -->
   <Match>
     <Or>
@@ -512,6 +533,16 @@
   <Match>
     <Package name="com.io7m.cardant.parsers"/>
     <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="BC_UNCONFIRMED_CAST"/>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.parsers"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
   </Match>
 
   <!--                             -->
@@ -615,6 +646,23 @@
       <Bug pattern="EI_EXPOSE_REP2"/>
       <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
     </Or>
+  </Match>
+
+  <!-- Unavoidable from pattern matching. -->
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICmdTypePackageInstall"/>
+    <Method name="executeActual"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAITypePackages"/>
+    <Method name="compile"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+  <Match>
+    <Class name="com.io7m.cardant.server.controller.inventory.CAICmdTypePackageInstall"/>
+    <Method name="executeActual"/>
+    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
   </Match>
 
   <!--                                               -->
@@ -864,6 +912,41 @@
       <Bug pattern="EI_EXPOSE_REP2"/>
       <Bug pattern="OPM_OVERLY_PERMISSIVE_METHOD"/>
     </Or>
+  </Match>
+
+  <!--                                  -->
+  <!-- com.io7m.cardant.type_packages.* -->
+  <!--                                  -->
+
+  <!-- Unnecessary. -->
+  <Match>
+    <Or>
+      <Package name="com.io7m.cardant.type_packages.checkers.internal"/>
+      <Package name="com.io7m.cardant.type_packages.compilers.internal"/>
+      <Package name="com.io7m.cardant.type_packages.parsers.internal"/>
+    </Or>
+    <Or>
+      <Bug pattern="CE_CLASS_ENVY"/>
+      <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING"/>
+    </Or>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.type_packages.parsers.internal.CATypePackageSerializer"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+  </Match>
+
+  <Match>
+    <Class name="com.io7m.cardant.type_packages.compilers.internal.CATypePackageCompiler"/>
+    <Or>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+      <Bug pattern="EXS_EXCEPTION_SOFTENING_HAS_CHECKED"/>
+    </Or>
+  </Match>
+
+  <Match>
+    <Package name="com.io7m.cardant.type_packages.standard"/>
+    <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED"/>
   </Match>
 
 </FindBugsFilter>

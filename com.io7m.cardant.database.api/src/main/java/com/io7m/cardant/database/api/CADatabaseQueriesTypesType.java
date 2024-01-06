@@ -16,13 +16,16 @@
 
 package com.io7m.cardant.database.api;
 
-import com.io7m.cardant.model.CATypeDeclaration;
+import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldUpdate;
+import com.io7m.cardant.model.CATypeRecordRemoval;
+import com.io7m.cardant.model.CATypeRecordSearchParameters;
+import com.io7m.cardant.model.CATypeScalarRemoval;
+import com.io7m.cardant.model.CATypeScalarSearchParameters;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.lanark.core.RDottedName;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Model database queries (Types).
@@ -35,8 +38,8 @@ public sealed interface CADatabaseQueriesTypesType
    * Remove a type declaration.
    */
 
-  non-sealed interface TypeDeclarationRemoveType
-    extends CADatabaseQueryType<RDottedName, CADatabaseUnit>,
+  non-sealed interface TypeRecordRemoveType
+    extends CADatabaseQueryType<CATypeRecordRemoval, CADatabaseUnit>,
     CADatabaseQueriesTypesType
   {
 
@@ -46,8 +49,30 @@ public sealed interface CADatabaseQueriesTypesType
    * Create or update a type declaration.
    */
 
-  non-sealed interface TypeDeclarationPutType
-    extends CADatabaseQueryType<CATypeDeclaration, CADatabaseUnit>,
+  non-sealed interface TypeRecordPutType
+    extends CADatabaseQueryType<CATypeRecord, CADatabaseUnit>,
+    CADatabaseQueriesTypesType
+  {
+
+  }
+
+  /**
+   * Remove a record type field.
+   */
+
+  non-sealed interface TypeRecordFieldRemoveType
+    extends CADatabaseQueryType<RDottedName, CADatabaseUnit>,
+    CADatabaseQueriesTypesType
+  {
+
+  }
+
+  /**
+   * Update a record type field.
+   */
+
+  non-sealed interface TypeRecordFieldUpdateType
+    extends CADatabaseQueryType<CATypeRecordFieldUpdate, CADatabaseUnit>,
     CADatabaseQueriesTypesType
   {
 
@@ -57,19 +82,8 @@ public sealed interface CADatabaseQueriesTypesType
    * Get a type declaration.
    */
 
-  non-sealed interface TypeDeclarationGetType
-    extends CADatabaseQueryType<RDottedName, Optional<CATypeDeclaration>>,
-    CADatabaseQueriesTypesType
-  {
-
-  }
-
-  /**
-   * Get multiple type declarations.
-   */
-
-  non-sealed interface TypeDeclarationGetMultipleType
-    extends CADatabaseQueryType<Set<RDottedName>, List<CATypeDeclaration>>,
+  non-sealed interface TypeRecordGetType
+    extends CADatabaseQueryType<RDottedName, Optional<CATypeRecord>>,
     CADatabaseQueriesTypesType
   {
 
@@ -80,8 +94,8 @@ public sealed interface CADatabaseQueriesTypesType
    * given name.
    */
 
-  non-sealed interface TypeDeclarationsReferencingScalarType
-    extends CADatabaseQueryType<RDottedName, CADatabaseTypeDeclarationSearchType>,
+  non-sealed interface TypeRecordsReferencingScalarType
+    extends CADatabaseQueryType<RDottedName, CADatabaseTypeRecordSearchType>,
     CADatabaseQueriesTypesType
   {
 
@@ -91,8 +105,8 @@ public sealed interface CADatabaseQueriesTypesType
    * Search for type declarations.
    */
 
-  non-sealed interface TypeDeclarationsSearchType
-    extends CADatabaseQueryType<String, CADatabaseTypeDeclarationSearchType>,
+  non-sealed interface TypeRecordsSearchType
+    extends CADatabaseQueryType<CATypeRecordSearchParameters, CADatabaseTypeRecordSearchType>,
     CADatabaseQueriesTypesType
   {
 
@@ -114,19 +128,18 @@ public sealed interface CADatabaseQueriesTypesType
    */
 
   non-sealed interface TypeScalarSearchType
-    extends CADatabaseQueryType<String, CADatabaseTypeScalarSearchType>,
+    extends CADatabaseQueryType<CATypeScalarSearchParameters, CADatabaseTypeScalarSearchType>,
     CADatabaseQueriesTypesType
   {
 
   }
 
   /**
-   * Remove a scalar type declaration. Fails if any type declarations still
-   * refer to this type.
+   * Remove a scalar type declaration.
    */
 
   non-sealed interface TypeScalarRemoveType
-    extends CADatabaseQueryType<RDottedName, CADatabaseUnit>,
+    extends CADatabaseQueryType<CATypeScalarRemoval, CADatabaseUnit>,
     CADatabaseQueriesTypesType
   {
 

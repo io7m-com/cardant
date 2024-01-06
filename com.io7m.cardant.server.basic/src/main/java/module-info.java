@@ -43,12 +43,20 @@ module com.io7m.cardant.server.basic
   requires com.io7m.cardant.server.service.reqlimit;
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
+  requires com.io7m.cardant.server.service.tls;
   requires com.io7m.cardant.server.service.verdant;
+  requires com.io7m.cardant.type_packages.checker.api;
+  requires com.io7m.cardant.type_packages.checkers;
+  requires com.io7m.cardant.type_packages.compiler.api;
+  requires com.io7m.cardant.type_packages.compilers;
+  requires com.io7m.cardant.type_packages.parser.api;
+  requires com.io7m.cardant.type_packages.parsers;
+  requires com.io7m.cardant.type_packages.upgrades.api;
+  requires com.io7m.cardant.type_packages.upgrades;
 
   requires com.io7m.jmulticlose.core;
   requires io.helidon.webserver;
   requires io.opentelemetry.api;
-  requires com.io7m.cardant.server.service.tls;
 
   provides CAServerFactoryType
     with CAServers;

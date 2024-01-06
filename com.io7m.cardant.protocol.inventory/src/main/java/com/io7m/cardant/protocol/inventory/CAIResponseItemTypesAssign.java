@@ -40,6 +40,7 @@ public record CAIResponseItemTypesAssign(
 
   public CAIResponseItemTypesAssign
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "item");
   }
 }

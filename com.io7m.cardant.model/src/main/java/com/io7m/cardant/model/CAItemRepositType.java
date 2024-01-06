@@ -21,9 +21,12 @@ package com.io7m.cardant.model;
  */
 
 public sealed interface CAItemRepositType
-  permits CAItemRepositAdd,
-  CAItemRepositMove,
-  CAItemRepositRemove
+  permits CAItemRepositSerialAdd,
+  CAItemRepositSerialMove,
+  CAItemRepositSerialRemove,
+  CAItemRepositSetAdd,
+  CAItemRepositSetMove,
+  CAItemRepositSetRemove
 {
   /**
    * @return The item ID

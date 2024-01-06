@@ -24,9 +24,10 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.CATypeDeclaration;
-import com.io7m.cardant.model.CATypeDeclarationSummary;
+import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
+import com.io7m.cardant.model.type_package.CATypePackageSummary;
 import com.io7m.medrina.api.MRoleName;
 
 import java.util.List;
@@ -140,7 +141,7 @@ public interface CAFormatterType
    * @throws Exception On errors
    */
 
-  void formatTypeDeclaration(CATypeDeclaration type)
+  void formatTypeDeclaration(CATypeRecord type)
     throws Exception;
 
   /**
@@ -152,7 +153,7 @@ public interface CAFormatterType
    */
 
   void formatTypeDeclarationPage(
-    CAPage<CATypeDeclarationSummary> types)
+    CAPage<CATypeRecordSummary> types)
     throws Exception;
 
   /**
@@ -178,4 +179,39 @@ public interface CAFormatterType
   void formatAuditPage(
     CAPage<CAAuditEvent> page)
     throws Exception;
+
+  /**
+   * Print text to the output.
+   *
+   * @param text The text
+   *
+   * @throws Exception On errors
+   */
+
+  void print(String text)
+    throws Exception;
+
+  /**
+   * Print text to the output with a newline.
+   *
+   * @param text The text
+   *
+   * @throws Exception On errors
+   */
+
+  void printLine(String text)
+    throws Exception;
+
+  /**
+   * Format a page of type packages.
+   *
+   * @param type The type packages
+   *
+   * @throws Exception On errors
+   */
+
+  void formatTypePackagePage(
+    CAPage<CATypePackageSummary> type)
+    throws Exception;
+
 }

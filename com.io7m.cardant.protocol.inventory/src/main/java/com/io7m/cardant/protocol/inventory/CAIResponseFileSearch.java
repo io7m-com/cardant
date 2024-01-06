@@ -41,6 +41,7 @@ public record CAIResponseFileSearch(
 
   public CAIResponseFileSearch
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "files");
   }
 }

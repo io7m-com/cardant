@@ -1,0 +1,3 @@
+match_serial_evaluate with-any-serial n                 ⇒ true
+match_serial_evaluate (with-serial-equal-to m) n        ⇒ n = m
+match_serial_evaluate (with-serial-not-equal-to m) n    ⇒ n ≠ m

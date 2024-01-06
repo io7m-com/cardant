@@ -18,15 +18,27 @@
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositAdd;
-import com.io7m.cardant.model.CAItemRepositMove;
-import com.io7m.cardant.model.CAItemRepositRemove;
+import com.io7m.cardant.model.CAItemRepositSerialAdd;
+import com.io7m.cardant.model.CAItemRepositSerialMove;
+import com.io7m.cardant.model.CAItemRepositSerialRemove;
+import com.io7m.cardant.model.CAItemRepositSetAdd;
+import com.io7m.cardant.model.CAItemRepositSetMove;
+import com.io7m.cardant.model.CAItemRepositSetRemove;
 import com.io7m.cardant.model.CAItemRepositType;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit.CAI1ItemRepositSerialAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit.CAI1ItemRepositSerialMove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit.CAI1ItemRepositSerialRemove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit.CAI1ItemRepositSetAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit.CAI1ItemRepositSetMove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemReposit.CAI1ItemRepositSetRemove;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
+
+import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
 /**
  * A validator.
@@ -46,26 +58,53 @@ public enum CAUVItemReposit
     final CAItemRepositType message)
   {
     return switch (message) {
-      case final CAItemRepositAdd a -> {
-        yield new CAI1ItemReposit.CAI1ItemRepositAdd(
+      case final CAItemRepositSetAdd a -> {
+        yield new CAI1ItemRepositSetAdd(
           new CBUUID(a.item().id()),
           new CBUUID(a.location().id()),
           new CBIntegerUnsigned64(a.count())
         );
       }
-      case final CAItemRepositRemove r -> {
-        yield new CAI1ItemReposit.CAI1ItemRepositRemove(
+
+      case final CAItemRepositSetRemove r -> {
+        yield new CAI1ItemRepositSetRemove(
           new CBUUID(r.item().id()),
           new CBUUID(r.location().id()),
           new CBIntegerUnsigned64(r.count())
         );
       }
-      case final CAItemRepositMove m -> {
-        yield new CAI1ItemReposit.CAI1ItemRepositMove(
+
+      case final CAItemRepositSetMove m -> {
+        yield new CAI1ItemRepositSetMove(
           new CBUUID(m.item().id()),
           new CBUUID(m.fromLocation().id()),
           new CBUUID(m.toLocation().id()),
           new CBIntegerUnsigned64(m.count())
+        );
+      }
+
+      case final CAItemRepositSerialAdd a -> {
+        yield new CAI1ItemRepositSerialAdd(
+          new CBUUID(a.item().id()),
+          new CBUUID(a.location().id()),
+          string(a.serial().value())
+        );
+      }
+
+      case final CAItemRepositSerialRemove r -> {
+        yield new CAI1ItemRepositSerialRemove(
+          new CBUUID(r.item().id()),
+          new CBUUID(r.location().id()),
+          string(r.serial().value())
+        );
+      }
+
+      case final CAItemRepositSerialMove m -> {
+        yield new CAI1ItemRepositSerialMove(
+          new CBUUID(m.item().id()),
+          new CBUUID(m.fromLocation().id()),
+          new CBUUID(m.toLocation().id()),
+          string(m.serial().value())
         );
       }
     };
@@ -76,26 +115,53 @@ public enum CAUVItemReposit
     final CAI1ItemReposit message)
   {
     return switch (message) {
-      case final CAI1ItemReposit.CAI1ItemRepositMove m -> {
-        yield new CAItemRepositMove(
+      case final CAI1ItemRepositSetMove m -> {
+        yield new CAItemRepositSetMove(
           new CAItemID(m.fieldItemId().value()),
           new CALocationID(m.fieldLocationFrom().value()),
           new CALocationID(m.fieldLocationTo().value()),
           m.fieldCount().value()
         );
       }
-      case final CAI1ItemReposit.CAI1ItemRepositRemove r -> {
-        yield new CAItemRepositRemove(
+
+      case final CAI1ItemRepositSetRemove r -> {
+        yield new CAItemRepositSetRemove(
           new CAItemID(r.fieldItemId().value()),
           new CALocationID(r.fieldLocationId().value()),
           r.fieldCount().value()
         );
       }
-      case final CAI1ItemReposit.CAI1ItemRepositAdd a -> {
-        yield new CAItemRepositAdd(
+
+      case final CAI1ItemRepositSetAdd a -> {
+        yield new CAItemRepositSetAdd(
           new CAItemID(a.fieldItemId().value()),
           new CALocationID(a.fieldLocationId().value()),
           a.fieldCount().value()
+        );
+      }
+
+      case final CAI1ItemRepositSerialAdd a -> {
+        yield new CAItemRepositSerialAdd(
+          new CAItemID(a.fieldItemId().value()),
+          new CALocationID(a.fieldLocationId().value()),
+          new CAItemSerial(a.fieldSerial().value())
+        );
+      }
+
+      case final CAI1ItemReposit.CAI1ItemRepositSerialMove m -> {
+        yield new CAItemRepositSerialMove(
+          new CAItemID(m.fieldItemId().value()),
+          new CALocationID(m.fieldLocationFrom().value()),
+          new CALocationID(m.fieldLocationTo().value()),
+          new CAItemSerial(m.fieldSerial().value())
+        );
+      }
+
+      case final CAI1ItemRepositSerialRemove r -> {
+        yield new CAItemRepositSerialRemove(
+          new CAItemID(r.fieldItemId().value()),
+          new CALocationID(r.fieldLocationId().value()),
+          new CAItemSerial(r.fieldSerial().value())
         );
       }
     };

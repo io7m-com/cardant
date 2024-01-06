@@ -40,6 +40,7 @@ public record CAIResponseItemMetadataPut(
 
   public CAIResponseItemMetadataPut
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "item");
   }
 }

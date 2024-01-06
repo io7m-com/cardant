@@ -18,13 +18,14 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.MetadataRemoveType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
@@ -56,17 +57,20 @@ public final class CAICmdItemMetadataRemove
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction = context.transaction();
     transaction.setUserId(context.session().userId());
 
     final var metaRemove =
-      transaction.queries(CADatabaseQueriesItemsType.MetadataRemoveType.class);
+      transaction.queries(CADatabaseQueriesItemsType.ItemMetadataRemoveType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.GetType.class);
-    final var typeGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
-
-    final var metadatas = command.metadataNames();
+      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
+    final var metadatas =
+      command.metadataNames();
 
     final var itemID = command.item();
     context.setAttribute(ITEM_ID, itemID.displayId());
@@ -82,8 +86,11 @@ public final class CAICmdItemMetadataRemove
       );
     }
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var item = itemOpt.get();
-    CAITypeChecking.checkTypes(context, typeGet, item);
+    CAITypeChecking.checkTypes(context, resolver, item);
     return new CAIResponseItemMetadataRemove(context.requestId(), item);
   }
 }

@@ -52,7 +52,7 @@ public final class CAICmdLocationPut extends CAICmdAbstract<CAICommandLocationPu
     final var transaction =
       context.transaction();
     final var put =
-      transaction.queries(CADatabaseQueriesLocationsType.PutType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationPutType.class);
 
     transaction.setUserId(context.session().userId());
     put.execute(command.location());

@@ -18,7 +18,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -112,15 +112,15 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationAttachRemove =
-      mock(CADatabaseQueriesLocationsType.AttachmentRemoveType.class);
+      mock(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.AttachmentRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class))
       .thenReturn(locationAttachRemove);
 
     when(locationGet.execute(any()))
@@ -160,9 +160,9 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.AttachmentRemoveType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(locationAttachRemove)
@@ -188,15 +188,15 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationAttachRemove =
-      mock(CADatabaseQueriesLocationsType.AttachmentRemoveType.class);
+      mock(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.AttachmentRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class))
       .thenReturn(locationAttachRemove);
 
     doThrow(new CADatabaseException(
@@ -253,15 +253,15 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationAttachRemove =
-      mock(CADatabaseQueriesLocationsType.AttachmentRemoveType.class);
+      mock(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.AttachmentRemoveType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class))
       .thenReturn(locationAttachRemove);
 
     when(locationGet.execute(any()))

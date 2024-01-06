@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -62,10 +62,10 @@ public final class CAICmdLocationAttachmentRemove
 
     final var attachRemove =
       transaction
-        .queries(CADatabaseQueriesLocationsType.AttachmentRemoveType.class);
+        .queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
     final var get =
       transaction
-        .queries(CADatabaseQueriesLocationsType.GetType.class);
+        .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
 
     final var locationID = command.location();
     attachRemove.execute(

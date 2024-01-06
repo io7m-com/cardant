@@ -39,6 +39,7 @@ public record CAIResponseItemMetadataRemove(
 
   public CAIResponseItemMetadataRemove
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "item");
   }
 }

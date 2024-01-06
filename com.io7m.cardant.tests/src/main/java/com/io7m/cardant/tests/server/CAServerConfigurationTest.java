@@ -32,6 +32,7 @@ import com.io7m.cardant.server.api.CAServerOpenTelemetryConfiguration.CATraces;
 import com.io7m.cardant.server.service.configuration.CAServerConfigurationParsers;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tls.CATLSDisabled;
+import com.io7m.cardant.type_packages.parsers.CATypePackageSerializers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
@@ -72,10 +73,14 @@ public final class CAServerConfigurationTest
         status -> ParseStatusLogging.logWithAll(LOG, status)
       );
 
+    final var typePackageSerializers =
+      new CATypePackageSerializers();
+
     final var configuration =
       CAServerConfigurations.ofFile(
         Locale.getDefault(),
         Clock.systemUTC(),
+        typePackageSerializers,
         configFile
       );
 
@@ -92,7 +97,8 @@ public final class CAServerConfigurationTest
         CADatabaseUpgrade.UPGRADE_DATABASE,
         "english",
         configuration.databaseConfiguration().clock(),
-        configuration.databaseConfiguration().strings()
+        configuration.databaseConfiguration().strings(),
+        typePackageSerializers
       ),
       configuration.databaseConfiguration()
     );

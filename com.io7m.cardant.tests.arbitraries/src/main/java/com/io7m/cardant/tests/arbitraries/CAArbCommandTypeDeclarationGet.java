@@ -15,18 +15,18 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.protocol.inventory.CAICommandTypeDeclarationGet;
+import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordGet;
 import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbCommandTypeDeclarationGet extends CAArbAbstract<CAICommandTypeDeclarationGet>
+public final class CAArbCommandTypeDeclarationGet extends CAArbAbstract<CAICommandTypeRecordGet>
 {
   public CAArbCommandTypeDeclarationGet()
   {
     super(
-      CAICommandTypeDeclarationGet.class,
+      CAICommandTypeRecordGet.class,
       () -> Arbitraries.defaultFor(RDottedName.class)
-        .map(CAICommandTypeDeclarationGet::new)
+        .map(CAICommandTypeRecordGet::new)
     );
   }
 }

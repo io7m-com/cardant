@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Section id="3901ba62-5a01-3b4f-8987-4f9ac1866074" title="item-search-begin" xmlns="urn:com.io7m.structural:8:0">
+<Section id="3901ba62-5a01-3b4f-8987-4f9ac1866074"
+         title="item-search-begin"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
   <Subsection title="Name">
     <Paragraph>
       <Term type="command">item-search-begin</Term>
@@ -12,92 +15,19 @@
       <Term type="command">item-search-begin</Term>
        command begins <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">searching</Link> for items.
     </Paragraph>
-    <FormalItem title="Parameters">
-      <Table type="parameterTable">
-        <Columns>
-          <Column>Parameter</Column>
-          <Column>Type</Column>
-          <Column>Cardinality</Column>
-          <Column>Default</Column>
-          <Column>Description</Column>
-        </Columns>
-        <Row>
-          <Cell>
-            <Term type="parameter">--limit</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">java.lang.Integer</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant">100</Term>
-          </Cell>
-          <Cell>The maximum number of results per page.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--location-match</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">com.io7m.cardant.model.CAItemLocationMatchType</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant">any-location</Term>
-          </Cell>
-          <Cell>Only include items in locations matching the given expression.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--metadata-match</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">com.io7m.cardant.model.CAMetadataElementMatchType</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant">anything</Term>
-          </Cell>
-          <Cell>Only include items with metadata matching the given expression.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--name-match</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">com.io7m.cardant.model.CANameMatchType</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant">any-name</Term>
-          </Cell>
-          <Cell>Only include items that have names matching the given expression.</Cell>
-        </Row>
-        <Row>
-          <Cell>
-            <Term type="parameter">--type-match</Term>
-          </Cell>
-          <Cell>
-            <Term type="type">com.io7m.cardant.model.CATypeMatchType</Term>
-          </Cell>
-          <Cell>
-            <Term type="expression">[1, 1]</Term>
-          </Cell>
-          <Cell>
-            <Term type="constant">any-type</Term>
-          </Cell>
-          <Cell>Only include items that have types matching the given expression.</Cell>
-        </Row>
-      </Table>
-    </FormalItem>
+    <Paragraph>
+      Items can be filtered based on matching their names against a given
+      <Link target="733cf6a3-dedc-4a3c-ae1c-b8301066ece3">name match</Link> expression.
+    </Paragraph>
+    <Paragraph>
+      Items can be filtered based on matching their descriptions against a given
+      <Link target="29c4727f-4858-480b-a137-b2328428cbe3">description match</Link> expression.
+    </Paragraph>
+    <Paragraph>
+      Items can be filtered based on matching their types against a given
+      <Link target="846b4339-eeb4-43e6-8bde-4a40332df205">type match</Link> expression.
+    </Paragraph>
   </Subsection>
+  <xi:include href="scmd-item-search-begin-parameters.xml"/>
 </Section>
 

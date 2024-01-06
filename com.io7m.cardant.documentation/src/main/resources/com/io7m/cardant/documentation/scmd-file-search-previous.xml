@@ -12,6 +12,10 @@
       <Term type="command">file-search-previous</Term>
        command goes to the previous page of file <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">search</Link> results.
     </Paragraph>
+    <Paragraph>
+      The command can only be used after the associated <Link target="ca8cdb3b-a80c-3d81-a9e4-c6b254a568ad">begin</Link>
+      command.
+    </Paragraph>
   </Subsection>
 </Section>
 

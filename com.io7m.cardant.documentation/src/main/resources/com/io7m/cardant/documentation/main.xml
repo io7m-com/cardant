@@ -28,5 +28,6 @@
   <xi:include href="shell.xml"/>
   <xi:include href="api.xml"/>
   <xi:include href="security.xml"/>
+  <xi:include href="appendix-schema.xml"/>
 
 </Document>

@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.DeleteType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CAItemID;
@@ -41,10 +41,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 
 public final class CADBQItemDelete
   extends CADBQAbstract<Collection<CAItemID>, CADatabaseUnit>
-  implements DeleteType
+  implements ItemDeleteType
 {
-  private static final Service<Collection<CAItemID>, CADatabaseUnit, DeleteType> SERVICE =
-    new Service<>(DeleteType.class, CADBQItemDelete::new);
+  private static final Service<Collection<CAItemID>, CADatabaseUnit, ItemDeleteType> SERVICE =
+    new Service<>(ItemDeleteType.class, CADBQItemDelete::new);
 
   /**
    * Construct a query.

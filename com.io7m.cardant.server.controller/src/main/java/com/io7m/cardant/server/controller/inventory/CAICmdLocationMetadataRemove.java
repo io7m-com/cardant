@@ -18,13 +18,14 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.MetadataRemoveType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
@@ -56,15 +57,18 @@ public final class CAICmdLocationMetadataRemove
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction = context.transaction();
     transaction.setUserId(context.session().userId());
 
     final var metaRemove =
-      transaction.queries(CADatabaseQueriesLocationsType.MetadataRemoveType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataRemoveType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesLocationsType.GetType.class);
-    final var typeGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
+      transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
 
     final var metadatas = command.metadataNames();
 
@@ -82,8 +86,11 @@ public final class CAICmdLocationMetadataRemove
       );
     }
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var location = locationOpt.get();
-    CAITypeChecking.checkTypes(context, typeGet, location);
+    CAITypeChecking.checkTypes(context, resolver, location);
     return new CAIResponseLocationMetadataRemove(context.requestId(), location);
   }
 }

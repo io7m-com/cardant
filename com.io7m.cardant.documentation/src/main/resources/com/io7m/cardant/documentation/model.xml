@@ -23,8 +23,8 @@
       <Paragraph>
         An <Term type="term">item</Term> is an object that is tracked by the inventory system. When the
         <Term type="package">cardant</Term>
-        package refers to items, it should more accurately be understood to be referring to <Term type="term">classes
-      </Term> of items. That is, the inventory system tracks sets of items of a given class
+        package refers to items, it should more accurately be understood to be referring to
+        <Term type="term">classes</Term> of items. That is, the inventory system tracks sets of items of a given class
         within <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>. An item has
         associated <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link>, an identifier that uniquely
         identifies the item class, zero or more
@@ -81,6 +81,12 @@
         (and then perhaps narrow down the search by asking for only those items that have an
         <Term type="type">output_voltage</Term>
         value equal to <Term type="type">5.0</Term>).
+      </Paragraph>
+      <Paragraph id="50cf733c-5437-4115-b4bb-7669499d9853">
+        Each type, whether <Link target="e0f0dda3-ecba-4571-8464-2a0f81ed25c6">scalar</Link> or
+        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">record</Link>, has a unique fully-qualified name.
+        Specifically, each type has a name that confirms to the
+        <LinkExternal target="https://www.io7m.com/software/lanark/">Lanark</LinkExternal> name specification.
       </Paragraph>
     </Subsection>
 
@@ -182,23 +188,27 @@
         in a laboratory. Locations are <Link target="c4dba23a-9e90-4ac0-b5a5-c0a6f16609a4">hierarchical</Link>.
       </Paragraph>
     </Subsection>
+
     <Subsection title="Metadata">
       <Paragraph>
         Locations carry <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link> in the same manner as items.
       </Paragraph>
     </Subsection>
+
     <Subsection title="Types">
       <Paragraph>
         Locations can have applied <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link> in the same manner
         as items.
       </Paragraph>
     </Subsection>
+
     <Subsection title="Attachments">
       <Paragraph>
         Locations can have <Link target="31255944-64ca-4b59-b2fd-e5d31aaad374">attachments</Link> in the same manner as
         items.
       </Paragraph>
     </Subsection>
+
     <Subsection title="Hierarchy"
                 id="c4dba23a-9e90-4ac0-b5a5-c0a6f16609a4">
       <Paragraph>
@@ -228,49 +238,152 @@
         they're keeping each kind of item.
       </Paragraph>
     </Subsection>
+
     <Subsection title="Repositing"
                 id="2083cf7c-5550-408c-a12e-d688427d740d">
+
+      <Subsection title="Overview">
+        <Paragraph>
+          Items are added to and removed from locations by <Term type="term">repositing</Term>. A
+          <Term type="term">reposit</Term>
+          operation atomically adds zero or more instances of an item to a location, and removes zero or more items from
+          another location in a single step. A reposit operation is either a
+          <Link target="764872ee-f8dc-4020-a2dd-644b196a0e72">set</Link> reposit or
+          a <Link target="911f1d39-b69a-4e98-ac79-63305762126f">serial</Link> reposit.
+        </Paragraph>
+      </Subsection>
+
+      <Subsection title="Set Reposit" id="764872ee-f8dc-4020-a2dd-644b196a0e72">
+        <Paragraph>
+          A <Term type="term">set reposit</Term> is an operation used to move sets of items that do not, themselves,
+          have useful individual identities. For example, an inventory manager that is managing an inventory that
+          contains rolls of passive electronics components such as
+          <LinkExternal target="https://en.wikipedia.org/wiki/Resistor">resistors</LinkExternal> would use set
+          reposit operations to subtract large numbers of resistors from the inventory as they are sold. The resistors
+          themselves do not have serial numbers or any kind of individual identity and therefore there is no reason
+          to (or, in fact, any way to) track the individual resistors; only the <Term type="term">count</Term> of
+          resistors has any meaning.
+        </Paragraph>
+      </Subsection>
+
+      <Subsection title="Serial Reposit" id="911f1d39-b69a-4e98-ac79-63305762126f">
+        <Paragraph>
+          A <Term type="term">serial reposit</Term> is an operation used to move items that
+          have individual identities. For example, an inventory manager that is managing an inventory that
+          contains musical instruments would use serial reposit operations to subtract individual instruments from
+          the inventory as they are sold. Instruments of each type are distinguished from other instruments of the
+          same type by way of <Term type="term">serial numbers</Term>. A <Term type="term">serial number</Term>
+          in the <Term type="package">cardant</Term> package is an arbitrary string. Serial numbers are unique for a
+          given <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">item class</Link> but are not assumed be globally
+          unique. After all, two manufacturers of completely different products might coincidentally manage to use
+          the same serial numbers for their products. Within a single manufacturer's product range, however, serial
+          numbers will most assuredly be unique. It is therefore an error to try to place two items of the
+          same type in a location with the same serial number.
+        </Paragraph>
+      </Subsection>
+
+      <Subsection title="Definitions And Invariants" id="b8ca9349-2947-4fa9-9434-1198c65fc153">
+        <Paragraph>
+          Reposit operations are described by the following algebraic datatype:
+        </Paragraph>
+        <FormalItem title="Reposit" id="dbb0cef2-fc59-4f83-a9c5-2668ddad500d">
+          <Verbatim><![CDATA[
+type Reposit =
+  | RepositSetAdd Item Count Location
+  | RepositSetRemove Item Count Location
+  | RepositSetMove Item Count Location Location
+  | RepositSerialAdd Item Serial Location
+  | RepositSerialRemove Item Serial Location
+  | RepositSerialMove Item Serial Location Location
+]]></Verbatim>
+        </FormalItem>
+        <Paragraph>
+          A reposit <Term type="expression">(RepositSetAdd i c r)</Term> adds <Term type="expression">c</Term>
+          instances of item type <Term type="expression">i</Term> to location <Term type="expression">r</Term>.
+        </Paragraph>
+        <Paragraph>
+          A reposit <Term type="expression">(RepositSetRemove i c r)</Term> removes <Term type="expression">c</Term>
+          instances of item type <Term type="expression">i</Term> from location <Term type="expression">r</Term>.
+          Only items that were originally added using a <Term type="term">set</Term> reposit can be removed; if
+          fewer than <Term type="expression">c</Term> instances of item type <Term type="expression">i</Term>
+          exist in location <Term type="expression">r</Term> without serial numbers, the operation fails.
+        </Paragraph>
+        <Paragraph>
+          A reposit <Term type="expression">(RepositSetMove i c r s)</Term> moves <Term type="expression">c</Term>
+          instances of item type <Term type="expression">i</Term> from location <Term type="expression">r</Term>
+          to location <Term type="expression">s</Term>. This is exactly equivalent to the operation
+          <Term type="expression">(RepositSetRemove i c r)</Term> being executed followed by
+          the operation <Term type="expression">(RepositSetAdd i c s)</Term>, except that both operations
+          are executed in one atomic step.
+        </Paragraph>
+        <Paragraph>
+          A reposit <Term type="expression">(RepositSerialAdd i x r)</Term> adds one
+          instance of item type <Term type="expression">i</Term> to location <Term type="expression">r</Term>
+          with serial number <Term type="expression">x</Term>.
+        </Paragraph>
+        <Paragraph>
+          A reposit <Term type="expression">(RepositSerialRemove i x r)</Term> removes the item with
+          item type <Term type="expression">i</Term> and serial number
+          <Term type="expression">x</Term> from location <Term type="expression">r</Term>.
+          If no item exists in location <Term type="expression">r</Term> with serial number
+          <Term type="expression">x</Term>, the operation fails.
+        </Paragraph>
+        <Paragraph>
+          A reposit <Term type="expression">(RepositSerialMove i x r s)</Term> moves the item with
+          item type <Term type="expression">i</Term> and serial number <Term type="expression">x</Term>
+          from location <Term type="expression">r</Term> to location <Term type="expression">s</Term>.
+          This is exactly equivalent to the operation
+          <Term type="expression">(RepositSerialRemove i x r)</Term> being executed followed by
+          the operation <Term type="expression">(RepositSerialAdd i x s)</Term>, except that both operations
+          are executed in one atomic step.
+        </Paragraph>
+      </Subsection>
+    </Subsection>
+  </Subsection>
+
+  <Subsection title="Type Packages" id="0f4b9332-c2d2-4460-9fb5-f2594b854219">
+    <Subsection title="Overview">
       <Paragraph>
-        Items are added to and removed from locations by <Term type="term">repositing</Term>. A
-        <Term type="term">reposit</Term>
-        operation atomically adds zero or more instances of an item to a location, and removes zero or more items from
-        another location in a single step. Mathematically, a
-        <Term type="term">reposit</Term>
-        operation can be modelled as a tuple
-        <Term type="expression">(S,A,T,R,I)</Term>, where <Term type="expression">S</Term> is the location to which <Term type="expression">
-        A
-      </Term> instances of item <Term type="expression">I</Term> will be added, and <Term type="expression">T</Term> is
-        the location from which
-        <Term type="expression">R</Term>
-        instances of item <Term type="expression">I</Term> will be removed. The system automatically enforces integrity
-        constraints such as not removing more item instances from a location than actually exist in that location.
+        Sets of <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link> can be installed into
+        a running <Term type="package">cardant</Term> server using <Term type="term">type packages</Term>.
+        A <Term type="term">type package</Term> is simply a named, versioned container of types that can
+        be uploaded and installed into the server's database atomically.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Names" id="56df9b58-93ac-4444-b76e-aacacd0e88ce">
+      <Paragraph>
+        Type packages are identified by their <Term type="term">name</Term> and <Term type="term">version</Term>.
+        It is not permitted to have two packages with the same name but different versions installed at the same
+        time. A type package name is a
+        <LinkExternal target="https://www.io7m.com/software/lanark/">Lanark</LinkExternal> dotted name (such
+        as <Term type="expression">com.io7m.example</Term>) and the types declared within the package have their
+        names derived by concatenating their unqualified names onto the end of the package name. So, for example,
+        a package <Term type="expression">com.io7m.example</Term> that contains a scalar type named
+        <Term type="expression">t</Term> will cause the scalar type <Term type="expression">com.io7m.example.t</Term>
+        to be created on the server when the package is installed.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Imports">
+      <Paragraph>
+        A type package may <Term type="term">import</Term> other type packages. An <Term type="term">import</Term>
+        consists of a <Link target="56df9b58-93ac-4444-b76e-aacacd0e88ce">package name</Link> and
+        a <Term type="term">version range</Term>. When a user tries to install a type package
+        <Term type="expression">p</Term>, each import <Term type="expression">i</Term> declared by
+        <Term type="expression">p</Term> is examined, and the server inspects its own set of installed
+        packages and verifies that a package is installed with both a name that matches <Term type="expression">i</Term>
+        and a version that falls within the range declared by <Term type="expression">i</Term>. If no such package
+        exists, the type package installation is rejected and the system is left untouched.
       </Paragraph>
       <Paragraph>
-        For example, adding <Term type="constant">10</Term> newly purchased instances of an item
-        <Term type="expression">I</Term>
-        to location <Term type="expression">S</Term> can be described by the tuple
-        <Term type="expression">(S,10,S,0,I)</Term>. That is, <Term type="constant">10</Term> instances of
-        <Term type="expression">I</Term>
-        are added to <Term type="expression">S</Term>, and
-        <Term type="constant">0</Term>
-        instances of <Term type="expression">I</Term> are removed from
-        <Term type="expression">S</Term>.
+        For the sake of simplicity, and because the number of installed type packages is expected to be small
+        and not change particularly often, imports are merely an install-time check. It is possible (but heavily
+        discouraged) for type packages to refer to types in packages that they have not imported.
       </Paragraph>
+    </Subsection>
+    <Subsection title="Serialization">
       <Paragraph>
-        As another example, selling <Term type="constant">10</Term> instances of an item
-        <Term type="expression">I</Term>
-        that currently resides in location <Term type="expression">S</Term> can be described by the tuple
-        <Term type="expression">(S,0,S,10,I)</Term>. That is, <Term type="constant">0</Term> instances of
-        <Term type="expression">I</Term>
-        are added to <Term type="expression">S</Term>, and
-        <Term type="constant">10</Term>
-        instances of <Term type="expression">I</Term> are removed from
-        <Term type="expression">S</Term>.
-      </Paragraph>
-      <Paragraph>
-        With the right arrangement of locations, reposit operations allow for a primitive form
-        of <LinkExternal target="https://en.wikipedia.org/wiki/Double-entry_bookkeeping">double-entry
-        bookkeeping</LinkExternal>.
+        Type packages are serialized using the given
+        <Link target="85488da3-174a-43f9-8f93-8d59bfab2846">XML schema</Link>.
       </Paragraph>
     </Subsection>
   </Subsection>

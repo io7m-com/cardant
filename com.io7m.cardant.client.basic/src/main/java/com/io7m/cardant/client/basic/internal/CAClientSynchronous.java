@@ -35,6 +35,7 @@ import com.io7m.hibiscus.basic.HBClientSynchronousAbstract;
 
 import java.net.http.HttpClient;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -95,7 +96,8 @@ public final class CAClientSynchronous
         ca.attributes(),
         ca.remediatingAction(),
         Optional.of(ca),
-        CAIResponseBlame.BLAME_CLIENT
+        CAIResponseBlame.BLAME_CLIENT,
+        List.of()
       );
     }
 
@@ -108,7 +110,8 @@ public final class CAClientSynchronous
       Map.of(),
       Optional.empty(),
       Optional.of(ex),
-      CAIResponseBlame.BLAME_CLIENT
+      CAIResponseBlame.BLAME_CLIENT,
+      List.of()
     );
   }
 

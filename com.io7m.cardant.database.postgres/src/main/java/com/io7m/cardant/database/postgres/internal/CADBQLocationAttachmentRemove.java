@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,11 +40,11 @@ import static com.io7m.cardant.strings.CAStringConstants.RELATION;
 
 public final class CADBQLocationAttachmentRemove
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements AttachmentRemoveType
+  implements LocationAttachmentRemoveType
 {
-  private static final Service<Parameters, CADatabaseUnit, AttachmentRemoveType> SERVICE =
+  private static final Service<Parameters, CADatabaseUnit, LocationAttachmentRemoveType> SERVICE =
     new Service<>(
-      AttachmentRemoveType.class,
+      LocationAttachmentRemoveType.class,
       CADBQLocationAttachmentRemove::new);
 
   /**

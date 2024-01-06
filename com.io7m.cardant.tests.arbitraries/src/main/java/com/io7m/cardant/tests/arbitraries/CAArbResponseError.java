@@ -31,15 +31,18 @@ public final class CAArbResponseError extends CAArbAbstract<CAIResponseError>
   {
     super(
       CAIResponseError.class,
-      () -> Combinators.combine(
-        Arbitraries.create(UUID::randomUUID),
-        Arbitraries.strings(),
-        Arbitraries.defaultFor(CAErrorCode.class),
-        Arbitraries.maps(Arbitraries.strings(), Arbitraries.strings()),
-        Arbitraries.strings().optional(),
-        exceptions(),
-        Arbitraries.defaultFor(CAIResponseBlame.class)
-      ).as(CAIResponseError::new)
+      () -> {
+        return Combinators.combine(
+          Arbitraries.create(UUID::randomUUID),
+          Arbitraries.strings(),
+          Arbitraries.defaultFor(CAErrorCode.class),
+          Arbitraries.maps(Arbitraries.strings(), Arbitraries.strings()),
+          Arbitraries.strings().optional(),
+          exceptions(),
+          Arbitraries.defaultFor(CAIResponseBlame.class),
+          CAArbSStructuredError.errors().list()
+        ).as(CAIResponseError::new);
+      }
     );
   }
 

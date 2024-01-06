@@ -17,16 +17,16 @@
 
 package com.io7m.cardant.server.controller.inventory;
 
-import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CATypeChecking;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.strings.CAStringConstantApplied;
 import com.io7m.cardant.strings.CAStrings;
+import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeCheckFailed;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_INDEXED;
@@ -41,12 +41,15 @@ final class CAITypeChecking
 
   static void checkTypes(
     final CAICommandContext context,
-    final CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType typeGet,
+    final CATypePackageResolverType resolver,
     final CALocation location)
-    throws CADatabaseException, CACommandExecutionFailure
+    throws CACommandExecutionFailure
   {
     final var types =
-      Set.copyOf(typeGet.execute(location.types()));
+      location.types()
+        .stream()
+        .flatMap(t -> resolver.findTypeRecord(t).stream())
+        .collect(Collectors.toSet());
 
     final var checker =
       CATypeChecking.create(
@@ -74,12 +77,15 @@ final class CAITypeChecking
 
   static void checkTypes(
     final CAICommandContext context,
-    final CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType typeGet,
+    final CATypePackageResolverType resolver,
     final CAItem item)
-    throws CADatabaseException, CACommandExecutionFailure
+    throws CACommandExecutionFailure
   {
     final var types =
-      Set.copyOf(typeGet.execute(item.types()));
+      item.types()
+        .stream()
+        .flatMap(t -> resolver.findTypeRecord(t).stream())
+        .collect(Collectors.toSet());
 
     final var checker =
       CATypeChecking.create(

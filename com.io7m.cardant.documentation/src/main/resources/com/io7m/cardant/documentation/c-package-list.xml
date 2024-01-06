@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         id="c4549c49-cc62-4fd1-8cf6-05fb2c9fddfb"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         title="package list">
+
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">package list</Term> - List packages that are available for install
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="Description">
+    <Paragraph>
+      The <Term type="command">package list</Term> command lists the built-in
+      <Link target="0f4b9332-c2d2-4460-9fb5-f2594b854219">type packages</Link> that are available to install.
+    </Paragraph>
+  </Subsection>
+
+  <xi:include href="mcmd-package-list-parameters.xml"/>
+
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim>
+        <xi:include parse="text"
+                    href="c-package-list-example.txt"/>
+      </Verbatim>
+    </FormalItem>
+  </Subsection>
+
+</Section>

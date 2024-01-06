@@ -40,6 +40,7 @@ public record CAIResponseLocationTypesRevoke(
 
   public CAIResponseLocationTypesRevoke
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "location");
   }
 }

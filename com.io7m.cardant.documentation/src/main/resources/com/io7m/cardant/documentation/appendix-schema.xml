@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         id="85488da3-174a-43f9-8f93-8d59bfab2846"
+         title="Appendix: Schema: Type Package 1.0">
+
+  <Paragraph>
+    <Link target="0f4b9332-c2d2-4460-9fb5-f2594b854219">Type packages</Link> are serialized using
+    the following XML schema:
+  </Paragraph>
+
+  <FormalItem title="Type Package 1.0">
+    <Verbatim><xi:include href="com/io7m/cardant/type_packages/parsers/type_packages-1.xsd" parse="text"/></Verbatim>
+  </FormalItem>
+
+</Section>

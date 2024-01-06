@@ -41,24 +41,27 @@ public final class CATestContainerDemo
       new ENContainerSupervisors();
     final var configuration =
       new EContainerConfiguration(
-        new RDottedName("com.io7m.cardant"), "podman", 30L, SECONDS);
+        new RDottedName("com.io7m.cardant"), "podman", 180L, SECONDS);
 
     final var directory =
       Files.createTempDirectory("cardant-");
 
     try (var supervisor = supervisors.create(configuration, EContainerSupervisorScope.PER_SUITE)) {
+      final var databaseFixture =
+        CATestContainers.createDatabase(supervisor, 25432);
+
       final var idstoreFixture =
         CATestContainers.createIdstore(
           supervisor,
+          databaseFixture,
           directory,
-          5432,
+          "idstore",
           51000,
           50000,
           50001
         );
 
       while (true) {
-        idstoreFixture.reset();
         Thread.sleep(5000L);
       }
     }

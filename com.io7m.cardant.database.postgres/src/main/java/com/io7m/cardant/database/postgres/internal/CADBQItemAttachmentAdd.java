@@ -18,8 +18,8 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentAddType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentAddType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentAddType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentAddType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
@@ -40,10 +40,10 @@ import static com.io7m.cardant.strings.CAStringConstants.RELATION;
 
 public final class CADBQItemAttachmentAdd
   extends CADBQAbstract<Parameters, CADatabaseUnit>
-  implements AttachmentAddType
+  implements ItemAttachmentAddType
 {
-  private static final Service<Parameters, CADatabaseUnit, AttachmentAddType> SERVICE =
-    new Service<>(AttachmentAddType.class, CADBQItemAttachmentAdd::new);
+  private static final Service<Parameters, CADatabaseUnit, ItemAttachmentAddType> SERVICE =
+    new Service<>(ItemAttachmentAddType.class, CADBQItemAttachmentAdd::new);
 
   /**
    * Construct a query.

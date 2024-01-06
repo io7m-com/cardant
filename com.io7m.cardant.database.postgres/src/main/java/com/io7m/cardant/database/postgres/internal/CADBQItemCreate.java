@@ -18,7 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.CreateType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.model.CAItemID;
 import org.jooq.DSLContext;
@@ -38,10 +38,10 @@ import static java.lang.Boolean.FALSE;
 
 public final class CADBQItemCreate
   extends CADBQAbstract<CAItemID, CADatabaseUnit>
-  implements CreateType
+  implements ItemCreateType
 {
-  private static final CADBQueryProviderType.Service<CAItemID, CADatabaseUnit, CreateType> SERVICE =
-    new CADBQueryProviderType.Service<>(CreateType.class, CADBQItemCreate::new);
+  private static final CADBQueryProviderType.Service<CAItemID, CADatabaseUnit, ItemCreateType> SERVICE =
+    new CADBQueryProviderType.Service<>(ItemCreateType.class, CADBQItemCreate::new);
 
   /**
    * Construct a query.

@@ -18,11 +18,13 @@
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataElementMatch;
+import com.io7m.cedarbridge.runtime.api.CBString;
 
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVMetadataNameMatch.METADATA_NAME_MATCH;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVMetadataValueMatch.METADATA_VALUE_MATCH;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVStrings.STRINGS;
 
 /**
  * A validator.
@@ -37,14 +39,18 @@ public enum CAUVMetadataElementMatch
 
   METADATA_MATCH;
 
+  private static final CAUVComparisonsFuzzy<String, CBString> FUZZY_VALIDATOR =
+    new CAUVComparisonsFuzzy<>(STRINGS);
+
   @Override
   public CAI1MetadataElementMatch convertToWire(
     final CAMetadataElementMatchType message)
+    throws CAProtocolException
   {
     return switch (message) {
       case final CAMetadataElementMatchType.Specific specific -> {
         yield new CAI1MetadataElementMatch.Specific(
-          METADATA_NAME_MATCH.convertToWire(specific.name()),
+          FUZZY_VALIDATOR.convertToWire(specific.name()),
           METADATA_VALUE_MATCH.convertToWire(specific.value())
         );
       }
@@ -66,6 +72,7 @@ public enum CAUVMetadataElementMatch
   @Override
   public CAMetadataElementMatchType convertFromWire(
     final CAI1MetadataElementMatch message)
+    throws CAProtocolException
   {
     return switch (message) {
       case final CAI1MetadataElementMatch.And and -> {
@@ -82,7 +89,7 @@ public enum CAUVMetadataElementMatch
       }
       case final CAI1MetadataElementMatch.Specific specific -> {
         yield new CAMetadataElementMatchType.Specific(
-          METADATA_NAME_MATCH.convertFromWire(specific.fieldName()),
+          FUZZY_VALIDATOR.convertFromWire(specific.fieldName()),
           METADATA_VALUE_MATCH.convertFromWire(specific.fieldValue())
         );
       }

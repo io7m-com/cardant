@@ -34,11 +34,12 @@ import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
 import com.io7m.jqpage.core.JQOrder;
+import com.io7m.lanark.core.RDottedName;
 import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.EnumType;
 import org.jooq.Field;
-import org.jooq.Record5;
+import org.jooq.Record6;
 import org.jooq.Select;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
@@ -56,10 +57,10 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
 
 public final class CADBQItemSearch
   extends CADBQAbstract<CAItemSearchParameters, CADatabaseItemSearchType>
-  implements CADatabaseQueriesItemsType.SearchType
+  implements CADatabaseQueriesItemsType.ItemSearchType
 {
-  private static final Service<CAItemSearchParameters, CADatabaseItemSearchType, SearchType> SERVICE =
-    new Service<>(SearchType.class, CADBQItemSearch::new);
+  private static final Service<CAItemSearchParameters, CADatabaseItemSearchType, ItemSearchType> SERVICE =
+    new Service<>(ItemSearchType.class, CADBQItemSearch::new);
 
   private static final Field<Object> ITEM_NAME_SEARCH =
     DSL.field(DSL.name(ITEM_SEARCH_VIEW.getName(), "ITEM_NAME_SEARCH"));
@@ -107,20 +108,16 @@ public final class CADBQItemSearch
      */
 
     final var nameCondition =
-      CADBMatch.ofNameMatch(
-        new CADBMatch.NameFields(
-          ITEM_SEARCH_VIEW.ITEM_NAME,
-          ITEM_NAME_SEARCH
-        ),
-        parameters.nameMatch()
+      CADBComparisons.createFuzzyMatchQuery(
+        parameters.nameMatch(),
+        ITEM_SEARCH_VIEW.ITEM_NAME,
+        ITEM_NAME_SEARCH.getName()
       );
 
     final var typeCondition =
-      CADBMatch.ofTypeMatch(
-        new CADBMatch.TypeFields(
-          ITEM_SEARCH_VIEW.ISV_MTR_NAMES
-        ),
-        parameters.typeMatch()
+      CADBComparisons.createSetMatchQueryString(
+        parameters.typeMatch().map(RDottedName::value),
+        ITEM_SEARCH_VIEW.ISV_MTR_NAMES
       );
 
     final var locationCondition =
@@ -131,11 +128,18 @@ public final class CADBQItemSearch
         parameters.locationMatch()
       );
 
+    final var serialCondition =
+      CADBMatch.ofSerialMatch(
+        ITEM_SEARCH_VIEW.ISV_ITEM_SERIALS,
+        parameters.serialMatch()
+      );
+
     final var simpleConditions =
       DSL.and(
         nameCondition,
         typeCondition,
-        locationCondition
+        locationCondition,
+        serialCondition
       );
 
     /*
@@ -186,34 +190,33 @@ public final class CADBQItemSearch
     return new CAItemSearch(pages);
   }
 
-  private static Select<Record5<UUID, String, Object, UUID[], String[]>> generateQuerySetFor(
+  private static Select<Record6<UUID, String, Object, UUID[], String[], String[]>> generateQuerySetFor(
     final DSLContext context,
     final CADBMatch.QuerySetType metaQuerySet)
   {
-    if (metaQuerySet instanceof final QuerySetCondition c) {
-      return context.select(
-          ITEM_SEARCH_VIEW.ITEM_ID,
-          ITEM_SEARCH_VIEW.ITEM_NAME,
-          ITEM_NAME_SEARCH,
-          ITEM_SEARCH_VIEW.ISV_ITEM_LOCATIONS,
-          ITEM_SEARCH_VIEW.ISV_MTR_NAMES)
-        .from(ITEM_SEARCH_VIEW)
-        .where(c.condition());
-    }
-
-    if (metaQuerySet instanceof final QuerySetUnion u) {
-      final var rq0 = generateQuerySetFor(context, u.q0());
-      final var rq1 = generateQuerySetFor(context, u.q1());
-      return rq0.union(rq1);
-    }
-
-    if (metaQuerySet instanceof final QuerySetIntersection u) {
-      final var rq0 = generateQuerySetFor(context, u.q0());
-      final var rq1 = generateQuerySetFor(context, u.q1());
-      return rq0.intersect(rq1);
-    }
-
-    throw new IllegalStateException();
+    return switch (metaQuerySet) {
+      case final QuerySetCondition c -> {
+        yield context.select(
+            ITEM_SEARCH_VIEW.ITEM_ID,
+            ITEM_SEARCH_VIEW.ITEM_NAME,
+            ITEM_NAME_SEARCH,
+            ITEM_SEARCH_VIEW.ISV_ITEM_LOCATIONS,
+            ITEM_SEARCH_VIEW.ISV_MTR_NAMES,
+            ITEM_SEARCH_VIEW.ISV_ITEM_SERIALS)
+          .from(ITEM_SEARCH_VIEW)
+          .where(c.condition());
+      }
+      case final QuerySetUnion u -> {
+        final var rq0 = generateQuerySetFor(context, u.q0());
+        final var rq1 = generateQuerySetFor(context, u.q1());
+        yield rq0.union(rq1);
+      }
+      case final QuerySetIntersection u -> {
+        final var rq0 = generateQuerySetFor(context, u.q0());
+        final var rq1 = generateQuerySetFor(context, u.q1());
+        yield rq0.intersect(rq1);
+      }
+    };
   }
 
   private static JQField orderingToJQField(

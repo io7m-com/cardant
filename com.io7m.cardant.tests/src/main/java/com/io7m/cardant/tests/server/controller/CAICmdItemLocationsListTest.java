@@ -141,11 +141,11 @@ public final class CAICmdItemLocationsListTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemsType.LocationsType.class);
+      mock(CADatabaseQueriesItemsType.ItemLocationsType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.LocationsType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemLocationsType.class))
       .thenReturn(items);
 
     when(items.execute(any()))
@@ -198,7 +198,7 @@ public final class CAICmdItemLocationsListTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.LocationsType.class);
+      .queries(CADatabaseQueriesItemsType.ItemLocationsType.class);
     verify(items)
       .execute(ITEM_ID);
 

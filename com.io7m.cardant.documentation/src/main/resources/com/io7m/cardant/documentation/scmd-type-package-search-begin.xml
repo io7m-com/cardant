@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section id="d202d992-d75a-37f9-a96d-6378e296b912"
+         title="type-package-search-begin"
+         xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-package-search-begin</Term>
+       - Start searching for type packages
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">type-package-search-begin</Term>
+      command starts <Link target="a14610db-3fbe-46b2-91a6-23d861f8d454">searching</Link> for installed type packages.
+    </Paragraph>
+    <Paragraph>
+      Packages can be filtered based on matching their descriptions against a given
+      <Link target="29c4727f-4858-480b-a137-b2328428cbe3">description match</Link> expression.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-type-package-search-begin-parameters.xml"/>
+</Section>
+

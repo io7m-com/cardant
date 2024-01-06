@@ -18,7 +18,7 @@ package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentRemoveType.Parameters;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -62,10 +62,10 @@ public final class CAICmdItemAttachmentRemove
 
     final var attachRemove =
       transaction
-        .queries(CADatabaseQueriesItemsType.AttachmentRemoveType.class);
+        .queries(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class);
     final var get =
       transaction
-        .queries(CADatabaseQueriesItemsType.GetType.class);
+        .queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemID = command.item();
     attachRemove.execute(

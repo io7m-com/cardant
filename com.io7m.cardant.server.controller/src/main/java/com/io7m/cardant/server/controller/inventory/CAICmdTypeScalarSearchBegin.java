@@ -58,11 +58,7 @@ public final class CAICmdTypeScalarSearchBegin
       transaction.queries(CADatabaseQueriesTypesType.TypeScalarSearchType.class);
 
     final var search =
-      searchQuery.execute(
-        command.parameters()
-          .search()
-          .orElse("")
-      );
+      searchQuery.execute(command.parameters());
 
     context.session()
       .setProperty(CADatabaseTypeScalarSearchType.class, search);

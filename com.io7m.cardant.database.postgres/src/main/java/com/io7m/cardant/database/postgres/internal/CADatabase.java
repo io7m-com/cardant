@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.strings.CAStrings;
+import com.io7m.cardant.type_packages.parser.api.CATypePackageSerializerFactoryType;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
 import com.zaxxer.hikari.HikariDataSource;
 import io.opentelemetry.api.metrics.LongCounter;
@@ -72,15 +73,17 @@ public final class CADatabase implements CADatabaseType
   private final ConcurrentLinkedQueue<Long> connectionTimes;
   private final CADatabaseTelemetry telemetry;
   private final CAStrings strings;
+  private final CATypePackageSerializerFactoryType serializers;
 
   /**
    * The default postgres server database implementation.
    *
-   * @param inStrings    The string resources
-   * @param inTelemetry  A telemetry
-   * @param inClock      The clock
-   * @param inDataSource A pooled data source
-   * @param inResources  The resources to be closed
+   * @param inStrings     The string resources
+   * @param inTelemetry   A telemetry
+   * @param inClock       The clock
+   * @param inSerializers The serializers
+   * @param inDataSource  A pooled data source
+   * @param inResources   The resources to be closed
    */
 
   public CADatabase(
@@ -88,12 +91,15 @@ public final class CADatabase implements CADatabaseType
     final CAStrings inStrings,
     final Clock inClock,
     final HikariDataSource inDataSource,
+    final CATypePackageSerializerFactoryType inSerializers,
     final CloseableCollectionType<CADatabaseException> inResources)
   {
     this.telemetry =
       Objects.requireNonNull(inTelemetry, "telemetry");
     this.strings =
       Objects.requireNonNull(inStrings, "inStrings");
+    this.serializers =
+      Objects.requireNonNull(inSerializers, "inSerializers");
     this.tracer =
       this.telemetry.tracer();
     this.resources =
@@ -238,6 +244,11 @@ public final class CADatabase implements CADatabaseType
       time = max(time, times.poll().longValue());
     }
     return time;
+  }
+
+  CATypePackageSerializerFactoryType typePackageSerializers()
+  {
+    return this.serializers;
   }
 
   LongCounter counterTransactions()

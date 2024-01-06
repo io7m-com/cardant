@@ -17,15 +17,16 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.GetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.TypesAssignType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeDeclarationGetMultipleType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesAssignType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesAssignType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -53,19 +54,25 @@ public final class CAICmdLocationTypesAssign extends CAICmdAbstract<CAICommandLo
   {
     context.securityCheck(INVENTORY_LOCATIONS, WRITE);
 
+    final var services =
+      context.services();
+    final var compilers =
+      services.requireService(CATypePackageCompilerFactoryType.class);
+
     final var transaction =
       context.transaction();
     final var get =
-      transaction.queries(GetType.class);
+      transaction.queries(LocationGetType.class);
     final var assign =
-      transaction.queries(TypesAssignType.class);
-    final var typeMultiGet =
-      transaction.queries(TypeDeclarationGetMultipleType.class);
+      transaction.queries(LocationTypesAssignType.class);
 
     assign.execute(new Parameters(command.location(), command.types()));
 
+    final var resolver =
+      CADatabaseTypePackageResolver.create(compilers, transaction);
+
     final var location = get.execute(command.location()).orElseThrow();
-    CAITypeChecking.checkTypes(context, typeMultiGet, location);
+    CAITypeChecking.checkTypes(context, resolver, location);
     return new CAIResponseLocationTypesAssign(context.requestId(), location);
   }
 }

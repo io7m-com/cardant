@@ -18,7 +18,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.AttachmentAddType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType.Parameters;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
@@ -112,15 +112,15 @@ public final class CAICmdLocationAttachmentAddTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationAdd =
-      mock(CADatabaseQueriesLocationsType.AttachmentAddType.class);
+      mock(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.AttachmentAddType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class))
       .thenReturn(locationAdd);
 
     when(locationGet.execute(any()))
@@ -160,9 +160,9 @@ public final class CAICmdLocationAttachmentAddTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.GetType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.AttachmentAddType.class);
+      .queries(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(locationAdd)
@@ -188,11 +188,11 @@ public final class CAICmdLocationAttachmentAddTest
     /* Arrange. */
 
     final var locations =
-      mock(CADatabaseQueriesLocationsType.AttachmentAddType.class);
+      mock(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.AttachmentAddType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class))
       .thenReturn(locations);
 
     doThrow(new CADatabaseException(
@@ -249,15 +249,15 @@ public final class CAICmdLocationAttachmentAddTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.GetType.class);
+      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
     final var locationAttachAdd =
-      mock(CADatabaseQueriesLocationsType.AttachmentAddType.class);
+      mock(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.AttachmentAddType.class))
+    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class))
       .thenReturn(locationAttachAdd);
 
     when(locationGet.execute(any()))

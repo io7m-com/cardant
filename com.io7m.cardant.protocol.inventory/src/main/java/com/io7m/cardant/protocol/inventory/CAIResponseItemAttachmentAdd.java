@@ -40,6 +40,7 @@ public record CAIResponseItemAttachmentAdd(
 
   public CAIResponseItemAttachmentAdd
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "item");
   }
 }

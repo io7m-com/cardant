@@ -54,6 +54,15 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.shell;
   requires com.io7m.cardant.tests.arbitraries;
   requires com.io7m.cardant.tls;
+  requires com.io7m.cardant.type_packages.checker.api;
+  requires com.io7m.cardant.type_packages.checkers;
+  requires com.io7m.cardant.type_packages.compiler.api;
+  requires com.io7m.cardant.type_packages.compilers;
+  requires com.io7m.cardant.type_packages.parser.api;
+  requires com.io7m.cardant.type_packages.parsers;
+  requires com.io7m.cardant.type_packages.resolver.api;
+  requires com.io7m.cardant.type_packages.upgrades.api;
+  requires com.io7m.cardant.type_packages.upgrades;
 
   uses ArbitraryProvider;
   uses CADBQueryProviderType;
@@ -66,6 +75,8 @@ open module com.io7m.cardant.tests
   requires com.io7m.ervilla.test_extension;
   requires com.io7m.idstore.admin_client.api;
   requires com.io7m.idstore.admin_client;
+  requires com.io7m.idstore.server.api;
+  requires com.io7m.idstore.server.service.configuration;
   requires com.io7m.junreachable.core;
   requires com.io7m.quarrel.ext.xstructural;
   requires com.io7m.repetoir.core;
@@ -88,4 +99,5 @@ open module com.io7m.cardant.tests
   requires transitive org.junit.jupiter.engine;
   requires transitive org.junit.platform.commons;
   requires transitive org.junit.platform.engine;
+  requires com.io7m.idstore.tls;
 }

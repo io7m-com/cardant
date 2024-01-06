@@ -20,7 +20,7 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositAdd;
+import com.io7m.cardant.model.CAItemRepositSetAdd;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
@@ -97,7 +97,7 @@ public final class CAICmdItemRepositTest
         handler.execute(
           context,
           new CAICommandItemReposit(
-            new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L)));
+            new CAItemRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L)));
       });
 
     /* Assert. */
@@ -118,15 +118,15 @@ public final class CAICmdItemRepositTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemReposit =
-      mock(CADatabaseQueriesItemsType.RepositType.class);
+      mock(CADatabaseQueriesItemsType.ItemRepositType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.RepositType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class))
       .thenReturn(itemReposit);
 
     when(itemGet.execute(any()))
@@ -162,19 +162,19 @@ public final class CAICmdItemRepositTest
     handler.execute(
       context,
       new CAICommandItemReposit(
-        new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L))
+        new CAItemRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L))
     );
 
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.RepositType.class);
+      .queries(CADatabaseQueriesItemsType.ItemRepositType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(itemReposit)
-      .execute(new CAItemRepositAdd(ITEM_ID, LOCATION_0.id(), 23L));
+      .execute(new CAItemRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L));
     verify(itemGet)
       .execute(ITEM_ID);
 

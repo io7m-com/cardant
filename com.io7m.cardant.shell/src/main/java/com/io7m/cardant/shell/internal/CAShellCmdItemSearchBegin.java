@@ -18,13 +18,18 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.model.CADescriptionMatch;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSearchParameters;
+import com.io7m.cardant.model.CAItemSerialMatch;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CANameMatchType;
-import com.io7m.cardant.model.CATypeMatchType;
+import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CATypeMatch;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -40,8 +45,6 @@ import java.util.Optional;
 
 import static com.io7m.cardant.model.CAItemColumn.BY_NAME;
 import static com.io7m.cardant.model.CAMetadataElementMatchType.ANYTHING;
-import static com.io7m.cardant.model.CANameMatchType.Any.ANY_NAME;
-import static com.io7m.cardant.model.CATypeMatchType.CATypeMatchAny.ANY;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
@@ -70,24 +73,34 @@ public final class CAShellCmdItemSearchBegin
       Integer.class
     );
 
-  private static final QParameterNamed1<CATypeMatchType> TYPE_MATCH =
+  private static final QParameterNamed1<CATypeMatch> TYPE_MATCH =
     new QParameterNamed1<>(
       "--type-match",
       List.of(),
       new QConstant(
         "Only include items that have types matching the given expression."),
-      Optional.of(ANY),
-      CATypeMatchType.class
+      Optional.of(new CATypeMatch(new CAComparisonSetType.Anything<>())),
+      CATypeMatch.class
     );
 
-  private static final QParameterNamed1<CANameMatchType> NAME_MATCH =
+  private static final QParameterNamed1<CANameMatch> NAME_MATCH =
     new QParameterNamed1<>(
       "--name-match",
       List.of(),
       new QConstant(
         "Only include items that have names matching the given expression."),
-      Optional.of(ANY_NAME),
-      CANameMatchType.class
+      Optional.of(new CANameMatch(new CAComparisonFuzzyType.Anything<>())),
+      CANameMatch.class
+    );
+
+  private static final QParameterNamed1<CADescriptionMatch> DESCRIPTION_MATCH =
+    new QParameterNamed1<>(
+      "--description-match",
+      List.of(),
+      new QConstant(
+        "Only include items that have descriptions matching the given expression."),
+      Optional.of(new CADescriptionMatch(new CAComparisonFuzzyType.Anything<>())),
+      CADescriptionMatch.class
     );
 
   private static final QParameterNamed1<CAMetadataElementMatchType> METADATA_MATCH =
@@ -98,6 +111,16 @@ public final class CAShellCmdItemSearchBegin
         "Only include items with metadata matching the given expression."),
       Optional.of(ANYTHING),
       CAMetadataElementMatchType.class
+    );
+
+  private static final QParameterNamed1<CAItemSerialMatch> SERIAL_MATCH =
+    new QParameterNamed1<>(
+      "--serial-match",
+      List.of(),
+      new QConstant(
+        "Only include items with serial numbers matching the given expression."),
+      Optional.of(new CAItemSerialMatch(new CAComparisonExactType.Anything<>())),
+      CAItemSerialMatch.class
     );
 
   /**
@@ -126,6 +149,8 @@ public final class CAShellCmdItemSearchBegin
     return List.of(
       LIMIT,
       LOCATION_MATCH,
+      DESCRIPTION_MATCH,
+      SERIAL_MATCH,
       METADATA_MATCH,
       NAME_MATCH,
       TYPE_MATCH
@@ -144,19 +169,25 @@ public final class CAShellCmdItemSearchBegin
       context.parameterValue(LOCATION_MATCH);
     final var nameMatch =
       context.parameterValue(NAME_MATCH);
+    final var descriptionMatch =
+      context.parameterValue(DESCRIPTION_MATCH);
     final var typeMatch =
       context.parameterValue(TYPE_MATCH);
     final var metaMatch =
       context.parameterValue(METADATA_MATCH);
+    final var serialMatch =
+      context.parameterValue(SERIAL_MATCH);
 
     final var parameters =
       new CAItemSearchParameters(
         locationMatch,
-        nameMatch,
-        typeMatch,
+        nameMatch.expression(),
+        descriptionMatch.expression(),
+        typeMatch.expression(),
+        serialMatch.expression(),
         metaMatch,
         new CAItemColumnOrdering(BY_NAME, true),
-        context.parameterValue(LIMIT).intValue()
+        context.parameterValue(LIMIT).longValue()
       );
 
     final var items =

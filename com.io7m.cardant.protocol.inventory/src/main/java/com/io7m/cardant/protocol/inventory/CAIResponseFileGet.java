@@ -40,6 +40,7 @@ public record CAIResponseFileGet(
 
   public CAIResponseFileGet
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(data, "file");
   }
 }

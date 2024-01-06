@@ -155,6 +155,19 @@ public final class CAStandardErrorCodes
     return ERROR_OPERATION_NOT_PERMITTED;
   }
 
+  private static final CAErrorCode ERROR_PARSE =
+    new CAErrorCode("error-parse");
+
+  /**
+   * A parse error was encountered.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorParse()
+  {
+    return ERROR_PARSE;
+  }
+
   private static final CAErrorCode ERROR_PROTOCOL =
     new CAErrorCode("error-protocol");
 
@@ -166,6 +179,19 @@ public final class CAStandardErrorCodes
   public static CAErrorCode errorProtocol()
   {
     return ERROR_PROTOCOL;
+  }
+
+  private static final CAErrorCode ERROR_REMOVE_IDENTIFIED_ITEMS =
+    new CAErrorCode("error-remove-identified-items");
+
+  /**
+   * The items to be removed have serial numbers and cannot be removed as part of a set.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorRemoveIdentifiedItems()
+  {
+    return ERROR_REMOVE_IDENTIFIED_ITEMS;
   }
 
   private static final CAErrorCode ERROR_REMOVE_TOO_MANY_ITEMS =
@@ -285,69 +311,17 @@ public final class CAStandardErrorCodes
     return ERROR_TRASCO;
   }
 
-  private static final CAErrorCode ERROR_USER_NONEXISTENT =
-    new CAErrorCode("error-user-nonexistent");
+  private static final CAErrorCode ERROR_TYPE_CHECK_FAILED =
+    new CAErrorCode("error-type-check-failed");
 
   /**
-   * An attempt was made to reference a user that does not exist.
+   * Type checking failed.
    *
    * @return The error code
    */
-  public static CAErrorCode errorUserNonexistent()
+  public static CAErrorCode errorTypeCheckFailed()
   {
-    return ERROR_USER_NONEXISTENT;
-  }
-
-  private static final CAErrorCode ERROR_TYPE_SCALAR_REFERENCED =
-    new CAErrorCode("error-type-scalar-referenced");
-
-  /**
-   * The scalar type is referenced by one or more existing types/fields.
-   *
-   * @return The error code
-   */
-  public static CAErrorCode errorTypeScalarReferenced()
-  {
-    return ERROR_TYPE_SCALAR_REFERENCED;
-  }
-
-  private static final CAErrorCode ERROR_TYPE_FIELD_TYPE_NONEXISTENT =
-    new CAErrorCode("error-type-field-type-nonexistent");
-
-  /**
-   * A field in the type declaration refers to a nonexistent type.
-   *
-   * @return The error code
-   */
-  public static CAErrorCode errorTypeFieldTypeNonexistent()
-  {
-    return ERROR_TYPE_FIELD_TYPE_NONEXISTENT;
-  }
-
-  private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_REQUIRED_MISSING =
-    new CAErrorCode("error-type-field-required-missing");
-
-  /**
-   * A field was required but is missing.
-   *
-   * @return The error code
-   */
-  public static CAErrorCode errorTypeCheckFieldRequiredMissing()
-  {
-    return ERROR_TYPE_CHECK_FIELD_REQUIRED_MISSING;
-  }
-
-  private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_PATTERN_FAILURE =
-    new CAErrorCode("error-type-field-pattern-invalid");
-
-  /**
-   * A field pattern was invalid.
-   *
-   * @return The error code
-   */
-  public static CAErrorCode errorTypeCheckFieldPatternFailure()
-  {
-    return ERROR_TYPE_CHECK_FIELD_PATTERN_FAILURE;
+    return ERROR_TYPE_CHECK_FAILED;
   }
 
   private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_INVALID =
@@ -363,17 +337,43 @@ public final class CAStandardErrorCodes
     return ERROR_TYPE_CHECK_FIELD_INVALID;
   }
 
-  private static final CAErrorCode ERROR_TYPE_CHECK_FAILED =
-    new CAErrorCode("error-type-check-failed");
+  private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_PATTERN_FAILURE =
+    new CAErrorCode("error-type-field-pattern-invalid");
 
   /**
-   * Type checking failed.
+   * A field pattern was invalid.
    *
    * @return The error code
    */
-  public static CAErrorCode errorTypeCheckFailed()
+  public static CAErrorCode errorTypeCheckFieldPatternFailure()
   {
-    return ERROR_TYPE_CHECK_FAILED;
+    return ERROR_TYPE_CHECK_FIELD_PATTERN_FAILURE;
+  }
+
+  private static final CAErrorCode ERROR_TYPE_CHECK_FIELD_REQUIRED_MISSING =
+    new CAErrorCode("error-type-field-required-missing");
+
+  /**
+   * A field was required but is missing.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeCheckFieldRequiredMissing()
+  {
+    return ERROR_TYPE_CHECK_FIELD_REQUIRED_MISSING;
+  }
+
+  private static final CAErrorCode ERROR_TYPE_FIELD_TYPE_NONEXISTENT =
+    new CAErrorCode("error-type-field-type-nonexistent");
+
+  /**
+   * A field in the type declaration refers to a nonexistent type.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorTypeFieldTypeNonexistent()
+  {
+    return ERROR_TYPE_FIELD_TYPE_NONEXISTENT;
   }
 
   private static final CAErrorCode ERROR_TYPE_REFERENCED =
@@ -389,17 +389,30 @@ public final class CAStandardErrorCodes
     return ERROR_TYPE_REFERENCED;
   }
 
-  private static final CAErrorCode ERROR_PARSE =
-    new CAErrorCode("error-parse");
+  private static final CAErrorCode ERROR_TYPE_SCALAR_REFERENCED =
+    new CAErrorCode("error-type-scalar-referenced");
 
   /**
-   * A parse error was encountered.
+   * The scalar type is referenced by one or more existing types/fields.
    *
    * @return The error code
    */
-  public static CAErrorCode errorParse()
+  public static CAErrorCode errorTypeScalarReferenced()
   {
-    return ERROR_PARSE;
+    return ERROR_TYPE_SCALAR_REFERENCED;
+  }
+
+  private static final CAErrorCode ERROR_USER_NONEXISTENT =
+    new CAErrorCode("error-user-nonexistent");
+
+  /**
+   * An attempt was made to reference a user that does not exist.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorUserNonexistent()
+  {
+    return ERROR_USER_NONEXISTENT;
   }
 }
 

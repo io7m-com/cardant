@@ -18,7 +18,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.AttachmentAddType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentAddType.Parameters;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
@@ -112,15 +112,15 @@ public final class CAICmdItemAttachmentAddTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemAdd =
-      mock(CADatabaseQueriesItemsType.AttachmentAddType.class);
+      mock(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentAddType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class))
       .thenReturn(itemAdd);
 
     when(itemGet.execute(any()))
@@ -161,9 +161,9 @@ public final class CAICmdItemAttachmentAddTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.GetType.class);
+      .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.AttachmentAddType.class);
+      .queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
     verify(transaction)
       .setUserId(context.session().userId());
     verify(itemAdd)
@@ -189,11 +189,11 @@ public final class CAICmdItemAttachmentAddTest
     /* Arrange. */
 
     final var items =
-      mock(CADatabaseQueriesItemsType.AttachmentAddType.class);
+      mock(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentAddType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class))
       .thenReturn(items);
 
     doThrow(new CADatabaseException(
@@ -250,15 +250,15 @@ public final class CAICmdItemAttachmentAddTest
     /* Arrange. */
 
     final var itemGet =
-      mock(CADatabaseQueriesItemsType.GetType.class);
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
     final var itemAttachAdd =
-      mock(CADatabaseQueriesItemsType.AttachmentAddType.class);
+      mock(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.GetType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(CADatabaseQueriesItemsType.AttachmentAddType.class))
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class))
       .thenReturn(itemAttachAdd);
 
     when(itemGet.execute(any()))

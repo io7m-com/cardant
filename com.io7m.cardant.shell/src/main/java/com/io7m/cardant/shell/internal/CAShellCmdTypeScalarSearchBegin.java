@@ -18,13 +18,15 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.model.CADescriptionMatch;
+import com.io7m.cardant.model.CANameMatch;
 import com.io7m.cardant.model.CATypeScalarSearchParameters;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypeScalarSearch;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
-import com.io7m.quarrel.core.QParameterNamed01;
 import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
@@ -42,13 +44,24 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 public final class CAShellCmdTypeScalarSearchBegin
   extends CAShellCmdAbstractCR<CAICommandTypeScalarSearchBegin, CAIResponseTypeScalarSearch>
 {
-  private static final QParameterNamed01<String> SEARCH =
-    new QParameterNamed01<>(
-      "--query",
+  private static final QParameterNamed1<CANameMatch> NAME_MATCH =
+    new QParameterNamed1<>(
+      "--name-match",
       List.of(),
-      new QConstant("The type search query."),
-      Optional.empty(),
-      String.class
+      new QConstant(
+        "Only include types that have names matching the given expression."),
+      Optional.of(new CANameMatch(new CAComparisonFuzzyType.Anything<>())),
+      CANameMatch.class
+    );
+
+  private static final QParameterNamed1<CADescriptionMatch> DESCRIPTION_MATCH =
+    new QParameterNamed1<>(
+      "--description-match",
+      List.of(),
+      new QConstant(
+        "Only include types that have descriptions matching the given expression."),
+      Optional.of(new CADescriptionMatch(new CAComparisonFuzzyType.Anything<>())),
+      CADescriptionMatch.class
     );
 
   private static final QParameterNamed1<Integer> LIMIT =
@@ -84,7 +97,11 @@ public final class CAShellCmdTypeScalarSearchBegin
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(SEARCH, LIMIT);
+    return List.of(
+      NAME_MATCH,
+      DESCRIPTION_MATCH,
+      LIMIT
+    );
   }
 
   @Override
@@ -95,15 +112,21 @@ public final class CAShellCmdTypeScalarSearchBegin
     final var client =
       this.client();
 
-    final var search =
-      context.parameterValue(SEARCH);
+    final var nameMatch =
+      context.parameterValue(NAME_MATCH);
+    final var descriptionMatch =
+      context.parameterValue(DESCRIPTION_MATCH);
     final var limit =
       context.parameterValue(LIMIT);
 
     final var type =
       ((CAIResponseTypeScalarSearch) client.executeOrElseThrow(
         new CAICommandTypeScalarSearchBegin(
-          new CATypeScalarSearchParameters(search, limit.intValue())
+          new CATypeScalarSearchParameters(
+            nameMatch.expression(),
+            descriptionMatch.expression(),
+            limit.longValue()
+          )
         ),
         CAClientException::ofError
       )).data();

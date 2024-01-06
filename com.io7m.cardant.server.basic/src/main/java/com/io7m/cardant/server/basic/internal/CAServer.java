@@ -49,6 +49,12 @@ import com.io7m.cardant.server.service.tls.CATLSContextServiceType;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessages;
 import com.io7m.cardant.server.service.verdant.CAVerdantMessagesType;
 import com.io7m.cardant.strings.CAStrings;
+import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerFactoryType;
+import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
+import com.io7m.cardant.type_packages.compilers.CATypePackageCompilers;
+import com.io7m.cardant.type_packages.parser.api.CATypePackageParserFactoryType;
+import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
 import com.io7m.idstore.model.IdName;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
@@ -209,6 +215,19 @@ public final class CAServer implements CAServerType
 
     final var health = CAServerHealth.create(services);
     services.register(CAServerHealth.class, health);
+
+    final var packageParsers = new CATypePackageParsers();
+    services.register(CATypePackageParserFactoryType.class, packageParsers);
+    final var packageCheckers = new CATypePackageCheckers();
+    services.register(CATypePackageCheckerFactoryType.class, packageCheckers);
+    services.register(
+      CATypePackageCompilerFactoryType.class,
+      CATypePackageCompilers.create(
+        strings,
+        packageParsers,
+        packageCheckers
+      )
+    );
 
     final var sessionInventoryService =
       new CASessionService(
