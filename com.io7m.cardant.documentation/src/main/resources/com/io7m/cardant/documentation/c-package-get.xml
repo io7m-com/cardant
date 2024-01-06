@@ -22,4 +22,13 @@
 
   <xi:include href="mcmd-package-get-parameters.xml"/>
 
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim>
+        <xi:include parse="text"
+                    href="c-package-get-example.txt"/>
+      </Verbatim>
+    </FormalItem>
+  </Subsection>
+
 </Section>

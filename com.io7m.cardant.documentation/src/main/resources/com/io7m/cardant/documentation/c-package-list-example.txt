@@ -1,0 +1,3 @@
+$ cardant package list
+# Package         Version
+cardant.product   1.0.0-SNAPSHOT

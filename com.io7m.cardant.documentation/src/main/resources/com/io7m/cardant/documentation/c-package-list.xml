@@ -20,4 +20,13 @@
 
   <xi:include href="mcmd-package-list-parameters.xml"/>
 
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim>
+        <xi:include parse="text"
+                    href="c-package-list-example.txt"/>
+      </Verbatim>
+    </FormalItem>
+  </Subsection>
+
 </Section>
