@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.cardant</artifactId>
     <groupId>com.io7m.cardant</groupId>
-    <version>0.0.2</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>com.io7m.cardant.protocol.inventory.cb</artifactId>
 
