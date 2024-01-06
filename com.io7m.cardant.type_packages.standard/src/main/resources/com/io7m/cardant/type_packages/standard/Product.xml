@@ -30,6 +30,11 @@
                   Description="A model number."
                   Pattern=".*"/>
 
+  <TypeScalarMonetary Name="recommended_retail_price"
+                      Description="A recommended retail price."
+                      RangeLower="0"
+                      RangeUpper="1000000000"/>
+
   <TypeRecord Name="product"
               Description="A manufactured product.">
     <Field Name="model_number"
@@ -38,6 +43,10 @@
     <Field Name="manufacturer"
            Description="The product's manufacturer."
            Type="manufacturer"/>
+    <Field Name="recommended_retail_price"
+           Description="The product's recommended retail price."
+           Type="recommended_retail_price"
+           Required="false"/>
   </TypeRecord>
 
 </Package>
