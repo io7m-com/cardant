@@ -17,6 +17,7 @@
 package com.io7m.cardant.tests.main;
 
 import com.io7m.cardant.main.CAMain;
+import com.io7m.cardant.model.CAVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DynamicTest;
@@ -101,7 +102,7 @@ public final class CAMainTest
       "--name",
       "cardant.product",
       "--version",
-      "1.0.0-SNAPSHOT"
+      CAVersion.MAIN_VERSION
     });
     assertEquals(0, r);
   }
