@@ -6,14 +6,16 @@
   <Subsection title="Name">
     <Paragraph>
       <Term type="command">type-package-install</Term>
-       - Install a type package.
+      - Install a type package.
     </Paragraph>
   </Subsection>
   <Subsection title="Description">
     <Paragraph>
-      The 
+      The
       <Term type="command">type-package-install</Term>
-       command installs a type package from a file.
+      command installs a type package from a file. Once installed, type packages may be
+      <Link target="c3812a35-9ad7-314b-9618-f1d8942abb64">upgraded</Link>
+      or <Link target="91fdb274-3d6e-3e4c-bdd9-a5057d6cf2f4">uninstalled</Link>.
     </Paragraph>
   </Subsection>
   <xi:include href="scmd-type-package-install-parameters.xml"/>

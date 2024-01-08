@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Subsection title="Parameters" xmlns="urn:com.io7m.structural:8:0">
-  <FormalItem id="8dc780a2-03dd-39bd-9ed3-264d3dd77828" title="--detach">
+  <FormalItem id="728bf7d1-867d-309e-8cf9-6b9f03a173a7" title="--file">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -9,55 +9,19 @@
       <Row>
         <Cell>Name</Cell>
         <Cell>
-          <Term type="parameter">--detach</Term>
+          <Term type="parameter">--file</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Type</Cell>
         <Cell>
-          <Term type="class">java.lang.Boolean</Term>
+          <Term type="class">java.nio.file.Path</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Default Value</Cell>
         <Cell>
           <Term type="constant"/>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Cardinality</Cell>
-        <Cell>
-          <Term type="expression">[0, 1]</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Description</Cell>
-        <Cell>Detach the location from its parent.</Cell>
-      </Row>
-    </Table>
-  </FormalItem>
-  <FormalItem id="61d94b1f-8777-351b-bb92-c5d24570422f" title="--id">
-    <Table type="parameterTable">
-      <Columns>
-        <Column>Attribute</Column>
-        <Column>Value</Column>
-      </Columns>
-      <Row>
-        <Cell>Name</Cell>
-        <Cell>
-          <Term type="parameter">--id</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Type</Cell>
-        <Cell>
-          <Term type="class">com.io7m.cardant.model.CALocationID</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Default Value</Cell>
-        <Cell>
-          <Term type="constant">d0bc621e-d402-48ee-80d0-92d56c000141</Term>
         </Cell>
       </Row>
       <Row>
@@ -68,11 +32,11 @@
       </Row>
       <Row>
         <Cell>Description</Cell>
-        <Cell>The location ID.</Cell>
+        <Cell>The type package file.</Cell>
       </Row>
     </Table>
   </FormalItem>
-  <FormalItem id="f32fc383-9dd8-312f-a7ba-1e68f9bfe5a9" title="--name">
+  <FormalItem id="869dfc78-e703-3f1c-9d53-674e12fcc885" title="--type-removal-behavior">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -81,34 +45,34 @@
       <Row>
         <Cell>Name</Cell>
         <Cell>
-          <Term type="parameter">--name</Term>
+          <Term type="parameter">--type-removal-behavior</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Type</Cell>
         <Cell>
-          <Term type="class">java.lang.String</Term>
+          <Term type="class">com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Default Value</Cell>
         <Cell>
-          <Term type="constant"/>
+          <Term type="constant">TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Cardinality</Cell>
         <Cell>
-          <Term type="expression">[0, 1]</Term>
+          <Term type="expression">[1, 1]</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Description</Cell>
-        <Cell>The location name.</Cell>
+        <Cell>The type removal behavior.</Cell>
       </Row>
     </Table>
   </FormalItem>
-  <FormalItem id="27f9711a-5b0d-3bbb-ae0e-48129fb793b3" title="--parent">
+  <FormalItem id="98033b05-9de3-3568-851a-1e6c3e46e0ae" title="--version-behavior">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -117,30 +81,30 @@
       <Row>
         <Cell>Name</Cell>
         <Cell>
-          <Term type="parameter">--parent</Term>
+          <Term type="parameter">--version-behavior</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Type</Cell>
         <Cell>
-          <Term type="class">com.io7m.cardant.model.CALocationID</Term>
+          <Term type="class">com.io7m.cardant.model.type_package.CATypePackageVersionBehavior</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Default Value</Cell>
         <Cell>
-          <Term type="constant"/>
+          <Term type="constant">VERSION_DISALLOW_DOWNGRADES</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Cardinality</Cell>
         <Cell>
-          <Term type="expression">[0, 1]</Term>
+          <Term type="expression">[1, 1]</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Description</Cell>
-        <Cell>The parent location ID.</Cell>
+        <Cell>The version behavior.</Cell>
       </Row>
     </Table>
   </FormalItem>

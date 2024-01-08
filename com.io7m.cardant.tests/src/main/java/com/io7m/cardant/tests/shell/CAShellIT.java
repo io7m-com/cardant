@@ -770,6 +770,8 @@ public final class CAShellIT
       "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
 
     w.println("type-package-install --file '%s'".formatted(file));
+    w.println("type-package-upgrade --file '%s'".formatted(file));
+
     w.println("type-package-get-text --name com.io7m.example --version 1.0.0");
     w.println("type-package-get-text --name com.io7m.example --version 1.0.0 --output '%s'".formatted(out));
     w.println("type-package-search-begin");

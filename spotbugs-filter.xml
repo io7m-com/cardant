@@ -515,6 +515,13 @@
     <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
   </Match>
 
+  <!-- Database schema should make null impossible. -->
+  <Match>
+    <Class name="com.io7m.cardant.database.postgres.internal.CADBQTypeRecordPut"/>
+    <Method name="putTypeRecord"/>
+    <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+  </Match>
+
   <!--                          -->
   <!-- com.io7m.cardant.parsers -->
   <!--                          -->

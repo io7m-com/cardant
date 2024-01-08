@@ -619,6 +619,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-type-package-search-next.xml"/>
     <xi:include href="scmd-type-package-search-previous.xml"/>
     <xi:include href="scmd-type-package-uninstall.xml"/>
+    <xi:include href="scmd-type-package-upgrade.xml"/>
     <xi:include href="scmd-type-record-get.xml"/>
     <xi:include href="scmd-type-record-search-begin.xml"/>
     <xi:include href="scmd-type-record-search-next.xml"/>
