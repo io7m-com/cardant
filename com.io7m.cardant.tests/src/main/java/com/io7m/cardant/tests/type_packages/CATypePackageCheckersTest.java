@@ -115,7 +115,7 @@ public final class CATypePackageCheckersTest
       this.checkers.createChecker(this.strings, this.resolver, packDecl)
         .execute();
 
-    dumpResult(r);
+    dumpCheckerResult(r);
 
     final var f =
       assertInstanceOf(CATypePackageCheckerFailure.class, r);
@@ -154,7 +154,7 @@ public final class CATypePackageCheckersTest
       this.checkers.createChecker(this.strings, this.resolver, packDecl)
         .execute();
 
-    dumpResult(r);
+    dumpCheckerResult(r);
 
     final var f =
       assertInstanceOf(CATypePackageCheckerFailure.class, r);
@@ -191,7 +191,7 @@ public final class CATypePackageCheckersTest
       this.checkers.createChecker(this.strings, this.resolver, packDecl)
         .execute();
 
-    dumpResult(r);
+    dumpCheckerResult(r);
 
     final var f =
       assertInstanceOf(CATypePackageCheckerFailure.class, r);
@@ -236,7 +236,7 @@ public final class CATypePackageCheckersTest
       this.checkers.createChecker(this.strings, this.resolver, packDecl)
         .execute();
 
-    dumpResult(r);
+    dumpCheckerResult(r);
 
     final var f =
       assertInstanceOf(CATypePackageCheckerFailure.class, r);
@@ -290,7 +290,7 @@ public final class CATypePackageCheckersTest
       this.checkers.createChecker(this.strings, this.resolver, packDecl)
         .execute();
 
-    dumpResult(r);
+    dumpCheckerResult(r);
 
     final var f =
       assertInstanceOf(CATypePackageCheckerFailure.class, r);
@@ -351,7 +351,7 @@ public final class CATypePackageCheckersTest
       this.checkers.createChecker(this.strings, this.resolver, packDecl)
         .execute();
 
-    dumpResult(r);
+    dumpCheckerResult(r);
 
     final CATypePackageCheckerSuccess success =
       assertInstanceOf(CATypePackageCheckerSuccess.class, r);
@@ -359,7 +359,7 @@ public final class CATypePackageCheckersTest
     this.roundTrip(directory, success.typePackage());
   }
 
-  private static void dumpResult(
+  private static void dumpCheckerResult(
     final CATypePackageCheckerResultType r)
   {
     switch (r) {

@@ -26,7 +26,6 @@ import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileCheckingFailed;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileOK;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileParsingFailed;
@@ -66,8 +65,6 @@ public final class CAICmdTypePackageInstall
 
     final var services =
       context.services();
-    final var strings =
-      services.requireService(CAStrings.class);
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 

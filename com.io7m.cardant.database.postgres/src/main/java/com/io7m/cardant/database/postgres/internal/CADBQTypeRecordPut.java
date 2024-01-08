@@ -128,18 +128,31 @@ public final class CADBQTypeRecordPut
     final var description =
       declaration.description();
 
-    final var typeId =
-      context.insertInto(METADATA_TYPES_RECORDS)
+    final var existingTypeId =
+      context.select(METADATA_TYPES_RECORDS.MTR_ID)
+        .from(METADATA_TYPES_RECORDS)
+        .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(typeName))
+        .fetchOptional(METADATA_TYPES_RECORDS.MTR_ID);
+
+    final int typeId;
+    if (existingTypeId.isPresent()) {
+      final var typeIdB = existingTypeId.get();
+      typeId = typeIdB.intValue();
+      context.update(METADATA_TYPES_RECORDS)
         .set(METADATA_TYPES_RECORDS.MTR_NAME, typeName)
         .set(METADATA_TYPES_RECORDS.MTR_PACKAGE, packageId)
         .set(METADATA_TYPES_RECORDS.MTR_DESCRIPTION, description)
-        .onConflict(METADATA_TYPES_RECORDS.MTR_NAME)
-        .doUpdate()
+        .where(METADATA_TYPES_RECORDS.MTR_ID.eq(typeIdB))
+        .execute();
+    } else {
+      typeId = context.insertInto(METADATA_TYPES_RECORDS)
         .set(METADATA_TYPES_RECORDS.MTR_NAME, typeName)
         .set(METADATA_TYPES_RECORDS.MTR_PACKAGE, packageId)
         .set(METADATA_TYPES_RECORDS.MTR_DESCRIPTION, description)
         .returning(METADATA_TYPES_RECORDS.MTR_ID)
-        .execute();
+        .fetchOne(METADATA_TYPES_RECORDS.MTR_ID)
+        .intValue();
+    }
 
     final var batches =
       new ArrayList<Query>(declaration.fields().size());
@@ -189,7 +202,7 @@ public final class CADBQTypeRecordPut
           .set(METADATA_TYPES_RECORD_FIELDS.MTRF_REQUIRED, field.isRequired())
           .set(METADATA_TYPES_RECORD_FIELDS.MTRF_SCALAR_TYPE, findTypeId)
           .onConflictOnConstraint(DSL.name(
-            "metadata_types_record_fields_primary_key"))
+            "metadata_types_record_fields_unique"))
           .doUpdate()
           .set(METADATA_TYPES_RECORD_FIELDS.MTRF_NAME, field.name().value())
           .set(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION, typeId)

@@ -24,10 +24,8 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.verona.core.VersionQualifier;
 import org.jooq.DSLContext;
-import org.jooq.Query;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
@@ -84,58 +82,40 @@ public final class CADBQTypePackageInstall
     this.setAttribute(PACKAGE, packageId.name().value());
     this.setAttribute(PACKAGE_VERSION, version.toString());
 
-    final var batch =
-      installQueries(
-        this.transaction(),
-        context,
-        typePackage,
-        this.attributes()
-      );
-
-    context.batch(batch).execute();
-    return CADatabaseUnit.UNIT;
-  }
-
-  static ArrayList<Query> installQueries(
-    final CADatabaseTransaction transaction,
-    final DSLContext context,
-    final CATypePackage typePackage,
-    final Map<String, String> attributes)
-    throws CADatabaseException
-  {
-    final var packageId =
+    final CADatabaseTransaction transaction = this.transaction();
+    final var packageId1 =
       typePackage.identifier();
-    final var version =
-      packageId.version();
+    final var version1 =
+      packageId1.version();
     final var text =
       CADBTypePackages.serialize(
         transaction.connection()
           .database()
           .typePackageSerializers(),
         typePackage,
-        attributes
+        this.attributes()
       );
 
     final var packageDbID =
       context.insertInto(METADATA_TYPE_PACKAGES)
         .set(
           METADATA_TYPE_PACKAGES.MTP_NAME,
-          packageId.name().value())
+          packageId1.name().value())
         .set(
           METADATA_TYPE_PACKAGES.MTP_DESCRIPTION,
           typePackage.description())
         .set(
           METADATA_TYPE_PACKAGES.MTP_VERSION_MAJOR,
-          Integer.valueOf(version.major()))
+          Integer.valueOf(version1.major()))
         .set(
           METADATA_TYPE_PACKAGES.MTP_VERSION_MINOR,
-          Integer.valueOf(version.minor()))
+          Integer.valueOf(version1.minor()))
         .set(
           METADATA_TYPE_PACKAGES.MTP_VERSION_PATCH,
-          Integer.valueOf(version.patch()))
+          Integer.valueOf(version1.patch()))
         .set(
           METADATA_TYPE_PACKAGES.MTP_VERSION_QUALIFIER,
-          version.qualifier()
+          version1.qualifier()
             .map(VersionQualifier::text)
             .orElse(null))
         .set(METADATA_TYPE_PACKAGES.MTP_TEXT, text)
@@ -144,38 +124,37 @@ public final class CADBQTypePackageInstall
         .orElseThrow()
         .intValue();
 
-    final var batch = new ArrayList<Query>();
     for (final var e : typePackage.scalarTypes().entrySet()) {
-      batch.addAll(
+      context.batch(
         CADBQTypeScalarPut.insertType(
           transaction,
           context,
           packageDbID,
           e.getValue()
         )
-      );
+      ).execute();
     }
+
     for (final var e : typePackage.recordTypes().entrySet()) {
-      batch.addAll(
+      context.batch(
         CADBQTypeRecordPut.putTypeRecord(
           transaction,
           context,
           packageDbID,
           e.getValue()
         )
-      );
+      ).execute();
     }
 
-    batch.add(
-      auditEvent(
-        context,
-        OffsetDateTime.now(transaction.clock()),
-        transaction.userId(),
-        "TYPE_PACKAGE_INSTALLED",
-        Map.entry("Package", packageId.name().value()),
-        Map.entry("PackageVersion", version.toString())
-      )
-    );
-    return batch;
+    auditEvent(
+      context,
+      OffsetDateTime.now(transaction.clock()),
+      transaction.userId(),
+      "TYPE_PACKAGE_INSTALLED",
+      Map.entry("Package", packageId1.name().value()),
+      Map.entry("PackageVersion", version1.toString())
+    ).execute();
+
+    return CADatabaseUnit.UNIT;
   }
 }

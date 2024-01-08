@@ -56,10 +56,15 @@ import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
 import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileOK;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileResultType;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 import com.io7m.cardant.type_packages.compilers.CATypePackageCompilers;
 import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
 import com.io7m.cardant.type_packages.parsers.CATypePackageSerializers;
 import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
+import com.io7m.cardant.type_packages.standard.CATPComputer;
+import com.io7m.cardant.type_packages.standard.CATPProduct;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
@@ -76,6 +81,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -94,6 +101,7 @@ import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -101,6 +109,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseTypePackagesTest
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CADatabaseTypePackagesTest.class);
+
   private static final CATypePackageIdentifier P =
     new CATypePackageIdentifier(
       new RDottedName("x"),
@@ -132,6 +143,7 @@ public final class CADatabaseTypePackagesTest
   private TypePackageSatisfyingType tpSatisfying;
   private TypePackageSearchType tpSearch;
   private ItemTypesAssignType iTypeAssign;
+  private CATypePackageCompilerFactoryType compilers;
 
   @BeforeAll
   public static void setupOnce(
@@ -208,15 +220,14 @@ public final class CADatabaseTypePackagesTest
     this.tRevoke =
       this.transaction.queries(ItemTypesRevokeType.class);
 
-    this.resolver =
-      CADatabaseTypePackageResolver.create(
-        CATypePackageCompilers.create(
-          CAStrings.create(Locale.ROOT),
-          new CATypePackageParsers(),
-          new CATypePackageCheckers()
-        ),
-        this.transaction
+    this.compilers =
+      CATypePackageCompilers.create(
+        CAStrings.create(Locale.ROOT),
+        new CATypePackageParsers(),
+        new CATypePackageCheckers()
       );
+    this.resolver =
+      CADatabaseTypePackageResolver.create(this.compilers, this.transaction);
   }
 
   /**
@@ -619,5 +630,72 @@ public final class CADatabaseTypePackagesTest
 
     this.transaction.commit();
     return List.copyOf(results);
+  }
+
+  /**
+   * Installing type packages works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypePackageInstallStandard()
+    throws Exception
+  {
+    final var r0 =
+      this.compilers.createCompiler(this.resolver)
+        .execute(new String(new CATPProduct().packageText().readAllBytes()));
+
+    final var r1 =
+      this.compilers.createCompiler(this.resolver)
+        .execute(new String(new CATPComputer().packageText().readAllBytes()));
+
+    dumpResult(r0);
+    dumpResult(r1);
+
+    final var p0 =
+      assertInstanceOf(CATypePackageCompileOK.class, r0);
+    final var p1 =
+      assertInstanceOf(CATypePackageCompileOK.class, r1);
+
+    this.tpInstall.execute(p0.typePackage());
+    this.assertIsInstalled(p0.typePackage());
+    this.tpInstall.execute(p1.typePackage());
+    this.assertIsInstalled(p1.typePackage());
+    this.transaction.commit();
+
+    {
+      final var t =
+        this.tdGet.execute(
+          new RDottedName("cardant.computer.dram")).orElseThrow();
+      assertEquals(5, t.fields().size());
+    }
+
+    {
+      final var t =
+        this.tdGet.execute(
+          new RDottedName("cardant.computer.cpu")).orElseThrow();
+      assertEquals(3, t.fields().size());
+    }
+
+    {
+      final var t =
+        this.tdGet.execute(
+          new RDottedName("cardant.computer.disk")).orElseThrow();
+      assertEquals(3, t.fields().size());
+    }
+
+    {
+      final var t =
+        this.tdGet.execute(
+          new RDottedName("cardant.product.product")).orElseThrow();
+      assertEquals(3, t.fields().size());
+    }
+  }
+
+  private static void dumpResult(
+    final CATypePackageCompileResultType r)
+  {
+    LOG.debug("{}", r);
   }
 }
