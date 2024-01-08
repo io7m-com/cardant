@@ -132,8 +132,6 @@ public final class CAICmdItemMetadataRemoveTest
       mock(ItemGetType.class);
     final var itemMetaRemove =
       mock(ItemMetadataRemoveType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
 
     final var transaction =
       this.transaction();
@@ -186,8 +184,6 @@ public final class CAICmdItemMetadataRemoveTest
       .queries(ItemGetType.class);
     verify(transaction)
       .queries(ItemMetadataRemoveType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(itemMetaRemove)
       .execute(
         new Parameters(
@@ -485,8 +481,6 @@ public final class CAICmdItemMetadataRemoveTest
       .queries(ItemMetadataRemoveType.class);
     verify(transaction)
       .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
     verify(itemGet)
       .execute(ITEM_ID);

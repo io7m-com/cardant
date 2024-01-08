@@ -62,9 +62,8 @@ public final class CAICmdLocationMetadataRemove
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var metaRemove =
       transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataRemoveType.class);
     final var get =

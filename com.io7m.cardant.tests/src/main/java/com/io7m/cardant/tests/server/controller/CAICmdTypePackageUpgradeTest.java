@@ -228,8 +228,6 @@ public final class CAICmdTypePackageUpgradeTest
       .queries(TypeRecordFieldUpdateType.class);
     verify(transaction)
       .queries(TypePackageSetVersionType.class);
-    verify(transaction)
-      .setUserId(any());
 
     verify(textGet, new Times(1))
       .execute(eq(typePackageIdentifier));

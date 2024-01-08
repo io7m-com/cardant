@@ -102,8 +102,6 @@ public final class CAICmdRolesRevoke extends CAICmdAbstract<CAICommandRolesRevok
     final var put =
       transaction.queries(CADatabaseQueriesUsersType.PutType.class);
 
-    transaction.setUserId(context.session().userId());
-
     final var targetUser =
       get.execute(command.user())
         .orElseThrow(() -> {

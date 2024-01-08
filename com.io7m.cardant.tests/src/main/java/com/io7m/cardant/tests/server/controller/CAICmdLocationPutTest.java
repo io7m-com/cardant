@@ -164,8 +164,6 @@ public final class CAICmdLocationPutTest
 
     verify(transaction)
       .queries(CADatabaseQueriesLocationsType.LocationPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(locPut)
       .execute(LOCATION_0);
 

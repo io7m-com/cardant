@@ -60,9 +60,8 @@ public final class CAICmdLocationMetadataPut
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var metaPut =
       transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataPutType.class);
     final var get =

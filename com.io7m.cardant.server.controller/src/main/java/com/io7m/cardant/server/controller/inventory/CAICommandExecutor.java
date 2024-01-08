@@ -106,6 +106,7 @@ public final class CAICommandExecutor
         .startSpan();
 
     try (var ignored = span.makeCurrent()) {
+      context.transaction().setUserId(context.session().userId());
       return executeCommand(context, command);
     } catch (final Throwable e) {
       span.recordException(e);

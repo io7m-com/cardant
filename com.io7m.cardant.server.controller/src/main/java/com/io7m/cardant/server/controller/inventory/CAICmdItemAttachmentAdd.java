@@ -57,9 +57,8 @@ public final class CAICmdItemAttachmentAdd
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var attachmentAdd =
       transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
     final var get =

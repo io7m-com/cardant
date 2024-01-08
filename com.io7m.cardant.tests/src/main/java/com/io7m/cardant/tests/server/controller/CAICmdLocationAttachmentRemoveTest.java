@@ -163,8 +163,6 @@ public final class CAICmdLocationAttachmentRemoveTest
       .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
       .queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(locationAttachRemove)
       .execute(new Parameters(LOCATION_ID, FILE_ID, "x"));
     verify(locationGet)

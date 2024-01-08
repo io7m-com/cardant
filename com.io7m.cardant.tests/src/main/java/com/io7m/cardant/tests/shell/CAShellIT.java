@@ -766,12 +766,24 @@ public final class CAShellIT
     w.println("set --terminate-on-errors true");
     w.printf("login %s someone-admin 12345678%n", this.uri());
 
+    final var itemId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
     w.println("type-package-install --file '%s'".formatted(file));
     w.println("type-package-get-text --name com.io7m.example --version 1.0.0");
     w.println("type-package-get-text --name com.io7m.example --version 1.0.0 --output '%s'".formatted(out));
     w.println("type-package-search-begin");
     w.println("type-package-search-next");
     w.println("type-package-search-previous");
+
+    w.printf(
+      "item-create --id %s --name Battery%n",
+      itemId
+    );
+    w.printf("item-metadata-put --id %s --metadata '[Money com.io7m.example.t5.q 0 USD]'%n", itemId);
+    w.printf("item-types-assign --id %s --type com.io7m.example.t5%n", itemId);
+    w.printf("item-types-revoke --id %s --type com.io7m.example.t5%n", itemId);
+
     w.println("set --formatter RAW");
     w.println("type-package-search-begin");
     w.println("type-package-search-next");

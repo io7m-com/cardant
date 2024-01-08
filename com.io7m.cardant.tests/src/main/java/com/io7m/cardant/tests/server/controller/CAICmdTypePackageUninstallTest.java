@@ -175,8 +175,6 @@ public final class CAICmdTypePackageUninstallTest
     /* Assert. */
 
     verify(transaction)
-      .setUserId(any());
-    verify(transaction)
       .queries(TypePackageUninstallType.class);
     verify(uninstall)
       .execute(any());

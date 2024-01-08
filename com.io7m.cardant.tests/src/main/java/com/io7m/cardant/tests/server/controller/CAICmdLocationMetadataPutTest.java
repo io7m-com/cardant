@@ -197,8 +197,6 @@ public final class CAICmdLocationMetadataPutTest
       .queries(LocationGetType.class);
     verify(transaction)
       .queries(LocationMetadataPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(locationMetaPut)
       .execute(new Parameters(
         LOCATION_ID,
@@ -401,8 +399,6 @@ public final class CAICmdLocationMetadataPutTest
       .queries(LocationGetType.class);
     verify(transaction)
       .queries(LocationMetadataPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
     verify(locationMetaPut)
       .execute(
@@ -548,8 +544,6 @@ public final class CAICmdLocationMetadataPutTest
       .queries(LocationMetadataPutType.class);
     verify(transaction)
       .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
     verify(locationGet)
       .execute(LOCATION_ID);

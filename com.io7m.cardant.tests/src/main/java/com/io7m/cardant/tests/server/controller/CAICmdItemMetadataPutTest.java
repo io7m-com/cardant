@@ -135,8 +135,6 @@ public final class CAICmdItemMetadataPutTest
       mock(ItemGetType.class);
     final var itemMetaPut =
       mock(ItemMetadataPutType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
 
     final var transaction =
       this.transaction();
@@ -200,8 +198,6 @@ public final class CAICmdItemMetadataPutTest
       .queries(ItemGetType.class);
     verify(transaction)
       .queries(ItemMetadataPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(itemMetaPut)
       .execute(new Parameters(
         ITEM_ID,
@@ -407,8 +403,6 @@ public final class CAICmdItemMetadataPutTest
       .queries(ItemGetType.class);
     verify(transaction)
       .queries(ItemMetadataPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
     verify(itemMetaPut)
       .execute(
@@ -554,8 +548,6 @@ public final class CAICmdItemMetadataPutTest
       .queries(ItemMetadataPutType.class);
     verify(transaction)
       .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
     verify(itemGet)
       .execute(ITEM_ID);

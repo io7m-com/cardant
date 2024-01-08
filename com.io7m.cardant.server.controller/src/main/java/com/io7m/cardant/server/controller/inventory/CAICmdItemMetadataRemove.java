@@ -62,9 +62,8 @@ public final class CAICmdItemMetadataRemove
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var metaRemove =
       transaction.queries(CADatabaseQueriesItemsType.ItemMetadataRemoveType.class);
     final var get =

@@ -50,9 +50,8 @@ public final class CAICmdItemReposit
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var repositQuery =
       transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
     final var get =

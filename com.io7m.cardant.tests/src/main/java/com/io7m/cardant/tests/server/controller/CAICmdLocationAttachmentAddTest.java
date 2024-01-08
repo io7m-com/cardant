@@ -163,8 +163,6 @@ public final class CAICmdLocationAttachmentAddTest
       .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
     verify(transaction)
       .queries(CADatabaseQueriesLocationsType.LocationAttachmentAddType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(locationAdd)
       .execute(new Parameters(LOCATION_ID, FILE_ID, "x"));
     verify(locationGet)

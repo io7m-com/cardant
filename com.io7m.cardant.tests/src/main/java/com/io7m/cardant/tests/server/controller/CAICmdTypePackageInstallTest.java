@@ -183,8 +183,6 @@ public final class CAICmdTypePackageInstallTest
     /* Assert. */
 
     verify(transaction)
-      .setUserId(any());
-    verify(transaction)
       .queries(TypePackageInstallType.class);
     verify(transaction)
       .queries(TypePackageSatisfyingType.class);
@@ -260,9 +258,6 @@ public final class CAICmdTypePackageInstallTest
     assertEquals(errorParse(), error.errorCode());
 
     /* Assert. */
-
-    verify(transaction)
-      .setUserId(any());
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(install);
@@ -343,8 +338,6 @@ public final class CAICmdTypePackageInstallTest
 
     /* Assert. */
 
-    verify(transaction)
-      .setUserId(any());
     verify(transaction)
       .queries(TypePackageSatisfyingType.class);
     verify(transaction)

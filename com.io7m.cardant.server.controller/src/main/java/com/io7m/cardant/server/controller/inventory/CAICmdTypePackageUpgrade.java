@@ -71,9 +71,8 @@ public final class CAICmdTypePackageUpgrade
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var resolver =
       CADatabaseTypePackageResolver.create(compilers, transaction);
     final var compiler =

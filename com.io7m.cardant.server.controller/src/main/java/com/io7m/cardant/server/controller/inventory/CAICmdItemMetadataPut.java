@@ -60,9 +60,8 @@ public final class CAICmdItemMetadataPut
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var metaPut =
       transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
     final var get =
