@@ -20,6 +20,8 @@ package com.io7m.cardant.shell.internal;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.parsers.CAMetadataExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.lanark.core.RDottedName;
@@ -80,7 +82,13 @@ public final class CAMetadataConverter
   public CAMetadataType exampleValue()
   {
     return new CAMetadataType.Monetary(
-      new RDottedName("com.io7m.metadata"),
+      new CATypeRecordFieldIdentifier(
+        new CATypeRecordIdentifier(
+          new RDottedName("com.io7m.metadata"),
+          new RDottedName("t")
+        ),
+        new RDottedName("x")
+      ),
       new BigDecimal("250.23"),
       CurrencyUnit.EUR
     );
@@ -89,11 +97,11 @@ public final class CAMetadataConverter
   @Override
   public String syntax()
   {
-    return "[Text <dotted-name> <quoted>] "
-      + "| [Integer <dotted-name> <integer>] "
-      + "| [Real <dotted-name> <real>] "
-      + "| [Time <dotted-name> <offset-date-time>] "
-      + "| [Money <dotted-name> <money> <currency>]";
+    return "[Text <type-field-identifier> <quoted>] "
+      + "| [Integer <type-field-identifier> <integer>] "
+      + "| [Real <type-field-identifier> <real>] "
+      + "| [Time <type-field-identifier> <offset-date-time>] "
+      + "| [Money <type-field-identifier> <money> <currency>]";
   }
 
   @Override

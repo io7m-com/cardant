@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
 import org.jooq.Query;
+import org.jooq.impl.DSL;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -31,7 +32,8 @@ import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 /**
@@ -79,10 +81,18 @@ public final class CADBQLocationTypesRevoke
       new ArrayList<Query>(parameters.types().size());
 
     for (final var type : parameters.types()) {
+      final var matches =
+        DSL.and(
+          METADATA_TYPES.MT_NAME.eq(type.typeName().value()),
+          METADATA_TYPE_PACKAGES.MTP_NAME.eq(type.packageName().value())
+        );
+
       final var selectType =
-        context.select(METADATA_TYPES_RECORDS.MTR_ID)
-          .from(METADATA_TYPES_RECORDS)
-          .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(type.value()));
+        context.select(METADATA_TYPES.MT_ID)
+          .from(METADATA_TYPES)
+          .join(METADATA_TYPE_PACKAGES)
+          .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES.MT_PACKAGE))
+          .where(matches);
 
       final var query =
         context.deleteFrom(LOCATION_TYPES)

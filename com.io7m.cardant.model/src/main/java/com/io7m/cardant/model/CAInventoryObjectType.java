@@ -17,8 +17,6 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.lanark.core.RDottedName;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
@@ -92,7 +90,7 @@ public sealed interface CAInventoryObjectType<S>
    * @return The metadata on this object
    */
 
-  SortedMap<RDottedName, CAMetadataType> metadata();
+  SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata();
 
   /**
    * @return The attachments on this object
@@ -104,5 +102,5 @@ public sealed interface CAInventoryObjectType<S>
    * @return The types assigned to this object
    */
 
-  SortedSet<RDottedName> types();
+  SortedSet<CATypeRecordIdentifier> types();
 }

@@ -26,20 +26,18 @@ import com.io7m.cardant.model.CAFileType.CAFileWithoutData;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
-import org.jooq.impl.SQLDataType;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 import static com.io7m.cardant.database.postgres.internal.Tables.FILES;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
@@ -47,7 +45,8 @@ import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENT
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS_SUMMED;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 
 /**
  * Retrieve the item with the given ID, if one exists.
@@ -65,12 +64,6 @@ public final class CADBQItemGet
 
   private static final Name ITEM_COUNT_NAME =
     DSL.name("ITEM_COUNT");
-
-  private static final Name ITEM_TYPES_NAME =
-    DSL.name("ITEM_TYPES");
-
-  private static final Field<String[]> ITEM_TYPES_FIELD =
-    DSL.array(DSL.field(ITEM_TYPES_NAME, SQLDataType.VARCHAR));
 
   /**
    * Construct a query.
@@ -104,9 +97,13 @@ public final class CADBQItemGet
           ITEMS.ITEM_NAME,
           DSL.coalesce(ITEM_LOCATIONS_SUMMED.ITEM_COUNT, ZERO)
             .as(ITEM_COUNT_NAME),
-          DSL.arrayAgg(METADATA_TYPES_RECORDS.MTR_NAME)
-            .as(ITEM_TYPES_NAME),
-          ITEM_METADATA.ITEM_META_NAME,
+          DSL.multisetAgg(
+            METADATA_TYPE_PACKAGES.MTP_NAME,
+            METADATA_TYPES.MT_NAME
+          ),
+          ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+          ITEM_METADATA.ITEM_META_TYPE_RECORD,
+          ITEM_METADATA.ITEM_META_TYPE_FIELD,
           ITEM_METADATA.ITEM_META_VALUE_INTEGRAL,
           ITEM_METADATA.ITEM_META_VALUE_MONEY,
           ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY,
@@ -126,8 +123,10 @@ public final class CADBQItemGet
         .on(ITEM_LOCATIONS_SUMMED.ITEM_ID.eq(ITEMS.ITEM_ID))
         .leftJoin(ITEM_TYPES)
         .on(ITEM_TYPES.IT_ITEM.eq(ITEMS.ITEM_ID))
-        .leftJoin(METADATA_TYPES_RECORDS)
-        .on(METADATA_TYPES_RECORDS.MTR_ID.eq(ITEM_TYPES.IT_TYPE))
+        .leftJoin(METADATA_TYPES)
+        .on(METADATA_TYPES.MT_ID.eq(ITEM_TYPES.IT_TYPE))
+        .leftJoin(METADATA_TYPE_PACKAGES)
+        .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES.MT_PACKAGE))
         .leftJoin(ITEM_METADATA)
         .on(ITEM_METADATA.ITEM_META_ITEM.eq(ITEMS.ITEM_ID))
         .leftJoin(ITEM_ATTACHMENTS)
@@ -139,7 +138,9 @@ public final class CADBQItemGet
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
           DSL.field(ITEM_COUNT_NAME),
-          ITEM_METADATA.ITEM_META_NAME,
+          ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+          ITEM_METADATA.ITEM_META_TYPE_RECORD,
+          ITEM_METADATA.ITEM_META_TYPE_FIELD,
           ITEM_METADATA.ITEM_META_VALUE_INTEGRAL,
           ITEM_METADATA.ITEM_META_VALUE_MONEY,
           ITEM_METADATA.ITEM_META_VALUE_MONEY_CURRENCY,
@@ -162,9 +163,7 @@ public final class CADBQItemGet
     }
 
     final var meta =
-      new TreeMap<RDottedName, CAMetadataType>();
-    final var types =
-      new TreeSet<RDottedName>();
+      new TreeMap<CATypeRecordFieldIdentifier, CAMetadataType>();
     final var attachments =
       new TreeMap<CAAttachmentKey, CAAttachment>();
 
@@ -177,11 +176,26 @@ public final class CADBQItemGet
       name = rec.get(ITEMS.ITEM_NAME);
       count = rec.get(ITEM_LOCATIONS_SUMMED.ITEM_COUNT).longValue();
 
-      Optional.ofNullable(rec.get(ITEM_METADATA.ITEM_META_NAME))
-        .ifPresent(s -> {
-          final var metaName = new RDottedName(s);
-          meta.put(metaName, mapItemMetadataRecord(metaName, rec));
-        });
+      final var typePack =
+        rec.get(ITEM_METADATA.ITEM_META_TYPE_PACKAGE);
+
+      if (typePack != null) {
+        final var typeRec =
+          rec.get(ITEM_METADATA.ITEM_META_TYPE_RECORD);
+        final var typeField =
+          rec.get(ITEM_METADATA.ITEM_META_TYPE_FIELD);
+
+        final var metaName =
+          new CATypeRecordFieldIdentifier(
+            new CATypeRecordIdentifier(
+              new RDottedName(typePack),
+              new RDottedName(typeRec)
+            ),
+            new RDottedName(typeField)
+          );
+
+        meta.put(metaName, mapItemMetadataRecord(metaName, rec));
+      }
 
       Optional.ofNullable(rec.get(ITEM_ATTACHMENTS.IA_RELATION))
         .ifPresent(f -> {
@@ -198,12 +212,29 @@ public final class CADBQItemGet
           );
           attachments.put(attachment.key(), attachment);
         });
+    }
 
-      types.addAll(
-        Stream.of(rec.get(ITEM_TYPES_NAME, String[].class))
-          .filter(Objects::nonNull)
-          .map(RDottedName::new)
-          .toList()
+    final var types =
+      new TreeSet<CATypeRecordIdentifier>();
+
+    final var typeRecords =
+      context.select(
+          METADATA_TYPES.MT_NAME,
+          METADATA_TYPE_PACKAGES.MTP_NAME
+        ).from(ITEM_TYPES)
+        .join(METADATA_TYPES)
+        .on(METADATA_TYPES.MT_ID.eq(ITEM_TYPES.IT_TYPE))
+        .join(METADATA_TYPE_PACKAGES)
+        .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES.MT_PACKAGE))
+        .where(ITEM_TYPES.IT_ITEM.eq(itemID.id()))
+        .fetch();
+
+    for (final var typeRecord : typeRecords) {
+      types.add(
+        new CATypeRecordIdentifier(
+          new RDottedName(typeRecord.get(METADATA_TYPE_PACKAGES.MTP_NAME)),
+          new RDottedName(typeRecord.get(METADATA_TYPES.MT_NAME))
+        )
       );
     }
 
@@ -221,7 +252,7 @@ public final class CADBQItemGet
   }
 
   static CAMetadataType mapItemMetadataRecord(
-    final RDottedName name,
+    final CATypeRecordFieldIdentifier name,
     final Record rec)
   {
     final var typeCode =

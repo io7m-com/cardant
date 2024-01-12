@@ -91,25 +91,25 @@
 [variant CAI1Metadata
   [case Integral
     [documentation key "The metadata value key."]
-    [field key cb:String]
+    [field key CAI1TypeRecordFieldIdentifier]
     [documentation value "The metadata value."]
     [field value cb:IntegerSigned64]
   ]
   [case Text
     [documentation key "The metadata value key."]
-    [field key cb:String]
+    [field key CAI1TypeRecordFieldIdentifier]
     [documentation value "The metadata value."]
     [field value cb:String]
   ]
   [case Time
     [documentation key "The metadata value key."]
-    [field key cb:String]
+    [field key CAI1TypeRecordFieldIdentifier]
     [documentation value "The metadata value."]
     [field value ct:OffsetDateTime]
   ]
   [case Monetary
     [documentation key "The metadata value key."]
-    [field key cb:String]
+    [field key CAI1TypeRecordFieldIdentifier]
     [documentation value "The metadata value."]
     [field value cb:String]
     [documentation currency "The metadata currency unit."]
@@ -117,7 +117,7 @@
   ]
   [case Real
     [documentation key "The metadata value key."]
-    [field key cb:String]
+    [field key CAI1TypeRecordFieldIdentifier]
     [documentation value "The metadata value."]
     [field value cb:Float64]
   ]
@@ -150,11 +150,11 @@
   [documentation countHere "The item count in this location."]
   [field countHere cb:IntegerUnsigned64]
   [documentation metadata "The item metadata."]
-  [field metadata [cb:Map cb:String CAI1Metadata]]
+  [field metadata [cb:Map CAI1TypeRecordFieldIdentifier CAI1Metadata]]
   [documentation attachments "The item attachments."]
   [field attachments [cb:Map CAI1AttachmentKey CAI1Attachment]]
   [documentation types "The item types."]
-  [field types [cb:List cb:String]]
+  [field types [cb:List CAI1TypeRecordIdentifier]]
 ]
 
 [documentation CAI1ListLocationBehaviour "The behaviour requested for listing items in locations."]
@@ -262,11 +262,11 @@
   [documentation name "The location name."]
   [field name cb:String]
   [documentation metadata "The item metadata."]
-  [field metadata [cb:Map cb:String CAI1Metadata]]
+  [field metadata [cb:Map CAI1TypeRecordFieldIdentifier CAI1Metadata]]
   [documentation attachments "The item attachments."]
   [field attachments [cb:Map CAI1AttachmentKey CAI1Attachment]]
   [documentation types "The item types."]
-  [field types [cb:List cb:String]]
+  [field types [cb:List CAI1TypeRecordIdentifier]]
 ]
 
 [documentation CAI1ItemColumn "The item column by which to order results."]
@@ -326,7 +326,9 @@
     [field e1 CAI1MetadataElementMatch]
   ]
   [case Specific
-    [field name [CAI1ComparisonFuzzy cb:String]]
+    [field packageName [CAI1ComparisonExact cb:String]]
+    [field typeName [CAI1ComparisonExact cb:String]]
+    [field fieldName [CAI1ComparisonExact cb:String]]
     [field value CAI1MetadataValueMatch]
   ]
 ]
@@ -340,7 +342,7 @@
   [documentation descriptionMatch "The item description match expression."]
   [field descriptionMatch [CAI1ComparisonFuzzy cb:String]]
   [documentation typeMatch "The item type match expression."]
-  [field typeMatch [CAI1ComparisonSet cb:String]]
+  [field typeMatch [CAI1ComparisonSet CAI1TypeRecordIdentifier]]
   [documentation serialMatch "The item serial match expression."]
   [field serialMatch [CAI1ComparisonExact cb:String]]
   [documentation metaMatch "The item metadata match expression."]
@@ -420,47 +422,58 @@
   [field name cb:String]
 ]
 
+[record CAI1TypeRecordFieldIdentifier
+  [field packageName cb:String]
+  [field typeName cb:String]
+  [field fieldName cb:String]
+]
+
+[record CAI1TypeRecordIdentifier
+  [field packageName cb:String]
+  [field typeName cb:String]
+]
+
+[record CAI1TypeScalarIdentifier
+  [field packageName cb:String]
+  [field typeName cb:String]
+]
+
 [documentation CAI1TypeScalar "A scalar type."]
 [variant CAI1TypeScalar
   [case Integral
-    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
-    [field name cb:String]
+    [field name CAI1TypeScalarIdentifier]
     [documentation description "The type description."]
     [field description cb:String]
     [field rangeLower cb:IntegerSigned64]
     [field rangeUpper cb:IntegerSigned64]
   ]
   [case Text
-    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
-    [field name cb:String]
+    [field name CAI1TypeScalarIdentifier]
     [documentation description "The type description."]
     [field description cb:String]
     [field pattern cb:String]
   ]
   [case Time
-    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
-    [field name cb:String]
+    [field name CAI1TypeScalarIdentifier]
     [documentation description "The type description."]
     [field description cb:String]
     [field rangeLower ct:OffsetDateTime]
     [field rangeUpper ct:OffsetDateTime]
   ]
   [case Monetary
-    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
-    [field name cb:String]
+    [field name CAI1TypeScalarIdentifier]
     [documentation description "The type description."]
     [field description cb:String]
     [field rangeLower cb:String]
     [field rangeUpper cb:String]
   ]
   [case Real
-    [field packageIdentifier CAI1TypePackageIdentifier]
     [documentation name "The type name."]
-    [field name cb:String]
+    [field name CAI1TypeScalarIdentifier]
     [documentation description "The type description."]
     [field description cb:String]
     [field rangeLower cb:Float64]
@@ -471,7 +484,7 @@
 [documentation CAI1TypeField "A field within a type declaration."]
 [record CAI1TypeField
   [documentation name "The type field name."]
-  [field name cb:String]
+  [field name CAI1TypeRecordFieldIdentifier]
   [documentation description "The type field description."]
   [field description cb:String]
   [documentation type "The type of the field."]
@@ -482,20 +495,18 @@
 
 [documentation CAI1TypeRecord "A type declaration."]
 [record CAI1TypeRecord
-  [field packageIdentifier CAI1TypePackageIdentifier]
   [documentation name "The type declaration name."]
-  [field name cb:String]
+  [field name CAI1TypeRecordIdentifier]
   [documentation description "The type declaration description."]
   [field description cb:String]
   [documentation fields "Whether or not the field is required to be present."]
-  [field fields [cb:Map cb:String CAI1TypeField]]
+  [field fields [cb:Map CAI1TypeRecordFieldIdentifier CAI1TypeField]]
 ]
 
 [documentation CAI1TypeRecordSummary "A type declaration summary."]
 [record CAI1TypeRecordSummary
-  [field packageIdentifier CAI1TypePackageIdentifier]
   [documentation name "The type declaration name."]
-  [field name cb:String]
+  [field name CAI1TypeRecordIdentifier]
   [documentation description "The type declaration description."]
   [field description cb:String]
 ]
@@ -687,7 +698,7 @@
   [documentation itemId "The item ID."]
   [field itemId cb:UUID]
   [documentation metadatas "The item metadatas."]
-  [field metadatas [cb:List cb:String]]
+  [field metadatas [cb:List CAI1TypeRecordFieldIdentifier]]
 ]
 
 [documentation CAI1CommandItemReposit "Reposit an item."]
@@ -812,7 +823,7 @@
   [documentation item "The target item."]
   [field item cb:UUID]
   [documentation types "The assigned types."]
-  [field types [cb:List cb:String]]
+  [field types [cb:List CAI1TypeRecordIdentifier]]
 ]
 
 [documentation CAI1CommandItemTypesRevoke "Revoke a set of types from an item."]
@@ -820,7 +831,7 @@
   [documentation item "The target item."]
   [field item cb:UUID]
   [documentation types "The removed types."]
-  [field types [cb:List cb:String]]
+  [field types [cb:List CAI1TypeRecordIdentifier]]
 ]
 
 [documentation CAI1CommandLocationMetadataPut "Add or update metadata values in a location."]
@@ -836,7 +847,7 @@
   [documentation locationId "The location ID."]
   [field locationId cb:UUID]
   [documentation metadatas "The location metadatas."]
-  [field metadatas [cb:List cb:String]]
+  [field metadatas [cb:List CAI1TypeRecordFieldIdentifier]]
 ]
 
 [documentation CAI1CommandLocationTypesAssign "Assign a set of types to a location."]
@@ -844,7 +855,7 @@
   [documentation location "The target location."]
   [field location cb:UUID]
   [documentation types "The assigned types."]
-  [field types [cb:List cb:String]]
+  [field types [cb:List CAI1TypeRecordIdentifier]]
 ]
 
 [documentation CAI1CommandLocationTypesRevoke "Revoke a set of types from a location."]
@@ -852,7 +863,7 @@
   [documentation location "The target location."]
   [field location cb:UUID]
   [documentation types "The removed types."]
-  [field types [cb:List cb:String]]
+  [field types [cb:List CAI1TypeRecordIdentifier]]
 ]
 
 [documentation CAI1CommandLocationAttachmentAdd "Add location attachments."]
@@ -1129,38 +1140,6 @@
   [field roles [cb:List cb:String]]
 ]
 
-[documentation CAI1ResponseTypeScalarGet "A response to CAI1CommandTypeScalarGet."]
-[record CAI1ResponseTypeScalarGet
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation type "The scalar type."]
-  [field type CAI1TypeScalar]
-]
-
-[documentation CAI1ResponseTypeScalarSearch "A response to CAI1CommandTypeScalarSearch*."]
-[record CAI1ResponseTypeScalarSearch
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation results "The results."]
-  [field results [CAI1Page CAI1TypeScalar]]
-]
-
-[documentation CAI1ResponseTypeRecordGet "A response to CAI1CommandTypeRecordGet."]
-[record CAI1ResponseTypeRecordGet
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation type "The scalar type."]
-  [field type CAI1TypeRecord]
-]
-
-[documentation CAI1ResponseTypeRecordSearch "A response to CAI1CommandTypeRecordSearch*."]
-[record CAI1ResponseTypeRecordSearch
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation results "The results."]
-  [field results [CAI1Page CAI1TypeRecordSummary]]
-]
-
 [documentation CAI1ResponseItemTypesAssign "A response to CAI1CommandItemTypesAssign."]
 [record CAI1ResponseItemTypesAssign
   [documentation requestId "The ID of the request that yielded this response."]
@@ -1334,14 +1313,6 @@
       CAI1CommandTypePackageSearchPrevious
       CAI1CommandTypePackageUninstall
       CAI1CommandTypePackageUpgrade
-      CAI1CommandTypeRecordGet
-      CAI1CommandTypeRecordSearchBegin
-      CAI1CommandTypeRecordSearchNext
-      CAI1CommandTypeRecordSearchPrevious
-      CAI1CommandTypeScalarGet
-      CAI1CommandTypeScalarSearchBegin
-      CAI1CommandTypeScalarSearchNext
-      CAI1CommandTypeScalarSearchPrevious
       CAI1EventUpdated
       CAI1ResponseAuditSearch
       CAI1ResponseError
@@ -1380,10 +1351,6 @@
       CAI1ResponseTypePackageSearch
       CAI1ResponseTypePackageUninstall
       CAI1ResponseTypePackageUpgrade
-      CAI1ResponseTypeRecordGet
-      CAI1ResponseTypeRecordSearch
-      CAI1ResponseTypeScalarGet
-      CAI1ResponseTypeScalarSearch
     ]
   ]
 ]

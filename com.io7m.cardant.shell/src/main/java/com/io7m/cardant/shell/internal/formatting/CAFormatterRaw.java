@@ -229,7 +229,7 @@ public final class CAFormatterRaw implements CAFormatterType
 
     final PrintWriter w = this.terminal.writer();
     for (final var type : typesSorted) {
-      w.printf("%s: %s%n", type.name().value(), type.description());
+      w.printf("%s: %s%n", type.name().toString(), type.description());
     }
   }
 
@@ -248,7 +248,7 @@ public final class CAFormatterRaw implements CAFormatterType
     );
 
     for (final var item : types.items()) {
-      w.printf("%s : %s%n", item.name().value(), item.description());
+      w.printf("%s : %s%n", item.name().toString(), item.description());
     }
   }
 
@@ -258,10 +258,10 @@ public final class CAFormatterRaw implements CAFormatterType
   {
     final PrintWriter w = this.terminal.writer();
     final var main = new TreeMap<String, String>();
-    main.put("Name", type.name().value());
+    main.put("Name", type.name().toString());
     main.put("Description", type.description());
 
-    w.printf("# Type %s%n", type.name().value());
+    w.printf("# Type %s%n", type.name());
     w.printf("#-----------------------------------------%n");
     w.println();
     paddedTable(w, main);
@@ -278,9 +278,9 @@ public final class CAFormatterRaw implements CAFormatterType
         new TreeMap<>(
           fields.entrySet()
             .stream()
-            .map(e -> Map.entry(e.getKey(), e.getValue().name().value()))
+            .map(e -> Map.entry(e.getKey(), e.getValue().name().toString()))
             .collect(Collectors.toMap(
-              e -> e.getKey().value(),
+              e -> e.getKey().toString(),
               Map.Entry::getValue))
         ));
     }
@@ -303,7 +303,7 @@ public final class CAFormatterRaw implements CAFormatterType
     );
 
     for (final var item : types.items()) {
-      w.printf("%s : %s%n", item.name().value(), item.description());
+      w.printf("%s : %s%n", item.name().toString(), item.description());
     }
   }
 

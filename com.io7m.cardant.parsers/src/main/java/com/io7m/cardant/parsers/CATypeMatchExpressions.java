@@ -19,6 +19,7 @@ package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CATypeMatch;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.Anything;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsEqualTo;
@@ -36,6 +37,7 @@ import com.io7m.jsx.SExpressionType.SSymbol;
 import com.io7m.lanark.core.RDottedName;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -131,7 +133,7 @@ public final class CATypeMatchExpressions extends CAExpressions
     return new CATypeMatch(this.typeMatchExpr(e));
   }
 
-  private CAComparisonSetType<RDottedName> typeMatchExpr(
+  private CAComparisonSetType<CATypeRecordIdentifier> typeMatchExpr(
     final SExpressionType e)
     throws CAException
   {
@@ -145,19 +147,19 @@ public final class CATypeMatchExpressions extends CAExpressions
           && xs.get(0) instanceof final SAtomType head -> {
         yield switch (head.text().toUpperCase(Locale.ROOT)) {
           case "WITH-TYPES-EQUAL-TO" -> {
-            yield new IsEqualTo<>(this.dottedNamesAfterHead(xs));
+            yield new IsEqualTo<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-NOT-EQUAL-TO" -> {
-            yield new IsNotEqualTo<>(this.dottedNamesAfterHead(xs));
+            yield new IsNotEqualTo<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-SUBSET-OF" -> {
-            yield new IsSubsetOf<>(this.dottedNamesAfterHead(xs));
+            yield new IsSubsetOf<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-SUPERSET-OF" -> {
-            yield new IsSupersetOf<>(this.dottedNamesAfterHead(xs));
+            yield new IsSupersetOf<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-OVERLAPPING" -> {
-            yield new IsOverlapping<>(this.dottedNamesAfterHead(xs));
+            yield new IsOverlapping<>(this.identifiersAfterHead(xs));
           }
           default -> {
             throw this.createParseError(e);
@@ -170,7 +172,7 @@ public final class CATypeMatchExpressions extends CAExpressions
     };
   }
 
-  private Set<RDottedName> dottedNamesAfterHead(
+  private Set<CATypeRecordIdentifier> identifiersAfterHead(
     final SListType xs)
     throws CAException
   {
@@ -178,11 +180,11 @@ public final class CATypeMatchExpressions extends CAExpressions
       return Set.of();
     }
 
-    final var results = new HashSet<RDottedName>();
+    final var results = new HashSet<CATypeRecordIdentifier>();
     for (var index = 1; index < xs.size(); ++index) {
       switch (xs.get(index)) {
         case final SAtomType a -> {
-          results.add(new RDottedName(a.text()));
+          results.add(this.identifier(a, a.text()));
         }
         case final SListType ys -> {
           throw this.createParseError(ys);
@@ -190,6 +192,21 @@ public final class CATypeMatchExpressions extends CAExpressions
       }
     }
     return Set.copyOf(results);
+  }
+
+  private CATypeRecordIdentifier identifier(
+    final SExpressionType e,
+    final String text)
+    throws CAException
+  {
+    final var segments = List.of(text.split(":"));
+    if (segments.size() == 2) {
+      return new CATypeRecordIdentifier(
+        new RDottedName(segments.get(0)),
+        new RDottedName(segments.get(1))
+      );
+    }
+    throw this.createParseError(e);
   }
 
   /**
@@ -218,13 +235,13 @@ public final class CATypeMatchExpressions extends CAExpressions
    */
 
   public SExpressionType typeMatchSerialize(
-    final CAComparisonSetType<RDottedName> expression)
+    final CAComparisonSetType<CATypeRecordIdentifier> expression)
   {
     return switch (expression) {
-      case final Anything<RDottedName> e -> {
+      case final Anything<CATypeRecordIdentifier> e -> {
         yield new SSymbol(zero(), "with-any-type");
       }
-      case final IsEqualTo<RDottedName> e -> {
+      case final IsEqualTo<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -236,7 +253,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsNotEqualTo<RDottedName> e -> {
+      case final IsNotEqualTo<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -248,7 +265,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsOverlapping<RDottedName> e -> {
+      case final IsOverlapping<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -260,7 +277,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsSubsetOf<RDottedName> e -> {
+      case final IsSubsetOf<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -272,7 +289,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsSupersetOf<RDottedName> e -> {
+      case final IsSupersetOf<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -288,8 +305,8 @@ public final class CATypeMatchExpressions extends CAExpressions
   }
 
   private static SExpressionType nameToSymbol(
-    final RDottedName n)
+    final CATypeRecordIdentifier n)
   {
-    return new SSymbol(zero(), n.value());
+    return new SSymbol(zero(), n.toString());
   }
 }

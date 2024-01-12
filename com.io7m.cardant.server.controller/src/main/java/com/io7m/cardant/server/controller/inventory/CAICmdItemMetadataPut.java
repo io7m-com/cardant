@@ -17,7 +17,8 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
@@ -63,9 +64,9 @@ public final class CAICmdItemMetadataPut
     final var transaction =
       context.transaction();
     final var metaPut =
-      transaction.queries(CADatabaseQueriesItemsType.ItemMetadataPutType.class);
+      transaction.queries(ItemMetadataPutType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      transaction.queries(ItemGetType.class);
 
     final var itemId = command.item();
     context.setAttribute(ITEM_ID, itemId.displayId());

@@ -17,7 +17,8 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
@@ -34,7 +35,8 @@ import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
  * @see CAICommandLocationTypesRevoke
  */
 
-public final class CAICmdLocationTypesRevoke extends CAICmdAbstract<CAICommandLocationTypesRevoke>
+public final class CAICmdLocationTypesRevoke
+  extends CAICmdAbstract<CAICommandLocationTypesRevoke>
 {
   /**
    * @see CAICommandLocationTypesRevoke
@@ -61,9 +63,9 @@ public final class CAICmdLocationTypesRevoke extends CAICmdAbstract<CAICommandLo
     final var transaction =
       context.transaction();
     final var get =
-      transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
+      transaction.queries(LocationGetType.class);
     final var revoke =
-      transaction.queries(CADatabaseQueriesLocationsType.LocationTypesRevokeType.class);
+      transaction.queries(LocationTypesRevokeType.class);
 
     revoke.execute(new Parameters(command.location(), command.types()));
 

@@ -62,8 +62,6 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.type_packages.parsers;
   requires com.io7m.cardant.type_packages.resolver.api;
   requires com.io7m.cardant.type_packages.standard;
-  requires com.io7m.cardant.type_packages.upgrades.api;
-  requires com.io7m.cardant.type_packages.upgrades;
 
   uses ArbitraryProvider;
   uses CADBQueryProviderType;

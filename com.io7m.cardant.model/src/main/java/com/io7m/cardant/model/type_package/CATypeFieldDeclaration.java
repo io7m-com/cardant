@@ -17,6 +17,8 @@
 
 package com.io7m.cardant.model.type_package;
 
+import com.io7m.cardant.model.CATypeScalarIdentifier;
+
 import java.util.Objects;
 
 /**
@@ -31,7 +33,7 @@ import java.util.Objects;
 public record CATypeFieldDeclaration(
   CANameUnqualified name,
   String description,
-  CANameType type,
+  CATypeScalarIdentifier type,
   boolean isRequired)
 {
   /**

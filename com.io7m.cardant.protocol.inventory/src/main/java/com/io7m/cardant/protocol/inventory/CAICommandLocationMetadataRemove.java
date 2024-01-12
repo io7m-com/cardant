@@ -18,7 +18,7 @@
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 
 import java.util.Objects;
 import java.util.Set;
@@ -32,7 +32,7 @@ import java.util.Set;
 
 public record CAICommandLocationMetadataRemove(
   CALocationID location,
-  Set<RDottedName> metadataNames)
+  Set<CATypeRecordFieldIdentifier> metadataNames)
   implements CAICommandType<CAIResponseLocationMetadataRemove>
 {
   /**

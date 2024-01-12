@@ -20,9 +20,8 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeRecordSummary;
-import com.io7m.lanark.core.RDottedName;
 
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageIdentifier.TYPE_PACKAGE_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordIdentifier.TYPE_RECORD_IDENTIFIER;
 import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
 /**
@@ -43,8 +42,7 @@ public enum CAUVTypeRecordSummary
     final CATypeRecordSummary message)
   {
     return new CAI1TypeRecordSummary(
-      TYPE_PACKAGE_IDENTIFIER.convertToWire(message.packageIdentifier()),
-      string(message.name().value()),
+      TYPE_RECORD_IDENTIFIER.convertToWire(message.name()),
       string(message.description())
     );
   }
@@ -54,8 +52,7 @@ public enum CAUVTypeRecordSummary
     final CAI1TypeRecordSummary message)
   {
     return new CATypeRecordSummary(
-      TYPE_PACKAGE_IDENTIFIER.convertFromWire(message.fieldPackageIdentifier()),
-      new RDottedName(message.fieldName().value()),
+      TYPE_RECORD_IDENTIFIER.convertFromWire(message.fieldName()),
       message.fieldDescription().value()
     );
   }

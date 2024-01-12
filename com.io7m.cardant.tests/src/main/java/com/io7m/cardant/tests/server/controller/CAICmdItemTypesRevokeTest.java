@@ -20,12 +20,11 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesRevokeType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.security.CASecurity;
@@ -46,11 +45,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeCheckFailed;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -76,6 +75,19 @@ public final class CAICmdItemTypesRevokeTest
       new RDottedName("com.io7m"),
       Version.of(1, 0, 0)
     );
+
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
 
   private static final CAItemID ITEM_ID = CAItemID.random();
 
@@ -104,7 +116,7 @@ public final class CAICmdItemTypesRevokeTest
           context,
           new CAICommandItemTypesRevoke(
             ITEM_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
         );
       });
 
@@ -114,7 +126,7 @@ public final class CAICmdItemTypesRevokeTest
   }
 
   /**
-   * Revokeing a type to an item works.
+   * Revoking a type to an item works.
    *
    * @throws Exception On errors
    */
@@ -125,31 +137,26 @@ public final class CAICmdItemTypesRevokeTest
   {
     /* Arrange. */
 
-    final var itemTypeRevoke =
-      mock(ItemTypesRevokeType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
     final var itemGet =
       mock(ItemGetType.class);
+    final var itemTypeRevoke =
+      mock(ItemTypesRevokeType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(ItemTypesRevokeType.class))
-      .thenReturn(itemTypeRevoke);
     when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of()
-        )
-      ));
+    when(transaction.queries(ItemTypesRevokeType.class))
+      .thenReturn(itemTypeRevoke);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
@@ -159,7 +166,7 @@ public final class CAICmdItemTypesRevokeTest
         0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
+        new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
       )));
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -177,6 +184,26 @@ public final class CAICmdItemTypesRevokeTest
 
     final var context =
       this.createContext();
+
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
+
+    when(itemGet.execute(any()))
+      .thenReturn(
+        Optional.of(
+          new CAItem(
+            CAItemID.random(),
+            "Item",
+            0L,
+            0L,
+            new TreeMap<>(),
+            Collections.emptySortedMap(),
+            new TreeSet<>()
+          )
+        )
+      );
 
     /* Act. */
 
@@ -185,14 +212,12 @@ public final class CAICmdItemTypesRevokeTest
       context,
       new CAICommandItemTypesRevoke(
         ITEM_ID,
-        Set.of(new RDottedName("t"))));
+        Set.of(CATypeRecordIdentifier.of("com.io7m:t"))));
 
     /* Assert. */
 
     verify(transaction)
       .queries(ItemGetType.class);
-    verify(transaction)
-      .queries(TypeRecordGetType.class);
     verify(transaction)
       .queries(ItemTypesRevokeType.class);
     verify(itemGet)
@@ -203,111 +228,7 @@ public final class CAICmdItemTypesRevokeTest
   }
 
   /**
-   * Revokeing a type fails if type checking fails.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testRevokeCheckFailed()
-    throws Exception
-  {
-    /* Arrange. */
-
-    final var itemTypeRevoke =
-      mock(ItemTypesRevokeType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
-    final var itemGet =
-      mock(ItemGetType.class);
-    final var transaction =
-      this.transaction();
-
-    when(transaction.queries(ItemTypesRevokeType.class))
-      .thenReturn(itemTypeRevoke);
-    when(transaction.queries(ItemGetType.class))
-      .thenReturn(itemGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "A field",
-              new Integral(P, new RDottedName("z"), "x", 23L, 1000L),
-              true
-            )
-          )
-        )
-      ));
-
-    when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
-      )));
-
-    CASecurity.setPolicy(new MPolicy(List.of(
-      new MRule(
-        MRuleName.of("rule0"),
-        "",
-        ALLOW,
-        new MMatchSubjectWithRolesAny(Set.of(ROLE_INVENTORY_ITEMS_WRITER)),
-        new MMatchObjectWithType(INVENTORY_ITEMS.type()),
-        new MMatchActionWithName(WRITE)
-      )
-    )));
-
-    this.setRoles(ROLE_INVENTORY_ITEMS_WRITER);
-
-    final var context =
-      this.createContext();
-
-    /* Act. */
-
-    final var handler = new CAICmdItemTypesRevoke();
-
-    final var ex =
-      assertThrows(CACommandExecutionFailure.class, () -> {
-        handler.execute(
-          context,
-          new CAICommandItemTypesRevoke(
-            ITEM_ID,
-            Set.of(new RDottedName("t")))
-        );
-      });
-
-    /* Assert. */
-
-    assertEquals(errorTypeCheckFailed(), ex.errorCode());
-
-    verify(transaction)
-      .queries(ItemGetType.class);
-    verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .queries(ItemTypesRevokeType.class);
-    verify(itemGet)
-      .execute(ITEM_ID);
-
-    verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(itemGet);
-  }
-
-  /**
-   * Revokeing a type to a nonexistent item fails.
+   * Revoking a type to a nonexistent item fails.
    *
    * @throws Exception On errors
    */
@@ -365,7 +286,8 @@ public final class CAICmdItemTypesRevokeTest
           context,
           new CAICommandItemTypesRevoke(
             ITEM_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t"))
+          )
         );
       });
 

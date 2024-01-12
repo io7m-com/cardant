@@ -28,7 +28,6 @@ import java.util.Objects;
  */
 
 public record CANameUnqualified(String value)
-  implements CANameType
 {
   /**
    * The type of unqualified names.

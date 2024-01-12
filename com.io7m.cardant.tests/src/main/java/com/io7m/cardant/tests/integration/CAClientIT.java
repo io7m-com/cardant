@@ -28,6 +28,7 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
@@ -531,11 +532,14 @@ public final class CAClientIT
     ));
 
     final var meta0 =
-      new CAMetadataType.Text(new RDottedName("a.b0"), "x");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("z:a.b0"), "x");
     final var meta1 =
-      new CAMetadataType.Text(new RDottedName("a.b1"), "y");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("z:a.b1"), "y");
     final var meta2 =
-      new CAMetadataType.Text(new RDottedName("a.b2"), "z");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("z:a.b2"), "z");
 
     this.client.executeOrElseThrow(
       new CAICommandLocationMetadataPut(id, Set.of(meta0, meta1, meta2))

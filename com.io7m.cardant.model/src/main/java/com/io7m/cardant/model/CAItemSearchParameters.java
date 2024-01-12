@@ -19,7 +19,6 @@ package com.io7m.cardant.model;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
-import com.io7m.lanark.core.RDottedName;
 
 import java.util.Objects;
 
@@ -40,7 +39,7 @@ public record CAItemSearchParameters(
   CAItemLocationMatchType locationMatch,
   CAComparisonFuzzyType<String> nameMatch,
   CAComparisonFuzzyType<String> descriptionMatch,
-  CAComparisonSetType<RDottedName> typeMatch,
+  CAComparisonSetType<CATypeRecordIdentifier> typeMatch,
   CAComparisonExactType<CAItemSerial> serialMatch,
   CAMetadataElementMatchType metadataMatch,
   CAItemColumnOrdering ordering,

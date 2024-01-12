@@ -20,12 +20,11 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
 import com.io7m.cardant.security.CASecurity;
@@ -77,6 +76,19 @@ public final class CAICmdLocationTypesAssignTest
       Version.of(1, 0, 0)
     );
 
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
+
   private static final CALocationID LOCATION_ID = CALocationID.random();
 
   /**
@@ -104,7 +116,8 @@ public final class CAICmdLocationTypesAssignTest
           context,
           new CAICommandLocationTypesAssign(
             LOCATION_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t"))
+          )
         );
       });
 
@@ -125,31 +138,26 @@ public final class CAICmdLocationTypesAssignTest
   {
     /* Arrange. */
 
-    final var locationTypeAssign =
-      mock(LocationTypesAssignType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
     final var locationGet =
       mock(LocationGetType.class);
+    final var locationTypeAssign =
+      mock(LocationTypesAssignType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(LocationTypesAssignType.class))
-      .thenReturn(locationTypeAssign);
     when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of()
-        )
-      ));
+    when(transaction.queries(LocationTypesAssignType.class))
+      .thenReturn(locationTypeAssign);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     when(locationGet.execute(any()))
       .thenReturn(Optional.of(new CALocation(
@@ -158,7 +166,7 @@ public final class CAICmdLocationTypesAssignTest
         "Location",
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
+        new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
       )));
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -177,6 +185,11 @@ public final class CAICmdLocationTypesAssignTest
     final var context =
       this.createContext();
 
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
+
     /* Act. */
 
     final var handler = new CAICmdLocationTypesAssign();
@@ -184,16 +197,20 @@ public final class CAICmdLocationTypesAssignTest
       context,
       new CAICommandLocationTypesAssign(
         LOCATION_ID,
-        Set.of(new RDottedName("t"))));
+        Set.of(CATypeRecordIdentifier.of("com.io7m:t"))
+      )
+    );
 
     /* Assert. */
 
     verify(transaction)
       .queries(LocationGetType.class);
     verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
       .queries(LocationTypesAssignType.class);
+    verify(transaction)
+      .queries(TypePackageSatisfyingType.class);
+    verify(transaction)
+      .queries(TypePackageGetTextType.class);
     verify(locationGet)
       .execute(LOCATION_ID);
 
@@ -213,39 +230,26 @@ public final class CAICmdLocationTypesAssignTest
   {
     /* Arrange. */
 
-    final var locationTypeAssign =
-      mock(LocationTypesAssignType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
     final var locationGet =
       mock(LocationGetType.class);
+    final var locationTypeAssign =
+      mock(LocationTypesAssignType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(LocationTypesAssignType.class))
-      .thenReturn(locationTypeAssign);
     when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "A field",
-              new Integral(P, new RDottedName("z"), "x", 23L, 1000L),
-              true
-            )
-          )
-        )
-      ));
+    when(transaction.queries(LocationTypesAssignType.class))
+      .thenReturn(locationTypeAssign);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     when(locationGet.execute(any()))
       .thenReturn(Optional.of(new CALocation(
@@ -254,7 +258,7 @@ public final class CAICmdLocationTypesAssignTest
         "Location",
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
+        new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t0")))
       )));
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -273,6 +277,11 @@ public final class CAICmdLocationTypesAssignTest
     final var context =
       this.createContext();
 
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
+
     /* Act. */
 
     final var handler = new CAICmdLocationTypesAssign();
@@ -283,7 +292,8 @@ public final class CAICmdLocationTypesAssignTest
           context,
           new CAICommandLocationTypesAssign(
             LOCATION_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t0"))
+          )
         );
       });
 
@@ -294,9 +304,11 @@ public final class CAICmdLocationTypesAssignTest
     verify(transaction)
       .queries(LocationGetType.class);
     verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
       .queries(LocationTypesAssignType.class);
+    verify(transaction)
+      .queries(TypePackageSatisfyingType.class);
+    verify(transaction)
+      .queries(TypePackageGetTextType.class);
     verify(locationGet)
       .execute(LOCATION_ID);
 
@@ -363,7 +375,7 @@ public final class CAICmdLocationTypesAssignTest
           context,
           new CAICommandLocationTypesAssign(
             LOCATION_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
         );
       });
 

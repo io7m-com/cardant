@@ -17,7 +17,7 @@
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 
 import java.util.Objects;
 import java.util.Set;
@@ -31,7 +31,7 @@ import java.util.Set;
 
 public record CAICommandItemTypesAssign(
   CAItemID item,
-  Set<RDottedName> types)
+  Set<CATypeRecordIdentifier> types)
   implements CAICommandType<CAIResponseItemTypesAssign>
 {
   /**

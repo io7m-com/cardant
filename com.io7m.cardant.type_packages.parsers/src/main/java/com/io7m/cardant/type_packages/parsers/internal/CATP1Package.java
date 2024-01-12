@@ -87,22 +87,34 @@ public final class CATP1Package
         CATP1Import::new),
       Map.entry(
         qName("TypeRecord"),
-        CATP1TypeRecord::new),
+        c -> {
+          return new CATP1TypeRecord(c, this.packageInfo.identifier().name());
+        }),
       Map.entry(
         qName("TypeScalarMonetary"),
-        c -> new CATP1TypeScalarMonetary(c, this.packageInfo.identifier())),
+        c -> {
+          return new CATP1TypeScalarMonetary(c, this.packageInfo.identifier());
+        }),
       Map.entry(
         qName("TypeScalarIntegral"),
-        c -> new CATP1TypeScalarIntegral(c, this.packageInfo.identifier())),
+        c -> {
+          return new CATP1TypeScalarIntegral(c, this.packageInfo.identifier());
+        }),
       Map.entry(
         qName("TypeScalarReal"),
-        c -> new CATP1TypeScalarReal(c, this.packageInfo.identifier())),
+        c -> {
+          return new CATP1TypeScalarReal(c, this.packageInfo.identifier());
+        }),
       Map.entry(
         qName("TypeScalarText"),
-        c -> new CATP1TypeScalarText(c, this.packageInfo.identifier())),
+        c -> {
+          return new CATP1TypeScalarText(c, this.packageInfo.identifier());
+        }),
       Map.entry(
         qName("TypeScalarTime"),
-        c -> new CATP1TypeScalarTime(c, this.packageInfo.identifier()))
+        c -> {
+          return new CATP1TypeScalarTime(c, this.packageInfo.identifier());
+        })
     );
   }
 
@@ -123,7 +135,7 @@ public final class CATP1Package
       }
 
       case final CATypeScalarType sc -> {
-        this.scalarTypes.put(new CANameUnqualified(sc.name().value()), sc);
+        this.scalarTypes.put(new CANameUnqualified(sc.name().typeName().value()), sc);
         return;
       }
 

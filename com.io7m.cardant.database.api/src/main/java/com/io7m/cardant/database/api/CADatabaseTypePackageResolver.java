@@ -20,10 +20,6 @@ package com.io7m.cardant.database.api;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileCheckingFailed;
@@ -75,30 +71,6 @@ public final class CADatabaseTypePackageResolver
       inCompilers,
       inTransaction
     );
-  }
-
-  @Override
-  public Optional<CATypeScalarType> findTypeScalar(
-    final RDottedName name)
-  {
-    try {
-      return this.transaction.queries(TypeScalarGetType.class)
-        .execute(name);
-    } catch (final CADatabaseException e) {
-      return Optional.empty();
-    }
-  }
-
-  @Override
-  public Optional<CATypeRecord> findTypeRecord(
-    final RDottedName name)
-  {
-    try {
-      return this.transaction.queries(TypeRecordGetType.class)
-        .execute(name);
-    } catch (final CADatabaseException e) {
-      return Optional.empty();
-    }
   }
 
   @Override

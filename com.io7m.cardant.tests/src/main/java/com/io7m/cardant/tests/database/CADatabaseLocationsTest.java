@@ -39,6 +39,7 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.tests.containers.CATestContainers;
@@ -48,7 +49,6 @@ import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
@@ -322,11 +322,14 @@ public final class CADatabaseLocationsTest
     );
 
     final var meta0 =
-      new CAMetadataType.Text(new RDottedName("x.y.a0"), "abc");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("x.y:a.b0"), "abc");
     final var meta1 =
-      new CAMetadataType.Text(new RDottedName("x.y.a1"), "def");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("x.y:a.b1"), "def");
     final var meta2 =
-      new CAMetadataType.Text(new RDottedName("x.y.a2"), "ghi");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("x.y:a.b2"), "ghi");
 
     this.metaPut.execute(
       new LocationMetadataPutType.Parameters(

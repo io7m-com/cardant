@@ -21,7 +21,8 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 
 import java.util.Optional;
 import java.util.Set;
@@ -107,7 +108,7 @@ public sealed interface CADatabaseQueriesLocationsType
 
     record Parameters(
       CALocationID location,
-      Set<RDottedName> names)
+      Set<CATypeRecordFieldIdentifier> names)
     {
 
     }
@@ -180,7 +181,7 @@ public sealed interface CADatabaseQueriesLocationsType
 
     record Parameters(
       CALocationID location,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }
@@ -203,7 +204,7 @@ public sealed interface CADatabaseQueriesLocationsType
 
     record Parameters(
       CALocationID location,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }

@@ -24,9 +24,10 @@ import com.io7m.cardant.model.CAMetadataElementMatchType.And;
 import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
 import com.io7m.cardant.model.CAMetadataValueMatchType.MonetaryMatchType.WithCurrency;
 import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType.WithinRange;
-import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.parsers.CAMetadataMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterType;
 
@@ -85,10 +86,17 @@ public final class CAMetadataMatchConverter
   {
     return new And(
       new Specific(
-        new CAComparisonFuzzyType.IsEqualTo<>("x.y"),
+        new CAComparisonExactType.IsEqualTo<>(new RDottedName("x.y")),
+        new CAComparisonExactType.Anything<>(),
+        new CAComparisonExactType.IsNotEqualTo<>("z"),
         new WithinRange(23.0, 200.0)
       ),
-      new Specific(new CAComparisonFuzzyType.Anything<>(), new WithCurrency(EUR))
+      new Specific(
+        new CAComparisonExactType.IsEqualTo<>(new RDottedName("a.b")),
+        new CAComparisonExactType.Anything<>(),
+        new CAComparisonExactType.IsNotEqualTo<>("q"),
+        new WithCurrency(EUR)
+      )
     );
   }
 

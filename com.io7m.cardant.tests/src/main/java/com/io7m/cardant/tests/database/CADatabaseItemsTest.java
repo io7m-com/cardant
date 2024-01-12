@@ -45,6 +45,7 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.tests.containers.CATestContainers;
@@ -53,7 +54,6 @@ import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
@@ -539,27 +539,27 @@ public final class CADatabaseItemsTest
 
     final var meta0 =
       new CAMetadataType.Text(
-        new RDottedName("x.y.a0"),
+        CATypeRecordFieldIdentifier.of("x.y:a0.s"),
         "abc"
       );
     final var meta1 =
       new CAMetadataType.Integral(
-        new RDottedName("x.y.a1"),
+        CATypeRecordFieldIdentifier.of("x.y:a1.t"),
         230L
       );
     final var meta2 =
       new CAMetadataType.Real(
-        new RDottedName("x.y.a2"),
+        CATypeRecordFieldIdentifier.of("x.y:a2.u"),
         45.0
       );
     final var meta3 =
       new CAMetadataType.Time(
-        new RDottedName("x.y.a3"),
+        CATypeRecordFieldIdentifier.of("x.y:a3.w"),
         OffsetDateTime.of(2000, 1, 1, 13, 30, 23, 0, UTC)
       );
     final var meta4 =
       new CAMetadataType.Monetary(
-        new RDottedName("x.y.a4"),
+        CATypeRecordFieldIdentifier.of("x.y:a4.p"),
         CAMoney.money("200.0000000000000000"),
         CurrencyUnit.EUR
       );

@@ -32,7 +32,7 @@ import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.ExactTextVa
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.Search;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
 import com.io7m.cardant.model.CAMoney;
-import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.Anything;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
@@ -40,6 +40,7 @@ import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
+import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
@@ -117,7 +118,9 @@ public final class CAMetadataMatchExpressions extends CAExpressions
         SYNTAX_METADATA_MATCH)
     );
 
-  private final CANameMatchExpressions names;
+  private final CAMetadataTypeMatchExpressions typeMatch;
+  private final CAMetadataPackageMatchExpressions packageMatch;
+  private final CAMetadataFieldMatchExpressions fieldMatch;
 
   /**
    * Expression parsers for metadata match expressions.
@@ -130,7 +133,12 @@ public final class CAMetadataMatchExpressions extends CAExpressions
   {
     super(inStrings);
 
-    this.names = new CANameMatchExpressions(inStrings);
+    this.typeMatch =
+      new CAMetadataTypeMatchExpressions(inStrings);
+    this.packageMatch =
+      new CAMetadataPackageMatchExpressions(inStrings);
+    this.fieldMatch =
+      new CAMetadataFieldMatchExpressions(inStrings);
   }
 
   private static SExpressionType metadataMatchValueSerialize(
@@ -330,11 +338,20 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     final SList list)
     throws CAException
   {
-    if (list.size() == 3) {
-      final SExpressionType e = list.get(1);
+    if (list.size() == 5) {
+      final SExpressionType ePackage = list.get(1);
+      final SExpressionType eType = list.get(2);
+      final SExpressionType eField = list.get(3);
+
       return new Specific(
-        this.names.nameMatch(e).expression(),
-        this.metadataValueMatchExpr(list.get(2))
+        this.packageMatch.metadataPackageMatch(ePackage)
+          .expression()
+          .map(RDottedName::new),
+        this.typeMatch.metadataTypeMatch(eType)
+          .expression(),
+        this.fieldMatch.metadataFieldMatch(eField)
+          .expression(),
+        this.metadataValueMatchExpr(list.get(4))
       );
     }
     throw this.createParseError(list);
@@ -638,15 +655,24 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     switch (value) {
       case final Specific specific -> {
         if (specific.value() == ANY_VALUE
-            && specific.name() instanceof Anything<String>) {
+            && specific.packageName() instanceof CAComparisonExactType.Anything<RDottedName>
+            && specific.typeName() instanceof CAComparisonExactType.Anything<String>
+            && specific.fieldName() instanceof CAComparisonExactType.Anything<String>
+        ) {
           return new SSymbol(zero(), "anything");
         }
+
         return new SList(
           zero(),
           true,
           List.of(
             new SSymbol(zero(), "match"),
-            this.names.nameMatchSerialize(specific.name()),
+            this.packageMatch.metadataPackageMatchSerialize(
+              specific.packageName()
+                .map(RDottedName::value)
+            ),
+            this.typeMatch.metadataTypeMatchSerialize(specific.typeName()),
+            this.fieldMatch.metadataFieldMatchSerialize(specific.fieldName()),
             metadataMatchValueSerialize(specific.value())
           )
         );

@@ -18,14 +18,20 @@ package com.io7m.cardant.tests.database;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemRepositType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSearchType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageInstallType;
+import com.io7m.cardant.database.api.CADatabaseQueriesUsersType.PutType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemColumn;
@@ -42,18 +48,33 @@ import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.model.CAMetadataElementMatchType.And;
 import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAMetadataType.Text;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.ExactTextValue;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType.IsEqualTo;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType.IsNotEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsSimilarTo;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.Anything;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsOverlapping;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
+import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerSuccess;
+import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
+import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
 import com.io7m.ervilla.api.EContainerSupervisorType;
 import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
@@ -69,10 +90,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -80,7 +105,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -110,30 +137,31 @@ public final class CADatabaseItemsSearchTest
       <p:PackageInfo Name="com.io7m"
                      Version="1.0.0"
                      Description="An example."/>
+      <p:TypeRecord Name="t0" Description="A record type."/>
+      <p:TypeRecord Name="t1" Description="A record type."/>
     </p:Package>
     """;
 
   private static final Logger LOG =
     LoggerFactory.getLogger(CADatabaseItemsSearchTest.class);
 
-  private static CATestContainers.CADatabaseFixture DATABASE_FIXTURE;
+  private static CADatabaseFixture DATABASE_FIXTURE;
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private CADatabaseQueriesItemsType.ItemCreateType itemCreate;
-  private CADatabaseQueriesItemsType.ItemSetNameType setName;
-  private CADatabaseQueriesItemsType.ItemGetType get;
-  private CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType deleteMark;
-  private CADatabaseQueriesLocationsType.LocationPutType locPut;
-  private CADatabaseQueriesItemsType.ItemRepositType repositQuery;
-  private CADatabaseQueriesItemsType.ItemSearchType searchQuery;
-  private CADatabaseQueriesItemsType.ItemDeleteType delete;
-  private CADatabaseQueriesItemsType.ItemGetType itemGet;
+  private ItemCreateType itemCreate;
+  private ItemSetNameType setName;
+  private ItemGetType get;
+  private ItemDeleteMarkOnlyType deleteMark;
+  private LocationPutType locPut;
+  private ItemRepositType repositQuery;
+  private ItemSearchType searchQuery;
+  private ItemDeleteType delete;
+  private ItemGetType itemGet;
   private ItemMetadataPutType metaAdd;
   private ItemMetadataRemoveType metaRemove;
-  private TypeRecordPutType typePut;
   private ItemTypesAssignType itemTypeAssign;
-  private CADatabaseQueriesItemsType.ItemRepositType reposit;
+  private ItemRepositType reposit;
 
   @BeforeAll
   public static void setupOnce(
@@ -159,41 +187,67 @@ public final class CADatabaseItemsSearchTest
       closeables.addPerTestResource(this.connection.openTransaction());
 
     final var userId = CAUserID.random();
-    this.transaction.queries(CADatabaseQueriesUsersType.PutType.class)
+    this.transaction.queries(PutType.class)
       .execute(new CAUser(userId, new IdName("x"), new MSubject(Set.of())));
     this.transaction.commit();
     this.transaction.setUserId(userId);
 
     this.itemCreate =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
+      this.transaction.queries(ItemCreateType.class);
     this.itemGet =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      this.transaction.queries(ItemGetType.class);
     this.itemTypeAssign =
       this.transaction.queries(ItemTypesAssignType.class);
     this.setName =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
+      this.transaction.queries(ItemSetNameType.class);
     this.get =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      this.transaction.queries(ItemGetType.class);
     this.deleteMark =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
+      this.transaction.queries(ItemDeleteMarkOnlyType.class);
     this.delete =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteType.class);
+      this.transaction.queries(ItemDeleteType.class);
     this.locPut =
-      this.transaction.queries(CADatabaseQueriesLocationsType.LocationPutType.class);
+      this.transaction.queries(LocationPutType.class);
     this.repositQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
+      this.transaction.queries(ItemRepositType.class);
     this.searchQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class);
+      this.transaction.queries(ItemSearchType.class);
     this.reposit =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
+      this.transaction.queries(ItemRepositType.class);
     this.metaAdd =
       this.transaction.queries(ItemMetadataPutType.class);
     this.metaRemove =
       this.transaction.queries(ItemMetadataRemoveType.class);
-    this.typePut =
-      this.transaction.queries(TypeRecordPutType.class);
 
-    CADatabaseTypesTest.installTestTypePackage(this.transaction);
+    installTestTypePackage(this.transaction);
+  }
+
+  static void installTestTypePackage(
+    final CADatabaseTransactionType transaction)
+    throws Exception
+  {
+    final var parsers =
+      new CATypePackageParsers();
+    final var checkers =
+      new CATypePackageCheckers();
+
+    final var packageDeclaration =
+      parsers.parse(
+        URI.create("urn:in"),
+        new ByteArrayInputStream(P_TEXT.getBytes(StandardCharsets.UTF_8))
+      );
+
+    final var packageV =
+      ((CATypePackageCheckerSuccess)
+        checkers.createChecker(
+          CAStrings.create(Locale.ROOT),
+          Mockito.mock(CATypePackageResolverType.class),
+          packageDeclaration
+        ).execute())
+        .typePackage();
+
+    transaction.queries(TypePackageInstallType.class).execute(packageV);
+    transaction.commit();
   }
 
   /**
@@ -293,7 +347,7 @@ public final class CADatabaseItemsSearchTest
           new CAItemLocationWithDescendants(loc0.id()),
           new CAComparisonFuzzyType.Anything<>(),
           new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonSetType.Anything<>(),
+          new Anything<>(),
           new CAComparisonExactType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -343,7 +397,7 @@ public final class CADatabaseItemsSearchTest
           new CAItemLocationWithDescendants(loc1.id()),
           new CAComparisonFuzzyType.Anything<>(),
           new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonSetType.Anything<>(),
+          new Anything<>(),
           new CAComparisonExactType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -393,7 +447,7 @@ public final class CADatabaseItemsSearchTest
           new CAItemLocationWithDescendants(loc2.id()),
           new CAComparisonFuzzyType.Anything<>(),
           new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonSetType.Anything<>(),
+          new Anything<>(),
           new CAComparisonExactType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -531,7 +585,7 @@ public final class CADatabaseItemsSearchTest
           new CAItemLocationExact(loc0.id()),
           new CAComparisonFuzzyType.Anything<>(),
           new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonSetType.Anything<>(),
+          new Anything<>(),
           new CAComparisonExactType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -581,7 +635,7 @@ public final class CADatabaseItemsSearchTest
           new CAItemLocationExact(loc1.id()),
           new CAComparisonFuzzyType.Anything<>(),
           new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonSetType.Anything<>(),
+          new Anything<>(),
           new CAComparisonExactType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -631,7 +685,7 @@ public final class CADatabaseItemsSearchTest
           new CAItemLocationExact(loc2.id()),
           new CAComparisonFuzzyType.Anything<>(),
           new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonSetType.Anything<>(),
+          new Anything<>(),
           new CAComparisonExactType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -769,7 +823,7 @@ public final class CADatabaseItemsSearchTest
           new CAItemLocationsAll(),
           new CAComparisonFuzzyType.Anything<>(),
           new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonSetType.Anything<>(),
+          new Anything<>(),
           new CAComparisonExactType.Anything<>(),
           CAMetadataElementMatchType.ANYTHING,
           new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -827,9 +881,9 @@ public final class CADatabaseItemsSearchTest
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
-        new CAComparisonFuzzyType.IsSimilarTo<>("join"),
+        new IsSimilarTo<>("join"),
         new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonSetType.Anything<>(),
+        new Anything<>(),
         new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -871,7 +925,7 @@ public final class CADatabaseItemsSearchTest
         new CAItemLocationsAll(),
         new CAComparisonFuzzyType.IsEqualTo<>(itemName),
         new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonSetType.Anything<>(),
+        new Anything<>(),
         new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
@@ -913,32 +967,33 @@ public final class CADatabaseItemsSearchTest
      * any values.
      */
 
-    final var name0 = new RDottedName("e");
-    final var name1 = new RDottedName("a");
-    final var name2 = new RDottedName("i");
+    final var name0 = new RDottedName("com.io7m");
+    final var name1 = "x";
+    final var name2 = "i";
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonSetType.Anything<>(),
+        new Anything<>(),
         new CAComparisonExactType.Anything<>(),
-        new CAMetadataElementMatchType.And(
-          new CAMetadataElementMatchType.And(
-            new Specific(
-              new CAComparisonFuzzyType.IsEqualTo<>(name0.value()),
-              ANY_VALUE),
-            new Specific(
-              new CAComparisonFuzzyType.IsEqualTo<>(name1.value()),
-              ANY_VALUE)
+        new And(
+          new Specific(
+            new CAComparisonExactType.IsEqualTo<>(name0),
+            new CAComparisonExactType.IsEqualTo<>(name1),
+            new CAComparisonExactType.IsEqualTo<>(name2),
+            ANY_VALUE
           ),
           new Specific(
-            new CAComparisonFuzzyType.IsEqualTo<>(name2.value()),
-            ANY_VALUE)
+            new CAComparisonExactType.Anything<>(),
+            new CAComparisonExactType.Anything<>(),
+            new CAComparisonExactType.IsEqualTo<>(name2),
+            ANY_VALUE
+          )
         ),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-        100
+        1000L
       ));
 
     /*
@@ -946,16 +1001,20 @@ public final class CADatabaseItemsSearchTest
      */
 
     final var page = search.pageCurrent(this.transaction);
-    assertTrue(page.items().size() >= 9);
-    assertTrue(page.items().size() <= 11);
+    assertTrue(page.items().size() >= 125);
+    assertTrue(page.items().size() <= 127);
 
     for (final var summary : page.items()) {
       final var item =
         this.itemGet.execute(summary.id()).orElseThrow();
 
-      assertTrue(item.metadata().containsKey(name0));
-      assertTrue(item.metadata().containsKey(name1));
-      assertTrue(item.metadata().containsKey(name2));
+      final var name =
+        new CATypeRecordFieldIdentifier(
+          new CATypeRecordIdentifier(name0, new RDottedName(name1)),
+          new RDottedName(name2)
+        );
+
+      assertTrue(item.metadata().containsKey(name));
     }
   }
 
@@ -978,17 +1037,17 @@ public final class CADatabaseItemsSearchTest
      * specific values.
      */
 
-    final var name0 = new RDottedName("e");
-
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
         new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonSetType.Anything<>(),
+        new Anything<>(),
         new CAComparisonExactType.Anything<>(),
         new Specific(
-          new CAComparisonFuzzyType.IsEqualTo<>(name0.value()),
+          new CAComparisonExactType.Anything<>(),
+          new CAComparisonExactType.Anything<>(),
+          new CAComparisonExactType.Anything<>(),
           new ExactTextValue("explanation")),
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -1001,8 +1060,17 @@ public final class CADatabaseItemsSearchTest
       final var item =
         this.itemGet.execute(summary.id()).orElseThrow();
 
-      assertTrue(item.metadata().containsKey(name0));
-      assertEquals("explanation", item.metadata().get(name0).valueString());
+      assertTrue(
+        item.metadata()
+          .values()
+          .stream()
+          .anyMatch(x -> {
+            if (x instanceof final Text q) {
+              return Objects.equals(q.value(), "explanation");
+            }
+            return false;
+          })
+      );
     }
   }
 
@@ -1029,8 +1097,11 @@ public final class CADatabaseItemsSearchTest
         new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonSetType.IsOverlapping<>(
-          Set.of(new RDottedName("t0"), new RDottedName("t1"))
+        new IsOverlapping<>(
+          Set.of(
+            CATypeRecordIdentifier.of("com.io7m:t0"),
+            CATypeRecordIdentifier.of("com.io7m:t1")
+          )
         ),
         new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
@@ -1046,9 +1117,9 @@ public final class CADatabaseItemsSearchTest
         this.itemGet.execute(summary.id()).orElseThrow();
 
       final var t0present =
-        item.types().contains(new RDottedName("t0"));
+        item.types().contains(CATypeRecordIdentifier.of("com.io7m:t0"));
       final var t1present =
-        item.types().contains(new RDottedName("t1"));
+        item.types().contains(CATypeRecordIdentifier.of("com.io7m:t1"));
 
       assertTrue(t0present || t1present);
     }
@@ -1078,7 +1149,10 @@ public final class CADatabaseItemsSearchTest
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonSetType.IsEqualTo<>(
-          Set.of(new RDottedName("t0"), new RDottedName("t1"))
+          Set.of(
+            CATypeRecordIdentifier.of("com.io7m:t0"),
+            CATypeRecordIdentifier.of("com.io7m:t1")
+          )
         ),
         new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
@@ -1094,9 +1168,9 @@ public final class CADatabaseItemsSearchTest
         this.itemGet.execute(summary.id()).orElseThrow();
 
       final var t0present =
-        item.types().contains(new RDottedName("t0"));
+        item.types().contains(CATypeRecordIdentifier.of("com.io7m:t0"));
       final var t1present =
-        item.types().contains(new RDottedName("t1"));
+        item.types().contains(CATypeRecordIdentifier.of("com.io7m:t1"));
 
       assertTrue(t0present && t1present);
     }
@@ -1118,14 +1192,17 @@ public final class CADatabaseItemsSearchTest
     final var rng = new Random(1000L);
 
     final var type0 =
-      new CATypeRecord(P,
-                       new RDottedName("t0"), "A type.", Map.of());
+      new CATypeRecord(
+        CATypeRecordIdentifier.of("com.io7m:t0"),
+        "A type.",
+        Map.of()
+      );
     final var type1 =
-      new CATypeRecord(P,
-                       new RDottedName("t1"), "A type.", Map.of());
-
-    this.typePut.execute(type0);
-    this.typePut.execute(type1);
+      new CATypeRecord(
+        CATypeRecordIdentifier.of("com.io7m:t1"),
+        "A type.",
+        Map.of()
+      );
 
     for (int index = 0; index < 500; ++index) {
       final var thisName = new ArrayList<String>();
@@ -1149,8 +1226,13 @@ public final class CADatabaseItemsSearchTest
         final var metaValue =
           thisName.get(metaIndex);
         final var metaName =
-          new RDottedName(metaValue.substring(0, 1));
-        meta.add(new CAMetadataType.Text(metaName, metaValue));
+          metaValue.substring(0, 1);
+        meta.add(
+          new Text(
+            CATypeRecordFieldIdentifier.of("com.io7m:x." + metaName),
+            metaValue
+          )
+        );
 
         /*
          * Assign some types.
@@ -1210,8 +1292,8 @@ public final class CADatabaseItemsSearchTest
         new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonSetType.Anything<>(),
-        new CAComparisonExactType.IsEqualTo<>(serial),
+        new Anything<>(),
+        new IsEqualTo<>(serial),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -1265,8 +1347,8 @@ public final class CADatabaseItemsSearchTest
         new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonSetType.Anything<>(),
-        new CAComparisonExactType.IsNotEqualTo<>(serial0),
+        new Anything<>(),
+        new IsNotEqualTo<>(serial0),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100

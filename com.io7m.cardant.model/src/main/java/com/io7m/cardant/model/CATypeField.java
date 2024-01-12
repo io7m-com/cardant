@@ -17,8 +17,6 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.lanark.core.RDottedName;
-
 import java.util.Objects;
 
 /**
@@ -31,7 +29,7 @@ import java.util.Objects;
  */
 
 public record CATypeField(
-  RDottedName name,
+  CATypeRecordFieldIdentifier name,
   String description,
   CATypeScalarType type,
   boolean isRequired)

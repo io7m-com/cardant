@@ -24,9 +24,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemMetadataRemove;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBLists;
 import com.io7m.cedarbridge.runtime.convenience.CBSets;
-import com.io7m.lanark.core.RDottedName;
 
-import java.util.stream.Collectors;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordFieldIdentifier.TYPE_RECORD_FIELD_IDENTIFIER;
 
 /**
  * A validator.
@@ -47,11 +46,9 @@ public enum CAUVCommandItemMetadataRemove
   {
     return new CAI1CommandItemMetadataRemove(
       new CBUUID(m.item().id()),
-      CBLists.ofCollectionString(
-        m.metadataNames()
-          .stream()
-          .map(RDottedName::value)
-          .toList()
+      CBLists.ofCollection(
+        m.metadataNames(),
+        TYPE_RECORD_FIELD_IDENTIFIER::convertToWire
       )
     );
   }
@@ -62,10 +59,10 @@ public enum CAUVCommandItemMetadataRemove
   {
     return new CAICommandItemMetadataRemove(
       new CAItemID(m.fieldItemId().value()),
-      CBSets.toSetString(m.fieldMetadatas())
-        .stream()
-        .map(RDottedName::new)
-        .collect(Collectors.toUnmodifiableSet())
+      CBSets.toSet(
+        m.fieldMetadatas(),
+        TYPE_RECORD_FIELD_IDENTIFIER::convertFromWire
+      )
     );
   }
 }

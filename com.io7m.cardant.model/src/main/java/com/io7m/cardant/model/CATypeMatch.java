@@ -18,7 +18,6 @@
 package com.io7m.cardant.model;
 
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
-import com.io7m.lanark.core.RDottedName;
 
 import java.util.Objects;
 
@@ -29,7 +28,7 @@ import java.util.Objects;
  */
 
 public record CATypeMatch(
-  CAComparisonSetType<RDottedName> expression)
+  CAComparisonSetType<CATypeRecordIdentifier> expression)
 {
   /**
    * A wrapper for a set comparison.

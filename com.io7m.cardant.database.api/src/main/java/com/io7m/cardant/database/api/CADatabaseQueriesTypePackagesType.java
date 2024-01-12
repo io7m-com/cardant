@@ -46,17 +46,6 @@ public sealed interface CADatabaseQueriesTypePackagesType
   }
 
   /**
-   * Set the version of a type package.
-   */
-
-  non-sealed interface TypePackageSetVersionType
-    extends CADatabaseQueryType<CATypePackageIdentifier, CADatabaseUnit>,
-    CADatabaseQueriesTypePackagesType
-  {
-
-  }
-
-  /**
    * Uninstall a type package.
    */
 

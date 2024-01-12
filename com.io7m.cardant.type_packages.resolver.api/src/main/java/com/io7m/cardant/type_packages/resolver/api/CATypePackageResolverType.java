@@ -18,12 +18,16 @@
 package com.io7m.cardant.type_packages.resolver.api;
 
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.lanark.core.RDottedName;
+import com.io7m.verona.core.Version;
 import com.io7m.verona.core.VersionRange;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -40,9 +44,23 @@ public interface CATypePackageResolverType
    * @return The type, if any
    */
 
-  Optional<CATypeScalarType> findTypeScalar(
-    RDottedName name
-  );
+  default Optional<CATypeScalarType> findTypeScalar(
+    final CATypeScalarIdentifier name)
+  {
+    Objects.requireNonNull(name, "name");
+
+    final var versionRangeMax =
+      new VersionRange(
+        Version.of(0, 0, 0),
+        true,
+        Version.of(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE),
+        true
+      );
+
+    return this.findTypePackageId(name.packageName(), versionRangeMax)
+      .flatMap(this::findTypePackage)
+      .flatMap(r -> Optional.ofNullable(r.scalarTypes().get(name)));
+  }
 
   /**
    * Find the record type with the given fully qualified name.
@@ -52,9 +70,23 @@ public interface CATypePackageResolverType
    * @return The type, if any
    */
 
-  Optional<CATypeRecord> findTypeRecord(
-    RDottedName name
-  );
+  default Optional<CATypeRecord> findTypeRecord(
+    final CATypeRecordIdentifier name)
+  {
+    Objects.requireNonNull(name, "name");
+
+    final var versionRangeMax =
+      new VersionRange(
+        Version.of(0, 0, 0),
+        true,
+        Version.of(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE),
+        true
+      );
+
+    return this.findTypePackageId(name.packageName(), versionRangeMax)
+      .flatMap(this::findTypePackage)
+      .flatMap(r -> Optional.ofNullable(r.recordTypes().get(name)));
+  }
 
   /**
    * Find a package with the given name that satisfies the given version range.

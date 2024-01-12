@@ -22,7 +22,7 @@ import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAMediaTypeMatch;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CANameMatchFuzzy;
 import com.io7m.cardant.model.CATypeMatch;
 import com.io7m.cardant.shell.CAShellValueConverters;
 import com.io7m.cardant.strings.CAStrings;
@@ -59,13 +59,13 @@ public final class CAConverterTests
 
   @Property
   public void testNameMatch(
-    final @ForAll CANameMatch match)
+    final @ForAll CANameMatchFuzzy match)
     throws Exception
   {
     final var d =
       CAShellValueConverters.create(CAStrings.create(Locale.ROOT));
     final var c =
-      d.converterFor(CANameMatch.class)
+      d.converterFor(CANameMatchFuzzy.class)
         .orElseThrow();
 
     assertEquals(

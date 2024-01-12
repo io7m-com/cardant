@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.lanark.core.RDottedName;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
@@ -38,9 +36,9 @@ public record CALocation(
   CALocationID id,
   Optional<CALocationID> parent,
   String name,
-  SortedMap<RDottedName, CAMetadataType> metadata,
+  SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
-  SortedSet<RDottedName> types)
+  SortedSet<CATypeRecordIdentifier> types)
   implements CAInventoryObjectType<CALocationSummary>
 {
   /**

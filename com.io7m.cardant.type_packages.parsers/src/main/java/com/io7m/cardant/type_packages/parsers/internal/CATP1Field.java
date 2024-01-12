@@ -19,8 +19,11 @@ package com.io7m.cardant.type_packages.parsers.internal;
 
 import com.io7m.blackthorne.core.BTElementHandlerType;
 import com.io7m.blackthorne.core.BTElementParsingContextType;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.type_package.CANameUnqualified;
 import com.io7m.cardant.model.type_package.CATypeFieldDeclaration;
+import com.io7m.lanark.core.RDottedName;
 import org.xml.sax.Attributes;
 
 import java.util.Objects;
@@ -32,6 +35,7 @@ import java.util.Objects;
 public final class CATP1Field
   implements BTElementHandlerType<Object, CATypeFieldDeclaration>
 {
+  private final CATypeRecordIdentifier typeRecord;
   private CANameUnqualified name;
   private String description;
   private CANameUnqualified type;
@@ -41,12 +45,15 @@ public final class CATP1Field
    * A parser.
    *
    * @param context The parse context
+   * @param inTypeRecord The record type that owns the field
    */
 
   public CATP1Field(
-    final BTElementParsingContextType context)
+    final BTElementParsingContextType context,
+    final CATypeRecordIdentifier inTypeRecord)
   {
-
+    this.typeRecord =
+      Objects.requireNonNull(inTypeRecord, "typeRecord");
   }
 
   @Override
@@ -77,7 +84,10 @@ public final class CATP1Field
     return new CATypeFieldDeclaration(
       this.name,
       this.description,
-      this.type,
+      new CATypeScalarIdentifier(
+        this.typeRecord.packageName(),
+        new RDottedName(this.type.value())
+      ),
       this.required
     );
   }

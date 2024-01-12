@@ -19,7 +19,7 @@ package com.io7m.cardant.type_packages.parsers.internal;
 
 import com.io7m.blackthorne.core.BTElementHandlerType;
 import com.io7m.blackthorne.core.BTElementParsingContextType;
-import com.io7m.cardant.model.type_package.CANameQualified;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.type_package.CANameUnqualified;
 import com.io7m.cardant.model.type_package.CATypeFieldDeclaration;
 import com.io7m.lanark.core.RDottedName;
@@ -36,8 +36,9 @@ public final class CATP1FieldWithExternalType
 {
   private CANameUnqualified name;
   private String description;
-  private CANameQualified type;
+  private CANameUnqualified typeName;
   private boolean required;
+  private RDottedName typePackageName;
 
   /**
    * A parser.
@@ -48,7 +49,8 @@ public final class CATP1FieldWithExternalType
   public CATP1FieldWithExternalType(
     final BTElementParsingContextType context)
   {
-
+    this.typeName =
+      new CANameUnqualified("x");
   }
 
   @Override
@@ -60,8 +62,12 @@ public final class CATP1FieldWithExternalType
       new CANameUnqualified(attributes.getValue("Name"));
     this.description =
       attributes.getValue("Description");
-    this.type =
-      new CANameQualified(new RDottedName(attributes.getValue("Type")));
+
+    this.typePackageName =
+      new RDottedName(attributes.getValue("Package"));
+    this.typeName =
+      new CANameUnqualified(attributes.getValue("Type"));
+
     this.required =
       Boolean.parseBoolean(
         Objects.requireNonNullElse(
@@ -78,7 +84,10 @@ public final class CATP1FieldWithExternalType
     return new CATypeFieldDeclaration(
       this.name,
       this.description,
-      this.type,
+      new CATypeScalarIdentifier(
+        this.typePackageName,
+        new RDottedName(this.typeName.value())
+      ),
       this.required
     );
   }

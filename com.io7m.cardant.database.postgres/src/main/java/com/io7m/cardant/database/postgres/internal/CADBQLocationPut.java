@@ -27,6 +27,7 @@ import com.io7m.cardant.model.CALocationSummary;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jooq.DSLContext;
 import org.jooq.Query;
+import org.jooq.impl.DSL;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -39,7 +40,8 @@ import static com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataP
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorCyclic;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_NAME;
@@ -131,16 +133,23 @@ public final class CADBQLocationPut
     );
 
     for (final var type : location.types()) {
+      final var matches =
+        DSL.and(
+          METADATA_TYPES.MT_PACKAGE.eq(METADATA_TYPE_PACKAGES.MTP_ID),
+          METADATA_TYPES.MT_NAME.eq(type.typeName().value())
+        );
+
+      final var typeSelect =
+        context.select(METADATA_TYPES.MT_ID)
+          .from(METADATA_TYPES)
+          .join(METADATA_TYPE_PACKAGES)
+          .on(METADATA_TYPES.MT_PACKAGE.eq(METADATA_TYPE_PACKAGES.MTP_ID))
+          .where(matches);
+
       batches.add(
         context.insertInto(LOCATION_TYPES)
-          .set(
-            LOCATION_TYPES.LT_LOCATION,
-            locationId)
-          .set(
-            LOCATION_TYPES.LT_TYPE,
-            context.select(METADATA_TYPES_RECORDS.MTR_ID)
-              .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(type.value()))
-          )
+          .set(LOCATION_TYPES.LT_LOCATION, locationId)
+          .set(LOCATION_TYPES.LT_TYPE, typeSelect)
       );
     }
 

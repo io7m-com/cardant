@@ -35,7 +35,8 @@ import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
  * @see CAICommandLocationTypesAssign
  */
 
-public final class CAICmdLocationTypesAssign extends CAICmdAbstract<CAICommandLocationTypesAssign>
+public final class CAICmdLocationTypesAssign
+  extends CAICmdAbstract<CAICommandLocationTypesAssign>
 {
   /**
    * @see CAICommandLocationTypesAssign

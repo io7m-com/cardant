@@ -193,6 +193,85 @@ public final class CADBComparisons
    * @return An exact match condition
    */
 
+  public static Condition createSetMatchQueryInteger(
+    final CAComparisonSetType<Integer> query,
+    final TableField<org.jooq.Record, Integer[]> field)
+  {
+    switch (query) {
+      case CAComparisonSetType.Anything<Integer> e -> {
+        return DSL.trueCondition();
+      }
+      case final CAComparisonSetType.IsEqualTo<Integer> isEqualTo -> {
+        final var set = isEqualTo.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "(cast (? as integer[]) <@ cast (? as integer[])) AND (cast (? as integer[]) @> cast (? as integer[]))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsNotEqualTo<Integer> isNotEqualTo -> {
+        final var set = isNotEqualTo.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "NOT ((cast (? as integer[]) <@ cast (? as integer[])) AND (cast (? as integer[]) @> cast (? as integer[])))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsSubsetOf<Integer> isSubsetOf -> {
+        final var set = isSubsetOf.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as integer[]) <@ cast (? as integer[])",
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsSupersetOf<Integer> isSupersetOf -> {
+        final var set = isSupersetOf.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as integer[]) @> cast (? as integer[])",
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsOverlapping<Integer> isOverlapping -> {
+        final var set = isOverlapping.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as integer[]) && cast (? as integer[])",
+          field,
+          DSL.array(values)
+        );
+      }
+    }
+  }
+  
+  /**
+   * Create a set match expression.
+   *
+   * @param query The query
+   * @param field The array-typed field
+   *
+   * @return An exact match condition
+   */
+
   public static Condition createSetMatchQueryLong(
     final CAComparisonSetType<Long> query,
     final TableField<org.jooq.Record, Long[]> field)

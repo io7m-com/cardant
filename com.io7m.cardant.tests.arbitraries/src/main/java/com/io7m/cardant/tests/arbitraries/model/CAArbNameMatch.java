@@ -17,19 +17,19 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CANameMatchFuzzy;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbNameMatch extends CAArbAbstract<CANameMatch>
+public final class CAArbNameMatch extends CAArbAbstract<CANameMatchFuzzy>
 {
   public CAArbNameMatch()
   {
     super(
-      CANameMatch.class,
+      CANameMatchFuzzy.class,
       () -> {
         return CAArbComparisons.fuzzy(Arbitraries.strings())
-          .map(CANameMatch::new);
+          .map(CANameMatchFuzzy::new);
       }
     );
   }

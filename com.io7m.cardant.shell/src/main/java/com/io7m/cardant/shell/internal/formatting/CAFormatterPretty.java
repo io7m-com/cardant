@@ -32,10 +32,10 @@ import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CATypePackageSummary;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
 import com.io7m.tabla.core.TColumnWidthConstraintMaximumAtMost;
@@ -227,7 +227,7 @@ public final class CAFormatterPretty implements CAFormatterType
   }
 
   private void formatMetadata(
-    final SortedMap<RDottedName, CAMetadataType> metadata)
+    final SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata)
     throws TException
   {
     if (!metadata.isEmpty()) {
@@ -242,7 +242,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
       for (final var entry : metadata.entrySet()) {
         tableBuilder.addRow()
-          .addCell(entry.getKey().value())
+          .addCell(entry.getKey().toString())
           .addCell(entry.getValue().valueString());
       }
 
@@ -416,7 +416,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     for (final var type : types) {
       tableBuilder.addRow()
-        .addCell(type.name().value())
+        .addCell(type.name().toString())
         .addCell(type.description())
         .addCell(type.kind().name())
         .addCell(type.showConstraint());
@@ -453,7 +453,7 @@ public final class CAFormatterPretty implements CAFormatterType
           .declareColumn("Description", atLeastContent());
 
       tableBuilder.addRow()
-        .addCell(type.name().value())
+        .addCell(type.name().toString())
         .addCell(type.description());
 
       this.renderTable(tableBuilder.build());
@@ -475,9 +475,9 @@ public final class CAFormatterPretty implements CAFormatterType
 
       for (final var field : fieldsSorted) {
         tableBuilder.addRow()
-          .addCell(field.name().value())
+          .addCell(field.name().toString())
           .addCell(field.description())
-          .addCell(field.type().name().value());
+          .addCell(field.type().name().toString());
       }
 
       this.renderTable(tableBuilder.build());
@@ -508,7 +508,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     for (final var type : types.items()) {
       tableBuilder.addRow()
-        .addCell(type.name().value())
+        .addCell(type.name().toString())
         .addCell(type.description());
     }
 

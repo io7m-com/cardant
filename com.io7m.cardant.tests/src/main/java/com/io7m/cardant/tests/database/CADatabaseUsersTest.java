@@ -134,7 +134,6 @@ public final class CADatabaseUsersTest
     assertEquals(user, get.execute(user.userId()).orElseThrow());
   }
 
-
   /**
    * Nonexistent users are nonexistent.
    *

@@ -66,8 +66,6 @@
     <module>com.io7m.cardant.type_packages.parsers</module>
     <module>com.io7m.cardant.type_packages.resolver.api</module>
     <module>com.io7m.cardant.type_packages.standard</module>
-    <module>com.io7m.cardant.type_packages.upgrades.api</module>
-    <module>com.io7m.cardant.type_packages.upgrades</module>
   </modules>
 
   <properties>

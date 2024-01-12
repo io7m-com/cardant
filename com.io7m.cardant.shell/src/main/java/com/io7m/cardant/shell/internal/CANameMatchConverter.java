@@ -19,9 +19,9 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CANameMatchFuzzy;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
-import com.io7m.cardant.parsers.CANameMatchExpressions;
+import com.io7m.cardant.parsers.CANameMatchFuzzyExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterType;
@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 
 public final class CANameMatchConverter
-  implements QValueConverterType<CANameMatch>
+  implements QValueConverterType<CANameMatchFuzzy>
 {
   private final CAStrings strings;
 
@@ -50,12 +50,12 @@ public final class CANameMatchConverter
   }
 
   @Override
-  public CANameMatch convertFromString(
+  public CANameMatchFuzzy convertFromString(
     final String text)
     throws QException
   {
     try {
-      return new CANameMatchExpressions(this.strings).nameMatch(text);
+      return new CANameMatchFuzzyExpressions(this.strings).nameMatch(text);
     } catch (final CAException e) {
       throw QException.adapt(e, CAErrorCode::id);
     }
@@ -63,11 +63,11 @@ public final class CANameMatchConverter
 
   @Override
   public String convertToString(
-    final CANameMatch value)
+    final CANameMatchFuzzy value)
     throws QException
   {
     try {
-      return new CANameMatchExpressions(this.strings)
+      return new CANameMatchFuzzyExpressions(this.strings)
         .nameMatchSerializeToString(value);
     } catch (final CAException e) {
       throw QException.adapt(e, CAErrorCode::id);
@@ -75,9 +75,9 @@ public final class CANameMatchConverter
   }
 
   @Override
-  public CANameMatch exampleValue()
+  public CANameMatchFuzzy exampleValue()
   {
-    return new CANameMatch(
+    return new CANameMatchFuzzy(
       new CAComparisonFuzzyType.IsEqualTo<>("x")
     );
   }
@@ -89,8 +89,8 @@ public final class CANameMatchConverter
   }
 
   @Override
-  public Class<CANameMatch> convertedClass()
+  public Class<CANameMatchFuzzy> convertedClass()
   {
-    return CANameMatch.class;
+    return CANameMatchFuzzy.class;
   }
 }

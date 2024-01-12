@@ -17,10 +17,9 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -34,8 +33,7 @@ public final class CAArbTypeScalarTime
     super(
       CATypeScalarType.Time.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CATypePackageIdentifier.class),
-        Arbitraries.defaultFor(RDottedName.class),
+        Arbitraries.defaultFor(CATypeScalarIdentifier.class),
         Arbitraries.strings(),
         Arbitraries.defaultFor(OffsetDateTime.class),
         Arbitraries.defaultFor(OffsetDateTime.class)

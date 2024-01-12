@@ -17,35 +17,28 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
-import com.io7m.lanark.core.RDottedName;
-
 import java.util.Objects;
 
 /**
  * A type declaration summary.
  *
- * @param packageIdentifier The package identifier
  * @param name              The type name
  * @param description       The description
  */
 
 public record CATypeRecordSummary(
-  CATypePackageIdentifier packageIdentifier,
-  RDottedName name,
+  CATypeRecordIdentifier name,
   String description)
 {
   /**
    * A type declaration summary.
    *
-   * @param packageIdentifier The package identifier
    * @param name              The type name
    * @param description       The description
    */
 
   public CATypeRecordSummary
   {
-    Objects.requireNonNull(packageIdentifier, "packageIdentifier");
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(description, "description");
   }

@@ -74,14 +74,6 @@ import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageUninstall;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageUpgrade;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordGet;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchBegin;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchNext;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchPrevious;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarGet;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchBegin;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchNext;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdVersion;
 import com.io7m.cardant.shell.internal.CAShellLoginTracker;
 import com.io7m.cardant.shell.internal.CAShellOptions;
@@ -212,14 +204,6 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdTypePackageSearchPrevious(services),
         new CAShellCmdTypePackageUninstall(services),
         new CAShellCmdTypePackageUpgrade(services),
-        new CAShellCmdTypeRecordGet(services),
-        new CAShellCmdTypeRecordSearchBegin(services),
-        new CAShellCmdTypeRecordSearchNext(services),
-        new CAShellCmdTypeRecordSearchPrevious(services),
-        new CAShellCmdTypeScalarGet(services),
-        new CAShellCmdTypeScalarSearchBegin(services),
-        new CAShellCmdTypeScalarSearchNext(services),
-        new CAShellCmdTypeScalarSearchPrevious(services),
         new CAShellCmdVersion(services)
       );
 

@@ -18,8 +18,8 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -30,7 +30,7 @@ public final class CAArbMetadataText extends CAArbAbstract<CAMetadataType.Text>
     super(
       CAMetadataType.Text.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(RDottedName.class),
+        Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class),
         Arbitraries.strings()
       ).as(CAMetadataType.Text::new)
     );

@@ -424,13 +424,13 @@ public final class CAShellIT
     w.println("item-create --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
               "--name 'Battery'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--metadata '[integer voltage 9]'");
+              "--metadata '[integer x:t.voltage 9]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--metadata '[integer size 23]'");
+              "--metadata '[integer x:t.size 23]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--metadata '[integer gauge 20]'");
+              "--metadata '[integer x:t.gauge 20]'");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--key gauge");
+              "--key x:t.gauge");
     w.println(
       "item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
@@ -615,76 +615,6 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellTypeScalarsWorkflow(
-    final @TempDir Path directory)
-    throws Exception
-  {
-    this.startShell();
-
-    final var file =
-      CATestDirectories.resourceOf(
-        CAShellIT.class,
-        directory,
-        "tpack2.xml"
-      );
-
-    final var w = this.terminal.sendInputToTerminalWriter();
-    w.println("set --terminate-on-errors true");
-
-    w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println("type-package-install --file '%s'".formatted(file));
-    w.println("type-scalar-get --name com.io7m.example.t0");
-    w.println("type-scalar-search-begin");
-    w.println("type-scalar-search-next");
-    w.println("type-scalar-search-previous");
-    w.println("set --formatter RAW");
-    w.println("type-scalar-search-begin");
-    w.println("type-scalar-search-next");
-    w.println("type-scalar-search-previous");
-    w.println("logout");
-    w.flush();
-    w.close();
-
-    this.waitForShell();
-    assertEquals(0, this.exitCode);
-  }
-
-  @Test
-  public void testShellTypeDeclarationWorkflow(
-    final @TempDir Path directory)
-    throws Exception
-  {
-    this.startShell();
-
-    final var file =
-      CATestDirectories.resourceOf(
-        CAShellIT.class,
-        directory,
-        "tpack2.xml"
-      );
-
-    final var w = this.terminal.sendInputToTerminalWriter();
-    w.println("set --terminate-on-errors true");
-
-    w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println("type-package-install --file '%s'".formatted(file));
-    w.println("type-record-get --name com.io7m.example.t5");
-    w.println("type-record-search-begin");
-    w.println("type-record-search-next");
-    w.println("type-record-search-previous");
-    w.println("set --formatter RAW");
-    w.println("type-record-search-begin");
-    w.println("type-record-search-next");
-    w.println("type-record-search-previous");
-    w.println("logout");
-    w.flush();
-    w.close();
-
-    this.waitForShell();
-    assertEquals(0, this.exitCode);
-  }
-
-  @Test
   public void testShellAuditWorkflow(
     final @TempDir Path directory)
     throws Exception
@@ -782,9 +712,9 @@ public final class CAShellIT
       "item-create --id %s --name Battery%n",
       itemId
     );
-    w.printf("item-metadata-put --id %s --metadata '[Money com.io7m.example.t5.q 0 USD]'%n", itemId);
-    w.printf("item-types-assign --id %s --type com.io7m.example.t5%n", itemId);
-    w.printf("item-types-revoke --id %s --type com.io7m.example.t5%n", itemId);
+    w.printf("item-metadata-put --id %s --metadata '[Money com.io7m.example:t5.q 0 USD]'%n", itemId);
+    w.printf("item-types-assign --id %s --type com.io7m.example:t5%n", itemId);
+    w.printf("item-types-revoke --id %s --type com.io7m.example:t5%n", itemId);
 
     w.println("set --formatter RAW");
     w.println("type-package-search-begin");

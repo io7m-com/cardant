@@ -71,15 +71,7 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   CAICommandTypePackageSearchNext,
   CAICommandTypePackageSearchPrevious,
   CAICommandTypePackageUninstall,
-  CAICommandTypePackageUpgrade,
-  CAICommandTypeRecordGet,
-  CAICommandTypeRecordSearchBegin,
-  CAICommandTypeRecordSearchNext,
-  CAICommandTypeRecordSearchPrevious,
-  CAICommandTypeScalarGet,
-  CAICommandTypeScalarSearchBegin,
-  CAICommandTypeScalarSearchNext,
-  CAICommandTypeScalarSearchPrevious
+  CAICommandTypePackageUpgrade
 {
   /**
    * @return The response class associated with this command (excluding the

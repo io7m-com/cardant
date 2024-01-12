@@ -18,8 +18,12 @@
 package com.io7m.cardant.tests.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.model.CAMoney;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.parsers.CAConstraintExpressions;
 import com.io7m.cardant.parsers.CADescriptionMatchExpressions;
 import com.io7m.cardant.parsers.CAItemLocationMatchExpressions;
@@ -27,7 +31,7 @@ import com.io7m.cardant.parsers.CAItemSerialMatchExpressions;
 import com.io7m.cardant.parsers.CAMediaTypeMatchExpressions;
 import com.io7m.cardant.parsers.CAMetadataExpressions;
 import com.io7m.cardant.parsers.CAMetadataMatchExpressions;
-import com.io7m.cardant.parsers.CANameMatchExpressions;
+import com.io7m.cardant.parsers.CANameMatchFuzzyExpressions;
 import com.io7m.cardant.parsers.CATypeMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.lanark.core.RDottedName;
@@ -37,7 +41,10 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -73,9 +80,9 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-      new CAConstraintExpressions(this.strings)
-        .monetaryRange("[24.0]");
-    });
+        new CAConstraintExpressions(this.strings)
+          .monetaryRange("[24.0]");
+      });
     assertEquals(errorParse(), ex.errorCode());
   }
 
@@ -198,10 +205,12 @@ public final class CAParsersTest
   {
     final var r =
       new CAMetadataExpressions(this.strings)
-        .metadataParse("[integer x 23]");
+        .metadataParse("[integer com.io7m:t.x 23]");
 
     assertEquals(
-      new CAMetadataType.Integral(new RDottedName("x"), 23L),
+      new CAMetadataType.Integral(
+        CATypeRecordFieldIdentifier.of("com.io7m:t.x"),
+        23L),
       r
     );
   }
@@ -211,36 +220,36 @@ public final class CAParsersTest
   {
     return Stream.of(
       "[real]",
-      "[real x y]",
-      "[real x y z]",
-      "[real x []]",
+      "[real com.io7m:t.x y]",
+      "[real com.io7m:t.x y z]",
+      "[real com.io7m:t.x []]",
       "[real [] 23]",
       "[integer]",
-      "[integer x y]",
-      "[integer x y z]",
-      "[integer x []]",
+      "[integer com.io7m:t.x y]",
+      "[integer com.io7m:t.x y z]",
+      "[integer com.io7m:t.x []]",
       "[integer [] 23]",
       "[text]",
-      "[text x]",
-      "[text x y z]",
-      "[text x []]",
+      "[text com.io7m:t.x]",
+      "[text com.io7m:t.x y z]",
+      "[text com.io7m:t.x []]",
       "[text [] y]",
       "[money]",
-      "[money x]",
-      "[money x y z]",
-      "[money x y []]",
-      "[money x 23 []]",
-      "[money x y z w]",
-      "[money x [] z]",
-      "[money x 23 z]",
-      "[money x 23 24]",
+      "[money com.io7m:t.x]",
+      "[money com.io7m:t.x y z]",
+      "[money com.io7m:t.x y []]",
+      "[money com.io7m:t.x 23 []]",
+      "[money com.io7m:t.x y z w]",
+      "[money com.io7m:t.x [] z]",
+      "[money com.io7m:t.x 23 z]",
+      "[money com.io7m:t.x 23 24]",
       "[time]",
-      "[time x]",
-      "[time x y z]",
-      "[time x []]",
-      "[time x y]",
+      "[time com.io7m:t.x]",
+      "[time com.io7m:t.x y z]",
+      "[time com.io7m:t.x []]",
+      "[time com.io7m:t.x y]",
       "[time [] y]",
-      "[what x y]"
+      "[what com.io7m:t.x y]"
     ).map(text -> {
       return dynamicTest("testMetaErrors_%s".formatted(text), () -> {
         final var ex =
@@ -257,11 +266,11 @@ public final class CAParsersTest
   public Stream<DynamicTest> testMetaParseIdentity()
   {
     return Stream.of(
-      "[real x 23.0]",
-      "[time x 2023-07-23T14:26:46+00:00]",
-      "[money x 23.0 EUR]",
-      "[integer x 23]",
-      "[text x 2023-07-23T14:26:46+00:00]"
+      "[real com.io7m:t.x 23.0]",
+      "[time com.io7m:t.x 2023-07-23T14:26:46+00:00]",
+      "[money com.io7m:t.x 23.0 EUR]",
+      "[integer com.io7m:t.x 23]",
+      "[text com.io7m:t.x 2023-07-23T14:26:46+00:00]"
     ).map(text -> {
       return dynamicTest("testMetaParseIdentity_%s".formatted(text), () -> {
         final var p0 =
@@ -285,10 +294,12 @@ public final class CAParsersTest
   {
     final var r =
       new CAMetadataExpressions(this.strings)
-        .metadataParse("[integer x 23]");
+        .metadataParse("[integer com.io7m:t.x 23]");
 
     assertEquals(
-      new CAMetadataType.Integral(new RDottedName("x"), 23),
+      new CAMetadataType.Integral(
+        CATypeRecordFieldIdentifier.of("com.io7m:t.x"),
+        23),
       r
     );
   }
@@ -299,10 +310,12 @@ public final class CAParsersTest
   {
     final var r =
       new CAMetadataExpressions(this.strings)
-        .metadataParse("[real x 23.0]");
+        .metadataParse("[real com.io7m:t.x 23.0]");
 
     assertEquals(
-      new CAMetadataType.Real(new RDottedName("x"), 23.0),
+      new CAMetadataType.Real(
+        CATypeRecordFieldIdentifier.of("com.io7m:t.x"),
+        23.0),
       r
     );
   }
@@ -313,11 +326,11 @@ public final class CAParsersTest
   {
     final var r =
       new CAMetadataExpressions(this.strings)
-        .metadataParse("[time x 2023-07-23T14:26:46+00:00]");
+        .metadataParse("[time com.io7m:t.x 2023-07-23T14:26:46+00:00]");
 
     assertEquals(
       new CAMetadataType.Time(
-        new RDottedName("x"),
+        CATypeRecordFieldIdentifier.of("com.io7m:t.x"),
         OffsetDateTime.parse("2023-07-23T14:26:46+00:00")
       ),
       r
@@ -330,11 +343,11 @@ public final class CAParsersTest
   {
     final var r =
       new CAMetadataExpressions(this.strings)
-        .metadataParse("[text x 2023-07-23T14:26:46+00:00]");
+        .metadataParse("[text com.io7m:t.x 2023-07-23T14:26:46+00:00]");
 
     assertEquals(
       new CAMetadataType.Text(
-        new RDottedName("x"),
+        CATypeRecordFieldIdentifier.of("com.io7m:t.x"),
         "2023-07-23T14:26:46+00:00"
       ),
       r
@@ -347,50 +360,16 @@ public final class CAParsersTest
   {
     final var r =
       new CAMetadataExpressions(this.strings)
-        .metadataParse("[money x 23.0 EUR]");
+        .metadataParse("[money com.io7m:t.x 23.0 EUR]");
 
     assertEquals(
       new CAMetadataType.Monetary(
-        new RDottedName("x"),
+        CATypeRecordFieldIdentifier.of("com.io7m:t.x"),
         CAMoney.money("23.0"),
         CurrencyUnit.EUR
       ),
       r
     );
-  }
-
-  @TestFactory
-  public Stream<DynamicTest> testMetaMatchParseIdentity()
-  {
-    return Stream.of(
-      "anything",
-      "[and anything anything]",
-      "[or anything anything]",
-      "[match with-any-name any-value]",
-      "[match [with-name-equal-to x] any-value]",
-      "[match [with-name-similar-to x] any-value]",
-      "[match with-any-name [within-range-integral 0 100]]",
-      "[match with-any-name [within-range-real 0 100]]",
-      "[match with-any-name [within-range-time 2023-07-23T14:26:46+00:00 2023-07-23T14:26:46+00:00]]",
-      "[match with-any-name [within-range-monetary 0 100]]",
-      "[match with-any-name [with-currency EUR]]",
-      "[match with-any-name [with-text-exact x]]",
-      "[match with-any-name [with-text-search y]]"
-    ).map(text -> {
-      return dynamicTest("testMetaMatchParseIdentity_%s".formatted(text), () -> {
-        final var p0 =
-          new CAMetadataMatchExpressions(this.strings)
-            .metadataMatch(text);
-        final var s =
-          new CAMetadataMatchExpressions(this.strings)
-            .metadataMatchSerializeToString(p0);
-        final var p1 =
-          new CAMetadataMatchExpressions(this.strings)
-            .metadataMatch(s);
-
-        assertEquals(p0, p1);
-      });
-    });
   }
 
   @TestFactory
@@ -463,25 +442,27 @@ public final class CAParsersTest
   {
     return Stream.of(
       "with-any-type",
-      "[with-types-equal-to x y z]",
-      "[with-types-not-equal-to x y z]",
-      "[with-types-overlapping x y z]",
-      "[with-types-subset-of x y z]",
-      "[with-types-superset-of x y z]"
+      "[with-types-equal-to a:x a:y a:z]",
+      "[with-types-not-equal-to a:x a:y a:z]",
+      "[with-types-overlapping a:x a:y a:z]",
+      "[with-types-subset-of a:x a:y a:z]",
+      "[with-types-superset-of a:x a:y a:z]"
     ).map(text -> {
-      return dynamicTest("testTypeMatchParseIdentity_%s".formatted(text), () -> {
-        final var p0 =
-          new CATypeMatchExpressions(this.strings)
-            .typeMatch(text);
-        final var s =
-          new CATypeMatchExpressions(this.strings)
-            .typeMatchSerializeToString(p0);
-        final var p1 =
-          new CATypeMatchExpressions(this.strings)
-            .typeMatch(s);
+      return dynamicTest(
+        "testTypeMatchParseIdentity_%s".formatted(text),
+        () -> {
+          final var p0 =
+            new CATypeMatchExpressions(this.strings)
+              .typeMatch(text);
+          final var s =
+            new CATypeMatchExpressions(this.strings)
+              .typeMatchSerializeToString(p0);
+          final var p1 =
+            new CATypeMatchExpressions(this.strings)
+              .typeMatch(s);
 
-        assertEquals(p0, p1);
-      });
+          assertEquals(p0, p1);
+        });
     });
   }
 
@@ -497,7 +478,7 @@ public final class CAParsersTest
       return dynamicTest("testNameMatchErrors_%s".formatted(text), () -> {
         final var ex =
           assertThrows(CAException.class, () -> {
-            new CANameMatchExpressions(this.strings)
+            new CANameMatchFuzzyExpressions(this.strings)
               .nameMatch(text);
           });
         assertEquals(errorParse(), ex.errorCode());
@@ -515,19 +496,21 @@ public final class CAParsersTest
       "[with-name-not-equal-to x]",
       "[with-name-not-similar-to y]"
     ).map(text -> {
-      return dynamicTest("testNameMatchParseIdentity_%s".formatted(text), () -> {
-        final var p0 =
-          new CANameMatchExpressions(this.strings)
-            .nameMatch(text);
-        final var s =
-          new CANameMatchExpressions(this.strings)
-            .nameMatchSerializeToString(p0);
-        final var p1 =
-          new CANameMatchExpressions(this.strings)
-            .nameMatch(s);
+      return dynamicTest(
+        "testNameMatchParseIdentity_%s".formatted(text),
+        () -> {
+          final var p0 =
+            new CANameMatchFuzzyExpressions(this.strings)
+              .nameMatch(text);
+          final var s =
+            new CANameMatchFuzzyExpressions(this.strings)
+              .nameMatchSerializeToString(p0);
+          final var p1 =
+            new CANameMatchFuzzyExpressions(this.strings)
+              .nameMatch(s);
 
-        assertEquals(p0, p1);
-      });
+          assertEquals(p0, p1);
+        });
     });
   }
 
@@ -564,19 +547,21 @@ public final class CAParsersTest
       "[with-location-exact d1ee2c6e-d032-4a5e-8b1b-97a876a12412]",
       "[with-location-or-descendants 195d8568-370b-4911-83bf-ebaa51d88d43]"
     ).map(text -> {
-      return dynamicTest("testLocationMatchParseIdentity_%s".formatted(text), () -> {
-        final var p0 =
-          new CAItemLocationMatchExpressions(this.strings)
-            .locationMatch(text);
-        final var s =
-          new CAItemLocationMatchExpressions(this.strings)
-            .locationMatchSerializeToString(p0);
-        final var p1 =
-          new CAItemLocationMatchExpressions(this.strings)
-            .locationMatch(s);
+      return dynamicTest(
+        "testLocationMatchParseIdentity_%s".formatted(text),
+        () -> {
+          final var p0 =
+            new CAItemLocationMatchExpressions(this.strings)
+              .locationMatch(text);
+          final var s =
+            new CAItemLocationMatchExpressions(this.strings)
+              .locationMatchSerializeToString(p0);
+          final var p1 =
+            new CAItemLocationMatchExpressions(this.strings)
+              .locationMatch(s);
 
-        assertEquals(p0, p1);
-      });
+          assertEquals(p0, p1);
+        });
     });
   }
 
@@ -611,19 +596,21 @@ public final class CAParsersTest
       "[with-serial-equal-to x]",
       "[with-serial-not-equal-to x]"
     ).map(text -> {
-      return dynamicTest("testSerialMatchParseIdentity_%s".formatted(text), () -> {
-        final var p0 =
-          new CAItemSerialMatchExpressions(this.strings)
-            .serialMatch(text);
-        final var s =
-          new CAItemSerialMatchExpressions(this.strings)
-            .serialMatchSerializeToString(p0);
-        final var p1 =
-          new CAItemSerialMatchExpressions(this.strings)
-            .serialMatch(s);
+      return dynamicTest(
+        "testSerialMatchParseIdentity_%s".formatted(text),
+        () -> {
+          final var p0 =
+            new CAItemSerialMatchExpressions(this.strings)
+              .serialMatch(text);
+          final var s =
+            new CAItemSerialMatchExpressions(this.strings)
+              .serialMatchSerializeToString(p0);
+          final var p1 =
+            new CAItemSerialMatchExpressions(this.strings)
+              .serialMatch(s);
 
-        assertEquals(p0, p1);
-      });
+          assertEquals(p0, p1);
+        });
     });
   }
 
@@ -664,19 +651,21 @@ public final class CAParsersTest
       "[with-mediatype-similar-to x]",
       "[with-mediatype-not-similar-to x]"
     ).map(text -> {
-      return dynamicTest("testMediatypeMatchParseIdentity_%s".formatted(text), () -> {
-        final var p0 =
-          new CAMediaTypeMatchExpressions(this.strings)
-            .mediatypeMatch(text);
-        final var s =
-          new CAMediaTypeMatchExpressions(this.strings)
-            .mediatypeMatchSerializeToString(p0);
-        final var p1 =
-          new CAMediaTypeMatchExpressions(this.strings)
-            .mediatypeMatch(s);
+      return dynamicTest(
+        "testMediatypeMatchParseIdentity_%s".formatted(text),
+        () -> {
+          final var p0 =
+            new CAMediaTypeMatchExpressions(this.strings)
+              .mediatypeMatch(text);
+          final var s =
+            new CAMediaTypeMatchExpressions(this.strings)
+              .mediatypeMatchSerializeToString(p0);
+          final var p1 =
+            new CAMediaTypeMatchExpressions(this.strings)
+              .mediatypeMatch(s);
 
-        assertEquals(p0, p1);
-      });
+          assertEquals(p0, p1);
+        });
     });
   }
 
@@ -696,14 +685,16 @@ public final class CAParsersTest
       "[with-description-similar-to]",
       "[with-description-not-similar-to]"
     ).map(text -> {
-      return dynamicTest("testDescriptionMatchErrors_%s".formatted(text), () -> {
-        final var ex =
-          assertThrows(CAException.class, () -> {
-            new CADescriptionMatchExpressions(this.strings)
-              .descriptionMatch(text);
-          });
-        assertEquals(errorParse(), ex.errorCode());
-      });
+      return dynamicTest(
+        "testDescriptionMatchErrors_%s".formatted(text),
+        () -> {
+          final var ex =
+            assertThrows(CAException.class, () -> {
+              new CADescriptionMatchExpressions(this.strings)
+                .descriptionMatch(text);
+            });
+          assertEquals(errorParse(), ex.errorCode());
+        });
     });
   }
 
@@ -717,18 +708,102 @@ public final class CAParsersTest
       "[with-description-similar-to x]",
       "[with-description-not-similar-to x]"
     ).map(text -> {
-      return dynamicTest("testDescriptionMatchParseIdentity_%s".formatted(text), () -> {
-        final var p0 =
-          new CADescriptionMatchExpressions(this.strings)
-            .descriptionMatch(text);
-        final var s =
-          new CADescriptionMatchExpressions(this.strings)
-            .descriptionMatchSerializeToString(p0);
-        final var p1 =
-          new CADescriptionMatchExpressions(this.strings)
-            .descriptionMatch(s);
+      return dynamicTest(
+        "testDescriptionMatchParseIdentity_%s".formatted(text),
+        () -> {
+          final var p0 =
+            new CADescriptionMatchExpressions(this.strings)
+              .descriptionMatch(text);
+          final var s =
+            new CADescriptionMatchExpressions(this.strings)
+              .descriptionMatchSerializeToString(p0);
+          final var p1 =
+            new CADescriptionMatchExpressions(this.strings)
+              .descriptionMatch(s);
 
-        assertEquals(p0, p1);
+          assertEquals(p0, p1);
+        });
+    });
+  }
+
+  private static List<CAMetadataElementMatchType> metaElementMatches()
+  {
+    final var r = new ArrayList<CAMetadataElementMatchType>();
+
+    for (final var pe : metaPackageMatches()) {
+      for (final var te : metaTypeMatches()) {
+        for (final var fe : metaFieldMatches()) {
+          for (final var v : metaValueMatches()) {
+            final var e0 = new CAMetadataElementMatchType.Specific(pe, te, fe, v);
+            r.add(e0);
+            r.add(new CAMetadataElementMatchType.And(e0, e0));
+            r.add(new CAMetadataElementMatchType.Or(e0, e0));
+          }
+        }
+      }
+    }
+    return List.copyOf(r);
+  }
+
+  private static List<CAMetadataValueMatchType> metaValueMatches()
+  {
+    return List.of(
+      new CAMetadataValueMatchType.TextMatchType.Search("x"),
+      new CAMetadataValueMatchType.MonetaryMatchType.WithCurrency(CurrencyUnit.EUR),
+      new CAMetadataValueMatchType.TextMatchType.ExactTextValue("x"),
+      new CAMetadataValueMatchType.MonetaryMatchType.WithinRange(BigDecimal.ZERO, BigDecimal.TEN),
+      CAMetadataValueMatchType.AnyValue.ANY_VALUE,
+      new CAMetadataValueMatchType.RealMatchType.WithinRange(0.0, 100.0),
+      new CAMetadataValueMatchType.IntegralMatchType.WithinRange(0L, 100L),
+      new CAMetadataValueMatchType.TimeMatchType.WithinRange(
+        OffsetDateTime.now(),
+        OffsetDateTime.now().plusDays(1L)
+      )
+    );
+  }
+
+  private static List<CAComparisonExactType<String>> metaFieldMatches()
+  {
+    return List.of(
+      new CAComparisonExactType.Anything<>(),
+      new CAComparisonExactType.IsEqualTo<>("f"),
+      new CAComparisonExactType.IsNotEqualTo<>("f")
+    );
+  }
+
+  private static List<CAComparisonExactType<String>> metaTypeMatches()
+  {
+    return List.of(
+      new CAComparisonExactType.Anything<>(),
+      new CAComparisonExactType.IsEqualTo<>("t"),
+      new CAComparisonExactType.IsNotEqualTo<>("t")
+    );
+  }
+
+  private static List<CAComparisonExactType<RDottedName>> metaPackageMatches()
+  {
+    return List.of(
+      new CAComparisonExactType.Anything<>(),
+      new CAComparisonExactType.IsEqualTo<>(new RDottedName("x.y")),
+      new CAComparisonExactType.IsNotEqualTo<>(new RDottedName("x.y"))
+    );
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testMetaMatchExhaustiveIdentity()
+  {
+    return metaElementMatches()
+      .stream()
+      .map(e -> {
+      return dynamicTest("testMetaMatchExhaustiveIdentity%s".formatted(e), () -> {
+        final var expressions =
+          new CAMetadataMatchExpressions(this.strings);
+        final var text =
+          expressions.metadataMatchSerializeToString(e);
+        final var r =
+          expressions.metadataMatch(text);
+
+        assertEquals(r, e);
       });
     });
   }

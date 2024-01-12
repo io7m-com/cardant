@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.tests.type_packages;
 
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CANameUnqualified;
 import com.io7m.cardant.model.type_package.CATypeFieldDeclaration;
@@ -127,82 +128,6 @@ public final class CATypePackageCheckersTest
   }
 
   @Test
-  public void testTypeScalarNameInvalid()
-  {
-    final var packDecl =
-      new CATypePackageDeclaration(
-        new CATypePackageIdentifier(
-          new RDottedName("a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a"),
-          Version.of(1, 0, 0)
-        ),
-        "T",
-        Set.of(),
-        Map.of(
-          new CANameUnqualified("x"),
-          new CATypeScalarType.Integral(
-            P,
-            new RDottedName("x"),
-            "X",
-            0L,
-            100L
-          )
-        ),
-        Map.of()
-      );
-
-    final var r =
-      this.checkers.createChecker(this.strings, this.resolver, packDecl)
-        .execute();
-
-    dumpCheckerResult(r);
-
-    final var f =
-      assertInstanceOf(CATypePackageCheckerFailure.class, r);
-
-    {
-      final var e = f.errors().get(0);
-      assertEquals("error-name-qualified-invalid", e.errorCode());
-    }
-  }
-
-  @Test
-  public void testTypeRecordNameInvalid()
-  {
-    final var packDecl =
-      new CATypePackageDeclaration(
-        new CATypePackageIdentifier(
-          new RDottedName("a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a"),
-          Version.of(1, 0, 0)
-        ),
-        "T",
-        Set.of(),
-        Map.of(),
-        Map.of(
-          new CANameUnqualified("x"),
-          new CATypeRecordDeclaration(
-            new CANameUnqualified("x"),
-            "X",
-            Map.of()
-          )
-        )
-      );
-
-    final var r =
-      this.checkers.createChecker(this.strings, this.resolver, packDecl)
-        .execute();
-
-    dumpCheckerResult(r);
-
-    final var f =
-      assertInstanceOf(CATypePackageCheckerFailure.class, r);
-
-    {
-      final var e = f.errors().get(0);
-      assertEquals("error-name-qualified-invalid", e.errorCode());
-    }
-  }
-
-  @Test
   public void testTypeRecordFieldTypeMissing()
   {
     final var packDecl =
@@ -224,7 +149,7 @@ public final class CATypePackageCheckersTest
               new CATypeFieldDeclaration(
                 new CANameUnqualified("f"),
                 "F",
-                new CANameUnqualified("t"),
+                CATypeScalarIdentifier.of("a:t"),
                 true
               )
             )
@@ -261,8 +186,7 @@ public final class CATypePackageCheckersTest
         Map.of(
           new CANameUnqualified("x"),
           new CATypeScalarType.Integral(
-            P,
-            new RDottedName("x"),
+            CATypeScalarIdentifier.of("a:x"),
             "X",
             0L,
             100L
@@ -278,7 +202,7 @@ public final class CATypePackageCheckersTest
               new CATypeFieldDeclaration(
                 new CANameUnqualified("cdfdf4253410dc9627b7ab4687e50f4036eb8a5f125210ca3fbeda989e536afe6c"),
                 "F",
-                new CANameUnqualified("x"),
+                CATypeScalarIdentifier.of("a:x"),
                 true
               )
             )
@@ -310,7 +234,7 @@ public final class CATypePackageCheckersTest
       CATestDirectories.resourceOf(
         CATypePackageCheckersTest.class,
         directory,
-        "tpack0.xml"
+        "tpack2.xml"
       );
 
     final var packDecl =
@@ -329,20 +253,6 @@ public final class CATypePackageCheckersTest
         new CATypePackageIdentifier(
           new RDottedName("com.io7m.other"),
           Version.of(1, 0, 0)
-        )
-      )
-    );
-
-    Mockito.when(this.resolver.findTypeScalar(
-      new RDottedName("com.io7m.exa.t")
-    )).thenReturn(
-      Optional.of(
-        new CATypeScalarType.Integral(
-          P,
-          new RDottedName("com.io7m.exa.t"),
-          "A type",
-          0L,
-          100L
         )
       )
     );

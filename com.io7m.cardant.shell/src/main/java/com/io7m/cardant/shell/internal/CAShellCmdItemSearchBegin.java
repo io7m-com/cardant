@@ -25,7 +25,7 @@ import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSerialMatch;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CANameMatchFuzzy;
 import com.io7m.cardant.model.CATypeMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
@@ -83,14 +83,14 @@ public final class CAShellCmdItemSearchBegin
       CATypeMatch.class
     );
 
-  private static final QParameterNamed1<CANameMatch> NAME_MATCH =
+  private static final QParameterNamed1<CANameMatchFuzzy> NAME_MATCH =
     new QParameterNamed1<>(
       "--name-match",
       List.of(),
       new QConstant(
         "Only include items that have names matching the given expression."),
-      Optional.of(new CANameMatch(new CAComparisonFuzzyType.Anything<>())),
-      CANameMatch.class
+      Optional.of(new CANameMatchFuzzy(new CAComparisonFuzzyType.Anything<>())),
+      CANameMatchFuzzy.class
     );
 
   private static final QParameterNamed1<CADescriptionMatch> DESCRIPTION_MATCH =

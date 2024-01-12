@@ -16,8 +16,8 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -29,7 +29,7 @@ public final class CAArbCommandItemMetadataRemove extends CAArbAbstract<CAIComma
       CAICommandItemMetadataRemove.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(RDottedName.class).set()
+        Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class).set()
       ).as(CAICommandItemMetadataRemove::new)
     );
   }

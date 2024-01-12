@@ -62,11 +62,7 @@ public sealed interface CAIResponseType
   CAIResponseTypePackageInstall,
   CAIResponseTypePackageSearch,
   CAIResponseTypePackageUninstall,
-  CAIResponseTypePackageUpgrade,
-  CAIResponseTypeRecordGet,
-  CAIResponseTypeRecordSearch,
-  CAIResponseTypeScalarGet,
-  CAIResponseTypeScalarSearch
+  CAIResponseTypePackageUpgrade
 {
   /**
    * @return The ID of the request that yielded this response

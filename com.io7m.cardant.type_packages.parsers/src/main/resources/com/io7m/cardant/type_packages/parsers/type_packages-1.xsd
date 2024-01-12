@@ -16,10 +16,10 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:simpleType name="QualifiedNameType">
+  <xsd:simpleType name="PackageNameType">
     <xsd:annotation>
       <xsd:documentation>
-        The type of Lanark dotted names.
+        The type of fully qualified package names.
       </xsd:documentation>
     </xsd:annotation>
 
@@ -43,7 +43,7 @@
   <xsd:element name="PackageInfo">
     <xsd:complexType>
       <xsd:attribute name="Name"
-                     type="p:QualifiedNameType"
+                     type="p:PackageNameType"
                      use="required">
         <xsd:annotation>
           <xsd:documentation>
@@ -120,7 +120,7 @@
       </xsd:sequence>
 
       <xsd:attribute name="Package"
-                     type="p:QualifiedNameType"
+                     type="p:PackageNameType"
                      use="required">
         <xsd:annotation>
           <xsd:documentation>
@@ -435,9 +435,19 @@
 
     <xsd:complexContent>
       <xsd:extension base="p:TypeFieldType">
+        <xsd:attribute name="Package"
+                       use="required"
+                       type="p:PackageNameType">
+          <xsd:annotation>
+            <xsd:documentation>
+              The package containing the target type.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
         <xsd:attribute name="Type"
                        use="required"
-                       type="p:QualifiedNameType">
+                       type="p:UnqualifiedNameType">
           <xsd:annotation>
             <xsd:documentation>
               The scalar type of the field.

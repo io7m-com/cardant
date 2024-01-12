@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import org.jooq.DSLContext;
 import org.jooq.Query;
+import org.jooq.impl.DSL;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -81,10 +82,24 @@ public final class CADBQItemMetadataRemove
     for (final var name : parameters.names()) {
       final var matchesItem =
         ITEM_METADATA.ITEM_META_ITEM.eq(item.id());
-      final var matchesName =
-        ITEM_METADATA.ITEM_META_NAME.eq(name.value());
+
+      final var matchesPackage =
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE
+          .eq(name.typeName().packageName().value());
+      final var matchesRecord =
+        ITEM_METADATA.ITEM_META_TYPE_RECORD
+          .eq(name.typeName().typeName().value());
+      final var matchesField =
+        ITEM_METADATA.ITEM_META_TYPE_FIELD
+          .eq(name.fieldName().value());
+
       final var matches =
-        matchesItem.and(matchesName);
+        DSL.and(
+          matchesItem,
+          matchesPackage,
+          matchesRecord,
+          matchesField
+        );
 
       queries.add(context.deleteFrom(ITEM_METADATA).where(matches));
     }

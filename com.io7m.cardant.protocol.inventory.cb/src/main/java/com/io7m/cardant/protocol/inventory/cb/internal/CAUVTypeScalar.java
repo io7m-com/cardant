@@ -22,9 +22,8 @@ import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeScalar;
 import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
-import com.io7m.lanark.core.RDottedName;
 
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageIdentifier.TYPE_PACKAGE_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeScalarIdentifier.TYPE_SCALAR_IDENTIFIER;
 import static com.io7m.cedarbridge.runtime.api.CBCore.float64;
 import static com.io7m.cedarbridge.runtime.api.CBCore.signed64;
 import static com.io7m.cedarbridge.runtime.api.CBCore.string;
@@ -49,8 +48,7 @@ public enum CAUVTypeScalar
     return switch (message) {
       case final CATypeScalarType.Integral cc -> {
         yield new CAI1TypeScalar.Integral(
-          TYPE_PACKAGE_IDENTIFIER.convertToWire(message.packageIdentifier()),
-          string(cc.name().value()),
+          TYPE_SCALAR_IDENTIFIER.convertToWire(message.name()),
           string(cc.description()),
           signed64(cc.rangeLower()),
           signed64(cc.rangeUpper())
@@ -58,8 +56,7 @@ public enum CAUVTypeScalar
       }
       case final CATypeScalarType.Monetary cc -> {
         yield new CAI1TypeScalar.Monetary(
-          TYPE_PACKAGE_IDENTIFIER.convertToWire(message.packageIdentifier()),
-          string(cc.name().value()),
+          TYPE_SCALAR_IDENTIFIER.convertToWire(message.name()),
           string(cc.description()),
           string(cc.rangeLower().toString()),
           string(cc.rangeUpper().toString())
@@ -67,16 +64,14 @@ public enum CAUVTypeScalar
       }
       case final CATypeScalarType.Text cc -> {
         yield new CAI1TypeScalar.Text(
-          TYPE_PACKAGE_IDENTIFIER.convertToWire(message.packageIdentifier()),
-          string(cc.name().value()),
+          TYPE_SCALAR_IDENTIFIER.convertToWire(message.name()),
           string(cc.description()),
           string(cc.pattern())
         );
       }
       case final CATypeScalarType.Time cc -> {
         yield new CAI1TypeScalar.Time(
-          TYPE_PACKAGE_IDENTIFIER.convertToWire(message.packageIdentifier()),
-          string(cc.name().value()),
+          TYPE_SCALAR_IDENTIFIER.convertToWire(message.name()),
           string(cc.description()),
           new CBOffsetDateTime(cc.rangeLower()),
           new CBOffsetDateTime(cc.rangeUpper())
@@ -84,8 +79,7 @@ public enum CAUVTypeScalar
       }
       case final CATypeScalarType.Real cc -> {
         yield new CAI1TypeScalar.Real(
-          TYPE_PACKAGE_IDENTIFIER.convertToWire(message.packageIdentifier()),
-          string(cc.name().value()),
+          TYPE_SCALAR_IDENTIFIER.convertToWire(message.name()),
           string(cc.description()),
           float64(cc.rangeLower()),
           float64(cc.rangeUpper())
@@ -101,8 +95,7 @@ public enum CAUVTypeScalar
     return switch (message) {
       case final CAI1TypeScalar.Integral xt -> {
         yield new CATypeScalarType.Integral(
-          TYPE_PACKAGE_IDENTIFIER.convertFromWire(xt.fieldPackageIdentifier()),
-          new RDottedName(xt.fieldName().value()),
+          TYPE_SCALAR_IDENTIFIER.convertFromWire(xt.fieldName()),
           xt.fieldDescription().value(),
           xt.fieldRangeLower().value(),
           xt.fieldRangeUpper().value()
@@ -110,8 +103,7 @@ public enum CAUVTypeScalar
       }
       case final CAI1TypeScalar.Time xt -> {
         yield new CATypeScalarType.Time(
-          TYPE_PACKAGE_IDENTIFIER.convertFromWire(xt.fieldPackageIdentifier()),
-          new RDottedName(xt.fieldName().value()),
+          TYPE_SCALAR_IDENTIFIER.convertFromWire(xt.fieldName()),
           xt.fieldDescription().value(),
           xt.fieldRangeLower().value(),
           xt.fieldRangeUpper().value()
@@ -119,16 +111,14 @@ public enum CAUVTypeScalar
       }
       case final CAI1TypeScalar.Text xt -> {
         yield new CATypeScalarType.Text(
-          TYPE_PACKAGE_IDENTIFIER.convertFromWire(xt.fieldPackageIdentifier()),
-          new RDottedName(xt.fieldName().value()),
+          TYPE_SCALAR_IDENTIFIER.convertFromWire(xt.fieldName()),
           xt.fieldDescription().value(),
           xt.fieldPattern().value()
         );
       }
       case final CAI1TypeScalar.Monetary xt -> {
         yield new CATypeScalarType.Monetary(
-          TYPE_PACKAGE_IDENTIFIER.convertFromWire(xt.fieldPackageIdentifier()),
-          new RDottedName(xt.fieldName().value()),
+          TYPE_SCALAR_IDENTIFIER.convertFromWire(xt.fieldName()),
           xt.fieldDescription().value(),
           CAMoney.money(xt.fieldRangeLower().value()),
           CAMoney.money(xt.fieldRangeUpper().value())
@@ -136,8 +126,7 @@ public enum CAUVTypeScalar
       }
       case final CAI1TypeScalar.Real xt -> {
         yield new CATypeScalarType.Real(
-          TYPE_PACKAGE_IDENTIFIER.convertFromWire(xt.fieldPackageIdentifier()),
-          new RDottedName(xt.fieldName().value()),
+          TYPE_SCALAR_IDENTIFIER.convertFromWire(xt.fieldName()),
           xt.fieldDescription().value(),
           xt.fieldRangeLower().value(),
           xt.fieldRangeUpper().value()

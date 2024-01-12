@@ -19,9 +19,9 @@ package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
@@ -35,23 +35,51 @@ public final class CAArbTypeDeclaration extends CAArbAbstract<CATypeRecord>
   {
     super(
       CATypeRecord.class,
-      () -> Combinators.combine(
-        Arbitraries.defaultFor(CATypePackageIdentifier.class),
-        Arbitraries.defaultFor(RDottedName.class),
-        Arbitraries.strings(),
-        fields()
-      ).as(CATypeRecord::new)
+      () -> {
+        return Arbitraries.defaultFor(CATypeRecordIdentifier.class)
+          .flatMap(id -> {
+            return Combinators.combine(
+              Arbitraries.strings(),
+              fields(id)
+            ).as((desc, fields) -> {
+              return new CATypeRecord(
+                id,
+                desc,
+                fields
+              );
+            });
+          });
+      }
     );
   }
 
-  private static Arbitrary<Map<RDottedName, CATypeField>> fields()
+  private static Arbitrary<Map<CATypeRecordFieldIdentifier, CATypeField>> fields(
+    final CATypeRecordIdentifier rec)
   {
     return Arbitraries.defaultFor(CATypeField.class)
       .set()
       .map(xs -> {
-        final var r = new HashMap<RDottedName, CATypeField>();
+        final var r =
+          new HashMap<CATypeRecordFieldIdentifier, CATypeField>(xs.size());
+
         for (final var x : xs) {
-          r.put(x.name(), x);
+          final var xNameOld =
+            x.name();
+          final var xNameNew =
+            new CATypeRecordFieldIdentifier(rec, xNameOld.fieldName());
+
+          final var xFieldNew =
+            new CATypeField(
+              xNameNew,
+              x.description(),
+              x.type(),
+              x.isRequired()
+            );
+
+          r.put(
+            xFieldNew.name(),
+            xFieldNew
+          );
         }
         return r;
       });

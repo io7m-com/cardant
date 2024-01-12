@@ -18,8 +18,8 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 import org.joda.money.CurrencyUnit;
@@ -32,7 +32,7 @@ public final class CAArbMetadataMonetary
     super(
       CAMetadataType.Monetary.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(RDottedName.class),
+        Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class),
         CAArbMoney.money(),
         Arbitraries.of(CurrencyUnit.EUR)
       ).as(CAMetadataType.Monetary::new)

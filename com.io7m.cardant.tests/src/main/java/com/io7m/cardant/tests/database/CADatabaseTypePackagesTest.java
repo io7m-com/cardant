@@ -25,15 +25,6 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageUninstallType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsReferencingScalarType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsSearchType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType.PutType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -41,6 +32,9 @@ import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType.Integral;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
@@ -98,7 +92,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -114,7 +107,7 @@ public final class CADatabaseTypePackagesTest
 
   private static final CATypePackageIdentifier P =
     new CATypePackageIdentifier(
-      new RDottedName("x"),
+      new RDottedName("com.io7m"),
       Version.of(1, 0, 0)
     );
 
@@ -122,15 +115,6 @@ public final class CADatabaseTypePackagesTest
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private TypeScalarPutType tsPut;
-  private TypeRecordPutType tdPut;
-  private TypeRecordsSearchType tdSearch;
-  private TypeRecordGetType tdGet;
-  private TypeRecordRemoveType tdRemove;
-  private TypeRecordsReferencingScalarType tdRefSearch;
-  private TypeScalarRemoveType tsRemove;
-  private TypeScalarSearchType tsSearch;
-  private TypeScalarGetType tsGet;
   private ItemCreateType iCreate;
   private ItemTypesAssignType tAssign;
   private ItemTypesRevokeType tRevoke;
@@ -186,26 +170,6 @@ public final class CADatabaseTypePackagesTest
     this.iTypeAssign =
       this.transaction.queries(ItemTypesAssignType.class);
 
-    this.tsPut =
-      this.transaction.queries(TypeScalarPutType.class);
-    this.tsGet =
-      this.transaction.queries(TypeScalarGetType.class);
-    this.tsRemove =
-      this.transaction.queries(TypeScalarRemoveType.class);
-    this.tsSearch =
-      this.transaction.queries(TypeScalarSearchType.class);
-
-    this.tdPut =
-      this.transaction.queries(TypeRecordPutType.class);
-    this.tdGet =
-      this.transaction.queries(TypeRecordGetType.class);
-    this.tdRemove =
-      this.transaction.queries(TypeRecordRemoveType.class);
-    this.tdSearch =
-      this.transaction.queries(TypeRecordsSearchType.class);
-    this.tdRefSearch =
-      this.transaction.queries(TypeRecordsReferencingScalarType.class);
-
     this.tpInstall =
       this.transaction.queries(TypePackageInstallType.class);
     this.tpUninstall =
@@ -242,8 +206,11 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var p0 =
       new CATypePackage(
@@ -259,11 +226,6 @@ public final class CADatabaseTypePackagesTest
     this.tpInstall.execute(p0);
     this.assertIsInstalled(p0);
     this.transaction.commit();
-
-    {
-      final var t0r = this.tsGet.execute(t0.name());
-      assertEquals(Optional.of(t0), t0r);
-    }
 
     {
       assertEquals(
@@ -295,8 +257,11 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var p0 =
       new CATypePackage(
@@ -325,10 +290,6 @@ public final class CADatabaseTypePackagesTest
 
     this.tpInstall.execute(p0);
     this.assertIsInstalled(p0);
-
-    final var ex =
-      assertThrows(CADatabaseException.class, () -> this.tpInstall.execute(p1));
-    assertEquals(errorDuplicate(), ex.errorCode());
   }
 
   /**
@@ -343,8 +304,11 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var p0 =
       new CATypePackage(
@@ -398,19 +362,21 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var t1 =
       new CATypeRecord(
-        P,
-        new RDottedName("x.t1"),
+        CATypeRecordIdentifier.of("com.io7m:t1"),
         "T1",
         Map.ofEntries(
           Map.entry(
-            new RDottedName("x.t1.f"),
+            CATypeRecordFieldIdentifier.of("com.io7m:t1.f"),
             new CATypeField(
-              new RDottedName("x.t1.f"),
+              CATypeRecordFieldIdentifier.of("com.io7m:t1.f"),
               "F0",
               t0,
               true
@@ -465,19 +431,21 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:s"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var t1 =
       new CATypeRecord(
-        P,
-        new RDottedName("x.t1"),
+        CATypeRecordIdentifier.of("com.io7m:x"),
         "T1",
         Map.ofEntries(
           Map.entry(
-            new RDottedName("x.t1.f"),
+            CATypeRecordFieldIdentifier.of("com.io7m:x.f"),
             new CATypeField(
-              new RDottedName("x.t1.f"),
+              CATypeRecordFieldIdentifier.of("com.io7m:x.f"),
               "F0",
               t0,
               true
@@ -663,34 +631,6 @@ public final class CADatabaseTypePackagesTest
     this.tpInstall.execute(p1.typePackage());
     this.assertIsInstalled(p1.typePackage());
     this.transaction.commit();
-
-    {
-      final var t =
-        this.tdGet.execute(
-          new RDottedName("cardant.computer.dram")).orElseThrow();
-      assertEquals(5, t.fields().size());
-    }
-
-    {
-      final var t =
-        this.tdGet.execute(
-          new RDottedName("cardant.computer.cpu")).orElseThrow();
-      assertEquals(3, t.fields().size());
-    }
-
-    {
-      final var t =
-        this.tdGet.execute(
-          new RDottedName("cardant.computer.disk")).orElseThrow();
-      assertEquals(3, t.fields().size());
-    }
-
-    {
-      final var t =
-        this.tdGet.execute(
-          new RDottedName("cardant.product.product")).orElseThrow();
-      assertEquals(3, t.fields().size());
-    }
   }
 
   private static void dumpResult(

@@ -379,6 +379,63 @@
     <![CDATA[anything | (Match <metadata-name-match> <metadata-value-match>) | (And <metadata-match> <metadata-match>) | (Or <metadata-match> <metadata-match>)]]>
   </entry>
 
+  <!--                     -->
+  <!-- Metadata type match -->
+  <!--                     -->
+
+  <entry key="syntax_type_match_anytype_name">Syntax (with-any-type)</entry>
+  <entry key="syntax_type_match_anytype">
+    <![CDATA[with-any-type]]>
+  </entry>
+
+  <entry key="syntax_type_match_with_type_equal_to_name">Syntax (with-type-equal-to)</entry>
+  <entry key="syntax_type_match_with_type_equal_to">
+    <![CDATA[(with-type-equal-to <type>)]]>
+  </entry>
+
+  <entry key="syntax_type_match_with_type_not_equal_to_name">Syntax (with-type-not-equal-to)</entry>
+  <entry key="syntax_type_match_with_type_not_equal_to">
+    <![CDATA[(with-type-not-equal-to <type>)]]>
+  </entry>
+
+  <!--                        -->
+  <!-- Metadata package match -->
+  <!--                        -->
+
+  <entry key="syntax_package_match_anypackage_name">Syntax (with-any-package)</entry>
+  <entry key="syntax_package_match_anypackage">
+    <![CDATA[with-any-package]]>
+  </entry>
+
+  <entry key="syntax_package_match_with_package_equal_to_name">Syntax (with-package-equal-to)</entry>
+  <entry key="syntax_package_match_with_package_equal_to">
+    <![CDATA[(with-package-equal-to <package>)]]>
+  </entry>
+
+  <entry key="syntax_package_match_with_package_not_equal_to_name">Syntax (with-package-not-equal-to)</entry>
+  <entry key="syntax_package_match_with_package_not_equal_to">
+    <![CDATA[(with-package-not-equal-to <package>)]]>
+  </entry>
+
+  <!--                      -->
+  <!-- Metadata field match -->
+  <!--                      -->
+
+  <entry key="syntax_field_match_anyfield_name">Syntax (with-any-field)</entry>
+  <entry key="syntax_field_match_anyfield">
+    <![CDATA[with-any-field]]>
+  </entry>
+
+  <entry key="syntax_field_match_with_field_equal_to_name">Syntax (with-field-equal-to)</entry>
+  <entry key="syntax_field_match_with_field_equal_to">
+    <![CDATA[(with-field-equal-to <field>)]]>
+  </entry>
+
+  <entry key="syntax_field_match_with_field_not_equal_to_name">Syntax (with-field-not-equal-to)</entry>
+  <entry key="syntax_field_match_with_field_not_equal_to">
+    <![CDATA[(with-field-not-equal-to <field>)]]>
+  </entry>
+
   <!--        -->
   <!-- Ranges -->
   <!--        -->

@@ -20,6 +20,7 @@ package com.io7m.cardant.shell.internal;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CATypeMatch;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.parsers.CATypeMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
@@ -82,8 +83,14 @@ public final class CATypeMatchConverter
     return new CATypeMatch(
       new CAComparisonSetType.IsOverlapping<>(
         Set.of(
-          new RDottedName("x.y"),
-          new RDottedName("y.z")
+          new CATypeRecordIdentifier(
+            new RDottedName("x.y"),
+            new RDottedName("t")
+          ),
+          new CATypeRecordIdentifier(
+            new RDottedName("com.io7m.example"),
+            new RDottedName("item")
+          )
         )
       )
     );

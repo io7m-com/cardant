@@ -77,7 +77,7 @@ public final class CATypePackageParserTest
           scalars.get(new CANameUnqualified("t0"))
         );
 
-      assertEquals("t0", t.name().value());
+      assertEquals("com.io7m.example:t0", t.name().toString());
       assertEquals("A monetary type.", t.description());
       assertEquals(new BigDecimal("0"), t.rangeLower());
       assertEquals(new BigDecimal("1000000.0"), t.rangeUpper());
@@ -90,7 +90,7 @@ public final class CATypePackageParserTest
           scalars.get(new CANameUnqualified("t1"))
         );
 
-      assertEquals("t1", t.name().value());
+      assertEquals("com.io7m.example:t1", t.name().toString());
       assertEquals("An integral type.", t.description());
       assertEquals(0L, t.rangeLower());
       assertEquals(1000L, t.rangeUpper());
@@ -103,7 +103,7 @@ public final class CATypePackageParserTest
           scalars.get(new CANameUnqualified("t2"))
         );
 
-      assertEquals("t2", t.name().value());
+      assertEquals("com.io7m.example:t2", t.name().toString());
       assertEquals("A real type.", t.description());
       assertEquals(0.0, t.rangeLower());
       assertEquals(100.0, t.rangeUpper());
@@ -116,7 +116,7 @@ public final class CATypePackageParserTest
           scalars.get(new CANameUnqualified("t3"))
         );
 
-      assertEquals("t3", t.name().value());
+      assertEquals("com.io7m.example:t3", t.name().toString());
       assertEquals("A text type.", t.description());
       assertEquals(".*", t.pattern());
     }
@@ -128,7 +128,7 @@ public final class CATypePackageParserTest
           scalars.get(new CANameUnqualified("t4"))
         );
 
-      assertEquals("t4", t.name().value());
+      assertEquals("com.io7m.example:t4", t.name().toString());
       assertEquals("A time type.", t.description());
       assertEquals("2000-01-01T00:00Z", t.rangeLower().toString());
       assertEquals("9999-01-01T00:00Z", t.rangeUpper().toString());
@@ -150,7 +150,7 @@ public final class CATypePackageParserTest
         final var f = fs.get(new CANameUnqualified("q"));
         assertEquals("q", f.name().value());
         assertEquals("A Q field.", f.description());
-        assertEquals("t0", f.type().toString());
+        assertEquals("com.io7m.example:t0", f.type().toString());
         assertTrue(f.isRequired());
       }
 
@@ -158,7 +158,7 @@ public final class CATypePackageParserTest
         final var f = fs.get(new CANameUnqualified("w"));
         assertEquals("w", f.name().value());
         assertEquals("A W field.", f.description());
-        assertEquals("com.io7m.exa.t", f.type().toString());
+        assertEquals("com.io7m.other:t", f.type().toString());
         assertTrue(f.isRequired());
       }
 
@@ -166,7 +166,7 @@ public final class CATypePackageParserTest
         final var f = fs.get(new CANameUnqualified("s"));
         assertEquals("s", f.name().value());
         assertEquals("An S field.", f.description());
-        assertEquals("t0", f.type().toString());
+        assertEquals("com.io7m.example:t0", f.type().toString());
         assertFalse(f.isRequired());
       }
     }
@@ -193,6 +193,6 @@ public final class CATypePackageParserTest
       LOG.debug("{}", e);
     });
 
-    assertEquals(17, ex.statusValues().size());
+    assertEquals(26, ex.statusValues().size());
   }
 }

@@ -170,7 +170,7 @@ public final class CADatabaseExceptions
         .orElse("");
 
     return switch (column.toUpperCase(Locale.ROOT)) {
-      case "MTRF_DECLARATION" -> {
+      case "MTRF_DECLARATION", "IT_TYPE" -> {
         yield new CADatabaseException(
           transaction.localize(ERROR_NONEXISTENT),
           e,

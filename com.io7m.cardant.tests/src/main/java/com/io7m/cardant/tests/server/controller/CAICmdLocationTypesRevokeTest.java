@@ -20,12 +20,11 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationTypesRevokeType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
 import com.io7m.cardant.security.CASecurity;
@@ -50,7 +49,6 @@ import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeCheckFailed;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
@@ -76,6 +74,19 @@ public final class CAICmdLocationTypesRevokeTest
       new RDottedName("com.io7m"),
       Version.of(1, 0, 0)
     );
+
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
 
   private static final CALocationID LOCATION_ID = CALocationID.random();
 
@@ -104,7 +115,7 @@ public final class CAICmdLocationTypesRevokeTest
           context,
           new CAICommandLocationTypesRevoke(
             LOCATION_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
         );
       });
 
@@ -114,7 +125,7 @@ public final class CAICmdLocationTypesRevokeTest
   }
 
   /**
-   * Revokeing a type to a location works.
+   * Revoking a type from a location works.
    *
    * @throws Exception On errors
    */
@@ -125,31 +136,26 @@ public final class CAICmdLocationTypesRevokeTest
   {
     /* Arrange. */
 
-    final var locationTypeRevoke =
-      mock(LocationTypesRevokeType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
     final var locationGet =
       mock(LocationGetType.class);
+    final var locationTypeRevoke =
+      mock(LocationTypesRevokeType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(LocationTypesRevokeType.class))
-      .thenReturn(locationTypeRevoke);
     when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of()
-        )
-      ));
+    when(transaction.queries(LocationTypesRevokeType.class))
+      .thenReturn(locationTypeRevoke);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     when(locationGet.execute(any()))
       .thenReturn(Optional.of(new CALocation(
@@ -158,7 +164,7 @@ public final class CAICmdLocationTypesRevokeTest
         "Location",
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
+        new TreeSet<>()
       )));
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -176,6 +182,11 @@ public final class CAICmdLocationTypesRevokeTest
 
     final var context =
       this.createContext();
+
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
 
     /* Act. */
 
@@ -184,117 +195,14 @@ public final class CAICmdLocationTypesRevokeTest
       context,
       new CAICommandLocationTypesRevoke(
         LOCATION_ID,
-        Set.of(new RDottedName("t"))));
-
-    /* Assert. */
-
-    verify(transaction)
-      .queries(LocationGetType.class);
-    verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .queries(LocationTypesRevokeType.class);
-    verify(locationGet)
-      .execute(LOCATION_ID);
-
-    verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(locationGet);
-  }
-
-  /**
-   * Revokeing a type fails if type checking fails.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testRevokeCheckFailed()
-    throws Exception
-  {
-    /* Arrange. */
-
-    final var locationTypeRevoke =
-      mock(LocationTypesRevokeType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
-    final var locationGet =
-      mock(LocationGetType.class);
-    final var transaction =
-      this.transaction();
-
-    when(transaction.queries(LocationTypesRevokeType.class))
-      .thenReturn(locationTypeRevoke);
-    when(transaction.queries(LocationGetType.class))
-      .thenReturn(locationGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "A field",
-              new Integral(P, new RDottedName("z"), "x", 23L, 1000L),
-              true
-            )
-          )
-        )
-      ));
-
-    when(locationGet.execute(any()))
-      .thenReturn(Optional.of(new CALocation(
-        LOCATION_ID,
-        Optional.empty(),
-        "Location",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
-      )));
-
-    CASecurity.setPolicy(new MPolicy(List.of(
-      new MRule(
-        MRuleName.of("rule0"),
-        "",
-        ALLOW,
-        new MMatchSubjectWithRolesAny(Set.of(ROLE_INVENTORY_LOCATIONS_WRITER)),
-        new MMatchObjectWithType(INVENTORY_LOCATIONS.type()),
-        new MMatchActionWithName(WRITE)
+        Set.of(CATypeRecordIdentifier.of("com.io7m:t0"))
       )
-    )));
-
-    this.setRoles(ROLE_INVENTORY_LOCATIONS_WRITER);
-
-    final var context =
-      this.createContext();
-
-    /* Act. */
-
-    final var handler = new CAICmdLocationTypesRevoke();
-
-    final var ex =
-      assertThrows(CACommandExecutionFailure.class, () -> {
-        handler.execute(
-          context,
-          new CAICommandLocationTypesRevoke(
-            LOCATION_ID,
-            Set.of(new RDottedName("t")))
-        );
-      });
+    );
 
     /* Assert. */
 
-    assertEquals(errorTypeCheckFailed(), ex.errorCode());
-
     verify(transaction)
       .queries(LocationGetType.class);
-    verify(transaction)
-      .queries(TypeRecordGetType.class);
     verify(transaction)
       .queries(LocationTypesRevokeType.class);
     verify(locationGet)
@@ -305,7 +213,7 @@ public final class CAICmdLocationTypesRevokeTest
   }
 
   /**
-   * Revokeing a type to a nonexistent location fails.
+   * Revoking a type to a nonexistent location fails.
    *
    * @throws Exception On errors
    */
@@ -363,7 +271,8 @@ public final class CAICmdLocationTypesRevokeTest
           context,
           new CAICommandLocationTypesRevoke(
             LOCATION_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t"))
+          )
         );
       });
 

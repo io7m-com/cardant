@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
@@ -34,7 +33,7 @@ public sealed interface CAMetadataType
    * @return The metadata name
    */
 
-  RDottedName name();
+  CATypeRecordFieldIdentifier name();
 
   /**
    * @return The metadata value as a string
@@ -50,7 +49,7 @@ public sealed interface CAMetadataType
    */
 
   record Integral(
-    RDottedName name,
+    CATypeRecordFieldIdentifier name,
     long value)
     implements CAMetadataType
   {
@@ -78,7 +77,7 @@ public sealed interface CAMetadataType
    */
 
   record Text(
-    RDottedName name,
+    CATypeRecordFieldIdentifier name,
     String value)
     implements CAMetadataType
   {
@@ -107,7 +106,7 @@ public sealed interface CAMetadataType
    */
 
   record Time(
-    RDottedName name,
+    CATypeRecordFieldIdentifier name,
     OffsetDateTime value)
     implements CAMetadataType
   {
@@ -137,7 +136,7 @@ public sealed interface CAMetadataType
    */
 
   record Monetary(
-    RDottedName name,
+    CATypeRecordFieldIdentifier name,
     BigDecimal value,
     CurrencyUnit currency)
     implements CAMetadataType
@@ -168,7 +167,7 @@ public sealed interface CAMetadataType
    */
 
   record Real(
-    RDottedName name,
+    CATypeRecordFieldIdentifier name,
     double value)
     implements CAMetadataType
   {

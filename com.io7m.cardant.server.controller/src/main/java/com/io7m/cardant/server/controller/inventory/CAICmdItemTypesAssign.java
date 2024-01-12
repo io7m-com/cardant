@@ -35,7 +35,8 @@ import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
  * @see CAICommandItemTypesAssign
  */
 
-public final class CAICmdItemTypesAssign extends CAICmdAbstract<CAICommandItemTypesAssign>
+public final class CAICmdItemTypesAssign
+  extends CAICmdAbstract<CAICommandItemTypesAssign>
 {
   /**
    * @see CAICommandItemTypesAssign

@@ -23,7 +23,8 @@ import com.io7m.cardant.model.CAItemLocations;
 import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -143,7 +144,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      Set<RDottedName> names)
+      Set<CATypeRecordFieldIdentifier> names)
     {
 
     }
@@ -249,7 +250,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }
@@ -272,7 +273,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }

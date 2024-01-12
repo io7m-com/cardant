@@ -44,7 +44,8 @@
              Type="t0"/>
     <p:FieldWithExternalType Name="w"
                              Description="A W field."
-                             Type="com.io7m.exa.t"
+                             Package="com.io7m.other"
+                             Type="t"
                              Required="true"/>
     <p:Field Name="s"
              Description="An S field."

@@ -22,8 +22,8 @@ import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -38,7 +38,7 @@ public final class CAArbItemSearchParameters
         Arbitraries.defaultFor(CAItemLocationMatchType.class),
         CAArbComparisons.fuzzy(Arbitraries.strings()),
         CAArbComparisons.fuzzy(Arbitraries.strings()),
-        CAArbComparisons.set(Arbitraries.defaultFor(RDottedName.class)),
+        CAArbComparisons.set(Arbitraries.defaultFor(CATypeRecordIdentifier.class)),
         CAArbComparisons.exact(Arbitraries.defaultFor(CAItemSerial.class)),
         Arbitraries.defaultFor(CAMetadataElementMatchType.class),
         Arbitraries.defaultFor(CAItemColumnOrdering.class),

@@ -22,8 +22,9 @@ import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -41,14 +42,14 @@ public final class CAArbLocation extends CAArbAbstract<CALocation>
         Arbitraries.defaultFor(CALocationID.class).optional(),
         Arbitraries.strings(),
         Arbitraries.maps(
-          Arbitraries.defaultFor(RDottedName.class),
+          Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class),
           Arbitraries.defaultFor(CAMetadataType.class)
         ).map(TreeMap::new),
         Arbitraries.maps(
           Arbitraries.defaultFor(CAAttachmentKey.class),
           Arbitraries.defaultFor(CAAttachment.class)
         ).map(TreeMap::new),
-        Arbitraries.defaultFor(RDottedName.class)
+        Arbitraries.defaultFor(CATypeRecordIdentifier.class)
           .set()
           .map(TreeSet::new)
       ).as(CALocation::new)

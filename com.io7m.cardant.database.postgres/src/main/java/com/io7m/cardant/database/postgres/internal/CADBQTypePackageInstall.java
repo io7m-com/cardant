@@ -24,11 +24,13 @@ import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service
 import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.verona.core.VersionQualifier;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.strings.CAStringConstants.PACKAGE;
 import static com.io7m.cardant.strings.CAStringConstants.PACKAGE_VERSION;
@@ -119,31 +121,39 @@ public final class CADBQTypePackageInstall
             .map(VersionQualifier::text)
             .orElse(null))
         .set(METADATA_TYPE_PACKAGES.MTP_TEXT, text)
+        .onConflictOnConstraint(DSL.constraint(
+          "metadata_type_packages_name_unique"))
+        .doUpdate()
+        .set(
+          METADATA_TYPE_PACKAGES.MTP_VERSION_MAJOR,
+          Integer.valueOf(version1.major()))
+        .set(
+          METADATA_TYPE_PACKAGES.MTP_VERSION_MINOR,
+          Integer.valueOf(version1.minor()))
+        .set(
+          METADATA_TYPE_PACKAGES.MTP_VERSION_PATCH,
+          Integer.valueOf(version1.patch()))
+        .set(
+          METADATA_TYPE_PACKAGES.MTP_VERSION_QUALIFIER,
+          version1.qualifier()
+            .map(VersionQualifier::text)
+            .orElse(null))
+        .set(METADATA_TYPE_PACKAGES.MTP_TEXT, text)
         .returning(METADATA_TYPE_PACKAGES.MTP_ID)
         .fetchOptional(METADATA_TYPE_PACKAGES.MTP_ID)
         .orElseThrow()
         .intValue();
 
-    for (final var e : typePackage.scalarTypes().entrySet()) {
-      context.batch(
-        CADBQTypeScalarPut.insertType(
-          transaction,
-          context,
-          packageDbID,
-          e.getValue()
-        )
-      ).execute();
-    }
-
     for (final var e : typePackage.recordTypes().entrySet()) {
-      context.batch(
-        CADBQTypeRecordPut.putTypeRecord(
-          transaction,
-          context,
-          packageDbID,
-          e.getValue()
-        )
-      ).execute();
+      final var type =
+        e.getValue();
+      final var query =
+        context.insertInto(METADATA_TYPES)
+          .set(METADATA_TYPES.MT_NAME, type.name().typeName().value())
+          .set(METADATA_TYPES.MT_PACKAGE, Integer.valueOf(packageDbID))
+          .onConflictDoNothing();
+
+      query.execute();
     }
 
     auditEvent(

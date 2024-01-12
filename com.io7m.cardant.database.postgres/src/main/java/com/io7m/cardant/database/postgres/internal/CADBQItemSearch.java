@@ -19,7 +19,10 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseItemSearchType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSearchType;
+import com.io7m.cardant.database.postgres.internal.CADBMatch.LocationFields;
+import com.io7m.cardant.database.postgres.internal.CADBMatch.MetaFields;
+import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetCondition;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetIntersection;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetUnion;
@@ -29,12 +32,19 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.Anything;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsEqualTo;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsNotEqualTo;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsOverlapping;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsSubsetOf;
+import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsSupersetOf;
 import com.io7m.jqpage.core.JQField;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPageDefinition;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPagination;
 import com.io7m.jqpage.core.JQKeysetRandomAccessPaginationParameters;
 import com.io7m.jqpage.core.JQOrder;
-import com.io7m.lanark.core.RDottedName;
 import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.EnumType;
@@ -44,11 +54,15 @@ import org.jooq.Select;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_SEARCH_VIEW;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
@@ -57,7 +71,7 @@ import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_ST
 
 public final class CADBQItemSearch
   extends CADBQAbstract<CAItemSearchParameters, CADatabaseItemSearchType>
-  implements CADatabaseQueriesItemsType.ItemSearchType
+  implements ItemSearchType
 {
   private static final Service<CAItemSearchParameters, CADatabaseItemSearchType, ItemSearchType> SERVICE =
     new Service<>(ItemSearchType.class, CADBQItemSearch::new);
@@ -115,14 +129,14 @@ public final class CADBQItemSearch
       );
 
     final var typeCondition =
-      CADBComparisons.createSetMatchQueryString(
-        parameters.typeMatch().map(RDottedName::value),
-        ITEM_SEARCH_VIEW.ISV_MTR_NAMES
+      CADBComparisons.createSetMatchQueryInteger(
+        mapTypeMatch(context, parameters.typeMatch()),
+        ITEM_SEARCH_VIEW.ISV_METADATA_TYPE_IDS
       );
 
     final var locationCondition =
       CADBMatch.ofLocationMatch(
-        new CADBMatch.LocationFields(
+        new LocationFields(
           ITEM_SEARCH_VIEW.ISV_ITEM_LOCATIONS
         ),
         parameters.locationMatch()
@@ -148,11 +162,10 @@ public final class CADBQItemSearch
 
     final var metaQuerySet =
       CADBMatch.ofMetaElementMatch(
-        new CADBMatch.MetaFields(
-          new CADBMatch.NameFields(
-            ITEM_SEARCH_VIEW.ITEM_META_NAME,
-            ITEM_META_NAME_SEARCH
-          ),
+        new MetaFields(
+          ITEM_SEARCH_VIEW.ITEM_META_TYPE_PACKAGE,
+          ITEM_SEARCH_VIEW.ITEM_META_TYPE_RECORD,
+          ITEM_SEARCH_VIEW.ITEM_META_TYPE_FIELD,
           ITEM_META_VALUE_TYPE,
           ITEM_SEARCH_VIEW.ITEM_META_VALUE_INTEGRAL,
           ITEM_SEARCH_VIEW.ITEM_META_VALUE_REAL,
@@ -190,9 +203,59 @@ public final class CADBQItemSearch
     return new CAItemSearch(pages);
   }
 
-  private static Select<Record6<UUID, String, Object, UUID[], String[], String[]>> generateQuerySetFor(
+  private static CAComparisonSetType<Integer> mapTypeMatch(
     final DSLContext context,
-    final CADBMatch.QuerySetType metaQuerySet)
+    final CAComparisonSetType<CATypeRecordIdentifier> c)
+  {
+    return switch (c) {
+      case final Anything<CATypeRecordIdentifier> a -> {
+        yield new Anything<>();
+      }
+      case final IsEqualTo<CATypeRecordIdentifier> e -> {
+        yield new IsEqualTo<>(resolveTypes(context, e.value()));
+      }
+      case final IsNotEqualTo<CATypeRecordIdentifier> e -> {
+        yield new IsNotEqualTo<>(resolveTypes(context, e.value()));
+      }
+      case final IsOverlapping<CATypeRecordIdentifier> e -> {
+        yield new IsOverlapping<>(resolveTypes(context, e.value()));
+      }
+      case final IsSubsetOf<CATypeRecordIdentifier> e -> {
+        yield new IsSubsetOf<>(resolveTypes(context, e.value()));
+      }
+      case final IsSupersetOf<CATypeRecordIdentifier> e -> {
+        yield new IsSupersetOf<>(resolveTypes(context, e.value()));
+      }
+    };
+  }
+
+  private static Set<Integer> resolveTypes(
+    final DSLContext context,
+    final Set<CATypeRecordIdentifier> identifiers)
+  {
+    final var results = new HashSet<Integer>(identifiers.size());
+    for (final var identifier : identifiers) {
+      final var matches =
+        DSL.and(
+          METADATA_TYPES.MT_NAME
+            .eq(identifier.typeName().value()),
+          METADATA_TYPE_PACKAGES.MTP_NAME
+            .eq(identifier.packageName().value())
+        );
+      context.select(METADATA_TYPES.MT_ID)
+        .from(METADATA_TYPES)
+        .join(METADATA_TYPE_PACKAGES)
+        .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES.MT_PACKAGE))
+        .where(matches)
+        .fetchOptional(METADATA_TYPES.MT_ID)
+        .ifPresent(results::add);
+    }
+    return Set.copyOf(results);
+  }
+
+  private static Select<Record6<UUID, String, Object, UUID[], Integer[], String[]>> generateQuerySetFor(
+    final DSLContext context,
+    final QuerySetType metaQuerySet)
   {
     return switch (metaQuerySet) {
       case final QuerySetCondition c -> {
@@ -201,7 +264,7 @@ public final class CADBQItemSearch
             ITEM_SEARCH_VIEW.ITEM_NAME,
             ITEM_NAME_SEARCH,
             ITEM_SEARCH_VIEW.ISV_ITEM_LOCATIONS,
-            ITEM_SEARCH_VIEW.ISV_MTR_NAMES,
+            ITEM_SEARCH_VIEW.ISV_METADATA_TYPE_IDS,
             ITEM_SEARCH_VIEW.ISV_ITEM_SERIALS)
           .from(ITEM_SEARCH_VIEW)
           .where(c.condition());
@@ -224,8 +287,12 @@ public final class CADBQItemSearch
   {
     final var field =
       switch (ordering.column()) {
-        case BY_ID -> ITEM_SEARCH_VIEW.ITEM_ID;
-        case BY_NAME -> ITEM_SEARCH_VIEW.ITEM_NAME;
+        case BY_ID -> {
+          yield ITEM_SEARCH_VIEW.ITEM_ID;
+        }
+        case BY_NAME -> {
+          yield ITEM_SEARCH_VIEW.ITEM_NAME;
+        }
       };
 
     return new JQField(

@@ -66,7 +66,7 @@
         <Term type="type">input_voltage</Term>
         and
         <Term type="type">output_voltage</Term>
-        that describe the input and output voltages of the regular. Any attempt to update an item that has the
+        that describe the input and output voltages of the regulator. Any attempt to update an item that has the
         <Term type="type">voltage_regulator</Term>
         type applied without providing values for the
         <Term type="type">input_voltage</Term>
@@ -81,12 +81,6 @@
         (and then perhaps narrow down the search by asking for only those items that have an
         <Term type="type">output_voltage</Term>
         value equal to <Term type="type">5.0</Term>).
-      </Paragraph>
-      <Paragraph id="50cf733c-5437-4115-b4bb-7669499d9853">
-        Each type, whether <Link target="e0f0dda3-ecba-4571-8464-2a0f81ed25c6">scalar</Link> or
-        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">record</Link>, has a unique fully-qualified name.
-        Specifically, each type has a name that confirms to the
-        <LinkExternal target="https://www.io7m.com/software/lanark/">Lanark</LinkExternal> name specification.
       </Paragraph>
     </Subsection>
 
@@ -344,7 +338,7 @@ type Reposit =
   <Subsection title="Type Packages" id="0f4b9332-c2d2-4460-9fb5-f2594b854219">
     <Subsection title="Overview">
       <Paragraph>
-        Sets of <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">types</Link> can be installed into
+        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">Types</Link> are introduced into
         a running <Term type="package">cardant</Term> server using <Term type="term">type packages</Term>.
         A <Term type="term">type package</Term> is simply a named, versioned container of types that can
         be uploaded and installed into the server's database atomically.
@@ -359,7 +353,7 @@ type Reposit =
         as <Term type="expression">com.io7m.example</Term>) and the types declared within the package have their
         names derived by concatenating their unqualified names onto the end of the package name. So, for example,
         a package <Term type="expression">com.io7m.example</Term> that contains a scalar type named
-        <Term type="expression">t</Term> will cause the scalar type <Term type="expression">com.io7m.example.t</Term>
+        <Term type="expression">t</Term> will cause the scalar type <Term type="expression">com.io7m.example:t</Term>
         to be created on the server when the package is installed.
       </Paragraph>
     </Subsection>

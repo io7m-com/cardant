@@ -21,11 +21,11 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLocationTypesAssign;
-import com.io7m.cedarbridge.runtime.api.CBCore;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBLists;
 import com.io7m.cedarbridge.runtime.convenience.CBSets;
-import com.io7m.lanark.core.RDottedName;
+
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordIdentifier.TYPE_RECORD_IDENTIFIER;
 
 /**
  * A validator.
@@ -46,7 +46,7 @@ public enum CAUVCommandLocationTypesAssign
   {
     return new CAI1CommandLocationTypesAssign(
       new CBUUID(c.location().id()),
-      CBLists.ofCollection(c.types(), r -> CBCore.string(r.value()))
+      CBLists.ofCollection(c.types(), TYPE_RECORD_IDENTIFIER::convertToWire)
     );
   }
 
@@ -56,7 +56,7 @@ public enum CAUVCommandLocationTypesAssign
   {
     return new CAICommandLocationTypesAssign(
       new CALocationID(c.fieldLocation().value()),
-      CBSets.toSet(c.fieldTypes(), x -> new RDottedName(x.value()))
+      CBSets.toSet(c.fieldTypes(), TYPE_RECORD_IDENTIFIER::convertFromWire)
     );
   }
 }

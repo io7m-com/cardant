@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.lanark.core.RDottedName;
-
 import java.util.Collections;
 import java.util.Objects;
 import java.util.SortedMap;
@@ -40,9 +38,9 @@ public record CAItem(
   String name,
   long countTotal,
   long countHere,
-  SortedMap<RDottedName, CAMetadataType> metadata,
+  SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
-  SortedSet<RDottedName> types)
+  SortedSet<CATypeRecordIdentifier> types)
   implements CAInventoryObjectType<CAItemSummary>
 {
   /**

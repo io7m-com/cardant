@@ -20,6 +20,7 @@ package com.io7m.cardant.parsers;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
@@ -27,7 +28,6 @@ import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
-import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
@@ -135,7 +135,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Text"),
-          new SSymbol(zero(), text.name().value()),
+          new SSymbol(zero(), text.name().toString()),
           new SQuotedString(zero(), text.value())
         )
       );
@@ -146,7 +146,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Time"),
-          new SSymbol(zero(), time.name().value()),
+          new SSymbol(zero(), time.name().toString()),
           new SSymbol(zero(), time.value().toString())
         )
       );
@@ -157,7 +157,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Integer"),
-          new SSymbol(zero(), integral.name().value()),
+          new SSymbol(zero(), integral.name().toString()),
           new SSymbol(zero(), Long.toString(integral.value()))
         )
       );
@@ -168,7 +168,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Real"),
-          new SSymbol(zero(), real.name().value()),
+          new SSymbol(zero(), real.name().toString()),
           new SSymbol(zero(), Double.toString(real.value()))
         )
       );
@@ -179,7 +179,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Money"),
-          new SSymbol(zero(), monetary.name().value()),
+          new SSymbol(zero(), monetary.name().toString()),
           new SSymbol(zero(), monetary.value().toString()),
           new SSymbol(zero(), monetary.currency().getCode())
         )
@@ -226,7 +226,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Text(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.text(list.get(2))
       );
     }
@@ -239,7 +239,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Time(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.time(list.get(2))
       );
     }
@@ -252,7 +252,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 4) {
       return new CAMetadataType.Monetary(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.monetary(list.get(2)),
         this.currency(list.get(3))
       );
@@ -266,7 +266,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Real(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.real(list.get(2))
       );
     }
@@ -279,7 +279,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Integral(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.integer(list.get(2))
       );
     }
@@ -370,5 +370,17 @@ public final class CAMetadataExpressions extends CAExpressions
     }
 
     throw this.createParseError(expr);
+  }
+
+  private CATypeRecordFieldIdentifier recordFieldIdentifier(
+    final SExpressionType expr,
+    final String text)
+    throws CAException
+  {
+    try {
+      return CATypeRecordFieldIdentifier.of(text);
+    } catch (final Exception e) {
+      throw this.createParseError(expr, e);
+    }
   }
 }

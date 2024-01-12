@@ -21,10 +21,10 @@ import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeRecord;
 import com.io7m.cedarbridge.runtime.convenience.CBMaps;
-import com.io7m.lanark.core.RDottedName;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeField.TYPE_FIELD;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypePackageIdentifier.TYPE_PACKAGE_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordFieldIdentifier.TYPE_RECORD_FIELD_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordIdentifier.TYPE_RECORD_IDENTIFIER;
 import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
 /**
@@ -45,12 +45,11 @@ public enum CAUVTypeRecord
     final CATypeRecord message)
   {
     return new CAI1TypeRecord(
-      TYPE_PACKAGE_IDENTIFIER.convertToWire(message.packageIdentifier()),
-      string(message.name().value()),
+      TYPE_RECORD_IDENTIFIER.convertToWire(message.name()),
       string(message.description()),
       CBMaps.ofMap(
         message.fields(),
-        s -> string(s.value()),
+        TYPE_RECORD_FIELD_IDENTIFIER::convertToWire,
         TYPE_FIELD::convertToWire
       )
     );
@@ -61,12 +60,11 @@ public enum CAUVTypeRecord
     final CAI1TypeRecord message)
   {
     return new CATypeRecord(
-      TYPE_PACKAGE_IDENTIFIER.convertFromWire(message.fieldPackageIdentifier()),
-      new RDottedName(message.fieldName().value()),
+      TYPE_RECORD_IDENTIFIER.convertFromWire(message.fieldName()),
       message.fieldDescription().value(),
       CBMaps.toMap(
         message.fieldFields(),
-        s -> new RDottedName(s.value()),
+        TYPE_RECORD_FIELD_IDENTIFIER::convertFromWire,
         TYPE_FIELD::convertFromWire
       )
     );

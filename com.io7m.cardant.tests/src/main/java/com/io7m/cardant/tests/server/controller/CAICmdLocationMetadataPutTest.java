@@ -21,14 +21,13 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
-import com.io7m.cardant.model.CATypeScalarType.Text;
+import com.io7m.cardant.model.CAMetadataType.Text;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
 import com.io7m.cardant.security.CASecurity;
@@ -81,6 +80,19 @@ public final class CAICmdLocationMetadataPutTest
       Version.of(1, 0, 0)
     );
 
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
+
   private static final CALocationID LOCATION_ID = CALocationID.random();
 
   /**
@@ -101,7 +113,7 @@ public final class CAICmdLocationMetadataPutTest
     /* Act. */
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
 
     final var handler =
       new CAICmdLocationMetadataPut();
@@ -111,7 +123,7 @@ public final class CAICmdLocationMetadataPutTest
           context,
           new CAICommandLocationMetadataPut(
             LOCATION_ID,
-            Set.of(new CAMetadataType.Text(name0, "y"))));
+            Set.of(new Text(name0, "y"))));
       });
 
     /* Assert. */
@@ -173,11 +185,11 @@ public final class CAICmdLocationMetadataPutTest
     /* Act. */
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
     final var name1 =
-      new RDottedName("com.io7m.name1");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name1");
     final var name2 =
-      new RDottedName("com.io7m.name2");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name2");
 
     final var handler = new CAICmdLocationMetadataPut();
     handler.execute(
@@ -185,9 +197,9 @@ public final class CAICmdLocationMetadataPutTest
       new CAICommandLocationMetadataPut(
         LOCATION_ID,
         Set.of(
-          new CAMetadataType.Text(name0, "x"),
-          new CAMetadataType.Text(name1, "y"),
-          new CAMetadataType.Text(name2, "z")
+          new Text(name0, "x"),
+          new Text(name1, "y"),
+          new Text(name2, "z")
         )
       ));
 
@@ -201,9 +213,9 @@ public final class CAICmdLocationMetadataPutTest
       .execute(new Parameters(
         LOCATION_ID,
         Set.of(
-          new CAMetadataType.Text(name0, "x"),
-          new CAMetadataType.Text(name1, "y"),
-          new CAMetadataType.Text(name2, "z")))
+          new Text(name0, "x"),
+          new Text(name1, "y"),
+          new Text(name2, "z")))
       );
     verify(locationGet)
       .execute(LOCATION_ID);
@@ -286,11 +298,11 @@ public final class CAICmdLocationMetadataPutTest
     final var handler = new CAICmdLocationMetadataPut();
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
     final var name1 =
-      new RDottedName("com.io7m.name1");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name1");
     final var name2 =
-      new RDottedName("com.io7m.name2");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name2");
 
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
@@ -299,9 +311,9 @@ public final class CAICmdLocationMetadataPutTest
           new CAICommandLocationMetadataPut(
             LOCATION_ID,
             Set.of(
-              new CAMetadataType.Text(name0, "x"),
-              new CAMetadataType.Text(name1, "y"),
-              new CAMetadataType.Text(name2, "z")
+              new Text(name0, "x"),
+              new Text(name1, "y"),
+              new Text(name2, "z")
             )
           ));
       });
@@ -327,8 +339,6 @@ public final class CAICmdLocationMetadataPutTest
       mock(LocationGetType.class);
     final var locationMetaPut =
       mock(LocationMetadataPutType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
 
     doThrow(
       new CADatabaseException(
@@ -371,11 +381,11 @@ public final class CAICmdLocationMetadataPutTest
     final var handler = new CAICmdLocationMetadataPut();
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
     final var name1 =
-      new RDottedName("com.io7m.name1");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name1");
     final var name2 =
-      new RDottedName("com.io7m.name2");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name2");
 
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
@@ -384,9 +394,9 @@ public final class CAICmdLocationMetadataPutTest
           new CAICommandLocationMetadataPut(
             LOCATION_ID,
             Set.of(
-              new CAMetadataType.Text(name0, "x"),
-              new CAMetadataType.Text(name1, "y"),
-              new CAMetadataType.Text(name2, "z")
+              new Text(name0, "x"),
+              new Text(name1, "y"),
+              new Text(name2, "z")
             )
           ));
       });
@@ -405,9 +415,9 @@ public final class CAICmdLocationMetadataPutTest
         new Parameters(
           LOCATION_ID,
           Set.of(
-            new CAMetadataType.Text(name0, "x"),
-            new CAMetadataType.Text(name1, "y"),
-            new CAMetadataType.Text(name2, "z")
+            new Text(name0, "x"),
+            new Text(name1, "y"),
+            new Text(name2, "z")
           )
         )
       );
@@ -433,8 +443,10 @@ public final class CAICmdLocationMetadataPutTest
       mock(LocationGetType.class);
     final var locationMetaPut =
       mock(LocationMetadataPutType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
 
     final var transaction =
       this.transaction();
@@ -443,8 +455,10 @@ public final class CAICmdLocationMetadataPutTest
       .thenReturn(locationGet);
     when(transaction.queries(LocationMetadataPutType.class))
       .thenReturn(locationMetaPut);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -463,7 +477,15 @@ public final class CAICmdLocationMetadataPutTest
       this.createContext();
 
     final var meta0 =
-      new CAMetadataType.Text(new RDottedName("a"), "x");
+      new Text(
+        CATypeRecordFieldIdentifier.of("com.io7m:a.x"),
+        "x"
+      );
+
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
 
     when(locationGet.execute(any()))
       .thenReturn(Optional.of(
@@ -474,51 +496,15 @@ public final class CAICmdLocationMetadataPutTest
           new TreeMap<>(Map.of(meta0.name(), meta0)),
           Collections.emptySortedMap(),
           new TreeSet<>(
-            Set.of(new RDottedName("t"))
+            List.of(
+              new CATypeRecordIdentifier(
+                new RDottedName("com.io7m"),
+                new RDottedName("t0")
+              )
+            )
           )
         )
       ));
-
-    final var type =
-      new CATypeRecord(
-        P,
-        new RDottedName("t"),
-        "T",
-        Map.ofEntries(
-          Map.entry(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "Field A",
-              new Integral(
-                P,
-                new RDottedName("ts0"),
-                "Number",
-                23L,
-                100L
-              ),
-              true
-            )
-          ),
-          Map.entry(
-            new RDottedName("b"),
-            new CATypeField(
-              new RDottedName("b"),
-              "Field B",
-              new Text(
-                P,
-                new RDottedName("ts0"),
-                "Anything",
-                ".*"
-              ),
-              true
-            )
-          )
-        )
-      );
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(type));
 
     /* Act. */
 
@@ -541,17 +527,25 @@ public final class CAICmdLocationMetadataPutTest
     verify(transaction)
       .queries(LocationGetType.class);
     verify(transaction)
-      .queries(LocationMetadataPutType.class);
+      .queries(TypePackageGetTextType.class);
     verify(transaction)
-      .queries(TypeRecordGetType.class);
+      .queries(TypePackageSatisfyingType.class);
+    verify(transaction)
+      .queries(LocationMetadataPutType.class);
 
     verify(locationGet)
       .execute(LOCATION_ID);
     verify(locationMetaPut)
       .execute(new Parameters(LOCATION_ID, Set.of(meta0)));
+    verify(typePackageSatisfying)
+      .execute(any());
+    verify(typePackageGetText)
+      .execute(P);
 
     verifyNoMoreInteractions(locationGet);
     verifyNoMoreInteractions(locationMetaPut);
+    verifyNoMoreInteractions(typePackageSatisfying);
+    verifyNoMoreInteractions(typePackageGetText);
     verifyNoMoreInteractions(transaction);
   }
 }

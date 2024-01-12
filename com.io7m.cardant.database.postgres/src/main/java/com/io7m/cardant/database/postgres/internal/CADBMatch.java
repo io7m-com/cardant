@@ -34,9 +34,12 @@ import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
+import com.io7m.lanark.core.RDottedName;
 import org.jooq.Condition;
 import org.jooq.EnumType;
 import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
 import java.math.BigDecimal;
@@ -161,7 +164,9 @@ public final class CADBMatch
   }
 
   record MetaFields(
-    NameFields nameFields,
+    TableField<Record, String> packageNameField,
+    TableField<Record, String> typeNameField,
+    TableField<Record, String> fieldNameField,
     Field<EnumType> metaValueType,
     Field<Long> metaValueInteger,
     Field<Double> metaValueReal,
@@ -226,10 +231,17 @@ public final class CADBMatch
       }
       case final CAMetadataElementMatchType.Specific specific -> {
         yield new QuerySetCondition(DSL.and(
-          CADBComparisons.createFuzzyMatchQuery(
-            specific.name(),
-            fields.nameFields.name,
-            fields.nameFields.nameSearch.getName()
+          CADBComparisons.createExactMatchQuery(
+            specific.packageName().map(RDottedName::value),
+            fields.packageNameField
+          ),
+          CADBComparisons.createExactMatchQuery(
+            specific.typeName(),
+            fields.typeNameField
+          ),
+          CADBComparisons.createExactMatchQuery(
+            specific.fieldName(),
+            fields.fieldNameField
           ),
           ofMetaValueMatch(fields, specific.value())
         ));
