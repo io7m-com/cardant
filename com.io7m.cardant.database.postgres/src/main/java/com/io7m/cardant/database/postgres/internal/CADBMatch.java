@@ -145,11 +145,15 @@ public final class CADBMatch
         yield DSL.trueCondition();
       }
       case final CAItemLocationExact exact -> {
-        yield fields.locationId.eq(DSL.array(exact.location().id()));
+        yield DSL.condition(
+          "ARRAY[?] && ?",
+          exact.location().id(),
+          fields.locationId
+        );
       }
       case final CAItemLocationWithDescendants descendants -> {
         yield DSL.condition(
-          "? && (select array(select location_descendants(?)))",
+          "? && (SELECT ARRAY(SELECT location_descendants(?)))",
           fields.locationId,
           descendants.location().id()
         );
