@@ -233,7 +233,7 @@ public final class CAFormatterPretty implements CAFormatterType
   {
     if (!metadata.isEmpty()) {
       final var writer = this.terminal.writer();
-      writer.println(" metadata");
+      writer.println(" Metadata");
 
       final var tableBuilder =
         Tabla.builder()

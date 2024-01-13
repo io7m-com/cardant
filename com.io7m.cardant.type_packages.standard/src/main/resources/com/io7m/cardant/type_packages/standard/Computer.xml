@@ -122,4 +122,11 @@
            Type="psu_form_factor"/>
   </TypeRecord>
 
+  <TypeRecord Name="gpu"
+              Description="A GPU.">
+    <Field Name="vram_size"
+           Description="The size of the VRAM."
+           Type="bytes"/>
+  </TypeRecord>
+
 </Package>
