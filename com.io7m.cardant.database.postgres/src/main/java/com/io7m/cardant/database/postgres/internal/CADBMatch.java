@@ -161,12 +161,6 @@ public final class CADBMatch
     };
   }
 
-  record TypeFields(
-    Field<String[]> types)
-  {
-
-  }
-
   record MetaFields(
     TableField<Record, String> packageNameField,
     TableField<Record, String> typeNameField,
@@ -179,13 +173,6 @@ public final class CADBMatch
     Field<BigDecimal> metaValueMoney,
     Field<String> metaValueText,
     Field<?> metaValueTextSearch)
-  {
-
-  }
-
-  record NameFields(
-    Field<String> name,
-    Field<?> nameSearch)
   {
 
   }
