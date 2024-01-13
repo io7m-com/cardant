@@ -32,6 +32,7 @@ import com.io7m.medrina.api.MRoleName;
 
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * A shell formatter for data.
@@ -214,4 +215,15 @@ public interface CAFormatterType
     CAPage<CATypePackageSummary> type)
     throws Exception;
 
+  /**
+   * Format a string set.
+   *
+   * @param strings The strings
+   *
+   * @throws Exception On errors
+   */
+
+  void formatStringSet(
+    SortedSet<String> strings)
+    throws Exception;
 }

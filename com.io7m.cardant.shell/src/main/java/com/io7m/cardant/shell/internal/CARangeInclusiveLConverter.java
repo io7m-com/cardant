@@ -19,7 +19,7 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.parsers.CAConstraintExpressions;
+import com.io7m.cardant.parsers.CAMetadataConstraintExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jranges.RangeInclusiveL;
 import com.io7m.quarrel.core.QException;
@@ -54,7 +54,7 @@ public final class CARangeInclusiveLConverter
     throws QException
   {
     try {
-      return new CAConstraintExpressions(this.strings).integerRange(text);
+      return new CAMetadataConstraintExpressions(this.strings).integerRange(text);
     } catch (final CAException e) {
       throw QException.adapt(e, CAErrorCode::id);
     }

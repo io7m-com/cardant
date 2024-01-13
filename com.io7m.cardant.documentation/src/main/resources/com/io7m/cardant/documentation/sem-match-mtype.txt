@@ -1,0 +1,3 @@
+match_type_evaluate with-any-type n                 ⇒ true
+match_type_evaluate (with-type-equal-to m) n        ⇒ n = m
+match_type_evaluate (with-type-not-equal-to m) n    ⇒ n ≠ m

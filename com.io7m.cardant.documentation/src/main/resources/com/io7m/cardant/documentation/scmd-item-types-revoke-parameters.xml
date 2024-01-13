@@ -51,7 +51,7 @@
       <Row>
         <Cell>Type</Cell>
         <Cell>
-          <Term type="class">com.io7m.lanark.core.RDottedName</Term>
+          <Term type="class">com.io7m.cardant.model.CATypeRecordIdentifier</Term>
         </Cell>
       </Row>
       <Row>

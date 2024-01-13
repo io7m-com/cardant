@@ -65,6 +65,8 @@ import com.io7m.cardant.shell.internal.CAShellCmdRolesGet;
 import com.io7m.cardant.shell.internal.CAShellCmdRolesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdSelf;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
+import com.io7m.cardant.shell.internal.CAShellCmdSyntaxList;
+import com.io7m.cardant.shell.internal.CAShellCmdSyntaxShow;
 import com.io7m.cardant.shell.internal.CAShellCmdType;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageGetText;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageInstall;
@@ -135,8 +137,12 @@ public final class CAShells implements CAShellFactoryType
       terminal.writer();
 
     final var services = new RPServiceDirectory();
+    final var strings = CAStrings.create(configuration.locale());
+    services.register(CAStrings.class, strings);
     services.register(CAClientSynchronousType.class, client);
-    services.register(CAShellOptions.class, new CAShellOptions(terminal));
+    services.register(
+      CAShellOptions.class,
+      new CAShellOptions(terminal));
     services.register(CAShellLoginTracker.class, new CAShellLoginTracker());
     services.register(
       CAPreferencesServiceType.class,
@@ -146,10 +152,7 @@ public final class CAShells implements CAShellFactoryType
       CAShellTerminalHolder.class,
       new CAShellTerminalHolder(terminal)
     );
-    services.register(
-      CAStrings.class,
-      CAStrings.create(configuration.locale())
-    );
+
 
     final List<CAShellCmdType> commands =
       List.of(
@@ -196,6 +199,8 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdRolesRevoke(services),
         new CAShellCmdSelf(services),
         new CAShellCmdSet(services),
+        new CAShellCmdSyntaxList(services),
+        new CAShellCmdSyntaxShow(services),
         new CAShellCmdTypePackageGetText(services),
         new CAShellCmdTypePackageInstall(services),
         new CAShellCmdTypePackageSchema(services),

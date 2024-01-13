@@ -14,6 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.cardant.parsers.CASyntaxFactoryType;
 import com.io7m.cardant.shell.CAShellFactoryType;
 import com.io7m.cardant.shell.CAShells;
 
@@ -44,6 +45,8 @@ module com.io7m.cardant.shell
   requires org.apache.commons.io;
   requires org.apache.tika.core;
   requires org.jline;
+
+  uses CASyntaxFactoryType;
 
   provides CAShellFactoryType
     with CAShells;

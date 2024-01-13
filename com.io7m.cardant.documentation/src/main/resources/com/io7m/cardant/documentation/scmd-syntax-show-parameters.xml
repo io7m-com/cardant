@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<Subsection title="Parameters"
+            xmlns="urn:com.io7m.structural:8:0">
+  <FormalItem id="796513b7-d5d2-4be8-bace-1fa7f83591c3"
+              title="--example">
+    <Table type="parameterTable">
+      <Columns>
+        <Column>Attribute</Column>
+        <Column>Value</Column>
+      </Columns>
+      <Row>
+        <Cell>Name</Cell>
+        <Cell>
+          <Term type="parameter">--example</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Type</Cell>
+        <Cell>
+          <Term type="class">java.lang.Boolean</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Default Value</Cell>
+        <Cell>
+          <Term type="constant">false</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Cardinality</Cell>
+        <Cell>
+          <Term type="expression">[1, 1]</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Description</Cell>
+        <Cell>Show a syntax example.</Cell>
+      </Row>
+    </Table>
+  </FormalItem>
+  <FormalItem id="d968b40b-f387-38c0-a1f1-89bb22891dac"
+              title="--rule">
+    <Table type="parameterTable">
+      <Columns>
+        <Column>Attribute</Column>
+        <Column>Value</Column>
+      </Columns>
+      <Row>
+        <Cell>Name</Cell>
+        <Cell>
+          <Term type="parameter">--rule</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Type</Cell>
+        <Cell>
+          <Term type="class">java.lang.String</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Default Value</Cell>
+        <Cell>
+          <Term type="constant"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Cardinality</Cell>
+        <Cell>
+          <Term type="expression">[1, 1]</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Description</Cell>
+        <Cell>The syntax rule name.</Cell>
+      </Row>
+    </Table>
+  </FormalItem>
+</Subsection>
+

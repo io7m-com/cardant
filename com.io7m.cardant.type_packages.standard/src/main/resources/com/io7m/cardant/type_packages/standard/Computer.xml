@@ -30,7 +30,7 @@
   <TypeScalarIntegral Name="hz"
                       Description="A rate in hz."
                       RangeLower="0"
-                      RangeUpper="1000000000000"/>
+                      RangeUpper="1000000000000000000"/>
 
   <TypeScalarReal Name="voltage"
                   Description="A voltage requirement for memory."
@@ -56,6 +56,15 @@
   <TypeScalarText Name="disk_type"
                   Description="The disk type."
                   Pattern="Magnetic|SSD|NVMe"/>
+
+  <TypeScalarText Name="psu_form_factor"
+                  Description="The PSU form factor."
+                  Pattern="ATX|ATX_2U"/>
+
+  <TypeScalarIntegral Name="watts"
+                      Description="A watt rating."
+                      RangeLower="50"
+                      RangeUpper="10000"/>
 
   <TypeRecord Name="dram"
               Description="A DRAM module.">
@@ -85,7 +94,7 @@
     <Field Name="voltage"
            Description="The voltage requirement for the CPU."
            Type="voltage"/>
-    <Field Name="socket"
+    <Field Name="socket_type"
            Description="The CPU socket type."
            Type="cpu_socket_type"/>
   </TypeRecord>
@@ -101,6 +110,16 @@
     <Field Name="interface"
            Description="The interface of the disk."
            Type="disk_interface"/>
+  </TypeRecord>
+
+  <TypeRecord Name="psu"
+              Description="A PSU.">
+    <Field Name="watts"
+           Description="The PSU wattage."
+           Type="watts"/>
+    <Field Name="psu_form_factor"
+           Description="The form factor of the PSU."
+           Type="psu_form_factor"/>
   </TypeRecord>
 
 </Package>

@@ -19,10 +19,12 @@ package com.io7m.cardant.tests.shell;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.parsers.CASyntaxRules;
 import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShells;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
 import com.io7m.cardant.tests.containers.CATestContainers;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -725,6 +727,38 @@ public final class CAShellIT
     w.println("type-package-search-next");
     w.println("type-package-search-previous");
     w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellSyntaxShow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var strings =
+      CAStrings.create(Locale.ROOT);
+    final var w =
+      this.terminal.sendInputToTerminalWriter();
+    final var rules =
+      CASyntaxRules.open(strings);
+
+    for (final var name : rules.rules().keySet()) {
+      w.println("syntax-show --rule " + name);
+      w.println();
+    }
+
+    for (final var name : rules.rules().keySet()) {
+      w.println("syntax-show --example true --rule " + name);
+      w.println();
+    }
+
+    this.startupLatch.await(5L, TimeUnit.SECONDS);
+
     w.flush();
     w.close();
 

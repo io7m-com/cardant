@@ -1,0 +1,5 @@
+match_package ::=
+    "with-any-package"
+  | "(" "with-package-equal-to" <package> ")"
+  | "(" "with-package-not-equal-to" <package> ")"
+  ;

@@ -21,7 +21,6 @@ import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -32,24 +31,29 @@ import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_INTEGER;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_INTEGER_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_INTEGER_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MONEY;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MONEY_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MONEY_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_REAL;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_REAL_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_REAL_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TEXT;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TEXT_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TEXT_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TIME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TIME_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TIME_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expressions over metadata values.
@@ -57,15 +61,6 @@ import static java.util.Map.entry;
 
 public final class CAMetadataExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(SYNTAX_METADATA_INTEGER_NAME, SYNTAX_METADATA_INTEGER),
-      entry(SYNTAX_METADATA_TIME_NAME, SYNTAX_METADATA_TIME),
-      entry(SYNTAX_METADATA_TEXT_NAME, SYNTAX_METADATA_TEXT),
-      entry(SYNTAX_METADATA_REAL_NAME, SYNTAX_METADATA_REAL),
-      entry(SYNTAX_METADATA_MONEY_NAME, SYNTAX_METADATA_MONEY),
-      entry(SYNTAX_METADATA_NAME, SYNTAX_METADATA)
-    );
 
   /**
    * Expression parsers for metadata values.
@@ -77,12 +72,6 @@ public final class CAMetadataExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -382,5 +371,70 @@ public final class CAMetadataExpressions extends CAExpressions
     } catch (final Exception e) {
       throw this.createParseError(expr, e);
     }
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_METADATA_NAME,
+        List.of(
+          SYNTAX_METADATA_INTEGER_NAME,
+          SYNTAX_METADATA_TIME_NAME,
+          SYNTAX_METADATA_TEXT_NAME,
+          SYNTAX_METADATA_REAL_NAME,
+          SYNTAX_METADATA_MONEY_NAME
+        ),
+        List.of(
+          SYNTAX_METADATA_INTEGER_EXAMPLE,
+          SYNTAX_METADATA_TIME_EXAMPLE,
+          SYNTAX_METADATA_TEXT_EXAMPLE,
+          SYNTAX_METADATA_REAL_EXAMPLE,
+          SYNTAX_METADATA_MONEY_EXAMPLE
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_INTEGER_NAME,
+        SYNTAX_METADATA_INTEGER,
+        List.of(SYNTAX_METADATA_INTEGER_EXAMPLE)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_TIME_NAME,
+        SYNTAX_METADATA_TIME,
+        List.of(SYNTAX_METADATA_TIME_EXAMPLE)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_TEXT_NAME,
+        SYNTAX_METADATA_TEXT,
+        List.of(SYNTAX_METADATA_TEXT_EXAMPLE)
+
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_REAL_NAME,
+        SYNTAX_METADATA_REAL,
+        List.of(SYNTAX_METADATA_REAL_EXAMPLE)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MONEY_NAME,
+        SYNTAX_METADATA_MONEY,
+        List.of(SYNTAX_METADATA_MONEY_EXAMPLE)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

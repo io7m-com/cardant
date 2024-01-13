@@ -21,7 +21,6 @@ import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMonetaryRange;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATimeRange;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jranges.RangeInclusiveD;
 import com.io7m.jranges.RangeInclusiveL;
@@ -30,66 +29,41 @@ import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_INTEGER_RANGE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_INTEGER_RANGE_EXAMPLE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_INTEGER_RANGE_EXAMPLE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_INTEGER_RANGE_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_ISO_TIMESTAMP;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_ISO_TIMESTAMP_EXAMPLE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_ISO_TIMESTAMP_EXAMPLE_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_ISO_TIMESTAMP_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MONEY_RANGE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MONEY_RANGE_EXAMPLE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MONEY_RANGE_EXAMPLE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MONEY_RANGE_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_RANGE_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_RANGE_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_RANGE_EXAMPLE_2;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_RANGE_EXAMPLE_3;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_RANGE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_REAL_RANGE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_REAL_RANGE_EXAMPLE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_REAL_RANGE_EXAMPLE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_REAL_RANGE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TIME_RANGE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TIME_RANGE_EXAMPLE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TIME_RANGE_EXAMPLE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TIME_RANGE_NAME;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for type constraints.
  */
 
-public final class CAConstraintExpressions extends CAExpressions
+public final class CAMetadataConstraintExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(SYNTAX_INTEGER_RANGE_EXAMPLE_NAME, SYNTAX_INTEGER_RANGE_EXAMPLE),
-      entry(SYNTAX_INTEGER_RANGE_NAME, SYNTAX_INTEGER_RANGE),
-      entry(SYNTAX_ISO_TIMESTAMP_EXAMPLE_NAME, SYNTAX_ISO_TIMESTAMP_EXAMPLE),
-      entry(SYNTAX_ISO_TIMESTAMP_NAME, SYNTAX_ISO_TIMESTAMP),
-      entry(SYNTAX_MONEY_RANGE_EXAMPLE_NAME, SYNTAX_MONEY_RANGE_EXAMPLE),
-      entry(SYNTAX_MONEY_RANGE_NAME, SYNTAX_MONEY_RANGE),
-      entry(SYNTAX_REAL_RANGE_EXAMPLE_NAME, SYNTAX_REAL_RANGE_EXAMPLE),
-      entry(SYNTAX_REAL_RANGE_NAME, SYNTAX_REAL_RANGE),
-      entry(SYNTAX_TIME_RANGE_EXAMPLE_NAME, SYNTAX_TIME_RANGE_EXAMPLE),
-      entry(SYNTAX_TIME_RANGE_NAME, SYNTAX_TIME_RANGE)
-    );
-
   /**
    * Expression parsers for type constraints.
    *
    * @param inStrings The string resources
    */
 
-  public CAConstraintExpressions(
+  public CAMetadataConstraintExpressions(
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -246,5 +220,60 @@ public final class CAConstraintExpressions extends CAExpressions
     }
 
     throw this.createParseError(expression);
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_RANGE_NAME,
+        List.of(
+          SYNTAX_INTEGER_RANGE_NAME,
+          SYNTAX_MONEY_RANGE_NAME,
+          SYNTAX_REAL_RANGE_NAME,
+          SYNTAX_TIME_RANGE_NAME
+        ),
+        List.of(
+          SYNTAX_RANGE_EXAMPLE_0,
+          SYNTAX_RANGE_EXAMPLE_1,
+          SYNTAX_RANGE_EXAMPLE_2,
+          SYNTAX_RANGE_EXAMPLE_3
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_INTEGER_RANGE_NAME,
+        SYNTAX_INTEGER_RANGE,
+        List.of(SYNTAX_RANGE_EXAMPLE_0)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_MONEY_RANGE_NAME,
+        SYNTAX_MONEY_RANGE,
+        List.of(SYNTAX_RANGE_EXAMPLE_1)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_REAL_RANGE_NAME,
+        SYNTAX_REAL_RANGE,
+        List.of(SYNTAX_RANGE_EXAMPLE_2)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TIME_RANGE_NAME,
+        SYNTAX_TIME_RANGE,
+        List.of(SYNTAX_RANGE_EXAMPLE_3)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

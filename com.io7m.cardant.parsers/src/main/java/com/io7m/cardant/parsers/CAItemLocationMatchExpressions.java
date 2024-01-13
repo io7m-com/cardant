@@ -23,28 +23,29 @@ import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
 import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 import com.io7m.jsx.SExpressionType.SSymbol;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_ANYNAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_ANYNAME_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_DESC;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_DESC_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXACT;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXACT_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXAMPLE_1;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for location match expressions.
@@ -52,22 +53,6 @@ import static java.util.Map.entry;
 
 public final class CAItemLocationMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_LOCATION_MATCH_NAME,
-        SYNTAX_LOCATION_MATCH),
-      entry(
-        SYNTAX_LOCATION_MATCH_EXACT_NAME,
-        SYNTAX_LOCATION_MATCH_EXACT),
-      entry(
-        SYNTAX_LOCATION_MATCH_DESC_NAME,
-        SYNTAX_LOCATION_MATCH_DESC),
-      entry(
-        SYNTAX_LOCATION_MATCH_ANYNAME_NAME,
-        SYNTAX_LOCATION_MATCH_ANYNAME)
-    );
-
   /**
    * Expression parsers for location match expressions.
    *
@@ -78,12 +63,6 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -231,5 +210,55 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
     throws CAException
   {
     return CAExpressions.serialize(this.locationMatchSerialize(match));
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_LOCATION_MATCH_NAME,
+        List.of(
+          SYNTAX_LOCATION_MATCH_ANYNAME_NAME,
+          SYNTAX_LOCATION_MATCH_EXACT_NAME,
+          SYNTAX_LOCATION_MATCH_DESC_NAME
+        ),
+        List.of(
+          SYNTAX_LOCATION_MATCH_ANYNAME,
+          SYNTAX_LOCATION_MATCH_EXAMPLE_0,
+          SYNTAX_LOCATION_MATCH_EXAMPLE_1
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_LOCATION_MATCH_ANYNAME_NAME,
+        SYNTAX_LOCATION_MATCH_ANYNAME,
+        List.of(
+          SYNTAX_LOCATION_MATCH_ANYNAME
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_LOCATION_MATCH_EXACT_NAME,
+        SYNTAX_LOCATION_MATCH_EXACT,
+        List.of(SYNTAX_LOCATION_MATCH_EXAMPLE_0)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_LOCATION_MATCH_DESC_NAME,
+        SYNTAX_LOCATION_MATCH_DESC,
+        List.of(SYNTAX_LOCATION_MATCH_EXAMPLE_1)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

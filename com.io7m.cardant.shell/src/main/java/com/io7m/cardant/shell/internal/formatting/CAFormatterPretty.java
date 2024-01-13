@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 
 import static com.io7m.cardant.shell.internal.formatting.CAFormatterRaw.formatSize;
 import static com.io7m.tabla.core.TColumnWidthConstraint.atLeastContent;
@@ -611,6 +612,23 @@ public final class CAFormatterPretty implements CAFormatterType
     this.renderTable(tableBuilder.build());
   }
 
+  @Override
+  public void formatStringSet(
+    final SortedSet<String> set)
+    throws Exception
+  {
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(1))
+        .declareColumn("Name", atLeastContentOrHeader());
+
+    for (final var item : set) {
+      tableBuilder.addRow().addCell(item);
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
   private void formatLocationAttributes(
     final CALocation location)
     throws TException
@@ -634,7 +652,6 @@ public final class CAFormatterPretty implements CAFormatterType
       .addCell(location.parent().map(CAIdType::displayId).orElse("None"));
 
     this.renderTable(tableBuilder.build());
-
   }
 
   @Override

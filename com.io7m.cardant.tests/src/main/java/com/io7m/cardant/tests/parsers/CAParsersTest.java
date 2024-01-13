@@ -24,11 +24,11 @@ import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
-import com.io7m.cardant.parsers.CAConstraintExpressions;
 import com.io7m.cardant.parsers.CADescriptionMatchExpressions;
 import com.io7m.cardant.parsers.CAItemLocationMatchExpressions;
 import com.io7m.cardant.parsers.CAItemSerialMatchExpressions;
 import com.io7m.cardant.parsers.CAMediaTypeMatchExpressions;
+import com.io7m.cardant.parsers.CAMetadataConstraintExpressions;
 import com.io7m.cardant.parsers.CAMetadataExpressions;
 import com.io7m.cardant.parsers.CAMetadataMatchExpressions;
 import com.io7m.cardant.parsers.CANameMatchFuzzyExpressions;
@@ -68,7 +68,7 @@ public final class CAParsersTest
     throws CAException
   {
     final var r =
-      new CAConstraintExpressions(this.strings)
+      new CAMetadataConstraintExpressions(this.strings)
         .monetaryRange("[24.0 500.0]");
 
     assertEquals(CAMoney.money("24.0"), r.lower());
@@ -80,7 +80,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .monetaryRange("[24.0]");
       });
     assertEquals(errorParse(), ex.errorCode());
@@ -91,7 +91,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .monetaryRange("[x y]");
       });
     assertEquals(errorParse(), ex.errorCode());
@@ -102,7 +102,7 @@ public final class CAParsersTest
     throws CAException
   {
     final var r =
-      new CAConstraintExpressions(this.strings)
+      new CAMetadataConstraintExpressions(this.strings)
         .integerRange("[24 500]");
 
     assertEquals(24L, r.lower());
@@ -114,7 +114,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .integerRange("[24 ]");
       });
     assertEquals(errorParse(), ex.errorCode());
@@ -125,7 +125,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .integerRange("[x y]");
       });
     assertEquals(errorParse(), ex.errorCode());
@@ -136,7 +136,7 @@ public final class CAParsersTest
     throws CAException
   {
     final var r =
-      new CAConstraintExpressions(this.strings)
+      new CAMetadataConstraintExpressions(this.strings)
         .realRange("[24.3 500.5]");
 
     assertEquals(24.3, r.lower());
@@ -148,7 +148,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .realRange("[24.0 ]");
       });
     assertEquals(errorParse(), ex.errorCode());
@@ -159,7 +159,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .realRange("[x y]");
       });
     assertEquals(errorParse(), ex.errorCode());
@@ -170,7 +170,7 @@ public final class CAParsersTest
     throws CAException
   {
     final var r =
-      new CAConstraintExpressions(this.strings)
+      new CAMetadataConstraintExpressions(this.strings)
         .timeRange("[2023-07-23T12:24:35+00:00 2023-07-23T12:24:54+00:00]");
 
     assertEquals("2023-07-23T12:24:35Z", r.lower().toString());
@@ -182,7 +182,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .timeRange("[2023-07-23T12:24:35+00:00 ]");
       });
     assertEquals(errorParse(), ex.errorCode());
@@ -193,7 +193,7 @@ public final class CAParsersTest
   {
     final var ex =
       assertThrows(CAException.class, () -> {
-        new CAConstraintExpressions(this.strings)
+        new CAMetadataConstraintExpressions(this.strings)
           .timeRange("[x y]");
       });
     assertEquals(errorParse(), ex.errorCode());

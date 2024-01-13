@@ -27,7 +27,6 @@ import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsNotEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsOverlapping;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsSubsetOf;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsSupersetOf;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -36,25 +35,34 @@ import com.io7m.jsx.SExpressionType.SListType;
 import com.io7m.jsx.SExpressionType.SSymbol;
 import com.io7m.lanark.core.RDottedName;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_ANYTYPE;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_ANYTYPE_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_2;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_3;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_4;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_NOT_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_NOT_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_OVERLAPPING_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_OVERLAPPING_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUBSETOF_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUBSETOF_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUPERSETOF_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUPERSETOF_TO;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for type match expressions.
@@ -62,25 +70,6 @@ import static java.util.Map.entry;
 
 public final class CATypeMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_NAME_MATCH_ANYNAME_NAME,
-        SYNTAX_NAME_MATCH_ANYNAME),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO)
-    );
-
   /**
    * Expression parsers for type match expressions.
    *
@@ -91,12 +80,6 @@ public final class CATypeMatchExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -308,5 +291,82 @@ public final class CATypeMatchExpressions extends CAExpressions
     final CATypeRecordIdentifier n)
   {
     return new SSymbol(zero(), n.toString());
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_TYPE_MATCH_NAME,
+        List.of(
+          SYNTAX_TYPE_MATCH_ANYTYPE_NAME,
+          SYNTAX_TYPE_MATCH_EQUAL_TO_NAME,
+          SYNTAX_TYPE_MATCH_NOT_EQUAL_TO_NAME,
+          SYNTAX_TYPE_MATCH_SUPERSETOF_NAME,
+          SYNTAX_TYPE_MATCH_SUBSETOF_NAME,
+          SYNTAX_TYPE_MATCH_OVERLAPPING_NAME
+        ),
+        List.of(
+          SYNTAX_TYPE_MATCH_EXAMPLE_0,
+          SYNTAX_TYPE_MATCH_EXAMPLE_1,
+          SYNTAX_TYPE_MATCH_EXAMPLE_2,
+          SYNTAX_TYPE_MATCH_EXAMPLE_3,
+          SYNTAX_TYPE_MATCH_EXAMPLE_4
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_ANYTYPE_NAME,
+        SYNTAX_TYPE_MATCH_ANYTYPE,
+        List.of(SYNTAX_TYPE_MATCH_ANYTYPE)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_EQUAL_TO_NAME,
+        SYNTAX_TYPE_MATCH_EQUAL_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_0)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_NOT_EQUAL_TO_NAME,
+        SYNTAX_TYPE_MATCH_NOT_EQUAL_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_1)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_SUPERSETOF_NAME,
+        SYNTAX_TYPE_MATCH_SUPERSETOF_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_4)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_SUBSETOF_NAME,
+        SYNTAX_TYPE_MATCH_SUBSETOF_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_3)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_OVERLAPPING_NAME,
+        SYNTAX_TYPE_MATCH_OVERLAPPING_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_2)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

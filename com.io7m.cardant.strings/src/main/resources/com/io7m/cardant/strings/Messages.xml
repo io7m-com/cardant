@@ -16,10 +16,14 @@
   <entry key="error_hash_value_mismatch">Hash value did not match.</entry>
   <entry key="error_http">HTTP server returned an error: {0}</entry>
   <entry key="error_indexed">Error[{0}]</entry>
+  <entry key="error_indexed_attribute">Error[{0}] {1}</entry>
   <entry key="error_io">I/O operation failed.</entry>
-  <entry key="error_item_count_store_invariant">The sum of the stored items does not match the expected item count.</entry>
+  <entry key="error_item_count_store_invariant">The sum of the stored items does not match the expected item count.
+  </entry>
   <entry key="error_item_count_too_many_removed">Attempted to remove too many items.</entry>
-  <entry key="error_item_reposit_remove_identified">The remaining items have serial numbers and therefore must be removed individually and not as part of a set.</entry>
+  <entry key="error_item_reposit_remove_identified">The remaining items have serial numbers and therefore must be
+    removed individually and not as part of a set.
+  </entry>
   <entry key="error_nonexistent">Object does not exist.</entry>
   <entry key="error_not_logged_in">Not logged in!</entry>
   <entry key="error_open_connection">Failed to open a database connection: {0}.</entry>
@@ -35,18 +39,25 @@
   <entry key="error_server_connect">Could not connect to server.</entry>
   <entry key="error_shell_options_combination">The options {0} cannot be used in combination.</entry>
   <entry key="error_type_checking"><![CDATA[Type checking failed.]]></entry>
-  <entry key="error_type_declaration_refers_to_nonexistent_type"><![CDATA[A field in the type declaration refers to a nonexistent type.]]></entry>
-  <entry key="error_type_field_invalid"><![CDATA[A value is of the wrong type and/or does not match the provided type constraint.]]></entry>
+  <entry key="error_type_declaration_refers_to_nonexistent_type">
+    <![CDATA[A field in the type declaration refers to a nonexistent type.]]></entry>
+  <entry key="error_type_field_invalid">
+    <![CDATA[A value is of the wrong type and/or does not match the provided type constraint.]]></entry>
   <entry key="error_type_invalid_pattern"><![CDATA[Invalid pattern in scalar type.]]></entry>
   <entry key="error_type_missing_required_field"><![CDATA[A required field is missing.]]></entry>
-  <entry key="error_type_scalar_still_referenced"><![CDATA[The given scalar type is still referenced by one or more fields/types, and cannot be removed without first removing those types/fields.]]></entry>
-  <entry key="error_type_scalar_still_referenced_suggest">Use TYPE_REMOVAL_REVOKE_TYPES to forcefully revoke types.</entry>
-  <entry key="error_type_still_referenced"><![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
+  <entry key="error_type_scalar_still_referenced">
+    <![CDATA[The given scalar type is still referenced by one or more fields/types, and cannot be removed without first removing those types/fields.]]></entry>
+  <entry key="error_type_scalar_still_referenced_suggest">Use TYPE_REMOVAL_REVOKE_TYPES to forcefully revoke types.
+  </entry>
+  <entry key="error_type_still_referenced">
+    <![CDATA[The given type is still referenced by one or more items, and cannot be removed without first removing those items or revoking the type from them.]]></entry>
   <entry key="error_unauthorized">Unauthorized.</entry>
   <entry key="error_package_downgrade">Package downgrades are not permitted.</entry>
   <entry key="error_package_downgrade_suggest">Use VERSION_ALLOW_DOWNGRADES to permit downgrades.</entry>
-  <entry key="error_type_exists_wrong_package">A type with the given name is already provided by a different package.</entry>
-  <entry key="error_type_exists_wrong_package_suggest">Use TYPE_ADDITION_REPLACE_TYPES to forcefully replace types.</entry>
+  <entry key="error_type_exists_wrong_package">A type with the given name is already provided by a different package.
+  </entry>
+  <entry key="error_type_exists_wrong_package_suggest">Use TYPE_ADDITION_REPLACE_TYPES to forcefully replace types.
+  </entry>
 
   <entry key="error_parse_indexed">Parse error {0}</entry>
   <entry key="error_type_indexed">Type error {0}</entry>
@@ -112,329 +123,427 @@
   <entry key="user_id">User ID</entry>
   <entry key="version_range">Version Range</entry>
 
+  <!-- Model types -->
+  <entry key="syntax_dotted_name_name">dotted-name</entry>
+  <entry key="syntax_dotted_name"># Lanark Dotted Name: https://www.io7m.com/software/lanark/</entry>
+  <entry key="syntax_dotted_name_example">com.io7m.example</entry>
+
+  <entry key="syntax_unqualified_name_name">unqualified-name</entry>
+  <entry key="syntax_unqualified_name"># Lanark Dotted Name Segment: https://www.io7m.com/software/lanark/</entry>
+  <entry key="syntax_unqualified_name_example">example</entry>
+
+  <entry key="syntax_type_record_identifier_name">type-record-identifier</entry>
+  <entry key="syntax_type_record_identifier"><![CDATA[<dotted-name> ':' <unqualified-name>]]></entry>
+  <entry key="syntax_type_record_identifier_example">com.io7m:t</entry>
+
+  <entry key="syntax_type_record_field_identifier_name">type-record-field-identifier</entry>
+  <entry key="syntax_type_record_field_identifier"><![CDATA[<dotted-name> ':' <unqualified-name> '.' <unqualified-name>]]></entry>
+  <entry key="syntax_type_record_field_identifier_example">com.io7m:t.x</entry>
+
+  <entry key="syntax_package_name">package</entry>
+  <entry key="syntax_package"><![CDATA[<dotted-name>]]></entry>
+  <entry key="syntax_package_example">com.io7m</entry>
+
   <!--           -->
   <!-- Locations -->
   <!--           -->
 
-  <entry key="syntax_location_match_anyname_name">Syntax (any-location)</entry>
+  <entry key="syntax_location_match_anyname_name">location-any</entry>
   <entry key="syntax_location_match_anyname">
     <![CDATA[any-location]]>
   </entry>
 
-  <entry key="syntax_location_match_exact_name">Syntax (with-location-exact)</entry>
+  <entry key="syntax_location_match_exact_name">location-exact</entry>
   <entry key="syntax_location_match_exact">
     <![CDATA[(with-location-exact <location-id>)]]>
   </entry>
 
-  <entry key="syntax_location_match_desc_name">Syntax (with-location-or-descendants)</entry>
+  <entry key="syntax_location_match_desc_name">location-descendants</entry>
   <entry key="syntax_location_match_desc">
     <![CDATA[(with-location-or-descendants <location-id>)]]>
   </entry>
 
-  <entry key="syntax_location_match_name">Syntax (location-match)</entry>
-  <entry key="syntax_location_match">
-    <![CDATA[<any-location> | <with-location-exact> | <with-location-or-descendants>]]>
+  <entry key="syntax_location_match_name">location-match</entry>
+  <entry key="syntax_location_match_example_0">(with-location-exact 06dc16ad-61f8-4a19-b33e-50e508fa983d)</entry>
+  <entry key="syntax_location_match_example_1">(with-location-or-descendants 06dc16ad-61f8-4a19-b33e-50e508fa983d)
   </entry>
 
   <!--       -->
   <!-- Names -->
   <!--       -->
 
-  <entry key="syntax_name_match_anyname_name">Syntax (with-any-name)</entry>
+  <entry key="syntax_name_match_name">name-match</entry>
+
+  <entry key="syntax_name_match_anyname_name">name-match-any</entry>
   <entry key="syntax_name_match_anyname">
     <![CDATA[with-any-name]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_equal_to_name">Syntax (with-name-equal-to)</entry>
+  <entry key="syntax_name_match_with_name_equal_to_name">name-match-equal-to</entry>
   <entry key="syntax_name_match_with_name_equal_to">
     <![CDATA[(with-name-equal-to <name>)]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_not_equal_to_name">Syntax (with-name-not-equal-to)</entry>
+  <entry key="syntax_name_match_with_name_not_equal_to_name">name-match-not-equal-to</entry>
   <entry key="syntax_name_match_with_name_not_equal_to">
     <![CDATA[(with-name-not-equal-to <name>)]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_similar_to_name">Syntax (with-name-similar-to)</entry>
+  <entry key="syntax_name_match_with_name_similar_to_name">name-match-similar-to</entry>
   <entry key="syntax_name_match_with_name_similar_to">
     <![CDATA[(with-name-similar-to <name>)]]>
   </entry>
 
-  <entry key="syntax_name_match_with_name_not_similar_to_name">Syntax (with-name-not-similar-to)</entry>
+  <entry key="syntax_name_match_with_name_not_similar_to_name">name-match-not-similar-to</entry>
   <entry key="syntax_name_match_with_name_not_similar_to">
     <![CDATA[(with-name-not-similar-to <name>)]]>
   </entry>
+
+  <entry key="syntax_name_match_example_0">[with-name-equal-to "A standard battery."]</entry>
+  <entry key="syntax_name_match_example_1">[with-name-not-equal-to "A standard battery."]</entry>
+  <entry key="syntax_name_match_example_2">[with-name-similar-to "Battery AND Nickel"]</entry>
+  <entry key="syntax_name_match_example_3">[with-name-not-similar-to "Battery AND Nickel"]</entry>
 
   <!--         -->
   <!-- Serials -->
   <!--         -->
 
-  <entry key="syntax_serial_match_anyserial_name">Syntax (with-any-serial)</entry>
+  <entry key="syntax_serial_match_anyserial_name">serial-any</entry>
   <entry key="syntax_serial_match_anyserial">
     <![CDATA[with-any-serial]]>
   </entry>
 
-  <entry key="syntax_serial_match_with_serial_equal_to_name">Syntax (with-serial-equal-to)</entry>
+  <entry key="syntax_serial_match_with_serial_equal_to_name">serial-equal-to</entry>
   <entry key="syntax_serial_match_with_serial_equal_to">
     <![CDATA[(with-serial-equal-to <serial>)]]>
   </entry>
 
-  <entry key="syntax_serial_match_with_serial_not_equal_to_name">Syntax (with-serial-not-equal-to)</entry>
+  <entry key="syntax_serial_match_with_serial_not_equal_to_name">serial-not-equal-to</entry>
   <entry key="syntax_serial_match_with_serial_not_equal_to">
     <![CDATA[(with-serial-not-equal-to <serial>)]]>
   </entry>
+
+  <entry key="syntax_serial_match_name">serial-match</entry>
+  <entry key="syntax_serial_match_example_0">[with-serial-equal-to "37F5F40B1719"]</entry>
+  <entry key="syntax_serial_match_example_1">[with-serial-not-equal-to "37F5F40B1719"]</entry>
 
   <!--             -->
   <!-- Description -->
   <!--             -->
 
-  <entry key="syntax_description_match_anydescription_name">Syntax (with-any-description)</entry>
+  <entry key="syntax_description_match_anydescription_name">description-with-any</entry>
   <entry key="syntax_description_match_anydescription">
     <![CDATA[with-any-description]]>
   </entry>
 
-  <entry key="syntax_description_match_with_description_equal_to_name">Syntax (with-description-equal-to)</entry>
+  <entry key="syntax_description_match_with_description_equal_to_name">description-equal-to</entry>
   <entry key="syntax_description_match_with_description_equal_to">
     <![CDATA[(with-description-equal-to <description>)]]>
   </entry>
 
-  <entry key="syntax_description_match_with_description_not_equal_to_name">Syntax (with-description-not-equal-to)</entry>
+  <entry key="syntax_description_match_with_description_not_equal_to_name">description-not-equal-to</entry>
   <entry key="syntax_description_match_with_description_not_equal_to">
     <![CDATA[(with-description-not-equal-to <description>)]]>
   </entry>
 
-  <entry key="syntax_description_match_with_description_similar_to_name">Syntax (with-description-similar-to)</entry>
+  <entry key="syntax_description_match_with_description_similar_to_name">description-similar-to</entry>
   <entry key="syntax_description_match_with_description_similar_to">
     <![CDATA[(with-description-similar-to <description>)]]>
   </entry>
 
-  <entry key="syntax_description_match_with_description_not_similar_to_name">Syntax (with-description-not-similar-to)</entry>
+  <entry key="syntax_description_match_with_description_not_similar_to_name">description-not-similar-to</entry>
   <entry key="syntax_description_match_with_description_not_similar_to">
     <![CDATA[(with-description-not-similar-to <description>)]]>
   </entry>
+
+  <entry key="syntax_description_match_name">description-match</entry>
+
+  <entry key="syntax_description_match_example_0">[with-description-equal-to "A standard battery."]</entry>
+  <entry key="syntax_description_match_example_1">[with-description-not-equal-to "A standard battery."]</entry>
+  <entry key="syntax_description_match_example_2">[with-description-similar-to "Battery AND Nickel"]</entry>
+  <entry key="syntax_description_match_example_3">[with-description-not-similar-to "Battery AND Nickel"]</entry>
 
   <!--            -->
   <!-- Media Type -->
   <!--            -->
 
-  <entry key="syntax_mediatype_match_anymediatype_name">Syntax (with-any-mediatype)</entry>
+  <entry key="syntax_mediatype_match_anymediatype_name">mediatype-with-any</entry>
   <entry key="syntax_mediatype_match_anymediatype">
     <![CDATA[with-any-mediatype]]>
   </entry>
 
-  <entry key="syntax_mediatype_match_with_mediatype_equal_to_name">Syntax (with-mediatype-equal-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_equal_to_name">mediatype-equal-to</entry>
   <entry key="syntax_mediatype_match_with_mediatype_equal_to">
     <![CDATA[(with-mediatype-equal-to <mediatype>)]]>
   </entry>
 
-  <entry key="syntax_mediatype_match_with_mediatype_not_equal_to_name">Syntax (with-mediatype-not-equal-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_not_equal_to_name">mediatype-not-equal-to</entry>
   <entry key="syntax_mediatype_match_with_mediatype_not_equal_to">
     <![CDATA[(with-mediatype-not-equal-to <mediatype>)]]>
   </entry>
 
-  <entry key="syntax_mediatype_match_with_mediatype_similar_to_name">Syntax (with-mediatype-similar-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_similar_to_name">mediatype-similar-to</entry>
   <entry key="syntax_mediatype_match_with_mediatype_similar_to">
     <![CDATA[(with-mediatype-similar-to <mediatype>)]]>
   </entry>
 
-  <entry key="syntax_mediatype_match_with_mediatype_not_similar_to_name">Syntax (with-mediatype-not-similar-to)</entry>
+  <entry key="syntax_mediatype_match_with_mediatype_not_similar_to_name">mediatype-not-similar-to</entry>
   <entry key="syntax_mediatype_match_with_mediatype_not_similar_to">
     <![CDATA[(with-mediatype-not-similar-to <mediatype>)]]>
   </entry>
+
+  <entry key="syntax_mediatype_match_name">mediatype-match</entry>
+  <entry key="syntax_mediatype_match_example_0">[with-mediatype-equal-to "A standard battery."]</entry>
+  <entry key="syntax_mediatype_match_example_1">[with-mediatype-not-equal-to "A standard battery."]</entry>
+  <entry key="syntax_mediatype_match_example_2">[with-mediatype-similar-to "Battery AND Nickel"]</entry>
+  <entry key="syntax_mediatype_match_example_3">[with-mediatype-not-similar-to "Battery AND Nickel"]</entry>
 
   <!--       -->
   <!-- Types -->
   <!--       -->
 
-  <entry key="syntax_type_match_anytype_name">Syntax (with-any-type)</entry>
+  <entry key="syntax_type_match_anytype_name">types-any</entry>
   <entry key="syntax_type_match_anytype">
     <![CDATA[any-type]]>
   </entry>
 
-  <entry key="syntax_type_match_equal_to_name">Syntax (with-types-equal-to)</entry>
+  <entry key="syntax_type_match_equal_to_name">types-equal-to</entry>
   <entry key="syntax_type_match_equal_to">
-    <![CDATA[(with-types-equal-to <type> <type> ...)]]>
+    <![CDATA[(with-types-equal-to <type-record-identifier> <type-record-identifier> ...)]]>
   </entry>
 
-  <entry key="syntax_type_match_not_equal_to_name">Syntax (with-types-not-equal-to)</entry>
+  <entry key="syntax_type_match_not_equal_to_name">types-not-equal-to</entry>
   <entry key="syntax_type_match_not_equal_to">
-    <![CDATA[(with-types-not-equal-to <type> <type> ...)]]>
+    <![CDATA[(with-types-not-equal-to <type-record-identifier> <type-record-identifier> ...)]]>
   </entry>
 
-  <entry key="syntax_type_match_overlapping_name">Syntax (with-types-overlapping)</entry>
+  <entry key="syntax_type_match_overlapping_name">types-overlapping</entry>
   <entry key="syntax_type_match_overlapping_to">
-    <![CDATA[(with-types-overlapping <type> <type> ...)]]>
+    <![CDATA[(with-types-overlapping <type-record-identifier> <type-record-identifier> ...)]]>
   </entry>
 
-  <entry key="syntax_type_match_subsetof_name">Syntax (with-types-subset-of)</entry>
+  <entry key="syntax_type_match_subsetof_name">types-subset-of</entry>
   <entry key="syntax_type_match_subsetof_to">
-    <![CDATA[(with-types-subset-of <type> <type> ...)]]>
+    <![CDATA[(with-types-subset-of <type-record-identifier> <type-record-identifier> ...)]]>
   </entry>
 
-  <entry key="syntax_type_match_supersetof_name">Syntax (with-types-superset-of)</entry>
+  <entry key="syntax_type_match_supersetof_name">types-superset-of</entry>
   <entry key="syntax_type_match_supersetof_to">
-    <![CDATA[(with-types-superset-of <type> <type> ...)]]>
+    <![CDATA[(with-types-superset-of <type-record-identifier> <type-record-identifier> ...)]]>
   </entry>
 
-  <entry key="syntax_type_match_name">Syntax (type-match)</entry>
-  <entry key="syntax_type_match">
-    <![CDATA[<with-any-type> | <with-types-equal-to> | <with-types-not-equal-to> | <with-types-overlapping> | <with-types-subset-of> | <with-types-superset-of> ]]>
-  </entry>
+  <entry key="syntax_type_match_name">type-match</entry>
+
+  <entry key="syntax_type_match_example_0">[types-equal-to cardant.computer:dram cardant.product]</entry>
+  <entry key="syntax_type_match_example_1">[types-not-equal-to cardant.computer:dram cardant.product]</entry>
+  <entry key="syntax_type_match_example_2">[types-overlapping cardant.computer:dram cardant.product]</entry>
+  <entry key="syntax_type_match_example_3">[types-subset-of cardant.computer:dram cardant.product]</entry>
+  <entry key="syntax_type_match_example_4">[types-superset-of cardant.computer:dram cardant.product]</entry>
 
   <!--          -->
   <!-- Metadata -->
   <!--          -->
 
-  <entry key="syntax_metadata_text_name">Syntax (Metadata Text)</entry>
+  <entry key="syntax_metadata_text_name">metadata-text</entry>
   <entry key="syntax_metadata_text">
     <![CDATA[(Text <text>)]]>
   </entry>
+  <entry key="syntax_metadata_text_example">[text "Some text"]</entry>
 
-  <entry key="syntax_metadata_time_name">Syntax (Metadata Time)</entry>
+  <entry key="syntax_metadata_time_name">metadata-time</entry>
   <entry key="syntax_metadata_time">
     <![CDATA[(Time <iso-8601-timestamp>)]]>
   </entry>
+  <entry key="syntax_metadata_time_example">[time 2024-01-13T15:46:48+0000]</entry>
 
-  <entry key="syntax_metadata_integer_name">Syntax (Metadata Integer)</entry>
+  <entry key="syntax_metadata_integer_name">metadata-integer</entry>
   <entry key="syntax_metadata_integer">
     <![CDATA[(Integer <integer>)]]>
   </entry>
+  <entry key="syntax_metadata_integer_example">[integer 23]</entry>
 
-  <entry key="syntax_metadata_real_name">Syntax (Metadata Real)</entry>
+  <entry key="syntax_metadata_real_name">metadata-real</entry>
   <entry key="syntax_metadata_real">
     <![CDATA[(Real <real>)]]>
   </entry>
+  <entry key="syntax_metadata_real_example">[real 23.0]</entry>
 
-  <entry key="syntax_metadata_money_name">Syntax (Metadata Money)</entry>
+  <entry key="syntax_metadata_money_name">metadata-money</entry>
   <entry key="syntax_metadata_money">
     <![CDATA[(Money <real> <currency>)]]>
   </entry>
+  <entry key="syntax_metadata_money_example">[money 23.0 USD]</entry>
 
-  <entry key="syntax_metadata_name">Syntax (Metadata)</entry>
-  <entry key="syntax_metadata">
-    <![CDATA[<metadata-text> | <metadata-time> | <metadata-integer> | <metadata-real> | <metadata-money>]]>
-  </entry>
+  <entry key="syntax_metadata_name">metadata</entry>
 
   <!--                -->
   <!-- Metadata match -->
   <!--                -->
 
-  <entry key="syntax_metadata_value_match_integral_range_name">Syntax (within-range-integral)</entry>
+  <entry key="syntax_metadata_value_match_integral_range_name">metadata-value-match-within-range-integral</entry>
   <entry key="syntax_metadata_value_match_integral_range">
     <![CDATA[(within-range-integral <integer> <integer>)]]>
   </entry>
 
-  <entry key="syntax_metadata_value_match_real_range_name">Syntax (within-range-real)</entry>
+  <entry key="syntax_metadata_value_match_real_range_name">metadata-value-match-within-range-real</entry>
   <entry key="syntax_metadata_value_match_real_range">
     <![CDATA[(within-range-real <real> <real>)]]>
   </entry>
 
-  <entry key="syntax_metadata_value_match_time_range_name">Syntax (within-range-time)</entry>
+  <entry key="syntax_metadata_value_match_time_range_name">metadata-value-match-within-range-time</entry>
   <entry key="syntax_metadata_value_match_time_range">
     <![CDATA[(within-range-time <time> <time>)]]>
   </entry>
 
-  <entry key="syntax_metadata_value_match_money_range_name">Syntax (within-range-money)</entry>
+  <entry key="syntax_metadata_value_match_money_range_name">metadata-value-match-within-range-money</entry>
   <entry key="syntax_metadata_value_match_money_range">
     <![CDATA[(within-range-money <real> <real>)]]>
   </entry>
 
-  <entry key="syntax_metadata_value_match_money_currency_name">Syntax (with-currency)</entry>
+  <entry key="syntax_metadata_value_match_money_currency_name">metadata-value-match-with-currency</entry>
   <entry key="syntax_metadata_value_match_money_currency">
     <![CDATA[(with-currency <currency-code>)]]>
   </entry>
 
-  <entry key="syntax_metadata_value_match_text_exact_name">Syntax (with-text-exact)</entry>
+  <entry key="syntax_metadata_value_match_text_exact_name">metadata-value-match-with-text-exact</entry>
   <entry key="syntax_metadata_value_match_text_exact">
     <![CDATA[(with-text-exact <text>)]]>
   </entry>
 
-  <entry key="syntax_metadata_value_match_text_search_name">Syntax (with-text-search)</entry>
+  <entry key="syntax_metadata_value_match_text_search_name">metadata-value-match-with-text-search</entry>
   <entry key="syntax_metadata_value_match_text_search">
     <![CDATA[(with-text-search <text>)]]>
   </entry>
 
-  <entry key="syntax_metadata_value_match_name">Syntax (metadata-value-match)</entry>
-  <entry key="syntax_metadata_value_match">
-    <![CDATA[any-value | <within-range-integral> | <within-range-real> | <within-range-time> | <within-range-money> | <with-currency> | <with-text-exact> | <with-text-search>]]>
+  <entry key="syntax_metadata_value_match_any_name">metadata-value-match-any</entry>
+  <entry key="syntax_metadata_value_match_any">
+    <![CDATA[any-value]]>
   </entry>
 
-  <entry key="syntax_metadata_name_match_exact_name">Syntax (with-name-exact)</entry>
-  <entry key="syntax_metadata_name_match_exact">
-    <![CDATA[(with-name-exact <name>)]]>
+  <entry key="syntax_metadata_value_match_name">metadata-value-match</entry>
+
+  <entry key="syntax_metadata_match_and_name">metadata-match-and</entry>
+  <entry key="syntax_metadata_match_and">
+    <![CDATA[(And <metadata-match> <metadata-match>)]]>
   </entry>
 
-  <entry key="syntax_metadata_name_match_search_name">Syntax (with-name-search)</entry>
-  <entry key="syntax_metadata_name_match_search">
-    <![CDATA[(with-name-search <name>)]]>
+  <entry key="syntax_metadata_match_or_name">metadata-match-or</entry>
+  <entry key="syntax_metadata_match_or">
+    <![CDATA[(Or <metadata-match> <metadata-match>)]]>
   </entry>
 
-  <entry key="syntax_metadata_name_match_name">Syntax (metadata-name-match)</entry>
-  <entry key="syntax_metadata_name_match">
-    <![CDATA[any-name | <with-name-search> | <with-name-exact>]]>
+  <entry key="syntax_metadata_match_match_name">metadata-match-match</entry>
+  <entry key="syntax_metadata_match_match">
+    <![CDATA[(Match <metadata-package-match> <metadata-type-match> <metadata-field-match> <metadata-value-match>)]]>
   </entry>
 
-  <entry key="syntax_metadata_match_name">Syntax (Metadata Match)</entry>
-  <entry key="syntax_metadata_match">
-    <![CDATA[anything | (Match <metadata-name-match> <metadata-value-match>) | (And <metadata-match> <metadata-match>) | (Or <metadata-match> <metadata-match>)]]>
+  <entry key="syntax_metadata_match_any_name">metadata-match-any</entry>
+  <entry key="syntax_metadata_match_any">
+    <![CDATA[anything]]>
+  </entry>
+
+  <entry key="syntax_metadata_match_name">metadata-match</entry>
+  <entry key="syntax_metadata_match_example_0">
+    <![CDATA[(match any-package any-type [with-field-equal-to "com.io7m:t.x"] any-value)]]></entry>
+  <entry key="syntax_metadata_match_example_1"><![CDATA[(and
+  [match any-package any-type [with-field-equal-to "com.io7m:t.x"] any-value]
+  [match [with-package-equal-to "com.io7m"] any-type any-field any-value]
+)]]></entry>
+  <entry key="syntax_metadata_match_example_2"><![CDATA[(or
+  [match any-package any-type [with-field-equal-to "com.io7m:t.x"] any-value]
+  [match [with-package-equal-to "com.io7m"] any-type any-field any-value]
+)]]>
+  </entry>
+  <entry key="syntax_metadata_match_example_3">
+    [within-range-integral 0 1000]
+  </entry>
+  <entry key="syntax_metadata_match_example_4">
+    [within-range-real 0.0 1000.0]
+  </entry>
+  <entry key="syntax_metadata_match_example_5">
+    [within-range-money 0.0 1000.0]
+  </entry>
+  <entry key="syntax_metadata_match_example_6">
+    [within-range-time 2024-01-13T15:41:36+0000 2024-01-13T15:41:45+0000]
+  </entry>
+  <entry key="syntax_metadata_match_example_7">
+    [with-currency USD]
+  </entry>
+  <entry key="syntax_metadata_match_example_8">
+    [with-text-exact "Battery"]
+  </entry>
+  <entry key="syntax_metadata_match_example_9">
+    [with-text-search "Battery AND Nickel"]
   </entry>
 
   <!--                     -->
   <!-- Metadata type match -->
   <!--                     -->
 
-  <entry key="syntax_type_match_anytype_name">Syntax (with-any-type)</entry>
-  <entry key="syntax_type_match_anytype">
+  <entry key="syntax_metadata_type_match_anytype_name">metadata-type-any</entry>
+  <entry key="syntax_metadata_type_match_anytype">
     <![CDATA[with-any-type]]>
   </entry>
 
-  <entry key="syntax_type_match_with_type_equal_to_name">Syntax (with-type-equal-to)</entry>
-  <entry key="syntax_type_match_with_type_equal_to">
-    <![CDATA[(with-type-equal-to <type>)]]>
+  <entry key="syntax_metadata_type_match_with_type_equal_to_name">metadata-type-equal-to</entry>
+  <entry key="syntax_metadata_type_match_with_type_equal_to">
+    <![CDATA[(with-type-equal-to <type-record-identifier>)]]>
   </entry>
 
-  <entry key="syntax_type_match_with_type_not_equal_to_name">Syntax (with-type-not-equal-to)</entry>
-  <entry key="syntax_type_match_with_type_not_equal_to">
-    <![CDATA[(with-type-not-equal-to <type>)]]>
+  <entry key="syntax_metadata_type_match_with_type_not_equal_to_name">metadata-type-not-equal-to</entry>
+  <entry key="syntax_metadata_type_match_with_type_not_equal_to">
+    <![CDATA[(with-type-not-equal-to <type-record-identifier>)]]>
   </entry>
+
+  <entry key="syntax_metadata_type_match_name">metadata-type-match</entry>
+  <entry key="syntax_metadata_type_match_example_0">[with-type-equal-to "com.io7m:t"]</entry>
+  <entry key="syntax_metadata_type_match_example_1">[with-type-not-equal-to "com.io7m:t"]</entry>
 
   <!--                        -->
   <!-- Metadata package match -->
   <!--                        -->
 
-  <entry key="syntax_package_match_anypackage_name">Syntax (with-any-package)</entry>
+  <entry key="syntax_package_match_anypackage_name">metadata-package-any</entry>
   <entry key="syntax_package_match_anypackage">
     <![CDATA[with-any-package]]>
   </entry>
 
-  <entry key="syntax_package_match_with_package_equal_to_name">Syntax (with-package-equal-to)</entry>
+  <entry key="syntax_package_match_with_package_equal_to_name">metadata-package-equal-to</entry>
   <entry key="syntax_package_match_with_package_equal_to">
     <![CDATA[(with-package-equal-to <package>)]]>
   </entry>
 
-  <entry key="syntax_package_match_with_package_not_equal_to_name">Syntax (with-package-not-equal-to)</entry>
+  <entry key="syntax_package_match_with_package_not_equal_to_name">metadata-package-not-equal-to</entry>
   <entry key="syntax_package_match_with_package_not_equal_to">
     <![CDATA[(with-package-not-equal-to <package>)]]>
   </entry>
+
+  <entry key="syntax_package_match_name">metadata-package-match</entry>
+  <entry key="syntax_package_match_example_0">[with-package-equal-to "t"]</entry>
+  <entry key="syntax_package_match_example_1">[with-package-not-equal-to "t"]</entry>
 
   <!--                      -->
   <!-- Metadata field match -->
   <!--                      -->
 
-  <entry key="syntax_field_match_anyfield_name">Syntax (with-any-field)</entry>
+  <entry key="syntax_field_match_anyfield_name">metadata-field-any</entry>
   <entry key="syntax_field_match_anyfield">
     <![CDATA[with-any-field]]>
   </entry>
 
-  <entry key="syntax_field_match_with_field_equal_to_name">Syntax (with-field-equal-to)</entry>
+  <entry key="syntax_field_match_with_field_equal_to_name">metadata-field-equal-to</entry>
   <entry key="syntax_field_match_with_field_equal_to">
-    <![CDATA[(with-field-equal-to <field>)]]>
+    <![CDATA[(with-field-equal-to <type-record-field-identifier>)]]>
   </entry>
 
-  <entry key="syntax_field_match_with_field_not_equal_to_name">Syntax (with-field-not-equal-to)</entry>
+  <entry key="syntax_field_match_with_field_not_equal_to_name">metadata-field-not-equal-to</entry>
   <entry key="syntax_field_match_with_field_not_equal_to">
-    <![CDATA[(with-field-not-equal-to <field>)]]>
+    <![CDATA[(with-field-not-equal-to <type-record-field-identifier>)]]>
   </entry>
+
+  <entry key="syntax_field_match_name">metadata-field-match</entry>
+  <entry key="syntax_field_match_example_0">[with-field-equal-to "com.io7m:t.x"]</entry>
+  <entry key="syntax_field_match_example_1">[with-field-not-equal-to "com.io7m:t.x"]</entry>
 
   <!--        -->
   <!-- Ranges -->
@@ -443,27 +552,34 @@
   <entry key="syntax_integer_range"><![CDATA[(<integer> <integer>)]]></entry>
   <entry key="syntax_integer_range_example"><![CDATA[[23 1000]]]></entry>
   <entry key="syntax_integer_range_example_name">Example (Integer Range)</entry>
-  <entry key="syntax_integer_range_name">Syntax (Integer Range)</entry>
+  <entry key="syntax_integer_range_name">range-integer</entry>
 
   <entry key="syntax_real_range"><![CDATA[(<real> <real>)]]></entry>
   <entry key="syntax_real_range_example"><![CDATA[(23.0 1000.0)]]></entry>
   <entry key="syntax_real_range_example_name">Example (Real Range)</entry>
-  <entry key="syntax_real_range_name">Syntax (Real Range)</entry>
+  <entry key="syntax_real_range_name">range-real</entry>
 
   <entry key="syntax_money_range"><![CDATA[(<real> <real>)]]></entry>
   <entry key="syntax_money_range_example"><![CDATA[(23.0 1000.0)]]></entry>
   <entry key="syntax_money_range_example_name">Example (Monetary Range)</entry>
-  <entry key="syntax_money_range_name">Syntax (Monetary Range)</entry>
+  <entry key="syntax_money_range_name">range-monetary</entry>
 
   <entry key="syntax_time_range"><![CDATA[(<iso-8601-timestamp> <iso-8601-timestamp>)]]></entry>
   <entry key="syntax_time_range_example"><![CDATA[(2023-07-23T12:24:35+00:00 2023-07-24T12:24:35+00:00)]]></entry>
   <entry key="syntax_time_range_example_name">Example (Time Range)</entry>
-  <entry key="syntax_time_range_name">Syntax (Time Range)</entry>
+  <entry key="syntax_time_range_name">range-time</entry>
 
   <entry key="syntax_iso_timestamp_example">2023-07-23T12:24:35+00:00</entry>
   <entry key="syntax_iso_timestamp_example_name">Example (ISO 8601 Timestamp)</entry>
   <entry key="syntax_iso_timestamp_name">Syntax (ISO 8601 Timestamp)</entry>
   <entry key="syntax_iso_timestamp">See ISO 8601.</entry>
+
+  <entry key="syntax_range_name">range</entry>
+
+  <entry key="syntax_range_example_0">[0 100]</entry>
+  <entry key="syntax_range_example_1">[0.0 100.0]</entry>
+  <entry key="syntax_range_example_2">[0.0 100.0]</entry>
+  <entry key="syntax_range_example_3">[2023-07-23T12:24:35+00:00 2023-07-24T12:24:35+00:00]</entry>
 
   <!--               -->
   <!-- Type checking -->
@@ -474,6 +590,8 @@
   <entry key="typechecker_record_field_type_nonexistent">A record field refers to a nonexistent scalar type.</entry>
   <entry key="typechecker_record_field_duplicate">A record field with the given name already exists.</entry>
   <entry key="typechecker_record_duplicate">A record type with the given name already exists.</entry>
-  <entry key="typechecker_name_qualified_invalid">Attempting to qualify the given name would result in an invalid qualified name.</entry>
+  <entry key="typechecker_name_qualified_invalid">Attempting to qualify the given name would result in an invalid
+    qualified name.
+  </entry>
 
 </properties>

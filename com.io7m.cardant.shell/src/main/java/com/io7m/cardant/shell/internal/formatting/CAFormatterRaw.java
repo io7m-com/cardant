@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -428,6 +429,16 @@ public final class CAFormatterRaw implements CAFormatterType
         item.identifier().version(),
         item.description()
       );
+    }
+  }
+
+  @Override
+  public void formatStringSet(
+    final SortedSet<String> set)
+  {
+    final PrintWriter w = this.terminal.writer();
+    for (final var s : set) {
+      w.printf("%s%n", s);
     }
   }
 

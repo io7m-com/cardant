@@ -33,7 +33,6 @@ import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.Search;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -45,19 +44,31 @@ import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue.ANY_VALUE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_AND;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_AND_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_ANY;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_2;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_3;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_4;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_5;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_6;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_7;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_8;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_9;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_MATCH;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_MATCH_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_EXACT;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_EXACT_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_SEARCH;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_SEARCH_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_OR;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_OR_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY;
@@ -73,7 +84,6 @@ import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_M
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for metadata match expressions.
@@ -81,42 +91,7 @@ import static java.util.Map.entry;
 
 public final class CAMetadataMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH),
-      entry(
-        SYNTAX_METADATA_NAME_MATCH_EXACT_NAME,
-        SYNTAX_METADATA_NAME_MATCH_EXACT),
-      entry(
-        SYNTAX_METADATA_NAME_MATCH_SEARCH_NAME,
-        SYNTAX_METADATA_NAME_MATCH_SEARCH),
-      entry(
-        SYNTAX_METADATA_NAME_MATCH_NAME,
-        SYNTAX_METADATA_NAME_MATCH),
-      entry(
-        SYNTAX_METADATA_MATCH_NAME,
-        SYNTAX_METADATA_MATCH)
-    );
+
 
   private final CAMetadataTypeMatchExpressions typeMatch;
   private final CAMetadataPackageMatchExpressions packageMatch;
@@ -271,12 +246,6 @@ public final class CAMetadataMatchExpressions extends CAExpressions
   public String toString()
   {
     return "[CAMetadataMatchExpressions]";
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -702,5 +671,116 @@ public final class CAMetadataMatchExpressions extends CAExpressions
         );
       }
     }
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_METADATA_MATCH_NAME,
+        List.of(
+          SYNTAX_METADATA_MATCH_ANY,
+          SYNTAX_METADATA_MATCH_AND_NAME,
+          SYNTAX_METADATA_MATCH_MATCH_NAME,
+          SYNTAX_METADATA_MATCH_OR_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME
+        ),
+        List.of(
+          SYNTAX_METADATA_MATCH_ANY,
+          SYNTAX_METADATA_MATCH_EXAMPLE_0,
+          SYNTAX_METADATA_MATCH_EXAMPLE_1,
+          SYNTAX_METADATA_MATCH_EXAMPLE_2,
+          SYNTAX_METADATA_MATCH_EXAMPLE_3,
+          SYNTAX_METADATA_MATCH_EXAMPLE_4,
+          SYNTAX_METADATA_MATCH_EXAMPLE_5,
+          SYNTAX_METADATA_MATCH_EXAMPLE_6,
+          SYNTAX_METADATA_MATCH_EXAMPLE_7,
+          SYNTAX_METADATA_MATCH_EXAMPLE_8,
+          SYNTAX_METADATA_MATCH_EXAMPLE_9
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_AND_NAME,
+        SYNTAX_METADATA_MATCH_AND,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_1)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_MATCH_NAME,
+        SYNTAX_METADATA_MATCH_MATCH,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_0)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_OR_NAME,
+        SYNTAX_METADATA_MATCH_OR,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_2)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_3)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_7)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_5)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_4)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_8)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_9)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_6)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

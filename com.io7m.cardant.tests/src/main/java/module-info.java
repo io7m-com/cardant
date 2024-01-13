@@ -15,6 +15,7 @@
  */
 
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType;
+import com.io7m.cardant.parsers.CASyntaxFactoryType;
 import net.jqwik.api.providers.ArbitraryProvider;
 
 /**
@@ -65,6 +66,7 @@ open module com.io7m.cardant.tests
 
   uses ArbitraryProvider;
   uses CADBQueryProviderType;
+  uses CASyntaxFactoryType;
 
   requires com.io7m.anethum.api;
   requires com.io7m.anethum.slf4j;
