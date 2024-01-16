@@ -782,42 +782,6 @@
   [field user cb:UUID]
 ]
 
-[documentation CAI1CommandTypeScalarGet "Get a scalar type."]
-[record CAI1CommandTypeScalarGet
-  [documentation name "The type name."]
-  [field name cb:String]
-]
-
-[documentation CAI1CommandTypeScalarSearchBegin "Search for scalar types."]
-[record CAI1CommandTypeScalarSearchBegin
-  [documentation parameters "The parameters."]
-  [field parameters CAI1TypeScalarSearchParameters]
-]
-
-[documentation CAI1CommandTypeScalarSearchNext "Search for scalar types."]
-[record CAI1CommandTypeScalarSearchNext]
-
-[documentation CAI1CommandTypeScalarSearchPrevious "Search for scalar types."]
-[record CAI1CommandTypeScalarSearchPrevious]
-
-[documentation CAI1CommandTypeRecordGet "Get a declared type."]
-[record CAI1CommandTypeRecordGet
-  [documentation name "The type name."]
-  [field name cb:String]
-]
-
-[documentation CAI1CommandTypeRecordSearchBegin "Search for declared types."]
-[record CAI1CommandTypeRecordSearchBegin
-  [documentation parameters "The parameters."]
-  [field parameters CAI1TypeRecordSearchParameters]
-]
-
-[documentation CAI1CommandTypeRecordSearchNext "Search for declared types."]
-[record CAI1CommandTypeRecordSearchNext]
-
-[documentation CAI1CommandTypeRecordSearchPrevious "Search for declared types."]
-[record CAI1CommandTypeRecordSearchPrevious]
-
 [documentation CAI1CommandItemTypesAssign "Assign a set of types to an item."]
 [record CAI1CommandItemTypesAssign
   [documentation item "The target item."]
