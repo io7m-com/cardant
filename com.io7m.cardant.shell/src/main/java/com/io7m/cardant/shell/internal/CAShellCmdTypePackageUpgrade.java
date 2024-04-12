@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageVersionBehavior;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUpgrade;
@@ -117,14 +116,14 @@ public final class CAShellCmdTypePackageUpgrade
       context.parameterValue(VERSION_BEHAVIOR);
 
     final var identifier =
-      ((CAIResponseTypePackageUpgrade) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandTypePackageUpgrade(
           typeRemovalBehavior,
           versionBehavior,
           Files.readString(inputFile)
         ),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().printLine(identifier.toString());
     return SUCCESS;

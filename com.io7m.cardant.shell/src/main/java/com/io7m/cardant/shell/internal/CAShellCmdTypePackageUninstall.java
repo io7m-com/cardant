@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
@@ -111,14 +110,14 @@ public final class CAShellCmdTypePackageUninstall
     final var packVersion =
       context.parameterValue(VERSION);
 
-    client.executeOrElseThrow(
+    client.sendAndWaitOrThrow(
       new CAICommandTypePackageUninstall(
         new CATypePackageUninstall(
           context.parameterValue(BEHAVIOR),
           new CATypePackageIdentifier(packName, packVersion)
         )
       ),
-      CAClientException::ofError
+      this.commandTimeout()
     );
 
     return SUCCESS;

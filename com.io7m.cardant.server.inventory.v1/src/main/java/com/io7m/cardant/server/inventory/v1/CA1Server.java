@@ -93,6 +93,9 @@ public final class CA1Server
           "/inventory/1/0/command",
           new CA1HandlerCommand(services))
         .post(
+          "/inventory/1/0/transaction",
+          new CA1HandlerTransaction(services))
+        .post(
           "/inventory/1/0/file-upload",
           new CA1HandlerFileUpload(services))
         .get(

@@ -16,14 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.hibiscus.api.HBEventType;
-
 /**
  * The base type of events.
  */
 
 public sealed interface CAIEventType
-  extends CAIMessageType, HBEventType
+  extends CAIMessageType
   permits CAIEventUpdated
 {
 

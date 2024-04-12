@@ -14,41 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.client.api;
+package com.io7m.cardant.client.basic.internal;
 
-import com.io7m.cardant.model.CAUserID;
-import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIResponseError;
-import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.hibiscus.api.HBClientAsynchronousType;
-import com.io7m.repetoir.core.RPServiceType;
+import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.strings.CAStrings;
+import com.io7m.genevan.core.GenProtocolClientHandlerType;
 
-import java.util.Optional;
+import java.net.URI;
+import java.net.http.HttpClient;
 
 /**
- * The type of client instances.
+ * The type of protocol transport factories.
  */
 
-public interface CAClientAsynchronousType
-  extends HBClientAsynchronousType<
-  CAClientException,
-  CAICommandType<?>,
-  CAIResponseType,
-  CAIResponseType,
-  CAIResponseError,
-  CAClientEventType,
-  CAClientCredentials>,
-  RPServiceType
+public interface CATransportFactoryType
+  extends GenProtocolClientHandlerType
 {
-  @Override
-  default String description()
-  {
-    return "An asynchronous inventory client.";
-  }
-
   /**
-   * @return The current logged-in user
+   * Create a new transport.
+   *
+   * @param configuration The configuration
+   * @param inHttpClient  The underlying HTTP client
+   * @param inStrings     The string resources
+   * @param baseURI       The base URI negotiated by the server
+   *
+   * @return A new handler
    */
 
-  Optional<CAUserID> userId();
+  CATransportType createTransport(
+    CAClientConfiguration configuration,
+    HttpClient inHttpClient,
+    CAStrings inStrings,
+    URI baseURI
+  );
 }

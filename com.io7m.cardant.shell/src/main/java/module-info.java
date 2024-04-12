@@ -36,7 +36,6 @@ module com.io7m.cardant.shell
 
   requires com.io7m.jeucreader.core;
   requires com.io7m.jmulticlose.core;
-  requires com.io7m.junreachable.core;
   requires com.io7m.jxe.core;
   requires com.io7m.lanark.core;
   requires com.io7m.quarrel.core;

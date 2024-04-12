@@ -88,8 +88,10 @@ public final class CAShellCmdLocationGet
       context.parameterValue(ID);
 
     final var existing =
-      client.executeOrElseThrow(new CAICommandLocationGet(locationID))
-        .data();
+      client.sendAndWaitOrThrow(
+        new CAICommandLocationGet(locationID),
+        this.commandTimeout()
+      ).data();
 
     final var w = context.output();
     w.printf(

@@ -46,7 +46,7 @@ import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceTyp
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.idstore.model.IdLoginMetadataStandard;
 import com.io7m.idstore.protocol.user.IdUResponseLogin;
-import com.io7m.idstore.user_client.api.IdUClientCredentials;
+import com.io7m.idstore.user_client.api.IdUClientConnectionParameters;
 import com.io7m.idstore.user_client.api.IdUClientException;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
@@ -178,11 +178,13 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
       );
 
     final var clientCredentials =
-      new IdUClientCredentials(
+      new IdUClientConnectionParameters(
         login.userName().value(),
         login.password(),
         idClients.baseURI(),
-        clientMetadata
+        clientMetadata,
+        Duration.ofSeconds(30L),
+        Duration.ofSeconds(30L)
       );
 
     final var span =
@@ -193,10 +195,11 @@ public final class CA1HandlerLogin extends CAHTTPHandlerFunctional
     try (var ignored = span.makeCurrent()) {
       try (var client = idClients.createClient()) {
         final var result =
-          client.login(clientCredentials)
-            .map(IdUResponseLogin.class::cast)
-            .orElseThrow(IdUClientException::ofError);
-        userId = result.user().id();
+          client.connectOrThrow(clientCredentials);
+        final var resultM =
+          (IdUResponseLogin) result;
+
+        userId = resultM.user().id();
       } catch (final IdUClientException e) {
         span.setAttribute("idstore.errorCode", e.errorCode().id());
         return errorResponseOf(

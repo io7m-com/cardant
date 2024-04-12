@@ -69,12 +69,17 @@
   </modules>
 
   <properties>
+    <!-- Configuration. -->
+    <io7m.api.previousVersion>1.0.0-SNAPSHOT</io7m.api.previousVersion>
+    <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
+
+    <!-- io7m dependencies. -->
     <com.io7m.anethum.version>1.1.0</com.io7m.anethum.version>
     <com.io7m.blackthorne.version>2.0.0</com.io7m.blackthorne.version>
     <com.io7m.cedarbridge.version>1.2.0</com.io7m.cedarbridge.version>
-    <com.io7m.ervilla.version>0.0.5</com.io7m.ervilla.version>
-    <com.io7m.hibiscus.version>0.0.8</com.io7m.hibiscus.version>
-    <com.io7m.idstore.version>1.0.0</com.io7m.idstore.version>
+    <com.io7m.ervilla.version>1.0.0-beta0002</com.io7m.ervilla.version>
+    <com.io7m.hibiscus.version>1.0.0-beta0001</com.io7m.hibiscus.version>
+    <com.io7m.idstore.version>2.0.0-beta0001</com.io7m.idstore.version>
     <com.io7m.jade.version>1.0.2</com.io7m.jade.version>
     <com.io7m.jbssio.version>2.0.0</com.io7m.jbssio.version>
     <com.io7m.jqpage.version>0.0.3</com.io7m.jqpage.version>
@@ -89,9 +94,11 @@
     <com.io7m.verdant.version>1.0.0</com.io7m.verdant.version>
     <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
     <com.io7m.zelador.version>0.0.1</com.io7m.zelador.version>
+
+    <!-- Third-party dependencies. -->
+    <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
+    <containers.postgresql.version>15.2</containers.postgresql.version>
     <helidon.version>4.0.2</helidon.version>
-    <io7m.api.previousVersion>1.0.0-SNAPSHOT</io7m.api.previousVersion>
-    <io7m.maven-enforcer-plugin.version>3.4.1</io7m.maven-enforcer-plugin.version>
     <jackson.version>2.14.2</jackson.version>
     <javafx.version>20.0.1</javafx.version>
     <jooq.version>3.19.1</jooq.version>
@@ -101,9 +108,6 @@
     <org.apache.tika.version>2.9.1</org.apache.tika.version>
     <org.jline.version>3.25.0</org.jline.version>
     <slf4j.version>2.0.10</slf4j.version>
-
-    <containers.postgresql.version>15.2</containers.postgresql.version>
-    <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
   </properties>
 
   <licenses>
@@ -226,11 +230,6 @@
       <dependency>
         <groupId>com.io7m.hibiscus</groupId>
         <artifactId>com.io7m.hibiscus.api</artifactId>
-        <version>${com.io7m.hibiscus.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.hibiscus</groupId>
-        <artifactId>com.io7m.hibiscus.basic</artifactId>
         <version>${com.io7m.hibiscus.version}</version>
       </dependency>
       <dependency>
@@ -761,15 +760,6 @@
     </pluginManagement>
 
     <plugins>
-      <!-- Spot bugs -->
-      <plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-        <configuration>
-          <excludeFilterFile>spotbugs-filter.xml</excludeFilterFile>
-        </configuration>
-      </plugin>
-
       <!-- Generate a site -->
       <plugin>
         <groupId>com.io7m.minisite</groupId>

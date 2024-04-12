@@ -17,13 +17,11 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentAdd;
-import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentRemove;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -113,10 +111,10 @@ public final class CAShellCmdLocationAttachmentRemove
       context.parameterValue(RELATION);
 
     final var location =
-      ((CAIResponseLocationAttachmentRemove) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandLocationAttachmentRemove(locationID, fileID, relation),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatLocation(location);
     return SUCCESS;

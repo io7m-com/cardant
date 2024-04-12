@@ -47,8 +47,8 @@ import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.containers.CATestContainers;
-import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CAFixtures;
 import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileOK;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileResultType;
@@ -60,7 +60,7 @@ import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
 import com.io7m.cardant.type_packages.standard.CATPComputer;
 import com.io7m.cardant.type_packages.standard.CATPProduct;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
@@ -131,11 +131,11 @@ public final class CADatabaseTypePackagesTest
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterClass EContainerSupervisorType containers)
+    final @ErvillaCloseAfterSuite EContainerSupervisorType containers)
     throws Exception
   {
     DATABASE_FIXTURE =
-      CATestContainers.createDatabase(containers, 15432);
+      CAFixtures.database(CAFixtures.pod(containers));
   }
 
   @BeforeEach

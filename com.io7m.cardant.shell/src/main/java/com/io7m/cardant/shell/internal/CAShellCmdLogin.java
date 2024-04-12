@@ -17,13 +17,13 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientCredentials;
-import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.client.api.CAClientConnectionParameters;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.idstore.model.IdName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
+import com.io7m.quarrel.core.QParameterNamed1;
 import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QParameterPositional;
 import com.io7m.quarrel.core.QParameterType;
@@ -35,6 +35,7 @@ import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.StringsCompleter;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,6 +70,24 @@ public final class CAShellCmdLogin extends CAShellCmdAbstract
       String.class
     );
 
+  private static final QParameterNamed1<Duration> LOGIN_TIMEOUT =
+    new QParameterNamed1<>(
+      "--login-timeout",
+      List.of(),
+      new QConstant("The server login timeout duration."),
+      Optional.of(Duration.ofSeconds(30L)),
+      Duration.class
+    );
+
+  private static final QParameterNamed1<Duration> COMMAND_TIMEOUT =
+    new QParameterNamed1<>(
+      "--command-timeout",
+      List.of(),
+      new QConstant("The server command timeout duration."),
+      Optional.of(Duration.ofSeconds(30L)),
+      Duration.class
+    );
+
   /**
    * Construct a command.
    *
@@ -100,7 +119,10 @@ public final class CAShellCmdLogin extends CAShellCmdAbstract
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of();
+    return List.of(
+      LOGIN_TIMEOUT,
+      COMMAND_TIMEOUT
+    );
   }
 
   @Override
@@ -125,19 +147,30 @@ public final class CAShellCmdLogin extends CAShellCmdAbstract
     final var password =
       context.parameterValue(PASSWORD);
 
+    final var loginTimeout =
+      context.parameterValue(LOGIN_TIMEOUT);
+    final var commandTimeout =
+      context.parameterValue(COMMAND_TIMEOUT);
+
+    this.setLoginTimeoutRecent(loginTimeout);
+    this.setCommandTimeoutRecent(commandTimeout);
+
     final var credentials =
-      new CAClientCredentials(
+      new CAClientConnectionParameters(
         server.getHost(),
         server.getPort(),
         Objects.equals(server.getScheme(), "https"),
         new IdName(userName),
         password,
-        Map.of()
+        Map.of(),
+        this.loginTimeout(),
+        this.commandTimeout()
       );
 
     final var response =
       (CAIResponseLogin)
-        this.client().loginOrElseThrow(credentials, CAClientException::ofError);
+        this.client()
+          .connectOrThrow(credentials);
 
     this.loginTracker().setUserId(response.userId());
     return SUCCESS;

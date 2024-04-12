@@ -18,6 +18,7 @@ package com.io7m.cardant.server.controller.command_exec;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 
 import java.util.Map;
 import java.util.Objects;
@@ -49,6 +50,18 @@ public final class CACommandExecutionFailure extends CAException
   public int httpStatusCode()
   {
     return this.httpStatusCode;
+  }
+
+  /**
+   * @return The inferred blame from the exception
+   */
+
+  public CAIResponseBlame blame()
+  {
+    if (this.httpStatusCode >= 500 && this.httpStatusCode < 600) {
+      return CAIResponseBlame.BLAME_SERVER;
+    }
+    return CAIResponseBlame.BLAME_CLIENT;
   }
 
   /**

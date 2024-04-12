@@ -16,50 +16,59 @@
 
 package com.io7m.cardant.client.api;
 
-import com.io7m.hibiscus.api.HBCredentialsType;
+import com.io7m.hibiscus.api.HBConnectionParametersType;
 import com.io7m.idstore.model.IdName;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * The client credentials.
  *
- * @param host     The target host
- * @param port     The target port
- * @param https    {@code true} if https should be used
- * @param username The username
- * @param password The password
- * @param metadata The extra metadata
+ * @param host           The target host
+ * @param port           The target port
+ * @param https          {@code true} if https should be used
+ * @param username       The username
+ * @param password       The password
+ * @param metadata       The extra metadata
+ * @param commandTimeout The command timeout
+ * @param loginTimeout   The login timeout
  */
 
-public record CAClientCredentials(
+public record CAClientConnectionParameters(
   String host,
   int port,
   boolean https,
   IdName username,
   String password,
-  Map<String, String> metadata)
-  implements HBCredentialsType
+  Map<String, String> metadata,
+  Duration loginTimeout,
+  Duration commandTimeout)
+  implements HBConnectionParametersType
 {
   /**
    * The client credentials.
    *
-   * @param host     The target host
-   * @param port     The target port
-   * @param https    {@code true} if https should be used
-   * @param username The username
-   * @param password The password
-   * @param metadata The extra metadata
+   * @param host           The target host
+   * @param port           The target port
+   * @param https          {@code true} if https should be used
+   * @param username       The username
+   * @param password       The password
+   * @param metadata       The extra metadata
+   * @param commandTimeout The command timeout
+   * @param loginTimeout   The login timeout
    */
 
-  public CAClientCredentials
+  public CAClientConnectionParameters
   {
     Objects.requireNonNull(host, "host");
     Objects.requireNonNull(username, "username");
     Objects.requireNonNull(password, "password");
     Objects.requireNonNull(metadata, "metadata");
+    Objects.requireNonNull(loginTimeout, "connectTimeout");
+    Objects.requireNonNull(commandTimeout, "commandTimeout");
   }
 
   /**

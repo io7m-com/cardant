@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
@@ -102,10 +101,10 @@ public final class CAShellCmdItemMetadataRemove
       context.parameterValues(KEY);
 
     final var item =
-      ((CAIResponseItemMetadataRemove) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemMetadataRemove(itemID, Set.copyOf(keys)),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItem(item);
     return SUCCESS;

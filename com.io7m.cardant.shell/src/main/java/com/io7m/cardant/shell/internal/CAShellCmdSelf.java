@@ -93,7 +93,10 @@ public final class CAShellCmdSelf extends CAShellCmdAbstract
 
     final var response =
       (CAIResponseRolesGet)
-        this.client().executeOrElseThrow(new CAICommandRolesGet(userId));
+        this.client().sendAndWaitOrThrow(
+          new CAICommandRolesGet(userId),
+          this.commandTimeout()
+        );
 
     context.output()
       .println("User ID: " + userId);

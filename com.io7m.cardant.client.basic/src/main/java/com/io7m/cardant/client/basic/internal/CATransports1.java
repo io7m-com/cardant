@@ -29,17 +29,17 @@ import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 
 /**
- * The factory of version 1 protocol handlers.
+ * The factory of version 1 protocol transports.
  */
 
-public final class CAHandlers1
-  implements CAHandlerFactoryType
+public final class CATransports1
+  implements CATransportFactoryType
 {
   /**
-   * The factory of version 1 protocol handlers.
+   * The factory of version 1 protocol transports.
    */
 
-  public CAHandlers1()
+  public CATransports1()
   {
 
   }
@@ -54,17 +54,26 @@ public final class CAHandlers1
   }
 
   @Override
-  public CAHandlerType createHandler(
+  public CATransportType createTransport(
     final CAClientConfiguration configuration,
     final HttpClient inHttpClient,
     final CAStrings inStrings,
     final URI inBaseURI)
   {
-    return new CAHandler1(
-      configuration,
+    return new CATransport1(
+      configuration.clock(),
       inStrings,
       inHttpClient,
       inBaseURI
+    );
+  }
+
+  @Override
+  public String toString()
+  {
+    return "[%s 0x%s]".formatted(
+      this.getClass().getSimpleName(),
+      Integer.toUnsignedString(this.hashCode(), 16)
     );
   }
 }

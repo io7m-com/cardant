@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
@@ -105,10 +104,10 @@ public final class CAShellCmdItemMetadataPut
       Set.copyOf(metas);
 
     final var item =
-      ((CAIResponseItemMetadataPut) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemMetadataPut(itemID, meta),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItem(item);
     return SUCCESS;

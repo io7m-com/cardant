@@ -146,8 +146,10 @@ public final class CAShellCmdLocationPut
     final CALocation location;
     try {
       location =
-        client.executeOrElseThrow(new CAICommandLocationGet(locationID))
-          .data();
+        client.sendAndWaitOrThrow(
+          new CAICommandLocationGet(locationID),
+          this.commandTimeout()
+        ).data();
     } catch (final CAClientException e) {
       if (Objects.equals(e.errorCode(), errorNonexistent())) {
         return this.createNewLocation(context);
@@ -211,7 +213,10 @@ public final class CAShellCmdLocationPut
     final var client =
       this.client();
     final var result =
-      client.executeOrElseThrow(new CAICommandLocationPut(newLocation));
+      client.sendAndWaitOrThrow(
+        new CAICommandLocationPut(newLocation),
+        this.commandTimeout()
+      );
 
     this.formatter().formatLocation(result.data());
     return SUCCESS;
@@ -241,7 +246,10 @@ public final class CAShellCmdLocationPut
     final var client =
       this.client();
     final var result =
-      client.executeOrElseThrow(new CAICommandLocationPut(newLocation));
+      client.sendAndWaitOrThrow(
+        new CAICommandLocationPut(newLocation),
+        this.commandTimeout()
+      );
 
     this.formatter().formatLocation(result.data());
     return SUCCESS;

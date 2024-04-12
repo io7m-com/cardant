@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CADescriptionMatch;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemLocationMatchType;
@@ -191,10 +190,10 @@ public final class CAShellCmdItemSearchBegin
       );
 
     final var items =
-      ((CAIResponseItemSearch) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemSearchBegin(parameters),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItemsPage(items);
     return SUCCESS;

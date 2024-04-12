@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemRepositSerialMove;
 import com.io7m.cardant.model.CAItemSerial;
@@ -124,7 +123,7 @@ public final class CAShellCmdItemRepositSerialMove
       context.parameterValue(SERIAL);
 
     final var item =
-      ((CAIResponseItemReposit) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemReposit(
           new CAItemRepositSerialMove(
             itemID,
@@ -133,8 +132,8 @@ public final class CAShellCmdItemRepositSerialMove
             new CAItemSerial(serial)
           )
         ),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItem(item);
     return SUCCESS;

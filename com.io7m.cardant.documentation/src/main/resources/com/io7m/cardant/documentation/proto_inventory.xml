@@ -7,13 +7,15 @@
 
   <Subsection title="Versioning">
     <Paragraph>
-      The <Link target="3dff8219-1792-41a3-bd8b-797efe61348c">Inventory API</Link> service exposes one or more
-      versions of the <Term type="term">Inventory</Term> protocol. The service uses the
-      <LinkExternal target="https://github.com/io7m/verdant">verdant</LinkExternal> protocol to advertise
-      which versions of the <Term type="term">Inventory</Term> protocol are available. Executing a
-      <Term type="function">GET</Term> request to the root endpoint will yield a <Term type="package">verdant</Term>
-      message showing which versions of the <Term type="term">Inventory</Term> protocol are available.
-      The <Term type="term">Inventory</Term>
+      The <Link target="3dff8219-1792-41a3-bd8b-797efe61348c">Inventory API</Link> service exposes one or more versions
+      of the <Term type="term">Inventory</Term> protocol. The service uses the
+      <LinkExternal target="https://github.com/io7m/verdant">verdant</LinkExternal>
+      protocol to advertise which versions of the <Term type="term">Inventory</Term> protocol are available. Executing a
+      <Term type="function">GET</Term>
+      request to the root endpoint will yield a
+      <Term type="package">verdant</Term>
+      message showing which versions of the <Term type="term">Inventory</Term> protocol are available. The
+      <Term type="term">Inventory</Term>
       protocol is assigned the protocol identifier <Term type="constant">8ee23158-f8db-317a-a58b-45bd9d702040</Term>.
     </Paragraph>
     <Paragraph>
@@ -30,14 +32,18 @@
     </FormalItem>
   </Subsection>
 
-  <Subsection title="Health" id="ddd9f938-5941-405f-ba78-1f256b614759">
+  <Subsection title="Health"
+              id="ddd9f938-5941-405f-ba78-1f256b614759">
     <Paragraph>
-      The Inventory API service exposes a health check endpoint at <Term type="expression">/health</Term>. The
-      endpoint returns a <Term type="constant">200</Term> status code and the string
-      <Term type="expression">OK</Term> if the server's most recent internal health checks succeeded. The
-      server returns a <Term type="constant">500</Term> status code and string not equal to
-      <Term type="expression">OK</Term> if the server's most recent internal health checks failed. In
-      both cases, the string is returned directly as a <Term type="expression">text/plain</Term> UTF-8 value.
+      The Inventory API service exposes a health check endpoint at <Term type="expression">/health</Term>. The endpoint
+      returns a <Term type="constant">200</Term> status code and the string
+      <Term type="expression">OK</Term>
+      if the server's most recent internal health checks succeeded. The server returns a <Term type="constant">500
+    </Term> status code and string not equal to
+      <Term type="expression">OK</Term>
+      if the server's most recent internal health checks failed. In both cases, the string is returned directly as a <Term type="expression">
+      text/plain
+    </Term> UTF-8 value.
     </Paragraph>
   </Subsection>
 
@@ -50,27 +56,54 @@
       </Paragraph>
     </Subsection>
 
-    <Subsection title="Login" id="5c7f8022-1270-4f31-921e-843d91b58fc8">
+    <Subsection title="Login"
+                id="5c7f8022-1270-4f31-921e-843d91b58fc8">
       <Paragraph>
-        Send an <Term type="type">CAI1CommandLogin</Term> command to <Term type="expression">/inventory/1/0/login</Term>. If
-        the login succeeds, a cookie named <Term type="expression">CARDANT_INVENTORY_SESSION</Term> will be set.
-        This cookie must be included with all subsequent requests.
+        Send an <Term type="type">CAI1CommandLogin</Term> command to <Term type="expression">/inventory/1/0/login</Term>.
+        If the login succeeds, a cookie named <Term type="expression">CARDANT_INVENTORY_SESSION</Term> will be set. This
+        cookie must be included with all subsequent requests.
       </Paragraph>
     </Subsection>
 
     <Subsection title="Commands">
       <Paragraph>
-        After <Link target="5c7f8022-1270-4f31-921e-843d91b58fc8">logging in successfully</Link>, send commands of
-        type <Term type="type">CAI1Command*</Term> to <Term type="expression">/inventory/1/0/command</Term>. Failed commands
-        will yield a value of type <Term type="type">CAI1ResponseError</Term>, whilst successful results will yield
-        values of type <Term type="type">CAI1Response*</Term>.
+        After <Link target="5c7f8022-1270-4f31-921e-843d91b58fc8">logging in successfully</Link>, send commands of type
+        <Term type="type">CAI1Command*</Term>
+        to <Term type="expression">/inventory/1/0/command</Term>. Failed commands will yield a value of
+        type <Term type="type">CAI1ResponseError</Term>, whilst successful results will yield values of
+        type <Term type="type">CAI1Response*</Term>.
+      </Paragraph>
+    </Subsection>
+
+    <Subsection title="Transactions">
+      <Paragraph>
+        It can sometimes be desirable to send sets of commands that must execute atomically; if a single command in the
+        set fails, it must be as if none of the commands were executed.
+      </Paragraph>
+      <Paragraph>
+        After <Link target="5c7f8022-1270-4f31-921e-843d91b58fc8">logging in successfully</Link>, a sequence of commands
+        of type <Term type="type">CAI1Command*</Term> can be sent to
+        <Term type="expression">/inventory/1/0/transaction</Term>. Each command must be prefixed with its serialized
+        length as a 32-bit unsigned big-endian integer, and the sequence of commands must be terminated with a 32-bit
+        unsigned big-endian value of zero.
+      </Paragraph>
+      <Paragraph>
+        The response from the
+        <Term type="expression">/inventory/1/0 /transaction</Term>
+        endpoint will be formatted in the same manner, where each element in the sequence is a value
+        of type <Term type="type">CAI1Response</Term> for the corresponding command in the original sequence.
+        If any of the values in the sequence are <Term type="type">CAI1ResponseError</Term> values, the transaction
+        was rolled back by the server and not committed.
       </Paragraph>
     </Subsection>
   </Subsection>
 
   <Subsection title="Schemas">
     <FormalItem title="Schemas">
-      <Verbatim><xi:include href="com/io7m/cardant/protocol/inventory/cb/Inventory.cbs" parse="text"/></Verbatim>
+      <Verbatim>
+        <xi:include href="com/io7m/cardant/protocol/inventory/cb/Inventory.cbs"
+                    parse="text"/>
+      </Verbatim>
     </FormalItem>
   </Subsection>
 

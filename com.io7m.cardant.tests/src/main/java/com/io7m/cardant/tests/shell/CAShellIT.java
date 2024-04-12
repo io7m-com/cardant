@@ -26,9 +26,12 @@ import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShells;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.cardant.tests.containers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CAFixtures;
+import com.io7m.cardant.tests.containers.CAIdstoreFixture;
+import com.io7m.cardant.tests.containers.CAServerFixture;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
@@ -66,11 +69,11 @@ public final class CAShellIT
 
   private static CAUserID USER_ADMIN;
   private static CAUserID USER;
-  private static CATestContainers.CAIdstoreFixture IDSTORE;
-  private static CATestContainers.CADatabaseFixture DATABASE;
+  private static CAIdstoreFixture IDSTORE;
+  private static CADatabaseFixture DATABASE;
   private static Path DIRECTORY;
 
-  private CATestContainers.CAServerFixture server;
+  private CAServerFixture server;
   private CAShells shells;
   private CAShellConfiguration configuration;
   private CAFakeTerminal terminal;
@@ -84,27 +87,21 @@ public final class CAShellIT
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
     DIRECTORY =
       Files.createTempDirectory("cardant-");
     DATABASE =
-      CATestContainers.createDatabase(supervisor, 15433);
+      CAFixtures.database(CAFixtures.pod(supervisor));
     IDSTORE =
-      CATestContainers.createIdstore(
-        supervisor,
-        DATABASE,
-        DIRECTORY,
-        "idstore",
-        51000,
-        50000,
-        50001
-      );
+      CAFixtures.idstore(CAFixtures.pod(supervisor));
 
-    USER_ADMIN = IDSTORE.createUser("someone-admin");
-    USER = IDSTORE.createUser("someone");
+    USER_ADMIN =
+      new CAUserID(IDSTORE.userWithAdmin().id());
+    USER =
+      new CAUserID(IDSTORE.userWithLogin().id());
 
     closeables.addPerTestClassResource(
       () -> CATestDirectories.deleteDirectory(DIRECTORY)
@@ -113,6 +110,7 @@ public final class CAShellIT
 
   @BeforeEach
   public void setupEach(
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
@@ -145,13 +143,10 @@ public final class CAShellIT
 
     this.server =
       closeables.addPerTestResource(
-        CATestContainers.createServer(
-          IDSTORE,
-          DATABASE,
-          30000
-        )
+        CAFixtures.server(CAFixtures.pod(supervisor))
       );
 
+    this.server.server().start();
     this.server.setUserAsAdmin(USER_ADMIN, "someone-admin");
 
     closeables.addPerTestResource(

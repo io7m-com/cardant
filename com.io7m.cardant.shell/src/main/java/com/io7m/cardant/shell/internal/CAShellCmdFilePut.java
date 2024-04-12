@@ -151,7 +151,7 @@ public final class CAShellCmdFilePut extends CAShellCmdAbstract
       );
     });
 
-    this.client().fileUploadOrThrow(
+    this.client().fileUpload(
       fileId,
       file,
       contentType,

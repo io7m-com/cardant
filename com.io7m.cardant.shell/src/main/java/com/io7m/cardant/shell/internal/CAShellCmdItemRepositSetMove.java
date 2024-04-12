@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemRepositSetMove;
 import com.io7m.cardant.model.CALocationID;
@@ -123,7 +122,7 @@ public final class CAShellCmdItemRepositSetMove
       context.parameterValue(COUNT);
 
     final var item =
-      ((CAIResponseItemReposit) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemReposit(
           new CAItemRepositSetMove(
             itemID,
@@ -132,8 +131,8 @@ public final class CAShellCmdItemRepositSetMove
             count.longValue()
           )
         ),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItem(item);
     return SUCCESS;

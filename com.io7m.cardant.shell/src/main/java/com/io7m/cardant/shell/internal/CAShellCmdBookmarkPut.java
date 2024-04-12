@@ -30,6 +30,7 @@ import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -99,6 +100,24 @@ public final class CAShellCmdBookmarkPut
       Boolean.class
     );
 
+  private static final QParameterNamed1<Duration> LOGIN_TIMEOUT =
+    new QParameterNamed1<>(
+      "--login-timeout",
+      List.of(),
+      new QConstant("The server login timeout duration."),
+      Optional.of(Duration.ofSeconds(30L)),
+      Duration.class
+    );
+
+  private static final QParameterNamed1<Duration> COMMAND_TIMEOUT =
+    new QParameterNamed1<>(
+      "--command-timeout",
+      List.of(),
+      new QConstant("The server command timeout duration."),
+      Optional.of(Duration.ofSeconds(30L)),
+      Duration.class
+    );
+
   /**
    * Construct a command.
    *
@@ -121,12 +140,14 @@ public final class CAShellCmdBookmarkPut
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
     return List.of(
-      NAME,
+      COMMAND_TIMEOUT,
       HOSTNAME,
-      PORT,
-      USERNAME,
+      LOGIN_TIMEOUT,
+      NAME,
       PASSWORD,
-      TLS
+      PORT,
+      TLS,
+      USERNAME
     );
   }
 
@@ -149,6 +170,10 @@ public final class CAShellCmdBookmarkPut
     final var tls =
       context.parameterValue(TLS)
         .booleanValue();
+    final var loginTimeout =
+      context.parameterValue(LOGIN_TIMEOUT);
+    final var commandTimeout =
+      context.parameterValue(COMMAND_TIMEOUT);
 
     final var bookmarksMutable =
       new ArrayList<>(this.preferences().preferences().serverBookmarks());
@@ -160,6 +185,8 @@ public final class CAShellCmdBookmarkPut
         hostname,
         port,
         tls,
+        loginTimeout,
+        commandTimeout,
         new CAPreferenceServerUsernamePassword(username, password)
       )
     );

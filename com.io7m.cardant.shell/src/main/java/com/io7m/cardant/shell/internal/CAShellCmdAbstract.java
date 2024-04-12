@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientSynchronousType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.shell.internal.formatting.CAFormatterType;
 import com.io7m.cardant.strings.CAStrings;
@@ -25,6 +25,7 @@ import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import org.jline.terminal.Terminal;
 
+import java.time.Duration;
 import java.util.Objects;
 
 /**
@@ -36,6 +37,11 @@ public abstract class CAShellCmdAbstract
 {
   private final QCommandMetadata metadata;
   private final RPServiceDirectoryType services;
+
+  private Duration loginTimeoutRecent =
+    Duration.ofSeconds(30L);
+  private Duration commandTimeoutRecent =
+    Duration.ofSeconds(30L);
 
   /**
    * Construct a command.
@@ -54,9 +60,9 @@ public abstract class CAShellCmdAbstract
       Objects.requireNonNull(inMetadata, "metadata");
   }
 
-  protected final CAClientSynchronousType client()
+  protected final CAClientType client()
   {
-    return this.services.requireService(CAClientSynchronousType.class);
+    return this.services.requireService(CAClientType.class);
   }
 
   protected final CAPreferencesServiceType preferences()
@@ -77,6 +83,32 @@ public abstract class CAShellCmdAbstract
   protected final CAStrings strings()
   {
     return this.services.requireService(CAStrings.class);
+  }
+
+  protected final Duration loginTimeout()
+  {
+    return this.loginTimeoutRecent;
+  }
+
+  protected final Duration commandTimeout()
+  {
+    return this.commandTimeoutRecent;
+  }
+
+  protected final void setLoginTimeoutRecent(
+    final Duration inLoginTimeoutRecent)
+  {
+    this.loginTimeoutRecent =
+      Objects.requireNonNull(
+        inLoginTimeoutRecent, "loginTimeoutRecent");
+  }
+
+  protected final void setCommandTimeoutRecent(
+    final Duration inCommandTimeoutRecent)
+  {
+    this.commandTimeoutRecent =
+      Objects.requireNonNull(
+        inCommandTimeoutRecent, "commandTimeoutRecent");
   }
 
   @Override

@@ -105,12 +105,16 @@ public final class CAShellCmdRolesAssign extends CAShellCmdAbstract
     final var roles =
       context.parameterValues(ROLES);
 
-    client.executeOrElseThrow(
-      new CAICommandRolesAssign(userId, Set.copyOf(roles))
+    client.sendAndWaitOrThrow(
+      new CAICommandRolesAssign(userId, Set.copyOf(roles)),
+      this.commandTimeout()
     );
 
     final var response =
-      client.executeOrElseThrow(new CAICommandRolesGet(userId));
+      client.sendAndWaitOrThrow(
+        new CAICommandRolesGet(userId),
+        this.commandTimeout()
+      );
 
     this.formatter().formatRoles(response.roles());
     return SUCCESS;

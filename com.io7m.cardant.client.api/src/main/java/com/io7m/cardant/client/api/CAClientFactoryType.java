@@ -16,9 +16,7 @@
 
 package com.io7m.cardant.client.api;
 
-import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIResponseError;
-import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.hibiscus.api.HBClientFactoryType;
 import com.io7m.repetoir.core.RPServiceType;
 
@@ -28,16 +26,11 @@ import com.io7m.repetoir.core.RPServiceType;
 
 public interface CAClientFactoryType extends RPServiceType,
   HBClientFactoryType<
-    CAClientException,
     CAClientConfiguration,
-    CAICommandType<?>,
-    CAIResponseType,
-    CAIResponseType,
-    CAIResponseError,
-    CAClientEventType,
-    CAClientCredentials,
-    CAClientAsynchronousType,
-    CAClientSynchronousType>
+    CAIMessageType,
+    CAClientConnectionParameters,
+    CAClientType,
+    CAClientException>
 {
 
 }

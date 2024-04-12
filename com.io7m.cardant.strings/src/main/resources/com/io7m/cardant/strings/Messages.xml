@@ -58,10 +58,14 @@
   </entry>
   <entry key="error_type_exists_wrong_package_suggest">Use TYPE_ADDITION_REPLACE_TYPES to forcefully replace types.
   </entry>
-
+  <entry key="error_unexpected_content_type">Received an unexpected content type.</entry>
+  <entry key="error_unexpected_response_type">Received an unexpected response type.</entry>
   <entry key="error_parse_indexed">Parse error {0}</entry>
   <entry key="error_type_indexed">Type error {0}</entry>
+  <entry key="error_expected_command_type">Expected a command type.</entry>
+  <entry key="error_closed_channel">Channel is closed.</entry>
 
+  <entry key="message_type">Message Type</entry>
   <entry key="Command">Command</entry>
   <entry key="Expected Content Type">Expected Content Type</entry>
   <entry key="Expected Hash">Expected Hash</entry>

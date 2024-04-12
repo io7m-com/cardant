@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
@@ -78,10 +77,10 @@ public final class CAShellCmdLocationList
       this.client();
 
     final var locations =
-      ((CAIResponseLocationList) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandLocationList(),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     /*
      * Collect all the locations into a map. Create nodes for each

@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchBegin;
@@ -107,6 +108,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUpgrade;
+import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandAuditSearchBegin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandAuditSearchNext;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandAuditSearchPrevious;
@@ -190,6 +192,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageUpgrade;
 import com.io7m.cardant.protocol.inventory.cb.ProtocolCAIv1Type;
+
+import java.util.Map;
+import java.util.Optional;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAIUVEventUpdated.EVENT_UPDATED;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandAuditSearchBegin.COMMAND_AUDIT_SEARCH_BEGIN;
@@ -444,7 +449,7 @@ public enum CAUVMessage
   {
     return switch (message) {
       case final CAICommandType<?> c -> {
-        yield CAUVMessage.convertToWireCommand(c);
+        yield convertToWireCommand(c);
       }
       case final CAIEventType e -> {
         yield convertToWireEvent(e);
@@ -452,7 +457,22 @@ public enum CAUVMessage
       case final CAIResponseType r -> {
         yield convertToWireResponse(r);
       }
+      case final CAITransactionResponse r -> {
+        yield convertToWireTransactionResponse(r);
+      }
     };
+  }
+
+  private static ProtocolCAIv1Type convertToWireTransactionResponse(
+    final CAITransactionResponse r)
+    throws CAProtocolException
+  {
+    throw new CAProtocolException(
+      "A message of this type cannot be serialized by this provider.",
+      CAStandardErrorCodes.errorApiMisuse(),
+      Map.of(),
+      Optional.empty()
+    );
   }
 
   private static ProtocolCAIv1Type convertToWireEvent(

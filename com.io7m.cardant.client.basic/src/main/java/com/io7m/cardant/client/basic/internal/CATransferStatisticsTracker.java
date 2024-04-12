@@ -60,7 +60,9 @@ final class CATransferStatisticsTracker implements AutoCloseable
     this.consumer =
       Objects.requireNonNull(inConsumer, "consumer");
     this.executor =
-      Executors.newSingleThreadScheduledExecutor();
+      Executors.newSingleThreadScheduledExecutor(r -> {
+        return Thread.ofVirtual().unstarted(r);
+      });
 
     this.executor.scheduleAtFixedRate(
       this::broadcast,

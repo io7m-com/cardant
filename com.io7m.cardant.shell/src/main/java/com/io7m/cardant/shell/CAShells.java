@@ -17,7 +17,7 @@
 package com.io7m.cardant.shell;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.error_codes.CAException;
@@ -118,7 +118,7 @@ public final class CAShells implements CAShellFactoryType
   {
     final var client =
       new CAClients()
-        .openSynchronousClient(
+        .create(
           new CAClientConfiguration(
             configuration.locale(),
             configuration.clock()
@@ -138,12 +138,22 @@ public final class CAShells implements CAShellFactoryType
 
     final var services = new RPServiceDirectory();
     final var strings = CAStrings.create(configuration.locale());
-    services.register(CAStrings.class, strings);
-    services.register(CAClientSynchronousType.class, client);
+    services.register(
+      CAStrings.class,
+      strings
+    );
+    services.register(
+      CAClientType.class,
+      client
+    );
     services.register(
       CAShellOptions.class,
-      new CAShellOptions(terminal));
-    services.register(CAShellLoginTracker.class, new CAShellLoginTracker());
+      new CAShellOptions(terminal)
+    );
+    services.register(
+      CAShellLoginTracker.class,
+      new CAShellLoginTracker()
+    );
     services.register(
       CAPreferencesServiceType.class,
       configuration.preferences()
@@ -152,7 +162,6 @@ public final class CAShells implements CAShellFactoryType
       CAShellTerminalHolder.class,
       new CAShellTerminalHolder(terminal)
     );
-
 
     final List<CAShellCmdType> commands =
       List.of(

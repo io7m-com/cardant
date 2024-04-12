@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIResponseAuditSearch;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -73,10 +72,10 @@ public final class CAShellCmdAuditSearchPrevious
       this.client();
 
     final var page =
-      ((CAIResponseAuditSearch) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandAuditSearchPrevious(),
-        CAClientException::ofError
-      )).results();
+        this.commandTimeout()
+      ).results();
 
     this.formatter().formatAuditPage(page);
     return SUCCESS;

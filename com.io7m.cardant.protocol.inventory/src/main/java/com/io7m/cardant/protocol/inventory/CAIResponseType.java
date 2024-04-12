@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.hibiscus.api.HBResponseType;
-
 import java.util.UUID;
 
 /**
@@ -25,7 +23,7 @@ import java.util.UUID;
  */
 
 public sealed interface CAIResponseType
-  extends CAIMessageType, HBResponseType
+  extends CAIMessageType
   permits CAIResponseAuditSearch,
   CAIResponseError,
   CAIResponseFileGet,

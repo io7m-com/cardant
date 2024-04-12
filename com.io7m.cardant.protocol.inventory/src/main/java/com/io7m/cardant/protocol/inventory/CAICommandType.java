@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.hibiscus.api.HBCommandType;
-
 /**
  * The type of commands in the User protocol.
  *
@@ -25,7 +23,7 @@ import com.io7m.hibiscus.api.HBCommandType;
  */
 
 public sealed interface CAICommandType<R extends CAIResponseType>
-  extends CAIMessageType, HBCommandType
+  extends CAIMessageType
   permits CAICommandAuditSearchBegin,
   CAICommandAuditSearchNext,
   CAICommandAuditSearchPrevious,
