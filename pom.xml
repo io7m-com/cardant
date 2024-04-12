@@ -87,7 +87,7 @@
     <com.io7m.jwheatsheaf.version>4.0.0-beta0001</com.io7m.jwheatsheaf.version>
     <com.io7m.jxtrand.version>2.0.0</com.io7m.jxtrand.version>
     <com.io7m.medrina.version>1.0.0-beta0003</com.io7m.medrina.version>
-    <com.io7m.quarrel.version>1.5.0</com.io7m.quarrel.version>
+    <com.io7m.quarrel.version>1.6.0</com.io7m.quarrel.version>
     <com.io7m.seltzer.version>1.0.0</com.io7m.seltzer.version>
     <com.io7m.tabla.version>0.0.2</com.io7m.tabla.version>
     <com.io7m.trasco.version>1.1.0</com.io7m.trasco.version>
@@ -98,16 +98,16 @@
     <!-- Third-party dependencies. -->
     <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
     <containers.postgresql.version>15.2</containers.postgresql.version>
-    <helidon.version>4.0.2</helidon.version>
+    <helidon.version>4.0.7</helidon.version>
     <jackson.version>2.14.2</jackson.version>
     <javafx.version>20.0.1</javafx.version>
-    <jooq.version>3.19.1</jooq.version>
-    <jqwik.version>1.8.2</jqwik.version>
-    <junit.version>5.10.1</junit.version>
-    <opentelemetry.version>1.34.0</opentelemetry.version>
-    <org.apache.tika.version>2.9.1</org.apache.tika.version>
-    <org.jline.version>3.25.0</org.jline.version>
-    <slf4j.version>2.0.10</slf4j.version>
+    <jooq.version>3.19.7</jooq.version>
+    <jqwik.version>1.8.4</jqwik.version>
+    <junit.version>5.10.2</junit.version>
+    <opentelemetry.version>1.37.0</opentelemetry.version>
+    <org.apache.tika.version>2.9.2</org.apache.tika.version>
+    <org.jline.version>3.25.1</org.jline.version>
+    <slf4j.version>2.0.13</slf4j.version>
   </properties>
 
   <licenses>
@@ -185,7 +185,7 @@
       <dependency>
         <groupId>com.io7m.jmulticlose</groupId>
         <artifactId>com.io7m.jmulticlose.core</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -205,7 +205,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.15.1</version>
+        <version>2.16.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -343,7 +343,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.4.14</version>
+        <version>1.5.4</version>
       </dependency>
 
       <!-- jxstrand string resources -->
@@ -536,24 +536,24 @@
       <dependency>
         <groupId>io.opentelemetry</groupId>
         <artifactId>opentelemetry-semconv</artifactId>
-        <version>1.18.0-alpha</version>
+        <version>1.30.1-alpha</version>
       </dependency>
       <dependency>
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-stdlib</artifactId>
-        <version>1.9.22</version>
+        <version>1.9.23</version>
       </dependency>
       <dependency>
         <groupId>com.squareup.okio</groupId>
         <artifactId>okio-jvm</artifactId>
-        <version>3.7.0</version>
+        <version>3.9.0</version>
       </dependency>
 
       <!-- Database -->
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.2</version>
+        <version>42.7.3</version>
         <exclusions>
           <exclusion>
             <groupId>org.checkerframework</groupId>
@@ -670,7 +670,7 @@
       <dependency>
         <groupId>nl.jqno.equalsverifier</groupId>
         <artifactId>equalsverifier</artifactId>
-        <version>3.15.5</version>
+        <version>3.16.1</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.ervilla</groupId>
@@ -702,17 +702,17 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.8.0</version>
+        <version>5.11.0</version>
       </dependency>
       <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy-agent</artifactId>
-        <version>1.14.11</version>
+        <version>1.14.13</version>
       </dependency>
       <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy</artifactId>
-        <version>1.14.11</version>
+        <version>1.14.13</version>
       </dependency>
 
       <!-- Blackthorne XML -->
