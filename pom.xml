@@ -107,7 +107,7 @@
     <opentelemetry.version>1.37.0</opentelemetry.version>
     <org.apache.tika.version>2.9.2</org.apache.tika.version>
     <org.jline.version>3.25.1</org.jline.version>
-    <slf4j.version>2.0.10</slf4j.version>
+    <slf4j.version>2.0.13</slf4j.version>
   </properties>
 
   <licenses>
