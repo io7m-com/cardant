@@ -9,7 +9,7 @@
     <Paragraph>
       The <Link target="3dff8219-1792-41a3-bd8b-797efe61348c">Inventory API</Link> service exposes one or more versions
       of the <Term type="term">Inventory</Term> protocol. The service uses the
-      <LinkExternal target="https://github.com/io7m/verdant">verdant</LinkExternal>
+      <LinkExternal target="https://www.github.com/io7m-com/verdant">verdant</LinkExternal>
       protocol to advertise which versions of the <Term type="term">Inventory</Term> protocol are available. Executing a
       <Term type="function">GET</Term>
       request to the root endpoint will yield a
