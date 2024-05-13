@@ -275,7 +275,7 @@
       <dependency>
         <groupId>com.io7m.verona</groupId>
         <artifactId>com.io7m.verona.core</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
       </dependency>
 
       <!-- Server security -->
