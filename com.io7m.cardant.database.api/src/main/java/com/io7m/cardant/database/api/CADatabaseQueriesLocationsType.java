@@ -17,6 +17,7 @@
 package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
@@ -25,6 +26,7 @@ import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -97,10 +99,27 @@ public sealed interface CADatabaseQueriesLocationsType
    */
 
   non-sealed interface LocationListType
-    extends CADatabaseQueryType<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>,
+    extends CADatabaseQueryType<LocationListType.Parameters, SortedMap<CALocationID, CALocationSummary>>,
     CADatabaseQueriesLocationsType
   {
+    /**
+     * Parameters for the operation.
+     *
+     * @param includeDeleted The deleted state
+     */
 
+    record Parameters(
+      CAIncludeDeleted includeDeleted)
+    {
+      /**
+       * Parameters for the operation.
+       */
+
+      public Parameters
+      {
+        Objects.requireNonNull(includeDeleted, "includeDeleted");
+      }
+    }
   }
 
   /**

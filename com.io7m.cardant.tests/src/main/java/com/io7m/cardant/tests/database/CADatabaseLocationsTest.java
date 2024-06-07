@@ -22,6 +22,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemRepositType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
@@ -75,6 +76,7 @@ import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNonDeletedChildren;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNotEmpty;
+import static com.io7m.cardant.model.CAIncludeDeleted.INCLUDE_ONLY_LIVE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -198,7 +200,12 @@ public final class CADatabaseLocationsTest
     r.put(loc1.id(), loc1.summary());
     r.put(loc2.id(), loc2.summary());
 
-    assertEquals(r, this.locationList.execute(UNIT));
+    assertEquals(
+      r,
+      this.locationList.execute(
+        new LocationListType.Parameters(INCLUDE_ONLY_LIVE)
+      )
+    );
 
     assertEquals(loc0, this.locationGet.execute(loc0.id()).orElseThrow());
     assertEquals(loc1, this.locationGet.execute(loc1.id()).orElseThrow());
@@ -267,7 +274,12 @@ public final class CADatabaseLocationsTest
     r.put(loc0.id(), loc0.summary());
     r.put(loc1without.id(), loc1without.summary());
 
-    assertEquals(r, list.execute(UNIT));
+    assertEquals(
+      r,
+      this.locationList.execute(
+        new LocationListType.Parameters(INCLUDE_ONLY_LIVE)
+      )
+    );
   }
 
   /**

@@ -267,7 +267,8 @@ CREATE TABLE items (
     GENERATED ALWAYS AS (to_tsvector(%S, item_name)) STORED,
   -- [jooq ignore stop]
 
-  item_deleted BOOLEAN NOT NULL DEFAULT 'f'::BOOLEAN,
+  -- A non-null timestamp means the item was deleted at that time.
+  item_deleted TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 
   CONSTRAINT items_primary_key
     PRIMARY KEY (item_id)
@@ -547,7 +548,9 @@ CREATE TABLE locations (
   location_id           UUID         NOT NULL,
   location_parent       UUID,
   location_name         VARCHAR(128) NOT NULL,
-  location_deleted      BOOLEAN      NOT NULL DEFAULT 'f'::BOOLEAN,
+
+  -- A non-null timestamp means the location was deleted at that time.
+  location_deleted TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 
   CONSTRAINT locations_primary_key
     PRIMARY KEY (location_id),
@@ -570,11 +573,11 @@ CREATE FUNCTION location_parent_not_deleted() RETURNS TRIGGER AS $$
   DECLARE
     count INTEGER;
   BEGIN
-    IF new.location_deleted = true THEN
+    IF new.location_deleted IS NOT NULL THEN
       SELECT count(*) INTO count
         FROM locations
           WHERE locations.location_parent = new.location_id
-            AND locations.location_deleted = false
+            AND locations.location_deleted IS NULL
         LIMIT 1;
 
       IF count > 0 THEN
@@ -599,7 +602,7 @@ CREATE FUNCTION location_items_not_empty() RETURNS TRIGGER AS $$
   DECLARE
     count INTEGER;
   BEGIN
-    IF new.location_deleted = true THEN
+    IF new.location_deleted IS NOT NULL THEN
       SELECT count(*) INTO count
         FROM item_locations
           WHERE item_locations.item_location = new.location_id

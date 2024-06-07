@@ -72,10 +72,18 @@ public final class CADBQItemDeleteMarkOnly
     final var transaction = this.transaction();
     final var updates =
       new ArrayList<Query>(parameters.items().size());
+
+    final OffsetDateTime deleted;
+    if (parameters.deleted()) {
+      deleted = OffsetDateTime.now();
+    } else {
+      deleted = null;
+    }
+
     for (final var item : parameters.items()) {
       updates.add(
         context.update(ITEMS)
-          .set(ITEMS.ITEM_DELETED, Boolean.valueOf(parameters.deleted()))
+          .set(ITEMS.ITEM_DELETED, deleted)
           .where(ITEMS.ITEM_ID.eq(item.id()))
       );
       updates.add(

@@ -47,6 +47,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATION
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -144,7 +145,7 @@ public final class CAICmdLocationsListTest
     when(transaction.queries(CADatabaseQueriesLocationsType.LocationListType.class))
       .thenReturn(locList);
 
-    when(locList.execute(UNIT))
+    when(locList.execute(any()))
       .thenReturn(new TreeMap<>(
         Map.ofEntries(
           Map.entry(LOCATION_0.id(), LOCATION_0.summary()),
@@ -181,7 +182,7 @@ public final class CAICmdLocationsListTest
     verify(transaction)
       .queries(CADatabaseQueriesLocationsType.LocationListType.class);
     verify(locList)
-      .execute(UNIT);
+      .execute(any());
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(locList);

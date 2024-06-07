@@ -18,12 +18,12 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationListType;
-import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
 import org.jooq.DSLContext;
 import org.jooq.Record3;
+import org.jooq.impl.DSL;
 
 import java.util.Optional;
 import java.util.SortedMap;
@@ -38,10 +38,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
  */
 
 public final class CADBQLocationList
-  extends CADBQAbstract<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>
+  extends CADBQAbstract<LocationListType.Parameters, SortedMap<CALocationID, CALocationSummary>>
   implements LocationListType
 {
-  private static final Service<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>, LocationListType> SERVICE =
+  private static final Service<Parameters, SortedMap<CALocationID, CALocationSummary>, LocationListType> SERVICE =
     new Service<>(LocationListType.class, CADBQLocationList::new);
 
   /**
@@ -68,20 +68,29 @@ public final class CADBQLocationList
   @Override
   protected SortedMap<CALocationID, CALocationSummary> onExecute(
     final DSLContext context,
-    final CADatabaseUnit parameters)
+    final Parameters parameters)
   {
-    return list(context);
+    return list(context, parameters);
   }
 
   static TreeMap<CALocationID, CALocationSummary> list(
-    final DSLContext context)
+    final DSLContext context,
+    final Parameters parameters)
   {
+    final var conditions =
+      switch (parameters.includeDeleted()) {
+        case INCLUDE_ONLY_LIVE -> LOCATIONS.LOCATION_DELETED.isNull();
+        case INCLUDE_ONLY_DELETED -> LOCATIONS.LOCATION_DELETED.isNotNull();
+        case INCLUDE_BOTH_LIVE_AND_DELETED -> DSL.trueCondition();
+      };
+
     return new TreeMap<>(
       context.select(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
           LOCATIONS.LOCATION_NAME
         ).from(LOCATIONS)
+        .where(conditions)
         .orderBy(LOCATIONS.LOCATION_NAME)
         .stream()
         .map(CADBQLocationList::mapRecord)

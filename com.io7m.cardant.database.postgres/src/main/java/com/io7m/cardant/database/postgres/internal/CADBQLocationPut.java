@@ -18,6 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationListType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationPutType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
@@ -43,6 +44,7 @@ import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorCyclic;
+import static com.io7m.cardant.model.CAIncludeDeleted.INCLUDE_ONLY_LIVE;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.NEW_LOCATION_ID;
@@ -127,9 +129,6 @@ public final class CADBQLocationPut
         .set(
           LOCATIONS.LOCATION_NAME,
           location.name())
-        .set(
-          LOCATIONS.LOCATION_DELETED,
-          Boolean.FALSE)
         .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))
@@ -230,7 +229,10 @@ public final class CADBQLocationPut
       );
 
     final var locations =
-      CADBQLocationList.list(context);
+      CADBQLocationList.list(
+        context,
+        new Parameters(INCLUDE_ONLY_LIVE)
+      );
 
     try {
       for (final var location : locations.values()) {

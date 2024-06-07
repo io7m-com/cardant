@@ -30,7 +30,6 @@ import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
-import static java.lang.Boolean.FALSE;
 
 /**
  * Create an item.
@@ -74,7 +73,6 @@ public final class CADBQItemCreate
 
     context.insertInto(ITEMS)
       .set(ITEMS.ITEM_ID, itemID.id())
-      .set(ITEMS.ITEM_DELETED, FALSE)
       .set(ITEMS.ITEM_NAME, "")
       .execute();
 

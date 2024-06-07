@@ -75,12 +75,18 @@ public final class CADBQLocationDeleteMarkOnly
     final var transaction = this.transaction();
     final var updates =
       new ArrayList<Query>(parameters.locations().size());
+
+    final OffsetDateTime deleted;
+    if (parameters.deleted()) {
+      deleted = OffsetDateTime.now();
+    } else {
+      deleted = null;
+    }
+
     for (final var location : parameters.locations()) {
       updates.add(
         context.update(LOCATIONS)
-          .set(
-            LOCATIONS.LOCATION_DELETED,
-            Boolean.valueOf(parameters.deleted()))
+          .set(LOCATIONS.LOCATION_DELETED, deleted)
           .where(LOCATIONS.LOCATION_ID.eq(location.id()))
       );
       updates.add(

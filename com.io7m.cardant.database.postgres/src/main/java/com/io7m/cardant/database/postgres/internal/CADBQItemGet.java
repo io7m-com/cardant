@@ -133,7 +133,7 @@ public final class CADBQItemGet
         .on(ITEM_ATTACHMENTS.IA_ITEM_ID.eq(ITEMS.ITEM_ID))
         .leftJoin(FILES)
         .on(FILES.FILE_ID.eq(ITEM_ATTACHMENTS.IA_FILE_ID))
-        .where(ITEMS.ITEM_ID.eq(itemID.id()).and(ITEMS.ITEM_DELETED.isFalse()))
+        .where(ITEMS.ITEM_ID.eq(itemID.id()).and(ITEMS.ITEM_DELETED.isNull()))
         .groupBy(
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
