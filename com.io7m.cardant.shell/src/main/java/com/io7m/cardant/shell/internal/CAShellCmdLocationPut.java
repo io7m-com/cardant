@@ -56,7 +56,7 @@ public final class CAShellCmdLocationPut
       "--id",
       List.of(),
       new QConstant("The location ID."),
-      Optional.of(CALocationID.random()),
+      Optional.empty(),
       CALocationID.class
     );
 
