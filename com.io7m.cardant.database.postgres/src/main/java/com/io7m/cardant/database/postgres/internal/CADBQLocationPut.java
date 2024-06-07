@@ -128,6 +128,9 @@ public final class CADBQLocationPut
           LOCATIONS.LOCATION_NAME,
           location.name())
         .set(
+          LOCATIONS.LOCATION_DELETED,
+          Boolean.FALSE)
+        .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))
     );

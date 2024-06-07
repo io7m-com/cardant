@@ -414,5 +414,44 @@ public final class CAStandardErrorCodes
   {
     return ERROR_USER_NONEXISTENT;
   }
+
+  private static final CAErrorCode ERROR_ITEM_STILL_IN_LOCATION =
+    new CAErrorCode("error-item-still-in-location");
+
+  /**
+   * An item cannot be deleted when instances of it are still present in one or more locations.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorItemStillInLocation()
+  {
+    return ERROR_ITEM_STILL_IN_LOCATION;
+  }
+
+  private static final CAErrorCode ERROR_LOCATION_NOT_EMPTY =
+    new CAErrorCode("error-location-not-empty");
+
+  /**
+   * A location cannot be deleted while it still contains one or more items.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorLocationNotEmpty()
+  {
+    return ERROR_LOCATION_NOT_EMPTY;
+  }
+
+  private static final CAErrorCode ERROR_LOCATION_NON_DELETED_CHILDREN =
+    new CAErrorCode("error-location-non-deleted-children");
+
+  /**
+   * A location cannot be deleted while it still has non-deleted child locations.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorLocationNonDeletedChildren()
+  {
+    return ERROR_LOCATION_NON_DELETED_CHILDREN;
+  }
 }
 

@@ -28,3 +28,6 @@ TYPE_FIELD_TYPE_NONEXISTENT|type-field-type-nonexistent|A field in the type decl
 TYPE_REFERENCED|type-referenced|The type is referenced by one or more existing items.
 TYPE_SCALAR_REFERENCED|type-scalar-referenced|The scalar type is referenced by one or more existing types/fields.
 USER_NONEXISTENT|user-nonexistent|An attempt was made to reference a user that does not exist.
+ITEM_STILL_IN_LOCATION|item-still-in-location|An item cannot be deleted when instances of it are still present in one or more locations.
+LOCATION_NOT_EMPTY|location-not-empty|A location cannot be deleted while it still contains one or more items.
+LOCATION_NON_DELETED_CHILDREN|location-non-deleted-children|A location cannot be deleted while it still has non-deleted child locations.

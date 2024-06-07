@@ -122,7 +122,7 @@ public final class CADBQLocationGet
         .on(LOCATION_ATTACHMENTS.LA_LOCATION_ID.eq(LOCATIONS.LOCATION_ID))
         .leftJoin(FILES)
         .on(FILES.FILE_ID.eq(LOCATION_ATTACHMENTS.LA_FILE_ID))
-        .where(LOCATIONS.LOCATION_ID.eq(id.id()))
+        .where(LOCATIONS.LOCATION_ID.eq(id.id()).and(LOCATIONS.LOCATION_DELETED.isFalse()))
         .groupBy(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,

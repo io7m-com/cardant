@@ -5,7 +5,7 @@
   <appender name="STDERR"
             class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%level %logger [%X{Container}] [%X{PID}] %X{Source}: %msg%n</pattern>
+      <pattern>%level %logger{0} %msg%n</pattern>
     </encoder>
     <target>System.err</target>
   </appender>
@@ -35,7 +35,7 @@
           level="INFO"/>
 
   <logger name="com.io7m.ervilla.native_exec"
-          level="DEBUG"/>
+          level="TRACE"/>
 
   <root level="TRACE">
     <appender-ref ref="STDERR"/>

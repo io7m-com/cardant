@@ -11,6 +11,13 @@
   <entry key="error_create_queries">Failed to create database queries: {0}.</entry>
   <entry key="error_create_queries_unavailable">No supported database queries of the given type.</entry>
   <entry key="error_duplicate">Object already exists.</entry>
+  <entry key="error_duplicate_type_package">A version of the given type package is already installed.</entry>
+  <entry key="error_duplicate_file">File already exists.</entry>
+  <entry key="error_duplicate_item_attachment">Item attachment already exists.</entry>
+  <entry key="error_duplicate_item_location">Item location already exists.</entry>
+  <entry key="error_duplicate_location">Location already exists.</entry>
+  <entry key="error_duplicate_item">Item already exists.</entry>
+  <entry key="error_duplicate_user">User already exists.</entry>
   <entry key="error_duplicate_deleted">A previously deleted object exists with this ID.</entry>
   <entry key="error_expected_command">Expected a command.</entry>
   <entry key="error_hash_value_mismatch">Hash value did not match.</entry>
@@ -18,11 +25,19 @@
   <entry key="error_indexed">Error[{0}]</entry>
   <entry key="error_indexed_attribute">Error[{0}] {1}</entry>
   <entry key="error_io">I/O operation failed.</entry>
-  <entry key="error_item_count_store_invariant">The sum of the stored items does not match the expected item count.
+  <entry key="error_item_count_store_invariant">
+    The sum of the stored items does not match the expected item count.
   </entry>
   <entry key="error_item_count_too_many_removed">Attempted to remove too many items.</entry>
-  <entry key="error_item_reposit_remove_identified">The remaining items have serial numbers and therefore must be
-    removed individually and not as part of a set.
+  <entry key="error_item_reposit_remove_identified">
+    <![CDATA[The remaining items have serial numbers and therefore must be removed individually and not as part of a set.]]>
+  </entry>
+  <entry key="error_item_still_in_location">
+    <![CDATA[An item cannot be deleted when instances of it are still present in one or more locations.]]>
+  </entry>
+  <entry key="error_location_not_empty">A location cannot be deleted while it still contains one or more items.</entry>
+  <entry key="error_location_non_deleted_children">
+    <![CDATA[A location cannot be deleted while it still has non-deleted child locations.]]>
   </entry>
   <entry key="error_nonexistent">Object does not exist.</entry>
   <entry key="error_not_logged_in">Not logged in!</entry>
@@ -141,7 +156,8 @@
   <entry key="syntax_type_record_identifier_example">com.io7m:t</entry>
 
   <entry key="syntax_type_record_field_identifier_name">type-record-field-identifier</entry>
-  <entry key="syntax_type_record_field_identifier"><![CDATA[<dotted-name> ':' <unqualified-name> '.' <unqualified-name>]]></entry>
+  <entry key="syntax_type_record_field_identifier">
+    <![CDATA[<dotted-name> ':' <unqualified-name> '.' <unqualified-name>]]></entry>
   <entry key="syntax_type_record_field_identifier_example">com.io7m:t.x</entry>
 
   <entry key="syntax_package_name">package</entry>

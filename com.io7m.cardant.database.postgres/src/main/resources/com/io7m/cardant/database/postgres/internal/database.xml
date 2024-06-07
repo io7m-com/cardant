@@ -267,7 +267,7 @@ CREATE TABLE items (
     GENERATED ALWAYS AS (to_tsvector(%S, item_name)) STORED,
   -- [jooq ignore stop]
 
-  item_deleted BOOLEAN NOT NULL,
+  item_deleted BOOLEAN NOT NULL DEFAULT 'f'::BOOLEAN,
 
   CONSTRAINT items_primary_key
     PRIMARY KEY (item_id)
@@ -544,9 +544,10 @@ CREATE VIEW item_metadata_real AS
       </ParameterReferences>
       <Text><![CDATA[
 CREATE TABLE locations (
-  location_id           UUID NOT NULL,
+  location_id           UUID         NOT NULL,
   location_parent       UUID,
   location_name         VARCHAR(128) NOT NULL,
+  location_deleted      BOOLEAN      NOT NULL DEFAULT 'f'::BOOLEAN,
 
   CONSTRAINT locations_primary_key
     PRIMARY KEY (location_id),
@@ -563,6 +564,63 @@ CREATE TABLE locations (
     <Statement>
       GRANT SELECT ON locations TO cardant_read_only
     </Statement>
+
+    <Statement><![CDATA[
+CREATE FUNCTION location_parent_not_deleted() RETURNS TRIGGER AS $$
+  DECLARE
+    count INTEGER;
+  BEGIN
+    IF new.location_deleted = true THEN
+      SELECT count(*) INTO count
+        FROM locations
+          WHERE locations.location_parent = new.location_id
+            AND locations.location_deleted = false
+        LIMIT 1;
+
+      IF count > 0 THEN
+        RAISE sqlstate 'CA001' USING message = 'A location cannot be deleted while it still has non-deleted child locations';
+        RETURN NULL;
+      END IF;
+    END IF;
+    RETURN new;
+  END;
+$$ LANGUAGE PLPGSQL;
+]]></Statement>
+
+    <Statement><![CDATA[
+CREATE TRIGGER location_check_update_parent_not_deleted
+  BEFORE UPDATE ON locations
+    FOR EACH ROW
+      EXECUTE FUNCTION location_parent_not_deleted();
+]]></Statement>
+
+    <Statement><![CDATA[
+CREATE FUNCTION location_items_not_empty() RETURNS TRIGGER AS $$
+  DECLARE
+    count INTEGER;
+  BEGIN
+    IF new.location_deleted = true THEN
+      SELECT count(*) INTO count
+        FROM item_locations
+          WHERE item_locations.item_location = new.location_id
+        LIMIT 1;
+
+      IF count > 0 THEN
+        RAISE sqlstate 'CA002' USING message = 'A location cannot be deleted while it still contains items.';
+        RETURN NULL;
+      END IF;
+    END IF;
+    RETURN new;
+  END;
+$$ LANGUAGE PLPGSQL;
+]]></Statement>
+
+    <Statement><![CDATA[
+CREATE TRIGGER location_check_update_items_not_empty
+  BEFORE UPDATE ON locations
+    FOR EACH ROW
+      EXECUTE FUNCTION location_items_not_empty();
+]]></Statement>
 
     <Comment>
       The location_types table associates locations with types.
@@ -730,10 +788,10 @@ CREATE TABLE item_locations (
     UNIQUE NULLS NOT DISTINCT (item_location_item, item_location, item_location_serial),
   -- [jooq ignore stop]
 
-  CONSTRAINT item_id_exists
+  CONSTRAINT item_locations_item_exists
     FOREIGN KEY (item_location_item) REFERENCES items (item_id),
 
-  CONSTRAINT item_location_exists
+  CONSTRAINT item_locations_location_exists
     FOREIGN KEY (item_location) REFERENCES locations (location_id),
 
   CONSTRAINT check_item_location_count
@@ -929,6 +987,7 @@ CREATE VIEW location_search_view AS
   SELECT
     locations.location_id,
     locations.location_name,
+    locations.location_deleted,
     location_metadata.location_meta_type_package,
     location_metadata.location_meta_type_record,
     location_metadata.location_meta_type_field,
@@ -951,6 +1010,7 @@ CREATE VIEW location_search_view AS
   GROUP BY
     locations.location_id,
     locations.location_name,
+    locations.location_deleted,
     location_metadata.location_meta_type_package,
     location_metadata.location_meta_type_record,
     location_metadata.location_meta_type_field,

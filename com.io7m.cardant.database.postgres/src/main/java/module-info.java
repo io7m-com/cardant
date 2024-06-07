@@ -84,6 +84,8 @@ module com.io7m.cardant.database.postgres
     com.io7m.cardant.database.postgres.internal.CADBQItemTypesRevoke,
     com.io7m.cardant.database.postgres.internal.CADBQLocationAttachmentAdd,
     com.io7m.cardant.database.postgres.internal.CADBQLocationAttachmentRemove,
+    com.io7m.cardant.database.postgres.internal.CADBQLocationDelete,
+    com.io7m.cardant.database.postgres.internal.CADBQLocationDeleteMarkOnly,
     com.io7m.cardant.database.postgres.internal.CADBQLocationGet,
     com.io7m.cardant.database.postgres.internal.CADBQLocationList,
     com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataPut,

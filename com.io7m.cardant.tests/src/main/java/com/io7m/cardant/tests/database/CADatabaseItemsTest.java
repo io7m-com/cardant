@@ -19,13 +19,22 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesFilesType.PutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentAddType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemAttachmentRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemRepositType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSearchType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -44,6 +53,11 @@ import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAMetadataType.Integral;
+import com.io7m.cardant.model.CAMetadataType.Monetary;
+import com.io7m.cardant.model.CAMetadataType.Real;
+import com.io7m.cardant.model.CAMetadataType.Text;
+import com.io7m.cardant.model.CAMetadataType.Time;
 import com.io7m.cardant.model.CAMoney;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUser;
@@ -75,6 +89,7 @@ import java.util.Set;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorItemStillInLocation;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveIdentifiedItems;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
@@ -94,15 +109,15 @@ public final class CADatabaseItemsTest
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private CADatabaseQueriesItemsType.ItemCreateType itemCreate;
-  private CADatabaseQueriesItemsType.ItemSetNameType setName;
-  private CADatabaseQueriesItemsType.ItemGetType get;
-  private CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType deleteMark;
-  private CADatabaseQueriesLocationsType.LocationPutType locPut;
-  private CADatabaseQueriesItemsType.ItemRepositType repositQuery;
-  private CADatabaseQueriesItemsType.ItemSearchType searchQuery;
-  private CADatabaseQueriesItemsType.ItemDeleteType delete;
-  private CADatabaseQueriesItemsType.ItemGetType itemGet;
+  private ItemCreateType itemCreate;
+  private ItemSetNameType setName;
+  private ItemGetType get;
+  private ItemDeleteMarkOnlyType deleteMark;
+  private LocationPutType locPut;
+  private ItemRepositType repositQuery;
+  private ItemSearchType searchQuery;
+  private ItemDeleteType delete;
+  private ItemGetType itemGet;
   private ItemMetadataPutType metaAdd;
   private ItemMetadataRemoveType metaRemove;
 
@@ -136,23 +151,23 @@ public final class CADatabaseItemsTest
     this.transaction.setUserId(userId);
 
     this.itemCreate =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
+      this.transaction.queries(ItemCreateType.class);
     this.itemGet =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      this.transaction.queries(ItemGetType.class);
     this.setName =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
+      this.transaction.queries(ItemSetNameType.class);
     this.get =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
+      this.transaction.queries(ItemGetType.class);
     this.deleteMark =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
+      this.transaction.queries(ItemDeleteMarkOnlyType.class);
     this.delete =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemDeleteType.class);
+      this.transaction.queries(ItemDeleteType.class);
     this.locPut =
-      this.transaction.queries(CADatabaseQueriesLocationsType.LocationPutType.class);
+      this.transaction.queries(LocationPutType.class);
     this.repositQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemRepositType.class);
+      this.transaction.queries(ItemRepositType.class);
     this.searchQuery =
-      this.transaction.queries(CADatabaseQueriesItemsType.ItemSearchType.class);
+      this.transaction.queries(ItemSearchType.class);
     this.metaAdd =
       this.transaction.queries(ItemMetadataPutType.class);
     this.metaRemove =
@@ -539,27 +554,27 @@ public final class CADatabaseItemsTest
     this.itemCreate.execute(id0);
 
     final var meta0 =
-      new CAMetadataType.Text(
+      new Text(
         CATypeRecordFieldIdentifier.of("x.y:a0.s"),
         "abc"
       );
     final var meta1 =
-      new CAMetadataType.Integral(
+      new Integral(
         CATypeRecordFieldIdentifier.of("x.y:a1.t"),
         230L
       );
     final var meta2 =
-      new CAMetadataType.Real(
+      new Real(
         CATypeRecordFieldIdentifier.of("x.y:a2.u"),
         45.0
       );
     final var meta3 =
-      new CAMetadataType.Time(
+      new Time(
         CATypeRecordFieldIdentifier.of("x.y:a3.w"),
         OffsetDateTime.of(2000, 1, 1, 13, 30, 23, 0, UTC)
       );
     final var meta4 =
-      new CAMetadataType.Monetary(
+      new Monetary(
         CATypeRecordFieldIdentifier.of("x.y:a4.p"),
         CAMoney.money("200.0000000000000000"),
         CurrencyUnit.EUR
@@ -627,7 +642,7 @@ public final class CADatabaseItemsTest
 
     final var fileAdd =
       this.transaction.queries(
-        CADatabaseQueriesFilesType.PutType.class);
+        PutType.class);
     final var itemAttachmentAdd =
       this.transaction.queries(
         ItemAttachmentAddType.class);
@@ -871,5 +886,42 @@ public final class CADatabaseItemsTest
     final var item_2 = this.itemGet.execute(itemId).orElseThrow();
     assertEquals(1L, item_2.countTotal());
     assertEquals(0L, item_2.countHere());
+  }
+
+  /**
+   * Removing items works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemRemoveReferenced0()
+    throws Exception
+  {
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var item_0 = this.itemGet.execute(itemId).orElseThrow();
+    assertEquals(0L, item_0.countTotal());
+    assertEquals(0L, item_0.countHere());
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+    this.repositQuery.execute(
+      new CAItemRepositSerialAdd(itemId, loc0.id(), new CAItemSerial("A")));
+
+    final var ex = assertThrows(CADatabaseException.class, () -> {
+      this.delete.execute(Set.of(itemId));
+    });
+    assertEquals(errorItemStillInLocation(), ex.errorCode());
   }
 }

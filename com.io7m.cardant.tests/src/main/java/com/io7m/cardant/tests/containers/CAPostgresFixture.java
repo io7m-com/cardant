@@ -61,17 +61,27 @@ public final class CAPostgresFixture
     LOG.info(
       "Creating postgres database on {}", Integer.valueOf(port));
 
+    final var builder =
+      EPgSpecs.builderFromDockerIO(
+        CATestProperties.POSTGRESQL_VERSION,
+        new EPortAddressType.All(),
+        port,
+        "postgres",
+        "postgres",
+        "12345678"
+      );
+
+    if (Objects.equals(System.getenv("CARDANT_POSTGRES_TEST_DEBUG"), "true")) {
+      builder.addArgument("-c")
+        .addArgument("log_destination=stderr")
+        .addArgument("-c")
+        .addArgument("log_statement=all")
+        .addArgument("-c")
+        .addArgument("client_min_messages=log");
+    }
+
     return new CAPostgresFixture(
-      supervisor.start(
-        EPgSpecs.builderFromDockerIO(
-          CATestProperties.POSTGRESQL_VERSION,
-          new EPortAddressType.All(),
-          port,
-          "postgres",
-          "postgres",
-          "12345678"
-        ).build()
-      ),
+      supervisor.start(builder.build()),
       "postgres",
       port
     );

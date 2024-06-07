@@ -19,9 +19,14 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemRepositType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationDeleteMarkOnlyType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationDeleteType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationListType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType;
@@ -35,6 +40,8 @@ import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemRepositSetAdd;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
@@ -66,6 +73,8 @@ import java.util.TreeMap;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNonDeletedChildren;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNotEmpty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -82,6 +91,10 @@ public final class CADatabaseLocationsTest
   private LocationListType locationList;
   private LocationMetadataPutType metaPut;
   private LocationMetadataRemoveType metaRemove;
+  private LocationDeleteType locationDelete;
+  private LocationDeleteMarkOnlyType locationDeleteMark;
+  private CADatabaseQueriesItemsType.ItemCreateType itemCreate;
+  private ItemRepositType itemReposit;
 
   @BeforeAll
   public static void setupOnce(
@@ -112,12 +125,21 @@ public final class CADatabaseLocationsTest
     this.transaction.commit();
     this.transaction.setUserId(userId);
 
+    this.itemCreate =
+      this.transaction.queries(ItemCreateType.class);
+    this.itemReposit =
+      this.transaction.queries(ItemRepositType.class);
+
     this.locationPut =
       this.transaction.queries(LocationPutType.class);
     this.locationList =
       this.transaction.queries(LocationListType.class);
     this.locationGet =
       this.transaction.queries(LocationGetType.class);
+    this.locationDelete =
+      this.transaction.queries(LocationDeleteType.class);
+    this.locationDeleteMark =
+      this.transaction.queries(LocationDeleteMarkOnlyType.class);
 
     this.metaPut =
       this.transaction.queries(LocationMetadataPutType.class);
@@ -181,6 +203,12 @@ public final class CADatabaseLocationsTest
     assertEquals(loc0, this.locationGet.execute(loc0.id()).orElseThrow());
     assertEquals(loc1, this.locationGet.execute(loc1.id()).orElseThrow());
     assertEquals(loc2, this.locationGet.execute(loc2.id()).orElseThrow());
+
+    this.locationDeleteMark.execute(Set.of(loc0.id(), loc1.id(), loc2.id()));
+
+    assertEquals(Optional.empty(), this.locationGet.execute(loc0.id()));
+    assertEquals(Optional.empty(), this.locationGet.execute(loc1.id()));
+    assertEquals(Optional.empty(), this.locationGet.execute(loc2.id()));
   }
 
   /**
@@ -247,8 +275,6 @@ public final class CADatabaseLocationsTest
   public void testLocationCyclic0()
     throws Exception
   {
-
-
     final var loc0 =
       new CALocation(
         CALocationID.random(),
@@ -333,10 +359,8 @@ public final class CADatabaseLocationsTest
 
     this.metaPut.execute(
       new LocationMetadataPutType.Parameters(
-        id0,
-        Set.of(meta0,
-               meta1,
-               meta2))
+        id0, Set.of(meta0, meta1, meta2)
+      )
     );
 
     {
@@ -459,5 +483,183 @@ public final class CADatabaseLocationsTest
         a
       );
     }
+  }
+
+  /**
+   * Deleting locations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationDelete0()
+    throws Exception
+  {
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locationPut.execute(loc0);
+    this.locationDelete.execute(Set.of(loc0.id()));
+
+    assertEquals(Optional.empty(), this.locationGet.execute(loc0.id()));
+  }
+
+  /**
+   * Deleting locations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationDelete1()
+    throws Exception
+  {
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locationPut.execute(loc0);
+
+    final var id = CAItemID.random();
+    this.itemCreate.execute(id);
+    this.itemReposit.execute(
+      new CAItemRepositSetAdd(id, loc0.id(), 10L));
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.locationDelete.execute(Set.of(loc0.id()));
+      });
+
+    assertEquals(errorLocationNotEmpty(), ex.errorCode());
+  }
+
+  /**
+   * Deleting locations works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationDelete2()
+    throws Exception
+  {
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locationPut.execute(loc0);
+
+    final var id = CAItemID.random();
+    this.itemCreate.execute(id);
+    this.itemReposit.execute(
+      new CAItemRepositSetAdd(id, loc0.id(), 10L));
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.locationDeleteMark.execute(Set.of(loc0.id()));
+      });
+
+    assertEquals(errorLocationNotEmpty(), ex.errorCode());
+  }
+
+  /**
+   * Locations cannot be deleted while they have non-deleted children.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationDelete3()
+    throws Exception
+  {
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    final var loc1 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.of(loc0.id()),
+        "Loc1",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locationPut.execute(loc0);
+    this.locationPut.execute(loc1);
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.locationDeleteMark.execute(Set.of(loc0.id()));
+      });
+
+    assertEquals(errorLocationNonDeletedChildren(), ex.errorCode());
+  }
+
+  /**
+   * Locations cannot be deleted while they have non-deleted children.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationDelete4()
+    throws Exception
+  {
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.empty(),
+        "Loc0",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    final var loc1 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.of(loc0.id()),
+        "Loc1",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locationPut.execute(loc0);
+    this.locationPut.execute(loc1);
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.locationDelete.execute(Set.of(loc0.id()));
+      });
+
+    assertEquals(errorLocationNonDeletedChildren(), ex.errorCode());
   }
 }

@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -52,6 +53,28 @@ public sealed interface CADatabaseQueriesLocationsType
 
   non-sealed interface LocationGetType
     extends CADatabaseQueryType<CALocationID, Optional<CALocation>>,
+    CADatabaseQueriesLocationsType
+  {
+
+  }
+
+  /**
+   * Delete the given locations.
+   */
+
+  non-sealed interface LocationDeleteType
+    extends CADatabaseQueryType<Collection<CALocationID>, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+
+  }
+
+  /**
+   * Mark the given locations as deleted.
+   */
+
+  non-sealed interface LocationDeleteMarkOnlyType
+    extends CADatabaseQueryType<Collection<CALocationID>, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
 
