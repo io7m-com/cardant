@@ -42,6 +42,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
 import java.util.List;
@@ -217,7 +218,7 @@ public final class CAICmdLocationMetadataPutTest
           new Text(name1, "y"),
           new Text(name2, "z")))
       );
-    verify(locationGet)
+    verify(locationGet, new Times(2))
       .execute(LOCATION_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -358,7 +359,14 @@ public final class CAICmdLocationMetadataPutTest
       .thenReturn(locationMetaPut);
 
     when(locationGet.execute(any()))
-      .thenReturn(Optional.empty());
+      .thenReturn(Optional.of(new CALocation(
+        LOCATION_ID,
+        Optional.empty(),
+        "Location",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        new TreeSet<>()
+      )));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -409,6 +417,9 @@ public final class CAICmdLocationMetadataPutTest
       .queries(LocationGetType.class);
     verify(transaction)
       .queries(LocationMetadataPutType.class);
+
+    verify(locationGet, new Times(1))
+      .execute(LOCATION_ID);
 
     verify(locationMetaPut)
       .execute(
@@ -533,7 +544,7 @@ public final class CAICmdLocationMetadataPutTest
     verify(transaction)
       .queries(LocationMetadataPutType.class);
 
-    verify(locationGet)
+    verify(locationGet, new Times(2))
       .execute(LOCATION_ID);
     verify(locationMetaPut)
       .execute(new Parameters(LOCATION_ID, Set.of(meta0)));

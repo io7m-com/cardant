@@ -94,14 +94,26 @@ public sealed interface CADatabaseQueriesItemsType
   }
 
   /**
-   * Mark the given items as deleted.
+   * Mark the given items as deleted/undeleted.
    */
 
   non-sealed interface ItemDeleteMarkOnlyType
-    extends CADatabaseQueryType<Collection<CAItemID>, CADatabaseUnit>,
+    extends CADatabaseQueryType<ItemDeleteMarkOnlyType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
+    /**
+     * Parameters for the operation.
+     *
+     * @param items   The item IDs
+     * @param deleted Whether items are deleted
+     */
 
+    record Parameters(
+      Collection<CAItemID> items,
+      boolean deleted)
+    {
+
+    }
   }
 
   /**

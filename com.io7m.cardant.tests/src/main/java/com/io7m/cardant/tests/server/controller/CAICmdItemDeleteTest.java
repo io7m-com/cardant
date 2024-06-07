@@ -17,12 +17,12 @@
 
 package com.io7m.cardant.tests.server.controller;
 
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.server.controller.inventory.CAICmdItemsRemove;
+import com.io7m.cardant.server.controller.inventory.CAICmdItemDelete;
 import com.io7m.medrina.api.MMatchActionType.MMatchActionWithName;
 import com.io7m.medrina.api.MMatchObjectType.MMatchObjectWithType;
 import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
@@ -47,16 +47,16 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * @see CAICmdItemsRemove
+ * @see CAICmdItemDelete
  */
 
-public final class CAICmdItemsRemoveTest
+public final class CAICmdItemDeleteTest
   extends CACmdAbstractContract
 {
-  private static final CAItemID ITEM_ID = CAItemID.random();
+  private static final CAItemID ITEM = CAItemID.random();
 
   /**
-   * Removing items requires the permission to WRITE to INVENTORY_ITEMS.
+   * Deleting an item requires the permission to WRITE to INVENTORY_ITEMS.
    *
    * @throws Exception On errors
    */
@@ -73,14 +73,12 @@ public final class CAICmdItemsRemoveTest
     /* Act. */
 
     final var handler =
-      new CAICmdItemsRemove();
+      new CAICmdItemDelete();
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
           context,
-          new CAICommandItemsRemove(
-            Set.of(ITEM_ID)
-          ));
+          new CAICommandItemDelete(ITEM));
       });
 
     /* Assert. */
@@ -89,24 +87,24 @@ public final class CAICmdItemsRemoveTest
   }
 
   /**
-   * Updating an item works.
+   * Deleting an item works.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testRemoves()
+  public void testCreates()
     throws Exception
   {
     /* Arrange. */
 
-    final var delete =
-      mock(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
+    final var items =
+      mock(ItemDeleteMarkOnlyType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class))
-      .thenReturn(delete);
+    when(transaction.queries(ItemDeleteMarkOnlyType.class))
+      .thenReturn(items);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -126,17 +124,18 @@ public final class CAICmdItemsRemoveTest
 
     /* Act. */
 
-    final var handler = new CAICmdItemsRemove();
-    handler.execute(context, new CAICommandItemsRemove(Set.of(ITEM_ID)));
+    final var handler = new CAICmdItemDelete();
+    handler.execute(context, new CAICommandItemDelete(ITEM));
 
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
-    verify(delete)
-      .execute(Set.of(ITEM_ID));
+      .queries(ItemDeleteMarkOnlyType.class);
+
+    verify(items)
+      .execute(new ItemDeleteMarkOnlyType.Parameters(Set.of(ITEM), true));
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(delete);
+    verifyNoMoreInteractions(items);
   }
 }

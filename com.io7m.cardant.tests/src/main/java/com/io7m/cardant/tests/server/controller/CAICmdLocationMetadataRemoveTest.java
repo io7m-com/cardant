@@ -42,6 +42,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
 import java.util.List;
@@ -216,7 +217,7 @@ public final class CAICmdLocationMetadataRemoveTest
 
         )
       );
-    verify(locationGet)
+    verify(locationGet, new Times(2))
       .execute(LOCATION_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -240,6 +241,16 @@ public final class CAICmdLocationMetadataRemoveTest
       mock(LocationGetType.class);
     final var locationMetaRemove =
       mock(LocationMetadataRemoveType.class);
+
+    when(locationGet.execute(any()))
+      .thenReturn(Optional.of(new CALocation(
+        LOCATION_ID,
+        Optional.empty(),
+        "Location",
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      )));
 
     doThrow(
       new CADatabaseException(
@@ -487,7 +498,7 @@ public final class CAICmdLocationMetadataRemoveTest
     verify(transaction)
       .queries(LocationMetadataRemoveType.class);
 
-    verify(locationGet)
+    verify(locationGet, new Times(2))
       .execute(LOCATION_ID);
     verify(locationMetaRemove)
       .execute(new Parameters(LOCATION_ID, Set.of(meta0.name())));

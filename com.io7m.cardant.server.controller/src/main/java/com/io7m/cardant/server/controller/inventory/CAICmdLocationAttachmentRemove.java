@@ -30,6 +30,7 @@ import java.util.Map;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
+import static com.io7m.cardant.server.controller.inventory.CAIChecks.checkLocationExists;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
@@ -67,6 +68,9 @@ public final class CAICmdLocationAttachmentRemove
         .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
 
     final var locationID = command.location();
+    context.setAttribute(LOCATION_ID, locationID.displayId());
+    checkLocationExists(context, get, locationID);
+
     attachRemove.execute(
       new Parameters(locationID, command.file(), command.relation())
     );

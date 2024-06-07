@@ -70,14 +70,26 @@ public sealed interface CADatabaseQueriesLocationsType
   }
 
   /**
-   * Mark the given locations as deleted.
+   * Mark the given locations as deleted/undeleted.
    */
 
   non-sealed interface LocationDeleteMarkOnlyType
-    extends CADatabaseQueryType<Collection<CALocationID>, CADatabaseUnit>,
+    extends CADatabaseQueryType<LocationDeleteMarkOnlyType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesLocationsType
   {
+    /**
+     * Parameters for the operation.
+     *
+     * @param locations The location IDs
+     * @param deleted   Whether the locations are deleted
+     */
 
+    record Parameters(
+      Collection<CALocationID> locations,
+      boolean deleted)
+    {
+
+    }
   }
 
   /**

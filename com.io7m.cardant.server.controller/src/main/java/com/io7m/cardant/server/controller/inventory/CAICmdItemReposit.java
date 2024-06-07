@@ -22,9 +22,11 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
+import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
  * @see CAICommandItemReposit
@@ -46,7 +48,7 @@ public final class CAICmdItemReposit
   protected CAIResponseType executeActual(
     final CAICommandContext context,
     final CAICommandItemReposit command)
-    throws CASecurityException, CADatabaseException
+    throws CASecurityException, CADatabaseException, CACommandExecutionFailure
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
@@ -58,10 +60,15 @@ public final class CAICmdItemReposit
       transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var reposit = command.reposit();
+
+    final var itemID = reposit.item();
+    context.setAttribute(ITEM_ID, itemID.displayId());
+    CAIChecks.checkItemExists(context, get, itemID);
+
     repositQuery.execute(reposit);
 
     final var item =
-      get.execute(reposit.item())
+      get.execute(itemID)
         .orElseThrow();
 
     return new CAIResponseItemReposit(context.requestId(), item);

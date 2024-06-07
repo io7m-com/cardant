@@ -70,6 +70,7 @@ public final class CAICmdItemMetadataPut
 
     final var itemId = command.item();
     context.setAttribute(ITEM_ID, itemId.displayId());
+    CAIChecks.checkItemExists(context, get, itemId);
 
     final var metadatas = command.metadatas();
     metaPut.execute(new Parameters(itemId, metadatas));

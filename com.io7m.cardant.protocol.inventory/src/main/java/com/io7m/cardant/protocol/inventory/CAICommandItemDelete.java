@@ -13,20 +13,35 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
-import net.jqwik.api.Arbitraries;
 
-public final class CAArbCommandFileRemove extends CAArbAbstract<CAICommandFileDelete>
+package com.io7m.cardant.protocol.inventory;
+
+import com.io7m.cardant.model.CAItemID;
+
+import java.util.Objects;
+
+/**
+ * Delete items.
+ *
+ * @param data The item
+ */
+
+public record CAICommandItemDelete(CAItemID data)
+  implements CAICommandType<CAIResponseItemDelete>
 {
-  public CAArbCommandFileRemove()
+  /**
+   * Delete items.
+   */
+
+  public CAICommandItemDelete
   {
-    super(
-      CAICommandFileDelete.class,
-      () -> Arbitraries.defaultFor(CAFileID.class)
-        .map(CAICommandFileDelete::new)
-    );
+    Objects.requireNonNull(data, "data");
+  }
+
+  @Override
+  public Class<CAIResponseItemDelete> responseClass()
+  {
+    return CAIResponseItemDelete.class;
   }
 }

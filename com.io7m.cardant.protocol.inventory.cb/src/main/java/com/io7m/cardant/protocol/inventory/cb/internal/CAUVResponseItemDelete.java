@@ -17,45 +17,42 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
-import com.io7m.cardant.model.CAIds;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemsRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemDelete;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemDelete;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
-import com.io7m.cedarbridge.runtime.convenience.CBLists;
-import com.io7m.cedarbridge.runtime.convenience.CBSets;
 
 /**
  * A validator.
  */
 
-public enum CAUVResponseItemsRemove
-  implements CAProtocolMessageValidatorType<CAIResponseItemsRemove, CAI1ResponseItemsRemove>
+public enum CAUVResponseItemDelete
+  implements CAProtocolMessageValidatorType<CAIResponseItemDelete, CAI1ResponseItemDelete>
 {
   /**
    * A validator.
    */
 
-  RESPONSE_ITEMS_REMOVE;
+  RESPONSE_ITEM_DELETE;
 
   @Override
-  public CAI1ResponseItemsRemove convertToWire(
-    final CAIResponseItemsRemove c)
+  public CAI1ResponseItemDelete convertToWire(
+    final CAIResponseItemDelete c)
   {
-    return new CAI1ResponseItemsRemove(
+    return new CAI1ResponseItemDelete(
       new CBUUID(c.requestId()),
-      CBLists.ofCollection(c.data().ids(), i -> new CBUUID(i.id()))
+      new CBUUID(c.data().id())
     );
   }
 
   @Override
-  public CAIResponseItemsRemove convertFromWire(
-    final CAI1ResponseItemsRemove m)
+  public CAIResponseItemDelete convertFromWire(
+    final CAI1ResponseItemDelete m)
   {
-    return new CAIResponseItemsRemove(
+    return new CAIResponseItemDelete(
       m.fieldRequestId().value(),
-      new CAIds(CBSets.toSet(m.fieldItems(), x -> new CAItemID(x.value())))
+      new CAItemID(m.fieldItem().value())
     );
   }
 }

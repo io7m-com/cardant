@@ -17,36 +17,42 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
-import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandFileRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationDelete;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLocationDelete;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 
 /**
  * A validator.
  */
 
-public enum CAUVCommandFileRemove
-  implements CAProtocolMessageValidatorType<CAICommandFileRemove, CAI1CommandFileRemove>
+public enum CAUVResponseLocationDelete
+  implements CAProtocolMessageValidatorType<CAIResponseLocationDelete, CAI1ResponseLocationDelete>
 {
   /**
    * A validator.
    */
 
-  COMMAND_FILE_REMOVE;
+  RESPONSE_LOCATION_DELETE;
 
   @Override
-  public CAI1CommandFileRemove convertToWire(
-    final CAICommandFileRemove message)
+  public CAI1ResponseLocationDelete convertToWire(
+    final CAIResponseLocationDelete c)
   {
-    return new CAI1CommandFileRemove(new CBUUID(message.data().id()));
+    return new CAI1ResponseLocationDelete(
+      new CBUUID(c.requestId()),
+      new CBUUID(c.data().id())
+    );
   }
 
   @Override
-  public CAICommandFileRemove convertFromWire(
-    final CAI1CommandFileRemove message)
+  public CAIResponseLocationDelete convertFromWire(
+    final CAI1ResponseLocationDelete m)
   {
-    return new CAICommandFileRemove(new CAFileID(message.fieldId().value()));
+    return new CAIResponseLocationDelete(
+      m.fieldRequestId().value(),
+      new CALocationID(m.fieldLocation().value())
+    );
   }
 }

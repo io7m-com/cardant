@@ -17,33 +17,30 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAFileID;
 
 import java.util.Objects;
-import java.util.Set;
+import java.util.UUID;
 
 /**
- * Delete items.
+ * @param requestId The request ID
+ * @param data      The returned item
  *
- * @param ids The item IDs
+ * @see CAICommandFileDelete
  */
 
-public record CAICommandItemsRemove(
-  Set<CAItemID> ids)
-  implements CAICommandType<CAIResponseItemsRemove>
+public record CAIResponseFileDelete(
+  UUID requestId,
+  CAFileID data)
+  implements CAIResponseType
 {
   /**
-   * Delete items.
+   * @see CAICommandFileDelete
    */
 
-  public CAICommandItemsRemove
+  public CAIResponseFileDelete
   {
-    Objects.requireNonNull(ids, "ids");
-  }
-
-  @Override
-  public Class<CAIResponseItemsRemove> responseClass()
-  {
-    return CAIResponseItemsRemove.class;
+    Objects.requireNonNull(requestId, "requestId");
+    Objects.requireNonNull(data, "data");
   }
 }

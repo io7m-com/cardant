@@ -42,6 +42,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
 import java.util.List;
@@ -214,7 +215,7 @@ public final class CAICmdItemMetadataRemoveTest
 
         )
       );
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -238,6 +239,21 @@ public final class CAICmdItemMetadataRemoveTest
       mock(ItemGetType.class);
     final var itemMetaRemove =
       mock(ItemMetadataRemoveType.class);
+
+    when(itemGet.execute(any()))
+      .thenReturn(
+        Optional.of(
+          new CAItem(
+            CAItemID.random(),
+            "Item",
+            0L,
+            0L,
+            new TreeMap<>(),
+            Collections.emptySortedMap(),
+            new TreeSet<>()
+          )
+        )
+      );
 
     doThrow(
       new CADatabaseException(
@@ -488,7 +504,7 @@ public final class CAICmdItemMetadataRemoveTest
     verify(transaction)
       .queries(ItemMetadataRemoveType.class);
 
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
     verify(itemMetaRemove)
       .execute(new ItemMetadataRemoveType.Parameters(ITEM_ID, Set.of(meta0.name())));

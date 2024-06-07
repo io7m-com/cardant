@@ -39,6 +39,7 @@ import com.io7m.cardant.shell.internal.CAShellCmdHelp;
 import com.io7m.cardant.shell.internal.CAShellCmdItemAttachmentAdd;
 import com.io7m.cardant.shell.internal.CAShellCmdItemAttachmentRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemCreate;
+import com.io7m.cardant.shell.internal.CAShellCmdItemDelete;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataRemove;
@@ -55,6 +56,7 @@ import com.io7m.cardant.shell.internal.CAShellCmdItemTypesAssign;
 import com.io7m.cardant.shell.internal.CAShellCmdItemTypesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentAdd;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdLocationDelete;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationGet;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationList;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationPut;
@@ -182,6 +184,7 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemAttachmentAdd(services),
         new CAShellCmdItemAttachmentRemove(services),
         new CAShellCmdItemCreate(services),
+        new CAShellCmdItemDelete(services),
         new CAShellCmdItemGet(services),
         new CAShellCmdItemMetadataPut(services),
         new CAShellCmdItemMetadataRemove(services),
@@ -198,6 +201,7 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemTypesRevoke(services),
         new CAShellCmdLocationAttachmentAdd(services),
         new CAShellCmdLocationAttachmentRemove(services),
+        new CAShellCmdLocationDelete(services),
         new CAShellCmdLocationGet(services),
         new CAShellCmdLocationList(services),
         new CAShellCmdLocationPut(services),

@@ -42,6 +42,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
 import java.util.List;
@@ -218,7 +219,7 @@ public final class CAICmdItemMetadataPutTest
           new CAMetadataType.Text(name1, "y"),
           new CAMetadataType.Text(name2, "z")))
       );
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -360,7 +361,19 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.empty());
+      .thenReturn(
+        Optional.of(
+          new CAItem(
+            CAItemID.random(),
+            "Item",
+            0L,
+            0L,
+            new TreeMap<>(),
+            Collections.emptySortedMap(),
+            new TreeSet<>()
+          )
+        )
+      );
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -424,7 +437,9 @@ public final class CAICmdItemMetadataPutTest
         )
       );
 
-    verifyNoMoreInteractions(itemGet);
+    verify(itemGet)
+      .execute(ITEM_ID);
+
     verifyNoMoreInteractions(itemMetaPut);
     verifyNoMoreInteractions(transaction);
   }
@@ -538,7 +553,7 @@ public final class CAICmdItemMetadataPutTest
     verify(transaction)
       .queries(ItemMetadataPutType.class);
 
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
     verify(itemMetaPut)
       .execute(new Parameters(ITEM_ID, Set.of(meta0)));

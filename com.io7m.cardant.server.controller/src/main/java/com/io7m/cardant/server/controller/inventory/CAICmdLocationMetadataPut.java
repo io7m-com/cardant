@@ -29,7 +29,8 @@ import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryT
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
+import static com.io7m.cardant.server.controller.inventory.CAIChecks.checkLocationExists;
+import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 /**
  * @see CAICommandLocationMetadataPut
@@ -67,16 +68,17 @@ public final class CAICmdLocationMetadataPut
     final var get =
       transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
 
-    final var locationId = command.location();
-    context.setAttribute(ITEM_ID, locationId.displayId());
+    final var locationID = command.location();
+    context.setAttribute(LOCATION_ID, locationID.displayId());
+    checkLocationExists(context, get, locationID);
 
     final var metadatas = command.metadatas();
-    metaPut.execute(new Parameters(locationId, metadatas));
+    metaPut.execute(new Parameters(locationID, metadatas));
 
     final var resolver =
       CADatabaseTypePackageResolver.create(compilers, transaction);
 
-    final var location = get.execute(locationId).orElseThrow();
+    final var location = get.execute(locationID).orElseThrow();
     CAITypeChecking.checkTypes(context, resolver, location);
     return new CAIResponseLocationMetadataPut(context.requestId(), location);
   }

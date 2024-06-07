@@ -21,15 +21,16 @@ import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
+import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
-import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
+import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
 import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
@@ -41,9 +42,9 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
-import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
@@ -117,8 +118,8 @@ public final class CAICommandExecutor
       case final CAICommandFilePut m -> {
         yield new CAICmdFilePut().execute(context, m);
       }
-      case final CAICommandFileRemove m -> {
-        yield new CAICmdFileRemove().execute(context, m);
+      case final CAICommandFileDelete m -> {
+        yield new CAICmdFileDelete().execute(context, m);
       }
       case final CAICommandItemAttachmentAdd m -> {
         yield new CAICmdItemAttachmentAdd().execute(context, m);
@@ -143,9 +144,6 @@ public final class CAICommandExecutor
       }
       case final CAICommandItemReposit m -> {
         yield new CAICmdItemReposit().execute(context, m);
-      }
-      case final CAICommandItemsRemove m -> {
-        yield new CAICmdItemsRemove().execute(context, m);
       }
       case final CAICommandItemSetName m -> {
         yield new CAICmdItemSetName().execute(context, m);
@@ -251,6 +249,12 @@ public final class CAICommandExecutor
       }
       case final CAICommandTypePackageUpgrade m -> {
         yield new CAICmdTypePackageUpgrade().execute(context, m);
+      }
+      case final CAICommandItemDelete m -> {
+        yield new CAICmdItemDelete().execute(context, m);
+      }
+      case final CAICommandLocationDelete m -> {
+        yield new CAICmdLocationDelete().execute(context, m);
       }
     };
   }

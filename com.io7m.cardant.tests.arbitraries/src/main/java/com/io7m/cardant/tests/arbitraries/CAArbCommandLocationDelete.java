@@ -15,18 +15,18 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationDelete;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbCommandFileRemove extends CAArbAbstract<CAICommandFileDelete>
+public final class CAArbCommandLocationDelete extends CAArbAbstract<CAICommandLocationDelete>
 {
-  public CAArbCommandFileRemove()
+  public CAArbCommandLocationDelete()
   {
     super(
-      CAICommandFileDelete.class,
-      () -> Arbitraries.defaultFor(CAFileID.class)
-        .map(CAICommandFileDelete::new)
+      CAICommandLocationDelete.class,
+      () -> Arbitraries.defaultFor(CALocationID.class)
+        .map(CAICommandLocationDelete::new)
     );
   }
 }

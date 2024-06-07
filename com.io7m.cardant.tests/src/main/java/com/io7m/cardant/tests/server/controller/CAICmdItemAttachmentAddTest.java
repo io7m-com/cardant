@@ -33,12 +33,15 @@ import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
@@ -118,10 +121,10 @@ public final class CAICmdItemAttachmentAddTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
-      .thenReturn(itemGet);
     when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class))
       .thenReturn(itemAdd);
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+      .thenReturn(itemGet);
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
@@ -166,7 +169,7 @@ public final class CAICmdItemAttachmentAddTest
       .queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
     verify(itemAdd)
       .execute(new Parameters(ITEM_ID, FILE_ID, "x"));
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -188,11 +191,29 @@ public final class CAICmdItemAttachmentAddTest
 
     final var items =
       mock(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
+    final var get =
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
+
     final var transaction =
       this.transaction();
 
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+      .thenReturn(get);
     when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class))
       .thenReturn(items);
+
+    when(get.execute(any()))
+      .thenReturn(Optional.of(
+        new CAItem(
+          CAItemID.random(),
+          "X",
+          0L,
+          0L,
+          new TreeMap<>(),
+          new TreeMap<>(),
+          new TreeSet<>()
+        )
+      ));
 
     doThrow(new CADatabaseException(
       "X",

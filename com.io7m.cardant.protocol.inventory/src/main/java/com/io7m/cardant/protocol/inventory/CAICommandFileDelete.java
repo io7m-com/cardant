@@ -15,44 +15,33 @@
  */
 
 
-package com.io7m.cardant.protocol.inventory.cb.internal;
+package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseFileRemove;
-import com.io7m.cedarbridge.runtime.api.CBUUID;
+
+import java.util.Objects;
 
 /**
- * A validator.
+ * Delete files.
+ *
+ * @param data The file
  */
 
-public enum CAUVResponseFileRemove
-  implements CAProtocolMessageValidatorType<CAIResponseFileRemove, CAI1ResponseFileRemove>
+public record CAICommandFileDelete(CAFileID data)
+  implements CAICommandType<CAIResponseFileDelete>
 {
   /**
-   * A validator.
+   * Delete files.
    */
 
-  RESPONSE_FILE_REMOVE;
-
-  @Override
-  public CAI1ResponseFileRemove convertToWire(
-    final CAIResponseFileRemove c)
+  public CAICommandFileDelete
   {
-    return new CAI1ResponseFileRemove(
-      new CBUUID(c.requestId()),
-      new CBUUID(c.data().id())
-    );
+    Objects.requireNonNull(data, "data");
   }
 
   @Override
-  public CAIResponseFileRemove convertFromWire(
-    final CAI1ResponseFileRemove m)
+  public Class<CAIResponseFileDelete> responseClass()
   {
-    return new CAIResponseFileRemove(
-      m.fieldRequestId().value(),
-      new CAFileID(m.fieldId().value())
-    );
+    return CAIResponseFileDelete.class;
   }
 }

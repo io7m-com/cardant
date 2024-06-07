@@ -67,6 +67,9 @@ public final class CAICmdItemAttachmentRemove
         .queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemID = command.item();
+    context.setAttribute(ITEM_ID, itemID.displayId());
+    CAIChecks.checkItemExists(context, get, itemID);
+
     attachRemove.execute(
       new Parameters(itemID, command.file(), command.relation())
     );

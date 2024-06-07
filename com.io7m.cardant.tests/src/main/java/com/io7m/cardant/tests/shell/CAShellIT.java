@@ -509,6 +509,39 @@ public final class CAShellIT
   }
 
   @Test
+  public void testShellItemDeletionWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var itemId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "item-create --id %s --name Battery%n",
+      itemId
+    );
+    w.printf(
+      "item-delete --id %s%n",
+      itemId
+    );
+    w.printf(
+      "item-get --id %s%n",
+      itemId
+    );
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(1, this.exitCode);
+  }
+
+  @Test
   public void testShellFileUploadDownload()
     throws Exception
   {
@@ -759,6 +792,39 @@ public final class CAShellIT
 
     this.waitForShell();
     assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellLocationDeletionWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var fileId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "location-put --id %s --name Battery%n",
+      fileId
+    );
+    w.printf(
+      "location-delete --id %s%n",
+      fileId
+    );
+    w.printf(
+      "location-get --id %s%n",
+      fileId
+    );
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(1, this.exitCode);
   }
 
   private void startShell()

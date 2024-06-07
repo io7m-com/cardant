@@ -39,6 +39,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
 import java.util.List;
@@ -220,7 +221,7 @@ public final class CAICmdItemTypesRevokeTest
       .queries(ItemGetType.class);
     verify(transaction)
       .queries(ItemTypesRevokeType.class);
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -250,6 +251,21 @@ public final class CAICmdItemTypesRevokeTest
       .thenReturn(itemTypeRevoke);
     when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
+
+    when(itemGet.execute(any()))
+      .thenReturn(
+        Optional.of(
+          new CAItem(
+            CAItemID.random(),
+            "Item",
+            0L,
+            0L,
+            new TreeMap<>(),
+            Collections.emptySortedMap(),
+            new TreeSet<>()
+          )
+        )
+      );
 
     doThrow(
       new CADatabaseException(

@@ -17,27 +17,30 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
-import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
-import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationDeleteMarkOnlyType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationDeleteMarkOnlyType.Parameters;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationDelete;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 
+import java.util.Set;
+
 import static com.io7m.cardant.security.CASecurityPolicy.DELETE;
-import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_FILES;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 
 /**
- * @see CAICommandFileRemove
+ * @see CAICommandLocationDelete
  */
 
-public final class CAICmdFileRemove extends CAICmdAbstract<CAICommandFileRemove>
+public final class CAICmdLocationDelete extends CAICmdAbstract<CAICommandLocationDelete>
 {
   /**
-   * @see CAICommandFileRemove
+   * @see CAICommandLocationDelete
    */
 
-  public CAICmdFileRemove()
+  public CAICmdLocationDelete()
   {
 
   }
@@ -45,16 +48,15 @@ public final class CAICmdFileRemove extends CAICmdAbstract<CAICommandFileRemove>
   @Override
   protected CAIResponseType executeActual(
     final CAICommandContext context,
-    final CAICommandFileRemove command)
+    final CAICommandLocationDelete command)
     throws CASecurityException, CADatabaseException, CACommandExecutionFailure
   {
-    context.securityCheck(INVENTORY_FILES, DELETE);
+    context.securityCheck(INVENTORY_LOCATIONS, DELETE);
 
     final var remove =
-      context.transaction()
-        .queries(CADatabaseQueriesFilesType.RemoveType.class);
+      context.transaction().queries(LocationDeleteMarkOnlyType.class);
 
-    remove.execute(command.data());
-    return new CAIResponseFileRemove(context.requestId(), command.data());
+    remove.execute(new Parameters(Set.of(command.data()), true));
+    return new CAIResponseLocationDelete(context.requestId(), command.data());
   }
 }

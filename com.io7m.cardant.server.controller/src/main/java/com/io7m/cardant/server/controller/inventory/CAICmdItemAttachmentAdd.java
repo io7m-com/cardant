@@ -65,6 +65,9 @@ public final class CAICmdItemAttachmentAdd
       transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemID = command.item();
+    context.setAttribute(ITEM_ID, itemID.displayId());
+    CAIChecks.checkItemExists(context, get, itemID);
+
     attachmentAdd.execute(
       new Parameters(itemID, command.file(), command.relation())
     );

@@ -256,7 +256,9 @@ public final class CADatabaseItemsTest
     this.itemCreate.execute(id0);
     assertEquals(id0, this.get.execute(id0).orElseThrow().id());
 
-    this.deleteMark.execute(List.of(id0));
+    this.deleteMark.execute(
+      new ItemDeleteMarkOnlyType.Parameters(List.of(id0), true)
+    );
     assertEquals(empty(), this.get.execute(id0));
   }
 

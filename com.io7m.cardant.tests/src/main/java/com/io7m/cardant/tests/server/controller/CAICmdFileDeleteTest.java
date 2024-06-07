@@ -20,10 +20,10 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType;
-import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
-import com.io7m.cardant.server.controller.inventory.CAICmdFileRemove;
+import com.io7m.cardant.server.controller.inventory.CAICmdFileDelete;
 import com.io7m.medrina.api.MMatchActionType.MMatchActionWithName;
 import com.io7m.medrina.api.MMatchObjectType.MMatchObjectWithType;
 import com.io7m.medrina.api.MMatchSubjectType.MMatchSubjectWithRolesAny;
@@ -48,10 +48,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * @see CAICmdFileRemove
+ * @see CAICmdFileDelete
  */
 
-public final class CAICmdFileRemoveTest
+public final class CAICmdFileDeleteTest
   extends CACmdAbstractContract
 {
   private static final CAFileType FILE =
@@ -82,12 +82,12 @@ public final class CAICmdFileRemoveTest
     /* Act. */
 
     final var handler =
-      new CAICmdFileRemove();
+      new CAICmdFileDelete();
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
         handler.execute(
           context,
-          new CAICommandFileRemove(FILE.id()));
+          new CAICommandFileDelete(FILE.id()));
       });
 
     /* Assert. */
@@ -133,8 +133,8 @@ public final class CAICmdFileRemoveTest
 
     /* Act. */
 
-    final var handler = new CAICmdFileRemove();
-    handler.execute(context, new CAICommandFileRemove(FILE.id()));
+    final var handler = new CAICmdFileDelete();
+    handler.execute(context, new CAICommandFileDelete(FILE.id()));
 
     /* Assert. */
 

@@ -33,12 +33,15 @@ import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
@@ -160,7 +163,7 @@ public final class CAICmdItemSetNameTest
       .queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
     verify(setName)
       .execute(new Parameters(ITEM_ID, "Item"));
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -191,6 +194,21 @@ public final class CAICmdItemSetNameTest
       .thenReturn(itemGet);
     when(transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class))
       .thenReturn(setName);
+
+    when(itemGet.execute(any()))
+      .thenReturn(
+        Optional.of(
+          new CAItem(
+            CAItemID.random(),
+            "Item",
+            0L,
+            0L,
+            new TreeMap<>(),
+            Collections.emptySortedMap(),
+            new TreeSet<>()
+          )
+        )
+      );
 
     doThrow(new CADatabaseException("X", errorNonexistent(), Map.of(), Optional.empty()))
       .when(setName)

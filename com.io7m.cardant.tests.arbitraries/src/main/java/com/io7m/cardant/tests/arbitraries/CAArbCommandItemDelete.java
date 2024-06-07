@@ -13,34 +13,20 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+package com.io7m.cardant.tests.arbitraries;
 
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
+import net.jqwik.api.Arbitraries;
 
-package com.io7m.cardant.protocol.inventory;
-
-import com.io7m.cardant.model.CAIds;
-
-import java.util.Objects;
-import java.util.UUID;
-
-/**
- * @param requestId The request ID
- * @param data      The returned item IDs
- *
- * @see CAICommandItemsRemove
- */
-
-public record CAIResponseItemsRemove(
-  UUID requestId,
-  CAIds data)
-  implements CAIResponseType
+public final class CAArbCommandItemDelete extends CAArbAbstract<CAICommandItemDelete>
 {
-  /**
-   * @see CAICommandItemsRemove
-   */
-
-  public CAIResponseItemsRemove
+  public CAArbCommandItemDelete()
   {
-    Objects.requireNonNull(requestId, "requestId");
-    Objects.requireNonNull(data, "id");
+    super(
+      CAICommandItemDelete.class,
+      () -> Arbitraries.defaultFor(CAItemID.class)
+        .map(CAICommandItemDelete::new)
+    );
   }
 }

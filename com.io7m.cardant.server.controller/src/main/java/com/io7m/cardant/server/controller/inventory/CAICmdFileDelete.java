@@ -17,29 +17,27 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.model.CAIds;
-import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
+import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
+import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
-
-import java.util.Set;
+import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 
 import static com.io7m.cardant.security.CASecurityPolicy.DELETE;
-import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
+import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_FILES;
 
 /**
- * @see CAICommandItemsRemove
+ * @see CAICommandFileDelete
  */
 
-public final class CAICmdItemsRemove extends CAICmdAbstract<CAICommandItemsRemove>
+public final class CAICmdFileDelete extends CAICmdAbstract<CAICommandFileDelete>
 {
   /**
-   * @see CAICommandItemsRemove
+   * @see CAICommandFileDelete
    */
 
-  public CAICmdItemsRemove()
+  public CAICmdFileDelete()
   {
 
   }
@@ -47,19 +45,16 @@ public final class CAICmdItemsRemove extends CAICmdAbstract<CAICommandItemsRemov
   @Override
   protected CAIResponseType executeActual(
     final CAICommandContext context,
-    final CAICommandItemsRemove command)
-    throws CASecurityException, CADatabaseException
+    final CAICommandFileDelete command)
+    throws CASecurityException, CADatabaseException, CACommandExecutionFailure
   {
-    context.securityCheck(INVENTORY_ITEMS, DELETE);
+    context.securityCheck(INVENTORY_FILES, DELETE);
 
-    final var delete =
+    final var remove =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.class);
+        .queries(CADatabaseQueriesFilesType.RemoveType.class);
 
-    delete.execute(command.ids());
-    return new CAIResponseItemsRemove(
-      context.requestId(),
-      new CAIds(Set.copyOf(command.ids()))
-    );
+    remove.execute(command.data());
+    return new CAIResponseFileDelete(context.requestId(), command.data());
   }
 }

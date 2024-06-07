@@ -17,29 +17,30 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
-import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType.Parameters;
+import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 
+import java.util.Set;
+
+import static com.io7m.cardant.security.CASecurityPolicy.DELETE;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
-import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
- * @see CAICommandItemSetName
+ * @see CAICommandItemDelete
  */
 
-public final class CAICmdItemSetName extends CAICmdAbstract<CAICommandItemSetName>
+public final class CAICmdItemDelete extends CAICmdAbstract<CAICommandItemDelete>
 {
   /**
-   * @see CAICommandItemSetName
+   * @see CAICommandItemDelete
    */
 
-  public CAICmdItemSetName()
+  public CAICmdItemDelete()
   {
 
   }
@@ -47,24 +48,15 @@ public final class CAICmdItemSetName extends CAICmdAbstract<CAICommandItemSetNam
   @Override
   protected CAIResponseType executeActual(
     final CAICommandContext context,
-    final CAICommandItemSetName command)
+    final CAICommandItemDelete command)
     throws CASecurityException, CADatabaseException, CACommandExecutionFailure
   {
-    context.securityCheck(INVENTORY_ITEMS, WRITE);
+    context.securityCheck(INVENTORY_ITEMS, DELETE);
 
-    final var transaction =
-      context.transaction();
-    final var setName =
-      transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
-    final var get =
-      transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
+    final var remove =
+      context.transaction().queries(ItemDeleteMarkOnlyType.class);
 
-    final var itemId = command.id();
-    context.setAttribute(ITEM_ID, itemId.displayId());
-    CAIChecks.checkItemExists(context, get, itemId);
-
-    setName.execute(new Parameters(command.id(), command.name()));
-    final var updated = get.execute(itemId).orElseThrow();
-    return new CAIResponseItemSetName(context.requestId(), updated);
+    remove.execute(new Parameters(Set.of(command.data()), true));
+    return new CAIResponseItemDelete(context.requestId(), command.data());
   }
 }

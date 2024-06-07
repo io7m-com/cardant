@@ -17,7 +17,8 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
@@ -27,10 +28,8 @@ import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 /**
@@ -65,30 +64,22 @@ public final class CAICmdLocationMetadataRemove
     final var transaction =
       context.transaction();
     final var metaRemove =
-      transaction.queries(CADatabaseQueriesLocationsType.LocationMetadataRemoveType.class);
+      transaction.queries(LocationMetadataRemoveType.class);
     final var get =
-      transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class);
+      transaction.queries(LocationGetType.class);
 
     final var metadatas = command.metadataNames();
 
     final var locationID = command.location();
     context.setAttribute(LOCATION_ID, locationID.displayId());
-    metaRemove.execute(new Parameters(locationID, metadatas));
+    CAIChecks.checkLocationExists(context, get, locationID);
 
-    final var locationOpt = get.execute(locationID);
-    if (locationOpt.isEmpty()) {
-      throw context.failFormatted(
-        400,
-        errorNonexistent(),
-        context.attributes(),
-        ERROR_NONEXISTENT
-      );
-    }
+    metaRemove.execute(new Parameters(locationID, metadatas));
 
     final var resolver =
       CADatabaseTypePackageResolver.create(compilers, transaction);
 
-    final var location = locationOpt.get();
+    final var location = get.execute(locationID).orElseThrow();
     CAITypeChecking.checkTypes(context, resolver, location);
     return new CAIResponseLocationMetadataRemove(context.requestId(), location);
   }

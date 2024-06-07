@@ -19,31 +19,31 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationDeleteMarkOnlyType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationDeleteMarkOnlyType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CALocationID;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
-import static java.lang.Boolean.TRUE;
 
 /**
  * Mark the given locations as deleted.
  */
 
 public final class CADBQLocationDeleteMarkOnly
-  extends CADBQAbstract<Collection<CALocationID>, CADatabaseUnit>
+  extends CADBQAbstract<Parameters, CADatabaseUnit>
   implements LocationDeleteMarkOnlyType
 {
-  private static final Service<Collection<CALocationID>, CADatabaseUnit, LocationDeleteMarkOnlyType> SERVICE =
-    new Service<>(LocationDeleteMarkOnlyType.class, CADBQLocationDeleteMarkOnly::new);
+  private static final Service<Parameters, CADatabaseUnit, LocationDeleteMarkOnlyType> SERVICE =
+    new Service<>(
+      LocationDeleteMarkOnlyType.class,
+      CADBQLocationDeleteMarkOnly::new);
 
   /**
    * Construct a query.
@@ -69,16 +69,18 @@ public final class CADBQLocationDeleteMarkOnly
   @Override
   protected CADatabaseUnit onExecute(
     final DSLContext context,
-    final Collection<CALocationID> locations)
+    final Parameters parameters)
     throws CADatabaseException
   {
     final var transaction = this.transaction();
     final var updates =
-      new ArrayList<Query>(locations.size());
-    for (final var location : locations) {
+      new ArrayList<Query>(parameters.locations().size());
+    for (final var location : parameters.locations()) {
       updates.add(
         context.update(LOCATIONS)
-          .set(LOCATIONS.LOCATION_DELETED, TRUE)
+          .set(
+            LOCATIONS.LOCATION_DELETED,
+            Boolean.valueOf(parameters.deleted()))
           .where(LOCATIONS.LOCATION_ID.eq(location.id()))
       );
       updates.add(
@@ -86,7 +88,7 @@ public final class CADBQLocationDeleteMarkOnly
           context,
           OffsetDateTime.now(transaction.clock()),
           transaction.userId(),
-          "LOCATION_MARKED_DELETED",
+          parameters.deleted() ? "LOCATION_MARKED_DELETED" : "LOCATION_UNMARKED_DELETED",
           Map.entry("Location", location.displayId())
         )
       );

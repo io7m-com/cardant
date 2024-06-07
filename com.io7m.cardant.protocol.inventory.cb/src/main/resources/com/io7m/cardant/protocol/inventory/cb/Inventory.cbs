@@ -633,8 +633,8 @@
   [field file CAI1File]
 ]
 
-[documentation CAI1CommandFileRemove "Remove files."]
-[record CAI1CommandFileRemove
+[documentation CAI1CommandFileDelete "Delete files."]
+[record CAI1CommandFileDelete
   [documentation id "The file ID."]
   [field id cb:UUID]
 ]
@@ -707,10 +707,10 @@
   [field reposit CAI1ItemReposit]
 ]
 
-[documentation CAI1CommandItemsRemove "Remove items."]
-[record CAI1CommandItemsRemove
-  [documentation items "The items."]
-  [field items [cb:List cb:UUID]]
+[documentation CAI1CommandItemDelete "Delete items."]
+[record CAI1CommandItemDelete
+  [documentation item "The items."]
+  [field item cb:UUID]
 ]
 
 [documentation CAI1CommandItemSetName "Update the names of items."]
@@ -734,6 +734,12 @@
 [record CAI1CommandLocationPut
   [documentation location "The location."]
   [field location CAI1Location]
+]
+
+[documentation CAI1CommandLocationDelete "Delete locations."]
+[record CAI1CommandLocationDelete
+  [documentation location "The location."]
+  [field location cb:UUID]
 ]
 
 [documentation CAI1CommandItemSearchBegin "Start searching for items."]
@@ -948,8 +954,8 @@
   [field file CAI1File]
 ]
 
-[documentation CAI1ResponseFileRemove "A response to CAI1CommandFileRemove."]
-[record CAI1ResponseFileRemove
+[documentation CAI1ResponseFileDelete "A response to CAI1CommandFileDelete."]
+[record CAI1ResponseFileDelete
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation id "The file ID."]
@@ -1028,12 +1034,12 @@
   [field item CAI1Item]
 ]
 
-[documentation CAI1ResponseItemsRemove "A response to CAI1CommandItemsRemove."]
-[record CAI1ResponseItemsRemove
+[documentation CAI1ResponseItemDelete "A response to CAI1CommandItemDelete."]
+[record CAI1ResponseItemDelete
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
-  [documentation items "The items."]
-  [field items [cb:List cb:UUID]]
+  [documentation item "The item."]
+  [field item cb:UUID]
 ]
 
 [documentation CAI1ResponseItemSetName "A response to CAI1CommandItemSetName."]
@@ -1066,6 +1072,14 @@
   [field requestId cb:UUID]
   [documentation location "The location."]
   [field location CAI1Location]
+]
+
+[documentation CAI1ResponseLocationDelete "A response to CAI1CommandLocationDelete."]
+[record CAI1ResponseLocationDelete
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation location "The location."]
+  [field location cb:UUID]
 ]
 
 [documentation CAI1ResponseItemSearch "A response to CAI1CommandItemSearch."]
@@ -1236,15 +1250,16 @@
       CAI1CommandAuditSearchBegin
       CAI1CommandAuditSearchNext
       CAI1CommandAuditSearchPrevious
+      CAI1CommandFileDelete
       CAI1CommandFileGet
       CAI1CommandFilePut
-      CAI1CommandFileRemove
       CAI1CommandFileSearchBegin
       CAI1CommandFileSearchNext
       CAI1CommandFileSearchPrevious
       CAI1CommandItemAttachmentAdd
       CAI1CommandItemAttachmentRemove
       CAI1CommandItemCreate
+      CAI1CommandItemDelete
       CAI1CommandItemGet
       CAI1CommandItemLocationsList
       CAI1CommandItemMetadataPut
@@ -1256,9 +1271,9 @@
       CAI1CommandItemSetName
       CAI1CommandItemTypesAssign
       CAI1CommandItemTypesRevoke
-      CAI1CommandItemsRemove
       CAI1CommandLocationAttachmentAdd
       CAI1CommandLocationAttachmentRemove
+      CAI1CommandLocationDelete
       CAI1CommandLocationGet
       CAI1CommandLocationList
       CAI1CommandLocationMetadataPut
@@ -1280,13 +1295,14 @@
       CAI1EventUpdated
       CAI1ResponseAuditSearch
       CAI1ResponseError
+      CAI1ResponseFileDelete
       CAI1ResponseFileGet
       CAI1ResponseFilePut
-      CAI1ResponseFileRemove
       CAI1ResponseFileSearch
       CAI1ResponseItemAttachmentAdd
       CAI1ResponseItemAttachmentRemove
       CAI1ResponseItemCreate
+      CAI1ResponseItemDelete
       CAI1ResponseItemGet
       CAI1ResponseItemLocationsList
       CAI1ResponseItemMetadataPut
@@ -1296,9 +1312,9 @@
       CAI1ResponseItemSetName
       CAI1ResponseItemTypesAssign
       CAI1ResponseItemTypesRevoke
-      CAI1ResponseItemsRemove
       CAI1ResponseLocationAttachmentAdd
       CAI1ResponseLocationAttachmentRemove
+      CAI1ResponseLocationDelete
       CAI1ResponseLocationGet
       CAI1ResponseLocationList
       CAI1ResponseLocationMetadataPut

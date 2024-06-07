@@ -204,7 +204,12 @@ public final class CADatabaseLocationsTest
     assertEquals(loc1, this.locationGet.execute(loc1.id()).orElseThrow());
     assertEquals(loc2, this.locationGet.execute(loc2.id()).orElseThrow());
 
-    this.locationDeleteMark.execute(Set.of(loc0.id(), loc1.id(), loc2.id()));
+    this.locationDeleteMark.execute(
+      new LocationDeleteMarkOnlyType.Parameters(
+        Set.of(loc0.id(), loc1.id(), loc2.id()),
+        true
+      )
+    );
 
     assertEquals(Optional.empty(), this.locationGet.execute(loc0.id()));
     assertEquals(Optional.empty(), this.locationGet.execute(loc1.id()));
@@ -575,7 +580,12 @@ public final class CADatabaseLocationsTest
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
-        this.locationDeleteMark.execute(Set.of(loc0.id()));
+        this.locationDeleteMark.execute(
+          new LocationDeleteMarkOnlyType.Parameters(
+            Set.of(loc0.id()),
+            true
+          )
+        );
       });
 
     assertEquals(errorLocationNotEmpty(), ex.errorCode());
@@ -616,7 +626,12 @@ public final class CADatabaseLocationsTest
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
-        this.locationDeleteMark.execute(Set.of(loc0.id()));
+        this.locationDeleteMark.execute(
+          new LocationDeleteMarkOnlyType.Parameters(
+            Set.of(loc0.id()),
+            true
+          )
+        );
       });
 
     assertEquals(errorLocationNonDeletedChildren(), ex.errorCode());

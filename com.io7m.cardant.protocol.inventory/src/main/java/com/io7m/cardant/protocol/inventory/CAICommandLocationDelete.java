@@ -13,25 +13,35 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CAIds;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemsRemove;
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
 
-import java.util.UUID;
+package com.io7m.cardant.protocol.inventory;
 
-public final class CAArbResponseItemsRemove extends CAArbAbstract<CAIResponseItemsRemove>
+import com.io7m.cardant.model.CALocationID;
+
+import java.util.Objects;
+
+/**
+ * Delete locations.
+ *
+ * @param data The location
+ */
+
+public record CAICommandLocationDelete(CALocationID data)
+  implements CAICommandType<CAIResponseLocationDelete>
 {
-  public CAArbResponseItemsRemove()
+  /**
+   * Delete locations.
+   */
+
+  public CAICommandLocationDelete
   {
-    super(
-      CAIResponseItemsRemove.class,
-      () -> Combinators.combine(
-        Arbitraries.create(UUID::randomUUID),
-        Arbitraries.defaultFor(CAIds.class)
-      ).as(CAIResponseItemsRemove::new)
-    );
+    Objects.requireNonNull(data, "data");
+  }
+
+  @Override
+  public Class<CAIResponseLocationDelete> responseClass()
+  {
+    return CAIResponseLocationDelete.class;
   }
 }

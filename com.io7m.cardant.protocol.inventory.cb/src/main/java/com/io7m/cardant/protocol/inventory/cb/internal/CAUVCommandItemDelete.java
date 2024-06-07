@@ -13,21 +13,44 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package com.io7m.cardant.tests.arbitraries;
+
+
+package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
-import net.jqwik.api.Arbitraries;
+import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemDelete;
+import com.io7m.cedarbridge.runtime.api.CBUUID;
 
-public final class CAArbCommandItemsRemove extends CAArbAbstract<CAICommandItemsRemove>
+/**
+ * A validator.
+ */
+
+public enum CAUVCommandItemDelete
+  implements CAProtocolMessageValidatorType<CAICommandItemDelete, CAI1CommandItemDelete>
 {
-  public CAArbCommandItemsRemove()
+  /**
+   * A validator.
+   */
+
+  COMMAND_ITEM_DELETE;
+
+  @Override
+  public CAI1CommandItemDelete convertToWire(
+    final CAICommandItemDelete c)
   {
-    super(
-      CAICommandItemsRemove.class,
-      () -> Arbitraries.defaultFor(CAItemID.class)
-        .set()
-        .map(CAICommandItemsRemove::new)
+    return new CAI1CommandItemDelete(
+      new CBUUID(c.data().id())
+    );
+  }
+
+  @Override
+  public CAICommandItemDelete convertFromWire(
+    final CAI1CommandItemDelete m)
+  {
+    return new CAICommandItemDelete(
+      new CAItemID(m.fieldItem().value())
     );
   }
 }
