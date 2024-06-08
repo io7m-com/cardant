@@ -158,15 +158,7 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -261,16 +253,7 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CAItem(
-          ITEM_ID,
-          "x",
-          0L,
-          0L,
-          Collections.emptySortedMap(),
-          Collections.emptySortedMap(),
-          Collections.emptySortedSet())
-      ));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(new CADatabaseException(
       "X",
@@ -361,19 +344,7 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
-      .thenReturn(
-        Optional.of(
-          new CAItem(
-            CAItemID.random(),
-            "Item",
-            0L,
-            0L,
-            new TreeMap<>(),
-            Collections.emptySortedMap(),
-            new TreeSet<>()
-          )
-        )
-      );
+      .thenReturn(Optional.of(CAItem.create()));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -510,8 +481,6 @@ public final class CAICmdItemMetadataPutTest
           new CAItem(
             CAItemID.random(),
             "Item",
-            0L,
-            0L,
             new TreeMap<>(Map.of(meta0.name(), meta0)),
             Collections.emptySortedMap(),
             new TreeSet<>(

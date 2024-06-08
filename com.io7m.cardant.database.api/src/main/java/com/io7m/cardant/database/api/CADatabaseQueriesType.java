@@ -31,6 +31,7 @@ public sealed interface CADatabaseQueriesType
   CADatabaseQueriesItemsType,
   CADatabaseQueriesLocationsType,
   CADatabaseQueriesMaintenanceType,
+  CADatabaseQueriesStockType,
   CADatabaseQueriesTypePackagesType,
   CADatabaseQueriesUsersType
 {

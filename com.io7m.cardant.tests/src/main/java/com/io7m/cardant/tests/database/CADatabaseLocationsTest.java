@@ -19,10 +19,7 @@ package com.io7m.cardant.tests.database;
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesFilesType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemRepositType;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
@@ -33,6 +30,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationList
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationPutType;
+import com.io7m.cardant.database.api.CADatabaseQueriesStockType.StockRepositType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -42,11 +40,11 @@ import com.io7m.cardant.model.CAByteArray;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType.CAFileWithData;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositSetAdd;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CAStockRepositSetAdd;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
@@ -73,7 +71,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
-import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNonDeletedChildren;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNotEmpty;
 import static com.io7m.cardant.model.CAIncludeDeleted.INCLUDE_ONLY_LIVE;
@@ -95,8 +92,8 @@ public final class CADatabaseLocationsTest
   private LocationMetadataRemoveType metaRemove;
   private LocationDeleteType locationDelete;
   private LocationDeleteMarkOnlyType locationDeleteMark;
-  private CADatabaseQueriesItemsType.ItemCreateType itemCreate;
-  private ItemRepositType itemReposit;
+  private ItemCreateType itemCreate;
+  private StockRepositType itemReposit;
 
   @BeforeAll
   public static void setupOnce(
@@ -130,7 +127,7 @@ public final class CADatabaseLocationsTest
     this.itemCreate =
       this.transaction.queries(ItemCreateType.class);
     this.itemReposit =
-      this.transaction.queries(ItemRepositType.class);
+      this.transaction.queries(StockRepositType.class);
 
     this.locationPut =
       this.transaction.queries(LocationPutType.class);
@@ -553,7 +550,7 @@ public final class CADatabaseLocationsTest
     final var id = CAItemID.random();
     this.itemCreate.execute(id);
     this.itemReposit.execute(
-      new CAItemRepositSetAdd(id, loc0.id(), 10L));
+      new CAStockRepositSetAdd(id, loc0.id(), 10L));
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
@@ -588,7 +585,7 @@ public final class CADatabaseLocationsTest
     final var id = CAItemID.random();
     this.itemCreate.execute(id);
     this.itemReposit.execute(
-      new CAItemRepositSetAdd(id, loc0.id(), 10L));
+      new CAStockRepositSetAdd(id, loc0.id(), 10L));
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {

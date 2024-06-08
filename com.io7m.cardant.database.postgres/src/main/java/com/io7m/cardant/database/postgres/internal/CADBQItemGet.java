@@ -31,7 +31,6 @@ import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 import org.jooq.DSLContext;
-import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
@@ -42,7 +41,6 @@ import java.util.TreeSet;
 import static com.io7m.cardant.database.postgres.internal.Tables.FILES;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
-import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS_SUMMED;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
@@ -58,12 +56,6 @@ public final class CADBQItemGet
 {
   private static final Service<CAItemID, Optional<CAItem>, ItemGetType> SERVICE =
     new Service<>(ItemGetType.class, CADBQItemGet::new);
-
-  private static final Long ZERO =
-    Long.valueOf(0L);
-
-  private static final Name ITEM_COUNT_NAME =
-    DSL.name("ITEM_COUNT");
 
   /**
    * Construct a query.
@@ -95,8 +87,6 @@ public final class CADBQItemGet
       context.select(
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
-          DSL.coalesce(ITEM_LOCATIONS_SUMMED.ITEM_COUNT, ZERO)
-            .as(ITEM_COUNT_NAME),
           DSL.multisetAgg(
             METADATA_TYPE_PACKAGES.MTP_NAME,
             METADATA_TYPES.MT_NAME
@@ -119,8 +109,6 @@ public final class CADBQItemGet
           FILES.FILE_HASH_ALGORITHM,
           FILES.FILE_HASH_VALUE
         ).from(ITEMS)
-        .leftJoin(ITEM_LOCATIONS_SUMMED)
-        .on(ITEM_LOCATIONS_SUMMED.ITEM_ID.eq(ITEMS.ITEM_ID))
         .leftJoin(ITEM_TYPES)
         .on(ITEM_TYPES.IT_ITEM.eq(ITEMS.ITEM_ID))
         .leftJoin(METADATA_TYPES)
@@ -137,7 +125,6 @@ public final class CADBQItemGet
         .groupBy(
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
-          DSL.field(ITEM_COUNT_NAME),
           ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
           ITEM_METADATA.ITEM_META_TYPE_RECORD,
           ITEM_METADATA.ITEM_META_TYPE_FIELD,
@@ -169,12 +156,10 @@ public final class CADBQItemGet
 
     CAItemID itemId = null;
     String name = null;
-    long count = ZERO;
 
     for (final var rec : results) {
       itemId = new CAItemID(rec.get(ITEMS.ITEM_ID));
       name = rec.get(ITEMS.ITEM_NAME);
-      count = rec.get(ITEM_LOCATIONS_SUMMED.ITEM_COUNT).longValue();
 
       final var typePack =
         rec.get(ITEM_METADATA.ITEM_META_TYPE_PACKAGE);
@@ -242,8 +227,6 @@ public final class CADBQItemGet
       new CAItem(
         itemId,
         name,
-        count,
-        ZERO,
         meta,
         attachments,
         types

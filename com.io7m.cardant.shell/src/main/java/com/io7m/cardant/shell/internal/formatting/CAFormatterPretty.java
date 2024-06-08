@@ -293,14 +293,6 @@ public final class CAFormatterPretty implements CAFormatterType
       .addCell("Name")
       .addCell(item.name());
 
-    tableBuilder.addRow()
-      .addCell("Count (Total)")
-      .addCell(Long.toUnsignedString(item.countTotal()));
-
-    tableBuilder.addRow()
-      .addCell("Count (Here)")
-      .addCell(Long.toUnsignedString(item.countHere()));
-
     this.renderTable(tableBuilder.build());
   }
 

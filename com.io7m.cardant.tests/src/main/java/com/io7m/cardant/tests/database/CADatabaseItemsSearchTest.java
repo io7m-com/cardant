@@ -23,8 +23,6 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOn
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemRepositType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSetNameType.Parameters;
@@ -37,16 +35,8 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
-import com.io7m.cardant.model.CAItemRepositSerialAdd;
-import com.io7m.cardant.model.CAItemRepositSetAdd;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.model.CALocation;
-import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataElementMatchType.And;
 import com.io7m.cardant.model.CAMetadataElementMatchType.Specific;
@@ -59,8 +49,6 @@ import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
-import com.io7m.cardant.model.comparisons.CAComparisonExactType.IsEqualTo;
-import com.io7m.cardant.model.comparisons.CAComparisonExactType.IsNotEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsSimilarTo;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
@@ -101,14 +89,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -116,9 +101,7 @@ import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue.ANY_VALUE;
-import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({ErvillaExtension.class, ZeladorExtension.class})
@@ -154,14 +137,11 @@ public final class CADatabaseItemsSearchTest
   private ItemGetType get;
   private ItemDeleteMarkOnlyType deleteMark;
   private LocationPutType locPut;
-  private ItemRepositType repositQuery;
   private ItemSearchType searchQuery;
   private ItemDeleteType delete;
   private ItemGetType itemGet;
   private ItemMetadataPutType metaAdd;
-  private ItemMetadataRemoveType metaRemove;
   private ItemTypesAssignType itemTypeAssign;
-  private ItemRepositType reposit;
 
   @BeforeAll
   public static void setupOnce(
@@ -208,16 +188,10 @@ public final class CADatabaseItemsSearchTest
       this.transaction.queries(ItemDeleteType.class);
     this.locPut =
       this.transaction.queries(LocationPutType.class);
-    this.repositQuery =
-      this.transaction.queries(ItemRepositType.class);
     this.searchQuery =
       this.transaction.queries(ItemSearchType.class);
-    this.reposit =
-      this.transaction.queries(ItemRepositType.class);
     this.metaAdd =
       this.transaction.queries(ItemMetadataPutType.class);
-    this.metaRemove =
-      this.transaction.queries(ItemMetadataRemoveType.class);
 
     installTestTypePackage(this.transaction);
   }
@@ -251,620 +225,6 @@ public final class CADatabaseItemsSearchTest
   }
 
   /**
-   * Listing items by descendants works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemSearchLocationDescendants()
-    throws Exception
-  {
-    final var loc0 =
-      new CALocation(
-        CALocationID.random(),
-        empty(),
-        "Loc0",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-    final var loc1 =
-      new CALocation(
-        CALocationID.random(),
-        Optional.of(loc0.id()),
-        "Loc1",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-    final var loc2 =
-      new CALocation(
-        CALocationID.random(),
-        Optional.of(loc1.id()),
-        "Loc2",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-
-    final var items = new ArrayList<CAItemID>();
-    for (int index = 0; index < 100; ++index) {
-      final var itemId = CAItemID.random();
-      this.itemCreate.execute(itemId);
-      items.add(itemId);
-    }
-
-    this.locPut.execute(loc0);
-    this.locPut.execute(loc1);
-    this.locPut.execute(loc2);
-
-    /*
-     * Sort items into locations.
-     */
-
-    final var itemsByLocation =
-      new HashMap<CALocationID, HashSet<CAItemID>>();
-
-    for (int index = 0; index < items.size(); ++index) {
-      final var item = items.get(index);
-      final CALocationID locationID;
-      if (index > 60) {
-        locationID = loc2.id();
-      } else if (index > 30) {
-        locationID = loc1.id();
-      } else {
-        locationID = loc0.id();
-      }
-      var m = itemsByLocation.get(locationID);
-      if (m == null) {
-        m = new HashSet<>();
-      }
-      m.add(item);
-      itemsByLocation.put(locationID, m);
-    }
-
-    for (final var entry : itemsByLocation.entrySet()) {
-      final var locationId = entry.getKey();
-      final var locationItems = entry.getValue();
-      for (final var item : locationItems) {
-        this.repositQuery.execute(new CAItemRepositSetAdd(
-          item,
-          locationId,
-          1L));
-      }
-    }
-
-    this.transaction.commit();
-
-    /*
-     * Searching for location 0 will return everything.
-     */
-
-    {
-      final var search =
-        this.searchQuery.execute(new CAItemSearchParameters(
-          new CAItemLocationWithDescendants(loc0.id()),
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new Anything<>(),
-          new CAComparisonExactType.Anything<>(),
-          CAMetadataElementMatchType.ANYTHING,
-          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-          100
-        ));
-
-      final var page = search.pageCurrent(this.transaction);
-      assertEquals(100, page.items().size());
-
-      final var received =
-        page.items()
-          .stream()
-          .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc0.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc1.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc2.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-    }
-
-    /*
-     * Searching for location 1 will return 39 + 60 items.
-     */
-
-    {
-      final var search =
-        this.searchQuery.execute(new CAItemSearchParameters(
-          new CAItemLocationWithDescendants(loc1.id()),
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new Anything<>(),
-          new CAComparisonExactType.Anything<>(),
-          CAMetadataElementMatchType.ANYTHING,
-          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-          100
-        ));
-
-      final var page = search.pageCurrent(this.transaction);
-      assertEquals(69, page.items().size());
-
-      final var received =
-        page.items()
-          .stream()
-          .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc0.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc1.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc2.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-    }
-
-    /*
-     * Searching for location 2 will return 39 items.
-     */
-
-    {
-      final var search =
-        this.searchQuery.execute(new CAItemSearchParameters(
-          new CAItemLocationWithDescendants(loc2.id()),
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new Anything<>(),
-          new CAComparisonExactType.Anything<>(),
-          CAMetadataElementMatchType.ANYTHING,
-          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-          100
-        ));
-
-      final var page = search.pageCurrent(this.transaction);
-      assertEquals(39, page.items().size());
-
-      final var received =
-        page.items()
-          .stream()
-          .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc0.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc1.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc2.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-    }
-  }
-
-  /**
-   * Listing items by exact location works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemSearchLocationExact()
-    throws Exception
-  {
-    final var loc0 =
-      new CALocation(
-        CALocationID.random(),
-        empty(),
-        "Loc0",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-    final var loc1 =
-      new CALocation(
-        CALocationID.random(),
-        Optional.of(loc0.id()),
-        "Loc1",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-    final var loc2 =
-      new CALocation(
-        CALocationID.random(),
-        Optional.of(loc1.id()),
-        "Loc2",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-
-    final var items = new ArrayList<CAItemID>();
-    for (int index = 0; index < 100; ++index) {
-      final var itemId = CAItemID.random();
-      this.itemCreate.execute(itemId);
-      items.add(itemId);
-    }
-
-    this.locPut.execute(loc0);
-    this.locPut.execute(loc1);
-    this.locPut.execute(loc2);
-
-    /*
-     * Sort items into locations.
-     */
-
-    final var itemsByLocation =
-      new HashMap<CALocationID, HashSet<CAItemID>>();
-
-    for (int index = 0; index < items.size(); ++index) {
-      final var item = items.get(index);
-      final CALocationID locationID;
-      if (index > 60) {
-        locationID = loc2.id();
-      } else if (index > 30) {
-        locationID = loc1.id();
-      } else {
-        locationID = loc0.id();
-      }
-      var m = itemsByLocation.get(locationID);
-      if (m == null) {
-        m = new HashSet<>();
-      }
-      m.add(item);
-      itemsByLocation.put(locationID, m);
-    }
-
-    for (final var entry : itemsByLocation.entrySet()) {
-      final var locationId = entry.getKey();
-      final var locationItems = entry.getValue();
-      for (final var item : locationItems) {
-        this.repositQuery.execute(new CAItemRepositSetAdd(
-          item,
-          locationId,
-          1L));
-      }
-    }
-
-    this.transaction.commit();
-
-    /*
-     * Searching for location 0 will return 31 items.
-     */
-
-    {
-      final var search =
-        this.searchQuery.execute(new CAItemSearchParameters(
-          new CAItemLocationExact(loc0.id()),
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new Anything<>(),
-          new CAComparisonExactType.Anything<>(),
-          CAMetadataElementMatchType.ANYTHING,
-          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-          100
-        ));
-
-      final var page = search.pageCurrent(this.transaction);
-      assertEquals(31, page.items().size());
-
-      final var received =
-        page.items()
-          .stream()
-          .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc0.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc1.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc2.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-    }
-
-    /*
-     * Searching for location 1 will return 30 items.
-     */
-
-    {
-      final var search =
-        this.searchQuery.execute(new CAItemSearchParameters(
-          new CAItemLocationExact(loc1.id()),
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new Anything<>(),
-          new CAComparisonExactType.Anything<>(),
-          CAMetadataElementMatchType.ANYTHING,
-          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-          100
-        ));
-
-      final var page = search.pageCurrent(this.transaction);
-      assertEquals(30, page.items().size());
-
-      final var received =
-        page.items()
-          .stream()
-          .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc0.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc1.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc2.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-    }
-
-    /*
-     * Searching for location 2 will return 39 items.
-     */
-
-    {
-      final var search =
-        this.searchQuery.execute(new CAItemSearchParameters(
-          new CAItemLocationExact(loc2.id()),
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new Anything<>(),
-          new CAComparisonExactType.Anything<>(),
-          CAMetadataElementMatchType.ANYTHING,
-          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-          100
-        ));
-
-      final var page = search.pageCurrent(this.transaction);
-      assertEquals(39, page.items().size());
-
-      final var received =
-        page.items()
-          .stream()
-          .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc0.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc1.id());
-        for (final var id : locationItems) {
-          assertFalse(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc2.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-    }
-  }
-
-  /**
-   * Listing items by all locations works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemSearchLocationAll()
-    throws Exception
-  {
-    final var loc0 =
-      new CALocation(
-        CALocationID.random(),
-        empty(),
-        "Loc0",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-    final var loc1 =
-      new CALocation(
-        CALocationID.random(),
-        Optional.of(loc0.id()),
-        "Loc1",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-    final var loc2 =
-      new CALocation(
-        CALocationID.random(),
-        Optional.of(loc1.id()),
-        "Loc2",
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-
-    final var items = new ArrayList<CAItemID>();
-    for (int index = 0; index < 100; ++index) {
-      final var itemId = CAItemID.random();
-      this.itemCreate.execute(itemId);
-      items.add(itemId);
-    }
-
-    this.locPut.execute(loc0);
-    this.locPut.execute(loc1);
-    this.locPut.execute(loc2);
-
-    /*
-     * Sort items into locations.
-     */
-
-    final var itemsByLocation =
-      new HashMap<CALocationID, HashSet<CAItemID>>();
-
-    for (int index = 0; index < items.size(); ++index) {
-      final var item = items.get(index);
-      final CALocationID locationID;
-      if (index > 60) {
-        locationID = loc2.id();
-      } else if (index > 30) {
-        locationID = loc1.id();
-      } else {
-        locationID = loc0.id();
-      }
-      var m = itemsByLocation.get(locationID);
-      if (m == null) {
-        m = new HashSet<>();
-      }
-      m.add(item);
-      itemsByLocation.put(locationID, m);
-    }
-
-    for (final var entry : itemsByLocation.entrySet()) {
-      final var locationId = entry.getKey();
-      final var locationItems = entry.getValue();
-      for (final var item : locationItems) {
-        this.repositQuery.execute(new CAItemRepositSetAdd(
-          item,
-          locationId,
-          1L));
-      }
-    }
-
-    this.transaction.commit();
-
-    /*
-     * Searching for location 0 will return 31 items.
-     */
-
-    {
-      final var search =
-        this.searchQuery.execute(new CAItemSearchParameters(
-          new CAItemLocationsAll(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new CAComparisonFuzzyType.Anything<>(),
-          new Anything<>(),
-          new CAComparisonExactType.Anything<>(),
-          CAMetadataElementMatchType.ANYTHING,
-          new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-          100
-        ));
-
-      final var page = search.pageCurrent(this.transaction);
-      assertEquals(100, page.items().size());
-
-      final var received =
-        page.items()
-          .stream()
-          .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc0.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc1.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-
-      {
-        final var locationItems =
-          itemsByLocation.get(loc2.id());
-        for (final var id : locationItems) {
-          assertTrue(received.containsKey(id));
-        }
-      }
-    }
-  }
-
-  /**
    * Searching for items by full text search works.
    *
    * @throws Exception On errors
@@ -880,11 +240,9 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
         new IsSimilarTo<>("join"),
         new CAComparisonFuzzyType.Anything<>(),
         new Anything<>(),
-        new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -922,11 +280,9 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
         new CAComparisonFuzzyType.IsEqualTo<>(itemName),
         new CAComparisonFuzzyType.Anything<>(),
         new Anything<>(),
-        new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -973,11 +329,9 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
         new Anything<>(),
-        new CAComparisonExactType.Anything<>(),
         new And(
           new Specific(
             new CAComparisonExactType.IsEqualTo<>(name0),
@@ -1039,11 +393,9 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
         new Anything<>(),
-        new CAComparisonExactType.Anything<>(),
         new Specific(
           new CAComparisonExactType.Anything<>(),
           new CAComparisonExactType.Anything<>(),
@@ -1094,7 +446,6 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
         new IsOverlapping<>(
@@ -1103,7 +454,6 @@ public final class CADatabaseItemsSearchTest
             CATypeRecordIdentifier.of("com.io7m:t1")
           )
         ),
-        new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         1000
@@ -1145,7 +495,6 @@ public final class CADatabaseItemsSearchTest
 
     final var search =
       this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonFuzzyType.Anything<>(),
         new CAComparisonSetType.IsEqualTo<>(
@@ -1154,7 +503,6 @@ public final class CADatabaseItemsSearchTest
             CATypeRecordIdentifier.of("com.io7m:t1")
           )
         ),
-        new CAComparisonExactType.Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
@@ -1261,109 +609,4 @@ public final class CADatabaseItemsSearchTest
     return List.copyOf(items);
   }
 
-  /**
-   * Searching for items by serial works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemSearchBySerial0()
-    throws Exception
-  {
-    final var item = CAItemID.random();
-    this.itemCreate.execute(item);
-
-    final var location = CALocationID.random();
-    this.locPut.execute(new CALocation(
-      location,
-      empty(),
-      "Location 0",
-      Collections.emptySortedMap(),
-      Collections.emptySortedMap(),
-      Collections.emptySortedSet()
-    ));
-
-    final var serial = new CAItemSerial("ABC-1234");
-    this.reposit.execute(new CAItemRepositSerialAdd(item, location, serial));
-
-    final var search =
-      this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
-        new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonFuzzyType.Anything<>(),
-        new Anything<>(),
-        new IsEqualTo<>(serial),
-        CAMetadataElementMatchType.ANYTHING,
-        new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-        100
-      ));
-
-    final var page = search.pageCurrent(this.transaction);
-    assertEquals(1, page.items().size());
-
-    final var received =
-      page.items()
-        .stream()
-        .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-    for (final var itemSummary : received.values()) {
-      assertEquals(item, itemSummary.id());
-    }
-  }
-
-  /**
-   * Searching for items by serial works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testItemSearchBySerial1()
-    throws Exception
-  {
-    final var item0 = CAItemID.random();
-    this.itemCreate.execute(item0);
-    final var item1 = CAItemID.random();
-    this.itemCreate.execute(item1);
-
-    final var location = CALocationID.random();
-    this.locPut.execute(new CALocation(
-      location,
-      empty(),
-      "Location 0",
-      Collections.emptySortedMap(),
-      Collections.emptySortedMap(),
-      Collections.emptySortedSet()
-    ));
-
-    final var serial0 = new CAItemSerial("ABC-1234");
-    this.reposit.execute(new CAItemRepositSerialAdd(item0, location, serial0));
-    final var serial1 = new CAItemSerial("ABC-1235");
-    this.reposit.execute(new CAItemRepositSerialAdd(item1, location, serial1));
-
-    final var search =
-      this.searchQuery.execute(new CAItemSearchParameters(
-        new CAItemLocationsAll(),
-        new CAComparisonFuzzyType.Anything<>(),
-        new CAComparisonFuzzyType.Anything<>(),
-        new Anything<>(),
-        new IsNotEqualTo<>(serial0),
-        CAMetadataElementMatchType.ANYTHING,
-        new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
-        100
-      ));
-
-    final var page = search.pageCurrent(this.transaction);
-    assertEquals(1, page.items().size());
-
-    final var received =
-      page.items()
-        .stream()
-        .collect(Collectors.toMap(CAItemSummary::id, Function.identity()));
-
-    for (final var itemSummary : received.values()) {
-      assertEquals(item1, itemSummary.id());
-    }
-  }
 }

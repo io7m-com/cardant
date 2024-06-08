@@ -18,11 +18,11 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositSerialAdd;
 import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
+import com.io7m.cardant.model.CAStockRepositSerialAdd;
+import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -41,7 +41,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemRepositSerialAdd
-  extends CAShellCmdAbstractCR<CAICommandItemReposit, CAIResponseItemReposit>
+  extends CAShellCmdAbstractCR<CAICommandStockReposit, CAIResponseStockReposit>
 {
   private static final QParameterNamed1<CAItemID> ITEM =
     new QParameterNamed1<>(
@@ -86,7 +86,7 @@ public final class CAShellCmdItemRepositSerialAdd
         new QConstant("Add an instance of an item to a location."),
         Optional.empty()
       ),
-      CAICommandItemReposit.class
+      CAICommandStockReposit.class
     );
   }
 
@@ -113,8 +113,8 @@ public final class CAShellCmdItemRepositSerialAdd
 
     final var item =
       client.sendAndWaitOrThrow(
-        new CAICommandItemReposit(
-          new CAItemRepositSerialAdd(
+        new CAICommandStockReposit(
+          new CAStockRepositSerialAdd(
             itemID,
             locationID,
             new CAItemSerial(serial)

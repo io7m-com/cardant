@@ -18,7 +18,7 @@
 package com.io7m.cardant.tests.shell;
 
 import com.io7m.cardant.model.CADescriptionMatch;
-import com.io7m.cardant.model.CAItemLocationMatchType;
+import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CAMediaTypeMatch;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataType;
@@ -169,13 +169,13 @@ public final class CAConverterTests
 
   @Property
   public void testItemLocation(
-    final @ForAll CAItemLocationMatchType match)
+    final @ForAll CALocationMatchType match)
     throws Exception
   {
     final var d =
       CAShellValueConverters.create(CAStrings.create(Locale.ROOT));
     final var c =
-      d.converterFor(CAItemLocationMatchType.class)
+      d.converterFor(CALocationMatchType.class)
         .orElseThrow();
 
     assertEquals(

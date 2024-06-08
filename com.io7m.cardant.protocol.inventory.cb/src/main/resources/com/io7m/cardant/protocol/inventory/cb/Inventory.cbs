@@ -145,10 +145,6 @@
   [field id cb:UUID]
   [documentation name "The item name."]
   [field name cb:String]
-  [documentation countTotal "The total item count."]
-  [field countTotal cb:IntegerUnsigned64]
-  [documentation countHere "The item count in this location."]
-  [field countHere cb:IntegerUnsigned64]
   [documentation metadata "The item metadata."]
   [field metadata [cb:Map CAI1TypeRecordFieldIdentifier CAI1Metadata]]
   [documentation attachments "The item attachments."]
@@ -157,38 +153,22 @@
   [field types [cb:List CAI1TypeRecordIdentifier]]
 ]
 
-[documentation CAI1ListLocationBehaviour "The behaviour requested for listing items in locations."]
-[variant CAI1ListLocationBehaviour
-  [documentation CAI1ListLocationExact "Only list items within the exact given location."]
-  [case CAI1ListLocationExact
+[documentation CAI1LocationMatch "The behaviour requested for matching locations."]
+[variant CAI1LocationMatch
+  [documentation CAI1LocationExact "Only consider the exact given location."]
+  [case CAI1LocationExact
     [field locationId cb:UUID]]
-  [documentation CAI1ListLocationWithDescendants "List items within the given location and all descendants of the given location."]
-  [case CAI1ListLocationWithDescendants
+  [documentation CAI1LocationWithDescendants "Consider the given location and all descendants of the given location."]
+  [case CAI1LocationWithDescendants
     [field locationId cb:UUID]]
-  [documentation CAI1ListLocationsAll "List items within all locations."]
-  [case CAI1ListLocationsAll]
+  [documentation CAI1LocationAny "Consider all locations."]
+  [case CAI1LocationAny]
 ]
 
-[documentation CAI1ItemLocation "An assertion that there are count instances of item at location."]
-[record CAI1ItemLocation
-  [documentation itemId "The item."]
-  [field itemId cb:UUID]
-  [documentation locationId "The location ID."]
-  [field locationId cb:UUID]
-  [documentation count "The count."]
-  [field count cb:IntegerUnsigned64]
-]
-
-[documentation CAI1ItemLocations "A set of assertions indicating items in locations."]
-[record CAI1ItemLocations
-  [documentation locations "The item locations."]
-  [field locations [cb:Map cb:UUID [cb:Map cb:UUID CAI1ItemLocation]]]
-]
-
-[documentation CAI1ItemReposit "The type of item reposit operations."]
-[variant CAI1ItemReposit
-  [documentation CAI1ItemRepositSetAdd "An operation that adds a set of items to a storage location."]
-  [case CAI1ItemRepositSetAdd
+[documentation CAI1StockReposit "The type of item reposit operations."]
+[variant CAI1StockReposit
+  [documentation CAI1StockRepositSetAdd "An operation that adds a set of items to a storage location."]
+  [case CAI1StockRepositSetAdd
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
@@ -196,8 +176,8 @@
     [documentation count "The count."]
     [field count cb:IntegerUnsigned64]]
 
-  [documentation CAI1ItemRepositSetMove "An operation that moves a set of items from one storage location to another."]
-  [case CAI1ItemRepositSetMove
+  [documentation CAI1StockRepositSetMove "An operation that moves a set of items from one storage location to another."]
+  [case CAI1StockRepositSetMove
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationFrom "The from location."]
@@ -207,8 +187,8 @@
     [documentation count "The count."]
     [field count cb:IntegerUnsigned64]]
 
-  [documentation CAI1ItemRepositSetRemove "An operation that removes a set of items from a storage location."]
-  [case CAI1ItemRepositSetRemove
+  [documentation CAI1StockRepositSetRemove "An operation that removes a set of items from a storage location."]
+  [case CAI1StockRepositSetRemove
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
@@ -216,8 +196,8 @@
     [documentation count "The count."]
     [field count cb:IntegerUnsigned64]]
 
-  [documentation CAI1ItemRepositSerialAdd "An operation that adds a single identified item to a storage location."]
-  [case CAI1ItemRepositSerialAdd
+  [documentation CAI1StockRepositSerialAdd "An operation that adds a single identified item to a storage location."]
+  [case CAI1StockRepositSerialAdd
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
@@ -225,8 +205,8 @@
     [documentation serial "The serial number."]
     [field serial cb:String]]
 
-  [documentation CAI1ItemRepositSerialMove "An operation that moves a single identified item from one storage location to another."]
-  [case CAI1ItemRepositSerialMove
+  [documentation CAI1StockRepositSerialMove "An operation that moves a single identified item from one storage location to another."]
+  [case CAI1StockRepositSerialMove
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationFrom "The from location."]
@@ -236,8 +216,8 @@
     [documentation serial "The serial number."]
     [field serial cb:String]]
 
-  [documentation CAI1ItemRepositSerialRemove "An operation that removes a single identified item from a storage location."]
-  [case CAI1ItemRepositSerialRemove
+  [documentation CAI1StockRepositSerialRemove "An operation that removes a single identified item from a storage location."]
+  [case CAI1StockRepositSerialRemove
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
@@ -335,16 +315,12 @@
 
 [documentation CAI1ItemSearchParameters "The item search parameters."]
 [record CAI1ItemSearchParameters
-  [documentation location "The item location search behaviour."]
-  [field location CAI1ListLocationBehaviour]
   [documentation nameMatch "The item name match expression."]
   [field nameMatch [CAI1ComparisonFuzzy cb:String]]
   [documentation descriptionMatch "The item description match expression."]
   [field descriptionMatch [CAI1ComparisonFuzzy cb:String]]
   [documentation typeMatch "The item type match expression."]
   [field typeMatch [CAI1ComparisonSet CAI1TypeRecordIdentifier]]
-  [documentation serialMatch "The item serial match expression."]
-  [field serialMatch [CAI1ComparisonExact cb:String]]
   [documentation metaMatch "The item metadata match expression."]
   [field metaMatch CAI1MetadataElementMatch]
   [documentation order "The item result ordering."]
@@ -701,10 +677,10 @@
   [field metadatas [cb:List CAI1TypeRecordFieldIdentifier]]
 ]
 
-[documentation CAI1CommandItemReposit "Reposit an item."]
-[record CAI1CommandItemReposit
+[documentation CAI1CommandStockReposit "Reposit an item."]
+[record CAI1CommandStockReposit
   [documentation reposit "The item reposition."]
-  [field reposit CAI1ItemReposit]
+  [field reposit CAI1StockReposit]
 ]
 
 [documentation CAI1CommandItemDelete "Delete items."]
@@ -1002,14 +978,6 @@
   [field file CAI1File]
 ]
 
-[documentation CAI1ResponseItemLocationsList "A response to CAI1CommandItemLocationsList."]
-[record CAI1ResponseItemLocationsList
-  [documentation requestId "The ID of the request that yielded this response."]
-  [field requestId cb:UUID]
-  [documentation itemLocations "The item locations."]
-  [field itemLocations CAI1ItemLocations]
-]
-
 [documentation CAI1ResponseItemMetadataPut "A response to CAI1CommandItemMetadataPut."]
 [record CAI1ResponseItemMetadataPut
   [documentation requestId "The ID of the request that yielded this response."]
@@ -1026,8 +994,8 @@
   [field item CAI1Item]
 ]
 
-[documentation CAI1ResponseItemReposit "A response to CAI1CommandItemReposit."]
-[record CAI1ResponseItemReposit
+[documentation CAI1ResponseStockReposit "A response to CAI1CommandStockReposit."]
+[record CAI1ResponseStockReposit
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation item "The item."]
@@ -1261,10 +1229,9 @@
       CAI1CommandItemCreate
       CAI1CommandItemDelete
       CAI1CommandItemGet
-      CAI1CommandItemLocationsList
       CAI1CommandItemMetadataPut
       CAI1CommandItemMetadataRemove
-      CAI1CommandItemReposit
+      CAI1CommandStockReposit
       CAI1CommandItemSearchBegin
       CAI1CommandItemSearchNext
       CAI1CommandItemSearchPrevious
@@ -1304,10 +1271,9 @@
       CAI1ResponseItemCreate
       CAI1ResponseItemDelete
       CAI1ResponseItemGet
-      CAI1ResponseItemLocationsList
       CAI1ResponseItemMetadataPut
       CAI1ResponseItemMetadataRemove
-      CAI1ResponseItemReposit
+      CAI1ResponseStockReposit
       CAI1ResponseItemSearch
       CAI1ResponseItemSetName
       CAI1ResponseItemTypesAssign

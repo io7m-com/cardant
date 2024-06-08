@@ -35,13 +35,10 @@ import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.verification.Times;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
@@ -127,15 +124,7 @@ public final class CAICmdItemAttachmentAddTest
       .thenReturn(itemGet);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -203,17 +192,7 @@ public final class CAICmdItemAttachmentAddTest
       .thenReturn(items);
 
     when(get.execute(any()))
-      .thenReturn(Optional.of(
-        new CAItem(
-          CAItemID.random(),
-          "X",
-          0L,
-          0L,
-          new TreeMap<>(),
-          new TreeMap<>(),
-          new TreeSet<>()
-        )
-      ));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(new CADatabaseException(
       "X",

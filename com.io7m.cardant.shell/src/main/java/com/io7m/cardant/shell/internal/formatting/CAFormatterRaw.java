@@ -115,8 +115,6 @@ public final class CAFormatterRaw implements CAFormatterType
     final var main = new TreeMap<String, String>();
     main.put("Item ID", item.id().displayId());
     main.put("Name", item.name());
-    main.put("Count (Here)", Long.toUnsignedString(item.countHere()));
-    main.put("Count (Total)", Long.toUnsignedString(item.countTotal()));
 
     w.printf("# Item %s%n", item.id().displayId());
     w.printf("#-----------------------------------------%n");

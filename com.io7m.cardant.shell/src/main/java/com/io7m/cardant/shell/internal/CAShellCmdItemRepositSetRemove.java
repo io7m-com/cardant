@@ -18,10 +18,10 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositSetRemove;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
+import com.io7m.cardant.model.CAStockRepositSetRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -40,7 +40,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemRepositSetRemove
-  extends CAShellCmdAbstractCR<CAICommandItemReposit, CAIResponseItemReposit>
+  extends CAShellCmdAbstractCR<CAICommandStockReposit, CAIResponseStockReposit>
 {
   private static final QParameterNamed1<CAItemID> ITEM =
     new QParameterNamed1<>(
@@ -85,7 +85,7 @@ public final class CAShellCmdItemRepositSetRemove
         new QConstant("Remove instances of items from locations."),
         Optional.empty()
       ),
-      CAICommandItemReposit.class
+      CAICommandStockReposit.class
     );
   }
 
@@ -112,8 +112,8 @@ public final class CAShellCmdItemRepositSetRemove
 
     final var item =
       client.sendAndWaitOrThrow(
-        new CAICommandItemReposit(
-          new CAItemRepositSetRemove(itemID, locationID, count.longValue())
+        new CAICommandStockReposit(
+          new CAStockRepositSetRemove(itemID, locationID, count.longValue())
         ),
         this.commandTimeout()
       ).data();

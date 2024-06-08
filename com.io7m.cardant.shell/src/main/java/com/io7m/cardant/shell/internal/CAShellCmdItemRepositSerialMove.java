@@ -18,11 +18,11 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemRepositSerialMove;
 import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
+import com.io7m.cardant.model.CAStockRepositSerialMove;
+import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -41,7 +41,7 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
  */
 
 public final class CAShellCmdItemRepositSerialMove
-  extends CAShellCmdAbstractCR<CAICommandItemReposit, CAIResponseItemReposit>
+  extends CAShellCmdAbstractCR<CAICommandStockReposit, CAIResponseStockReposit>
 {
   private static final QParameterNamed1<CAItemID> ITEM =
     new QParameterNamed1<>(
@@ -95,7 +95,7 @@ public final class CAShellCmdItemRepositSerialMove
         new QConstant("Move an instance of an item between locations."),
         Optional.empty()
       ),
-      CAICommandItemReposit.class
+      CAICommandStockReposit.class
     );
   }
 
@@ -124,8 +124,8 @@ public final class CAShellCmdItemRepositSerialMove
 
     final var item =
       client.sendAndWaitOrThrow(
-        new CAICommandItemReposit(
-          new CAItemRepositSerialMove(
+        new CAICommandStockReposit(
+          new CAStockRepositSerialMove(
             itemID,
             locationFrom,
             locationTo,

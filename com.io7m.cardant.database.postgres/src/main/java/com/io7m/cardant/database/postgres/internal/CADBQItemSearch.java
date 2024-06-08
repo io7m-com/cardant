@@ -20,7 +20,6 @@ package com.io7m.cardant.database.postgres.internal;
 import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseItemSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemSearchType;
-import com.io7m.cardant.database.postgres.internal.CADBMatch.LocationFields;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.MetaFields;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetCondition;
@@ -134,26 +133,10 @@ public final class CADBQItemSearch
         ITEM_SEARCH_VIEW.ISV_METADATA_TYPE_IDS
       );
 
-    final var locationCondition =
-      CADBMatch.ofLocationMatch(
-        new LocationFields(
-          ITEM_SEARCH_VIEW.ISV_ITEM_LOCATIONS
-        ),
-        parameters.locationMatch()
-      );
-
-    final var serialCondition =
-      CADBMatch.ofSerialMatch(
-        ITEM_SEARCH_VIEW.ISV_ITEM_SERIALS,
-        parameters.serialMatch()
-      );
-
     final var simpleConditions =
       DSL.and(
         nameCondition,
-        typeCondition,
-        locationCondition,
-        serialCondition
+        typeCondition
       );
 
     /*

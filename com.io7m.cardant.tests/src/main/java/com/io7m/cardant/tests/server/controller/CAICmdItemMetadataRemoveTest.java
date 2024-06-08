@@ -157,15 +157,7 @@ public final class CAICmdItemMetadataRemoveTest
       .thenReturn(itemMetaRemove);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -241,19 +233,7 @@ public final class CAICmdItemMetadataRemoveTest
       mock(ItemMetadataRemoveType.class);
 
     when(itemGet.execute(any()))
-      .thenReturn(
-        Optional.of(
-          new CAItem(
-            CAItemID.random(),
-            "Item",
-            0L,
-            0L,
-            new TreeMap<>(),
-            Collections.emptySortedMap(),
-            new TreeSet<>()
-          )
-        )
-      );
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(
       new CADatabaseException(
@@ -461,8 +441,6 @@ public final class CAICmdItemMetadataRemoveTest
           new CAItem(
             CAItemID.random(),
             "Item",
-            0L,
-            0L,
             new TreeMap<>(Map.of(meta0.name(), meta0)),
             Collections.emptySortedMap(),
             new TreeSet<>(

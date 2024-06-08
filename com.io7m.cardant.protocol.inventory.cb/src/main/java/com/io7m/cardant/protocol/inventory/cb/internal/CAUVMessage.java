@@ -36,10 +36,8 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
-import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
@@ -60,6 +58,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
@@ -82,10 +81,8 @@ import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemCreate;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemDelete;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemGet;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
@@ -104,6 +101,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall;
@@ -125,10 +123,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemCreate;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemGet;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemSearchPrevious;
@@ -149,6 +145,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesRevoke;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandStockReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypePackageInstall;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypePackageSearchBegin;
@@ -168,10 +165,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemCreate;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemDelete;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemGet;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemLocationsList;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemSetName;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseItemTypesAssign;
@@ -190,6 +185,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseStockReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageInstall;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageSearch;
@@ -215,10 +211,8 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemAtt
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemCreate.COMMAND_ITEM_CREATE;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemDelete.COMMAND_ITEM_DELETE;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemGet.COMMAND_ITEM_GET;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemLocationsList.COMMAND_ITEM_LOCATIONS_LIST;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemMetadataPut.COMMAND_ITEM_METADATA_PUT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemMetadataRemove.COMMAND_ITEM_METADATA_REMOVE;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemReposit.COMMAND_ITEM_REPOSIT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemSearchBegin.COMMAND_ITEM_SEARCH_BEGIN;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemSearchNext.COMMAND_ITEM_SEARCH_NEXT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandItemSearchPrevious.COMMAND_ITEM_SEARCH_PREVIOUS;
@@ -239,6 +233,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandLogin.C
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandRolesAssign.COMMAND_ROLES_ASSIGN;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandRolesGet.COMMAND_ROLES_GET;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandRolesRevoke.COMMAND_ROLES_REVOKE;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandStockReposit.COMMAND_STOCK_REPOSIT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypePackageGetText.COMMAND_TYPE_PACKAGE_GET_TEXT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypePackageInstall.COMMAND_TYPE_PACKAGE_INSTALL;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypePackageSearchBegin.COMMAND_TYPE_PACKAGE_SEARCH_BEGIN;
@@ -257,10 +252,8 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemAt
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemCreate.RESPONSE_ITEM_CREATE;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemDelete.RESPONSE_ITEM_DELETE;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemGet.RESPONSE_ITEM_GET;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemLocationList.RESPONSE_ITEM_LOCATION_LIST;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemMetadataPut.RESPONSE_ITEM_METADATA_PUT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemMetadataRemove.RESPONSE_ITEM_METADATA_REMOVE;
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemReposit.RESPONSE_ITEM_REPOSIT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemSearch.RESPONSE_ITEM_SEARCH;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemSetName.RESPONSE_ITEM_SET_NAME;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseItemTypesAssign.RESPONSE_ITEM_TYPES_ASSIGN;
@@ -279,6 +272,7 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseLogin.
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseRolesAssign.RESPONSE_ROLES_ASSIGN;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseRolesGet.RESPONSE_ROLES_GET;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseRolesRevoke.RESPONSE_ROLES_REVOKE;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseStockReposit.RESPONSE_STOCK_REPOSIT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseTypePackageGetText.RESPONSE_TYPE_PACKAGE_GET_TEXT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseTypePackageInstall.RESPONSE_TYPE_PACKAGE_INSTALL;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseTypePackageSearch.RESPONSE_TYPE_PACKAGE_SEARCH;
@@ -343,17 +337,14 @@ public enum CAUVMessage
       case final CAICommandItemGet c -> {
         yield COMMAND_ITEM_GET.convertToWire(c);
       }
-      case final CAICommandItemLocationsList c -> {
-        yield COMMAND_ITEM_LOCATIONS_LIST.convertToWire(c);
-      }
       case final CAICommandItemMetadataPut c -> {
         yield COMMAND_ITEM_METADATA_PUT.convertToWire(c);
       }
       case final CAICommandItemMetadataRemove c -> {
         yield COMMAND_ITEM_METADATA_REMOVE.convertToWire(c);
       }
-      case final CAICommandItemReposit c -> {
-        yield COMMAND_ITEM_REPOSIT.convertToWire(c);
+      case final CAICommandStockReposit c -> {
+        yield COMMAND_STOCK_REPOSIT.convertToWire(c);
       }
       case final CAICommandItemSearchBegin c -> {
         yield COMMAND_ITEM_SEARCH_BEGIN.convertToWire(c);
@@ -525,17 +516,14 @@ public enum CAUVMessage
       case final CAIResponseItemGet r -> {
         yield RESPONSE_ITEM_GET.convertToWire(r);
       }
-      case final CAIResponseItemLocationsList r -> {
-        yield RESPONSE_ITEM_LOCATION_LIST.convertToWire(r);
-      }
       case final CAIResponseItemMetadataPut r -> {
         yield RESPONSE_ITEM_METADATA_PUT.convertToWire(r);
       }
       case final CAIResponseItemMetadataRemove r -> {
         yield RESPONSE_ITEM_METADATA_REMOVE.convertToWire(r);
       }
-      case final CAIResponseItemReposit r -> {
-        yield RESPONSE_ITEM_REPOSIT.convertToWire(r);
+      case final CAIResponseStockReposit r -> {
+        yield RESPONSE_STOCK_REPOSIT.convertToWire(r);
       }
       case final CAIResponseItemSearch r -> {
         yield RESPONSE_ITEM_SEARCH.convertToWire(r);
@@ -651,17 +639,14 @@ public enum CAUVMessage
       case final CAI1CommandItemGet c -> {
         yield COMMAND_ITEM_GET.convertFromWire(c);
       }
-      case final CAI1CommandItemLocationsList c -> {
-        yield COMMAND_ITEM_LOCATIONS_LIST.convertFromWire(c);
-      }
       case final CAI1CommandItemMetadataPut c -> {
         yield COMMAND_ITEM_METADATA_PUT.convertFromWire(c);
       }
       case final CAI1CommandItemMetadataRemove c -> {
         yield COMMAND_ITEM_METADATA_REMOVE.convertFromWire(c);
       }
-      case final CAI1CommandItemReposit c -> {
-        yield COMMAND_ITEM_REPOSIT.convertFromWire(c);
+      case final CAI1CommandStockReposit c -> {
+        yield COMMAND_STOCK_REPOSIT.convertFromWire(c);
       }
       case final CAI1CommandItemSearchBegin c -> {
         yield COMMAND_ITEM_SEARCH_BEGIN.convertFromWire(c);
@@ -751,17 +736,14 @@ public enum CAUVMessage
       case final CAI1ResponseItemGet r -> {
         yield RESPONSE_ITEM_GET.convertFromWire(r);
       }
-      case final CAI1ResponseItemLocationsList r -> {
-        yield RESPONSE_ITEM_LOCATION_LIST.convertFromWire(r);
-      }
       case final CAI1ResponseItemMetadataPut r -> {
         yield RESPONSE_ITEM_METADATA_PUT.convertFromWire(r);
       }
       case final CAI1ResponseItemMetadataRemove r -> {
         yield RESPONSE_ITEM_METADATA_REMOVE.convertFromWire(r);
       }
-      case final CAI1ResponseItemReposit r -> {
-        yield RESPONSE_ITEM_REPOSIT.convertFromWire(r);
+      case final CAI1ResponseStockReposit r -> {
+        yield RESPONSE_STOCK_REPOSIT.convertFromWire(r);
       }
       case final CAI1ResponseItemSearch r -> {
         yield RESPONSE_ITEM_SEARCH.convertFromWire(r);

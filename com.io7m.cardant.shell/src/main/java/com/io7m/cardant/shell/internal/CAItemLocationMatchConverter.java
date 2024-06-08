@@ -19,9 +19,9 @@ package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CAItemLocationMatchType;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
 import com.io7m.cardant.parsers.CAItemLocationMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QException;
@@ -34,7 +34,7 @@ import java.util.Objects;
  */
 
 public final class CAItemLocationMatchConverter
-  implements QValueConverterType<CAItemLocationMatchType>
+  implements QValueConverterType<CALocationMatchType>
 {
   private final CAStrings strings;
 
@@ -51,7 +51,7 @@ public final class CAItemLocationMatchConverter
   }
 
   @Override
-  public CAItemLocationMatchType convertFromString(
+  public CALocationMatchType convertFromString(
     final String text)
     throws QException
   {
@@ -65,7 +65,7 @@ public final class CAItemLocationMatchConverter
 
   @Override
   public String convertToString(
-    final CAItemLocationMatchType value)
+    final CALocationMatchType value)
     throws QException
   {
     try {
@@ -77,9 +77,9 @@ public final class CAItemLocationMatchConverter
   }
 
   @Override
-  public CAItemLocationMatchType exampleValue()
+  public CALocationMatchType exampleValue()
   {
-    return new CAItemLocationExact(CALocationID.random());
+    return new CALocationExact(CALocationID.random());
   }
 
   @Override
@@ -89,8 +89,8 @@ public final class CAItemLocationMatchConverter
   }
 
   @Override
-  public Class<CAItemLocationMatchType> convertedClass()
+  public Class<CALocationMatchType> convertedClass()
   {
-    return CAItemLocationMatchType.class;
+    return CALocationMatchType.class;
   }
 }
