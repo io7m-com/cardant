@@ -54,6 +54,7 @@ import static com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue.ANY_VALUE
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_AND;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_AND_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_ANY;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_ANY_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_0;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_1;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_2;
@@ -91,8 +92,6 @@ import static com.io7m.jlexing.core.LexicalPositions.zero;
 
 public final class CAMetadataMatchExpressions extends CAExpressions
 {
-
-
   private final CAMetadataTypeMatchExpressions typeMatch;
   private final CAMetadataPackageMatchExpressions packageMatch;
   private final CAMetadataFieldMatchExpressions fieldMatch;
@@ -682,7 +681,7 @@ public final class CAMetadataMatchExpressions extends CAExpressions
       this.ruleBranch(
         SYNTAX_METADATA_MATCH_NAME,
         List.of(
-          SYNTAX_METADATA_MATCH_ANY,
+          SYNTAX_METADATA_MATCH_ANY_NAME,
           SYNTAX_METADATA_MATCH_AND_NAME,
           SYNTAX_METADATA_MATCH_MATCH_NAME,
           SYNTAX_METADATA_MATCH_OR_NAME,
@@ -710,6 +709,13 @@ public final class CAMetadataMatchExpressions extends CAExpressions
       )
     );
 
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_ANY_NAME,
+        SYNTAX_METADATA_MATCH_ANY,
+        List.of()
+      )
+    );
     results.add(
       this.ruleLeafWithExamples(
         SYNTAX_METADATA_MATCH_AND_NAME,

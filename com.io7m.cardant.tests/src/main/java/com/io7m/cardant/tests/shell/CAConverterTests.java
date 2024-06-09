@@ -62,7 +62,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -76,6 +75,24 @@ public final class CAConverterTests
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CAConverterTests.class);
+
+  /**
+   * 64 random bytes that definitely won't be parsed by any syntax rules.
+   */
+
+  private static final byte[] MISC = {
+    (byte) '?', (byte) 86, (byte) 35, (byte) 238, (byte) 191, (byte) 61,
+    (byte) 160, (byte) 44, (byte) 176, (byte) 126, (byte) 152, (byte) 196,
+    (byte) 127, (byte) 24, (byte) 201, (byte) 216, (byte) 69, (byte) 49,
+    (byte) 195, (byte) 198, (byte) 234, (byte) 109, (byte) 222, (byte) 228,
+    (byte) 10, (byte) 172, (byte) 251, (byte) 120, (byte) 158, (byte) 75,
+    (byte) 171, (byte) 128, (byte) 167, (byte) 186, (byte) 111, (byte) 122,
+    (byte) 86, (byte) 232, (byte) 246, (byte) 71, (byte) 234, (byte) 54,
+    (byte) 231, (byte) 140, (byte) 20, (byte) 148, (byte) 100, (byte) 217,
+    (byte) 122, (byte) 34, (byte) 203, (byte) 220, (byte) 81, (byte) 235,
+    (byte) 159, (byte) 195, (byte) 174, (byte) 37,
+    (byte) 238, (byte) 147, (byte) 17, (byte) 250, (byte) 93, (byte) 138
+  };
 
   private static final CAStrings STRINGS =
     CAStrings.create(Locale.ROOT);
@@ -253,14 +270,8 @@ public final class CAConverterTests
 
         final QValueConverterType<Object> finalO = o;
 
-        final var rng =
-          SecureRandom.getInstanceStrong();
-        final var data =
-          new byte[64];
-        rng.nextBytes(data);
-
         final var corruptedText =
-          new String(data, StandardCharsets.UTF_8);
+          new String(MISC, StandardCharsets.UTF_8);
 
         final var ex =
           assertThrows(

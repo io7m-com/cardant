@@ -152,7 +152,16 @@ public final class CAShellCmdSyntaxShow extends CAShellCmdAbstract
     formatter.printLine(rule.text().trim());
 
     for (final var subRule : rule.subRules()) {
-      this.formatRule(ruleMap, ruleMap.get(subRule));
+      final var subRuleName =
+        subRule.trim();
+      final var rr =
+        ruleMap.get(subRuleName);
+
+      if (rr == null) {
+        throw new IllegalStateException("No such rule: %s".formatted(subRuleName));
+      }
+
+      this.formatRule(ruleMap, rr);
     }
   }
 }

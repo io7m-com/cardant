@@ -858,6 +858,22 @@ public final class CAShellIT
     assertEquals(1, this.exitCode);
   }
 
+  @Test
+  public void testBug94()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.println("syntax-show --rule metadata-match");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
   private void startShell()
   {
     this.executor.execute(() -> {
