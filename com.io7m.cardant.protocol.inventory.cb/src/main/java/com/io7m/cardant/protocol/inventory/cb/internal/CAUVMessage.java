@@ -58,7 +58,11 @@ import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAICommandStockCount;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
@@ -101,7 +105,9 @@ import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockCount;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall;
@@ -145,7 +151,11 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1CommandLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandRolesRevoke;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandStockCount;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandStockReposit;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandStockSearchBegin;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandStockSearchNext;
+import com.io7m.cardant.protocol.inventory.cb.CAI1CommandStockSearchPrevious;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypePackageInstall;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandTypePackageSearchBegin;
@@ -185,7 +195,9 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseLogin;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesAssign;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesGet;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseRolesRevoke;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseStockCount;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseStockReposit;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseStockSearch;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageInstall;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseTypePackageSearch;
@@ -233,7 +245,11 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandLogin.C
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandRolesAssign.COMMAND_ROLES_ASSIGN;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandRolesGet.COMMAND_ROLES_GET;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandRolesRevoke.COMMAND_ROLES_REVOKE;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandStockCount.COMMAND_STOCK_COUNT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandStockReposit.COMMAND_STOCK_REPOSIT;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandStockSearchBegin.COMMAND_STOCK_SEARCH_BEGIN;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandStockSearchNext.COMMAND_STOCK_SEARCH_NEXT;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandStockSearchPrevious.COMMAND_STOCK_SEARCH_PREVIOUS;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypePackageGetText.COMMAND_TYPE_PACKAGE_GET_TEXT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypePackageInstall.COMMAND_TYPE_PACKAGE_INSTALL;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVCommandTypePackageSearchBegin.COMMAND_TYPE_PACKAGE_SEARCH_BEGIN;
@@ -272,7 +288,9 @@ import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseLogin.
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseRolesAssign.RESPONSE_ROLES_ASSIGN;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseRolesGet.RESPONSE_ROLES_GET;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseRolesRevoke.RESPONSE_ROLES_REVOKE;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseStockCount.RESPONSE_STOCK_COUNT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseStockReposit.RESPONSE_STOCK_REPOSIT;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseStockSearch.RESPONSE_STOCK_SEARCH;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseTypePackageGetText.RESPONSE_TYPE_PACKAGE_GET_TEXT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseTypePackageInstall.RESPONSE_TYPE_PACKAGE_INSTALL;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVResponseTypePackageSearch.RESPONSE_TYPE_PACKAGE_SEARCH;
@@ -439,6 +457,18 @@ public enum CAUVMessage
       case final CAICommandLocationDelete c -> {
         yield COMMAND_LOCATION_DELETE.convertToWire(c);
       }
+      case final CAICommandStockCount c -> {
+        yield COMMAND_STOCK_COUNT.convertToWire(c);
+      }
+      case final CAICommandStockSearchBegin c -> {
+        yield COMMAND_STOCK_SEARCH_BEGIN.convertToWire(c);
+      }
+      case final CAICommandStockSearchNext c -> {
+        yield COMMAND_STOCK_SEARCH_NEXT.convertToWire(c);
+      }
+      case final CAICommandStockSearchPrevious c -> {
+        yield COMMAND_STOCK_SEARCH_PREVIOUS.convertToWire(c);
+      }
     };
   }
 
@@ -599,6 +629,12 @@ public enum CAUVMessage
       }
       case final CAIResponseLocationDelete r -> {
         yield RESPONSE_LOCATION_DELETE.convertToWire(r);
+      }
+      case final CAIResponseStockCount r -> {
+        yield RESPONSE_STOCK_COUNT.convertToWire(r);
+      }
+      case final CAIResponseStockSearch r -> {
+        yield RESPONSE_STOCK_SEARCH.convertToWire(r);
       }
     };
   }
@@ -857,6 +893,24 @@ public enum CAUVMessage
       }
       case final CAI1ResponseLocationDelete r -> {
         yield RESPONSE_LOCATION_DELETE.convertFromWire(r);
+      }
+      case final CAI1CommandStockSearchBegin c -> {
+        yield COMMAND_STOCK_SEARCH_BEGIN.convertFromWire(c);
+      }
+      case final CAI1CommandStockSearchNext c -> {
+        yield COMMAND_STOCK_SEARCH_NEXT.convertFromWire(c);
+      }
+      case final CAI1CommandStockSearchPrevious c -> {
+        yield COMMAND_STOCK_SEARCH_PREVIOUS.convertFromWire(c);
+      }
+      case final CAI1ResponseStockCount c -> {
+        yield RESPONSE_STOCK_COUNT.convertFromWire(c);
+      }
+      case final CAI1ResponseStockSearch c -> {
+        yield RESPONSE_STOCK_SEARCH.convertFromWire(c);
+      }
+      case final CAI1CommandStockCount c -> {
+        yield COMMAND_STOCK_COUNT.convertFromWire(c);
       }
     };
   }

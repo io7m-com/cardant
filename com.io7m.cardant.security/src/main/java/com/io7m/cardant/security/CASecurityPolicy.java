@@ -74,6 +74,14 @@ public final class CASecurityPolicy
     new MObject(MTypeName.of("inventory.locations"), Map.of());
 
   /**
+   * The stock section of the inventory.
+   */
+
+  @CASecurityDocumentation("The stock section of the inventory.")
+  public static final MObject INVENTORY_STOCK =
+    new MObject(MTypeName.of("inventory.stock"), Map.of());
+
+  /**
    * A "read" action.
    */
 
@@ -109,6 +117,22 @@ public final class CASecurityPolicy
   @CASecurityDocumentation("A reader of inventory files.")
   public static final MRoleName ROLE_INVENTORY_FILES_READER =
     MRoleName.of("inventory.files.reader");
+
+  /**
+   * A writer of inventory stock.
+   */
+
+  @CASecurityDocumentation("A writer of inventory stock.")
+  public static final MRoleName ROLE_INVENTORY_STOCK_WRITER =
+    MRoleName.of("inventory.stock.writer");
+
+  /**
+   * A reader of inventory stock.
+   */
+
+  @CASecurityDocumentation("A reader of inventory stock.")
+  public static final MRoleName ROLE_INVENTORY_STOCK_READER =
+    MRoleName.of("inventory.stock.reader");
 
   /**
    * A writer of inventory items.
@@ -171,7 +195,9 @@ public final class CASecurityPolicy
       ROLE_INVENTORY_ITEMS_READER,
       ROLE_INVENTORY_ITEMS_WRITER,
       ROLE_INVENTORY_LOCATIONS_READER,
-      ROLE_INVENTORY_LOCATIONS_WRITER
+      ROLE_INVENTORY_LOCATIONS_WRITER,
+      ROLE_INVENTORY_STOCK_READER,
+      ROLE_INVENTORY_STOCK_WRITER
     );
 
   /**

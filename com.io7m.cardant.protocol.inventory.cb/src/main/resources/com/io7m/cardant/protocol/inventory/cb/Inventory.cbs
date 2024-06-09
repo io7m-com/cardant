@@ -589,6 +589,36 @@
   [field identifier CAI1TypePackageIdentifier]
 ]
 
+[variant CAI1StockOccurrenceKind
+  [case Set]
+  [case Serial]
+]
+
+[variant CAI1StockOccurrence
+  [case Serial
+    [field location CAI1LocationSummary]
+    [field item CAI1ItemSummary]
+    [field serial cb:String]
+  ]
+  [case Set
+    [field location CAI1LocationSummary]
+    [field item CAI1ItemSummary]
+    [field count cb:IntegerUnsigned64]
+  ]
+]
+
+[documentation CAI1StockSearchParameters "The stock search parameters."]
+[record CAI1StockSearchParameters
+  [documentation locationMatch "The location match."]
+  [field locationMatch CAI1LocationMatch]
+  [documentation itemMatch "The item match."]
+  [field itemMatch [CAI1ComparisonExact cb:UUID]]
+  [documentation includeOccurrences "The kinds of stock occurrences to include."]
+  [field includeOccurrences [cb:List CAI1StockOccurrenceKind]]
+  [documentation pageSize "The page size."]
+  [field pageSize cb:IntegerUnsigned32]
+]
+
 ;
 ; Commands.
 ;
@@ -883,6 +913,24 @@
   [documentation text "The type package text."]
   [field text cb:String]
 ]
+
+[documentation CAI1CommandStockCount "Count stock."]
+[record CAI1CommandStockCount
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1StockSearchParameters]
+]
+
+[documentation CAI1CommandStockSearchBegin "Search stock."]
+[record CAI1CommandStockSearchBegin
+  [documentation parameters "The search parameters."]
+  [field parameters CAI1StockSearchParameters]
+]
+
+[documentation CAI1CommandStockSearchNext "Search stock."]
+[record CAI1CommandStockSearchNext]
+
+[documentation CAI1CommandStockSearchPrevious "Search stock."]
+[record CAI1CommandStockSearchPrevious]
 
 ;
 ; Responses.
@@ -1196,6 +1244,22 @@
   [field identifier CAI1TypePackageIdentifier]
 ]
 
+[documentation CAI1ResponseStockCount "A response to CAI1CommandStockCount."]
+[record CAI1ResponseStockCount
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation count "The count."]
+  [field count cb:IntegerUnsigned64]
+]
+
+[documentation CAI1ResponseStockSearch "A response to CAI1CommandStockSearch."]
+[record CAI1ResponseStockSearch
+  [documentation requestId "The ID of the request that yielded this response."]
+  [field requestId cb:UUID]
+  [documentation results "The results."]
+  [field results [CAI1Page CAI1StockOccurrence]]
+]
+
 ;
 ; Events.
 ;
@@ -1231,7 +1295,6 @@
       CAI1CommandItemGet
       CAI1CommandItemMetadataPut
       CAI1CommandItemMetadataRemove
-      CAI1CommandStockReposit
       CAI1CommandItemSearchBegin
       CAI1CommandItemSearchNext
       CAI1CommandItemSearchPrevious
@@ -1252,6 +1315,11 @@
       CAI1CommandRolesAssign
       CAI1CommandRolesGet
       CAI1CommandRolesRevoke
+      CAI1CommandStockCount
+      CAI1CommandStockReposit
+      CAI1CommandStockSearchBegin
+      CAI1CommandStockSearchNext
+      CAI1CommandStockSearchPrevious
       CAI1CommandTypePackageGetText
       CAI1CommandTypePackageInstall
       CAI1CommandTypePackageSearchBegin
@@ -1273,7 +1341,6 @@
       CAI1ResponseItemGet
       CAI1ResponseItemMetadataPut
       CAI1ResponseItemMetadataRemove
-      CAI1ResponseStockReposit
       CAI1ResponseItemSearch
       CAI1ResponseItemSetName
       CAI1ResponseItemTypesAssign
@@ -1292,6 +1359,9 @@
       CAI1ResponseRolesAssign
       CAI1ResponseRolesGet
       CAI1ResponseRolesRevoke
+      CAI1ResponseStockCount
+      CAI1ResponseStockReposit
+      CAI1ResponseStockSearch
       CAI1ResponseTypePackageGetText
       CAI1ResponseTypePackageInstall
       CAI1ResponseTypePackageSearch

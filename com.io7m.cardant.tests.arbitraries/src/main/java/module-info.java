@@ -53,7 +53,11 @@ import com.io7m.cardant.tests.arbitraries.CAArbCommandLogin;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesAssign;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesGet;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandRolesRevoke;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandStockCount;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandStockReposit;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandStockSearchBegin;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandStockSearchNext;
+import com.io7m.cardant.tests.arbitraries.CAArbCommandStockSearchPrevious;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageGetText;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageInstall;
 import com.io7m.cardant.tests.arbitraries.CAArbCommandTypePackageSearchBegin;
@@ -93,7 +97,9 @@ import com.io7m.cardant.tests.arbitraries.CAArbResponseLogin;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesAssign;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesGet;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseRolesRevoke;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseStockCount;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseStockReposit;
+import com.io7m.cardant.tests.arbitraries.CAArbResponseStockSearch;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageGetText;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageInstall;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageSearch;
@@ -157,6 +163,9 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbMetadataValueMatchTimeWithi
 import com.io7m.cardant.tests.arbitraries.model.CAArbNameMatch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbOffsetDateTime;
 import com.io7m.cardant.tests.arbitraries.model.CAArbSizeRange;
+import com.io7m.cardant.tests.arbitraries.model.CAArbStockOccurrence;
+import com.io7m.cardant.tests.arbitraries.model.CAArbStockOccurrenceSerial;
+import com.io7m.cardant.tests.arbitraries.model.CAArbStockOccurrenceSet;
 import com.io7m.cardant.tests.arbitraries.model.CAArbStockReposit;
 import com.io7m.cardant.tests.arbitraries.model.CAArbStockRepositSerialAdd;
 import com.io7m.cardant.tests.arbitraries.model.CAArbStockRepositSerialMove;
@@ -164,6 +173,7 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbStockRepositSerialRemove;
 import com.io7m.cardant.tests.arbitraries.model.CAArbStockRepositSetAdd;
 import com.io7m.cardant.tests.arbitraries.model.CAArbStockRepositSetMove;
 import com.io7m.cardant.tests.arbitraries.model.CAArbStockRepositSetRemove;
+import com.io7m.cardant.tests.arbitraries.model.CAArbStockSearchParameters;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTimeRange;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclaration;
 import com.io7m.cardant.tests.arbitraries.model.CAArbTypeDeclarationSearchParameters;
@@ -205,6 +215,16 @@ module com.io7m.cardant.tests.arbitraries
   uses ArbitraryProvider;
 
   provides ArbitraryProvider with
+CAArbStockSearchParameters,
+CAArbStockOccurrence,
+CAArbStockOccurrenceSerial,
+CAArbStockOccurrenceSet,
+CAArbResponseStockCount,
+CAArbResponseStockSearch,
+CAArbCommandStockCount,
+CAArbCommandStockSearchBegin,
+CAArbCommandStockSearchNext,
+CAArbCommandStockSearchPrevious,
 CAArbAttachment,
 CAArbAttachmentKey,
 CAArbAuditEvent,

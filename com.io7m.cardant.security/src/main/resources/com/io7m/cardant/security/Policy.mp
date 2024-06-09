@@ -128,6 +128,31 @@
 ]
 
 #------------------------------------------------------------------------
+# Stock
+#
+
+[Rule
+  [Conclusion   AllowImmediately]
+  [MatchSubject [WithAnyRolesFrom inventory.stock.writer]]
+  [MatchObject  [WithType inventory.stock]]
+  [MatchAction  [WithName write]]
+]
+
+[Rule
+  [Conclusion   AllowImmediately]
+  [MatchSubject [WithAnyRolesFrom inventory.stock.writer]]
+  [MatchObject  [WithType inventory.stock]]
+  [MatchAction  [WithName delete]]
+]
+
+[Rule
+  [Conclusion   AllowImmediately]
+  [MatchSubject [WithAnyRolesFrom inventory.stock.reader]]
+  [MatchObject  [WithType inventory.stock]]
+  [MatchAction  [WithName read]]
+]
+
+#------------------------------------------------------------------------
 # Audit
 #
 
