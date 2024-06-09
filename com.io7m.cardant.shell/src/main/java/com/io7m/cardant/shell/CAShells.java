@@ -43,12 +43,12 @@ import com.io7m.cardant.shell.internal.CAShellCmdItemDelete;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialMove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetMove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialMove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetMove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchPrevious;
@@ -67,6 +67,9 @@ import com.io7m.cardant.shell.internal.CAShellCmdRolesGet;
 import com.io7m.cardant.shell.internal.CAShellCmdRolesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdSelf;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
+import com.io7m.cardant.shell.internal.CAShellCmdStockSearchBegin;
+import com.io7m.cardant.shell.internal.CAShellCmdStockSearchNext;
+import com.io7m.cardant.shell.internal.CAShellCmdStockSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdSyntaxList;
 import com.io7m.cardant.shell.internal.CAShellCmdSyntaxShow;
 import com.io7m.cardant.shell.internal.CAShellCmdType;
@@ -188,12 +191,6 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemGet(services),
         new CAShellCmdItemMetadataPut(services),
         new CAShellCmdItemMetadataRemove(services),
-        new CAShellCmdItemRepositSerialAdd(services),
-        new CAShellCmdItemRepositSerialMove(services),
-        new CAShellCmdItemRepositSerialRemove(services),
-        new CAShellCmdItemRepositSetAdd(services),
-        new CAShellCmdItemRepositSetMove(services),
-        new CAShellCmdItemRepositSetRemove(services),
         new CAShellCmdItemSearchBegin(services),
         new CAShellCmdItemSearchNext(services),
         new CAShellCmdItemSearchPrevious(services),
@@ -212,6 +209,15 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdRolesRevoke(services),
         new CAShellCmdSelf(services),
         new CAShellCmdSet(services),
+        new CAShellCmdStockRepositSerialAdd(services),
+        new CAShellCmdStockRepositSerialMove(services),
+        new CAShellCmdStockRepositSerialRemove(services),
+        new CAShellCmdStockRepositSetAdd(services),
+        new CAShellCmdStockRepositSetMove(services),
+        new CAShellCmdStockRepositSetRemove(services),
+        new CAShellCmdStockSearchBegin(services),
+        new CAShellCmdStockSearchNext(services),
+        new CAShellCmdStockSearchPrevious(services),
         new CAShellCmdSyntaxList(services),
         new CAShellCmdSyntaxShow(services),
         new CAShellCmdTypePackageGetText(services),

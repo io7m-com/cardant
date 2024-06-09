@@ -18,11 +18,11 @@
 package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CAItemLocationMatchType;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
+import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
+import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -75,21 +75,21 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public CAItemLocationMatchType locationMatch(
+  public CALocationMatchType locationMatch(
     final String text)
     throws CAException
   {
     return this.locationMatchExpr(CAExpressions.parse(text));
   }
 
-  private CAItemLocationMatchType locationMatchExpr(
+  private CALocationMatchType locationMatchExpr(
     final SExpressionType expression)
     throws CAException
   {
     if (expression instanceof final SAtomType atom) {
       return switch (atom.text().toUpperCase(Locale.ROOT)) {
         case "ANY-LOCATION" -> {
-          yield new CAItemLocationsAll();
+          yield new CALocationsAll();
         }
         default -> {
           throw this.createParseError(expression);
@@ -115,24 +115,24 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
     throw this.createParseError(expression);
   }
 
-  private CAItemLocationMatchType locationMatchExact(
+  private CALocationMatchType locationMatchExact(
     final SList list)
     throws CAException
   {
     if (list.size() == 2) {
-      return new CAItemLocationExact(
+      return new CALocationExact(
         this.location(list.get(1))
       );
     }
     throw this.createParseError(list);
   }
 
-  private CAItemLocationMatchType locationMatchWithDescendants(
+  private CALocationMatchType locationMatchWithDescendants(
     final SList list)
     throws CAException
   {
     if (list.size() == 2) {
-      return new CAItemLocationWithDescendants(
+      return new CALocationWithDescendants(
         this.location(list.get(1))
       );
     }
@@ -164,13 +164,13 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
    */
 
   public SExpressionType locationMatchSerialize(
-    final CAItemLocationMatchType match)
+    final CALocationMatchType match)
   {
-    if (match instanceof CAItemLocationsAll) {
+    if (match instanceof CALocationsAll) {
       return new SSymbol(zero(), "any-location");
     }
 
-    if (match instanceof final CAItemLocationExact w) {
+    if (match instanceof final CALocationExact w) {
       return new SList(
         zero(),
         true,
@@ -181,7 +181,7 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
       );
     }
 
-    if (match instanceof final CAItemLocationWithDescendants w) {
+    if (match instanceof final CALocationWithDescendants w) {
       return new SList(
         zero(),
         true,
@@ -206,7 +206,7 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
    */
 
   public String locationMatchSerializeToString(
-    final CAItemLocationMatchType match)
+    final CALocationMatchType match)
     throws CAException
   {
     return CAExpressions.serialize(this.locationMatchSerialize(match));

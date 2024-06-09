@@ -29,7 +29,6 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1AttachmentKey;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Item;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Metadata;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeRecordFieldIdentifier;
-import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBString;
@@ -95,8 +94,6 @@ public enum CAUVItem
     return new CAI1Item(
       new CBUUID(item.id().id()),
       new CBString(item.name()),
-      new CBIntegerUnsigned64(item.countTotal()),
-      new CBIntegerUnsigned64(item.countHere()),
       new CBMap<>(metadata),
       new CBMap<>(attachments),
       new CBList<>(
@@ -145,8 +142,6 @@ public enum CAUVItem
     return new CAItem(
       new CAItemID(item.fieldId().value()),
       item.fieldName().value(),
-      item.fieldCountTotal().value(),
-      item.fieldCountHere().value(),
       new TreeMap<>(metadata),
       new TreeMap<>(attachments),
       new TreeSet<>(

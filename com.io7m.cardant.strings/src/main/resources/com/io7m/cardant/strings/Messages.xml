@@ -247,6 +247,29 @@
   <entry key="syntax_serial_match_example_0">[with-serial-equal-to "37F5F40B1719"]</entry>
   <entry key="syntax_serial_match_example_1">[with-serial-not-equal-to "37F5F40B1719"]</entry>
 
+  <!--          -->
+  <!-- Item IDs -->
+  <!--          -->
+
+  <entry key="syntax_item_match_anyitem_name">item-any</entry>
+  <entry key="syntax_item_match_anyitem">
+    <![CDATA[with-any-item]]>
+  </entry>
+
+  <entry key="syntax_item_match_with_item_equal_to_name">item-equal-to</entry>
+  <entry key="syntax_item_match_with_item_equal_to">
+    <![CDATA[(with-item-equal-to <item>)]]>
+  </entry>
+
+  <entry key="syntax_item_match_with_item_not_equal_to_name">item-not-equal-to</entry>
+  <entry key="syntax_item_match_with_item_not_equal_to">
+    <![CDATA[(with-item-not-equal-to <item>)]]>
+  </entry>
+
+  <entry key="syntax_item_match_name">item-match</entry>
+  <entry key="syntax_item_match_example_0">[with-item-equal-to "3b174fcb-db3c-48b5-a442-0bf4a2a37208"]</entry>
+  <entry key="syntax_item_match_example_1">[with-item-not-equal-to "61ffe60a-fd3e-41b7-95e6-cd33535ee8bb"]</entry>
+
   <!--             -->
   <!-- Description -->
   <!--             -->

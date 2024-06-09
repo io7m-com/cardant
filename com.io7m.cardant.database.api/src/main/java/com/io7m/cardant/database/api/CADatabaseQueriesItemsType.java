@@ -19,8 +19,6 @@ package com.io7m.cardant.database.api;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocations;
-import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
@@ -210,28 +208,6 @@ public sealed interface CADatabaseQueriesItemsType
     {
 
     }
-  }
-
-  /**
-   * Reposit items.
-   */
-
-  non-sealed interface ItemRepositType
-    extends CADatabaseQueryType<CAItemRepositType, CADatabaseUnit>,
-    CADatabaseQueriesItemsType
-  {
-
-  }
-
-  /**
-   * Retrieve the locations of the given item.
-   */
-
-  non-sealed interface ItemLocationsType
-    extends CADatabaseQueryType<CAItemID, CAItemLocations>,
-    CADatabaseQueriesItemsType
-  {
-
   }
 
   /**

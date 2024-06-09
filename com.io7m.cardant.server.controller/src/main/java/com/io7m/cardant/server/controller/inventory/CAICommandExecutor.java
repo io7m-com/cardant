@@ -32,10 +32,8 @@ import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
 import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
-import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
@@ -56,6 +54,11 @@ import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAICommandStockCount;
+import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
@@ -133,17 +136,14 @@ public final class CAICommandExecutor
       case final CAICommandItemGet m -> {
         yield new CAICmdItemGet().execute(context, m);
       }
-      case final CAICommandItemLocationsList m -> {
-        yield new CAICmdItemLocationsList().execute(context, m);
-      }
       case final CAICommandItemMetadataPut m -> {
         yield new CAICmdItemMetadataPut().execute(context, m);
       }
       case final CAICommandItemMetadataRemove m -> {
         yield new CAICmdItemMetadataRemove().execute(context, m);
       }
-      case final CAICommandItemReposit m -> {
-        yield new CAICmdItemReposit().execute(context, m);
+      case final CAICommandStockReposit m -> {
+        yield new CAICmdStockReposit().execute(context, m);
       }
       case final CAICommandItemSetName m -> {
         yield new CAICmdItemSetName().execute(context, m);
@@ -255,6 +255,18 @@ public final class CAICommandExecutor
       }
       case final CAICommandLocationDelete m -> {
         yield new CAICmdLocationDelete().execute(context, m);
+      }
+      case final CAICommandStockCount m -> {
+        yield new CAICmdStockCount().execute(context, m);
+      }
+      case final CAICommandStockSearchBegin m -> {
+        yield new CAICmdStockSearchBegin().execute(context, m);
+      }
+      case final CAICommandStockSearchNext m -> {
+        yield new CAICmdStockSearchNext().execute(context, m);
+      }
+      case final CAICommandStockSearchPrevious m -> {
+        yield new CAICmdStockSearchPrevious().execute(context, m);
       }
     };
   }

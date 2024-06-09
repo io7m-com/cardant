@@ -24,6 +24,9 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockOccurrenceSerial;
+import com.io7m.cardant.model.CAStockOccurrenceSet;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
@@ -115,8 +118,6 @@ public final class CAFormatterRaw implements CAFormatterType
     final var main = new TreeMap<String, String>();
     main.put("Item ID", item.id().displayId());
     main.put("Name", item.name());
-    main.put("Count (Here)", Long.toUnsignedString(item.countHere()));
-    main.put("Count (Total)", Long.toUnsignedString(item.countTotal()));
 
     w.printf("# Item %s%n", item.id().displayId());
     w.printf("#-----------------------------------------%n");
@@ -439,6 +440,46 @@ public final class CAFormatterRaw implements CAFormatterType
     final PrintWriter w = this.terminal.writer();
     for (final var s : set) {
       w.printf("%s%n", s);
+    }
+  }
+
+  @Override
+  public void formatStockPage(
+    final CAPage<CAStockOccurrenceType> page)
+    throws Exception
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.printf(
+      "# Search results: Page %d of %d%n",
+      Integer.valueOf(page.pageIndex()),
+      Integer.valueOf(page.pageCount())
+    );
+    w.println(
+      "#--------------------------------"
+    );
+
+    final var items = page.items();
+    for (final var item : items) {
+      switch (item) {
+        case final CAStockOccurrenceSerial serial -> {
+          w.printf(
+            "%s %s \"%s\" (Serial %s)%n",
+            serial.location().id(),
+            serial.item().id(),
+            serial.item().name(),
+            serial.serial().value()
+          );
+        }
+        case final CAStockOccurrenceSet set -> {
+          w.printf(
+            "%s %s \"%s\" (Count %s)%n",
+            set.location().id(),
+            set.item().id(),
+            set.item().name(),
+            Long.toUnsignedString(set.count())
+          );
+        }
+      }
     }
   }
 

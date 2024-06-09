@@ -21,11 +21,11 @@ import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QueryS
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetIntersection;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetUnion;
 import com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT;
-import com.io7m.cardant.model.CAItemLocationMatchType;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSerial;
+import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
+import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
+import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType;
@@ -138,20 +138,20 @@ public final class CADBMatch
 
   static Condition ofLocationMatch(
     final LocationFields fields,
-    final CAItemLocationMatchType match)
+    final CALocationMatchType match)
   {
     return switch (match) {
-      case final CAItemLocationsAll e -> {
+      case final CALocationsAll e -> {
         yield DSL.trueCondition();
       }
-      case final CAItemLocationExact exact -> {
+      case final CALocationExact exact -> {
         yield DSL.condition(
           "ARRAY[?] && ?",
           exact.location().id(),
           fields.locationId
         );
       }
-      case final CAItemLocationWithDescendants descendants -> {
+      case final CALocationWithDescendants descendants -> {
         yield DSL.condition(
           "? && (SELECT ARRAY(SELECT location_descendants(?)))",
           fields.locationId,

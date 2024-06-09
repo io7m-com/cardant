@@ -26,8 +26,6 @@ import java.util.SortedSet;
  *
  * @param id          The item ID
  * @param name        The item name
- * @param countTotal  The item count across all storage locations in the inventory
- * @param countHere   The item count in the context of a storage location
  * @param metadata    The item metadata
  * @param attachments The item attachments
  * @param types       The item types
@@ -36,8 +34,6 @@ import java.util.SortedSet;
 public record CAItem(
   CAItemID id,
   String name,
-  long countTotal,
-  long countHere,
   SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
   SortedSet<CATypeRecordIdentifier> types)
@@ -48,8 +44,6 @@ public record CAItem(
    *
    * @param id          The item ID
    * @param name        The item name
-   * @param countTotal  The item count
-   * @param countHere   The item count in the context of a storage location
    * @param metadata    The item metadata
    * @param attachments The item attachments
    * @param types       The types assigned to the item
@@ -73,36 +67,26 @@ public record CAItem(
 
   public static CAItem create()
   {
-    return new CAItem(
-      CAItemID.random(),
-      "",
-      0L,
-      0L,
-      Collections.emptySortedMap(),
-      Collections.emptySortedMap(),
-      Collections.emptySortedSet()
-    );
+    return createWith(CAItemID.random());
   }
 
   /**
-   * Set the count in the current storage location context for this item.
+   * Create an empty item with the given ID.
    *
-   * @param newCountHere The item count
+   * @param id The ID
    *
-   * @return This item with the given count
+   * @return The item
    */
 
-  public CAItem withCountHere(
-    final long newCountHere)
+  public static CAItem createWith(
+    final CAItemID id)
   {
     return new CAItem(
-      this.id,
-      this.name,
-      this.countTotal,
-      newCountHere,
-      this.metadata,
-      this.attachments,
-      this.types
+      id,
+      "",
+      Collections.emptySortedMap(),
+      Collections.emptySortedMap(),
+      Collections.emptySortedSet()
     );
   }
 

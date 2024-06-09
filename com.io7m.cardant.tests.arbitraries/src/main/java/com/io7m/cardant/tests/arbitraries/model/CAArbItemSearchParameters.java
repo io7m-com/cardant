@@ -18,9 +18,7 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAItemColumnOrdering;
-import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
@@ -35,11 +33,9 @@ public final class CAArbItemSearchParameters
     super(
       CAItemSearchParameters.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemLocationMatchType.class),
         CAArbComparisons.fuzzy(Arbitraries.strings()),
         CAArbComparisons.fuzzy(Arbitraries.strings()),
         CAArbComparisons.set(Arbitraries.defaultFor(CATypeRecordIdentifier.class)),
-        CAArbComparisons.exact(Arbitraries.defaultFor(CAItemSerial.class)),
         Arbitraries.defaultFor(CAMetadataElementMatchType.class),
         Arbitraries.defaultFor(CAItemColumnOrdering.class),
         Arbitraries.integers().between(1, 1000)

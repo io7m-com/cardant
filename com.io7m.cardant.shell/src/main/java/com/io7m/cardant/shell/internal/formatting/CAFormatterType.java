@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
@@ -225,5 +226,17 @@ public interface CAFormatterType
 
   void formatStringSet(
     SortedSet<String> strings)
+    throws Exception;
+
+  /**
+   * Format a page of stock occurrences.
+   *
+   * @param page The page
+   *
+   * @throws Exception On errors
+   */
+
+  void formatStockPage(
+    CAPage<CAStockOccurrenceType> page)
     throws Exception;
 }

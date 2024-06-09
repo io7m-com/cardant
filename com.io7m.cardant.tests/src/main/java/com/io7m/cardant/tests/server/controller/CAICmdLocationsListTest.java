@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;

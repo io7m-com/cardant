@@ -19,6 +19,7 @@ package com.io7m.cardant.parsers;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A syntax rule consisting of a set of sub rules.
@@ -45,8 +46,12 @@ public record CASyntaxRuleBranch(
   public CASyntaxRuleBranch
   {
     Objects.requireNonNull(name, "name");
-    subRules = List.copyOf(subRules);
-    examples = List.copyOf(examples);
+    subRules =
+      subRules.stream()
+        .map(String::trim)
+        .collect(Collectors.toList());
+    examples =
+      List.copyOf(examples);
   }
 
   @Override

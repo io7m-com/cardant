@@ -40,8 +40,6 @@ public final class CAArbItem extends CAArbAbstract<CAItem>
       () -> Combinators.combine(
         Arbitraries.defaultFor(CAItemID.class),
         Arbitraries.strings(),
-        Arbitraries.longs(),
-        Arbitraries.longs(),
         Arbitraries.maps(
           Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class),
           Arbitraries.defaultFor(CAMetadataType.class)

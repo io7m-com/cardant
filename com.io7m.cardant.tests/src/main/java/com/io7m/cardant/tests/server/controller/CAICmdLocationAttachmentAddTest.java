@@ -17,7 +17,6 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentAddType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;

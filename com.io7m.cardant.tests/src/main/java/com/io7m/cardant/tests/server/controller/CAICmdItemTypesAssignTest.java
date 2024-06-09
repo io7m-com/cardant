@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
@@ -165,8 +164,6 @@ public final class CAICmdItemTypesAssignTest
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
-        0L,
-        0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
@@ -194,19 +191,7 @@ public final class CAICmdItemTypesAssignTest
       .thenReturn(Optional.of(P_TEXT));
 
     when(itemGet.execute(any()))
-      .thenReturn(
-        Optional.of(
-          new CAItem(
-            CAItemID.random(),
-            "Item",
-            0L,
-            0L,
-            new TreeMap<>(),
-            Collections.emptySortedMap(),
-            new TreeSet<>()
-          )
-        )
-      );
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     /* Act. */
 
@@ -288,8 +273,6 @@ public final class CAICmdItemTypesAssignTest
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
-        0L,
-        0L,
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t0")))
@@ -364,19 +347,7 @@ public final class CAICmdItemTypesAssignTest
       .thenReturn(itemGet);
 
     when(itemGet.execute(any()))
-      .thenReturn(
-        Optional.of(
-          new CAItem(
-            CAItemID.random(),
-            "Item",
-            0L,
-            0L,
-            new TreeMap<>(),
-            Collections.emptySortedMap(),
-            new TreeSet<>()
-          )
-        )
-      );
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(
       new CADatabaseException(
