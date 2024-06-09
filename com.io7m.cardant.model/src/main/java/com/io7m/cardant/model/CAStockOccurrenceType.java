@@ -24,5 +24,15 @@ package com.io7m.cardant.model;
 public sealed interface CAStockOccurrenceType
   permits CAStockOccurrenceSerial, CAStockOccurrenceSet
 {
+  /**
+   * @return The location
+   */
 
+  CALocationSummary location();
+
+  /**
+   * @return The item
+   */
+
+  CAItemSummary item();
 }
