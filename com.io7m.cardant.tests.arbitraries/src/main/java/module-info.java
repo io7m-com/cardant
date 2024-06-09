@@ -123,8 +123,10 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbIds;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItem;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemColumnOrdering;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemID;
+import com.io7m.cardant.tests.arbitraries.model.CAArbItemIDMatch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemSearchParameters;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemSerial;
+import com.io7m.cardant.tests.arbitraries.model.CAArbItemSerialMatch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbItemSummary;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocation;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationID;
@@ -215,6 +217,8 @@ module com.io7m.cardant.tests.arbitraries
   uses ArbitraryProvider;
 
   provides ArbitraryProvider with
+CAArbItemIDMatch,
+CAArbItemSerialMatch,
 CAArbStockSearchParameters,
 CAArbStockOccurrence,
 CAArbStockOccurrenceSerial,

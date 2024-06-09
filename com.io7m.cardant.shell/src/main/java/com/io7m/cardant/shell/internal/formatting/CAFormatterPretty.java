@@ -30,6 +30,9 @@ import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockOccurrenceSerial;
+import com.io7m.cardant.model.CAStockOccurrenceSet;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
@@ -616,6 +619,52 @@ public final class CAFormatterPretty implements CAFormatterType
 
     for (final var item : set) {
       tableBuilder.addRow().addCell(item);
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatStockPage(
+    final CAPage<CAStockOccurrenceType> page)
+    throws Exception
+  {
+    this.terminal.writer()
+      .printf(
+        "Search results: Page %d of %d%n",
+        Integer.valueOf(page.pageIndex()),
+        Integer.valueOf(page.pageCount())
+      );
+
+    if (page.items().isEmpty()) {
+      return;
+    }
+
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(4))
+        .declareColumn("Location", atLeastContentOrHeader())
+        .declareColumn("Item ID", atLeastContentOrHeader())
+        .declareColumn("Description", atLeastContentOrHeader())
+        .declareColumn("Count/Serial", atLeastContent());
+
+    for (final var item : page.items()) {
+      switch (item) {
+        case final CAStockOccurrenceSerial serial -> {
+          tableBuilder.addRow()
+            .addCell(serial.location().id().displayId())
+            .addCell(serial.item().id().displayId())
+            .addCell(serial.item().name())
+            .addCell("(Serial %s)".formatted(serial.serial().value()));
+        }
+        case final CAStockOccurrenceSet set -> {
+          tableBuilder.addRow()
+            .addCell(set.location().id().displayId())
+            .addCell(set.item().id().displayId())
+            .addCell(set.item().name())
+            .addCell("(Count %s)".formatted(Long.toUnsignedString(set.count())));
+        }
+      }
     }
 
     this.renderTable(tableBuilder.build());

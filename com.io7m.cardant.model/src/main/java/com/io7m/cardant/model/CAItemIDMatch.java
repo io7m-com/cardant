@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,36 +15,29 @@
  */
 
 
-package com.io7m.cardant.protocol.inventory;
+package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.CAStockSearchParameters;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 
 import java.util.Objects;
 
 /**
- * Search for stock.
+ * A wrapper for an exact comparison.
  *
- * @param searchParameters The search parameters
+ * @param expression The expression
  */
 
-public record CAICommandStockSearchBegin(
-  CAStockSearchParameters searchParameters)
-  implements CAICommandType<CAIResponseStockSearch>
+public record CAItemIDMatch(
+  CAComparisonExactType<CAItemID> expression)
 {
   /**
-   * Search for stock.
+   * A wrapper for an exact comparison.
    *
-   * @param searchParameters The search parameters
+   * @param expression The expression
    */
 
-  public CAICommandStockSearchBegin
+  public CAItemIDMatch
   {
-    Objects.requireNonNull(searchParameters, "searchParameters");
-  }
-
-  @Override
-  public Class<CAIResponseStockSearch> responseClass()
-  {
-    return CAIResponseStockSearch.class;
+    Objects.requireNonNull(expression, "expression");
   }
 }

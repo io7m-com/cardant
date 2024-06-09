@@ -428,24 +428,45 @@ public final class CAShellIT
               "--metadata '[integer x:t.gauge 20]'");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
               "--key x:t.gauge");
+
     w.println(
-      "item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "stock-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
       "--count 100");
     w.println(
-      "item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "stock-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
       "--count 50");
     w.println(
-      "item-reposit-set-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "stock-reposit-set-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
       "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
       "--count 15");
     w.println(
-      "item-reposit-set-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "stock-reposit-set-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
       "--count 2");
+
+    w.println(
+      "stock-reposit-serial-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--serial A");
+    w.println(
+      "stock-reposit-serial-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "--serial B");
+    w.println(
+      "stock-reposit-serial-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "--serial A");
+    w.println(
+      "stock-reposit-serial-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "--serial B");
+
     w.println("item-get --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4");
+    w.println("set --formatter PRETTY");
     w.println("item-search-begin");
     w.println("item-search-next");
     w.println("item-search-previous");
@@ -453,6 +474,16 @@ public final class CAShellIT
     w.println("item-search-begin");
     w.println("item-search-next");
     w.println("item-search-previous");
+
+    w.println("set --formatter PRETTY");
+    w.println("stock-search-begin");
+    w.println("stock-search-next");
+    w.println("stock-search-previous");
+    w.println("set --formatter RAW");
+    w.println("stock-search-begin");
+    w.println("stock-search-next");
+    w.println("stock-search-previous");
+
     w.println("logout");
     w.flush();
     w.close();

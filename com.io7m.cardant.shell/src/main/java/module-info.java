@@ -51,4 +51,7 @@ module com.io7m.cardant.shell
     with CAShells;
 
   exports com.io7m.cardant.shell;
+
+  exports com.io7m.cardant.shell.internal.converters
+    to com.io7m.cardant.tests;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,37 +14,11 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
-package com.io7m.cardant.protocol.inventory;
-
-import com.io7m.cardant.model.CAStockSearchParameters;
-
-import java.util.Objects;
-
 /**
- * Search for stock.
- *
- * @param searchParameters The search parameters
+ * Inventory server (Shell [internals])
  */
 
-public record CAICommandStockSearchBegin(
-  CAStockSearchParameters searchParameters)
-  implements CAICommandType<CAIResponseStockSearch>
-{
-  /**
-   * Search for stock.
-   *
-   * @param searchParameters The search parameters
-   */
+@Version("1.0.0")
+package com.io7m.cardant.shell.internal.converters;
 
-  public CAICommandStockSearchBegin
-  {
-    Objects.requireNonNull(searchParameters, "searchParameters");
-  }
-
-  @Override
-  public Class<CAIResponseStockSearch> responseClass()
-  {
-    return CAIResponseStockSearch.class;
-  }
-}
+import org.osgi.annotation.versioning.Version;
