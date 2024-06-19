@@ -18,6 +18,7 @@ package com.io7m.cardant.tests.database;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemCreateType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteType;
@@ -32,6 +33,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType.PutType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
@@ -244,6 +246,7 @@ public final class CADatabaseItemsSearchTest
         new CAComparisonFuzzyType.Anything<>(),
         new Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -284,6 +287,7 @@ public final class CADatabaseItemsSearchTest
         new CAComparisonFuzzyType.Anything<>(),
         new Anything<>(),
         CAMetadataElementMatchType.ANYTHING,
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -346,6 +350,7 @@ public final class CADatabaseItemsSearchTest
             ANY_VALUE
           )
         ),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         1000L
       ));
@@ -401,6 +406,7 @@ public final class CADatabaseItemsSearchTest
           new CAComparisonExactType.Anything<>(),
           new CAComparisonExactType.Anything<>(),
           new ExactTextValue("explanation")),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -455,6 +461,7 @@ public final class CADatabaseItemsSearchTest
           )
         ),
         CAMetadataElementMatchType.ANYTHING,
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         1000
       ));
@@ -504,6 +511,7 @@ public final class CADatabaseItemsSearchTest
           )
         ),
         CAMetadataElementMatchType.ANYTHING,
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
         100
       ));
@@ -609,4 +617,136 @@ public final class CADatabaseItemsSearchTest
     return List.copyOf(items);
   }
 
+  /**
+   * Deleted items are returned (or not) as required.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemSearchDeleted0(
+    final @TempDir Path directory)
+    throws Exception
+  {
+    final var itemIDs =
+      this.populateItems(directory);
+
+    final var deletedIDs = new HashSet<CAItemID>(itemIDs.size());
+    for (int index = 0; index < itemIDs.size(); ++index) {
+      if (index % 2 == 0) {
+        deletedIDs.add(itemIDs.get(index));
+      }
+    }
+
+    this.deleteMark.execute(
+      new ItemDeleteMarkOnlyType.Parameters(deletedIDs, true)
+    );
+
+    final var search =
+      this.searchQuery.execute(new CAItemSearchParameters(
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.Anything<>(),
+        CAMetadataElementMatchType.ANYTHING,
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
+        1000L
+      ));
+
+    final var page = search.pageCurrent(this.transaction);
+    assertTrue(
+      page.items().stream().noneMatch(i -> deletedIDs.contains(i.id()))
+    );
+    assertEquals(250, page.items().size());
+  }
+
+  /**
+   * Deleted items are returned (or not) as required.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemSearchDeleted1(
+    final @TempDir Path directory)
+    throws Exception
+  {
+    final var itemIDs =
+      this.populateItems(directory);
+
+    final var deletedIDs = new HashSet<CAItemID>(itemIDs.size());
+    for (int index = 0; index < itemIDs.size(); ++index) {
+      if (index % 2 == 0) {
+        deletedIDs.add(itemIDs.get(index));
+      }
+    }
+
+    this.deleteMark.execute(
+      new ItemDeleteMarkOnlyType.Parameters(deletedIDs, true)
+    );
+
+    final var search =
+      this.searchQuery.execute(new CAItemSearchParameters(
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.Anything<>(),
+        CAMetadataElementMatchType.ANYTHING,
+        CAIncludeDeleted.INCLUDE_BOTH_LIVE_AND_DELETED,
+        new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
+        1000L
+      ));
+
+    final var page = search.pageCurrent(this.transaction);
+    assertTrue(
+      page.items().stream().allMatch(i -> {
+        return deletedIDs.contains(i.id()) || itemIDs.contains(i.id());
+      })
+    );
+    assertEquals(500, page.items().size());
+  }
+
+  /**
+   * Deleted items are returned (or not) as required.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testItemSearchDeleted2(
+    final @TempDir Path directory)
+    throws Exception
+  {
+    final var itemIDs =
+      this.populateItems(directory);
+
+    final var deletedIDs = new HashSet<CAItemID>(itemIDs.size());
+    for (int index = 0; index < itemIDs.size(); ++index) {
+      if (index % 2 == 0) {
+        deletedIDs.add(itemIDs.get(index));
+      }
+    }
+
+    this.deleteMark.execute(
+      new ItemDeleteMarkOnlyType.Parameters(deletedIDs, true)
+    );
+
+    final var search =
+      this.searchQuery.execute(new CAItemSearchParameters(
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonFuzzyType.Anything<>(),
+        new CAComparisonSetType.Anything<>(),
+        CAMetadataElementMatchType.ANYTHING,
+        CAIncludeDeleted.INCLUDE_ONLY_DELETED,
+        new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
+        1000L
+      ));
+
+    final var page = search.pageCurrent(this.transaction);
+    assertTrue(
+      page.items().stream().allMatch(i -> {
+        return deletedIDs.contains(i.id());
+      })
+    );
+    assertEquals(250, page.items().size());
+  }
 }

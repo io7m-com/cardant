@@ -18,6 +18,7 @@
 package com.io7m.cardant.shell.internal;
 
 import com.io7m.cardant.model.CADescriptionMatch;
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
@@ -153,6 +154,7 @@ public final class CAShellCmdItemSearchBegin
         descriptionMatch.expression(),
         typeMatch.expression(),
         metaMatch,
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(BY_NAME, true),
         context.parameterValue(LIMIT).longValue()
       );

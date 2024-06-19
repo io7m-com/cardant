@@ -29,6 +29,7 @@ import java.util.Objects;
  * @param typeMatch        The type match expression
  * @param metadataMatch    The metadata match expression
  * @param ordering         The ordering specification
+ * @param includeDeleted   Whether to include deleted data
  * @param pageSize         The page size
  */
 
@@ -37,6 +38,7 @@ public record CAItemSearchParameters(
   CAComparisonFuzzyType<String> descriptionMatch,
   CAComparisonSetType<CATypeRecordIdentifier> typeMatch,
   CAMetadataElementMatchType metadataMatch,
+  CAIncludeDeleted includeDeleted,
   CAItemColumnOrdering ordering,
   long pageSize)
   implements CASearchParametersType
@@ -48,6 +50,7 @@ public record CAItemSearchParameters(
    * @param descriptionMatch The description match expression
    * @param typeMatch        The type match expression
    * @param metadataMatch    The metadata match expression
+   * @param includeDeleted   Whether to include deleted data
    * @param ordering         The ordering specification
    * @param pageSize         The page size
    */
@@ -58,6 +61,7 @@ public record CAItemSearchParameters(
     Objects.requireNonNull(nameMatch, "nameMatch");
     Objects.requireNonNull(descriptionMatch, "descriptionMatch");
     Objects.requireNonNull(metadataMatch, "metadataMatch");
+    Objects.requireNonNull(includeDeleted, "includeDeleted");
     Objects.requireNonNull(ordering, "ordering");
     pageSize = CAPageSizes.clampPageSize(pageSize);
   }

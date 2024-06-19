@@ -55,6 +55,16 @@
   [case CAI1UserID     [field id cb:UUID]]
 ]
 
+[documentation CAI1IncludeDeleted "Include deleted data in search results."]
+[variant CAI1IncludeDeleted
+  [documentation IncludeOnlyLive "Include only live data."]
+  [case IncludeOnlyLive]
+  [documentation IncludeOnlyDeleted "Include only deleted data."]
+  [case IncludeOnlyDeleted]
+  [documentation IncludeLiveAndDeleted "Include both live and deleted data."]
+  [case IncludeLiveAndDeleted]
+]
+
 [documentation CAI1File "A file."]
 [variant CAI1File
   [case CAI1FileWithoutData
@@ -323,6 +333,8 @@
   [field typeMatch [CAI1ComparisonSet CAI1TypeRecordIdentifier]]
   [documentation metaMatch "The item metadata match expression."]
   [field metaMatch CAI1MetadataElementMatch]
+  [documentation includeDeleted "Include live/deleted data."]
+  [field includeDeleted CAI1IncludeDeleted]
   [documentation order "The item result ordering."]
   [field order CAI1ItemColumnOrdering]
   [documentation limit "The item limit."]

@@ -48,11 +48,12 @@ import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.EnumType;
 import org.jooq.Field;
-import org.jooq.Record6;
+import org.jooq.Record7;
 import org.jooq.Select;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -133,8 +134,16 @@ public final class CADBQItemSearch
         ITEM_SEARCH_VIEW.ISV_METADATA_TYPE_IDS
       );
 
+    final var deletedCondition =
+      switch (parameters.includeDeleted()) {
+        case INCLUDE_ONLY_LIVE -> ITEM_SEARCH_VIEW.ITEM_DELETED.isNull();
+        case INCLUDE_ONLY_DELETED -> ITEM_SEARCH_VIEW.ITEM_DELETED.isNotNull();
+        case INCLUDE_BOTH_LIVE_AND_DELETED -> DSL.trueCondition();
+      };
+
     final var simpleConditions =
       DSL.and(
+        deletedCondition,
         nameCondition,
         typeCondition
       );
@@ -236,7 +245,7 @@ public final class CADBQItemSearch
     return Set.copyOf(results);
   }
 
-  private static Select<Record6<UUID, String, Object, UUID[], Integer[], String[]>> generateQuerySetFor(
+  private static Select<Record7<UUID, String, Object, OffsetDateTime, UUID[], Integer[], String[]>> generateQuerySetFor(
     final DSLContext context,
     final QuerySetType metaQuerySet)
   {
@@ -246,6 +255,7 @@ public final class CADBQItemSearch
             ITEM_SEARCH_VIEW.ITEM_ID,
             ITEM_SEARCH_VIEW.ITEM_NAME,
             ITEM_NAME_SEARCH,
+            ITEM_SEARCH_VIEW.ITEM_DELETED,
             ITEM_SEARCH_VIEW.ISV_ITEM_LOCATIONS,
             ITEM_SEARCH_VIEW.ISV_METADATA_TYPE_IDS,
             ITEM_SEARCH_VIEW.ISV_ITEM_SERIALS)

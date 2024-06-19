@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseItemSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
@@ -71,6 +72,7 @@ public final class CAICmdItemSearchBeginTest
       new CAComparisonFuzzyType.Anything<>(),
       new CAComparisonSetType.Anything<>(),
       CAMetadataElementMatchType.ANYTHING,
+      CAIncludeDeleted.INCLUDE_ONLY_LIVE,
       new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
       100L
     );

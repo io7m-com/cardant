@@ -25,6 +25,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSearchParameters;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeRecordIdentifier;
 import com.io7m.cedarbridge.runtime.api.CBString;
 
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVIncludeDeleted.INCLUDE_DELETED;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemColumnOrdering.ITEM_COLUMN_ORDERING;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVMetadataElementMatch.METADATA_MATCH;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVStrings.STRINGS;
@@ -60,6 +61,7 @@ public enum CAUVItemSearchParameters
       FUZZY_VALIDATOR.convertToWire(parameters.descriptionMatch()),
       SET_VALIDATOR.convertToWire(parameters.typeMatch()),
       METADATA_MATCH.convertToWire(parameters.metadataMatch()),
+      INCLUDE_DELETED.convertToWire(parameters.includeDeleted()),
       ITEM_COLUMN_ORDERING.convertToWire(parameters.ordering()),
       unsigned32(parameters.pageSize())
     );
@@ -75,6 +77,7 @@ public enum CAUVItemSearchParameters
       FUZZY_VALIDATOR.convertFromWire(parameters.fieldDescriptionMatch()),
       SET_VALIDATOR.convertFromWire(parameters.fieldTypeMatch()),
       METADATA_MATCH.convertFromWire(parameters.fieldMetaMatch()),
+      INCLUDE_DELETED.convertFromWire(parameters.fieldIncludeDeleted()),
       ITEM_COLUMN_ORDERING.convertFromWire(parameters.fieldOrder()),
       parameters.fieldLimit().value()
     );

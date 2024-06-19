@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
@@ -37,6 +38,7 @@ public final class CAArbItemSearchParameters
         CAArbComparisons.fuzzy(Arbitraries.strings()),
         CAArbComparisons.set(Arbitraries.defaultFor(CATypeRecordIdentifier.class)),
         Arbitraries.defaultFor(CAMetadataElementMatchType.class),
+        Arbitraries.defaultFor(CAIncludeDeleted.class),
         Arbitraries.defaultFor(CAItemColumnOrdering.class),
         Arbitraries.integers().between(1, 1000)
       ).as(CAItemSearchParameters::new)
