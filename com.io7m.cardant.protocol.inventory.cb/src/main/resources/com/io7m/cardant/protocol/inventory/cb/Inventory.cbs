@@ -800,7 +800,7 @@
   [field roles [cb:List cb:String]]
 ]
 
-[documentation CAI1CommandRolesRevoke "Get the roles for a user."]
+[documentation CAI1CommandRolesGet "Get the roles for a user."]
 [record CAI1CommandRolesGet
   [documentation user "The target user."]
   [field user cb:UUID]
