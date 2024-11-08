@@ -30,6 +30,7 @@ module com.io7m.cardant.server.service.maintenance
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.tls;
 
+  requires com.io7m.jmulticlose.core;
   requires com.io7m.repetoir.core;
   requires io.opentelemetry.context;
   requires org.slf4j;
