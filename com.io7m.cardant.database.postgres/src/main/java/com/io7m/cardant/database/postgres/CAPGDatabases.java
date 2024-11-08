@@ -202,6 +202,8 @@ public final class CAPGDatabases implements CADatabaseFactoryType
     config.setUsername("cardant");
     config.setPassword(configuration.workerRolePassword());
     config.setAutoCommit(false);
+    config.setMinimumIdle(configuration.minimumConnections());
+    config.setMaximumPoolSize(configuration.maximumConnections());
 
     final var dataSource =
       resources.add(new HikariDataSource(config));

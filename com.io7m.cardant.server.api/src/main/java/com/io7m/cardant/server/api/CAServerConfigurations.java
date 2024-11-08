@@ -87,7 +87,9 @@ public final class CAServerConfigurations
         fileDbConfig.databaseLanguage(),
         clock,
         strings,
-        serializers
+        serializers,
+        fileDbConfig.minimumConnections(),
+        fileDbConfig.maximumConnections()
       );
 
     final var databaseFactories =

@@ -98,7 +98,9 @@ public final class CAServerConfigurationTest
         "english",
         configuration.databaseConfiguration().clock(),
         configuration.databaseConfiguration().strings(),
-        typePackageSerializers
+        typePackageSerializers,
+        1,
+        10
       ),
       configuration.databaseConfiguration()
     );

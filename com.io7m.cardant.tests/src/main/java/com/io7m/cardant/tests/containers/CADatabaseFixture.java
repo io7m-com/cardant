@@ -71,7 +71,9 @@ public record CADatabaseFixture(
         "english",
         Clock.systemUTC(),
         CAStrings.create(Locale.ROOT),
-        new CATypePackageSerializers()
+        new CATypePackageSerializers(),
+        0,
+        10
       );
 
     final var r =

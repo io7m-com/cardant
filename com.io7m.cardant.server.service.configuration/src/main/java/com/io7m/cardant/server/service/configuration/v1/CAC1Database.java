@@ -41,6 +41,16 @@ final class CAC1Database
     final BTElementParsingContextType context,
     final Attributes attributes)
   {
+    final var minimumPoolConnections =
+      Optional.ofNullable(attributes.getValue("MinimumPoolConnections"))
+        .map(x -> Integer.valueOf(Integer.parseUnsignedInt(x)))
+        .orElse(Integer.valueOf(0));
+
+    final var maximumPoolConnections =
+      Optional.ofNullable(attributes.getValue("MaximumPoolConnections"))
+        .map(x -> Integer.valueOf(Integer.parseUnsignedInt(x)))
+        .orElse(Integer.valueOf(10));
+
     this.result =
       new CAServerDatabaseConfiguration(
         CAServerDatabaseKind.valueOf(attributes.getValue("Kind")),
@@ -53,7 +63,9 @@ final class CAC1Database
         attributes.getValue("Name"),
         attributes.getValue("Language"),
         Boolean.parseBoolean(attributes.getValue("Create")),
-        Boolean.parseBoolean(attributes.getValue("Upgrade"))
+        Boolean.parseBoolean(attributes.getValue("Upgrade")),
+        minimumPoolConnections.intValue(),
+        maximumPoolConnections.intValue()
       );
   }
 
