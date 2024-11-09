@@ -20,6 +20,8 @@ package com.io7m.cardant.shell.internal;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationName;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
@@ -69,13 +71,13 @@ public final class CAShellCmdLocationPut
       CALocationID.class
     );
 
-  private static final QParameterNamed01<String> NAME =
+  private static final QParameterNamed01<CALocationName> NAME =
     new QParameterNamed01<>(
       "--name",
       List.of(),
       new QConstant("The location name."),
       Optional.empty(),
-      String.class
+      CALocationName.class
     );
 
   private static final QParameterNamed01<Boolean> PARENT_DETACH =
@@ -174,7 +176,7 @@ public final class CAShellCmdLocationPut
       newLocation = new CALocation(
         newLocation.id(),
         newLocation.parent(),
-        newName.get(),
+        CALocationPath.singleton(newName.get()),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -188,7 +190,7 @@ public final class CAShellCmdLocationPut
       newLocation = new CALocation(
         newLocation.id(),
         newParent,
-        newLocation.name(),
+        newLocation.path(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -203,7 +205,7 @@ public final class CAShellCmdLocationPut
       newLocation = new CALocation(
         newLocation.id(),
         Optional.empty(),
-        newLocation.name(),
+        newLocation.path(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -229,7 +231,7 @@ public final class CAShellCmdLocationPut
     final var locationID =
       context.parameterValue(ID);
     final var newName =
-      context.parameterValue(NAME);
+      context.parameterValueRequireNow(NAME);
     final var newParent =
       context.parameterValue(PARENT);
 
@@ -237,7 +239,7 @@ public final class CAShellCmdLocationPut
       new CALocation(
         locationID,
         newParent,
-        newName.orElse(""),
+        CALocationPath.singleton(newName),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()

@@ -28,6 +28,7 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUserID;
@@ -487,7 +488,7 @@ public final class CAClientIT
       new CALocation(
         id,
         Optional.empty(),
-        "Location 0",
+        CALocationPath.singleton("Location 0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -575,7 +576,7 @@ public final class CAClientIT
       new CALocation(
         id,
         Optional.empty(),
-        "Location 0",
+        CALocationPath.singleton("Location 0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()

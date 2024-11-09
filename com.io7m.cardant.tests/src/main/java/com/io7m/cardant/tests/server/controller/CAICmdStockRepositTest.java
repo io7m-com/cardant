@@ -23,6 +23,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAStockRepositSetAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.security.CASecurity;
@@ -69,7 +70,7 @@ public final class CAICmdStockRepositTest
     new CALocation(
       CALocationID.random(),
       Optional.empty(),
-      "A",
+      CALocationPath.singleton("A"),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()

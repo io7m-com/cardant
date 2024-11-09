@@ -25,6 +25,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType.Text;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
@@ -126,7 +127,7 @@ public final class CAICmdLocationMetadataRemoveTest
               CATypeRecordFieldIdentifier.of("com.z:t.y"),
               CATypeRecordFieldIdentifier.of("com.z:t.z")
             )
-        ));
+          ));
       });
 
     /* Assert. */
@@ -163,7 +164,7 @@ public final class CAICmdLocationMetadataRemoveTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -246,7 +247,7 @@ public final class CAICmdLocationMetadataRemoveTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -457,7 +458,7 @@ public final class CAICmdLocationMetadataRemoveTest
         new CALocation(
           CALocationID.random(),
           Optional.empty(),
-          "x",
+          CALocationPath.singleton("x"),
           new TreeMap<>(Map.of(meta0.name(), meta0)),
           Collections.emptySortedMap(),
           new TreeSet<>(

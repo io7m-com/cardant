@@ -25,6 +25,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType.Text;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
@@ -161,7 +162,7 @@ public final class CAICmdLocationMetadataPutTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -264,11 +265,11 @@ public final class CAICmdLocationMetadataPutTest
         new CALocation(
           LOCATION_ID,
           Optional.empty(),
-          "Location",
+          CALocationPath.singleton("Location"),
           Collections.emptySortedMap(),
           Collections.emptySortedMap(),
           Collections.emptySortedSet()
-      )));
+        )));
 
     doThrow(new CADatabaseException(
       "X",
@@ -362,7 +363,7 @@ public final class CAICmdLocationMetadataPutTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>()
@@ -503,7 +504,7 @@ public final class CAICmdLocationMetadataPutTest
         new CALocation(
           CALocationID.random(),
           Optional.empty(),
-          "x",
+          CALocationPath.singleton("x"),
           new TreeMap<>(Map.of(meta0.name(), meta0)),
           Collections.emptySortedMap(),
           new TreeSet<>(

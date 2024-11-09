@@ -685,8 +685,8 @@ public final class CAFormatterPretty implements CAFormatterType
       .addCell(location.id().displayId());
 
     tableBuilder.addRow()
-      .addCell("Name")
-      .addCell(location.name());
+      .addCell("Path")
+      .addCell(location.path().toString());
 
     tableBuilder.addRow()
       .addCell("Parent")

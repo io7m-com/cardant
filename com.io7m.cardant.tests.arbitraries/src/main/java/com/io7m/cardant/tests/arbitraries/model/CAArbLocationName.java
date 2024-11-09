@@ -14,45 +14,26 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
 
-import java.util.Objects;
-import java.util.Optional;
+package com.io7m.cardant.tests.arbitraries.model;
 
-/**
- * A summary of a location.
- *
- * @param id     The id
- * @param parent The parent
- * @param path   The location path
- */
+import com.io7m.cardant.model.CALocationName;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import com.io7m.lanark.core.RDottedName;
+import com.io7m.medrina.api.MRoleName;
+import net.jqwik.api.Arbitraries;
 
-public record CALocationSummary(
-  CALocationID id,
-  Optional<CALocationID> parent,
-  CALocationPath path)
+public final class CAArbLocationName extends CAArbAbstract<CALocationName>
 {
-  /**
-   * A summary of a location.
-   *
-   * @param id     The id
-   * @param parent The parent
-   * @param path   The location path
-   */
-
-  public CALocationSummary
+  public CAArbLocationName()
   {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(parent, "parent");
-    Objects.requireNonNull(path, "path");
-  }
-
-  /**
-   * @return The location name (the last path component)
-   */
-
-  public CALocationName name()
-  {
-    return this.path.last();
+    super(
+      CALocationName.class,
+      () -> Arbitraries.strings()
+        .ofMinLength(1)
+        .ofMaxLength(128)
+        .excludeChars('/')
+        .map(CALocationName::new)
+    );
   }
 }

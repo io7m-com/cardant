@@ -29,6 +29,7 @@ import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
 import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
 import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
@@ -53,6 +54,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.io7m.cardant.database.postgres.internal.CADBLocationPaths.LOCATION_PATH_NAME;
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS;
@@ -252,7 +254,10 @@ public final class CADBQStockSearch
             ITEM_LOCATIONS.ITEM_LOCATION_COUNT,
             ITEM_LOCATIONS.ITEM_LOCATION_ITEM,
             ITEM_LOCATIONS.ITEM_LOCATION_SERIAL,
-            LOCATIONS.LOCATION_NAME,
+            CADBLocationPaths.locationPathFromColumnNamed(
+              context,
+              LOCATIONS.LOCATION_ID
+            ),
             LOCATIONS.LOCATION_PARENT
           ));
 
@@ -287,7 +292,7 @@ public final class CADBQStockSearch
           Optional.ofNullable(
             r.get(LOCATIONS.LOCATION_PARENT)
           ).map(CALocationID::new),
-          r.get(LOCATIONS.LOCATION_NAME)
+          CALocationPath.ofArray(r.get(LOCATION_PATH_NAME))
         );
 
       final var itemSummary =

@@ -26,7 +26,7 @@ import java.util.SortedSet;
  *
  * @param id          The location ID
  * @param parent      The location parent, if any
- * @param name        The location name
+ * @param path        The location path
  * @param metadata    The metadata associated with the location
  * @param types       The types associated with the location
  * @param attachments The attachments associated with the location
@@ -35,7 +35,7 @@ import java.util.SortedSet;
 public record CALocation(
   CALocationID id,
   Optional<CALocationID> parent,
-  String name,
+  CALocationPath path,
   SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
   SortedSet<CATypeRecordIdentifier> types)
@@ -46,14 +46,14 @@ public record CALocation(
    *
    * @param id          The location ID
    * @param parent      The location parent, if any
-   * @param name        The location name
+   * @param path        The location path
    */
 
   public CALocation
   {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(parent, "parent");
-    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(path, "path");
     Objects.requireNonNull(metadata, "metadata");
     Objects.requireNonNull(attachments, "attachments");
     Objects.requireNonNull(types, "types");
@@ -78,6 +78,15 @@ public record CALocation(
   @Override
   public CALocationSummary summary()
   {
-    return new CALocationSummary(this.id, this.parent, this.name);
+    return new CALocationSummary(this.id, this.parent, this.path);
+  }
+
+  /**
+   * @return The location name (the last path component)
+   */
+
+  public CALocationName name()
+  {
+    return this.path.last();
   }
 }

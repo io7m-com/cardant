@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2024 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,45 +14,46 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.model;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
- * A summary of a location.
+ * A location name.
  *
- * @param id     The id
- * @param parent The parent
- * @param path   The location path
+ * @param value The location name
  */
 
-public record CALocationSummary(
-  CALocationID id,
-  Optional<CALocationID> parent,
-  CALocationPath path)
+public record CALocationName(
+  String value)
 {
   /**
-   * A summary of a location.
-   *
-   * @param id     The id
-   * @param parent The parent
-   * @param path   The location path
+   * The pattern that defines valid names.
    */
 
-  public CALocationSummary
-  {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(parent, "parent");
-    Objects.requireNonNull(path, "path");
-  }
+  public static final Pattern VALID_NAME =
+    Pattern.compile("^[^/]{1,128}$", Pattern.UNICODE_CHARACTER_CLASS);
 
   /**
-   * @return The location name (the last path component)
+   * A location name.
+   *
+   * @param value The location name
    */
 
-  public CALocationName name()
+  public CALocationName
   {
-    return this.path.last();
+    if (!VALID_NAME.matcher(value).matches()) {
+      throw new IllegalArgumentException(
+        "Location name '%s' must match '%s'"
+          .formatted(value, VALID_NAME)
+      );
+    }
+  }
+
+  @Override
+  public String toString()
+  {
+    return this.value;
   }
 }

@@ -24,6 +24,7 @@ import com.io7m.cardant.shell.internal.converters.CAItemIdConverter;
 import com.io7m.cardant.shell.internal.converters.CALocationMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CAItemSerialMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CALocationIdConverter;
+import com.io7m.cardant.shell.internal.converters.CALocationNameConverter;
 import com.io7m.cardant.shell.internal.converters.CAMediaTypeMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CAMetadataConverter;
 import com.io7m.cardant.shell.internal.converters.CAMetadataMatchConverter;
@@ -68,11 +69,12 @@ public final class CAShellValueConverters
     return QValueConverterDirectory.core()
       .with(new CADescriptionMatchConverter(strings))
       .with(new CAFileIdConverter())
-      .with(new CAItemIdConverter())
-      .with(new CALocationMatchConverter(strings))
-      .with(new CAItemSerialMatchConverter(strings))
       .with(new CAItemIDMatchConverter(strings))
+      .with(new CAItemIdConverter())
+      .with(new CAItemSerialMatchConverter(strings))
       .with(new CALocationIdConverter())
+      .with(new CALocationMatchConverter(strings))
+      .with(new CALocationNameConverter())
       .with(new CAMediaTypeMatchConverter(strings))
       .with(new CAMetadataConverter(strings))
       .with(new CAMetadataMatchConverter(strings))
