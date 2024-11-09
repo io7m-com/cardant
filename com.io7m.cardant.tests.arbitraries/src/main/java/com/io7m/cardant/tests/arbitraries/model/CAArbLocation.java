@@ -21,6 +21,7 @@ import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
@@ -40,7 +41,7 @@ public final class CAArbLocation extends CAArbAbstract<CALocation>
       () -> Combinators.combine(
         Arbitraries.defaultFor(CALocationID.class),
         Arbitraries.defaultFor(CALocationID.class).optional(),
-        Arbitraries.strings(),
+        Arbitraries.defaultFor(CALocationPath.class),
         Arbitraries.maps(
           Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class),
           Arbitraries.defaultFor(CAMetadataType.class)

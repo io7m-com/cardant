@@ -25,6 +25,7 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
@@ -87,7 +88,7 @@ public final class CADBQLocationGet
       context.select(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
-          LOCATIONS.LOCATION_NAME,
+          CADBLocationPaths.locationPathNamed(context, id),
           DSL.multisetAgg(
             METADATA_TYPE_PACKAGES.MTP_NAME,
             METADATA_TYPES.MT_NAME
@@ -126,7 +127,7 @@ public final class CADBQLocationGet
         .groupBy(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
-          LOCATIONS.LOCATION_NAME,
+          CADBLocationPaths.LOCATION_PATH_NAME,
           LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
           LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
           LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
@@ -158,7 +159,7 @@ public final class CADBQLocationGet
 
     CALocationID locationId = null;
     Optional<CALocationID> parent = Optional.empty();
-    String name = null;
+    CALocationPath path = null;
 
     for (final var rec : results) {
       locationId =
@@ -166,8 +167,10 @@ public final class CADBQLocationGet
       parent =
         Optional.ofNullable(rec.get(LOCATIONS.LOCATION_PARENT))
           .map(CALocationID::new);
-      name =
-        rec.get(LOCATIONS.LOCATION_NAME);
+      path =
+        CALocationPath.ofArray(
+          rec.get(CADBLocationPaths.LOCATION_PATH_NAME)
+        );
 
       final var typePack =
         rec.get(LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE);
@@ -235,7 +238,7 @@ public final class CADBQLocationGet
       new CALocation(
         locationId,
         parent,
-        name,
+        path,
         meta,
         attachments,
         types

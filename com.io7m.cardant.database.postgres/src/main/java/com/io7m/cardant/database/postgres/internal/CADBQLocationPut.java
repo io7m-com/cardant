@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jooq.DSLContext;
@@ -93,7 +94,7 @@ public final class CADBQLocationPut
     throws CADatabaseException
   {
     this.setAttribute(LOCATION_ID, location.displayId());
-    this.setAttribute(LOCATION_NAME, location.name());
+    this.setAttribute(LOCATION_NAME, location.name().value());
 
     this.checkAcyclic(context, location);
 
@@ -118,7 +119,7 @@ public final class CADBQLocationPut
           locationId)
         .set(
           LOCATIONS.LOCATION_NAME,
-          location.name())
+          location.name().value())
         .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))
@@ -128,7 +129,7 @@ public final class CADBQLocationPut
           locationId)
         .set(
           LOCATIONS.LOCATION_NAME,
-          location.name())
+          location.name().value())
         .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))
@@ -257,10 +258,10 @@ public final class CADBQLocationPut
       graph.addEdge(newLocation.id(), newParent, newEdge);
     } catch (final IllegalArgumentException e) {
       this.setAttribute(NEW_LOCATION_ID, newLocation.displayId());
-      this.setAttribute(NEW_LOCATION_NAME, newLocation.name());
+      this.setAttribute(NEW_LOCATION_NAME, newLocation.name().value());
       this.setAttribute(NEW_LOCATION_PARENT_ID, newParent.displayId());
       this.setAttribute(OLD_LOCATION_ID, oldLocation.id().displayId());
-      this.setAttribute(OLD_LOCATION_NAME, oldLocation.name());
+      this.setAttribute(OLD_LOCATION_NAME, oldLocation.name().value());
       oldParentOpt.ifPresent(oldParent -> {
         this.setAttribute(OLD_LOCATION_PARENT_ID, oldParent.displayId());
       });
@@ -281,7 +282,8 @@ public final class CADBQLocationPut
   {
     return context.select(
         LOCATIONS.LOCATION_PARENT,
-        LOCATIONS.LOCATION_NAME
+        LOCATIONS.LOCATION_NAME,
+        CADBLocationPaths.locationPathNamed(context, id)
       ).from(LOCATIONS)
       .where(LOCATIONS.LOCATION_ID.eq(id.id()))
       .fetchOptional()
@@ -290,7 +292,9 @@ public final class CADBQLocationPut
           id,
           Optional.ofNullable(r.get(LOCATIONS.LOCATION_PARENT))
             .map(CALocationID::new),
-          r.get(LOCATIONS.LOCATION_NAME)
+          CALocationPath.ofArray(
+            r.get(CADBLocationPaths.LOCATION_PATH_NAME)
+          )
         );
       });
   }

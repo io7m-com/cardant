@@ -20,6 +20,7 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -63,7 +64,7 @@ public final class CAICmdLocationsListTest
     new CALocation(
       CALocationID.random(),
       Optional.empty(),
-      "A",
+      CALocationPath.singleton("A"),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -73,7 +74,7 @@ public final class CAICmdLocationsListTest
     new CALocation(
       CALocationID.random(),
       Optional.of(LOCATION_0.id()),
-      "B",
+      CALocationPath.singleton("B"),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -83,7 +84,7 @@ public final class CAICmdLocationsListTest
     new CALocation(
       CALocationID.random(),
       Optional.of(LOCATION_1.id()),
-      "C",
+      CALocationPath.singleton("C"),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()

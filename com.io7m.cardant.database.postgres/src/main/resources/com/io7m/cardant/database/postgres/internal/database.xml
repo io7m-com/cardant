@@ -918,6 +918,49 @@ $$
 ]]></Statement>
 
     <Comment>
+      The location_path function returns the full path of a given location.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE FUNCTION location_path (X UUID)
+  RETURNS TABLE (
+    r_location_ids  UUID[],
+    r_location_path VARCHAR(128)[]
+  )
+  LANGUAGE SQL
+  AS
+$$
+WITH RECURSIVE locations_r AS (
+  SELECT
+    location_id,
+    location_parent,
+    array[location_id]                       AS b_location_ids,
+    CAST (array[location_name] AS varchar[]) AS b_location_path
+  FROM
+    locations
+  WHERE
+    locations.location_id = X
+UNION ALL
+  SELECT
+    LR.location_id,
+    LP.location_parent,
+    LP.location_id || b_location_ids,
+    LP.location_name || b_location_path
+  FROM locations_r LR
+    JOIN locations LP ON LR.location_parent = LP.location_id
+      WHERE LP.location_id <> all(b_location_ids)
+)
+SELECT
+  b_location_ids  AS r_location_ids,
+  b_location_path AS r_location_path
+FROM
+  locations_r
+ORDER BY cardinality (b_location_ids) DESC
+  LIMIT 1
+$$
+]]></Statement>
+
+    <Comment>
       A view for performing item searches.
     </Comment>
 

@@ -23,6 +23,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetT
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -130,7 +131,7 @@ public final class CAICmdLocationAttachmentRemoveTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -204,7 +205,7 @@ public final class CAICmdLocationAttachmentRemoveTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>()

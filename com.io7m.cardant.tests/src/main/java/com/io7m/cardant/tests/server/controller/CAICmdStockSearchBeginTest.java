@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAPage;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
@@ -77,9 +78,9 @@ public final class CAICmdStockSearchBeginTest
   static final CAItemSummary I1 =
     new CAItemSummary(ITEM1, "I1");
   static final CALocationSummary L0S =
-    new CALocationSummary(L0, Optional.empty(), "Loc0");
+    new CALocationSummary(L0, Optional.empty(), CALocationPath.singleton("Loc0"));
   static final CALocationSummary L1S =
-    new CALocationSummary(L1, Optional.empty(), "Loc1");
+    new CALocationSummary(L1, Optional.empty(), CALocationPath.singleton("Loc1"));
 
   static final CAStockSearchParameters PARAMETERS =
     new CAStockSearchParameters(

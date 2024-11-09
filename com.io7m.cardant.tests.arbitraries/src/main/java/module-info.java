@@ -134,6 +134,8 @@ import com.io7m.cardant.tests.arbitraries.model.CAArbLocationMatch;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationMatchAny;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationMatchExact;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationMatchWithDescendants;
+import com.io7m.cardant.tests.arbitraries.model.CAArbLocationName;
+import com.io7m.cardant.tests.arbitraries.model.CAArbLocationPath;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationSummaries;
 import com.io7m.cardant.tests.arbitraries.model.CAArbLocationSummary;
 import com.io7m.cardant.tests.arbitraries.model.CAArbMRoleName;
@@ -217,6 +219,8 @@ module com.io7m.cardant.tests.arbitraries
   uses ArbitraryProvider;
 
   provides ArbitraryProvider with
+CAArbLocationName,
+CAArbLocationPath,
 CAArbItemIDMatch,
 CAArbItemSerialMatch,
 CAArbStockSearchParameters,

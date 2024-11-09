@@ -21,6 +21,8 @@ import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationName;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
@@ -32,8 +34,8 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1TypeRecordFieldIdentifier;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
-import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
+import com.io7m.cedarbridge.runtime.convenience.CBLists;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -95,7 +97,13 @@ public enum CAUVLocation
     return new CAI1Location(
       new CBUUID(location.id().id()),
       CBOptionType.fromOptional(location.parent().map(x -> new CBUUID(x.id()))),
-      new CBString(location.name()),
+      CBLists.ofCollectionString(
+        location.path()
+          .path()
+          .stream()
+          .map(CALocationName::value)
+          .toList()
+      ),
       new CBMap<>(metadata),
       new CBMap<>(attachments),
       new CBList<>(
@@ -146,7 +154,11 @@ public enum CAUVLocation
       c.fieldParent()
         .asOptional()
         .map(x -> new CALocationID(x.value())),
-      c.fieldName().value(),
+      new CALocationPath(
+        CBLists.toList(
+          c.fieldPath(),
+          s -> new CALocationName(s.value()))
+      ),
       new TreeMap<>(metadata),
       new TreeMap<>(attachments),
       new TreeSet<>(

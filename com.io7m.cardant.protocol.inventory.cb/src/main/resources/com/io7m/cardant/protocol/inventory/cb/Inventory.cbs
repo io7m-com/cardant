@@ -240,7 +240,7 @@
 [record CAI1LocationSummary
   [field id cb:UUID]
   [field parent [cb:Option cb:UUID]]
-  [field name cb:String]
+  [field path [cb:List cb:String]]
 ]
 
 [documentation CAI1Location "A location."]
@@ -249,8 +249,8 @@
   [field locationId cb:UUID]
   [documentation parent "The location parent."]
   [field parent [cb:Option cb:UUID]]
-  [documentation name "The location name."]
-  [field name cb:String]
+  [documentation path "The location path."]
+  [field path [cb:List cb:String]]
   [documentation metadata "The item metadata."]
   [field metadata [cb:Map CAI1TypeRecordFieldIdentifier CAI1Metadata]]
   [documentation attachments "The item attachments."]

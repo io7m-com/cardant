@@ -316,7 +316,8 @@ public final class CAFormatterRaw implements CAFormatterType
     final PrintWriter w = this.terminal.writer();
     final var main = new TreeMap<String, String>();
     main.put("Location ID", location.id().displayId());
-    main.put("Name", location.name());
+    main.put("Path", location.path().toString());
+    main.put("Name", location.name().value());
 
     w.printf("# Item %s%n", location.id().displayId());
     w.printf("#-----------------------------------------%n");

@@ -24,26 +24,53 @@ import java.util.Optional;
  *
  * @param id     The id
  * @param parent The parent
- * @param name   The name
+ * @param path   The location path
  */
 
 public record CALocationSummary(
   CALocationID id,
   Optional<CALocationID> parent,
-  String name)
+  CALocationPath path)
 {
   /**
    * A summary of a location.
    *
    * @param id     The id
    * @param parent The parent
-   * @param name   The name
+   * @param path   The location path
    */
 
   public CALocationSummary
   {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(parent, "parent");
-    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(path, "path");
+  }
+
+  /**
+   * @return The location name (the last path component)
+   */
+
+  public CALocationName name()
+  {
+    return this.path.last();
+  }
+
+  /**
+   * Adjust this location summary to have a new path.
+   *
+   * @param newPath The new path
+   *
+   * @return This location summary with a new path
+   */
+
+  public CALocationSummary withPath(
+    final CALocationPath newPath)
+  {
+    return new CALocationSummary(
+      this.id,
+      this.parent,
+      newPath
+    );
   }
 }

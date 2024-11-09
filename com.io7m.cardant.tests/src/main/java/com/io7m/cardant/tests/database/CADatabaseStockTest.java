@@ -35,6 +35,7 @@ import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
 import com.io7m.cardant.model.CAStockRepositSerialAdd;
 import com.io7m.cardant.model.CAStockRepositSerialMove;
@@ -173,7 +174,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -230,7 +231,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -296,7 +297,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -353,7 +354,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -406,7 +407,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -416,7 +417,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc1",
+        CALocationPath.singleton("Loc1"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -501,7 +502,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -511,7 +512,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc1",
+        CALocationPath.singleton("Loc1"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -571,7 +572,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -623,7 +624,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -688,7 +689,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -745,7 +746,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -755,7 +756,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc1",
+        CALocationPath.singleton("Loc1"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -845,7 +846,7 @@ public final class CADatabaseStockTest
       new CALocation(
         CALocationID.random(),
         empty(),
-        "Loc0",
+        CALocationPath.singleton("Loc0"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()

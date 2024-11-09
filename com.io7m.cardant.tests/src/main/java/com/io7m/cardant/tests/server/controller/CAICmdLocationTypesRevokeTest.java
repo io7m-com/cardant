@@ -24,6 +24,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
@@ -162,7 +163,7 @@ public final class CAICmdLocationTypesRevokeTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>()
@@ -241,7 +242,7 @@ public final class CAICmdLocationTypesRevokeTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>()

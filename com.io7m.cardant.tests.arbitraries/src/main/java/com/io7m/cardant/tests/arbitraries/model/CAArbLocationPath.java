@@ -17,23 +17,22 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationName;
 import com.io7m.cardant.model.CALocationPath;
-import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
 
-public final class CAArbLocationSummary extends CAArbAbstract<CALocationSummary>
+public final class CAArbLocationPath extends CAArbAbstract<CALocationPath>
 {
-  public CAArbLocationSummary()
+  public CAArbLocationPath()
   {
     super(
-      CALocationSummary.class,
-      () -> Combinators.combine(
-        Arbitraries.create(CALocationID::random),
-        Arbitraries.create(CALocationID::random).optional(),
-        Arbitraries.defaultFor(CALocationPath.class)
-      ).as(CALocationSummary::new));
+      CALocationPath.class,
+      () -> Arbitraries.defaultFor(CALocationName.class)
+        .list()
+        .ofMinSize(1)
+        .ofMaxSize(32)
+        .map(CALocationPath::new)
+    );
   }
 }

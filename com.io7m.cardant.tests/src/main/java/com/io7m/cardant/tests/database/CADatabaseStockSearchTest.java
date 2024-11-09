@@ -37,6 +37,7 @@ import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
 import com.io7m.cardant.model.CAStockOccurrenceSerial;
 import com.io7m.cardant.model.CAStockOccurrenceSet;
@@ -86,7 +87,7 @@ public final class CADatabaseStockSearchTest
     new CALocation(
       CALocationID.random(),
       empty(),
-      "Loc0",
+      CALocationPath.singleton("Loc0"),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -96,7 +97,7 @@ public final class CADatabaseStockSearchTest
     new CALocation(
       CALocationID.random(),
       Optional.of(L0.id()),
-      "Loc1",
+      CALocationPath.singleton("Loc1"),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -106,7 +107,7 @@ public final class CADatabaseStockSearchTest
     new CALocation(
       CALocationID.random(),
       Optional.of(L1.id()),
-      "Loc2",
+      CALocationPath.singleton("Loc2"),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -550,7 +551,11 @@ public final class CADatabaseStockSearchTest
 
       assertEquals(
         new CAStockOccurrenceSet(
-          L2.summary(),
+          L2.summary().withPath(
+            CALocationPath.ofArray(new String[] {
+              "Loc0", "Loc1", "Loc2"
+            })
+          ),
           new CAItemSummary(item0, ""),
           15L
         ),
