@@ -551,7 +551,11 @@ public final class CADatabaseStockSearchTest
 
       assertEquals(
         new CAStockOccurrenceSet(
-          L2.summary(),
+          L2.summary().withPath(
+            CALocationPath.ofArray(new String[] {
+              "Loc0", "Loc1", "Loc2"
+            })
+          ),
           new CAItemSummary(item0, ""),
           15L
         ),

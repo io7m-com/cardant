@@ -55,4 +55,22 @@ public record CALocationSummary(
   {
     return this.path.last();
   }
+
+  /**
+   * Adjust this location summary to have a new path.
+   *
+   * @param newPath The new path
+   *
+   * @return This location summary with a new path
+   */
+
+  public CALocationSummary withPath(
+    final CALocationPath newPath)
+  {
+    return new CALocationSummary(
+      this.id,
+      this.parent,
+      newPath
+    );
+  }
 }

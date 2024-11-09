@@ -63,6 +63,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -82,6 +84,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseLocationsTest
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CADatabaseLocationsTest.class);
+
   private static CADatabaseFixture DATABASE_FIXTURE;
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
@@ -686,5 +691,59 @@ public final class CADatabaseLocationsTest
       });
 
     assertEquals(errorLocationNonDeletedChildren(), ex.errorCode());
+  }
+
+  /**
+   * Location paths are correct.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testLocationPath0()
+    throws Exception
+  {
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+    final var loc1 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.of(loc0.id()),
+        CALocationPath.singleton("Loc1"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+    final var loc2 =
+      new CALocation(
+        CALocationID.random(),
+        Optional.of(loc1.id()),
+        CALocationPath.singleton("Loc2"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locationPut.execute(loc0);
+    this.locationPut.execute(loc1);
+    this.locationPut.execute(loc2);
+
+    {
+      final var r =
+        this.locationGet.execute(loc2.id())
+          .orElseThrow();
+
+      assertEquals(
+        "Loc0/Loc1/Loc2",
+        r.path().toString()
+      );
+    }
   }
 }
