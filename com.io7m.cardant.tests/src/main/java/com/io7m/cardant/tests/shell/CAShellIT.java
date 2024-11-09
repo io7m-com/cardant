@@ -874,6 +874,35 @@ public final class CAShellIT
     assertEquals(0, this.exitCode);
   }
 
+  @Test
+  public void testShellItemSetName()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var itemId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "item-create --id %s --name Battery%n",
+      itemId
+    );
+    w.printf(
+      "item-set-name --id %s --name Battery23%n",
+      itemId
+    );
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
   private void startShell()
   {
     this.executor.execute(() -> {
