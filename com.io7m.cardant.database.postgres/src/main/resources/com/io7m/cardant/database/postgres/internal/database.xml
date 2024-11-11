@@ -854,6 +854,10 @@ CREATE TABLE stock (
     </Statement>
 
     <Statement><![CDATA[
+CREATE INDEX stock_serials_gin_index ON stock USING gin (stock_serials)
+]]></Statement>
+
+    <Statement><![CDATA[
 CREATE VIEW item_locations_summed (item_id, item_count) AS
   SELECT
     item_locations.item_location_item,
