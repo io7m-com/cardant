@@ -36,8 +36,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.io7m.cardant.database.postgres.internal.Keys.ITEM_LOCATIONS_ITEM_EXISTS;
-import static com.io7m.cardant.database.postgres.internal.Keys.ITEM_LOCATIONS_LOCATION_EXISTS;
 import static com.io7m.cardant.database.postgres.internal.Keys.ITEM_TYPES_RECORD_TYPE_EXISTS;
 import static com.io7m.cardant.database.postgres.internal.Keys.LOCATION_PARENT_EXISTS;
 import static com.io7m.cardant.database.postgres.internal.Keys.STOCK_ITEM_EXISTS;
@@ -77,16 +75,6 @@ public final class CADatabaseExceptions
 {
   private static final Map<String, CAForeignKeyViolation> FOREIGN_KEYS =
     Stream.of(
-      new CAForeignKeyViolation(
-        ITEM_LOCATIONS_ITEM_EXISTS,
-        errorItemStillInLocation(),
-        ERROR_ITEM_STILL_IN_LOCATION
-      ),
-      new CAForeignKeyViolation(
-        ITEM_LOCATIONS_LOCATION_EXISTS,
-        errorLocationNotEmpty(),
-        ERROR_ITEM_STILL_IN_LOCATION
-      ),
       new CAForeignKeyViolation(
         ITEM_TYPES_RECORD_TYPE_EXISTS,
         errorTypeReferenced(),
