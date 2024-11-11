@@ -430,40 +430,44 @@ public final class CAShellIT
               "--key x:t.gauge");
 
     w.println(
-      "stock-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "stock-reposit-set-introduce " +
+      "--instance 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
+      "--item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
       "--count 100");
     w.println(
-      "stock-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "stock-reposit-set-add " +
+      "--instance 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
       "--count 50");
     w.println(
-      "stock-reposit-set-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "stock-reposit-set-move " +
+      "--instance-from 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
+      "--instance-to d47f8ab7-5da7-451c-9285-4df7879d0730 " +
       "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
       "--count 15");
     w.println(
-      "stock-reposit-set-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "stock-reposit-set-remove " +
+      "--instance 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
       "--count 2");
 
     w.println(
-      "stock-reposit-serial-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "stock-reposit-serial-introduce " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
-      "--serial A");
+      "--serial manufacturer:A");
     w.println(
-      "stock-reposit-serial-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-      "--serial B");
+      "stock-reposit-serial-number-add " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--serial manufacturer:B");
     w.println(
-      "stock-reposit-serial-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
-      "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-      "--serial A");
+      "stock-reposit-serial-move " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf ");
     w.println(
-      "stock-reposit-serial-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
-      "--serial B");
+      "stock-reposit-serial-number-remove " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--serial manufacturer:B");
 
     w.println("item-get --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4");
     w.println("set --formatter PRETTY");

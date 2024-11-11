@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAItemSerialMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.parsers.CAItemSerialMatchExpressions;
 import com.io7m.cardant.strings.CAStrings;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QException;
 import com.io7m.quarrel.core.QValueConverterType;
 
@@ -79,7 +80,12 @@ public final class CAItemSerialMatchConverter
   public CAItemSerialMatch exampleValue()
   {
     return new CAItemSerialMatch(
-      new CAComparisonExactType.IsEqualTo<>(new CAItemSerial("Z512345"))
+      new CAComparisonExactType.IsEqualTo<>(
+        new CAItemSerial(
+          new RDottedName("com.io7m.example"),
+          "Z512345"
+        )
+      )
     );
   }
 

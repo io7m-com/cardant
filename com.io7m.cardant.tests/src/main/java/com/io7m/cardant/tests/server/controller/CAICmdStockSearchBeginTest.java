@@ -27,6 +27,7 @@ import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
 import com.io7m.cardant.model.CAStockOccurrenceSet;
 import com.io7m.cardant.model.CAStockOccurrenceType;
@@ -68,6 +69,9 @@ import static org.mockito.Mockito.when;
 public final class CAICmdStockSearchBeginTest
   extends CACmdAbstractContract
 {
+  static final CAStockInstanceID STOCK0 = CAStockInstanceID.random();
+  static final CAStockInstanceID STOCK1 = CAStockInstanceID.random();
+  static final CAStockInstanceID STOCK2 = CAStockInstanceID.random();
   static final CAItemID ITEM0 = CAItemID.random();
   static final CAItemID ITEM1 = CAItemID.random();
   static final CALocationID L0 = CALocationID.random();
@@ -145,9 +149,9 @@ public final class CAICmdStockSearchBeginTest
     final var page =
       new CAPage<CAStockOccurrenceType>(
         List.of(
-          new CAStockOccurrenceSet(L0S, I0, 23L),
-          new CAStockOccurrenceSet(L0S, I1, 20L),
-          new CAStockOccurrenceSet(L1S, I1, 10L)
+          new CAStockOccurrenceSet(STOCK0, L0S, I0, 23L),
+          new CAStockOccurrenceSet(STOCK1, L0S, I1, 20L),
+          new CAStockOccurrenceSet(STOCK2, L1S, I1, 10L)
         ),
         1,
         1,

@@ -16,27 +16,30 @@
 
 package com.io7m.cardant.model;
 
-import java.util.UUID;
+import java.util.Objects;
 
 /**
- * The type of ID values in the model.
+ * An operation that adds a serial number to an existing stock instance.
+ *
+ * @param instance The instance
+ * @param serial   The item serial number
  */
 
-public sealed interface CAIdType
-  permits CAFileID, CAItemID, CALocationID, CAStockInstanceID, CAUserID
+public record CAStockRepositSerialNumberAdd(
+  CAStockInstanceID instance,
+  CAItemSerial serial)
+  implements CAStockRepositType
 {
   /**
-   * @return The raw ID value
+   * An operation that adds a serial number to a stock instance.
+   *
+   * @param instance The instance
+   * @param serial   The item serial number
    */
 
-  UUID id();
-
-  /**
-   * @return This ID as a machine-readable value
-   */
-
-  default String displayId()
+  public CAStockRepositSerialNumberAdd
   {
-    return this.id().toString();
+    Objects.requireNonNull(instance, "instance");
+    Objects.requireNonNull(serial, "serial");
   }
 }

@@ -15,7 +15,7 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
-import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
@@ -30,7 +30,7 @@ public final class CAArbResponseStockReposit extends CAArbAbstract<CAIResponseSt
       CAIResponseStockReposit.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
-        Arbitraries.defaultFor(CAItem.class)
+        Arbitraries.defaultFor(CAStockOccurrenceType.class)
       ).as(CAIResponseStockReposit::new)
     );
   }

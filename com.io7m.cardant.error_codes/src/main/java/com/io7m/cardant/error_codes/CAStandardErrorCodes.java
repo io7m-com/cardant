@@ -453,5 +453,31 @@ public final class CAStandardErrorCodes
   {
     return ERROR_LOCATION_NON_DELETED_CHILDREN;
   }
+
+  private static final CAErrorCode ERROR_STOCK_IS_NOT_SET =
+    new CAErrorCode("error-stock-is-not-set");
+
+  /**
+   * The given stock instance is not a set instance.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorStockIsNotSet()
+  {
+    return ERROR_STOCK_IS_NOT_SET;
+  }
+
+  private static final CAErrorCode ERROR_STOCK_IS_NOT_SERIAL =
+    new CAErrorCode("error-stock-is-not-serial");
+
+  /**
+   * The given stock instance is not a serial instance.
+   *
+   * @return The error code
+   */
+  public static CAErrorCode errorStockIsNotSerial()
+  {
+    return ERROR_STOCK_IS_NOT_SERIAL;
+  }
 }
 

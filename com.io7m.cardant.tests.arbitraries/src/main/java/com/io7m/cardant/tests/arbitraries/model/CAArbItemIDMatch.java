@@ -19,10 +19,6 @@ package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemIDMatch;
-import com.io7m.cardant.model.CALocationMatchType;
-import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
-import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
-import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 

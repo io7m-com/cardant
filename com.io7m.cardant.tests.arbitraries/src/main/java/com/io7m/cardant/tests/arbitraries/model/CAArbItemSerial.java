@@ -19,7 +19,9 @@ package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Combinators;
 
 import java.util.UUID;
 
@@ -27,6 +29,12 @@ public final class CAArbItemSerial extends CAArbAbstract<CAItemSerial>
 {
   public CAArbItemSerial()
   {
-    super(CAItemSerial.class, () -> Arbitraries.create(UUID::randomUUID).map(x -> new CAItemSerial(x.toString())));
+    super(
+      CAItemSerial.class,
+      () -> Combinators.combine(
+        Arbitraries.defaultFor(RDottedName.class),
+        Arbitraries.create(UUID::randomUUID).map(UUID::toString)
+      ).as(CAItemSerial::new)
+    );
   }
 }

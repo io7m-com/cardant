@@ -17,15 +17,17 @@
 
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
-import com.io7m.cardant.model.CAItemSerial;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockOccurrenceSerial;
 import com.io7m.cardant.model.CAStockOccurrenceSet;
 import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1StockOccurrence;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
-import com.io7m.cedarbridge.runtime.api.CBString;
+import com.io7m.cedarbridge.runtime.api.CBUUID;
+import com.io7m.cedarbridge.runtime.convenience.CBLists;
 
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemSerial.ITEM_SERIAL;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemSummary.ITEM_SUMMARY;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVLocationSummary.LOCATION_SUMMARY;
 
@@ -60,6 +62,7 @@ public enum CAUVStockOccurrence
     final CAStockOccurrenceSet set)
   {
     return new CAI1StockOccurrence.Set(
+      new CBUUID(set.instance().id()),
       LOCATION_SUMMARY.convertToWire(set.location()),
       ITEM_SUMMARY.convertToWire(set.item()),
       new CBIntegerUnsigned64(set.count())
@@ -70,9 +73,10 @@ public enum CAUVStockOccurrence
     final CAStockOccurrenceSerial serial)
   {
     return new CAI1StockOccurrence.Serial(
+      new CBUUID(serial.instance().id()),
       LOCATION_SUMMARY.convertToWire(serial.location()),
       ITEM_SUMMARY.convertToWire(serial.item()),
-      new CBString(serial.serial().value())
+      CBLists.ofCollection(serial.serials(), ITEM_SERIAL::convertToWire)
     );
   }
 
@@ -94,6 +98,7 @@ public enum CAUVStockOccurrence
     final CAI1StockOccurrence.Set set)
   {
     return new CAStockOccurrenceSet(
+      new CAStockInstanceID(set.fieldInstance().value()),
       LOCATION_SUMMARY.convertFromWire(set.fieldLocation()),
       ITEM_SUMMARY.convertFromWire(set.fieldItem()),
       set.fieldCount().value()
@@ -104,9 +109,10 @@ public enum CAUVStockOccurrence
     final CAI1StockOccurrence.Serial serial)
   {
     return new CAStockOccurrenceSerial(
+      new CAStockInstanceID(serial.fieldInstance().value()),
       LOCATION_SUMMARY.convertFromWire(serial.fieldLocation()),
       ITEM_SUMMARY.convertFromWire(serial.fieldItem()),
-      new CAItemSerial(serial.fieldSerial().value())
+      CBLists.toList(serial.fieldSerials(), ITEM_SERIAL::convertFromWire)
     );
   }
 }

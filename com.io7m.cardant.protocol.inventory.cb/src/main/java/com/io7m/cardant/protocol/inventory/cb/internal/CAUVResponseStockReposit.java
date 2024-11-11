@@ -22,7 +22,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseStockReposit;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 
-import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItem.ITEM;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVStockOccurrence.STOCK_OCCURRENCE;
 
 /**
  * A validator.
@@ -42,7 +42,8 @@ public enum CAUVResponseStockReposit
     final CAIResponseStockReposit c)
   {
     return new CAI1ResponseStockReposit(
-      new CBUUID(c.requestId()), ITEM.convertToWire(c.data())
+      new CBUUID(c.requestId()),
+      STOCK_OCCURRENCE.convertToWire(c.data())
     );
   }
 
@@ -52,7 +53,7 @@ public enum CAUVResponseStockReposit
   {
     return new CAIResponseStockReposit(
       m.fieldRequestId().value(),
-      ITEM.convertFromWire(m.fieldItem())
+      STOCK_OCCURRENCE.convertFromWire(m.fieldStock())
     );
   }
 }

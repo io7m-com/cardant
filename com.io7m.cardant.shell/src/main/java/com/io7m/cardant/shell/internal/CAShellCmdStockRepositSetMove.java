@@ -17,8 +17,8 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockRepositSetMove;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
@@ -42,22 +42,22 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 public final class CAShellCmdStockRepositSetMove
   extends CAShellCmdAbstractCR<CAICommandStockReposit, CAIResponseStockReposit>
 {
-  private static final QParameterNamed1<CAItemID> ITEM =
+  private static final QParameterNamed1<CAStockInstanceID> INSTANCE_SOURCE =
     new QParameterNamed1<>(
-      "--item",
+      "--instance-from",
       List.of(),
-      new QConstant("The item ID."),
+      new QConstant("The source stock instance ID."),
       Optional.empty(),
-      CAItemID.class
+      CAStockInstanceID.class
     );
 
-  private static final QParameterNamed1<CALocationID> LOCATION_FROM =
+  private static final QParameterNamed1<CAStockInstanceID> INSTANCE_TARGET =
     new QParameterNamed1<>(
-      "--location-from",
+      "--instance-to",
       List.of(),
-      new QConstant("The source location ID."),
+      new QConstant("The target stock instance ID."),
       Optional.empty(),
-      CALocationID.class
+      CAStockInstanceID.class
     );
 
   private static final QParameterNamed1<CALocationID> LOCATION_TO =
@@ -101,7 +101,7 @@ public final class CAShellCmdStockRepositSetMove
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ITEM, LOCATION_FROM, LOCATION_TO, COUNT);
+    return List.of(INSTANCE_SOURCE, INSTANCE_TARGET, LOCATION_TO, COUNT);
   }
 
   @Override
@@ -112,10 +112,10 @@ public final class CAShellCmdStockRepositSetMove
     final var client =
       this.client();
 
-    final var itemID =
-      context.parameterValue(ITEM);
-    final var locationFrom =
-      context.parameterValue(LOCATION_FROM);
+    final var instanceSource =
+      context.parameterValue(INSTANCE_SOURCE);
+    final var instanceTarget =
+      context.parameterValue(INSTANCE_TARGET);
     final var locationTo =
       context.parameterValue(LOCATION_TO);
     final var count =
@@ -125,8 +125,8 @@ public final class CAShellCmdStockRepositSetMove
       client.sendAndWaitOrThrow(
         new CAICommandStockReposit(
           new CAStockRepositSetMove(
-            itemID,
-            locationFrom,
+            instanceSource,
+            instanceTarget,
             locationTo,
             count.longValue()
           )
@@ -134,7 +134,7 @@ public final class CAShellCmdStockRepositSetMove
         this.commandTimeout()
       ).data();
 
-    this.formatter().formatItem(item);
+    this.formatter().formatStock(item);
     return SUCCESS;
   }
 }

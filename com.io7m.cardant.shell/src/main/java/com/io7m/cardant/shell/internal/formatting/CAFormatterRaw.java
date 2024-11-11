@@ -21,6 +21,7 @@ import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
@@ -461,25 +462,42 @@ public final class CAFormatterRaw implements CAFormatterType
 
     final var items = page.items();
     for (final var item : items) {
-      switch (item) {
-        case final CAStockOccurrenceSerial serial -> {
-          w.printf(
-            "%s %s \"%s\" (Serial %s)%n",
-            serial.location().id(),
-            serial.item().id(),
-            serial.item().name(),
-            serial.serial().value()
-          );
-        }
-        case final CAStockOccurrenceSet set -> {
-          w.printf(
-            "%s %s \"%s\" (Count %s)%n",
-            set.location().id(),
-            set.item().id(),
-            set.item().name(),
-            Long.toUnsignedString(set.count())
-          );
-        }
+      formatStockOccurrence(item, w);
+    }
+  }
+
+  @Override
+  public void formatStock(final CAStockOccurrenceType item)
+    throws Exception
+  {
+    formatStockOccurrence(item, this.terminal.writer());
+  }
+
+  private static void formatStockOccurrence(
+    final CAStockOccurrenceType item,
+    final PrintWriter w)
+  {
+    switch (item) {
+      case final CAStockOccurrenceSerial serial -> {
+        w.printf(
+          "%s %s \"%s\" (Serials %s)%n",
+          serial.location().id(),
+          serial.item().id(),
+          serial.item().name(),
+          serial.serials()
+            .stream()
+            .map(CAItemSerial::toString)
+            .collect(Collectors.joining(", "))
+        );
+      }
+      case final CAStockOccurrenceSet set -> {
+        w.printf(
+          "%s %s \"%s\" (Count %s)%n",
+          set.location().id(),
+          set.item().id(),
+          set.item().name(),
+          Long.toUnsignedString(set.count())
+        );
       }
     }
   }

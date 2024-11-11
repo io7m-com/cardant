@@ -29,6 +29,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesStockType.StockSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemSerial;
@@ -36,11 +37,15 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CALocationPath;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
-import com.io7m.cardant.model.CAStockRepositSerialAdd;
+import com.io7m.cardant.model.CAStockRepositRemove;
+import com.io7m.cardant.model.CAStockRepositSerialIntroduce;
 import com.io7m.cardant.model.CAStockRepositSerialMove;
-import com.io7m.cardant.model.CAStockRepositSerialRemove;
+import com.io7m.cardant.model.CAStockRepositSerialNumberAdd;
+import com.io7m.cardant.model.CAStockRepositSerialNumberRemove;
 import com.io7m.cardant.model.CAStockRepositSetAdd;
+import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.model.CAStockRepositSetMove;
 import com.io7m.cardant.model.CAStockRepositSetRemove;
 import com.io7m.cardant.model.CAStockSearchParameters;
@@ -54,6 +59,7 @@ import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
@@ -70,8 +76,9 @@ import java.util.Set;
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorItemStillInLocation;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveIdentifiedItems;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorStockIsNotSerial;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorStockIsNotSet;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -82,6 +89,9 @@ public final class CADatabaseStockTest
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CADatabaseStockTest.class);
+
+  private static final RDottedName TYPE0 =
+    new RDottedName("com.io7m.ex");
 
   private static CADatabaseFixture DATABASE_FIXTURE;
   private CADatabaseConnectionType connection;
@@ -144,15 +154,20 @@ public final class CADatabaseStockTest
   }
 
   /**
-   * Adding items works.
+   * Introducing stock works.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testStockRepositSetAdd()
+  public void testStockRepositSetIntroduce()
     throws Exception
   {
+    final var instance0 =
+      CAStockInstanceID.random();
+    final var instance1 =
+      CAStockInstanceID.random();
+
     final var itemId = CAItemID.random();
     this.itemCreate.execute(itemId);
 
@@ -182,7 +197,12 @@ public final class CADatabaseStockTest
 
     this.locPut.execute(loc0);
     this.stockReposit.execute(
-      new CAStockRepositSetAdd(itemId, loc0.id(), 100L)
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        100L
+      )
     );
 
     {
@@ -191,7 +211,12 @@ public final class CADatabaseStockTest
     }
 
     this.stockReposit.execute(
-      new CAStockRepositSetAdd(itemId, loc0.id(), 100L)
+      new CAStockRepositSetIntroduce(
+        instance1,
+        itemId,
+        loc0.id(),
+        100L
+      )
     );
 
     {
@@ -201,15 +226,18 @@ public final class CADatabaseStockTest
   }
 
   /**
-   * Removing items works.
+   * Stock can only be introduced once.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testStockRepositSetRemove()
+  public void testStockRepositSetIntroduceNoDouble()
     throws Exception
   {
+    final var instance0 =
+      CAStockInstanceID.random();
+
     final var itemId = CAItemID.random();
     this.itemCreate.execute(itemId);
 
@@ -239,7 +267,12 @@ public final class CADatabaseStockTest
 
     this.locPut.execute(loc0);
     this.stockReposit.execute(
-      new CAStockRepositSetAdd(itemId, loc0.id(), 100L)
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        100L
+      )
     );
 
     {
@@ -247,92 +280,109 @@ public final class CADatabaseStockTest
       assertEquals(100L, c);
     }
 
-    this.stockReposit.execute(
-      new CAStockRepositSetRemove(itemId, loc0.id(), 99L)
-    );
-
-    {
-      final var c = this.stockCount.execute(search);
-      assertEquals(1L, c);
-    }
-
-    this.stockReposit.execute(
-      new CAStockRepositSetRemove(itemId, loc0.id(), 1L)
-    );
-
-    {
-      final var c = this.stockCount.execute(search);
-      assertEquals(0L, c);
-    }
-  }
-
-  /**
-   * It's not possible to remove too many items.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testStockRepositSetRemoveTooMany0()
-    throws Exception
-  {
-    final var itemId = CAItemID.random();
-    this.itemCreate.execute(itemId);
-
-    final var search =
-      new CAStockSearchParameters(
-        new CALocationMatchType.CALocationsAll(),
-        new CAComparisonExactType.IsEqualTo<>(itemId),
-        CAStockOccurrenceKind.all(),
-        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
-        0L
-      );
-
-    {
-      final var c = this.stockCount.execute(search);
-      assertEquals(0L, c);
-    }
-
-    final var loc0 =
-      new CALocation(
-        CALocationID.random(),
-        empty(),
-        CALocationPath.singleton("Loc0"),
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-
-    this.locPut.execute(loc0);
-    this.stockReposit.execute(
-      new CAStockRepositSetAdd(itemId, loc0.id(), 100L)
-    );
-
-    {
-      final var c = this.stockCount.execute(search);
-      assertEquals(100L, c);
-    }
+    this.transaction.commit();
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
         this.stockReposit.execute(
-          new CAStockRepositSetRemove(itemId, loc0.id(), 200L)
+          new CAStockRepositSetIntroduce(
+            instance0,
+            itemId,
+            loc0.id(),
+            100L
+          )
         );
       });
 
-    assertEquals(errorRemoveTooManyItems(), ex.errorCode());
+    assertEquals(CAStandardErrorCodes.errorDuplicate(), ex.errorCode());
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(100L, c);
+    }
   }
 
   /**
-   * It's not possible to remove too many items.
+   * Adding stock works.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testStockRepositSetRemoveTooMany1()
+  public void testStockRepositSetAdd()
     throws Exception
   {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+    this.stockReposit.execute(
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        100L
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(100L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositSetAdd(
+        instance0,
+        100L
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(200L, c);
+    }
+  }
+
+  /**
+   * Removing stock works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSetAddRemove()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
     final var itemId = CAItemID.random();
     this.itemCreate.execute(itemId);
 
@@ -363,21 +413,172 @@ public final class CADatabaseStockTest
     this.locPut.execute(loc0);
 
     this.stockReposit.execute(
-      new CAStockRepositSetAdd(itemId, loc0.id(), 100L));
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        100L
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(100L, c);
+    }
+
     this.stockReposit.execute(
-      new CAStockRepositSetRemove(itemId, loc0.id(), 100L));
+      new CAStockRepositSetRemove(
+        instance0,
+        50L
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(50L, c);
+    }
+
+    this.transaction.commit();
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
         this.stockReposit.execute(
-          new CAStockRepositSetRemove(itemId, loc0.id(), 1L));
+          new CAStockRepositSetRemove(
+            instance0,
+            51L
+          )
+        );
       });
-
     assertEquals(errorRemoveTooManyItems(), ex.errorCode());
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(50L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositSetRemove(
+        instance0,
+        50L
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
   }
 
   /**
-   * Moving items works.
+   * Adding stock does not work if it has not been introduced.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSetAddNonexistent()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(
+          new CAStockRepositSetAdd(
+            instance0,
+            100L
+          )
+        );
+      });
+    assertEquals(errorNonexistent(), ex.errorCode());
+  }
+
+  /**
+   * Removing stock does not work if it has not been introduced.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSetRemoveNonexistent()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(
+          new CAStockRepositSetRemove(
+            instance0,
+            100L
+          )
+        );
+      });
+    assertEquals(errorNonexistent(), ex.errorCode());
+  }
+
+  /**
+   * Moving stock works.
    *
    * @throws Exception On errors
    */
@@ -386,10 +587,15 @@ public final class CADatabaseStockTest
   public void testStockRepositSetMove()
     throws Exception
   {
+    final var instance0 =
+      CAStockInstanceID.random();
+    final var instance1 =
+      CAStockInstanceID.random();
+
     final var itemId = CAItemID.random();
     this.itemCreate.execute(itemId);
 
-    final var search0 =
+    final var search =
       new CAStockSearchParameters(
         new CALocationMatchType.CALocationsAll(),
         new CAComparisonExactType.IsEqualTo<>(itemId),
@@ -399,7 +605,7 @@ public final class CADatabaseStockTest
       );
 
     {
-      final var c = this.stockCount.execute(search0);
+      final var c = this.stockCount.execute(search);
       assertEquals(0L, c);
     }
 
@@ -426,65 +632,68 @@ public final class CADatabaseStockTest
     this.locPut.execute(loc0);
     this.locPut.execute(loc1);
 
-    final var searchLoc0 =
-      new CAStockSearchParameters(
-        new CALocationMatchType.CALocationExact(loc0.id()),
-        new CAComparisonExactType.IsEqualTo<>(itemId),
-        CAStockOccurrenceKind.all(),
-        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
-        0L
-      );
-
-    final var searchLoc1 =
-      new CAStockSearchParameters(
-        new CALocationMatchType.CALocationExact(loc1.id()),
-        new CAComparisonExactType.IsEqualTo<>(itemId),
-        CAStockOccurrenceKind.all(),
-        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
-        0L
-      );
-
     this.stockReposit.execute(
-      new CAStockRepositSetAdd(itemId, loc0.id(), 100L));
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        100L
+      )
+    );
 
     {
-      final var c = this.stockCount.execute(searchLoc0);
+      final var c = this.stockCount.execute(search);
       assertEquals(100L, c);
     }
 
+    this.stockReposit.execute(
+      new CAStockRepositSetMove(
+        instance0,
+        instance1,
+        loc1.id(),
+        50L
+      )
+    );
+
     {
-      final var c = this.stockCount.execute(searchLoc1);
-      assertEquals(0L, c);
+      final var c = this.stockCount.execute(search);
+      assertEquals(100L, c);
     }
 
     this.stockReposit.execute(
-      new CAStockRepositSetMove(itemId, loc0.id(), loc1.id(), 50L));
+      new CAStockRepositSetMove(
+        instance0,
+        instance1,
+        loc1.id(),
+        50L
+      )
+    );
 
     {
-      final var c = this.stockCount.execute(searchLoc0);
-      assertEquals(50L, c);
-    }
-
-    {
-      final var c = this.stockCount.execute(searchLoc1);
-      assertEquals(50L, c);
+      final var c = this.stockCount.execute(search);
+      assertEquals(100L, c);
     }
   }
 
   /**
-   * It's not possible to move more items than exist.
+   * Moving stock fails if the source does not exist.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testStockRepositSetMoveTooMany()
+  public void testStockRepositSetMoveSourceNonexistent()
     throws Exception
   {
+    final var instance0 =
+      CAStockInstanceID.random();
+    final var instance1 =
+      CAStockInstanceID.random();
+
     final var itemId = CAItemID.random();
     this.itemCreate.execute(itemId);
 
-    final var search0 =
+    final var search =
       new CAStockSearchParameters(
         new CALocationMatchType.CALocationsAll(),
         new CAComparisonExactType.IsEqualTo<>(itemId),
@@ -494,7 +703,7 @@ public final class CADatabaseStockTest
       );
 
     {
-      final var c = this.stockCount.execute(search0);
+      final var c = this.stockCount.execute(search);
       assertEquals(0L, c);
     }
 
@@ -520,158 +729,40 @@ public final class CADatabaseStockTest
 
     this.locPut.execute(loc0);
     this.locPut.execute(loc1);
-
-    this.stockReposit.execute(
-      new CAStockRepositSetAdd(itemId, loc0.id(), 100L)
-    );
-
-    {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(100L, c);
-    }
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
         this.stockReposit.execute(
           new CAStockRepositSetMove(
-            itemId, loc0.id(), loc1.id(), 101L)
+            instance0,
+            instance1,
+            loc1.id(),
+            50L
+          )
         );
       });
-
-    assertEquals(errorRemoveTooManyItems(), ex.errorCode());
-  }
-
-  /**
-   * Adding items works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testStockRepositSerialAdd()
-    throws Exception
-  {
-    final var itemId = CAItemID.random();
-    this.itemCreate.execute(itemId);
-
-    final var search0 =
-      new CAStockSearchParameters(
-        new CALocationMatchType.CALocationsAll(),
-        new CAComparisonExactType.IsEqualTo<>(itemId),
-        CAStockOccurrenceKind.all(),
-        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
-        0L
-      );
-
-    {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(0L, c);
-    }
-
-    final var loc0 =
-      new CALocation(
-        CALocationID.random(),
-        empty(),
-        CALocationPath.singleton("Loc0"),
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-
-    this.locPut.execute(loc0);
-    this.stockReposit.execute(
-      new CAStockRepositSerialAdd(
-        itemId, loc0.id(), new CAItemSerial("A")
-      )
-    );
-
-    this.transaction.commit();
-
-    {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(1L, c);
-    }
-  }
-
-  /**
-   * Removing items works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testStockRepositSerialRemove()
-    throws Exception
-  {
-    final var itemId = CAItemID.random();
-    this.itemCreate.execute(itemId);
-
-    final var search0 =
-      new CAStockSearchParameters(
-        new CALocationMatchType.CALocationsAll(),
-        new CAComparisonExactType.IsEqualTo<>(itemId),
-        CAStockOccurrenceKind.all(),
-        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
-        0L
-      );
-
-    {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(0L, c);
-    }
-
-    final var loc0 =
-      new CALocation(
-        CALocationID.random(),
-        empty(),
-        CALocationPath.singleton("Loc0"),
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-
-    this.locPut.execute(loc0);
-
-    final var serial = new CAItemSerial("A");
-    this.stockReposit.execute(
-      new CAStockRepositSerialAdd(itemId, loc0.id(), serial));
-
-    {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(1L, c);
-    }
-
-    this.stockReposit.execute(
-      new CAStockRepositSerialRemove(itemId, loc0.id(), serial));
-
-    {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(0L, c);
-    }
-
-    final var ex =
-      assertThrows(CADatabaseException.class, () -> {
-        this.stockReposit.execute(
-          new CAStockRepositSerialRemove(itemId, loc0.id(), serial));
-      });
-
     assertEquals(errorNonexistent(), ex.errorCode());
   }
 
   /**
-   * Removing items works.
+   * Moving stock fails if the target is a serial instance.
    *
    * @throws Exception On errors
    */
 
   @Test
-  public void testStockRepositSerialRemoveNotSet()
+  public void testStockRepositSetMoveTargetSerial()
     throws Exception
   {
+    final var instance0 =
+      CAStockInstanceID.random();
+    final var instance1 =
+      CAStockInstanceID.random();
+
     final var itemId = CAItemID.random();
     this.itemCreate.execute(itemId);
 
-    final var search0 =
+    final var search =
       new CAStockSearchParameters(
         new CALocationMatchType.CALocationsAll(),
         new CAComparisonExactType.IsEqualTo<>(itemId),
@@ -681,64 +772,7 @@ public final class CADatabaseStockTest
       );
 
     {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(0L, c);
-    }
-
-    final var loc0 =
-      new CALocation(
-        CALocationID.random(),
-        empty(),
-        CALocationPath.singleton("Loc0"),
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      );
-
-    this.locPut.execute(loc0);
-    this.stockReposit.execute(
-      new CAStockRepositSerialAdd(
-        itemId, loc0.id(), new CAItemSerial("A"))
-    );
-
-    {
-      final var c = this.stockCount.execute(search0);
-      assertEquals(1L, c);
-    }
-
-    final var ex =
-      assertThrows(CADatabaseException.class, () -> {
-        this.stockReposit.execute(
-          new CAStockRepositSetRemove(itemId, loc0.id(), 1L));
-      });
-
-    assertEquals(errorRemoveIdentifiedItems(), ex.errorCode());
-  }
-
-  /**
-   * Moving items works.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testStockRepositSerialMove()
-    throws Exception
-  {
-    final var itemId = CAItemID.random();
-    this.itemCreate.execute(itemId);
-
-    final var search0 =
-      new CAStockSearchParameters(
-        new CALocationMatchType.CALocationsAll(),
-        new CAComparisonExactType.IsEqualTo<>(itemId),
-        CAStockOccurrenceKind.all(),
-        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
-        0L
-      );
-
-    {
-      final var c = this.stockCount.execute(search0);
+      final var c = this.stockCount.execute(search);
       assertEquals(0L, c);
     }
 
@@ -762,61 +796,121 @@ public final class CADatabaseStockTest
         Collections.emptySortedSet()
       );
 
-    final var searchLoc0 =
+    this.locPut.execute(loc0);
+    this.locPut.execute(loc1);
+
+    this.stockReposit.execute(
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        100L
+      )
+    );
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialIntroduce(
+        instance1,
+        itemId,
+        loc1.id(),
+        new CAItemSerial(TYPE0, "A")
+      )
+    );
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(
+          new CAStockRepositSetMove(
+            instance0,
+            instance1,
+            loc1.id(),
+            50L
+          )
+        );
+      });
+    assertEquals(errorStockIsNotSet(), ex.errorCode());
+  }
+
+  /**
+   * Moving stock fails if the source is a serial instance.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSetMoveSourceSerial()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+    final var instance1 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
       new CAStockSearchParameters(
-        new CALocationMatchType.CALocationExact(loc0.id()),
+        new CALocationMatchType.CALocationsAll(),
         new CAComparisonExactType.IsEqualTo<>(itemId),
         CAStockOccurrenceKind.all(),
         CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         0L
       );
 
-    final var searchLoc1 =
-      new CAStockSearchParameters(
-        new CALocationMatchType.CALocationExact(loc1.id()),
-        new CAComparisonExactType.IsEqualTo<>(itemId),
-        CAStockOccurrenceKind.all(),
-        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
-        0L
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    final var loc1 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc1"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
       );
 
     this.locPut.execute(loc0);
     this.locPut.execute(loc1);
 
-    final var serial =
-      new CAItemSerial("A");
-
     this.stockReposit.execute(
-      new CAStockRepositSerialAdd(itemId, loc0.id(), serial));
+      new CAStockRepositSerialIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        new CAItemSerial(TYPE0, "A")
+      )
+    );
 
-    {
-      final var c = this.stockCount.execute(searchLoc0);
-      assertEquals(1L, c);
-    }
-
-    {
-      final var c = this.stockCount.execute(searchLoc1);
-      assertEquals(0L, c);
-    }
-
-    this.stockReposit.execute(
-      new CAStockRepositSerialMove(itemId, loc0.id(), loc1.id(), serial));
-
-    final var item_2 = this.itemGet.execute(itemId).orElseThrow();
-
-    {
-      final var c = this.stockCount.execute(searchLoc0);
-      assertEquals(0L, c);
-    }
-
-    {
-      final var c = this.stockCount.execute(searchLoc1);
-      assertEquals(1L, c);
-    }
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(
+          new CAStockRepositSetMove(
+            instance0,
+            instance1,
+            loc1.id(),
+            50L
+          )
+        );
+      });
+    assertEquals(errorStockIsNotSet(), ex.errorCode());
   }
 
   /**
-   * Removing items works.
+   * An item cannot be deleted while stock of it still exists.
    *
    * @throws Exception On errors
    */
@@ -825,6 +919,9 @@ public final class CADatabaseStockTest
   public void testItemRemoveReferenced0()
     throws Exception
   {
+    final var instance0 =
+      CAStockInstanceID.random();
+
     final var itemId = CAItemID.random();
     this.itemCreate.execute(itemId);
 
@@ -854,8 +951,11 @@ public final class CADatabaseStockTest
 
     this.locPut.execute(loc0);
     this.stockReposit.execute(
-      new CAStockRepositSerialAdd(
-        itemId, loc0.id(), new CAItemSerial("A")
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        1000L
       )
     );
 
@@ -864,5 +964,606 @@ public final class CADatabaseStockTest
         this.delete.execute(Set.of(itemId));
       });
     assertEquals(errorItemStillInLocation(), ex.errorCode());
+  }
+
+  /**
+   * Introducing stock works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSerialIntroduce()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        new CAItemSerial(TYPE0, "A")
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+  }
+
+  /**
+   * Adding serial numbers works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSerialNumberAdd()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        new CAItemSerial(TYPE0, "A")
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialNumberAdd(
+        instance0,
+        new CAItemSerial(TYPE0, "B")
+      )
+    );
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialNumberAdd(
+        instance0,
+        new CAItemSerial(TYPE0, "C")
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+  }
+
+  /**
+   * Removing serial numbers works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSerialNumberAddRemove()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        new CAItemSerial(TYPE0, "A")
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialNumberAdd(
+        instance0,
+        new CAItemSerial(TYPE0, "B")
+      )
+    );
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialNumberAdd(
+        instance0,
+        new CAItemSerial(TYPE0, "C")
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialNumberRemove(
+        instance0,
+        new CAItemSerial(TYPE0, "C")
+      )
+    );
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialNumberRemove(
+        instance0,
+        new CAItemSerial(TYPE0, "B")
+      )
+    );
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(
+          new CAStockRepositSerialNumberRemove(
+            instance0,
+            new CAItemSerial(TYPE0, "B")
+          )
+        );
+      });
+    assertEquals(errorNonexistent(), ex.errorCode());
+  }
+
+  /**
+   * Removing instances works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositRemove0()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        new CAItemSerial(TYPE0, "A")
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositRemove(
+        instance0
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(new CAStockRepositRemove(instance0));
+      });
+    assertEquals(errorNonexistent(), ex.errorCode());
+  }
+
+  /**
+   * Removing instances works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositRemove1()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+
+    this.stockReposit.execute(
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        1000L
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1000L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositRemove(
+        instance0
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(new CAStockRepositRemove(instance0));
+      });
+    assertEquals(errorNonexistent(), ex.errorCode());
+  }
+
+  /**
+   * Moving stock works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSerialMove()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    final var loc1 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc1"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+    this.locPut.execute(loc1);
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        new CAItemSerial(TYPE0, "A")
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+
+    this.stockReposit.execute(
+      new CAStockRepositSerialMove(
+        instance0,
+        loc1.id()
+      )
+    );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(1L, c);
+    }
+  }
+
+  /**
+   * Moving stock fails if the source does not exist.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSerialMoveSourceNonexistent()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    final var loc1 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc1"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+    this.locPut.execute(loc1);
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(
+          new CAStockRepositSerialMove(
+            instance0,
+            loc1.id()
+          )
+        );
+      });
+    assertEquals(errorNonexistent(), ex.errorCode());
+  }
+
+  /**
+   * Moving stock fails if the source is a set instance.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testStockRepositSerialMoveSourceSet()
+    throws Exception
+  {
+    final var instance0 =
+      CAStockInstanceID.random();
+
+    final var itemId = CAItemID.random();
+    this.itemCreate.execute(itemId);
+
+    final var search =
+      new CAStockSearchParameters(
+        new CALocationMatchType.CALocationsAll(),
+        new CAComparisonExactType.IsEqualTo<>(itemId),
+        CAStockOccurrenceKind.all(),
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
+        0L
+      );
+
+    {
+      final var c = this.stockCount.execute(search);
+      assertEquals(0L, c);
+    }
+
+    final var loc0 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc0"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    final var loc1 =
+      new CALocation(
+        CALocationID.random(),
+        empty(),
+        CALocationPath.singleton("Loc1"),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      );
+
+    this.locPut.execute(loc0);
+    this.locPut.execute(loc1);
+
+    this.stockReposit.execute(
+      new CAStockRepositSetIntroduce(
+        instance0,
+        itemId,
+        loc0.id(),
+        1L
+      )
+    );
+
+    final var ex =
+      assertThrows(CADatabaseException.class, () -> {
+        this.stockReposit.execute(
+          new CAStockRepositSerialMove(
+            instance0,
+            loc1.id()
+          )
+        );
+      });
+    assertEquals(errorStockIsNotSerial(), ex.errorCode());
   }
 }

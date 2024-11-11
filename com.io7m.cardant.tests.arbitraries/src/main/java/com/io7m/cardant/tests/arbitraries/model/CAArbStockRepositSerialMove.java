@@ -17,9 +17,8 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockRepositSerialMove;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
@@ -33,10 +32,8 @@ public final class CAArbStockRepositSerialMove
     super(
       CAStockRepositSerialMove.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.strings().map(CAItemSerial::new)
+        Arbitraries.defaultFor(CAStockInstanceID.class),
+        Arbitraries.defaultFor(CALocationID.class)
       ).as(CAStockRepositSerialMove::new)
     );
   }

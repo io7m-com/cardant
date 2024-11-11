@@ -17,34 +17,41 @@
 
 package com.io7m.cardant.model;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
  * An occurrence of an item in a location.
  *
+ * @param instance The instance
  * @param location The location
  * @param item     The item
- * @param serial   The item serial
+ * @param serials  The item serials
  */
 
 public record CAStockOccurrenceSerial(
+  CAStockInstanceID instance,
   CALocationSummary location,
   CAItemSummary item,
-  CAItemSerial serial)
+  List<CAItemSerial> serials)
   implements CAStockOccurrenceType
 {
   /**
    * An occurrence of an item in a location.
    *
+   * @param instance The instance
    * @param location The location
    * @param item     The item
-   * @param serial   The item serial
+   * @param serials  The item serials
    */
 
   public CAStockOccurrenceSerial
   {
+    Objects.requireNonNull(instance, "instance");
     Objects.requireNonNull(location, "location");
     Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(serial, "serial");
+    Objects.requireNonNull(serials, "serial");
+
+    serials = List.copyOf(serials);
   }
 }

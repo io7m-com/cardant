@@ -604,12 +604,12 @@ CREATE FUNCTION location_items_not_empty() RETURNS TRIGGER AS $$
   BEGIN
     IF new.location_deleted IS NOT NULL THEN
       SELECT count(*) INTO count
-        FROM item_locations
-          WHERE item_locations.item_location = new.location_id
+        FROM stock
+          WHERE stock.stock_location = new.location_id
         LIMIT 1;
 
       IF count > 0 THEN
-        RAISE sqlstate 'CA002' USING message = 'A location cannot be deleted while it still contains items.';
+        RAISE sqlstate 'CA002' USING message = 'A location cannot be deleted while it still contains stock.';
         RETURN NULL;
       END IF;
     END IF;
@@ -809,6 +809,50 @@ CREATE TABLE item_locations (
       GRANT SELECT ON item_locations TO cardant_read_only
     </Statement>
 
+    <Comment>
+      The stock table associates specific item instances with locations.
+    </Comment>
+
+    <Statement><![CDATA[
+CREATE TABLE stock (
+  stock_instance  UUID   NOT NULL,
+  stock_item      UUID   NOT NULL,
+  stock_location  UUID   NOT NULL,
+  stock_count     BIGINT NOT NULL,
+  stock_serials   JSONB,
+
+  -- [jooq ignore start]
+  CONSTRAINT stock_set_or_serial CHECK (
+    CASE
+      WHEN stock_serials IS NOT NULL THEN
+        stock_count = 1
+      ELSE
+        't'::boolean
+    END
+  ),
+  -- [jooq ignore stop]
+
+  CONSTRAINT stock_count_non_negative
+    CHECK (stock_count >= 0),
+
+  CONSTRAINT stock_primary_key
+    PRIMARY KEY (stock_instance),
+
+  CONSTRAINT stock_item_exists
+    FOREIGN KEY (stock_item) REFERENCES items (item_id),
+
+  CONSTRAINT stock_location_exists
+    FOREIGN KEY (stock_location) REFERENCES locations (location_id)
+)
+]]></Statement>
+
+    <Statement>
+      GRANT SELECT, INSERT, UPDATE, DELETE ON stock TO cardant
+    </Statement>
+    <Statement>
+      GRANT SELECT ON stock TO cardant_read_only
+    </Statement>
+
     <Statement><![CDATA[
 CREATE VIEW item_locations_summed (item_id, item_count) AS
   SELECT
@@ -983,9 +1027,12 @@ CREATE VIEW item_search_view AS
     item_metadata.item_meta_value_money,
     item_metadata.item_meta_value_money_currency,
     item_metadata.item_meta_value_real,
-    array_agg(metadata_types.mt_id)                AS isv_metadata_type_ids,
-    array_agg(item_locations.item_location)        AS isv_item_locations,
-    array_agg(item_locations.item_location_serial) AS isv_item_serials
+    array_agg(metadata_types.mt_id)
+      AS isv_metadata_type_ids,
+    array_agg(stock.stock_location)
+      AS isv_item_locations,
+    jsonb_agg_strict(stock.stock_serials)
+      AS isv_item_serials
   FROM
     items
   LEFT JOIN item_types
@@ -996,8 +1043,8 @@ CREATE VIEW item_search_view AS
     ON metadata_types.mt_id = item_types.it_type
   LEFT JOIN metadata_type_packages
     ON metadata_type_packages.mtp_id = metadata_types.mt_package
-  LEFT JOIN item_locations
-    ON item_locations.item_location_item = items.item_id
+  LEFT JOIN stock
+    ON stock.stock_item = items.item_id
   GROUP BY
     items.item_id,
     items.item_name,
@@ -1074,6 +1121,11 @@ CREATE VIEW location_search_view AS
     </Statement>
     <Statement>
       GRANT SELECT ON location_search_view TO cardant_read_only
+    </Statement>
+
+    <Statement><![CDATA[
+
+]]>
     </Statement>
 
     <Comment>

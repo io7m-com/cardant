@@ -31,3 +31,5 @@ USER_NONEXISTENT|user-nonexistent|An attempt was made to reference a user that d
 ITEM_STILL_IN_LOCATION|item-still-in-location|An item cannot be deleted when instances of it are still present in one or more locations.
 LOCATION_NOT_EMPTY|location-not-empty|A location cannot be deleted while it still contains one or more items.
 LOCATION_NON_DELETED_CHILDREN|location-non-deleted-children|A location cannot be deleted while it still has non-deleted child locations.
+STOCK_IS_NOT_SET|stock-is-not-set|The given stock instance is not a set instance.
+STOCK_IS_NOT_SERIAL|stock-is-not-serial|The given stock instance is not a serial instance.

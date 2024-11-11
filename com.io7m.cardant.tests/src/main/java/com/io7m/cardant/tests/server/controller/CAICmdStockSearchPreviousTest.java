@@ -46,6 +46,9 @@ import static com.io7m.cardant.tests.server.controller.CAICmdStockSearchBeginTes
 import static com.io7m.cardant.tests.server.controller.CAICmdStockSearchBeginTest.I1;
 import static com.io7m.cardant.tests.server.controller.CAICmdStockSearchBeginTest.L0S;
 import static com.io7m.cardant.tests.server.controller.CAICmdStockSearchBeginTest.L1S;
+import static com.io7m.cardant.tests.server.controller.CAICmdStockSearchBeginTest.STOCK0;
+import static com.io7m.cardant.tests.server.controller.CAICmdStockSearchBeginTest.STOCK1;
+import static com.io7m.cardant.tests.server.controller.CAICmdStockSearchBeginTest.STOCK2;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -116,9 +119,9 @@ public final class CAICmdStockSearchPreviousTest
     final var page =
       new CAPage<CAStockOccurrenceType>(
         List.of(
-          new CAStockOccurrenceSet(L0S, I0, 23L),
-          new CAStockOccurrenceSet(L0S, I1, 20L),
-          new CAStockOccurrenceSet(L1S, I1, 10L)
+          new CAStockOccurrenceSet(STOCK0, L0S, I0, 23L),
+          new CAStockOccurrenceSet(STOCK1, L0S, I1, 20L),
+          new CAStockOccurrenceSet(STOCK2, L1S, I1, 10L)
         ),
         1,
         1,

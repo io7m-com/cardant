@@ -16,8 +16,12 @@
 
 package com.io7m.cardant.database.api;
 
+import com.io7m.cardant.model.CAStockInstanceID;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.model.CAStockRepositType;
 import com.io7m.cardant.model.CAStockSearchParameters;
+
+import java.util.Optional;
 
 /**
  * Model database queries (Stock).
@@ -27,7 +31,7 @@ public sealed interface CADatabaseQueriesStockType
   extends CADatabaseQueriesType
 {
   /**
-   * Reposit items.
+   * Reposit stock.
    */
 
   non-sealed interface StockRepositType
@@ -38,7 +42,7 @@ public sealed interface CADatabaseQueriesStockType
   }
 
   /**
-   * Search for items.
+   * Search for stock.
    */
 
   non-sealed interface StockSearchType
@@ -49,11 +53,22 @@ public sealed interface CADatabaseQueriesStockType
   }
 
   /**
-   * Count items.
+   * Count stock.
    */
 
   non-sealed interface StockCountType
     extends CADatabaseQueryType<CAStockSearchParameters, Long>,
+    CADatabaseQueriesStockType
+  {
+
+  }
+
+  /**
+   * Retrieve stock.
+   */
+
+  non-sealed interface StockGetType
+    extends CADatabaseQueryType<CAStockInstanceID, Optional<CAStockOccurrenceType>>,
     CADatabaseQueriesStockType
   {
 

@@ -24,12 +24,14 @@ import java.util.Objects;
 /**
  * An occurrence of a set of items in a location.
  *
+ * @param instance The instance
  * @param location The location
  * @param item     The item
  * @param count    The item count
  */
 
 public record CAStockOccurrenceSet(
+  CAStockInstanceID instance,
   CALocationSummary location,
   CAItemSummary item,
   long count)
@@ -38,6 +40,7 @@ public record CAStockOccurrenceSet(
   /**
    * An occurrence of a set of items in a location.
    *
+   * @param instance The instance
    * @param location The location
    * @param item     The item
    * @param count    The item count
@@ -45,6 +48,7 @@ public record CAStockOccurrenceSet(
 
   public CAStockOccurrenceSet
   {
+    Objects.requireNonNull(instance, "instance");
     Objects.requireNonNull(location, "location");
     Objects.requireNonNull(item, "item");
 

@@ -40,7 +40,10 @@ public final class CADBQLocationDeleteMarkOnly
   extends CADBQAbstract<Parameters, CADatabaseUnit>
   implements LocationDeleteMarkOnlyType
 {
-  private static final Service<Parameters, CADatabaseUnit, LocationDeleteMarkOnlyType> SERVICE =
+  private static final Service<
+    Parameters,
+    CADatabaseUnit,
+    LocationDeleteMarkOnlyType> SERVICE =
     new Service<>(
       LocationDeleteMarkOnlyType.class,
       CADBQLocationDeleteMarkOnly::new);

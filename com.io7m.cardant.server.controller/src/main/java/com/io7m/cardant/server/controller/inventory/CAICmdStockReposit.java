@@ -17,7 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesStockType;
 import com.io7m.cardant.database.api.CADatabaseQueriesStockType.StockRepositType;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
@@ -27,7 +27,6 @@ import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
  * @see CAICommandStockReposit
@@ -58,18 +57,15 @@ public final class CAICmdStockReposit
     final var repositQuery =
       transaction.queries(StockRepositType.class);
     final var get =
-      transaction.queries(ItemGetType.class);
+      transaction.queries(CADatabaseQueriesStockType.StockGetType.class);
 
-    final var reposit = command.reposit();
-
-    final var itemID = reposit.item();
-    context.setAttribute(ITEM_ID, itemID.displayId());
-    CAIChecks.checkItemExists(context, get, itemID);
+    final var reposit =
+      command.reposit();
 
     repositQuery.execute(reposit);
 
     final var item =
-      get.execute(itemID)
+      get.execute(reposit.instance())
         .orElseThrow();
 
     return new CAIResponseStockReposit(context.requestId(), item);

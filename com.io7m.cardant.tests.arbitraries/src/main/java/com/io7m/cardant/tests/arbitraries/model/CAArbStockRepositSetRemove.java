@@ -17,8 +17,7 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockRepositSetRemove;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
@@ -31,8 +30,7 @@ public final class CAArbStockRepositSetRemove extends CAArbAbstract<CAStockRepos
     super(
       CAStockRepositSetRemove.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(CALocationID.class),
+        Arbitraries.defaultFor(CAStockInstanceID.class),
         Arbitraries.longs().between(0L, 10000L)
       ).as(CAStockRepositSetRemove::new)
     );

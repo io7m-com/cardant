@@ -16,27 +16,26 @@
 
 package com.io7m.cardant.model;
 
-import java.util.UUID;
+import java.util.Objects;
 
 /**
- * The type of ID values in the model.
+ * An operation that removes a stock instance.
+ *
+ * @param instance The instance
  */
 
-public sealed interface CAIdType
-  permits CAFileID, CAItemID, CALocationID, CAStockInstanceID, CAUserID
+public record CAStockRepositRemove(
+  CAStockInstanceID instance)
+  implements CAStockRepositType
 {
   /**
-   * @return The raw ID value
+   * An operation that removes a stock instance.
+   *
+   * @param instance The instance
    */
 
-  UUID id();
-
-  /**
-   * @return This ID as a machine-readable value
-   */
-
-  default String displayId()
+  public CAStockRepositRemove
   {
-    return this.id().toString();
+    Objects.requireNonNull(instance, "instance");
   }
 }

@@ -43,16 +43,10 @@ import com.io7m.cardant.shell.internal.CAShellCmdItemDelete;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemSetName;
-import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialMove;
-import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetMove;
-import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdItemSetName;
 import com.io7m.cardant.shell.internal.CAShellCmdItemTypesAssign;
 import com.io7m.cardant.shell.internal.CAShellCmdItemTypesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentAdd;
@@ -68,6 +62,15 @@ import com.io7m.cardant.shell.internal.CAShellCmdRolesGet;
 import com.io7m.cardant.shell.internal.CAShellCmdRolesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdSelf;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialIntroduce;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialMove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialNumberAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialNumberRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetIntroduce;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetMove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdStockSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdStockSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdStockSearchPrevious;
@@ -211,10 +214,13 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdRolesRevoke(services),
         new CAShellCmdSelf(services),
         new CAShellCmdSet(services),
-        new CAShellCmdStockRepositSerialAdd(services),
+        new CAShellCmdStockRepositRemove(services),
+        new CAShellCmdStockRepositSerialIntroduce(services),
         new CAShellCmdStockRepositSerialMove(services),
-        new CAShellCmdStockRepositSerialRemove(services),
+        new CAShellCmdStockRepositSerialNumberAdd(services),
+        new CAShellCmdStockRepositSerialNumberRemove(services),
         new CAShellCmdStockRepositSetAdd(services),
+        new CAShellCmdStockRepositSetIntroduce(services),
         new CAShellCmdStockRepositSetMove(services),
         new CAShellCmdStockRepositSetRemove(services),
         new CAShellCmdStockSearchBegin(services),

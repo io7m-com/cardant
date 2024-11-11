@@ -38,12 +38,14 @@ import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationMatchType;
 import com.io7m.cardant.model.CALocationPath;
+import com.io7m.cardant.model.CALocationSummary;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
 import com.io7m.cardant.model.CAStockOccurrenceSerial;
 import com.io7m.cardant.model.CAStockOccurrenceSet;
 import com.io7m.cardant.model.CAStockOccurrenceType;
-import com.io7m.cardant.model.CAStockRepositSerialAdd;
-import com.io7m.cardant.model.CAStockRepositSetAdd;
+import com.io7m.cardant.model.CAStockRepositSerialIntroduce;
+import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.model.CAStockSearchParameters;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
@@ -55,6 +57,7 @@ import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
+import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MSubject;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
 import com.io7m.zelador.test_extension.ZeladorExtension;
@@ -72,7 +75,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
-import static com.io7m.cardant.model.CAStockOccurrenceKind.SERIAL;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -115,6 +117,23 @@ public final class CADatabaseStockSearchTest
 
   private static final long PAGE_SIZE =
     1000L;
+
+  private static final List<CAStockInstanceID> STOCK_IDS =
+    List.of(
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random(),
+      CAStockInstanceID.random()
+    );
+
+  private static final RDottedName TYPE0 =
+    new RDottedName("t");
 
   private static CADatabaseFixture DATABASE_FIXTURE;
   private CADatabaseConnectionType connection;
@@ -205,12 +224,9 @@ public final class CADatabaseStockSearchTest
 
     this.locPut.execute(L0);
 
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item2);
+    this.setAdd(STOCK_IDS.get(0), L0, item0, 20L);
+    this.setAdd(STOCK_IDS.get(1), L0, item1, 5L);
+    this.setAdd(STOCK_IDS.get(2), L0, item2, 30L);
 
     {
       final List<CAStockOccurrenceType> occ =
@@ -218,9 +234,10 @@ public final class CADatabaseStockSearchTest
 
       assertEquals(
         new CAStockOccurrenceSet(
+          STOCK_IDS.get(0),
           L0.summary(),
           new CAItemSummary(item0, ""),
-          15L
+          20L
         ),
         occ.get(0)
       );
@@ -235,7 +252,7 @@ public final class CADatabaseStockSearchTest
    */
 
   @Test
-  public void testStockSearchExactNotItem()
+  public void testStockSearchExactItemNot()
     throws Exception
   {
     final var item0 = CAItemID.random();
@@ -257,12 +274,9 @@ public final class CADatabaseStockSearchTest
 
     this.locPut.execute(L0);
 
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item2);
+    this.setAdd(STOCK_IDS.get(0), L0, item0, 20L);
+    this.setAdd(STOCK_IDS.get(1), L0, item1, 5L);
+    this.setAdd(STOCK_IDS.get(2), L0, item2, 30L);
 
     {
       final List<CAStockOccurrenceType> occ =
@@ -270,20 +284,23 @@ public final class CADatabaseStockSearchTest
 
       assertEquals(
         new CAStockOccurrenceSet(
+          STOCK_IDS.get(2),
           L0.summary(),
-          new CAItemSummary(item1, ""),
-          10L
+          new CAItemSummary(item2, ""),
+          30L
         ),
         occ.get(0)
       );
       assertEquals(
         new CAStockOccurrenceSet(
+          STOCK_IDS.get(1),
           L0.summary(),
-          new CAItemSummary(item2, ""),
+          new CAItemSummary(item1, ""),
           5L
         ),
         occ.get(1)
       );
+
       assertEquals(2, occ.size());
     }
   }
@@ -295,7 +312,7 @@ public final class CADatabaseStockSearchTest
    */
 
   @Test
-  public void testStockSearchAnyItem()
+  public void testStockSearchSetOnly()
     throws Exception
   {
     final var item0 = CAItemID.random();
@@ -310,19 +327,15 @@ public final class CADatabaseStockSearchTest
       new CAStockSearchParameters(
         new CALocationMatchType.CALocationsAll(),
         new CAComparisonExactType.Anything<>(),
-        CAStockOccurrenceKind.all(),
+        Set.of(CAStockOccurrenceKind.SET),
         CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         PAGE_SIZE
       );
 
     this.locPut.execute(L0);
 
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item2);
+    this.setAdd(STOCK_IDS.get(0), L0, item0, 20L);
+    this.serialAdd(STOCK_IDS.get(1), L0, item0, "A");
 
     {
       final List<CAStockOccurrenceType> occ =
@@ -330,29 +343,14 @@ public final class CADatabaseStockSearchTest
 
       assertEquals(
         new CAStockOccurrenceSet(
+          STOCK_IDS.get(0),
           L0.summary(),
           new CAItemSummary(item0, ""),
-          15L
+          20L
         ),
         occ.get(0)
       );
-      assertEquals(
-        new CAStockOccurrenceSet(
-          L0.summary(),
-          new CAItemSummary(item1, ""),
-          10L
-        ),
-        occ.get(1)
-      );
-      assertEquals(
-        new CAStockOccurrenceSet(
-          L0.summary(),
-          new CAItemSummary(item2, ""),
-          5L
-        ),
-        occ.get(2)
-      );
-      assertEquals(3, occ.size());
+      assertEquals(1, occ.size());
     }
   }
 
@@ -363,7 +361,7 @@ public final class CADatabaseStockSearchTest
    */
 
   @Test
-  public void testStockSearchSerial()
+  public void testStockSearchSerialOnly()
     throws Exception
   {
     final var item0 = CAItemID.random();
@@ -378,69 +376,30 @@ public final class CADatabaseStockSearchTest
       new CAStockSearchParameters(
         new CALocationMatchType.CALocationsAll(),
         new CAComparisonExactType.Anything<>(),
-        CAStockOccurrenceKind.all(),
+        Set.of(CAStockOccurrenceKind.SERIAL),
         CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         PAGE_SIZE
       );
 
     this.locPut.execute(L0);
 
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.serialAdd(L0, item0, "A");
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item1);
-    this.serialAdd(L0, item1, "B");
-    this.setAdd(L0, item2);
-
-    this.transaction.commit();
+    this.setAdd(STOCK_IDS.get(0), L0, item0, 20L);
+    this.serialAdd(STOCK_IDS.get(1), L0, item0, "A");
 
     {
       final List<CAStockOccurrenceType> occ =
         this.executeSearch(search);
 
       assertEquals(
-        new CAStockOccurrenceSet(
+        new CAStockOccurrenceSerial(
+          STOCK_IDS.get(1),
           L0.summary(),
           new CAItemSummary(item0, ""),
-          15L
+          List.of(new CAItemSerial(TYPE0, "A"))
         ),
         occ.get(0)
       );
-      assertEquals(
-        new CAStockOccurrenceSet(
-          L0.summary(),
-          new CAItemSummary(item1, ""),
-          10L
-        ),
-        occ.get(1)
-      );
-      assertEquals(
-        new CAStockOccurrenceSet(
-          L0.summary(),
-          new CAItemSummary(item2, ""),
-          5L
-        ),
-        occ.get(2)
-      );
-      assertEquals(
-        new CAStockOccurrenceSerial(
-          L0.summary(),
-          new CAItemSummary(item0, ""),
-          new CAItemSerial("A")
-        ),
-        occ.get(3)
-      );
-      assertEquals(
-        new CAStockOccurrenceSerial(
-          L0.summary(),
-          new CAItemSummary(item1, ""),
-          new CAItemSerial("B")
-        ),
-        occ.get(4)
-      );
-      assertEquals(5, occ.size());
+      assertEquals(1, occ.size());
     }
   }
 
@@ -451,7 +410,7 @@ public final class CADatabaseStockSearchTest
    */
 
   @Test
-  public void testStockSearchSerialExact()
+  public void testStockSearchLocationExact()
     throws Exception
   {
     final var item0 = CAItemID.random();
@@ -464,47 +423,42 @@ public final class CADatabaseStockSearchTest
 
     final var search =
       new CAStockSearchParameters(
-        new CALocationMatchType.CALocationsAll(),
+        new CALocationMatchType.CALocationExact(L1.id()),
         new CAComparisonExactType.Anything<>(),
-        Set.of(SERIAL),
+        CAStockOccurrenceKind.all(),
         CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         PAGE_SIZE
       );
 
     this.locPut.execute(L0);
+    this.locPut.execute(L1);
+    this.locPut.execute(L2);
 
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.setAdd(L0, item0);
-    this.serialAdd(L0, item0, "A");
-    this.setAdd(L0, item1);
-    this.setAdd(L0, item1);
-    this.serialAdd(L0, item1, "B");
-    this.setAdd(L0, item2);
-
-    this.transaction.commit();
+    this.setAdd(STOCK_IDS.get(0), L0, item0, 20L);
+    this.setAdd(STOCK_IDS.get(1), L1, item1, 5L);
+    this.setAdd(STOCK_IDS.get(2), L2, item2, 30L);
 
     {
       final List<CAStockOccurrenceType> occ =
         this.executeSearch(search);
 
       assertEquals(
-        new CAStockOccurrenceSerial(
-          L0.summary(),
-          new CAItemSummary(item0, ""),
-          new CAItemSerial("A")
+        new CAStockOccurrenceSet(
+          STOCK_IDS.get(1),
+          new CALocationSummary(
+            L1.id(),
+            Optional.of(L0.id()),
+            CALocationPath.ofArray(new String[] {
+              "Loc0",
+              "Loc1"
+            })
+          ),
+          new CAItemSummary(item1, ""),
+          5
         ),
         occ.get(0)
       );
-      assertEquals(
-        new CAStockOccurrenceSerial(
-          L0.summary(),
-          new CAItemSummary(item1, ""),
-          new CAItemSerial("B")
-        ),
-        occ.get(1)
-      );
-      assertEquals(2, occ.size());
+      assertEquals(1, occ.size());
     }
   }
 
@@ -528,7 +482,7 @@ public final class CADatabaseStockSearchTest
 
     final var search =
       new CAStockSearchParameters(
-        new CALocationMatchType.CALocationWithDescendants(L0.id()),
+        new CALocationMatchType.CALocationWithDescendants(L1.id()),
         new CAComparisonExactType.Anything<>(),
         CAStockOccurrenceKind.all(),
         CAIncludeDeleted.INCLUDE_ONLY_LIVE,
@@ -539,11 +493,9 @@ public final class CADatabaseStockSearchTest
     this.locPut.execute(L1);
     this.locPut.execute(L2);
 
-    this.setAdd(L2, item0);
-    this.setAdd(L2, item0);
-    this.setAdd(L2, item0);
-
-    this.transaction.commit();
+    this.setAdd(STOCK_IDS.get(0), L0, item0, 20L);
+    this.setAdd(STOCK_IDS.get(1), L1, item1, 5L);
+    this.setAdd(STOCK_IDS.get(2), L2, item2, 30L);
 
     {
       final List<CAStockOccurrenceType> occ =
@@ -551,38 +503,74 @@ public final class CADatabaseStockSearchTest
 
       assertEquals(
         new CAStockOccurrenceSet(
-          L2.summary().withPath(
+          STOCK_IDS.get(2),
+          new CALocationSummary(
+            L2.id(),
+            Optional.of(L1.id()),
             CALocationPath.ofArray(new String[] {
-              "Loc0", "Loc1", "Loc2"
+              "Loc0",
+              "Loc1",
+              "Loc2"
             })
           ),
-          new CAItemSummary(item0, ""),
-          15L
+          new CAItemSummary(item2, ""),
+          30L
         ),
         occ.get(0)
       );
-      assertEquals(1, occ.size());
+
+      assertEquals(
+        new CAStockOccurrenceSet(
+          STOCK_IDS.get(1),
+          new CALocationSummary(
+            L1.id(),
+            Optional.of(L0.id()),
+            CALocationPath.ofArray(new String[] {
+              "Loc0",
+              "Loc1"
+            })
+          ),
+          new CAItemSummary(item1, ""),
+          5
+        ),
+        occ.get(1)
+      );
+
+      assertEquals(2, occ.size());
     }
   }
 
   private CADatabaseUnit serialAdd(
+    final CAStockInstanceID stock,
     final CALocation location,
     final CAItemID item,
     final String serial)
     throws CADatabaseException
   {
     return this.stockReposit.execute(
-      new CAStockRepositSerialAdd(item, location.id(), new CAItemSerial(serial))
+      new CAStockRepositSerialIntroduce(
+        stock,
+        item,
+        location.id(),
+        new CAItemSerial(TYPE0, serial)
+      )
     );
   }
 
   private void setAdd(
+    final CAStockInstanceID stock,
     final CALocation location,
-    final CAItemID item)
+    final CAItemID item,
+    final long count)
     throws CADatabaseException
   {
     this.stockReposit.execute(
-      new CAStockRepositSetAdd(item, location.id(), 5L)
+      new CAStockRepositSetIntroduce(
+        stock,
+        item,
+        location.id(),
+        count
+      )
     );
   }
 

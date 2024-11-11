@@ -14,42 +14,32 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.cardant.model;
 
-package com.io7m.cardant.protocol.inventory.cb.internal;
-
-import com.io7m.cardant.model.CAItemSerial;
-import com.io7m.cardant.protocol.api.CAProtocolException;
-import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
-import com.io7m.cedarbridge.runtime.api.CBString;
-
-import static com.io7m.cedarbridge.runtime.api.CBCore.string;
+import java.util.Objects;
 
 /**
- * A validator.
+ * An operation that removes a serial number from an existing stock instance.
+ *
+ * @param instance The instance
+ * @param serial   The item serial number
  */
 
-public enum CAUVItemSerials
-  implements CAProtocolMessageValidatorType<CAItemSerial, CBString>
+public record CAStockRepositSerialNumberRemove(
+  CAStockInstanceID instance,
+  CAItemSerial serial)
+  implements CAStockRepositType
 {
   /**
-   * A validator.
+   * An operation that removes a serial number from an existing stock instance.
+   *
+   * @param instance The instance
+   * @param serial   The item serial number
    */
 
-  ITEM_SERIALS;
-
-  @Override
-  public CBString convertToWire(
-    final CAItemSerial message)
-    throws CAProtocolException
+  public CAStockRepositSerialNumberRemove
   {
-    return string(message.value());
-  }
-
-  @Override
-  public CAItemSerial convertFromWire(
-    final CBString message)
-    throws CAProtocolException
-  {
-    return new CAItemSerial(message.value());
+    Objects.requireNonNull(instance, "instance");
+    Objects.requireNonNull(serial, "serial");
   }
 }

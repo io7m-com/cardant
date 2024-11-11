@@ -48,6 +48,7 @@ import com.io7m.cardant.database.postgres.internal.CADBQLocationTypesAssign;
 import com.io7m.cardant.database.postgres.internal.CADBQLocationTypesRevoke;
 import com.io7m.cardant.database.postgres.internal.CADBQMaintenance;
 import com.io7m.cardant.database.postgres.internal.CADBQStockCount;
+import com.io7m.cardant.database.postgres.internal.CADBQStockGet;
 import com.io7m.cardant.database.postgres.internal.CADBQStockReposit;
 import com.io7m.cardant.database.postgres.internal.CADBQStockSearch;
 import com.io7m.cardant.database.postgres.internal.CADBQTypePackageGetText;
@@ -90,6 +91,8 @@ module com.io7m.cardant.database.postgres
   requires org.jooq;
   requires org.postgresql.jdbc;
   requires org.slf4j;
+  requires com.fasterxml.jackson.databind;
+  requires com.io7m.junreachable.core;
 
   exports com.io7m.cardant.database.postgres.internal.tables
     to org.jooq;
@@ -133,6 +136,7 @@ CADBQLocationTypesAssign,
 CADBQLocationTypesRevoke,
 CADBQMaintenance,
 CADBQStockCount,
+CADBQStockGet,
 CADBQStockReposit,
 CADBQStockSearch,
 CADBQTypePackageGetText,
