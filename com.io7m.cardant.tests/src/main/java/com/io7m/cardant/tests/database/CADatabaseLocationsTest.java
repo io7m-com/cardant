@@ -45,7 +45,8 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CAStockRepositSetAdd;
+import com.io7m.cardant.model.CAStockInstanceID;
+import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
@@ -553,10 +554,14 @@ public final class CADatabaseLocationsTest
 
     this.locationPut.execute(loc0);
 
-    final var id = CAItemID.random();
-    this.itemCreate.execute(id);
+    final var itemID =
+      CAItemID.random();
+    final var instanceID =
+      CAStockInstanceID.random();
+
+    this.itemCreate.execute(itemID);
     this.itemReposit.execute(
-      new CAStockRepositSetAdd(id, loc0.id(), 10L));
+      new CAStockRepositSetIntroduce(instanceID, itemID, loc0.id(), 10L));
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {
@@ -588,10 +593,14 @@ public final class CADatabaseLocationsTest
 
     this.locationPut.execute(loc0);
 
-    final var id = CAItemID.random();
-    this.itemCreate.execute(id);
+    final var itemID =
+      CAItemID.random();
+    final var instanceID =
+      CAStockInstanceID.random();
+
+    this.itemCreate.execute(itemID);
     this.itemReposit.execute(
-      new CAStockRepositSetAdd(id, loc0.id(), 10L));
+      new CAStockRepositSetIntroduce(instanceID, itemID, loc0.id(), 10L));
 
     final var ex =
       assertThrows(CADatabaseException.class, () -> {

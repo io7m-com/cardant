@@ -11,6 +11,7 @@
   <entry key="error_create_queries">Failed to create database queries: {0}.</entry>
   <entry key="error_create_queries_unavailable">No supported database queries of the given type.</entry>
   <entry key="error_duplicate">Object already exists.</entry>
+  <entry key="error_duplicate_stock_instance">A stock instance already exists with the given ID.</entry>
   <entry key="error_duplicate_type_package">A version of the given type package is already installed.</entry>
   <entry key="error_duplicate_file">File already exists.</entry>
   <entry key="error_duplicate_item_attachment">Item attachment already exists.</entry>
@@ -19,6 +20,8 @@
   <entry key="error_duplicate_item">Item already exists.</entry>
   <entry key="error_duplicate_user">User already exists.</entry>
   <entry key="error_duplicate_deleted">A previously deleted object exists with this ID.</entry>
+  <entry key="error_stock_instance_is_not_set">The given stock instance is not a set instance.</entry>
+  <entry key="error_stock_instance_is_not_serial">The given stock instance is not a serial instance.</entry>
   <entry key="error_expected_command">Expected a command.</entry>
   <entry key="error_hash_value_mismatch">Hash value did not match.</entry>
   <entry key="error_http">HTTP server returned an error: {0}</entry>
@@ -80,7 +83,6 @@
   <entry key="error_expected_command_type">Expected a command type.</entry>
   <entry key="error_closed_channel">Channel is closed.</entry>
 
-  <entry key="message_type">Message Type</entry>
   <entry key="Command">Command</entry>
   <entry key="Expected Content Type">Expected Content Type</entry>
   <entry key="Expected Hash">Expected Hash</entry>
@@ -112,6 +114,7 @@
   <entry key="location">Location</entry>
   <entry key="location_id">Location ID</entry>
   <entry key="location_name">Location Name</entry>
+  <entry key="message_type">Message Type</entry>
   <entry key="metadata_name">Metadata Name</entry>
   <entry key="metadata_value">Metadata Value</entry>
   <entry key="name">Name</entry>
@@ -125,9 +128,9 @@
   <entry key="old_location_name">Old Location Name</entry>
   <entry key="old_location_parent_id">Old Location Parent ID</entry>
   <entry key="package">Package</entry>
-  <entry key="package_version">Package Version</entry>
   <entry key="package_installed">Package (Installed)</entry>
   <entry key="package_installed_version">Package Version (Installed)</entry>
+  <entry key="package_version">Package Version</entry>
   <entry key="problem">Problem</entry>
   <entry key="queries_class">Queries class</entry>
   <entry key="received_content_type">Received Content Type</entry>
@@ -135,6 +138,7 @@
   <entry key="received_type">Received Type</entry>
   <entry key="relation">Relation</entry>
   <entry key="starting_count">Starting Count</entry>
+  <entry key="stock_instance">Stock Instance</entry>
   <entry key="tag">Tag</entry>
   <entry key="tag_id">Tag ID</entry>
   <entry key="tag_name">Tag Name</entry>

@@ -19,8 +19,6 @@ package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CALocationName;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
-import com.io7m.medrina.api.MRoleName;
 import net.jqwik.api.Arbitraries;
 
 public final class CAArbLocationName extends CAArbAbstract<CALocationName>

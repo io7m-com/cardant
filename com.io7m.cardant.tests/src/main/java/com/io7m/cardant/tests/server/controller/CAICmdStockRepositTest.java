@@ -18,13 +18,18 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesStockType;
+import com.io7m.cardant.database.api.CADatabaseQueriesStockType.StockGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesStockType.StockRepositType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationPath;
-import com.io7m.cardant.model.CAStockRepositSetAdd;
+import com.io7m.cardant.model.CAStockInstanceID;
+import com.io7m.cardant.model.CAStockOccurrenceSet;
+import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -63,6 +68,9 @@ import static org.mockito.Mockito.when;
 public final class CAICmdStockRepositTest
   extends CACmdAbstractContract
 {
+  private static final CAStockInstanceID STOCK_INSTANCE_ID =
+    CAStockInstanceID.random();
+
   private static final CAItemID ITEM_ID =
     CAItemID.random();
 
@@ -100,7 +108,14 @@ public final class CAICmdStockRepositTest
         handler.execute(
           context,
           new CAICommandStockReposit(
-            new CAStockRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L)));
+            new CAStockRepositSetIntroduce(
+              STOCK_INSTANCE_ID,
+              ITEM_ID,
+              LOCATION_0.id(),
+              23L
+            )
+          )
+        );
       });
 
     /* Assert. */
@@ -120,20 +135,30 @@ public final class CAICmdStockRepositTest
   {
     /* Arrange. */
 
-    final var itemGet =
-      mock(ItemGetType.class);
-    final var itemReposit =
+    final var stockGet =
+      mock(StockGetType.class);
+    final var stockReposit =
       mock(StockRepositType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(ItemGetType.class))
-      .thenReturn(itemGet);
+    when(transaction.queries(StockGetType.class))
+      .thenReturn(stockGet);
     when(transaction.queries(StockRepositType.class))
-      .thenReturn(itemReposit);
+      .thenReturn(stockReposit);
 
-    when(itemGet.execute(any()))
-      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
+    when(stockGet.execute(any()))
+      .thenReturn(Optional.of(
+        new CAStockOccurrenceSet(
+          STOCK_INSTANCE_ID,
+          LOCATION_0.summary(),
+          new CAItemSummary(
+            ITEM_ID,
+            "Item"
+          ),
+          23L
+        )
+      ));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -157,7 +182,12 @@ public final class CAICmdStockRepositTest
     handler.execute(
       context,
       new CAICommandStockReposit(
-        new CAStockRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L))
+        new CAStockRepositSetIntroduce(
+          STOCK_INSTANCE_ID,
+          ITEM_ID,
+          LOCATION_0.id(),
+          23L
+        ))
     );
 
     /* Assert. */
@@ -165,14 +195,14 @@ public final class CAICmdStockRepositTest
     verify(transaction)
       .queries(StockRepositType.class);
     verify(transaction)
-      .queries(ItemGetType.class);
-    verify(itemReposit)
-      .execute(new CAStockRepositSetAdd(ITEM_ID, LOCATION_0.id(), 23L));
-    verify(itemGet, new Times(2))
-      .execute(ITEM_ID);
+      .queries(StockGetType.class);
+    verify(stockReposit)
+      .execute(new CAStockRepositSetIntroduce(STOCK_INSTANCE_ID, ITEM_ID, LOCATION_0.id(), 23L));
+    verify(stockGet, new Times(1))
+      .execute(STOCK_INSTANCE_ID);
 
     verifyNoMoreInteractions(transaction);
-    verifyNoMoreInteractions(itemReposit);
-    verifyNoMoreInteractions(itemGet);
+    verifyNoMoreInteractions(stockReposit);
+    verifyNoMoreInteractions(stockGet);
   }
 }

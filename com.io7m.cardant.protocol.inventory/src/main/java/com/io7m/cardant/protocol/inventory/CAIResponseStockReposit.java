@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -30,7 +30,7 @@ import java.util.UUID;
 
 public record CAIResponseStockReposit(
   UUID requestId,
-  CAItem data)
+  CAStockOccurrenceType data)
   implements CAIResponseType
 {
   /**

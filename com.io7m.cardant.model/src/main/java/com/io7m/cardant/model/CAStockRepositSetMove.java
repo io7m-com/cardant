@@ -19,34 +19,40 @@ package com.io7m.cardant.model;
 import java.util.Objects;
 
 /**
- * An operation that moves a set of items from one storage location to another.
+ * An operation that moves stock from one storage location to another.
  *
- * @param item         The item
- * @param fromLocation The source storage location
- * @param toLocation   The target storage location
- * @param count        The item count
+ * @param instanceSource The existing stock instance
+ * @param instanceTarget The target stock instance
+ * @param toLocation     The target storage location
+ * @param count          The item count
  */
 
 public record CAStockRepositSetMove(
-  CAItemID item,
-  CALocationID fromLocation,
+  CAStockInstanceID instanceSource,
+  CAStockInstanceID instanceTarget,
   CALocationID toLocation,
   long count)
   implements CAStockRepositType
 {
   /**
-   * An operation that moves a set of items from one storage location to another.
+   * An operation that moves stock from one storage location to another.
    *
-   * @param item         The item
-   * @param fromLocation The source storage location
-   * @param toLocation   The target storage location
-   * @param count        The item count
+   * @param instanceSource The existing stock instance
+   * @param instanceTarget The target stock instance
+   * @param toLocation     The target storage location
+   * @param count          The item count
    */
 
   public CAStockRepositSetMove
   {
-    Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(fromLocation, "fromLocation");
+    Objects.requireNonNull(instanceSource, "instanceSource");
+    Objects.requireNonNull(instanceTarget, "instanceTarget");
     Objects.requireNonNull(toLocation, "toLocation");
+  }
+
+  @Override
+  public CAStockInstanceID instance()
+  {
+    return this.instanceTarget;
   }
 }

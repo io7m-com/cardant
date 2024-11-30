@@ -593,8 +593,8 @@ public final class CAParsersTest
   {
     return Stream.of(
       "with-any-serial",
-      "[with-serial-equal-to x]",
-      "[with-serial-not-equal-to x]"
+      "[with-serial-equal-to m:x]",
+      "[with-serial-not-equal-to m:x]"
     ).map(text -> {
       return dynamicTest(
         "testSerialMatchParseIdentity_%s".formatted(text),

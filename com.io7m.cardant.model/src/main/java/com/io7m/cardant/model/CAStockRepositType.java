@@ -17,26 +17,23 @@
 package com.io7m.cardant.model;
 
 /**
- * The type of item reposit operations.
+ * The type of stock reposit operations.
  */
 
 public sealed interface CAStockRepositType
-  permits CAStockRepositSerialAdd,
+  permits CAStockRepositRemove,
+  CAStockRepositSerialIntroduce,
   CAStockRepositSerialMove,
-  CAStockRepositSerialRemove,
+  CAStockRepositSerialNumberAdd,
+  CAStockRepositSerialNumberRemove,
   CAStockRepositSetAdd,
+  CAStockRepositSetIntroduce,
   CAStockRepositSetMove,
   CAStockRepositSetRemove
 {
   /**
-   * @return The item ID
+   * @return The stock instance
    */
 
-  CAItemID item();
-
-  /**
-   * @return The item count
-   */
-
-  long count();
+  CAStockInstanceID instance();
 }

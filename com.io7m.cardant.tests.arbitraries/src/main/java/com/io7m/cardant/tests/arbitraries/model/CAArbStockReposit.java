@@ -17,10 +17,10 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAStockRepositSerialAdd;
+import com.io7m.cardant.model.CAStockRepositRemove;
 import com.io7m.cardant.model.CAStockRepositSerialMove;
-import com.io7m.cardant.model.CAStockRepositSerialRemove;
-import com.io7m.cardant.model.CAStockRepositSetAdd;
+import com.io7m.cardant.model.CAStockRepositSerialNumberAdd;
+import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.model.CAStockRepositSetMove;
 import com.io7m.cardant.model.CAStockRepositSetRemove;
 import com.io7m.cardant.model.CAStockRepositType;
@@ -36,12 +36,12 @@ public final class CAArbStockReposit extends CAArbAbstract<CAStockRepositType>
       CAStockRepositType.class,
 
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAStockRepositSetAdd.class),
+        Arbitraries.defaultFor(CAStockRepositSetIntroduce.class),
         Arbitraries.defaultFor(CAStockRepositSetMove.class),
         Arbitraries.defaultFor(CAStockRepositSetRemove.class),
-        Arbitraries.defaultFor(CAStockRepositSerialAdd.class),
+        Arbitraries.defaultFor(CAStockRepositSerialNumberAdd.class),
         Arbitraries.defaultFor(CAStockRepositSerialMove.class),
-        Arbitraries.defaultFor(CAStockRepositSerialRemove.class),
+        Arbitraries.defaultFor(CAStockRepositRemove.class),
         Arbitraries.integers().between(0, 5)
       ).as((add0, move0, remove0, add1, move1, remove1, which) -> {
         return switch (which) {

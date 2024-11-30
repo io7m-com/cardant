@@ -19,37 +19,37 @@ package com.io7m.cardant.model;
 import java.util.Objects;
 
 /**
- * An operation that removes an item with a serial number from a storage location.
+ * An operation that introduces a single item with a serial number to a
+ * storage location.
  *
+ * @param instance The instance
  * @param item     The item
  * @param location The storage location
  * @param serial   The item serial number
  */
 
-public record CAStockRepositSerialRemove(
+public record CAStockRepositSerialIntroduce(
+  CAStockInstanceID instance,
   CAItemID item,
   CALocationID location,
   CAItemSerial serial)
   implements CAStockRepositType
 {
   /**
-   * An operation that removes an item with a serial number from a storage location.
+   * An operation that introduces a single item with a serial number to a
+   * storage location.
    *
+   * @param instance The instance
    * @param item     The item
    * @param location The storage location
    * @param serial   The item serial number
    */
 
-  public CAStockRepositSerialRemove
+  public CAStockRepositSerialIntroduce
   {
+    Objects.requireNonNull(instance, "instance");
     Objects.requireNonNull(item, "item");
     Objects.requireNonNull(location, "location");
     Objects.requireNonNull(serial, "serial");
-  }
-
-  @Override
-  public long count()
-  {
-    return 1L;
   }
 }

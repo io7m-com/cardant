@@ -32,6 +32,7 @@ import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockOccurrenceKind;
 import com.io7m.cardant.model.CAStockOccurrenceSerial;
 import com.io7m.cardant.model.CAStockOccurrenceSet;
@@ -49,6 +50,7 @@ import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,8 +59,8 @@ import java.util.Set;
 import static com.io7m.cardant.database.postgres.internal.CADBLocationPaths.LOCATION_PATH_NAME;
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
-import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.STOCK;
 import static io.opentelemetry.semconv.trace.attributes.SemanticAttributes.DB_STATEMENT;
 
 /**
@@ -80,15 +82,6 @@ public final class CADBQStockSearch
     );
 
   /**
-   * @return A query provider
-   */
-
-  public static CADBQueryProviderType provider()
-  {
-    return () -> SERVICE;
-  }
-
-  /**
    * Construct a query.
    *
    * @param transaction The transaction
@@ -100,54 +93,13 @@ public final class CADBQStockSearch
     super(transaction);
   }
 
-  @Override
-  protected CADatabaseStockSearchType onExecute(
-    final DSLContext context,
-    final CAStockSearchParameters parameters)
-    throws CADatabaseException
+  /**
+   * @return A query provider
+   */
+
+  public static CADBQueryProviderType provider()
   {
-    final var tableSource =
-      ITEM_LOCATIONS
-        .join(ITEMS)
-        .on(ITEM_LOCATIONS.ITEM_LOCATION_ITEM.eq(ITEMS.ITEM_ID))
-        .join(LOCATIONS)
-        .on(ITEM_LOCATIONS.ITEM_LOCATION.eq(LOCATIONS.LOCATION_ID));
-
-    final var locationCondition =
-      createLocationMatchCondition(parameters.locationMatch());
-    final var itemCondition =
-      createItemMatchCondition(parameters.itemMatch());
-    final var kindCondition =
-      createKindCondition(parameters.includeOccurrences());
-    final var deletedCondition =
-      createDeletedCondition(parameters.includeDeleted());
-    final var allConditions =
-      DSL.and(
-        locationCondition,
-        itemCondition,
-        deletedCondition,
-        kindCondition
-      );
-
-    final var orderField =
-      new JQField(ITEM_LOCATIONS.ITEM_LOCATION_COUNT, JQOrder.DESCENDING);
-
-    final var pageParameters =
-      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
-        .addSortField(orderField)
-        .addWhereCondition(allConditions)
-        .setPageSize(parameters.pageSize())
-        .setStatementListener(statement -> {
-          Span.current().setAttribute(DB_STATEMENT, statement.toString());
-        }).build();
-
-    final var pages =
-      JQKeysetRandomAccessPagination.createPageDefinitions(
-        context,
-        pageParameters
-      );
-
-    return new CAStockSearch(pages);
+    return () -> SERVICE;
   }
 
   static Condition createKindCondition(
@@ -160,8 +112,12 @@ public final class CADBQStockSearch
     Condition cond = DSL.falseCondition();
     for (final var kind : kinds) {
       cond = switch (kind) {
-        case SERIAL -> cond.or(ITEM_LOCATIONS.ITEM_LOCATION_SERIAL.isNotNull());
-        case SET -> cond.or(ITEM_LOCATIONS.ITEM_LOCATION_SERIAL.isNull());
+        case SERIAL -> {
+          yield cond.or(STOCK.STOCK_SERIALS.isNotNull());
+        }
+        case SET -> {
+          yield cond.or(STOCK.STOCK_SERIALS.isNull());
+        }
       };
     }
     return cond;
@@ -193,16 +149,66 @@ public final class CADBQStockSearch
         yield DSL.trueCondition();
       }
       case final CAComparisonExactType.IsEqualTo<CAItemID> isEqualTo -> {
-        yield ITEM_LOCATIONS.ITEM_LOCATION_ITEM.eq(
-          isEqualTo.value().id()
-        );
+        yield ITEMS.ITEM_ID.eq(isEqualTo.value().id());
       }
       case final CAComparisonExactType.IsNotEqualTo<CAItemID> isNotEqualTo -> {
-        yield ITEM_LOCATIONS.ITEM_LOCATION_ITEM.notEqual(
-          isNotEqualTo.value().id()
-        );
+        yield ITEMS.ITEM_ID.notEqual(isNotEqualTo.value().id());
       }
     };
+  }
+
+  @Override
+  protected CADatabaseStockSearchType onExecute(
+    final DSLContext context,
+    final CAStockSearchParameters parameters)
+    throws CADatabaseException
+  {
+    final var locationCondition =
+      createLocationMatchCondition(parameters.locationMatch());
+    final var itemCondition =
+      createItemMatchCondition(parameters.itemMatch());
+    final var kindCondition =
+      createKindCondition(parameters.includeOccurrences());
+    final var deletedCondition =
+      createDeletedCondition(parameters.includeDeleted());
+
+    final var tableSource =
+      STOCK
+        .join(ITEMS)
+        .on(STOCK.STOCK_ITEM.eq(ITEMS.ITEM_ID))
+        .join(LOCATIONS)
+        .on(STOCK.STOCK_LOCATION.eq(LOCATIONS.LOCATION_ID));
+
+    final var allConditions =
+      DSL.and(
+        locationCondition,
+        itemCondition,
+        deletedCondition,
+        kindCondition
+      );
+
+    final var orderField =
+      new JQField(
+        STOCK.STOCK_COUNT,
+        JQOrder.DESCENDING
+      );
+
+    final var pageParameters =
+      JQKeysetRandomAccessPaginationParameters.forTable(tableSource)
+        .addSortField(orderField)
+        .addWhereCondition(allConditions)
+        .setPageSize(parameters.pageSize())
+        .setStatementListener(statement -> {
+          Span.current().setAttribute(DB_STATEMENT, statement.toString());
+        }).build();
+
+    final var pages =
+      JQKeysetRandomAccessPagination.createPageDefinitions(
+        context,
+        pageParameters
+      );
+
+    return new CAStockSearch(pages);
   }
 
   static Condition createLocationMatchCondition(
@@ -210,12 +216,12 @@ public final class CADBQStockSearch
   {
     return switch (match) {
       case final CALocationExact exact -> {
-        yield ITEM_LOCATIONS.ITEM_LOCATION.eq(exact.location().id());
+        yield STOCK.STOCK_LOCATION.eq(exact.location().id());
       }
       case final CALocationWithDescendants withDescendants -> {
         yield DSL.condition(
           "ARRAY[?] && (SELECT ARRAY(SELECT location_descendants(?)))",
-          ITEM_LOCATIONS.ITEM_LOCATION,
+          STOCK.STOCK_LOCATION,
           withDescendants.location().id()
         );
       }
@@ -235,6 +241,59 @@ public final class CADBQStockSearch
       super(pages);
     }
 
+    private static CAStockOccurrenceType mapRecord(
+      final org.jooq.Record r)
+    {
+      final var isSerial =
+        r.get(STOCK.STOCK_SERIALS) != null;
+
+      final var instance =
+        new CAStockInstanceID(r.get(STOCK.STOCK_INSTANCE));
+
+      final var itemSummary =
+        new CAItemSummary(
+          new CAItemID(r.get(ITEMS.ITEM_ID)),
+          r.get(ITEMS.ITEM_NAME)
+        );
+
+      final var locationSummary =
+        new CALocationSummary(
+          new CALocationID(r.get(STOCK.STOCK_LOCATION)),
+          Optional.ofNullable(r.get(LOCATIONS.LOCATION_PARENT))
+            .map(CALocationID::new),
+          CALocationPath.ofArray(r.get(LOCATION_PATH_NAME))
+        );
+
+      if (isSerial) {
+        final var serialsJSON =
+          r.get(STOCK.STOCK_SERIALS);
+
+        List<CAItemSerial> serials;
+        try {
+          serials = CADBSerialsJSON.serialsFromJSON(serialsJSON)
+            .stream()
+            .sorted(CAItemSerial::compareTo)
+            .toList();
+        } catch (final IOException e) {
+          serials = List.of();
+        }
+
+        return new CAStockOccurrenceSerial(
+          instance,
+          locationSummary,
+          itemSummary,
+          serials
+        );
+      }
+
+      return new CAStockOccurrenceSet(
+        instance,
+        locationSummary,
+        itemSummary,
+        r.<Long>get(STOCK.STOCK_COUNT).longValue()
+      );
+    }
+
     @Override
     protected CAPage<CAStockOccurrenceType> page(
       final CADatabaseTransaction transaction,
@@ -249,11 +308,12 @@ public final class CADBQStockSearch
       try {
         final var query =
           page.queryFields(context, List.of(
+            ITEMS.ITEM_ID,
             ITEMS.ITEM_NAME,
-            ITEM_LOCATIONS.ITEM_LOCATION,
-            ITEM_LOCATIONS.ITEM_LOCATION_COUNT,
-            ITEM_LOCATIONS.ITEM_LOCATION_ITEM,
-            ITEM_LOCATIONS.ITEM_LOCATION_SERIAL,
+            STOCK.STOCK_INSTANCE,
+            STOCK.STOCK_LOCATION,
+            STOCK.STOCK_SERIALS,
+            STOCK.STOCK_COUNT,
             CADBLocationPaths.locationPathFromColumnNamed(
               context,
               LOCATIONS.LOCATION_ID
@@ -278,42 +338,6 @@ public final class CADBQStockSearch
       } finally {
         querySpan.end();
       }
-    }
-
-    private static CAStockOccurrenceType mapRecord(
-      final org.jooq.Record r)
-    {
-      final var serial =
-        r.get(ITEM_LOCATIONS.ITEM_LOCATION_SERIAL);
-
-      final var locationSummary =
-        new CALocationSummary(
-          new CALocationID(r.get(ITEM_LOCATIONS.ITEM_LOCATION)),
-          Optional.ofNullable(
-            r.get(LOCATIONS.LOCATION_PARENT)
-          ).map(CALocationID::new),
-          CALocationPath.ofArray(r.get(LOCATION_PATH_NAME))
-        );
-
-      final var itemSummary =
-        new CAItemSummary(
-          new CAItemID(r.get(ITEM_LOCATIONS.ITEM_LOCATION_ITEM)),
-          r.get(ITEMS.ITEM_NAME)
-        );
-
-      if (serial == null) {
-        return new CAStockOccurrenceSet(
-          locationSummary,
-          itemSummary,
-          r.<Long>get(ITEM_LOCATIONS.ITEM_LOCATION_COUNT).longValue()
-        );
-      }
-
-      return new CAStockOccurrenceSerial(
-        locationSummary,
-        itemSummary,
-        new CAItemSerial(r.get(ITEM_LOCATIONS.ITEM_LOCATION_SERIAL))
-      );
     }
   }
 }

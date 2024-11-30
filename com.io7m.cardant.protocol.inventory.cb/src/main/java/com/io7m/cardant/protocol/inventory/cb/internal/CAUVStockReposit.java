@@ -18,27 +18,33 @@
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAStockRepositSerialAdd;
+import com.io7m.cardant.model.CAStockInstanceID;
+import com.io7m.cardant.model.CAStockRepositRemove;
+import com.io7m.cardant.model.CAStockRepositSerialIntroduce;
 import com.io7m.cardant.model.CAStockRepositSerialMove;
-import com.io7m.cardant.model.CAStockRepositSerialRemove;
+import com.io7m.cardant.model.CAStockRepositSerialNumberAdd;
+import com.io7m.cardant.model.CAStockRepositSerialNumberRemove;
 import com.io7m.cardant.model.CAStockRepositSetAdd;
+import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.model.CAStockRepositSetMove;
 import com.io7m.cardant.model.CAStockRepositSetRemove;
 import com.io7m.cardant.model.CAStockRepositType;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit;
-import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSerialAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSerialIntroduce;
 import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSerialMove;
+import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSerialNumberAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSerialNumberRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSerialRemove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSetAdd;
+import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSetIntroduce;
 import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSetMove;
 import com.io7m.cardant.protocol.inventory.cb.CAI1StockReposit.CAI1StockRepositSetRemove;
 import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 
-import static com.io7m.cedarbridge.runtime.api.CBCore.string;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVItemSerial.ITEM_SERIAL;
 
 /**
  * A validator.
@@ -58,8 +64,9 @@ public enum CAUVStockReposit
     final CAStockRepositType message)
   {
     return switch (message) {
-      case final CAStockRepositSetAdd a -> {
-        yield new CAI1StockRepositSetAdd(
+      case final CAStockRepositSetIntroduce a -> {
+        yield new CAI1StockRepositSetIntroduce(
+          new CBUUID(a.instance().id()),
           new CBUUID(a.item().id()),
           new CBUUID(a.location().id()),
           new CBIntegerUnsigned64(a.count())
@@ -68,43 +75,60 @@ public enum CAUVStockReposit
 
       case final CAStockRepositSetRemove r -> {
         yield new CAI1StockRepositSetRemove(
-          new CBUUID(r.item().id()),
-          new CBUUID(r.location().id()),
+          new CBUUID(r.instance().id()),
           new CBIntegerUnsigned64(r.count())
         );
       }
 
       case final CAStockRepositSetMove m -> {
         yield new CAI1StockRepositSetMove(
-          new CBUUID(m.item().id()),
-          new CBUUID(m.fromLocation().id()),
+          new CBUUID(m.instanceSource().id()),
+          new CBUUID(m.instanceTarget().id()),
           new CBUUID(m.toLocation().id()),
           new CBIntegerUnsigned64(m.count())
         );
       }
 
-      case final CAStockRepositSerialAdd a -> {
-        yield new CAI1StockRepositSerialAdd(
-          new CBUUID(a.item().id()),
-          new CBUUID(a.location().id()),
-          string(a.serial().value())
+      case final CAStockRepositSerialNumberAdd a -> {
+        yield new CAI1StockRepositSerialNumberAdd(
+          new CBUUID(a.instance().id()),
+          ITEM_SERIAL.convertToWire(a.serial())
         );
       }
 
-      case final CAStockRepositSerialRemove r -> {
+      case final CAStockRepositRemove r -> {
         yield new CAI1StockRepositSerialRemove(
-          new CBUUID(r.item().id()),
-          new CBUUID(r.location().id()),
-          string(r.serial().value())
+          new CBUUID(r.instance().id())
         );
       }
 
       case final CAStockRepositSerialMove m -> {
         yield new CAI1StockRepositSerialMove(
-          new CBUUID(m.item().id()),
-          new CBUUID(m.fromLocation().id()),
-          new CBUUID(m.toLocation().id()),
-          string(m.serial().value())
+          new CBUUID(m.instance().id()),
+          new CBUUID(m.toLocation().id())
+        );
+      }
+
+      case final CAStockRepositSerialIntroduce r -> {
+        yield new CAI1StockRepositSerialIntroduce(
+          new CBUUID(r.instance().id()),
+          new CBUUID(r.item().id()),
+          new CBUUID(r.location().id()),
+          ITEM_SERIAL.convertToWire(r.serial())
+        );
+      }
+
+      case final CAStockRepositSerialNumberRemove r -> {
+        yield new CAI1StockRepositSerialNumberRemove(
+          new CBUUID(r.instance().id()),
+          ITEM_SERIAL.convertToWire(r.serial())
+        );
+      }
+
+      case final CAStockRepositSetAdd r -> {
+        yield new CAI1StockRepositSetAdd(
+          new CBUUID(r.instance().id()),
+          new CBIntegerUnsigned64(r.count())
         );
       }
     };
@@ -117,8 +141,8 @@ public enum CAUVStockReposit
     return switch (message) {
       case final CAI1StockRepositSetMove m -> {
         yield new CAStockRepositSetMove(
-          new CAItemID(m.fieldItemId().value()),
-          new CALocationID(m.fieldLocationFrom().value()),
+          new CAStockInstanceID(m.fieldInstanceSource().value()),
+          new CAStockInstanceID(m.fieldInstanceTarget().value()),
           new CALocationID(m.fieldLocationTo().value()),
           m.fieldCount().value()
         );
@@ -126,42 +150,60 @@ public enum CAUVStockReposit
 
       case final CAI1StockRepositSetRemove r -> {
         yield new CAStockRepositSetRemove(
-          new CAItemID(r.fieldItemId().value()),
-          new CALocationID(r.fieldLocationId().value()),
+          new CAStockInstanceID(r.fieldInstanceId().value()),
           r.fieldCount().value()
         );
       }
 
-      case final CAI1StockRepositSetAdd a -> {
-        yield new CAStockRepositSetAdd(
+      case final CAI1StockRepositSetIntroduce a -> {
+        yield new CAStockRepositSetIntroduce(
+          new CAStockInstanceID(a.fieldInstanceId().value()),
           new CAItemID(a.fieldItemId().value()),
           new CALocationID(a.fieldLocationId().value()),
           a.fieldCount().value()
         );
       }
 
-      case final CAI1StockRepositSerialAdd a -> {
-        yield new CAStockRepositSerialAdd(
-          new CAItemID(a.fieldItemId().value()),
-          new CALocationID(a.fieldLocationId().value()),
-          new CAItemSerial(a.fieldSerial().value())
+      case final CAI1StockRepositSerialIntroduce r -> {
+        yield new CAStockRepositSerialIntroduce(
+          new CAStockInstanceID(r.fieldInstanceId().value()),
+          new CAItemID(r.fieldItemId().value()),
+          new CALocationID(r.fieldLocationId().value()),
+          ITEM_SERIAL.convertFromWire(r.fieldSerial())
         );
       }
 
-      case final CAI1StockReposit.CAI1StockRepositSerialMove m -> {
+      case final CAI1StockRepositSerialMove r -> {
         yield new CAStockRepositSerialMove(
-          new CAItemID(m.fieldItemId().value()),
-          new CALocationID(m.fieldLocationFrom().value()),
-          new CALocationID(m.fieldLocationTo().value()),
-          new CAItemSerial(m.fieldSerial().value())
+          new CAStockInstanceID(r.fieldInstanceId().value()),
+          new CALocationID(r.fieldLocationTo().value())
+        );
+      }
+
+      case final CAI1StockRepositSerialNumberAdd r -> {
+        yield new CAStockRepositSerialNumberAdd(
+          new CAStockInstanceID(r.fieldInstanceId().value()),
+          ITEM_SERIAL.convertFromWire(r.fieldSerial())
+        );
+      }
+
+      case final CAI1StockRepositSerialNumberRemove r -> {
+        yield new CAStockRepositSerialNumberRemove(
+          new CAStockInstanceID(r.fieldInstanceId().value()),
+          ITEM_SERIAL.convertFromWire(r.fieldSerial())
         );
       }
 
       case final CAI1StockRepositSerialRemove r -> {
-        yield new CAStockRepositSerialRemove(
-          new CAItemID(r.fieldItemId().value()),
-          new CALocationID(r.fieldLocationId().value()),
-          new CAItemSerial(r.fieldSerial().value())
+        yield new CAStockRepositRemove(
+          new CAStockInstanceID(r.fieldInstanceId().value())
+        );
+      }
+
+      case final CAI1StockRepositSetAdd r -> {
+        yield new CAStockRepositSetAdd(
+          new CAStockInstanceID(r.fieldInstanceId().value()),
+          r.fieldCount().value()
         );
       }
     };

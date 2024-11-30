@@ -17,8 +17,7 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockRepositSetAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
@@ -42,22 +41,13 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 public final class CAShellCmdStockRepositSetAdd
   extends CAShellCmdAbstractCR<CAICommandStockReposit, CAIResponseStockReposit>
 {
-  private static final QParameterNamed1<CAItemID> ITEM =
+  private static final QParameterNamed1<CAStockInstanceID> INSTANCE =
     new QParameterNamed1<>(
-      "--item",
+      "--instance",
       List.of(),
-      new QConstant("The item ID."),
+      new QConstant("The stock instance ID."),
       Optional.empty(),
-      CAItemID.class
-    );
-
-  private static final QParameterNamed1<CALocationID> LOCATION =
-    new QParameterNamed1<>(
-      "--location",
-      List.of(),
-      new QConstant("The location ID."),
-      Optional.empty(),
-      CALocationID.class
+      CAStockInstanceID.class
     );
 
   private static final QParameterNamed1<Long> COUNT =
@@ -82,7 +72,7 @@ public final class CAShellCmdStockRepositSetAdd
       inServices,
       new QCommandMetadata(
         "stock-reposit-set-add",
-        new QConstant("Add instances of items to locations."),
+        new QConstant("Add stock instances to locations."),
         Optional.empty()
       ),
       CAICommandStockReposit.class
@@ -92,7 +82,7 @@ public final class CAShellCmdStockRepositSetAdd
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ITEM, LOCATION, COUNT);
+    return List.of(INSTANCE, COUNT);
   }
 
   @Override
@@ -103,22 +93,20 @@ public final class CAShellCmdStockRepositSetAdd
     final var client =
       this.client();
 
-    final var itemID =
-      context.parameterValue(ITEM);
-    final var locationID =
-      context.parameterValue(LOCATION);
+    final var instanceID =
+      context.parameterValue(INSTANCE);
     final var count =
       context.parameterValue(COUNT);
 
     final var item =
       client.sendAndWaitOrThrow(
         new CAICommandStockReposit(
-          new CAStockRepositSetAdd(itemID, locationID, count.longValue())
+          new CAStockRepositSetAdd(instanceID, count.longValue())
         ),
         this.commandTimeout()
       ).data();
 
-    this.formatter().formatItem(item);
+    this.formatter().formatStock(item);
     return SUCCESS;
   }
 }

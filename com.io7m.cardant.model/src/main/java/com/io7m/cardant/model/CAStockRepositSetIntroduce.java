@@ -16,27 +16,37 @@
 
 package com.io7m.cardant.model;
 
-import java.util.UUID;
+import java.util.Objects;
 
 /**
- * The type of ID values in the model.
+ * An operation that adds a set of items to a storage location.
+ *
+ * @param instance The stock instance
+ * @param item     The item
+ * @param location The storage location
+ * @param count    The item count
  */
 
-public sealed interface CAIdType
-  permits CAFileID, CAItemID, CALocationID, CAStockInstanceID, CAUserID
+public record CAStockRepositSetIntroduce(
+  CAStockInstanceID instance,
+  CAItemID item,
+  CALocationID location,
+  long count)
+  implements CAStockRepositType
 {
   /**
-   * @return The raw ID value
+   * An operation that adds a set of items to a storage location.
+   *
+   * @param instance The stock instance
+   * @param item     The item
+   * @param location The storage location
+   * @param count    The item count
    */
 
-  UUID id();
-
-  /**
-   * @return This ID as a machine-readable value
-   */
-
-  default String displayId()
+  public CAStockRepositSetIntroduce
   {
-    return this.id().toString();
+    Objects.requireNonNull(instance, "instance");
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(location, "location");
   }
 }

@@ -77,7 +77,7 @@ public final class CAConverterTests
     LoggerFactory.getLogger(CAConverterTests.class);
 
   /**
-   * 64 random bytes that definitely won't be parsed by any syntax rules.
+   * Random bytes that definitely won't be parsed by any syntax rules.
    */
 
   private static final byte[] MISC = {
@@ -91,7 +91,8 @@ public final class CAConverterTests
     (byte) 231, (byte) 140, (byte) 20, (byte) 148, (byte) 100, (byte) 217,
     (byte) 122, (byte) 34, (byte) 203, (byte) 220, (byte) 81, (byte) 235,
     (byte) 159, (byte) 195, (byte) 174, (byte) 37,
-    (byte) 238, (byte) 147, (byte) 17, (byte) 250, (byte) 93, (byte) 138
+    (byte) 238, (byte) 147, (byte) 17, (byte) 250, (byte) 93, (byte) 138,
+    (byte) '/',
   };
 
   private static final CAStrings STRINGS =
@@ -197,30 +198,33 @@ public final class CAConverterTests
   public Stream<DynamicTest> testBruteForce()
   {
     return Stream.of(
-      CADescriptionMatchConverter.class,
-      CAFileIdConverter.class,
-      CAItemIdConverter.class,
-      CAItemIDMatchConverter.class,
-      CAItemSerialMatchConverter.class,
-      CALocationIdConverter.class,
-      CALocationMatchConverter.class,
-      CAMediaTypeMatchConverter.class,
-      CAMetadataConverter.class,
-      CAMetadataMatchConverter.class,
-      CAMonetaryRangeConverter.class,
-      CANameMatchConverter.class,
-      CAPatternConverter.class,
-      CARangeInclusiveDConverter.class,
-      CARangeInclusiveLConverter.class,
-      CARDottedNameConverter.class,
-      CARoleNameConverter.class,
-      CATimeRangeConverter.class,
-      CATypeMatchConverter.class,
-      CATypePackageUninstallBehaviorConverter.class,
-      CATypeRecordFieldIdentifierConverter.class,
-      CATypeRecordIdentifierConverter.class,
-      CAUserIdConverter.class,
-      CAVersionConverter.class
+      com.io7m.cardant.shell.internal.converters.CADescriptionMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAFileIdConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAItemIdConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAItemIDMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAItemSerialConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAItemSerialMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CALocationIdConverter.class,
+      com.io7m.cardant.shell.internal.converters.CALocationMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CALocationNameConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAMediaTypeMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAMetadataConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAMetadataMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAMonetaryRangeConverter.class,
+      com.io7m.cardant.shell.internal.converters.CANameMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAPatternConverter.class,
+      com.io7m.cardant.shell.internal.converters.CARangeInclusiveDConverter.class,
+      com.io7m.cardant.shell.internal.converters.CARangeInclusiveLConverter.class,
+      com.io7m.cardant.shell.internal.converters.CARDottedNameConverter.class,
+      com.io7m.cardant.shell.internal.converters.CARoleNameConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAStockInstanceIdConverter.class,
+      com.io7m.cardant.shell.internal.converters.CATimeRangeConverter.class,
+      com.io7m.cardant.shell.internal.converters.CATypeMatchConverter.class,
+      com.io7m.cardant.shell.internal.converters.CATypePackageUninstallBehaviorConverter.class,
+      com.io7m.cardant.shell.internal.converters.CATypeRecordFieldIdentifierConverter.class,
+      com.io7m.cardant.shell.internal.converters.CATypeRecordIdentifierConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAUserIdConverter.class,
+      com.io7m.cardant.shell.internal.converters.CAVersionConverter.class
     ).map(this::bruteForceOf);
   }
 

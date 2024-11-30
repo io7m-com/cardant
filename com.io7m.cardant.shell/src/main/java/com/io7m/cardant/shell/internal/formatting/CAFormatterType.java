@@ -239,4 +239,16 @@ public interface CAFormatterType
   void formatStockPage(
     CAPage<CAStockOccurrenceType> page)
     throws Exception;
+
+  /**
+   * Format a stock occurrence.
+   *
+   * @param item The item
+   *
+   * @throws Exception On errors
+   */
+
+  void formatStock(
+    CAStockOccurrenceType item)
+    throws Exception;
 }

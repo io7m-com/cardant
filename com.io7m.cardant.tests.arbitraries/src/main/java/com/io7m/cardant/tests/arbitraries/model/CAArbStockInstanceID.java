@@ -14,29 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
 
-import java.util.UUID;
+package com.io7m.cardant.tests.arbitraries.model;
 
-/**
- * The type of ID values in the model.
- */
+import com.io7m.cardant.model.CAStockInstanceID;
+import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
+import net.jqwik.api.Arbitraries;
 
-public sealed interface CAIdType
-  permits CAFileID, CAItemID, CALocationID, CAStockInstanceID, CAUserID
+public final class CAArbStockInstanceID extends CAArbAbstract<CAStockInstanceID>
 {
-  /**
-   * @return The raw ID value
-   */
-
-  UUID id();
-
-  /**
-   * @return This ID as a machine-readable value
-   */
-
-  default String displayId()
+  public CAArbStockInstanceID()
   {
-    return this.id().toString();
+    super(CAStockInstanceID.class, () -> Arbitraries.create(CAStockInstanceID::random));
   }
 }

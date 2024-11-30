@@ -21,28 +21,24 @@ import java.util.Objects;
 /**
  * An operation that removes a set of items from a storage location.
  *
- * @param item     The item
- * @param location The storage location
+ * @param instance The instance
  * @param count    The item count
  */
 
 public record CAStockRepositSetRemove(
-  CAItemID item,
-  CALocationID location,
+  CAStockInstanceID instance,
   long count)
   implements CAStockRepositType
 {
   /**
    * An operation that removes a set of items from a storage location.
    *
-   * @param item     The item
-   * @param location The storage location
+   * @param instance The instance
    * @param count    The item count
    */
 
   public CAStockRepositSetRemove
   {
-    Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(location, "location");
+    Objects.requireNonNull(instance, "instance");
   }
 }

@@ -26,6 +26,7 @@ import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAMetadataType;
@@ -60,6 +61,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.shell.internal.formatting.CAFormatterRaw.formatSize;
 import static com.io7m.tabla.core.TColumnWidthConstraint.atLeastContent;
@@ -655,7 +657,12 @@ public final class CAFormatterPretty implements CAFormatterType
             .addCell(serial.location().id().displayId())
             .addCell(serial.item().id().displayId())
             .addCell(serial.item().name())
-            .addCell("(Serial %s)".formatted(serial.serial().value()));
+            .addCell("(Serials %s)".formatted(
+              serial.serials()
+                .stream()
+                .map(CAItemSerial::toString)
+                .collect(Collectors.joining(", ")))
+            );
         }
         case final CAStockOccurrenceSet set -> {
           tableBuilder.addRow()
@@ -668,6 +675,93 @@ public final class CAFormatterPretty implements CAFormatterType
     }
 
     this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatStock(
+    final CAStockOccurrenceType item)
+    throws Exception
+  {
+    switch (item) {
+      case final CAStockOccurrenceSerial serial -> {
+        {
+          final var tableBuilder =
+            Tabla.builder()
+              .setWidthConstraint(this.softTableWidth(2))
+              .declareColumn("Attribute", atLeastContentOrHeader())
+              .declareColumn("Value", atLeastContentOrHeader());
+
+          tableBuilder.addRow()
+            .addCell("Instance")
+            .addCell(item.instance().displayId());
+
+          tableBuilder.addRow()
+            .addCell("Location")
+            .addCell(item.location().id().displayId());
+
+          tableBuilder.addRow()
+            .addCell("Item ID")
+            .addCell(item.item().id().displayId());
+
+          tableBuilder.addRow()
+            .addCell("Item Name")
+            .addCell(item.item().name());
+
+          this.renderTable(tableBuilder.build());
+        }
+
+        if (!serial.serials().isEmpty()) {
+          this.terminal.writer()
+            .println("Serial Numbers");
+        }
+
+        {
+          final var tableBuilder =
+            Tabla.builder()
+              .setWidthConstraint(this.softTableWidth(2))
+              .declareColumn("Type", atLeastContentOrHeader())
+              .declareColumn("Value", atLeastContentOrHeader());
+
+          for (final var number : serial.serials()) {
+            tableBuilder.addRow()
+              .addCell(number.type().value())
+              .addCell(number.value());
+          }
+
+          this.renderTable(tableBuilder.build());
+        }
+      }
+
+      case final CAStockOccurrenceSet set -> {
+        final var tableBuilder =
+          Tabla.builder()
+            .setWidthConstraint(this.softTableWidth(2))
+            .declareColumn("Attribute", atLeastContentOrHeader())
+            .declareColumn("Value", atLeastContentOrHeader());
+
+        tableBuilder.addRow()
+          .addCell("Instance")
+          .addCell(item.instance().displayId());
+
+        tableBuilder.addRow()
+          .addCell("Location")
+          .addCell(item.location().id().displayId());
+
+        tableBuilder.addRow()
+          .addCell("Item ID")
+          .addCell(item.item().id().displayId());
+
+        tableBuilder.addRow()
+          .addCell("Item Name")
+          .addCell(item.item().name());
+
+        tableBuilder.addRow()
+          .addCell("Count")
+          .addCell(Long.toUnsignedString(set.count()));
+
+        this.renderTable(tableBuilder.build());
+      }
+    }
   }
 
   private void formatLocationAttributes(

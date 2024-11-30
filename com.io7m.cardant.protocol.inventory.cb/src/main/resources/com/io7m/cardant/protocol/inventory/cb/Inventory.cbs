@@ -49,11 +49,17 @@
 
 [documentation CAI1Id "An identifier value."]
 [variant CAI1Id
-  [case CAI1FileID     [field id cb:UUID]]
-  [case CAI1ItemID     [field id cb:UUID]]
-  [case CAI1LocationID [field id cb:UUID]]
-  [case CAI1UserID     [field id cb:UUID]]
+  [case CAI1FileID           [field id cb:UUID]]
+  [case CAI1ItemID           [field id cb:UUID]]
+  [case CAI1LocationID       [field id cb:UUID]]
+  [case CAI1UserID           [field id cb:UUID]]
+  [case CAI1StockInstanceID  [field id cb:UUID]]
 ]
+
+[documentation CAI1ItemSerial "A serial number."]
+[record CAI1ItemSerial
+  [field type  cb:String]
+  [field value cb:String]]
 
 [documentation CAI1IncludeDeleted "Include deleted data in search results."]
 [variant CAI1IncludeDeleted
@@ -177,63 +183,87 @@
 
 [documentation CAI1StockReposit "The type of item reposit operations."]
 [variant CAI1StockReposit
-  [documentation CAI1StockRepositSetAdd "An operation that adds a set of items to a storage location."]
-  [case CAI1StockRepositSetAdd
+  [documentation CAI1StockRepositSetIntroduce "An operation that adds a set of items to a storage location."]
+  [case CAI1StockRepositSetIntroduce
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
     [field locationId cb:UUID]
     [documentation count "The count."]
-    [field count cb:IntegerUnsigned64]]
+    [field count cb:IntegerUnsigned64]
+  ]
+
+  [documentation CAI1StockRepositSetAdd "An operation that adds a set of items to an instance."]
+  [case CAI1StockRepositSetAdd
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
+    [documentation count "The count."]
+    [field count cb:IntegerUnsigned64]
+  ]
 
   [documentation CAI1StockRepositSetMove "An operation that moves a set of items from one storage location to another."]
   [case CAI1StockRepositSetMove
-    [documentation itemId "The item."]
-    [field itemId cb:UUID]
-    [documentation locationFrom "The from location."]
-    [field locationFrom cb:UUID]
-    [documentation locationTo "The to location."]
+    [documentation instanceSource "The source instance."]
+    [field instanceSource cb:UUID]
+    [documentation instanceTarget "The target instance."]
+    [field instanceTarget cb:UUID]
+    [documentation locationTo "The target location."]
     [field locationTo cb:UUID]
     [documentation count "The count."]
-    [field count cb:IntegerUnsigned64]]
+    [field count cb:IntegerUnsigned64]
+  ]
 
   [documentation CAI1StockRepositSetRemove "An operation that removes a set of items from a storage location."]
   [case CAI1StockRepositSetRemove
-    [documentation itemId "The item."]
-    [field itemId cb:UUID]
-    [documentation locationId "The location ID."]
-    [field locationId cb:UUID]
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
     [documentation count "The count."]
-    [field count cb:IntegerUnsigned64]]
+    [field count cb:IntegerUnsigned64]
+  ]
 
-  [documentation CAI1StockRepositSerialAdd "An operation that adds a single identified item to a storage location."]
-  [case CAI1StockRepositSerialAdd
+  [documentation CAI1StockRepositSerialIntroduce "An operation that adds a single identified item to a storage location."]
+  [case CAI1StockRepositSerialIntroduce
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
     [documentation itemId "The item."]
     [field itemId cb:UUID]
     [documentation locationId "The location ID."]
     [field locationId cb:UUID]
     [documentation serial "The serial number."]
-    [field serial cb:String]]
+    [field serial CAI1ItemSerial]
+  ]
 
-  [documentation CAI1StockRepositSerialMove "An operation that moves a single identified item from one storage location to another."]
+  [documentation CAI1StockRepositSerialMove "An operation that moves a single identified item between storage locations."]
   [case CAI1StockRepositSerialMove
-    [documentation itemId "The item."]
-    [field itemId cb:UUID]
-    [documentation locationFrom "The from location."]
-    [field locationFrom cb:UUID]
-    [documentation locationTo "The to location."]
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
+    [documentation locationTo "The target location."]
     [field locationTo cb:UUID]
-    [documentation serial "The serial number."]
-    [field serial cb:String]]
+  ]
 
-  [documentation CAI1StockRepositSerialRemove "An operation that removes a single identified item from a storage location."]
+  [documentation CAI1StockRepositSerialRemove "An operation that removes a single identified item."]
   [case CAI1StockRepositSerialRemove
-    [documentation itemId "The item."]
-    [field itemId cb:UUID]
-    [documentation locationId "The location ID."]
-    [field locationId cb:UUID]
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
+  ]
+
+  [documentation CAI1StockRepositSerialNumberAdd "An operation that adds a serial number to an instance."]
+  [case CAI1StockRepositSerialNumberAdd
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
     [documentation serial "The serial number."]
-    [field serial cb:String]]
+    [field serial CAI1ItemSerial]
+  ]
+
+  [documentation CAI1StockRepositSerialNumberRemove "An operation that removes a serial number from an instance."]
+  [case CAI1StockRepositSerialNumberRemove
+    [documentation instanceId "The instance."]
+    [field instanceId cb:UUID]
+    [documentation serial "The serial number."]
+    [field serial CAI1ItemSerial]
+  ]
 ]
 
 [documentation CAI1LocationSummary "A summary of a location."]
@@ -608,11 +638,13 @@
 
 [variant CAI1StockOccurrence
   [case Serial
+    [field instance cb:UUID]
     [field location CAI1LocationSummary]
     [field item CAI1ItemSummary]
-    [field serial cb:String]
+    [field serials [cb:List CAI1ItemSerial]]
   ]
   [case Set
+    [field instance cb:UUID]
     [field location CAI1LocationSummary]
     [field item CAI1ItemSummary]
     [field count cb:IntegerUnsigned64]
@@ -1058,8 +1090,8 @@
 [record CAI1ResponseStockReposit
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
-  [documentation item "The item."]
-  [field item CAI1Item]
+  [documentation stock "The stock."]
+  [field stock CAI1StockOccurrence]
 ]
 
 [documentation CAI1ResponseItemDelete "A response to CAI1CommandItemDelete."]

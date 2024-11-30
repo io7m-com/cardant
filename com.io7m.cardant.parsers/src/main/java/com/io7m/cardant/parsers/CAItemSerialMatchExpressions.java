@@ -114,12 +114,12 @@ public final class CAItemSerialMatchExpressions extends CAExpressions
         yield switch (head.text().toUpperCase(Locale.ROOT)) {
           case "WITH-SERIAL-EQUAL-TO" -> {
             yield new CAComparisonExactType.IsEqualTo<>(
-              new CAItemSerial(value.text())
+              CAItemSerial.parse(value.text())
             );
           }
           case "WITH-SERIAL-NOT-EQUAL-TO" -> {
             yield new CAComparisonExactType.IsNotEqualTo<>(
-              new CAItemSerial(value.text())
+              CAItemSerial.parse(value.text())
             );
           }
           default -> {
@@ -173,7 +173,7 @@ public final class CAItemSerialMatchExpressions extends CAExpressions
           true,
           List.of(
             new SSymbol(zero(), "with-serial-equal-to"),
-            new SQuotedString(zero(), e.value().value())
+            new SQuotedString(zero(), e.value().toString())
           )
         );
       }
@@ -183,7 +183,7 @@ public final class CAItemSerialMatchExpressions extends CAExpressions
           true,
           List.of(
             new SSymbol(zero(), "with-serial-not-equal-to"),
-            new SQuotedString(zero(), e.value().value())
+            new SQuotedString(zero(), e.value().toString())
           )
         );
       }

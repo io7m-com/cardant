@@ -21,6 +21,7 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Id;
@@ -56,6 +57,9 @@ public enum CAUVId
       case final CAUserID ii -> {
         yield new CAI1Id.CAI1UserID(new CBUUID(ii.id()));
       }
+      case final CAStockInstanceID ii -> {
+        yield new CAI1Id.CAI1StockInstanceID(new CBUUID(ii.id()));
+      }
     };
   }
 
@@ -75,6 +79,9 @@ public enum CAUVId
       }
       case final CAI1Id.CAI1UserID ii -> {
         yield new CAUserID(ii.fieldId().value());
+      }
+      case final CAI1Id.CAI1StockInstanceID ii -> {
+        yield new CAStockInstanceID(ii.fieldId().value());
       }
     };
   }

@@ -18,12 +18,18 @@
 package com.io7m.cardant.model;
 
 /**
- * An occurrence of an item in a location.
+ * An occurrence of stock in a location.
  */
 
 public sealed interface CAStockOccurrenceType
   permits CAStockOccurrenceSerial, CAStockOccurrenceSet
 {
+  /**
+   * @return The instance
+   */
+
+  CAStockInstanceID instance();
+
   /**
    * @return The location
    */

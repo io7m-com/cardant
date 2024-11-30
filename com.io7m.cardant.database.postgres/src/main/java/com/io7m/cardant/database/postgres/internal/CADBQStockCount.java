@@ -30,8 +30,8 @@ import static com.io7m.cardant.database.postgres.internal.CADBQStockSearch.creat
 import static com.io7m.cardant.database.postgres.internal.CADBQStockSearch.createKindCondition;
 import static com.io7m.cardant.database.postgres.internal.CADBQStockSearch.createLocationMatchCondition;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
-import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
+import static com.io7m.cardant.database.postgres.internal.Tables.STOCK;
 
 /**
  * Count stock.
@@ -82,11 +82,11 @@ public final class CADBQStockCount
     throws CADatabaseException
   {
     final var tableSource =
-      ITEM_LOCATIONS
+      STOCK
         .join(ITEMS)
-        .on(ITEM_LOCATIONS.ITEM_LOCATION_ITEM.eq(ITEMS.ITEM_ID))
+        .on(STOCK.STOCK_ITEM.eq(ITEMS.ITEM_ID))
         .join(LOCATIONS)
-        .on(ITEM_LOCATIONS.ITEM_LOCATION.eq(LOCATIONS.LOCATION_ID));
+        .on(STOCK.STOCK_LOCATION.eq(LOCATIONS.LOCATION_ID));
 
     final var locationCondition =
       createLocationMatchCondition(parameters.locationMatch());
@@ -105,7 +105,7 @@ public final class CADBQStockCount
       );
 
     final var query =
-      context.select(DSL.sum(ITEM_LOCATIONS.ITEM_LOCATION_COUNT))
+      context.select(DSL.sum(STOCK.STOCK_COUNT))
         .from(tableSource)
         .where(allConditions);
 

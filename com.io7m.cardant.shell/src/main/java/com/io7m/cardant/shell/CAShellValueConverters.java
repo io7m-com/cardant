@@ -21,9 +21,10 @@ import com.io7m.cardant.shell.internal.converters.CADescriptionMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CAFileIdConverter;
 import com.io7m.cardant.shell.internal.converters.CAItemIDMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CAItemIdConverter;
-import com.io7m.cardant.shell.internal.converters.CALocationMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CAItemSerialConverter;
 import com.io7m.cardant.shell.internal.converters.CAItemSerialMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CALocationIdConverter;
+import com.io7m.cardant.shell.internal.converters.CALocationMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CALocationNameConverter;
 import com.io7m.cardant.shell.internal.converters.CAMediaTypeMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CAMetadataConverter;
@@ -35,6 +36,7 @@ import com.io7m.cardant.shell.internal.converters.CARDottedNameConverter;
 import com.io7m.cardant.shell.internal.converters.CARangeInclusiveDConverter;
 import com.io7m.cardant.shell.internal.converters.CARangeInclusiveLConverter;
 import com.io7m.cardant.shell.internal.converters.CARoleNameConverter;
+import com.io7m.cardant.shell.internal.converters.CAStockInstanceIdConverter;
 import com.io7m.cardant.shell.internal.converters.CATimeRangeConverter;
 import com.io7m.cardant.shell.internal.converters.CATypeMatchConverter;
 import com.io7m.cardant.shell.internal.converters.CATypePackageUninstallBehaviorConverter;
@@ -71,6 +73,7 @@ public final class CAShellValueConverters
       .with(new CAFileIdConverter())
       .with(new CAItemIDMatchConverter(strings))
       .with(new CAItemIdConverter())
+      .with(new CAItemSerialConverter())
       .with(new CAItemSerialMatchConverter(strings))
       .with(new CALocationIdConverter())
       .with(new CALocationMatchConverter(strings))
@@ -85,6 +88,7 @@ public final class CAShellValueConverters
       .with(new CARangeInclusiveDConverter(strings))
       .with(new CARangeInclusiveLConverter(strings))
       .with(new CARoleNameConverter())
+      .with(new CAStockInstanceIdConverter())
       .with(new CATimeRangeConverter(strings))
       .with(new CATypeMatchConverter(strings))
       .with(new CATypePackageUninstallBehaviorConverter())

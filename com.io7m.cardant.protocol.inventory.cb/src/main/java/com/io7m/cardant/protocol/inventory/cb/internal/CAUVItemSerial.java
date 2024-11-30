@@ -14,42 +14,46 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.model;
 
-import java.util.Objects;
+package com.io7m.cardant.protocol.inventory.cb.internal;
+
+import com.io7m.cardant.model.CAItemSerial;
+import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
+import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSerial;
+import com.io7m.lanark.core.RDottedName;
+
+import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
 /**
- * An operation that adds a single item with a serial number to a storage location.
- *
- * @param item     The item
- * @param location The storage location
- * @param serial   The item serial number
+ * A validator.
  */
 
-public record CAStockRepositSerialAdd(
-  CAItemID item,
-  CALocationID location,
-  CAItemSerial serial)
-  implements CAStockRepositType
+public enum CAUVItemSerial
+  implements CAProtocolMessageValidatorType<CAItemSerial, CAI1ItemSerial>
 {
   /**
-   * An operation that adds a single item with a serial number to a storage location.
-   *
-   * @param item     The item
-   * @param location The storage location
-   * @param serial   The item serial number
+   * A validator.
    */
 
-  public CAStockRepositSerialAdd
+  ITEM_SERIAL;
+
+  @Override
+  public CAI1ItemSerial convertToWire(
+    final CAItemSerial serial)
   {
-    Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(location, "location");
-    Objects.requireNonNull(serial, "serial");
+    return new CAI1ItemSerial(
+      string(serial.type().value()),
+      string(serial.value())
+    );
   }
 
   @Override
-  public long count()
+  public CAItemSerial convertFromWire(
+    final CAI1ItemSerial c)
   {
-    return 1L;
+    return new CAItemSerial(
+      new RDottedName(c.fieldType().value()),
+      c.fieldValue().value()
+    );
   }
 }

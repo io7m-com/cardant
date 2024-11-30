@@ -245,7 +245,8 @@ public final class CADBQItemSearch
     return Set.copyOf(results);
   }
 
-  private static Select<Record7<UUID, String, Object, OffsetDateTime, UUID[], Integer[], String[]>> generateQuerySetFor(
+  private static Select<Record7<UUID, String, Object, OffsetDateTime, UUID[], Integer[], Object>>
+  generateQuerySetFor(
     final DSLContext context,
     final QuerySetType metaQuerySet)
   {

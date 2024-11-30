@@ -19,6 +19,7 @@ package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocationSummary;
+import com.io7m.cardant.model.CAStockInstanceID;
 import com.io7m.cardant.model.CAStockOccurrenceSet;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
@@ -32,6 +33,7 @@ public final class CAArbStockOccurrenceSet
     super(
       CAStockOccurrenceSet.class,
       () -> Combinators.combine(
+        Arbitraries.defaultFor(CAStockInstanceID.class),
         Arbitraries.defaultFor(CALocationSummary.class),
         Arbitraries.defaultFor(CAItemSummary.class),
         Arbitraries.longs().greaterOrEqual(1L)

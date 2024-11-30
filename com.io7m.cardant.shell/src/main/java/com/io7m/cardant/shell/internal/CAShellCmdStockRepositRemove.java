@@ -17,10 +17,8 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemSerial;
-import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAStockRepositSerialAdd;
+import com.io7m.cardant.model.CAStockInstanceID;
+import com.io7m.cardant.model.CAStockRepositRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -37,37 +35,19 @@ import java.util.Optional;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "stock-reposit-serial-add"
+ * "stock-reposit-remove"
  */
 
-public final class CAShellCmdStockRepositSerialAdd
+public final class CAShellCmdStockRepositRemove
   extends CAShellCmdAbstractCR<CAICommandStockReposit, CAIResponseStockReposit>
 {
-  private static final QParameterNamed1<CAItemID> ITEM =
+  private static final QParameterNamed1<CAStockInstanceID> INSTANCE =
     new QParameterNamed1<>(
-      "--item",
+      "--instance",
       List.of(),
-      new QConstant("The item ID."),
+      new QConstant("The stock instance ID."),
       Optional.empty(),
-      CAItemID.class
-    );
-
-  private static final QParameterNamed1<CALocationID> LOCATION =
-    new QParameterNamed1<>(
-      "--location",
-      List.of(),
-      new QConstant("The location ID."),
-      Optional.empty(),
-      CALocationID.class
-    );
-
-  private static final QParameterNamed1<String> SERIAL =
-    new QParameterNamed1<>(
-      "--serial",
-      List.of(),
-      new QConstant("The item serial number."),
-      Optional.empty(),
-      String.class
+      CAStockInstanceID.class
     );
 
   /**
@@ -76,14 +56,14 @@ public final class CAShellCmdStockRepositSerialAdd
    * @param inServices The context
    */
 
-  public CAShellCmdStockRepositSerialAdd(
+  public CAShellCmdStockRepositRemove(
     final RPServiceDirectoryType inServices)
   {
     super(
       inServices,
       new QCommandMetadata(
-        "stock-reposit-serial-add",
-        new QConstant("Add an instance of an item to a location."),
+        "stock-reposit-remove",
+        new QConstant("Remove a stock instance."),
         Optional.empty()
       ),
       CAICommandStockReposit.class
@@ -93,7 +73,7 @@ public final class CAShellCmdStockRepositSerialAdd
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(ITEM, LOCATION, SERIAL);
+    return List.of(INSTANCE);
   }
 
   @Override
@@ -104,26 +84,18 @@ public final class CAShellCmdStockRepositSerialAdd
     final var client =
       this.client();
 
-    final var itemID =
-      context.parameterValue(ITEM);
-    final var locationID =
-      context.parameterValue(LOCATION);
-    final var serial =
-      context.parameterValue(SERIAL);
+    final var instanceID =
+      context.parameterValue(INSTANCE);
 
     final var item =
       client.sendAndWaitOrThrow(
         new CAICommandStockReposit(
-          new CAStockRepositSerialAdd(
-            itemID,
-            locationID,
-            new CAItemSerial(serial)
-          )
+          new CAStockRepositRemove(instanceID)
         ),
         this.commandTimeout()
       ).data();
 
-    this.formatter().formatItem(item);
+    this.formatter().formatStock(item);
     return SUCCESS;
   }
 }

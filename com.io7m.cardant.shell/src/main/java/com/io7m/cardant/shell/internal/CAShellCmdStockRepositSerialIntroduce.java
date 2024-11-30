@@ -17,9 +17,11 @@
 
 package com.io7m.cardant.shell.internal;
 
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CAStockInstanceID;
-import com.io7m.cardant.model.CAStockRepositSerialMove;
+import com.io7m.cardant.model.CAStockRepositSerialIntroduce;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -36,12 +38,21 @@ import java.util.Optional;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 
 /**
- * "stock-reposit-serial-move"
+ * "stock-reposit-serial-introduce"
  */
 
-public final class CAShellCmdStockRepositSerialMove
+public final class CAShellCmdStockRepositSerialIntroduce
   extends CAShellCmdAbstractCR<CAICommandStockReposit, CAIResponseStockReposit>
 {
+  private static final QParameterNamed1<CAItemID> ITEM =
+    new QParameterNamed1<>(
+      "--item",
+      List.of(),
+      new QConstant("The item ID."),
+      Optional.empty(),
+      CAItemID.class
+    );
+
   private static final QParameterNamed1<CAStockInstanceID> INSTANCE =
     new QParameterNamed1<>(
       "--instance",
@@ -51,13 +62,22 @@ public final class CAShellCmdStockRepositSerialMove
       CAStockInstanceID.class
     );
 
-  private static final QParameterNamed1<CALocationID> LOCATION_TO =
+  private static final QParameterNamed1<CALocationID> LOCATION =
     new QParameterNamed1<>(
-      "--location-to",
+      "--location",
       List.of(),
-      new QConstant("The destination location ID."),
+      new QConstant("The location ID."),
       Optional.empty(),
       CALocationID.class
+    );
+
+  private static final QParameterNamed1<CAItemSerial> SERIAL =
+    new QParameterNamed1<>(
+      "--serial",
+      List.of(),
+      new QConstant("The item serial number."),
+      Optional.empty(),
+      CAItemSerial.class
     );
 
   /**
@@ -66,14 +86,14 @@ public final class CAShellCmdStockRepositSerialMove
    * @param inServices The context
    */
 
-  public CAShellCmdStockRepositSerialMove(
+  public CAShellCmdStockRepositSerialIntroduce(
     final RPServiceDirectoryType inServices)
   {
     super(
       inServices,
       new QCommandMetadata(
-        "stock-reposit-serial-move",
-        new QConstant("Move an instance of an item between locations."),
+        "stock-reposit-serial-introduce",
+        new QConstant("Add an instance of an item to a location."),
         Optional.empty()
       ),
       CAICommandStockReposit.class
@@ -83,7 +103,7 @@ public final class CAShellCmdStockRepositSerialMove
   @Override
   public List<QParameterNamedType<?>> onListNamedParameters()
   {
-    return List.of(INSTANCE, LOCATION_TO);
+    return List.of(ITEM, INSTANCE, LOCATION, SERIAL);
   }
 
   @Override
@@ -94,15 +114,24 @@ public final class CAShellCmdStockRepositSerialMove
     final var client =
       this.client();
 
-    final var instanceID =
+    final var itemID =
+      context.parameterValue(ITEM);
+    final var locationID =
+      context.parameterValue(LOCATION);
+    final var instance =
       context.parameterValue(INSTANCE);
-    final var locationTo =
-      context.parameterValue(LOCATION_TO);
+    final var serial =
+      context.parameterValue(SERIAL);
 
     final var item =
       client.sendAndWaitOrThrow(
         new CAICommandStockReposit(
-          new CAStockRepositSerialMove(instanceID, locationTo)
+          new CAStockRepositSerialIntroduce(
+            instance,
+            itemID,
+            locationID,
+            serial
+          )
         ),
         this.commandTimeout()
       ).data();

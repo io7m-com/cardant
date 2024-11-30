@@ -21,28 +21,24 @@ import java.util.Objects;
 /**
  * An operation that adds a set of items to a storage location.
  *
- * @param item     The item
- * @param location The storage location
+ * @param instance The instance
  * @param count    The item count
  */
 
 public record CAStockRepositSetAdd(
-  CAItemID item,
-  CALocationID location,
+  CAStockInstanceID instance,
   long count)
   implements CAStockRepositType
 {
   /**
    * An operation that adds a set of items to a storage location.
    *
-   * @param item     The item
-   * @param location The storage location
+   * @param instance The instance
    * @param count    The item count
    */
 
   public CAStockRepositSetAdd
   {
-    Objects.requireNonNull(item, "item");
-    Objects.requireNonNull(location, "location");
+    Objects.requireNonNull(instance, "instance");
   }
 }

@@ -17,26 +17,24 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
-import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAItemSerial;
-import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAStockRepositSerialAdd;
+import com.io7m.cardant.model.CAStockInstanceID;
+import com.io7m.cardant.model.CAStockRepositSerialNumberAdd;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
 public final class CAArbStockRepositSerialAdd
-  extends CAArbAbstract<CAStockRepositSerialAdd>
+  extends CAArbAbstract<CAStockRepositSerialNumberAdd>
 {
   public CAArbStockRepositSerialAdd()
   {
     super(
-      CAStockRepositSerialAdd.class,
+      CAStockRepositSerialNumberAdd.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.strings().map(CAItemSerial::new)
-      ).as(CAStockRepositSerialAdd::new)
+        Arbitraries.defaultFor(CAStockInstanceID.class),
+        Arbitraries.defaultFor(CAItemSerial.class)
+      ).as(CAStockRepositSerialNumberAdd::new)
     );
   }
 }
