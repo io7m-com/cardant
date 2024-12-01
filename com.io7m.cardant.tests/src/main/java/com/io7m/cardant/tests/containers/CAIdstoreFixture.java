@@ -213,7 +213,7 @@ public final class CAIdstoreFixture
           .addArgument("--configuration")
           .addArgument("/idstore/etc/server.xml")
           .setReadyCheck(new CAIdstoreReadyCheck(
-            new EPortAddressType.All(),
+            new EPortAddressType.AllIPv4(),
             adminAPIPort))
           .build()
       );
@@ -310,21 +310,21 @@ public final class CAIdstoreFixture
       ),
       new IdServerHTTPConfiguration(
         new IdServerHTTPServiceConfiguration(
-          "[::]",
+          "0.0.0.0",
           adminAPIPort,
-          URI.create("http://[::]:" + adminAPIPort + "/"),
+          URI.create("http://0.0.0.0:" + adminAPIPort + "/"),
           IdTLSDisabled.TLS_DISABLED
         ),
         new IdServerHTTPServiceConfiguration(
-          "[::]",
+          "0.0.0.0",
           userAPIPort,
-          URI.create("http://[::]:" + userAPIPort + "/"),
+          URI.create("http://0.0.0.0:" + userAPIPort + "/"),
           IdTLSDisabled.TLS_DISABLED
         ),
         new IdServerHTTPServiceConfiguration(
-          "[::]",
+          "0.0.0.0",
           userViewPort,
-          URI.create("http://[::]:" + userViewPort + "/"),
+          URI.create("http://0.0.0.0:" + userViewPort + "/"),
           IdTLSDisabled.TLS_DISABLED
         )
       ),
@@ -334,7 +334,7 @@ public final class CAIdstoreFixture
         PASSWORD,
         PASSWORD,
         empty(),
-        "[::]",
+        "0.0.0.0",
         postgres.port(),
         "idstore",
         true,
@@ -379,7 +379,7 @@ public final class CAIdstoreFixture
     ) {
 
       final var address =
-        "http://%s:%d/".formatted("[::]", Integer.valueOf(adminAPIPort));
+        "http://%s:%d/".formatted("localhost", Integer.valueOf(adminAPIPort));
 
       client.connectOrThrow(
         new IdAClientConnectionParameters(

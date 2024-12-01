@@ -64,7 +64,7 @@ public final class CAPostgresFixture
     final var builder =
       EPgSpecs.builderFromDockerIO(
         CATestProperties.POSTGRESQL_VERSION,
-        new EPortAddressType.All(),
+        new EPortAddressType.AllIPv4(),
         port,
         "postgres",
         "postgres",

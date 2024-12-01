@@ -68,15 +68,15 @@ public record CAServerFixture(
         DATABASES,
         databaseFixture.configuration(),
         new CAServerHTTPServiceConfiguration(
-          "::",
+          "0.0.0.0",
           CAFixtures.inventoryServicePort(),
-          URI.create("http://[::]:" + CAFixtures.inventoryServicePort()),
+          URI.create("http://0.0.0.0:" + CAFixtures.inventoryServicePort()),
           Optional.of(Duration.ofHours(1L)),
           CATLSDisabled.TLS_DISABLED
         ),
         new CAServerIdstoreConfiguration(
-          URI.create("http://[::]:" + idstoreFixture.userAPIPort()),
-          URI.create("http://[::]:" + idstoreFixture.userAPIPort())
+          URI.create("http://0.0.0.0:" + idstoreFixture.userAPIPort()),
+          URI.create("http://0.0.0.0:" + idstoreFixture.userAPIPort())
         ),
         new CAServerLimitsConfiguration(
           10_000_000L,

@@ -63,7 +63,7 @@ public record CADatabaseFixture(
         "12345678",
         "12345678",
         Optional.of("12345678"),
-        "::",
+        "0.0.0.0",
         CAFixtures.postgresPort(),
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
