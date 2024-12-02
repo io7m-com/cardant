@@ -96,7 +96,7 @@
     <com.io7m.zelador.version>1.0.0</com.io7m.zelador.version>
 
     <!-- Third-party dependencies. -->
-    <com.fasterxml.jackson.version>2.18.1</com.fasterxml.jackson.version>
+    <com.fasterxml.jackson.version>2.18.2</com.fasterxml.jackson.version>
     <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
     <containers.postgresql.version>17.0-bookworm</containers.postgresql.version>
     <helidon.version>4.1.4</helidon.version>
