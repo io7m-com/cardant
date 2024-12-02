@@ -19,6 +19,7 @@ package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseConnectionType;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.database.api.CADatabaseQueryType;
 import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseTelemetry;
@@ -74,10 +75,12 @@ public final class CADatabase implements CADatabaseType
   private final CADatabaseTelemetry telemetry;
   private final CAStrings strings;
   private final CATypePackageSerializerFactoryType serializers;
+  private final CADatabaseLanguage language;
 
   /**
    * The default postgres server database implementation.
    *
+   * @param inLanguage    The database language
    * @param inStrings     The string resources
    * @param inTelemetry   A telemetry
    * @param inClock       The clock
@@ -88,6 +91,7 @@ public final class CADatabase implements CADatabaseType
 
   public CADatabase(
     final CADatabaseTelemetry inTelemetry,
+    final CADatabaseLanguage inLanguage,
     final CAStrings inStrings,
     final Clock inClock,
     final HikariDataSource inDataSource,
@@ -110,6 +114,8 @@ public final class CADatabase implements CADatabaseType
       Objects.requireNonNull(inDataSource, "dataSource");
     this.queries =
       loadQueryProviders();
+    this.language =
+      Objects.requireNonNull(inLanguage, "language");
 
     this.settings =
       new Settings().withRenderNameCase(RenderNameCase.LOWER);
@@ -371,5 +377,14 @@ public final class CADatabase implements CADatabaseType
     final Class<?> qClass)
   {
     return this.queries.get(qClass);
+  }
+
+  /**
+   * @return The database language
+   */
+
+  public CADatabaseLanguage language()
+  {
+    return this.language;
   }
 }

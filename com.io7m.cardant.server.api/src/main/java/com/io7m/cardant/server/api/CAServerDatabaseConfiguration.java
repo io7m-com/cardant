@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.server.api;
 
+import com.io7m.cardant.database.api.CADatabaseLanguage;
+
 import java.util.Objects;
 import java.util.Optional;
 
@@ -46,7 +48,7 @@ public record CAServerDatabaseConfiguration(
   String address,
   int port,
   String databaseName,
-  String databaseLanguage,
+  CADatabaseLanguage databaseLanguage,
   boolean create,
   boolean upgrade,
   int minimumConnections,

@@ -210,6 +210,7 @@ public final class CAPGDatabases implements CADatabaseFactoryType
 
     return new CADatabase(
       telemetry,
+      configuration.language(),
       configuration.strings(),
       configuration.clock(),
       dataSource,
@@ -239,7 +240,10 @@ public final class CAPGDatabases implements CADatabaseFactoryType
         .startSpan();
 
     final var argSearchLanguage =
-      new TrArgumentString("search.language", configuration.language());
+      new TrArgumentString(
+        "search.language",
+        configuration.language().value()
+      );
 
     final var arguments =
       new TrArguments(

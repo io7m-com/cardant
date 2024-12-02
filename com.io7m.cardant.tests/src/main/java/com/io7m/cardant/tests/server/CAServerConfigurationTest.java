@@ -20,6 +20,7 @@ package com.io7m.cardant.tests.server;
 import com.io7m.anethum.slf4j.ParseStatusLogging;
 import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseCreate;
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.database.api.CADatabaseUpgrade;
 import com.io7m.cardant.server.api.CAServerConfigurations;
 import com.io7m.cardant.server.api.CAServerHTTPServiceConfiguration;
@@ -95,7 +96,7 @@ public final class CAServerConfigurationTest
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
         CADatabaseUpgrade.UPGRADE_DATABASE,
-        "english",
+        new CADatabaseLanguage("english"),
         configuration.databaseConfiguration().clock(),
         configuration.databaseConfiguration().strings(),
         typePackageSerializers,

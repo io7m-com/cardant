@@ -20,6 +20,7 @@ package com.io7m.cardant.tests.containers;
 import com.io7m.cardant.database.api.CADatabaseConfiguration;
 import com.io7m.cardant.database.api.CADatabaseCreate;
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.database.api.CADatabaseTelemetry;
 import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.database.api.CADatabaseUpgrade;
@@ -68,7 +69,7 @@ public record CADatabaseFixture(
         "cardant",
         CADatabaseCreate.CREATE_DATABASE,
         CADatabaseUpgrade.UPGRADE_DATABASE,
-        "english",
+        new CADatabaseLanguage("english"),
         Clock.systemUTC(),
         CAStrings.create(Locale.ROOT),
         new CATypePackageSerializers(),

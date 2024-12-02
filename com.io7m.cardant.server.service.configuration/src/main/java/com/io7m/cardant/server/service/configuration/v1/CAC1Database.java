@@ -19,6 +19,7 @@ package com.io7m.cardant.server.service.configuration.v1;
 
 import com.io7m.blackthorne.core.BTElementHandlerType;
 import com.io7m.blackthorne.core.BTElementParsingContextType;
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.server.api.CAServerDatabaseConfiguration;
 import com.io7m.cardant.server.api.CAServerDatabaseKind;
 import org.xml.sax.Attributes;
@@ -61,7 +62,7 @@ final class CAC1Database
         attributes.getValue("Address"),
         Integer.valueOf(attributes.getValue("Port")).intValue(),
         attributes.getValue("Name"),
-        attributes.getValue("Language"),
+        new CADatabaseLanguage(attributes.getValue("Language")),
         Boolean.parseBoolean(attributes.getValue("Create")),
         Boolean.parseBoolean(attributes.getValue("Upgrade")),
         minimumPoolConnections.intValue(),

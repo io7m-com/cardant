@@ -18,6 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
@@ -40,6 +41,7 @@ public final class CADBComparisons
   /**
    * Create a fuzzy match expression.
    *
+   * @param language The database language
    * @param query       The query
    * @param fieldExact  The "exact" field
    * @param fieldSearch The search field
@@ -49,6 +51,7 @@ public final class CADBComparisons
    */
 
   public static <T> Condition createFuzzyMatchQuery(
+    final CADatabaseLanguage language,
     final CAComparisonFuzzyType<T> query,
     final Field<T> fieldExact,
     final String fieldSearch)
@@ -65,13 +68,15 @@ public final class CADBComparisons
       }
       case final CAComparisonFuzzyType.IsSimilarTo<T> isSimilarTo -> {
         yield DSL.condition(
-          "%s @@ websearch_to_tsquery(?)".formatted(fieldSearch),
+          "%s @@ websearch_to_tsquery('%s', ?)"
+            .formatted(fieldSearch, language),
           isSimilarTo.value()
         );
       }
       case final CAComparisonFuzzyType.IsNotSimilarTo<T> isNotSimilarTo -> {
         yield DSL.condition(
-          "NOT (%s @@ websearch_to_tsquery(?))".formatted(fieldSearch),
+          "NOT (%s @@ websearch_to_tsquery('%s', ?))"
+            .formatted(fieldSearch, language),
           isNotSimilarTo.value()
         );
       }

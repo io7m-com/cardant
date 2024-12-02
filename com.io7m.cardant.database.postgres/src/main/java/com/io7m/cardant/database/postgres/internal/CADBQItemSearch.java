@@ -123,6 +123,7 @@ public final class CADBQItemSearch
 
     final var nameCondition =
       CADBComparisons.createFuzzyMatchQuery(
+        this.language(),
         parameters.nameMatch(),
         ITEM_SEARCH_VIEW.ITEM_NAME,
         ITEM_NAME_SEARCH.getName()
@@ -154,6 +155,7 @@ public final class CADBQItemSearch
 
     final var metaQuerySet =
       CADBMatch.ofMetaElementMatch(
+        this.language(),
         new MetaFields(
           ITEM_SEARCH_VIEW.ITEM_META_TYPE_PACKAGE,
           ITEM_SEARCH_VIEW.ITEM_META_TYPE_RECORD,

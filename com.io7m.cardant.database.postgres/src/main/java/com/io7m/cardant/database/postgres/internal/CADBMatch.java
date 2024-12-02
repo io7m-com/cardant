@@ -17,6 +17,7 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetCondition;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetIntersection;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetUnion;
@@ -178,6 +179,7 @@ public final class CADBMatch
   }
 
   static Condition ofMetaValueMatch(
+    final CADatabaseLanguage language,
     final MetaFields fields,
     final CAMetadataValueMatchType match)
   {
@@ -195,7 +197,7 @@ public final class CADBMatch
         yield ofMetaValueMatchReal(fields, realM);
       }
       case final TextMatchType textM -> {
-        yield ofMetaValueMatchText(fields, textM);
+        yield ofMetaValueMatchText(language, fields, textM);
       }
       case final TimeMatchType timeM -> {
         yield ofMetaValueMatchTime(fields, timeM);
@@ -204,20 +206,21 @@ public final class CADBMatch
   }
 
   static QuerySetType ofMetaElementMatch(
+    final CADatabaseLanguage language,
     final MetaFields fields,
     final CAMetadataElementMatchType match)
   {
     return switch (match) {
       case final CAMetadataElementMatchType.And and -> {
         yield new QuerySetIntersection(
-          ofMetaElementMatch(fields, and.e0()),
-          ofMetaElementMatch(fields, and.e1())
+          ofMetaElementMatch(language, fields, and.e0()),
+          ofMetaElementMatch(language, fields, and.e1())
         );
       }
       case final CAMetadataElementMatchType.Or or -> {
         yield new QuerySetUnion(
-          ofMetaElementMatch(fields, or.e0()),
-          ofMetaElementMatch(fields, or.e1())
+          ofMetaElementMatch(language, fields, or.e0()),
+          ofMetaElementMatch(language, fields, or.e1())
         );
       }
       case final CAMetadataElementMatchType.Specific specific -> {
@@ -234,7 +237,7 @@ public final class CADBMatch
             specific.fieldName(),
             fields.fieldNameField
           ),
-          ofMetaValueMatch(fields, specific.value())
+          ofMetaValueMatch(language, fields, specific.value())
         ));
       }
     };
@@ -263,6 +266,7 @@ public final class CADBMatch
   }
 
   private static Condition ofMetaValueMatchText(
+    final CADatabaseLanguage language,
     final MetaFields fields,
     final TextMatchType match)
   {
@@ -282,7 +286,7 @@ public final class CADBMatch
       return DSL.and(
         isType,
         DSL.condition(
-          "? @@ websearch_to_tsquery(?)",
+          "? @@ websearch_to_tsquery('%s', ?)".formatted(language),
           fields.metaValueTextSearch,
           DSL.inline(search.query())
         )

@@ -31,6 +31,7 @@ module com.io7m.cardant.server.service.configuration
   requires com.io7m.blackthorne.jxe;
   requires com.io7m.jxe.core;
   requires com.io7m.repetoir.core;
+  requires com.io7m.cardant.database.api;
 
   exports com.io7m.cardant.server.service.configuration;
 }

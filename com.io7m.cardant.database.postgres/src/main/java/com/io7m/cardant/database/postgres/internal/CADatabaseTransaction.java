@@ -18,6 +18,7 @@ package com.io7m.cardant.database.postgres.internal;
 
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.database.api.CADatabaseQueriesType;
 import com.io7m.cardant.database.api.CADatabaseRole;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
@@ -251,5 +252,10 @@ final class CADatabaseTransaction
     return this.connection.database()
       .messages()
       .format(c, args);
+  }
+
+  public CADatabaseLanguage language()
+  {
+    return this.connection.database().language();
   }
 }

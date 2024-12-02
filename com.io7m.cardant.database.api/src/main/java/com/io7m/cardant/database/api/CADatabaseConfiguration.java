@@ -53,7 +53,7 @@ public record CADatabaseConfiguration(
   String databaseName,
   CADatabaseCreate create,
   CADatabaseUpgrade upgrade,
-  String language,
+  CADatabaseLanguage language,
   Clock clock,
   CAStrings strings,
   CATypePackageSerializerFactoryType typePackageSerializers,

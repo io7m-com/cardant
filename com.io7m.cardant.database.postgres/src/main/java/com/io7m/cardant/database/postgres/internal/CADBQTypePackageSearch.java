@@ -89,6 +89,7 @@ public final class CADBQTypePackageSearch
   {
     final Condition descriptionCondition =
       CADBComparisons.createFuzzyMatchQuery(
+        this.language(),
         parameters.descriptionMatch(),
         METADATA_TYPE_PACKAGES.MTP_DESCRIPTION,
         "METADATA_TYPE_PACKAGES.MTP_DESCRIPTION_SEARCH"

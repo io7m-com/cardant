@@ -18,6 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.database.api.CADatabaseQueryType;
 import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
@@ -37,6 +38,7 @@ abstract class CADBQAbstract<P, R>
 {
   private final CADatabaseTransaction transaction;
   private final TreeMap<String, String> attributes;
+  private final CADatabaseLanguage language;
 
   protected CADBQAbstract(
     final CADatabaseTransaction inTransaction)
@@ -45,6 +47,8 @@ abstract class CADBQAbstract<P, R>
       Objects.requireNonNull(inTransaction, "transaction");
     this.attributes =
       new TreeMap<String, String>();
+    this.language =
+      this.transaction.language();
   }
 
   protected final Span transactionSpan()
@@ -110,5 +114,10 @@ abstract class CADBQAbstract<P, R>
   protected final Map<String, String> attributes()
   {
     return this.attributes;
+  }
+
+  protected CADatabaseLanguage language()
+  {
+    return this.language;
   }
 }
