@@ -143,6 +143,7 @@
   <entry key="tag_id">Tag ID</entry>
   <entry key="tag_name">Tag Name</entry>
   <entry key="type">Type</entry>
+  <entry key="type_indexed">Type ({0})</entry>
   <entry key="user_id">User ID</entry>
   <entry key="version_range">Version Range</entry>
 

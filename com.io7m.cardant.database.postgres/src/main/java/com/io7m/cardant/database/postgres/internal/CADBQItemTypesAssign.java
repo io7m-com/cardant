@@ -22,6 +22,7 @@ import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignT
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
+import com.io7m.cardant.strings.CAStringConstantApplied;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.impl.DSL;
@@ -35,6 +36,7 @@ import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
+import static com.io7m.cardant.strings.CAStringConstants.TYPE_INDEXED;
 
 /**
  * Assign types for the given item.
@@ -80,7 +82,13 @@ public final class CADBQItemTypesAssign
     final var batches =
       new ArrayList<Query>(parameters.types().size());
 
+    int index = 0;
     for (final var type : parameters.types()) {
+      this.setAttribute(
+        new CAStringConstantApplied(TYPE_INDEXED, Integer.valueOf(index)),
+        type.toString()
+      );
+
       final var matches =
         DSL.and(
           METADATA_TYPES.MT_NAME.eq(type.typeName().value()),
@@ -101,6 +109,7 @@ public final class CADBQItemTypesAssign
           .onConflictDoNothing();
 
       batches.add(query);
+      ++index;
     }
 
     final var transaction = this.transaction();
