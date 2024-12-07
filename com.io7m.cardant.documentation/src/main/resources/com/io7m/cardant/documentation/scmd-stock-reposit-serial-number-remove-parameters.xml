@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Subsection title="Parameters" xmlns="urn:com.io7m.structural:8:0">
+  <FormalItem id="ac7395ea-32a0-3d58-b72a-99e7705a9324" title="--instance">
+    <Table type="parameterTable">
+      <Columns>
+        <Column>Attribute</Column>
+        <Column>Value</Column>
+      </Columns>
+      <Row>
+        <Cell>Name</Cell>
+        <Cell>
+          <Term type="parameter">--instance</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Type</Cell>
+        <Cell>
+          <Term type="class">com.io7m.cardant.model.CAStockInstanceID</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Default Value</Cell>
+        <Cell>
+          <Term type="constant"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Cardinality</Cell>
+        <Cell>
+          <Term type="expression">[1, 1]</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Description</Cell>
+        <Cell>The stock instance ID.</Cell>
+      </Row>
+    </Table>
+  </FormalItem>
+  <FormalItem id="837607a2-d1be-3aca-a33d-b22e5905cd53" title="--serial">
+    <Table type="parameterTable">
+      <Columns>
+        <Column>Attribute</Column>
+        <Column>Value</Column>
+      </Columns>
+      <Row>
+        <Cell>Name</Cell>
+        <Cell>
+          <Term type="parameter">--serial</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Type</Cell>
+        <Cell>
+          <Term type="class">com.io7m.cardant.model.CAItemSerial</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Default Value</Cell>
+        <Cell>
+          <Term type="constant"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Cardinality</Cell>
+        <Cell>
+          <Term type="expression">[1, 1]</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Description</Cell>
+        <Cell>The item serial number.</Cell>
+      </Row>
+    </Table>
+  </FormalItem>
+</Subsection>
+

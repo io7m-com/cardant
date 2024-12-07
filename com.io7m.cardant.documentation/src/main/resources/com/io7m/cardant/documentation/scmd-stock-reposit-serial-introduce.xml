@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="9ff78b94-26a3-37c4-9e8a-7f798aca676f" title="stock-reposit-serial-introduce" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-reposit-serial-introduce</Term>
+       - Add an instance of an item to a location.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-reposit-serial-introduce</Term>
+       command introduces serial stock instances.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-reposit-serial-introduce-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-reposit-serial-introduce \
+  --instance 3cb641ac-182f-4f44-98f6-a3e0fe752297 \
+  --item 98725a33-5202-4143-820e-75b60a1df4d3 \
+  --location 2bbc8132-cae3-4d51-95a0-0ab5318b3745 \
+  --serial manufacturer_serial:91FA61CC
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

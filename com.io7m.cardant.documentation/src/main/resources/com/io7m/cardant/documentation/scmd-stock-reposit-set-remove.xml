@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="966039af-0931-3afc-9315-d32c1974de5a" title="stock-reposit-set-remove" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-reposit-set-remove</Term>
+       - Remove stock instances from locations.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-reposit-set-remove</Term>
+       command removes items from set stock instances.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-reposit-set-remove-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-reposit-set-remove \
+  --instance 0b041ff1-4bbe-4265-b0f2-51f0c5ff6757 \
+  --count 50
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Subsection title="Parameters" xmlns="urn:com.io7m.structural:8:0">
-  <FormalItem id="c9e6a3b9-b38f-316b-a7e3-2cdfde9ed6de" title="--count">
+  <FormalItem id="5709c0b6-8594-3bf3-942c-f95ba425aa8c" title="--count">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -32,11 +32,47 @@
       </Row>
       <Row>
         <Cell>Description</Cell>
-        <Cell>The number of instances of the item to remove.</Cell>
+        <Cell>The number of instances of the item to introduce.</Cell>
       </Row>
     </Table>
   </FormalItem>
-  <FormalItem id="032085eb-250e-3b26-8963-e09b43947928" title="--item">
+  <FormalItem id="14a38eda-a543-319b-b503-4aa3d1a4e786" title="--instance">
+    <Table type="parameterTable">
+      <Columns>
+        <Column>Attribute</Column>
+        <Column>Value</Column>
+      </Columns>
+      <Row>
+        <Cell>Name</Cell>
+        <Cell>
+          <Term type="parameter">--instance</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Type</Cell>
+        <Cell>
+          <Term type="class">com.io7m.cardant.model.CAStockInstanceID</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Default Value</Cell>
+        <Cell>
+          <Term type="constant"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Cardinality</Cell>
+        <Cell>
+          <Term type="expression">[1, 1]</Term>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>Description</Cell>
+        <Cell>The stock instance ID.</Cell>
+      </Row>
+    </Table>
+  </FormalItem>
+  <FormalItem id="95f69055-12e6-36be-98ee-c9992591d712" title="--item">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -72,7 +108,7 @@
       </Row>
     </Table>
   </FormalItem>
-  <FormalItem id="fd487987-ffc8-3884-a234-8eb253121a09" title="--location-from">
+  <FormalItem id="ae549c86-4726-3892-a0fc-bbd8e73dd749" title="--location">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -81,7 +117,7 @@
       <Row>
         <Cell>Name</Cell>
         <Cell>
-          <Term type="parameter">--location-from</Term>
+          <Term type="parameter">--location</Term>
         </Cell>
       </Row>
       <Row>
@@ -104,43 +140,7 @@
       </Row>
       <Row>
         <Cell>Description</Cell>
-        <Cell>The source location ID.</Cell>
-      </Row>
-    </Table>
-  </FormalItem>
-  <FormalItem id="ea7c416d-ef13-3272-a7fb-3c84576043ad" title="--location-to">
-    <Table type="parameterTable">
-      <Columns>
-        <Column>Attribute</Column>
-        <Column>Value</Column>
-      </Columns>
-      <Row>
-        <Cell>Name</Cell>
-        <Cell>
-          <Term type="parameter">--location-to</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Type</Cell>
-        <Cell>
-          <Term type="class">com.io7m.cardant.model.CALocationID</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Default Value</Cell>
-        <Cell>
-          <Term type="constant"/>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Cardinality</Cell>
-        <Cell>
-          <Term type="expression">[1, 1]</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Description</Cell>
-        <Cell>The destination location ID.</Cell>
+        <Cell>The location ID.</Cell>
       </Row>
     </Table>
   </FormalItem>

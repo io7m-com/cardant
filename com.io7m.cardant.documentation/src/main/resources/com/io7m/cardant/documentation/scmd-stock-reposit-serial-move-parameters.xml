@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Subsection title="Parameters" xmlns="urn:com.io7m.structural:8:0">
-  <FormalItem id="4cf9dc3e-ed6a-3b09-83d2-189d077769bc" title="--count">
+  <FormalItem id="0bdb0def-ce4a-3c35-83d9-318cbea6e47f" title="--instance">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -9,13 +9,13 @@
       <Row>
         <Cell>Name</Cell>
         <Cell>
-          <Term type="parameter">--count</Term>
+          <Term type="parameter">--instance</Term>
         </Cell>
       </Row>
       <Row>
         <Cell>Type</Cell>
         <Cell>
-          <Term type="class">java.lang.Long</Term>
+          <Term type="class">com.io7m.cardant.model.CAStockInstanceID</Term>
         </Cell>
       </Row>
       <Row>
@@ -32,11 +32,11 @@
       </Row>
       <Row>
         <Cell>Description</Cell>
-        <Cell>The number of instances of the item to remove.</Cell>
+        <Cell>The stock instance ID.</Cell>
       </Row>
     </Table>
   </FormalItem>
-  <FormalItem id="d88cc60c-0ed9-3ff0-a2a9-2543318608b4" title="--item">
+  <FormalItem id="bb4f222a-4168-3e1a-8da4-d9915413319c" title="--location-to">
     <Table type="parameterTable">
       <Columns>
         <Column>Attribute</Column>
@@ -45,43 +45,7 @@
       <Row>
         <Cell>Name</Cell>
         <Cell>
-          <Term type="parameter">--item</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Type</Cell>
-        <Cell>
-          <Term type="class">com.io7m.cardant.model.CAItemID</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Default Value</Cell>
-        <Cell>
-          <Term type="constant"/>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Cardinality</Cell>
-        <Cell>
-          <Term type="expression">[1, 1]</Term>
-        </Cell>
-      </Row>
-      <Row>
-        <Cell>Description</Cell>
-        <Cell>The item ID.</Cell>
-      </Row>
-    </Table>
-  </FormalItem>
-  <FormalItem id="05de5474-8b05-3b0d-95d6-c39cce37a6ee" title="--location">
-    <Table type="parameterTable">
-      <Columns>
-        <Column>Attribute</Column>
-        <Column>Value</Column>
-      </Columns>
-      <Row>
-        <Cell>Name</Cell>
-        <Cell>
-          <Term type="parameter">--location</Term>
+          <Term type="parameter">--location-to</Term>
         </Cell>
       </Row>
       <Row>
@@ -104,7 +68,7 @@
       </Row>
       <Row>
         <Cell>Description</Cell>
-        <Cell>The location ID.</Cell>
+        <Cell>The destination location ID.</Cell>
       </Row>
     </Table>
   </FormalItem>

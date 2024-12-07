@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="0090dde7-d7a8-3aba-a34f-b1d0f7ae4055" title="stock-reposit-serial-number-remove" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-reposit-serial-number-remove</Term>
+       - Remove a serial number from a stock instance.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-reposit-serial-number-remove</Term>
+       command removes serial numbers from stock instances.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-reposit-serial-number-remove-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-reposit-serial-number-remove \
+  --instance 3cb641ac-182f-4f44-98f6-a3e0fe752297 \
+  --serial manufacturer_serial:33CBE10A
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+
