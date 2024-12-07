@@ -21,14 +21,19 @@ import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
+import java.time.OffsetDateTime;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import static java.time.ZoneOffset.UTC;
 
 public final class CAArbLocation extends CAArbAbstract<CALocation>
 {
@@ -39,16 +44,18 @@ public final class CAArbLocation extends CAArbAbstract<CALocation>
       () -> Combinators.combine(
         Arbitraries.defaultFor(CALocationID.class),
         Arbitraries.defaultFor(CALocationID.class).optional(),
-        Arbitraries.strings(),
+        Arbitraries.defaultFor(CALocationPath.class),
+        Arbitraries.create(() -> OffsetDateTime.now(UTC)),
+        Arbitraries.create(() -> OffsetDateTime.now(UTC)),
         Arbitraries.maps(
-          Arbitraries.defaultFor(RDottedName.class),
+          Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class),
           Arbitraries.defaultFor(CAMetadataType.class)
         ).map(TreeMap::new),
         Arbitraries.maps(
           Arbitraries.defaultFor(CAAttachmentKey.class),
           Arbitraries.defaultFor(CAAttachment.class)
         ).map(TreeMap::new),
-        Arbitraries.defaultFor(RDottedName.class)
+        Arbitraries.defaultFor(CATypeRecordIdentifier.class)
           .set()
           .map(TreeSet::new)
       ).as(CALocation::new)

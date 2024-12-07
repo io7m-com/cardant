@@ -18,10 +18,8 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageInstallType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSetVersionType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordFieldUpdateType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarPutType;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUpgrade;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
@@ -57,7 +55,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -159,23 +156,15 @@ public final class CAICmdTypePackageUpgradeTest
       mock(TypePackageSatisfyingType.class);
     final var textGet =
       mock(TypePackageGetTextType.class);
-    final var typeScalarPut =
-      mock(TypeScalarPutType.class);
-    final var typeFieldPut =
-      mock(TypeRecordFieldUpdateType.class);
-    final var typeVersionSet =
-      mock(TypePackageSetVersionType.class);
+    final var typePackageInstall =
+      mock(TypePackageInstallType.class);
 
     when(transaction.queries(TypePackageSatisfyingType.class))
       .thenReturn(satisfy);
     when(transaction.queries(TypePackageGetTextType.class))
       .thenReturn(textGet);
-    when(transaction.queries(TypeScalarPutType.class))
-      .thenReturn(typeScalarPut);
-    when(transaction.queries(TypeRecordFieldUpdateType.class))
-      .thenReturn(typeFieldPut);
-    when(transaction.queries(TypePackageSetVersionType.class))
-      .thenReturn(typeVersionSet);
+    when(transaction.queries(TypePackageInstallType.class))
+      .thenReturn(typePackageInstall);
 
     final var typePackageIdentifier =
       new CATypePackageIdentifier(
@@ -219,37 +208,12 @@ public final class CAICmdTypePackageUpgradeTest
     /* Assert. */
 
     verify(transaction)
-      .queries(TypePackageGetTextType.class);
-    verify(transaction)
-      .queries(TypePackageSatisfyingType.class);
-    verify(transaction)
-      .queries(TypeScalarPutType.class);
-    verify(transaction)
-      .queries(TypeRecordFieldUpdateType.class);
-    verify(transaction)
-      .queries(TypePackageSetVersionType.class);
-    verify(transaction)
-      .setUserId(any());
-
-    verify(textGet, new Times(1))
-      .execute(eq(typePackageIdentifier));
-    verify(satisfy, new Times(1))
+      .queries(TypePackageInstallType.class);
+    verify(typePackageInstall, new Times(1))
       .execute(any());
-    verify(typeFieldPut, new Times(1))
-      .execute(any());
-    verify(typeScalarPut, new Times(1))
-      .execute(any());
-    verify(typeVersionSet, new Times(1))
-      .execute(new CATypePackageIdentifier(
-        new RDottedName("com.io7m.p"),
-        Version.of(1, 1, 0)
-      ));
 
     verifyNoMoreInteractions(satisfy);
     verifyNoMoreInteractions(textGet);
-    verifyNoMoreInteractions(typeFieldPut);
-    verifyNoMoreInteractions(typeScalarPut);
-    verifyNoMoreInteractions(typeVersionSet);
     verifyNoMoreInteractions(transaction);
   }
 

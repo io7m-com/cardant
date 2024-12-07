@@ -196,6 +196,18 @@
         prevented.
       </Paragraph>
       <Paragraph>
+        The <Term type="expression">MinimumPoolConnections</Term> attribute specifies the number of database
+        connections to keep idle in the internal database connection pool. If this attribute is not specified,
+        the default is <Term type="expression">0</Term>.
+      </Paragraph>
+      <Paragraph>
+        The <Term type="expression">MaximumPoolConnections</Term> attribute specifies the maximum number of database
+        connections to allow in the internal database connection pool. If this attribute is not specified,
+        the default is <Term type="expression">10</Term>. If the number of connections in the internal database
+        pool reaches this value, the application will be forced to wait for a connection to become idle before it
+        can obtain a new connection.
+      </Paragraph>
+      <Paragraph>
         The <Term type="expression">Name</Term> attribute specifies the database name.
       </Paragraph>
       <Paragraph>
@@ -227,7 +239,9 @@
           Name="cardant"
           Create="true"
           Upgrade="true"
-          Language="english"/>
+          Language="english"
+          MinimumPoolConnections="1"
+          MaximumPoolConnections="5"/>
 ]]></Verbatim>
       </FormalItem>
     </Subsection>

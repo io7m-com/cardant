@@ -19,14 +19,19 @@ package com.io7m.cardant.tests.shell;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.client.preferences.vanilla.CAPreferencesService;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.parsers.CASyntaxRules;
 import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.shell.CAShellConfiguration;
 import com.io7m.cardant.shell.CAShellType;
 import com.io7m.cardant.shell.CAShells;
+import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.cardant.tests.containers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CAFixtures;
+import com.io7m.cardant.tests.containers.CAIdstoreFixture;
+import com.io7m.cardant.tests.containers.CAServerFixture;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
@@ -64,11 +69,11 @@ public final class CAShellIT
 
   private static CAUserID USER_ADMIN;
   private static CAUserID USER;
-  private static CATestContainers.CAIdstoreFixture IDSTORE;
-  private static CATestContainers.CADatabaseFixture DATABASE;
+  private static CAIdstoreFixture IDSTORE;
+  private static CADatabaseFixture DATABASE;
   private static Path DIRECTORY;
 
-  private CATestContainers.CAServerFixture server;
+  private CAServerFixture server;
   private CAShells shells;
   private CAShellConfiguration configuration;
   private CAFakeTerminal terminal;
@@ -82,27 +87,21 @@ public final class CAShellIT
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
     DIRECTORY =
       Files.createTempDirectory("cardant-");
     DATABASE =
-      CATestContainers.createDatabase(supervisor, 15433);
+      CAFixtures.database(CAFixtures.pod(supervisor));
     IDSTORE =
-      CATestContainers.createIdstore(
-        supervisor,
-        DATABASE,
-        DIRECTORY,
-        "idstore",
-        51000,
-        50000,
-        50001
-      );
+      CAFixtures.idstore(CAFixtures.pod(supervisor));
 
-    USER_ADMIN = IDSTORE.createUser("someone-admin");
-    USER = IDSTORE.createUser("someone");
+    USER_ADMIN =
+      new CAUserID(IDSTORE.userWithAdmin().id());
+    USER =
+      new CAUserID(IDSTORE.userWithLogin().id());
 
     closeables.addPerTestClassResource(
       () -> CATestDirectories.deleteDirectory(DIRECTORY)
@@ -111,6 +110,7 @@ public final class CAShellIT
 
   @BeforeEach
   public void setupEach(
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
@@ -143,13 +143,10 @@ public final class CAShellIT
 
     this.server =
       closeables.addPerTestResource(
-        CATestContainers.createServer(
-          IDSTORE,
-          DATABASE,
-          30000
-        )
+        CAFixtures.server(CAFixtures.pod(supervisor))
       );
 
+    this.server.server().start();
     this.server.setUserAsAdmin(USER_ADMIN, "someone-admin");
 
     closeables.addPerTestResource(
@@ -424,31 +421,56 @@ public final class CAShellIT
     w.println("item-create --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
               "--name 'Battery'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--metadata '[integer voltage 9]'");
+              "--metadata '[integer x:t.voltage 9]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--metadata '[integer size 23]'");
+              "--metadata '[integer x:t.size 23]'");
     w.println("item-metadata-put --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--metadata '[integer gauge 20]'");
+              "--metadata '[integer x:t.gauge 20]'");
     w.println("item-metadata-remove --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-              "--key gauge");
+              "--key x:t.gauge");
+
     w.println(
-      "item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "stock-reposit-set-introduce " +
+      "--instance 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
+      "--item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
       "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
       "--count 100");
     w.println(
-      "item-reposit-set-add --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "stock-reposit-set-add " +
+      "--instance 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
       "--count 50");
     w.println(
-      "item-reposit-set-move --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location-from 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "stock-reposit-set-move " +
+      "--instance-from 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
+      "--instance-to d47f8ab7-5da7-451c-9285-4df7879d0730 " +
       "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
       "--count 15");
     w.println(
-      "item-reposit-set-remove --item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
-      "--location 544c6447-b5dd-4df9-a5c5-78e70b486fcf " +
+      "stock-reposit-set-remove " +
+      "--instance 8e897e52-47c2-4d4c-9579-928e2f9a54e4 " +
       "--count 2");
+
+    w.println(
+      "stock-reposit-serial-introduce " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--item 8d64fc55-beae-4a91-ad45-d6968e9b82c4 " +
+      "--location 9f87685b-121e-4209-b864-80b0752132b5 " +
+      "--serial manufacturer:A");
+    w.println(
+      "stock-reposit-serial-number-add " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--serial manufacturer:B");
+    w.println(
+      "stock-reposit-serial-move " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--location-to 544c6447-b5dd-4df9-a5c5-78e70b486fcf ");
+    w.println(
+      "stock-reposit-serial-number-remove " +
+      "--instance 8add7a8e-e03f-44f2-84ce-25955505c738 " +
+      "--serial manufacturer:B");
+
     w.println("item-get --id 8d64fc55-beae-4a91-ad45-d6968e9b82c4");
+    w.println("set --formatter PRETTY");
     w.println("item-search-begin");
     w.println("item-search-next");
     w.println("item-search-previous");
@@ -456,6 +478,16 @@ public final class CAShellIT
     w.println("item-search-begin");
     w.println("item-search-next");
     w.println("item-search-previous");
+
+    w.println("set --formatter PRETTY");
+    w.println("stock-search-begin");
+    w.println("stock-search-next");
+    w.println("stock-search-previous");
+    w.println("set --formatter RAW");
+    w.println("stock-search-begin");
+    w.println("stock-search-next");
+    w.println("stock-search-previous");
+
     w.println("logout");
     w.flush();
     w.close();
@@ -509,6 +541,39 @@ public final class CAShellIT
 
     this.waitForShell();
     assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellItemDeletionWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var itemId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "item-create --id %s --name Battery%n",
+      itemId
+    );
+    w.printf(
+      "item-delete --id %s%n",
+      itemId
+    );
+    w.printf(
+      "item-get --id %s%n",
+      itemId
+    );
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(1, this.exitCode);
   }
 
   @Test
@@ -615,76 +680,6 @@ public final class CAShellIT
   }
 
   @Test
-  public void testShellTypeScalarsWorkflow(
-    final @TempDir Path directory)
-    throws Exception
-  {
-    this.startShell();
-
-    final var file =
-      CATestDirectories.resourceOf(
-        CAShellIT.class,
-        directory,
-        "tpack2.xml"
-      );
-
-    final var w = this.terminal.sendInputToTerminalWriter();
-    w.println("set --terminate-on-errors true");
-
-    w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println("type-package-install --file '%s'".formatted(file));
-    w.println("type-scalar-get --name com.io7m.example.t0");
-    w.println("type-scalar-search-begin");
-    w.println("type-scalar-search-next");
-    w.println("type-scalar-search-previous");
-    w.println("set --formatter RAW");
-    w.println("type-scalar-search-begin");
-    w.println("type-scalar-search-next");
-    w.println("type-scalar-search-previous");
-    w.println("logout");
-    w.flush();
-    w.close();
-
-    this.waitForShell();
-    assertEquals(0, this.exitCode);
-  }
-
-  @Test
-  public void testShellTypeDeclarationWorkflow(
-    final @TempDir Path directory)
-    throws Exception
-  {
-    this.startShell();
-
-    final var file =
-      CATestDirectories.resourceOf(
-        CAShellIT.class,
-        directory,
-        "tpack2.xml"
-      );
-
-    final var w = this.terminal.sendInputToTerminalWriter();
-    w.println("set --terminate-on-errors true");
-
-    w.printf("login %s someone-admin 12345678%n", this.uri());
-    w.println("type-package-install --file '%s'".formatted(file));
-    w.println("type-record-get --name com.io7m.example.t5");
-    w.println("type-record-search-begin");
-    w.println("type-record-search-next");
-    w.println("type-record-search-previous");
-    w.println("set --formatter RAW");
-    w.println("type-record-search-begin");
-    w.println("type-record-search-next");
-    w.println("type-record-search-previous");
-    w.println("logout");
-    w.flush();
-    w.close();
-
-    this.waitForShell();
-    assertEquals(0, this.exitCode);
-  }
-
-  @Test
   public void testShellAuditWorkflow(
     final @TempDir Path directory)
     throws Exception
@@ -766,12 +761,26 @@ public final class CAShellIT
     w.println("set --terminate-on-errors true");
     w.printf("login %s someone-admin 12345678%n", this.uri());
 
+    final var itemId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
     w.println("type-package-install --file '%s'".formatted(file));
+    w.println("type-package-upgrade --file '%s'".formatted(file));
+
     w.println("type-package-get-text --name com.io7m.example --version 1.0.0");
     w.println("type-package-get-text --name com.io7m.example --version 1.0.0 --output '%s'".formatted(out));
     w.println("type-package-search-begin");
     w.println("type-package-search-next");
     w.println("type-package-search-previous");
+
+    w.printf(
+      "item-create --id %s --name Battery%n",
+      itemId
+    );
+    w.printf("item-metadata-put --id %s --metadata '[Money com.io7m.example:t5.q 0 USD]'%n", itemId);
+    w.printf("item-types-assign --id %s --type com.io7m.example:t5%n", itemId);
+    w.printf("item-types-revoke --id %s --type com.io7m.example:t5%n", itemId);
+
     w.println("set --formatter RAW");
     w.println("type-package-search-begin");
     w.println("type-package-search-next");
@@ -780,6 +789,116 @@ public final class CAShellIT
     w.println("type-package-search-begin");
     w.println("type-package-search-next");
     w.println("type-package-search-previous");
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellSyntaxShow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var strings =
+      CAStrings.create(Locale.ROOT);
+    final var w =
+      this.terminal.sendInputToTerminalWriter();
+    final var rules =
+      CASyntaxRules.open(strings);
+
+    for (final var name : rules.rules().keySet()) {
+      w.println("syntax-show --rule " + name);
+      w.println();
+    }
+
+    for (final var name : rules.rules().keySet()) {
+      w.println("syntax-show --example true --rule " + name);
+      w.println();
+    }
+
+    this.startupLatch.await(5L, TimeUnit.SECONDS);
+
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellLocationDeletionWorkflow()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var fileId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "location-put --id %s --name Battery%n",
+      fileId
+    );
+    w.printf(
+      "location-delete --id %s%n",
+      fileId
+    );
+    w.printf(
+      "location-get --id %s%n",
+      fileId
+    );
+    w.println("logout");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(1, this.exitCode);
+  }
+
+  @Test
+  public void testBug94()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.println("syntax-show --rule metadata-match");
+    w.flush();
+    w.close();
+
+    this.waitForShell();
+    assertEquals(0, this.exitCode);
+  }
+
+  @Test
+  public void testShellItemSetName()
+    throws Exception
+  {
+    this.startShell();
+
+    final var w = this.terminal.sendInputToTerminalWriter();
+    w.println("set --terminate-on-errors true");
+    w.printf("login %s someone-admin 12345678%n", this.uri());
+
+    final var itemId =
+      "6c44c6ad-3fb9-4b2c-9230-4eabaf9295ae";
+
+    w.printf(
+      "item-create --id %s --name Battery%n",
+      itemId
+    );
+    w.printf(
+      "item-set-name --id %s --name Battery23%n",
+      itemId
+    );
     w.println("logout");
     w.flush();
     w.close();

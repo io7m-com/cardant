@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="f6120250-200e-3141-84c1-2ab06ed3c183" title="stock-reposit-set-move" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-reposit-set-move</Term>
+       - Move instances of items between locations.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-reposit-set-move</Term>
+       command moves items between set stock instances.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-reposit-set-move-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-reposit-set-move \
+  --instance-from 0b041ff1-4bbe-4265-b0f2-51f0c5ff6757 \
+  --instance-to d7c18055-cadb-4701-aa3d-9207711f6c8a
+  --location-to 55311cea-052f-4f72-9e34-bc01d0e43fee \
+  --count 50
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

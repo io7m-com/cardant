@@ -20,6 +20,8 @@ package com.io7m.cardant.shell.internal;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationName;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
@@ -32,6 +34,7 @@ import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,7 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_SHELL_OPTIONS_COMBINATION;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
+import static java.time.ZoneOffset.UTC;
 
 /**
  * "location-put"
@@ -56,7 +60,7 @@ public final class CAShellCmdLocationPut
       "--id",
       List.of(),
       new QConstant("The location ID."),
-      Optional.of(CALocationID.random()),
+      Optional.empty(),
       CALocationID.class
     );
 
@@ -69,13 +73,13 @@ public final class CAShellCmdLocationPut
       CALocationID.class
     );
 
-  private static final QParameterNamed01<String> NAME =
+  private static final QParameterNamed01<CALocationName> NAME =
     new QParameterNamed01<>(
       "--name",
       List.of(),
       new QConstant("The location name."),
       Optional.empty(),
-      String.class
+      CALocationName.class
     );
 
   private static final QParameterNamed01<Boolean> PARENT_DETACH =
@@ -146,8 +150,10 @@ public final class CAShellCmdLocationPut
     final CALocation location;
     try {
       location =
-        client.executeOrElseThrow(new CAICommandLocationGet(locationID))
-          .data();
+        client.sendAndWaitOrThrow(
+          new CAICommandLocationGet(locationID),
+          this.commandTimeout()
+        ).data();
     } catch (final CAClientException e) {
       if (Objects.equals(e.errorCode(), errorNonexistent())) {
         return this.createNewLocation(context);
@@ -172,7 +178,9 @@ public final class CAShellCmdLocationPut
       newLocation = new CALocation(
         newLocation.id(),
         newLocation.parent(),
-        newName.get(),
+        CALocationPath.singleton(newName.get()),
+        newLocation.timeCreated(),
+        newLocation.timeUpdated(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -186,7 +194,9 @@ public final class CAShellCmdLocationPut
       newLocation = new CALocation(
         newLocation.id(),
         newParent,
-        newLocation.name(),
+        newLocation.path(),
+        newLocation.timeCreated(),
+        newLocation.timeUpdated(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -201,7 +211,9 @@ public final class CAShellCmdLocationPut
       newLocation = new CALocation(
         newLocation.id(),
         Optional.empty(),
-        newLocation.name(),
+        newLocation.path(),
+        newLocation.timeCreated(),
+        newLocation.timeUpdated(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -211,7 +223,10 @@ public final class CAShellCmdLocationPut
     final var client =
       this.client();
     final var result =
-      client.executeOrElseThrow(new CAICommandLocationPut(newLocation));
+      client.sendAndWaitOrThrow(
+        new CAICommandLocationPut(newLocation),
+        this.commandTimeout()
+      );
 
     this.formatter().formatLocation(result.data());
     return SUCCESS;
@@ -224,7 +239,7 @@ public final class CAShellCmdLocationPut
     final var locationID =
       context.parameterValue(ID);
     final var newName =
-      context.parameterValue(NAME);
+      context.parameterValueRequireNow(NAME);
     final var newParent =
       context.parameterValue(PARENT);
 
@@ -232,7 +247,9 @@ public final class CAShellCmdLocationPut
       new CALocation(
         locationID,
         newParent,
-        newName.orElse(""),
+        CALocationPath.singleton(newName),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -241,7 +258,10 @@ public final class CAShellCmdLocationPut
     final var client =
       this.client();
     final var result =
-      client.executeOrElseThrow(new CAICommandLocationPut(newLocation));
+      client.sendAndWaitOrThrow(
+        new CAICommandLocationPut(newLocation),
+        this.commandTimeout()
+      );
 
     this.formatter().formatLocation(result.data());
     return SUCCESS;

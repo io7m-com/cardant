@@ -20,12 +20,14 @@ package com.io7m.cardant.type_packages.parsers.internal;
 import com.io7m.anethum.api.SerializationException;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageImport;
 import com.io7m.cardant.type_packages.parser.api.CATypePackageSerializerType;
 import com.io7m.cardant.type_packages.parsers.CATypePackageSchemas;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.verona.core.VersionRange;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -35,7 +37,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -102,7 +103,7 @@ public final class CATypePackageSerializer
 
   private void serializeRecords(
     final CATypePackage typePackage,
-    final Map<RDottedName, CATypeRecord> records)
+    final Map<CATypeRecordIdentifier, CATypeRecord> records)
     throws XMLStreamException
   {
     for (final var entry : records.entrySet()) {
@@ -152,7 +153,7 @@ public final class CATypePackageSerializer
       this.output.writeAttribute(
         "Description", field.description());
       this.output.writeAttribute(
-        "Type", type.name().value());
+        "Type", type.name().toString());
       this.output.writeAttribute(
         "Required",
         String.valueOf(field.isRequired()));
@@ -164,17 +165,14 @@ public final class CATypePackageSerializer
     final CATypePackage typePackage,
     final CATypeScalarType type)
   {
-    final var pName =
-      typePackage.identifier().name().segments();
-    final var tName =
-      new LinkedList<>(type.name().segments());
-
-    tName.removeLast();
-    return Objects.equals(pName, tName);
+    return Objects.equals(
+      typePackage.identifier().name(),
+      type.name().packageName()
+    );
   }
 
   private void serializeTypeScalars(
-    final Map<RDottedName, CATypeScalarType> scalars)
+    final Map<CATypeScalarIdentifier, CATypeScalarType> scalars)
     throws XMLStreamException
   {
     for (final var entry : scalars.entrySet()) {
@@ -286,9 +284,24 @@ public final class CATypePackageSerializer
   }
 
   private static String unqualify(
-    final RDottedName name)
+    final CATypeScalarIdentifier name)
   {
-    return name.segments().get(name.segments().size() - 1);
+    final var nameParts = name.typeName().segments();
+    return nameParts.get(nameParts.size() - 1);
+  }
+
+  private static String unqualify(
+    final CATypeRecordIdentifier name)
+  {
+    final var nameParts = name.typeName().segments();
+    return nameParts.get(nameParts.size() - 1);
+  }
+
+  private static String unqualify(
+    final CATypeRecordFieldIdentifier name)
+  {
+    final var nameParts = name.fieldName().segments();
+    return nameParts.get(nameParts.size() - 1);
   }
 
   private void serializeImports(

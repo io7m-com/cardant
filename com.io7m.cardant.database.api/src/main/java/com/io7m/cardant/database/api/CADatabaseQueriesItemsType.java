@@ -19,11 +19,10 @@ package com.io7m.cardant.database.api;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocations;
-import com.io7m.cardant.model.CAItemRepositType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -93,14 +92,26 @@ public sealed interface CADatabaseQueriesItemsType
   }
 
   /**
-   * Mark the given items as deleted.
+   * Mark the given items as deleted/undeleted.
    */
 
   non-sealed interface ItemDeleteMarkOnlyType
-    extends CADatabaseQueryType<Collection<CAItemID>, CADatabaseUnit>,
+    extends CADatabaseQueryType<ItemDeleteMarkOnlyType.Parameters, CADatabaseUnit>,
     CADatabaseQueriesItemsType
   {
+    /**
+     * Parameters for the operation.
+     *
+     * @param items   The item IDs
+     * @param deleted Whether items are deleted
+     */
 
+    record Parameters(
+      Collection<CAItemID> items,
+      boolean deleted)
+    {
+
+    }
   }
 
   /**
@@ -143,7 +154,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      Set<RDottedName> names)
+      Set<CATypeRecordFieldIdentifier> names)
     {
 
     }
@@ -200,28 +211,6 @@ public sealed interface CADatabaseQueriesItemsType
   }
 
   /**
-   * Reposit items.
-   */
-
-  non-sealed interface ItemRepositType
-    extends CADatabaseQueryType<CAItemRepositType, CADatabaseUnit>,
-    CADatabaseQueriesItemsType
-  {
-
-  }
-
-  /**
-   * Retrieve the locations of the given item.
-   */
-
-  non-sealed interface ItemLocationsType
-    extends CADatabaseQueryType<CAItemID, CAItemLocations>,
-    CADatabaseQueriesItemsType
-  {
-
-  }
-
-  /**
    * Start searching for items.
    */
 
@@ -249,7 +238,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }
@@ -272,7 +261,7 @@ public sealed interface CADatabaseQueriesItemsType
 
     record Parameters(
       CAItemID item,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }

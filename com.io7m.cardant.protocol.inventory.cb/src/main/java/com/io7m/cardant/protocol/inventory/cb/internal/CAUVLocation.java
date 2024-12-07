@@ -21,18 +21,22 @@ import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationName;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Attachment;
 import com.io7m.cardant.protocol.inventory.cb.CAI1AttachmentKey;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Location;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Metadata;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeRecordFieldIdentifier;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
-import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cedarbridge.runtime.convenience.CBLists;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -41,6 +45,8 @@ import java.util.TreeSet;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVAttachment.ATTACHMENT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVAttachmentKey.ATTACHMENT_KEY;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVMetadata.METADATA;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordFieldIdentifier.TYPE_RECORD_FIELD_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordIdentifier.TYPE_RECORD_IDENTIFIER;
 
 /**
  * A validator.
@@ -75,7 +81,7 @@ public enum CAUVLocation
     }
 
     final var metadata =
-      new HashMap<CBString, CAI1Metadata>();
+      new HashMap<CAI1TypeRecordFieldIdentifier, CAI1Metadata>();
 
     for (final var entry : location.metadata().entrySet()) {
       final var key =
@@ -83,7 +89,7 @@ public enum CAUVLocation
       final var val =
         entry.getValue();
       final var rKey =
-        new CBString(key.value());
+        TYPE_RECORD_FIELD_IDENTIFIER.convertToWire(key);
       final var rVal =
         METADATA.convertToWire(val);
       metadata.put(rKey, rVal);
@@ -92,14 +98,21 @@ public enum CAUVLocation
     return new CAI1Location(
       new CBUUID(location.id().id()),
       CBOptionType.fromOptional(location.parent().map(x -> new CBUUID(x.id()))),
-      new CBString(location.name()),
+      CBLists.ofCollectionString(
+        location.path()
+          .path()
+          .stream()
+          .map(CALocationName::value)
+          .toList()
+      ),
+      new CBOffsetDateTime(location.timeCreated()),
+      new CBOffsetDateTime(location.timeUpdated()),
       new CBMap<>(metadata),
       new CBMap<>(attachments),
       new CBList<>(
         location.types()
           .stream()
-          .map(RDottedName::value)
-          .map(CBString::new)
+          .map(TYPE_RECORD_IDENTIFIER::convertToWire)
           .toList()
       )
     );
@@ -125,7 +138,7 @@ public enum CAUVLocation
     }
 
     final var metadata =
-      new HashMap<RDottedName, CAMetadataType>();
+      new HashMap<CATypeRecordFieldIdentifier, CAMetadataType>();
 
     for (final var entry : c.fieldMetadata().values().entrySet()) {
       final var key =
@@ -133,7 +146,7 @@ public enum CAUVLocation
       final var val =
         entry.getValue();
       final var rKey =
-        new RDottedName(key.value());
+        TYPE_RECORD_FIELD_IDENTIFIER.convertFromWire(key);
       final var rVal =
         METADATA.convertFromWire(val);
       metadata.put(rKey, rVal);
@@ -144,15 +157,20 @@ public enum CAUVLocation
       c.fieldParent()
         .asOptional()
         .map(x -> new CALocationID(x.value())),
-      c.fieldName().value(),
+      new CALocationPath(
+        CBLists.toList(
+          c.fieldPath(),
+          s -> new CALocationName(s.value()))
+      ),
+      c.fieldCreated().value(),
+      c.fieldUpdated().value(),
       new TreeMap<>(metadata),
       new TreeMap<>(attachments),
       new TreeSet<>(
         c.fieldTypes()
           .values()
           .stream()
-          .map(CBString::value)
-          .map(RDottedName::new)
+          .map(TYPE_RECORD_IDENTIFIER::convertFromWire)
           .toList()
       )
     );

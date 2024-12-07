@@ -21,11 +21,11 @@ import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
 import com.io7m.cardant.protocol.inventory.cb.CAI1CommandItemTypesRevoke;
-import com.io7m.cedarbridge.runtime.api.CBCore;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBLists;
 import com.io7m.cedarbridge.runtime.convenience.CBSets;
-import com.io7m.lanark.core.RDottedName;
+
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordIdentifier.TYPE_RECORD_IDENTIFIER;
 
 /**
  * A validator.
@@ -46,7 +46,7 @@ public enum CAUVCommandItemTypesRevoke
   {
     return new CAI1CommandItemTypesRevoke(
       new CBUUID(c.item().id()),
-      CBLists.ofCollection(c.types(), r -> CBCore.string(r.value()))
+      CBLists.ofCollection(c.types(), TYPE_RECORD_IDENTIFIER::convertToWire)
     );
   }
 
@@ -56,7 +56,7 @@ public enum CAUVCommandItemTypesRevoke
   {
     return new CAICommandItemTypesRevoke(
       new CAItemID(c.fieldItem().value()),
-      CBSets.toSet(c.fieldTypes(), x -> new RDottedName(x.value()))
+      CBSets.toSet(c.fieldTypes(), TYPE_RECORD_IDENTIFIER::convertFromWire)
     );
   }
 }

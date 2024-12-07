@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.hibiscus.api.HBCommandType;
-
 /**
  * The type of commands in the User protocol.
  *
@@ -25,35 +23,34 @@ import com.io7m.hibiscus.api.HBCommandType;
  */
 
 public sealed interface CAICommandType<R extends CAIResponseType>
-  extends CAIMessageType, HBCommandType
+  extends CAIMessageType
   permits CAICommandAuditSearchBegin,
   CAICommandAuditSearchNext,
   CAICommandAuditSearchPrevious,
   CAICommandDebugInvalid,
   CAICommandDebugRandom,
+  CAICommandFileDelete,
   CAICommandFileGet,
   CAICommandFilePut,
-  CAICommandFileRemove,
   CAICommandFileSearchBegin,
   CAICommandFileSearchNext,
   CAICommandFileSearchPrevious,
   CAICommandItemAttachmentAdd,
   CAICommandItemAttachmentRemove,
   CAICommandItemCreate,
+  CAICommandItemDelete,
   CAICommandItemGet,
-  CAICommandItemLocationsList,
   CAICommandItemMetadataPut,
   CAICommandItemMetadataRemove,
-  CAICommandItemReposit,
   CAICommandItemSearchBegin,
   CAICommandItemSearchNext,
   CAICommandItemSearchPrevious,
   CAICommandItemSetName,
   CAICommandItemTypesAssign,
   CAICommandItemTypesRevoke,
-  CAICommandItemsRemove,
   CAICommandLocationAttachmentAdd,
   CAICommandLocationAttachmentRemove,
+  CAICommandLocationDelete,
   CAICommandLocationGet,
   CAICommandLocationList,
   CAICommandLocationMetadataPut,
@@ -65,21 +62,18 @@ public sealed interface CAICommandType<R extends CAIResponseType>
   CAICommandRolesAssign,
   CAICommandRolesGet,
   CAICommandRolesRevoke,
+  CAICommandStockCount,
+  CAICommandStockReposit,
+  CAICommandStockSearchBegin,
+  CAICommandStockSearchNext,
+  CAICommandStockSearchPrevious,
   CAICommandTypePackageGetText,
   CAICommandTypePackageInstall,
   CAICommandTypePackageSearchBegin,
   CAICommandTypePackageSearchNext,
   CAICommandTypePackageSearchPrevious,
   CAICommandTypePackageUninstall,
-  CAICommandTypePackageUpgrade,
-  CAICommandTypeRecordGet,
-  CAICommandTypeRecordSearchBegin,
-  CAICommandTypeRecordSearchNext,
-  CAICommandTypeRecordSearchPrevious,
-  CAICommandTypeScalarGet,
-  CAICommandTypeScalarSearchBegin,
-  CAICommandTypeScalarSearchNext,
-  CAICommandTypeScalarSearchPrevious
+  CAICommandTypePackageUpgrade
 {
   /**
    * @return The response class associated with this command (excluding the

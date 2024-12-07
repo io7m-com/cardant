@@ -88,8 +88,9 @@ public final class CAShellCmdRolesGet extends CAShellCmdAbstract
   {
     final var response =
       (CAIResponseRolesGet)
-        this.client().executeOrElseThrow(
-          new CAICommandRolesGet(context.parameterValue(USER_ID))
+        this.client().sendAndWaitOrThrow(
+          new CAICommandRolesGet(context.parameterValue(USER_ID)),
+          this.commandTimeout()
         );
 
     this.formatter().formatRoles(response.roles());

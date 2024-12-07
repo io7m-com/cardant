@@ -17,33 +17,40 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
+import com.io7m.cardant.client.api.CAClientException;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
+import com.io7m.cardant.strings.CAStringConstants;
 import com.io7m.cardant.strings.CAStrings;
 
-import java.net.http.HttpClient;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * The abstract base class for handlers.
  */
 
-public abstract class CAHandlerAbstract
+abstract class CAHandlerAbstract
   implements CAHandlerType
 {
   private final CAStrings strings;
-  private final HttpClient httpClient;
   private final CAClientConfiguration configuration;
 
   protected CAHandlerAbstract(
     final CAClientConfiguration inConfiguration,
-    final CAStrings inStrings,
-    final HttpClient inHttpClient)
+    final CAStrings inStrings)
   {
     this.configuration =
       Objects.requireNonNull(inConfiguration, "configuration");
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
-    this.httpClient =
-      Objects.requireNonNull(inHttpClient, "httpClient");
+  }
+
+  @Override
+  public final Function<Throwable, CAClientException> exceptionTransformer()
+  {
+    return CAClientException::ofException;
   }
 
   protected final CAStrings strings()
@@ -51,13 +58,19 @@ public abstract class CAHandlerAbstract
     return this.strings;
   }
 
-  protected final HttpClient httpClient()
-  {
-    return this.httpClient;
-  }
-
   protected final CAClientConfiguration configuration()
   {
     return this.configuration;
+  }
+
+  protected final CAClientException onNotConnected()
+  {
+    return new CAClientException(
+      this.strings.format(CAStringConstants.ERROR_NOT_LOGGED_IN),
+      CAStandardErrorCodes.errorNotLoggedIn(),
+      Map.of(),
+      Optional.empty(),
+      Optional.empty()
+    );
   }
 }

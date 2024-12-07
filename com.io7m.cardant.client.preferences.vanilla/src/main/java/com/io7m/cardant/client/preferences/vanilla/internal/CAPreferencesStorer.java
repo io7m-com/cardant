@@ -129,6 +129,14 @@ public final class CAPreferencesStorer
         String.format("server.bookmarks.%s.https", i),
         Boolean.toString(bookmark.isHTTPs())
       );
+      this.properties.setProperty(
+        String.format("server.bookmarks.%s.loginTimeout", i),
+        bookmark.loginTimeout().toString()
+      );
+      this.properties.setProperty(
+        String.format("server.bookmarks.%s.commandTimeout", i),
+        bookmark.commandTimeout().toString()
+      );
 
       final var credentials = bookmark.credentials();
       if (credentials instanceof CAPreferenceServerUsernamePassword usernamePassword) {

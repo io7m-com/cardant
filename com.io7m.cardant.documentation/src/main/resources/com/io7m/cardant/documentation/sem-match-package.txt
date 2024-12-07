@@ -1,0 +1,3 @@
+match_package_evaluate with-any-package n                 ⇒ true
+match_package_evaluate (with-package-equal-to m) n        ⇒ n = m
+match_package_evaluate (with-package-not-equal-to m) n    ⇒ n ≠ m

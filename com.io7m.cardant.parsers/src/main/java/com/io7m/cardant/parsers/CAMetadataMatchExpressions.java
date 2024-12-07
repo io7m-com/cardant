@@ -32,31 +32,44 @@ import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.ExactTextVa
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType.Search;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
 import com.io7m.cardant.model.CAMoney;
-import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.Anything;
-import com.io7m.cardant.strings.CAStringConstantType;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
+import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.model.CAMetadataValueMatchType.AnyValue.ANY_VALUE;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_AND;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_AND_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_ANY;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_ANY_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_2;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_3;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_4;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_5;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_6;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_7;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_8;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_EXAMPLE_9;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_MATCH;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_MATCH_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_EXACT;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_EXACT_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_SEARCH;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME_MATCH_SEARCH_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_OR;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MATCH_OR_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY;
@@ -72,7 +85,6 @@ import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_M
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for metadata match expressions.
@@ -80,44 +92,9 @@ import static java.util.Map.entry;
 
 public final class CAMetadataMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT),
-      entry(
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH_NAME,
-        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH),
-      entry(
-        SYNTAX_METADATA_NAME_MATCH_EXACT_NAME,
-        SYNTAX_METADATA_NAME_MATCH_EXACT),
-      entry(
-        SYNTAX_METADATA_NAME_MATCH_SEARCH_NAME,
-        SYNTAX_METADATA_NAME_MATCH_SEARCH),
-      entry(
-        SYNTAX_METADATA_NAME_MATCH_NAME,
-        SYNTAX_METADATA_NAME_MATCH),
-      entry(
-        SYNTAX_METADATA_MATCH_NAME,
-        SYNTAX_METADATA_MATCH)
-    );
-
-  private final CANameMatchExpressions names;
+  private final CAMetadataTypeMatchExpressions typeMatch;
+  private final CAMetadataPackageMatchExpressions packageMatch;
+  private final CAMetadataFieldMatchExpressions fieldMatch;
 
   /**
    * Expression parsers for metadata match expressions.
@@ -130,7 +107,12 @@ public final class CAMetadataMatchExpressions extends CAExpressions
   {
     super(inStrings);
 
-    this.names = new CANameMatchExpressions(inStrings);
+    this.typeMatch =
+      new CAMetadataTypeMatchExpressions(inStrings);
+    this.packageMatch =
+      new CAMetadataPackageMatchExpressions(inStrings);
+    this.fieldMatch =
+      new CAMetadataFieldMatchExpressions(inStrings);
   }
 
   private static SExpressionType metadataMatchValueSerialize(
@@ -265,12 +247,6 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     return "[CAMetadataMatchExpressions]";
   }
 
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
-  }
-
   /**
    * Parse a match expression for metadata.
    *
@@ -330,11 +306,20 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     final SList list)
     throws CAException
   {
-    if (list.size() == 3) {
-      final SExpressionType e = list.get(1);
+    if (list.size() == 5) {
+      final SExpressionType ePackage = list.get(1);
+      final SExpressionType eType = list.get(2);
+      final SExpressionType eField = list.get(3);
+
       return new Specific(
-        this.names.nameMatch(e).expression(),
-        this.metadataValueMatchExpr(list.get(2))
+        this.packageMatch.metadataPackageMatch(ePackage)
+          .expression()
+          .map(RDottedName::new),
+        this.typeMatch.metadataTypeMatch(eType)
+          .expression(),
+        this.fieldMatch.metadataFieldMatch(eField)
+          .expression(),
+        this.metadataValueMatchExpr(list.get(4))
       );
     }
     throw this.createParseError(list);
@@ -638,15 +623,24 @@ public final class CAMetadataMatchExpressions extends CAExpressions
     switch (value) {
       case final Specific specific -> {
         if (specific.value() == ANY_VALUE
-            && specific.name() instanceof Anything<String>) {
+            && specific.packageName() instanceof CAComparisonExactType.Anything<RDottedName>
+            && specific.typeName() instanceof CAComparisonExactType.Anything<String>
+            && specific.fieldName() instanceof CAComparisonExactType.Anything<String>
+        ) {
           return new SSymbol(zero(), "anything");
         }
+
         return new SList(
           zero(),
           true,
           List.of(
             new SSymbol(zero(), "match"),
-            this.names.nameMatchSerialize(specific.name()),
+            this.packageMatch.metadataPackageMatchSerialize(
+              specific.packageName()
+                .map(RDottedName::value)
+            ),
+            this.typeMatch.metadataTypeMatchSerialize(specific.typeName()),
+            this.fieldMatch.metadataFieldMatchSerialize(specific.fieldName()),
             metadataMatchValueSerialize(specific.value())
           )
         );
@@ -676,5 +670,123 @@ public final class CAMetadataMatchExpressions extends CAExpressions
         );
       }
     }
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_METADATA_MATCH_NAME,
+        List.of(
+          SYNTAX_METADATA_MATCH_ANY_NAME,
+          SYNTAX_METADATA_MATCH_AND_NAME,
+          SYNTAX_METADATA_MATCH_MATCH_NAME,
+          SYNTAX_METADATA_MATCH_OR_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH_NAME,
+          SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME
+        ),
+        List.of(
+          SYNTAX_METADATA_MATCH_ANY,
+          SYNTAX_METADATA_MATCH_EXAMPLE_0,
+          SYNTAX_METADATA_MATCH_EXAMPLE_1,
+          SYNTAX_METADATA_MATCH_EXAMPLE_2,
+          SYNTAX_METADATA_MATCH_EXAMPLE_3,
+          SYNTAX_METADATA_MATCH_EXAMPLE_4,
+          SYNTAX_METADATA_MATCH_EXAMPLE_5,
+          SYNTAX_METADATA_MATCH_EXAMPLE_6,
+          SYNTAX_METADATA_MATCH_EXAMPLE_7,
+          SYNTAX_METADATA_MATCH_EXAMPLE_8,
+          SYNTAX_METADATA_MATCH_EXAMPLE_9
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_ANY_NAME,
+        SYNTAX_METADATA_MATCH_ANY,
+        List.of()
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_AND_NAME,
+        SYNTAX_METADATA_MATCH_AND,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_1)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_MATCH_NAME,
+        SYNTAX_METADATA_MATCH_MATCH,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_0)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MATCH_OR_NAME,
+        SYNTAX_METADATA_MATCH_OR,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_2)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_INTEGRAL_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_3)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_CURRENCY,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_7)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_MONEY_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_5)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_REAL_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_4)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_EXACT,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_8)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_TEXT_SEARCH,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_9)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE_NAME,
+        SYNTAX_METADATA_VALUE_MATCH_TIME_RANGE,
+        List.of(SYNTAX_METADATA_MATCH_EXAMPLE_6)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

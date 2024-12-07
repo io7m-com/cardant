@@ -21,13 +21,16 @@ import com.io7m.blackthorne.core.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.core.BTElementHandlerType;
 import com.io7m.blackthorne.core.BTElementParsingContextType;
 import com.io7m.blackthorne.core.BTQualifiedName;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CANameUnqualified;
 import com.io7m.cardant.model.type_package.CATypeFieldDeclaration;
 import com.io7m.cardant.model.type_package.CATypeRecordDeclaration;
+import com.io7m.lanark.core.RDottedName;
 import org.xml.sax.Attributes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.io7m.cardant.type_packages.parsers.internal.CATP1Names.qName;
 
@@ -39,20 +42,26 @@ public final class CATP1TypeRecord
   implements BTElementHandlerType<Object, CATypeRecordDeclaration>
 {
   private final HashMap<CANameUnqualified, CATypeFieldDeclaration> fields;
+  private final RDottedName packageName;
   private CANameUnqualified name;
   private String description;
+  private CATypeRecordIdentifier fullName;
 
   /**
    * A parser.
    *
    * @param context The parse context
+   * @param inPackageName The package name
    */
 
   public CATP1TypeRecord(
-    final BTElementParsingContextType context)
+    final BTElementParsingContextType context,
+    final RDottedName inPackageName)
   {
     this.fields =
       new HashMap<>();
+    this.packageName =
+      Objects.requireNonNull(inPackageName, "packageName");
   }
 
   @Override
@@ -64,6 +73,12 @@ public final class CATP1TypeRecord
       new CANameUnqualified(attributes.getValue("Name"));
     this.description =
       attributes.getValue("Description");
+
+    this.fullName =
+      new CATypeRecordIdentifier(
+        this.packageName,
+        new RDottedName(this.name.value())
+      );
   }
 
   @Override
@@ -72,7 +87,9 @@ public final class CATP1TypeRecord
     final BTElementParsingContextType context)
   {
     return Map.ofEntries(
-      Map.entry(qName("Field"), CATP1Field::new),
+      Map.entry(qName("Field"), c -> {
+        return new CATP1Field(c, this.fullName);
+      }),
       Map.entry(qName("FieldWithExternalType"), CATP1FieldWithExternalType::new)
     );
   }

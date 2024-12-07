@@ -78,6 +78,7 @@ public final class CADBQFileSearch
 
     final Condition descriptionCondition =
       CADBComparisons.createFuzzyMatchQuery(
+        this.language(),
         parameters.description(),
         FILES.FILE_DESCRIPTION,
         "FILES.FILE_DESCRIPTION_SEARCH"
@@ -86,6 +87,7 @@ public final class CADBQFileSearch
 
     final Condition mediaCondition =
       CADBComparisons.createFuzzyMatchQuery(
+        this.language(),
         parameters.mediaType(),
         FILES.FILE_MEDIA_TYPE,
         "FILES.FILE_MEDIA_TYPE_SEARCH"

@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_ATTACHMENTS;
 import static com.io7m.cardant.strings.CAStringConstants.FILE_ID;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
@@ -87,6 +88,11 @@ public final class CADBQItemAttachmentAdd
       .onDuplicateKeyUpdate()
       .set(ITEM_ATTACHMENTS.IA_FILE_ID, file.id())
       .set(ITEM_ATTACHMENTS.IA_RELATION, relation)
+      .execute();
+
+    context.update(ITEMS)
+      .set(ITEMS.ITEM_UPDATED, this.now())
+      .where(ITEMS.ITEM_ID.eq(item.id()))
       .execute();
 
     final var transaction = this.transaction();

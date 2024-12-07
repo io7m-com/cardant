@@ -25,7 +25,6 @@ import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsNotEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsNotSimilarTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsSimilarTo;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -34,12 +33,19 @@ import com.io7m.jsx.SExpressionType.SListType;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_EXAMPLE_2;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_EXAMPLE_3;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO;
@@ -49,7 +55,6 @@ import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATC
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for description match expressions.
@@ -57,25 +62,6 @@ import static java.util.Map.entry;
 
 public final class CADescriptionMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION_NAME,
-        SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION),
-      entry(
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO_NAME,
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO),
-      entry(
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO_NAME,
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO),
-      entry(
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO_NAME,
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO),
-      entry(
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO_NAME,
-        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO)
-    );
-
   /**
    * Expression parsers for description match expressions.
    *
@@ -86,12 +72,6 @@ public final class CADescriptionMatchExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -139,8 +119,8 @@ public final class CADescriptionMatchExpressions extends CAExpressions
       }
       case final SListType xs
         when xs.size() == 2
-          && xs.get(0) instanceof final SAtomType head
-          && xs.get(1) instanceof final SAtomType value -> {
+             && xs.get(0) instanceof final SAtomType head
+             && xs.get(1) instanceof final SAtomType value -> {
         yield switch (head.text().toUpperCase(Locale.ROOT)) {
           case "WITH-DESCRIPTION-EQUAL-TO" -> {
             yield new IsEqualTo<>(value.text());
@@ -242,5 +222,71 @@ public final class CADescriptionMatchExpressions extends CAExpressions
         );
       }
     };
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_DESCRIPTION_MATCH_NAME,
+        List.of(
+          SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION_NAME,
+          SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO_NAME,
+          SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO_NAME,
+          SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO_NAME,
+          SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO_NAME
+        ),
+        List.of(
+          SYNTAX_DESCRIPTION_MATCH_EXAMPLE_0,
+          SYNTAX_DESCRIPTION_MATCH_EXAMPLE_1,
+          SYNTAX_DESCRIPTION_MATCH_EXAMPLE_2,
+          SYNTAX_DESCRIPTION_MATCH_EXAMPLE_3
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeaf(
+        SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION_NAME,
+        SYNTAX_DESCRIPTION_MATCH_ANYDESCRIPTION
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_EQUAL_TO,
+        List.of(SYNTAX_DESCRIPTION_MATCH_EXAMPLE_0)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_EQUAL_TO,
+        List.of(SYNTAX_DESCRIPTION_MATCH_EXAMPLE_1)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_SIMILAR_TO,
+        List.of(SYNTAX_DESCRIPTION_MATCH_EXAMPLE_2)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO_NAME,
+        SYNTAX_DESCRIPTION_MATCH_WITH_DESCRIPTION_NOT_SIMILAR_TO,
+        List.of(SYNTAX_DESCRIPTION_MATCH_EXAMPLE_3)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

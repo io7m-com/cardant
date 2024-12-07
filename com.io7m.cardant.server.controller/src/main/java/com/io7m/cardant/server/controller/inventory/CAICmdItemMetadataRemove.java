@@ -27,10 +27,8 @@ import com.io7m.cardant.security.CASecurityException;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
-import static com.io7m.cardant.strings.CAStringConstants.ERROR_NONEXISTENT;
 import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
@@ -62,9 +60,8 @@ public final class CAICmdItemMetadataRemove
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var metaRemove =
       transaction.queries(CADatabaseQueriesItemsType.ItemMetadataRemoveType.class);
     final var get =
@@ -74,22 +71,14 @@ public final class CAICmdItemMetadataRemove
 
     final var itemID = command.item();
     context.setAttribute(ITEM_ID, itemID.displayId());
-    metaRemove.execute(new Parameters(itemID, metadatas));
+    CAIChecks.checkItemExists(context, get, itemID);
 
-    final var itemOpt = get.execute(itemID);
-    if (itemOpt.isEmpty()) {
-      throw context.failFormatted(
-        400,
-        errorNonexistent(),
-        context.attributes(),
-        ERROR_NONEXISTENT
-      );
-    }
+    metaRemove.execute(new Parameters(itemID, metadatas));
 
     final var resolver =
       CADatabaseTypePackageResolver.create(compilers, transaction);
 
-    final var item = itemOpt.get();
+    final var item = get.execute(itemID).orElseThrow();
     CAITypeChecking.checkTypes(context, resolver, item);
     return new CAIResponseItemMetadataRemove(context.requestId(), item);
   }

@@ -30,12 +30,15 @@ import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryT
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
+import static com.io7m.cardant.server.controller.inventory.CAIChecks.checkLocationExists;
+import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
 /**
  * @see CAICommandLocationTypesAssign
  */
 
-public final class CAICmdLocationTypesAssign extends CAICmdAbstract<CAICommandLocationTypesAssign>
+public final class CAICmdLocationTypesAssign
+  extends CAICmdAbstract<CAICommandLocationTypesAssign>
 {
   /**
    * @see CAICommandLocationTypesAssign
@@ -65,6 +68,10 @@ public final class CAICmdLocationTypesAssign extends CAICmdAbstract<CAICommandLo
       transaction.queries(LocationGetType.class);
     final var assign =
       transaction.queries(LocationTypesAssignType.class);
+
+    final var locationID = command.location();
+    context.setAttribute(LOCATION_ID, locationID.displayId());
+    checkLocationExists(context, get, locationID);
 
     assign.execute(new Parameters(command.location(), command.types()));
 

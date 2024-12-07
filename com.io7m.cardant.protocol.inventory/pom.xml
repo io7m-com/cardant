@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.cardant</artifactId>
     <groupId>com.io7m.cardant</groupId>
-    <version>0.0.2</version>
+    <version>1.0.0-beta0001</version>
   </parent>
   <artifactId>com.io7m.cardant.protocol.inventory</artifactId>
 
@@ -35,10 +35,6 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.io7m.lanark</groupId>
-      <artifactId>com.io7m.lanark.core</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.io7m.medrina</groupId>
       <artifactId>com.io7m.medrina.api</artifactId>

@@ -17,9 +17,12 @@
 package com.io7m.cardant.tests.server.v1;
 
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.cardant.tests.containers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CAFixtures;
+import com.io7m.cardant.tests.containers.CAIdstoreFixture;
+import com.io7m.cardant.tests.containers.CAServerFixture;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.zelador.test_extension.CloseableResourcesType;
@@ -45,31 +48,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CAI1ServerTest
 {
-  private static CATestContainers.CAIdstoreFixture IDSTORE;
-  private static CATestContainers.CADatabaseFixture DATABASE;
+  private static CAIdstoreFixture IDSTORE;
+  private static CADatabaseFixture DATABASE;
   private static Path DIRECTORY;
-  private CATestContainers.CAServerFixture server;
+  private CAServerFixture server;
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
     DIRECTORY =
       Files.createTempDirectory("cardant-");
     DATABASE =
-      CATestContainers.createDatabase(supervisor, 15433);
+      CAFixtures.database(CAFixtures.pod(supervisor));
     IDSTORE =
-      CATestContainers.createIdstore(
-        supervisor,
-        DATABASE,
-        DIRECTORY,
-        "idstore",
-        51000,
-        50000,
-        50001
-      );
+      CAFixtures.idstore(CAFixtures.pod(supervisor));
 
     closeables.addPerTestClassResource(
       () -> CATestDirectories.deleteDirectory(DIRECTORY)
@@ -78,6 +73,7 @@ public final class CAI1ServerTest
 
   @BeforeEach
   public void setupEach(
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
@@ -85,11 +81,7 @@ public final class CAI1ServerTest
 
     this.server =
       closeables.addPerTestResource(
-        CATestContainers.createServer(
-          IDSTORE,
-          DATABASE,
-          30000
-        )
+        CAFixtures.server(CAFixtures.pod(supervisor))
       );
   }
 

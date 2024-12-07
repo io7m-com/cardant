@@ -24,6 +24,7 @@ import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
@@ -32,6 +33,7 @@ import com.io7m.medrina.api.MRoleName;
 
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * A shell formatter for data.
@@ -214,4 +216,39 @@ public interface CAFormatterType
     CAPage<CATypePackageSummary> type)
     throws Exception;
 
+  /**
+   * Format a string set.
+   *
+   * @param strings The strings
+   *
+   * @throws Exception On errors
+   */
+
+  void formatStringSet(
+    SortedSet<String> strings)
+    throws Exception;
+
+  /**
+   * Format a page of stock occurrences.
+   *
+   * @param page The page
+   *
+   * @throws Exception On errors
+   */
+
+  void formatStockPage(
+    CAPage<CAStockOccurrenceType> page)
+    throws Exception;
+
+  /**
+   * Format a stock occurrence.
+   *
+   * @param item The item
+   *
+   * @throws Exception On errors
+   */
+
+  void formatStock(
+    CAStockOccurrenceType item)
+    throws Exception;
 }

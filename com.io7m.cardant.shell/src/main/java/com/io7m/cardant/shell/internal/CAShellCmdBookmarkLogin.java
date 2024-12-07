@@ -17,14 +17,13 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.client.api.CAClientConnectionParameters;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.client.preferences.api.CAPreferenceServerUsernamePassword;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 import com.io7m.idstore.model.IdName;
-import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -108,18 +107,24 @@ public final class CAShellCmdBookmarkLogin
     }
 
     final var credentials =
-      new CAClientCredentials(
+      new CAClientConnectionParameters(
         bookmark.host(),
         bookmark.port(),
         bookmark.isHTTPs(),
         userNameOf(bookmark),
         passwordOf(bookmark),
-        Map.of()
+        Map.of(),
+        bookmark.loginTimeout(),
+        bookmark.commandTimeout()
       );
+
+    this.setCommandTimeoutRecent(bookmark.commandTimeout());
+    this.setLoginTimeoutRecent(bookmark.loginTimeout());
 
     final var response =
       (CAIResponseLogin)
-        this.client().loginOrElseThrow(credentials);
+        this.client()
+          .connectOrThrow(credentials);
 
     this.loginTracker().setUserId(response.userId());
     return SUCCESS;
@@ -138,19 +143,21 @@ public final class CAShellCmdBookmarkLogin
   private static IdName userNameOf(
     final CAPreferenceServerBookmark bookmark)
   {
-    if (bookmark.credentials() instanceof final CAPreferenceServerUsernamePassword c) {
-      return new IdName(c.username());
+    switch (bookmark.credentials()) {
+      case final CAPreferenceServerUsernamePassword c -> {
+        return new IdName(c.username());
+      }
     }
-    throw new UnreachableCodeException();
   }
 
   private static String passwordOf(
     final CAPreferenceServerBookmark bookmark)
   {
-    if (bookmark.credentials() instanceof final CAPreferenceServerUsernamePassword c) {
-      return c.password();
+    switch (bookmark.credentials()) {
+      case final CAPreferenceServerUsernamePassword c -> {
+        return c.password();
+      }
     }
-    throw new UnreachableCodeException();
   }
 
   @Override

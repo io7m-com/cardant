@@ -20,36 +20,40 @@ package com.io7m.cardant.parsers;
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAMoney;
-import com.io7m.cardant.strings.CAStringConstantType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
-import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_INTEGER;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_INTEGER_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_INTEGER_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MONEY;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MONEY_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_MONEY_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_REAL;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_REAL_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_REAL_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TEXT;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TEXT_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TEXT_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TIME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TIME_EXAMPLE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_METADATA_TIME_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expressions over metadata values.
@@ -57,15 +61,6 @@ import static java.util.Map.entry;
 
 public final class CAMetadataExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(SYNTAX_METADATA_INTEGER_NAME, SYNTAX_METADATA_INTEGER),
-      entry(SYNTAX_METADATA_TIME_NAME, SYNTAX_METADATA_TIME),
-      entry(SYNTAX_METADATA_TEXT_NAME, SYNTAX_METADATA_TEXT),
-      entry(SYNTAX_METADATA_REAL_NAME, SYNTAX_METADATA_REAL),
-      entry(SYNTAX_METADATA_MONEY_NAME, SYNTAX_METADATA_MONEY),
-      entry(SYNTAX_METADATA_NAME, SYNTAX_METADATA)
-    );
 
   /**
    * Expression parsers for metadata values.
@@ -77,12 +72,6 @@ public final class CAMetadataExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -135,7 +124,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Text"),
-          new SSymbol(zero(), text.name().value()),
+          new SSymbol(zero(), text.name().toString()),
           new SQuotedString(zero(), text.value())
         )
       );
@@ -146,7 +135,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Time"),
-          new SSymbol(zero(), time.name().value()),
+          new SSymbol(zero(), time.name().toString()),
           new SSymbol(zero(), time.value().toString())
         )
       );
@@ -157,7 +146,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Integer"),
-          new SSymbol(zero(), integral.name().value()),
+          new SSymbol(zero(), integral.name().toString()),
           new SSymbol(zero(), Long.toString(integral.value()))
         )
       );
@@ -168,7 +157,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Real"),
-          new SSymbol(zero(), real.name().value()),
+          new SSymbol(zero(), real.name().toString()),
           new SSymbol(zero(), Double.toString(real.value()))
         )
       );
@@ -179,7 +168,7 @@ public final class CAMetadataExpressions extends CAExpressions
         zero(), true,
         List.of(
           new SSymbol(zero(), "Money"),
-          new SSymbol(zero(), monetary.name().value()),
+          new SSymbol(zero(), monetary.name().toString()),
           new SSymbol(zero(), monetary.value().toString()),
           new SSymbol(zero(), monetary.currency().getCode())
         )
@@ -226,7 +215,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Text(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.text(list.get(2))
       );
     }
@@ -239,7 +228,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Time(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.time(list.get(2))
       );
     }
@@ -252,7 +241,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 4) {
       return new CAMetadataType.Monetary(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.monetary(list.get(2)),
         this.currency(list.get(3))
       );
@@ -266,7 +255,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Real(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.real(list.get(2))
       );
     }
@@ -279,7 +268,7 @@ public final class CAMetadataExpressions extends CAExpressions
   {
     if (list.size() == 3) {
       return new CAMetadataType.Integral(
-        new RDottedName(this.text(list.get(1))),
+        this.recordFieldIdentifier(list.get(1), this.text(list.get(1))),
         this.integer(list.get(2))
       );
     }
@@ -370,5 +359,82 @@ public final class CAMetadataExpressions extends CAExpressions
     }
 
     throw this.createParseError(expr);
+  }
+
+  private CATypeRecordFieldIdentifier recordFieldIdentifier(
+    final SExpressionType expr,
+    final String text)
+    throws CAException
+  {
+    try {
+      return CATypeRecordFieldIdentifier.of(text);
+    } catch (final Exception e) {
+      throw this.createParseError(expr, e);
+    }
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_METADATA_NAME,
+        List.of(
+          SYNTAX_METADATA_INTEGER_NAME,
+          SYNTAX_METADATA_TIME_NAME,
+          SYNTAX_METADATA_TEXT_NAME,
+          SYNTAX_METADATA_REAL_NAME,
+          SYNTAX_METADATA_MONEY_NAME
+        ),
+        List.of(
+          SYNTAX_METADATA_INTEGER_EXAMPLE,
+          SYNTAX_METADATA_TIME_EXAMPLE,
+          SYNTAX_METADATA_TEXT_EXAMPLE,
+          SYNTAX_METADATA_REAL_EXAMPLE,
+          SYNTAX_METADATA_MONEY_EXAMPLE
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_INTEGER_NAME,
+        SYNTAX_METADATA_INTEGER,
+        List.of(SYNTAX_METADATA_INTEGER_EXAMPLE)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_TIME_NAME,
+        SYNTAX_METADATA_TIME,
+        List.of(SYNTAX_METADATA_TIME_EXAMPLE)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_TEXT_NAME,
+        SYNTAX_METADATA_TEXT,
+        List.of(SYNTAX_METADATA_TEXT_EXAMPLE)
+
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_REAL_NAME,
+        SYNTAX_METADATA_REAL,
+        List.of(SYNTAX_METADATA_REAL_EXAMPLE)
+      )
+    );
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_METADATA_MONEY_NAME,
+        SYNTAX_METADATA_MONEY,
+        List.of(SYNTAX_METADATA_MONEY_EXAMPLE)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

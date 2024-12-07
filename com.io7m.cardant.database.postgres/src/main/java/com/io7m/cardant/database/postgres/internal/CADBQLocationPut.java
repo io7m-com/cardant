@@ -18,15 +18,18 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationListType.Parameters;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationPutType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jooq.DSLContext;
 import org.jooq.Query;
+import org.jooq.impl.DSL;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -39,8 +42,10 @@ import static com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataP
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorCyclic;
+import static com.io7m.cardant.model.CAIncludeDeleted.INCLUDE_ONLY_LIVE;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.NEW_LOCATION_ID;
@@ -89,7 +94,7 @@ public final class CADBQLocationPut
     throws CADatabaseException
   {
     this.setAttribute(LOCATION_ID, location.displayId());
-    this.setAttribute(LOCATION_NAME, location.name());
+    this.setAttribute(LOCATION_NAME, location.name().value());
 
     this.checkAcyclic(context, location);
 
@@ -114,7 +119,13 @@ public final class CADBQLocationPut
           locationId)
         .set(
           LOCATIONS.LOCATION_NAME,
-          location.name())
+          location.name().value())
+        .set(
+          LOCATIONS.LOCATION_CREATED,
+          this.now())
+        .set(
+          LOCATIONS.LOCATION_UPDATED,
+          this.now())
         .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))
@@ -124,23 +135,34 @@ public final class CADBQLocationPut
           locationId)
         .set(
           LOCATIONS.LOCATION_NAME,
-          location.name())
+          location.name().value())
+        .set(
+          LOCATIONS.LOCATION_UPDATED,
+          this.now()
+        )
         .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))
     );
 
     for (final var type : location.types()) {
+      final var matches =
+        DSL.and(
+          METADATA_TYPES.MT_PACKAGE.eq(METADATA_TYPE_PACKAGES.MTP_ID),
+          METADATA_TYPES.MT_NAME.eq(type.typeName().value())
+        );
+
+      final var typeSelect =
+        context.select(METADATA_TYPES.MT_ID)
+          .from(METADATA_TYPES)
+          .join(METADATA_TYPE_PACKAGES)
+          .on(METADATA_TYPES.MT_PACKAGE.eq(METADATA_TYPE_PACKAGES.MTP_ID))
+          .where(matches);
+
       batches.add(
         context.insertInto(LOCATION_TYPES)
-          .set(
-            LOCATION_TYPES.LT_LOCATION,
-            locationId)
-          .set(
-            LOCATION_TYPES.LT_TYPE,
-            context.select(METADATA_TYPES_RECORDS.MTR_ID)
-              .where(METADATA_TYPES_RECORDS.MTR_NAME.eq(type.value()))
-          )
+          .set(LOCATION_TYPES.LT_LOCATION, locationId)
+          .set(LOCATION_TYPES.LT_TYPE, typeSelect)
       );
     }
 
@@ -218,7 +240,10 @@ public final class CADBQLocationPut
       );
 
     final var locations =
-      CADBQLocationList.list(context);
+      CADBQLocationList.list(
+        context,
+        new Parameters(INCLUDE_ONLY_LIVE)
+      );
 
     try {
       for (final var location : locations.values()) {
@@ -243,10 +268,10 @@ public final class CADBQLocationPut
       graph.addEdge(newLocation.id(), newParent, newEdge);
     } catch (final IllegalArgumentException e) {
       this.setAttribute(NEW_LOCATION_ID, newLocation.displayId());
-      this.setAttribute(NEW_LOCATION_NAME, newLocation.name());
+      this.setAttribute(NEW_LOCATION_NAME, newLocation.name().value());
       this.setAttribute(NEW_LOCATION_PARENT_ID, newParent.displayId());
       this.setAttribute(OLD_LOCATION_ID, oldLocation.id().displayId());
-      this.setAttribute(OLD_LOCATION_NAME, oldLocation.name());
+      this.setAttribute(OLD_LOCATION_NAME, oldLocation.name().value());
       oldParentOpt.ifPresent(oldParent -> {
         this.setAttribute(OLD_LOCATION_PARENT_ID, oldParent.displayId());
       });
@@ -267,7 +292,10 @@ public final class CADBQLocationPut
   {
     return context.select(
         LOCATIONS.LOCATION_PARENT,
-        LOCATIONS.LOCATION_NAME
+        LOCATIONS.LOCATION_NAME,
+        CADBLocationPaths.locationPathNamed(context, id),
+        LOCATIONS.LOCATION_CREATED,
+        LOCATIONS.LOCATION_UPDATED
       ).from(LOCATIONS)
       .where(LOCATIONS.LOCATION_ID.eq(id.id()))
       .fetchOptional()
@@ -276,7 +304,11 @@ public final class CADBQLocationPut
           id,
           Optional.ofNullable(r.get(LOCATIONS.LOCATION_PARENT))
             .map(CALocationID::new),
-          r.get(LOCATIONS.LOCATION_NAME)
+          CALocationPath.ofArray(
+            r.get(CADBLocationPaths.LOCATION_PATH_NAME)
+          ),
+          r.get(LOCATIONS.LOCATION_CREATED),
+          r.get(LOCATIONS.LOCATION_UPDATED)
         );
       });
   }

@@ -24,7 +24,10 @@ import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import com.io7m.cedarbridge.runtime.api.CBProtocolMessageVersionedSerializerType;
+import com.io7m.cedarbridge.runtime.api.CBSerializationContextType;
 import com.io7m.cedarbridge.runtime.bssio.CBSerializationContextBSSIO;
 import com.io7m.jbssio.api.BSSReaderProviderType;
 import com.io7m.jbssio.api.BSSWriterProviderType;
@@ -33,7 +36,9 @@ import com.io7m.jbssio.vanilla.BSSWriters;
 import com.io7m.repetoir.core.RPServiceType;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -62,6 +67,13 @@ public final class CAI1Messages
 
   public static final String CONTENT_TYPE =
     "application/cardant_inventory+cedarbridge";
+
+  /**
+   * The content type for the protocol.
+   */
+
+  public static final String CONTENT_TYPE_FOR_SEQUENCE =
+    "application/cardant_inventory_sequence+cedarbridge";
 
   private final BSSReaderProviderType readers;
   private final BSSWriterProviderType writers;
@@ -111,6 +123,15 @@ public final class CAI1Messages
   }
 
   /**
+   * @return The content type for sequences
+   */
+
+  public static String contentTypeForSequence()
+  {
+    return CONTENT_TYPE_FOR_SEQUENCE;
+  }
+
+  /**
    * @return The protocol identifier
    */
 
@@ -153,26 +174,25 @@ public final class CAI1Messages
           output
         );
 
-      if (message instanceof final CAICommandDebugInvalid invalid) {
-        this.serializer.serialize(
-          context,
-          this.validator.convertToWire(new CAIResponseError(
-            UUID.randomUUID(),
-            "Invalid!",
-            new CAErrorCode("error-invalid"),
-            Map.of("X", "Y"),
-            Optional.of("Avoid sending this."),
-            Optional.empty(),
-            BLAME_CLIENT,
-            List.of()
-          ))
-        );
-      } else if (message instanceof CAICommandDebugRandom) {
-        final var random = SecureRandom.getInstanceStrong();
-        final var data = new byte[1024];
-        random.nextBytes(data);
-      } else {
-        this.serializer.serialize(context, this.validator.convertToWire(message));
+      switch (message) {
+        case final CAICommandDebugInvalid ignored -> {
+          this.serializeInvalid(context);
+        }
+
+        case final CAICommandDebugRandom ignored -> {
+          serializeRandom(output);
+        }
+
+        case final CAITransactionResponse transactionResponse -> {
+          this.serializeTransactionResponse(output, transactionResponse);
+        }
+
+        case null, default -> {
+          this.serializer.serialize(
+            context,
+            this.validator.convertToWire(message)
+          );
+        }
       }
 
       return output.toByteArray();
@@ -181,6 +201,64 @@ public final class CAI1Messages
     } catch (final CAProtocolException | NoSuchAlgorithmException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  private void serializeTransactionResponse(
+    final OutputStream outputStream,
+    final CAITransactionResponse transactionResponse)
+    throws IOException, CAProtocolException
+  {
+    try (var dataOut = new DataOutputStream(outputStream)) {
+      for (final CAIResponseType message : transactionResponse.responses()) {
+        final var output =
+          new ByteArrayOutputStream();
+        final var context =
+          CBSerializationContextBSSIO.createFromOutputStream(
+            this.writers,
+            output
+          );
+
+        this.serializer.serialize(
+          context,
+          this.validator.convertToWire(message)
+        );
+
+        final var data = output.toByteArray();
+        dataOut.writeInt(data.length);
+        dataOut.write(data);
+      }
+
+      dataOut.writeInt(0);
+    }
+  }
+
+  private static void serializeRandom(
+    final ByteArrayOutputStream outputStream)
+    throws NoSuchAlgorithmException
+  {
+    final var random = SecureRandom.getInstanceStrong();
+    final var data = new byte[1024];
+    random.nextBytes(data);
+    outputStream.writeBytes(data);
+  }
+
+  private void serializeInvalid(
+    final CBSerializationContextType context)
+    throws IOException, CAProtocolException
+  {
+    this.serializer.serialize(
+      context,
+      this.validator.convertToWire(new CAIResponseError(
+        UUID.randomUUID(),
+        "Invalid!",
+        new CAErrorCode("error-invalid"),
+        Map.of("X", "Y"),
+        Optional.of("Avoid sending this."),
+        Optional.empty(),
+        BLAME_CLIENT,
+        List.of()
+      ))
+    );
   }
 
   @Override

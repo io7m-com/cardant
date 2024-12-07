@@ -34,6 +34,7 @@ import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_METADATA;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
@@ -92,6 +93,12 @@ public final class CADBQItemMetadataPut
       batches.add(setMetadataValue(context, item, meta));
     }
 
+    batches.add(
+      context.update(ITEMS)
+        .set(ITEMS.ITEM_UPDATED, this.now())
+        .where(ITEMS.ITEM_ID.eq(item.id()))
+    );
+
     final var transaction = this.transaction();
     batches.add(
       auditEvent(
@@ -138,7 +145,15 @@ public final class CADBQItemMetadataPut
   {
     return context.insertInto(ITEM_METADATA)
       .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
-      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_INTEGRAL)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, Long.valueOf(meta.value()))
       .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
@@ -146,7 +161,11 @@ public final class CADBQItemMetadataPut
       .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
-      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .onConflict(
+        ITEM_METADATA.ITEM_META_ITEM,
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        ITEM_METADATA.ITEM_META_TYPE_FIELD)
       .doUpdate()
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_INTEGRAL)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, Long.valueOf(meta.value()))
@@ -164,7 +183,15 @@ public final class CADBQItemMetadataPut
   {
     return context.insertInto(ITEM_METADATA)
       .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
-      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TEXT)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
@@ -172,7 +199,11 @@ public final class CADBQItemMetadataPut
       .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, meta.value())
       .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
-      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .onConflict(
+        ITEM_METADATA.ITEM_META_ITEM,
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        ITEM_METADATA.ITEM_META_TYPE_FIELD)
       .doUpdate()
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TEXT)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
@@ -190,7 +221,15 @@ public final class CADBQItemMetadataPut
   {
     return context.insertInto(ITEM_METADATA)
       .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
-      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TIME)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
@@ -198,7 +237,11 @@ public final class CADBQItemMetadataPut
       .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_TIME, meta.value())
-      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .onConflict(
+        ITEM_METADATA.ITEM_META_ITEM,
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        ITEM_METADATA.ITEM_META_TYPE_FIELD)
       .doUpdate()
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_TIME)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
@@ -216,7 +259,15 @@ public final class CADBQItemMetadataPut
   {
     return context.insertInto(ITEM_METADATA)
       .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
-      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_REAL)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, (BigDecimal) null)
@@ -224,7 +275,11 @@ public final class CADBQItemMetadataPut
       .set(ITEM_METADATA.ITEM_META_VALUE_REAL, Double.valueOf(meta.value()))
       .set(ITEM_METADATA.ITEM_META_VALUE_TEXT, (String) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
-      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .onConflict(
+        ITEM_METADATA.ITEM_META_ITEM,
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        ITEM_METADATA.ITEM_META_TYPE_FIELD)
       .doUpdate()
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_REAL)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
@@ -242,7 +297,15 @@ public final class CADBQItemMetadataPut
   {
     return context.insertInto(ITEM_METADATA)
       .set(ITEM_METADATA.ITEM_META_ITEM, itemID.id())
-      .set(ITEM_METADATA.ITEM_META_NAME, meta.name().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        ITEM_METADATA.ITEM_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_MONEY)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_MONEY, meta.value())
@@ -251,7 +314,11 @@ public final class CADBQItemMetadataPut
         meta.currency().getCode())
       .set(ITEM_METADATA.ITEM_META_VALUE_REAL, (Double) null)
       .set(ITEM_METADATA.ITEM_META_VALUE_TIME, (OffsetDateTime) null)
-      .onConflict(ITEM_METADATA.ITEM_META_ITEM, ITEM_METADATA.ITEM_META_NAME)
+      .onConflict(
+        ITEM_METADATA.ITEM_META_ITEM,
+        ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
+        ITEM_METADATA.ITEM_META_TYPE_RECORD,
+        ITEM_METADATA.ITEM_META_TYPE_FIELD)
       .doUpdate()
       .set(ITEM_METADATA.ITEM_META_VALUE_TYPE, SCALAR_MONEY)
       .set(ITEM_METADATA.ITEM_META_VALUE_INTEGRAL, (Long) null)

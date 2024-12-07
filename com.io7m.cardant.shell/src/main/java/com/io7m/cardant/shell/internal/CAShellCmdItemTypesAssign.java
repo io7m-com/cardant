@@ -17,11 +17,10 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -53,13 +52,13 @@ public final class CAShellCmdItemTypesAssign
       CAItemID.class
     );
 
-  private static final QParameterNamed0N<RDottedName> TYPES =
+  private static final QParameterNamed0N<CATypeRecordIdentifier> TYPES =
     new QParameterNamed0N<>(
       "--type",
       List.of(),
       new QConstant("The item types."),
       List.of(),
-      RDottedName.class
+      CATypeRecordIdentifier.class
     );
 
   /**
@@ -102,10 +101,10 @@ public final class CAShellCmdItemTypesAssign
       context.parameterValues(TYPES);
 
     final var item =
-      ((CAIResponseItemTypesAssign) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemTypesAssign(itemID, Set.copyOf(types)),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItem(item);
     return SUCCESS;

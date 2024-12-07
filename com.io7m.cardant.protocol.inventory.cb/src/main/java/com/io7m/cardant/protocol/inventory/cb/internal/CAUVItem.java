@@ -22,17 +22,18 @@ import com.io7m.cardant.model.CAAttachmentKey;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Attachment;
 import com.io7m.cardant.protocol.inventory.cb.CAI1AttachmentKey;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Item;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Metadata;
-import com.io7m.cedarbridge.runtime.api.CBIntegerUnsigned64;
+import com.io7m.cardant.protocol.inventory.cb.CAI1TypeRecordFieldIdentifier;
 import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -41,6 +42,8 @@ import java.util.TreeSet;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVAttachment.ATTACHMENT;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVAttachmentKey.ATTACHMENT_KEY;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVMetadata.METADATA;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordFieldIdentifier.TYPE_RECORD_FIELD_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordIdentifier.TYPE_RECORD_IDENTIFIER;
 
 /**
  * A validator.
@@ -75,7 +78,7 @@ public enum CAUVItem
     }
 
     final var metadata =
-      new HashMap<CBString, CAI1Metadata>();
+      new HashMap<CAI1TypeRecordFieldIdentifier, CAI1Metadata>();
 
     for (final var entry : item.metadata().entrySet()) {
       final var key =
@@ -83,7 +86,7 @@ public enum CAUVItem
       final var val =
         entry.getValue();
       final var rKey =
-        new CBString(key.value());
+        TYPE_RECORD_FIELD_IDENTIFIER.convertToWire(key);
       final var rVal =
         METADATA.convertToWire(val);
       metadata.put(rKey, rVal);
@@ -92,15 +95,14 @@ public enum CAUVItem
     return new CAI1Item(
       new CBUUID(item.id().id()),
       new CBString(item.name()),
-      new CBIntegerUnsigned64(item.countTotal()),
-      new CBIntegerUnsigned64(item.countHere()),
+      new CBOffsetDateTime(item.timeCreated()),
+      new CBOffsetDateTime(item.timeUpdated()),
       new CBMap<>(metadata),
       new CBMap<>(attachments),
       new CBList<>(
         item.types()
           .stream()
-          .map(RDottedName::value)
-          .map(CBString::new)
+          .map(TYPE_RECORD_IDENTIFIER::convertToWire)
           .toList()
       )
     );
@@ -126,7 +128,7 @@ public enum CAUVItem
     }
 
     final var metadata =
-      new HashMap<RDottedName, CAMetadataType>();
+      new HashMap<CATypeRecordFieldIdentifier, CAMetadataType>();
 
     for (final var entry : item.fieldMetadata().values().entrySet()) {
       final var key =
@@ -134,7 +136,7 @@ public enum CAUVItem
       final var val =
         entry.getValue();
       final var rKey =
-        new RDottedName(key.value());
+        TYPE_RECORD_FIELD_IDENTIFIER.convertFromWire(key);
       final var rVal =
         METADATA.convertFromWire(val);
       metadata.put(rKey, rVal);
@@ -143,16 +145,15 @@ public enum CAUVItem
     return new CAItem(
       new CAItemID(item.fieldId().value()),
       item.fieldName().value(),
-      item.fieldCountTotal().value(),
-      item.fieldCountHere().value(),
+      item.fieldCreated().value(),
+      item.fieldUpdated().value(),
       new TreeMap<>(metadata),
       new TreeMap<>(attachments),
       new TreeSet<>(
         item.fieldTypes()
           .values()
           .stream()
-          .map(CBString::value)
-          .map(RDottedName::new)
+          .map(TYPE_RECORD_IDENTIFIER::convertFromWire)
           .toList()
       )
     );

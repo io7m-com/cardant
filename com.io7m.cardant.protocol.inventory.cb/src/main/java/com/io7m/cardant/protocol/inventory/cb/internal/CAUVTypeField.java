@@ -21,8 +21,8 @@ import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1TypeField;
 import com.io7m.cedarbridge.runtime.api.CBBooleanType;
-import com.io7m.lanark.core.RDottedName;
 
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeRecordFieldIdentifier.TYPE_RECORD_FIELD_IDENTIFIER;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVTypeScalar.TYPE_SCALAR;
 import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
@@ -45,7 +45,7 @@ public enum CAUVTypeField
     final CATypeField message)
   {
     return new CAI1TypeField(
-      string(message.name().value()),
+      TYPE_RECORD_FIELD_IDENTIFIER.convertToWire(message.name()),
       string(message.description()),
       TYPE_SCALAR.convertToWire(message.type()),
       CBBooleanType.fromBoolean(message.isRequired())
@@ -57,7 +57,7 @@ public enum CAUVTypeField
     final CAI1TypeField message)
   {
     return new CATypeField(
-      new RDottedName(message.fieldName().value()),
+      TYPE_RECORD_FIELD_IDENTIFIER.convertFromWire(message.fieldName()),
       message.fieldDescription().value(),
       TYPE_SCALAR.convertFromWire(message.fieldType()),
       message.fieldRequired().asBoolean()

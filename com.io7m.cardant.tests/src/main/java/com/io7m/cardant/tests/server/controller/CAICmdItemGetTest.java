@@ -32,7 +32,6 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -111,15 +110,7 @@ public final class CAICmdItemGetTest
     when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
       .thenReturn(itemGet);
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(

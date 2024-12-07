@@ -18,9 +18,10 @@
 package com.io7m.cardant.model.type_package;
 
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.jaffirm.core.Preconditions;
-import com.io7m.lanark.core.RDottedName;
 
 import java.util.Map;
 import java.util.Objects;
@@ -40,8 +41,8 @@ public record CATypePackage(
   CATypePackageIdentifier identifier,
   String description,
   Set<CATypePackageImport> imports,
-  Map<RDottedName, CATypeScalarType> scalarTypes,
-  Map<RDottedName, CATypeRecord> recordTypes)
+  Map<CATypeScalarIdentifier, CATypeScalarType> scalarTypes,
+  Map<CATypeRecordIdentifier, CATypeRecord> recordTypes)
 {
   /**
    * A type package.
@@ -64,14 +65,14 @@ public record CATypePackage(
 
     for (final var e : scalarTypes.entrySet()) {
       Preconditions.checkPreconditionV(
-        Objects.equals(e.getKey().value(), e.getValue().name().value()),
+        Objects.equals(e.getKey(), e.getValue().name()),
         "Type names must match the names used in the type map."
       );
     }
 
     for (final var e : recordTypes.entrySet()) {
       Preconditions.checkPreconditionV(
-        Objects.equals(e.getKey().value(), e.getValue().name().value()),
+        Objects.equals(e.getKey(), e.getValue().name()),
         "Type names must match the names used in the type map."
       );
     }

@@ -242,6 +242,7 @@ public final class CAServer implements CAServerType
     final var idstore =
       CAIdstoreClients.create(
         this.configuration.locale(),
+        this.configuration.clock(),
         this.telemetry,
         this.configuration.idstoreConfiguration()
       );

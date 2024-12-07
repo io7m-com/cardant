@@ -17,10 +17,8 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.jranges.RangeInclusiveD;
 import com.io7m.jranges.RangeInclusiveL;
-import com.io7m.lanark.core.RDottedName;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -34,10 +32,10 @@ import java.util.regex.Pattern;
 public sealed interface CATypeScalarType
 {
   /**
-   * @return The package to which this type belongs
+   * @return The type name
    */
 
-  CATypePackageIdentifier packageIdentifier();
+  CATypeScalarIdentifier name();
 
   /**
    * The kind of scalar type.
@@ -82,13 +80,7 @@ public sealed interface CATypeScalarType
    * @return This type with a new name
    */
 
-  CATypeScalarType withName(RDottedName newName);
-
-  /**
-   * @return The type name
-   */
-
-  RDottedName name();
+  CATypeScalarType withName(CATypeScalarIdentifier newName);
 
   /**
    * @return A humanly-readable description of the type
@@ -111,16 +103,14 @@ public sealed interface CATypeScalarType
   /**
    * An integer type.
    *
-   * @param packageIdentifier The package to which this type belongs
-   * @param name              The type name
-   * @param description       A humanly-readable description of the type
-   * @param rangeLower        The lower bound (inclusive)
-   * @param rangeUpper        The upper bound (inclusive)
+   * @param name        The type name
+   * @param description A humanly-readable description of the type
+   * @param rangeLower  The lower bound (inclusive)
+   * @param rangeUpper  The upper bound (inclusive)
    */
 
   record Integral(
-    CATypePackageIdentifier packageIdentifier,
-    RDottedName name,
+    CATypeScalarIdentifier name,
     String description,
     long rangeLower,
     long rangeUpper)
@@ -132,17 +122,15 @@ public sealed interface CATypeScalarType
 
     public Integral
     {
-      Objects.requireNonNull(packageIdentifier, "packageIdentifier");
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(description, "description");
     }
 
     @Override
     public CATypeScalarType withName(
-      final RDottedName newName)
+      final CATypeScalarIdentifier newName)
     {
       return new Integral(
-        this.packageIdentifier,
         newName,
         this.description,
         this.rangeLower,
@@ -183,15 +171,13 @@ public sealed interface CATypeScalarType
   /**
    * A text type.
    *
-   * @param packageIdentifier The package to which this type belongs
-   * @param name              The type name
-   * @param description       A humanly-readable description of the type
-   * @param pattern           The pattern that constrains text values
+   * @param name        The type name
+   * @param description A humanly-readable description of the type
+   * @param pattern     The pattern that constrains text values
    */
 
   record Text(
-    CATypePackageIdentifier packageIdentifier,
-    RDottedName name,
+    CATypeScalarIdentifier name,
     String description,
     String pattern)
     implements CATypeScalarType
@@ -202,7 +188,6 @@ public sealed interface CATypeScalarType
 
     public Text
     {
-      Objects.requireNonNull(packageIdentifier, "packageIdentifier");
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(description, "description");
       Objects.requireNonNull(pattern, "pattern");
@@ -218,10 +203,9 @@ public sealed interface CATypeScalarType
 
     @Override
     public CATypeScalarType withName(
-      final RDottedName newName)
+      final CATypeScalarIdentifier newName)
     {
       return new Text(
-        this.packageIdentifier,
         newName,
         this.description,
         this.pattern
@@ -252,16 +236,14 @@ public sealed interface CATypeScalarType
   /**
    * A time type.
    *
-   * @param packageIdentifier The package to which this type belongs
-   * @param name              The type name
-   * @param description       A humanly-readable description of the type
-   * @param rangeLower        The lower bound (inclusive)
-   * @param rangeUpper        The upper bound (inclusive)
+   * @param name        The type name
+   * @param description A humanly-readable description of the type
+   * @param rangeLower  The lower bound (inclusive)
+   * @param rangeUpper  The upper bound (inclusive)
    */
 
   record Time(
-    CATypePackageIdentifier packageIdentifier,
-    RDottedName name,
+    CATypeScalarIdentifier name,
     String description,
     OffsetDateTime rangeLower,
     OffsetDateTime rangeUpper)
@@ -273,7 +255,6 @@ public sealed interface CATypeScalarType
 
     public Time
     {
-      Objects.requireNonNull(packageIdentifier, "packageIdentifier");
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(description, "description");
       Objects.requireNonNull(rangeLower, "rangeLower");
@@ -288,10 +269,9 @@ public sealed interface CATypeScalarType
 
     @Override
     public CATypeScalarType withName(
-      final RDottedName newName)
+      final CATypeScalarIdentifier newName)
     {
       return new Time(
-        this.packageIdentifier,
         newName,
         this.description,
         this.rangeLower,
@@ -326,16 +306,14 @@ public sealed interface CATypeScalarType
   /**
    * A monetary type.
    *
-   * @param packageIdentifier The package to which this type belongs
-   * @param name              The type name
-   * @param description       A humanly-readable description of the type
-   * @param rangeLower        The lower bound (inclusive)
-   * @param rangeUpper        The upper bound (inclusive)
+   * @param name        The type name
+   * @param description A humanly-readable description of the type
+   * @param rangeLower  The lower bound (inclusive)
+   * @param rangeUpper  The upper bound (inclusive)
    */
 
   record Monetary(
-    CATypePackageIdentifier packageIdentifier,
-    RDottedName name,
+    CATypeScalarIdentifier name,
     String description,
     BigDecimal rangeLower,
     BigDecimal rangeUpper)
@@ -347,7 +325,6 @@ public sealed interface CATypeScalarType
 
     public Monetary
     {
-      Objects.requireNonNull(packageIdentifier, "packageIdentifier");
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(description, "description");
       Objects.requireNonNull(rangeLower, "rangeLower");
@@ -356,10 +333,9 @@ public sealed interface CATypeScalarType
 
     @Override
     public CATypeScalarType withName(
-      final RDottedName newName)
+      final CATypeScalarIdentifier newName)
     {
       return new Monetary(
-        this.packageIdentifier,
         newName,
         this.description,
         this.rangeLower,
@@ -400,16 +376,14 @@ public sealed interface CATypeScalarType
   /**
    * A real type.
    *
-   * @param packageIdentifier The package to which this type belongs
-   * @param name              The type name
-   * @param description       A humanly-readable description of the type
-   * @param rangeLower        The lower bound (inclusive)
-   * @param rangeUpper        The upper bound (inclusive)
+   * @param name        The type name
+   * @param description A humanly-readable description of the type
+   * @param rangeLower  The lower bound (inclusive)
+   * @param rangeUpper  The upper bound (inclusive)
    */
 
   record Real(
-    CATypePackageIdentifier packageIdentifier,
-    RDottedName name,
+    CATypeScalarIdentifier name,
     String description,
     double rangeLower,
     double rangeUpper)
@@ -421,17 +395,15 @@ public sealed interface CATypeScalarType
 
     public Real
     {
-      Objects.requireNonNull(packageIdentifier, "packageIdentifier");
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(description, "description");
     }
 
     @Override
     public CATypeScalarType withName(
-      final RDottedName newName)
+      final CATypeScalarIdentifier newName)
     {
       return new Real(
-        this.packageIdentifier,
         newName,
         this.description,
         this.rangeLower,

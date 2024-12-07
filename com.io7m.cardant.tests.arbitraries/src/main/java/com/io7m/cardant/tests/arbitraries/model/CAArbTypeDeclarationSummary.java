@@ -17,22 +17,21 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.CATypeRecordSummary;
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
-public final class CAArbTypeDeclarationSummary extends CAArbAbstract<CATypeRecordSummary>
+public final class CAArbTypeDeclarationSummary
+  extends CAArbAbstract<CATypeRecordSummary>
 {
   public CAArbTypeDeclarationSummary()
   {
     super(
       CATypeRecordSummary.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CATypePackageIdentifier.class),
-        Arbitraries.defaultFor(RDottedName.class),
+        Arbitraries.defaultFor(CATypeRecordIdentifier.class),
         Arbitraries.strings()
       ).as(CATypeRecordSummary::new)
     );

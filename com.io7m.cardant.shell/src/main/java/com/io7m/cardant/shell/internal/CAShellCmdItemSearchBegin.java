@@ -17,17 +17,13 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CADescriptionMatch;
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CAItemColumnOrdering;
-import com.io7m.cardant.model.CAItemLocationMatchType;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSearchParameters;
-import com.io7m.cardant.model.CAItemSerialMatch;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
-import com.io7m.cardant.model.CANameMatch;
+import com.io7m.cardant.model.CANameMatchFuzzy;
 import com.io7m.cardant.model.CATypeMatch;
-import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
@@ -54,16 +50,6 @@ import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
 public final class CAShellCmdItemSearchBegin
   extends CAShellCmdAbstractCR<CAICommandItemSearchBegin, CAIResponseItemSearch>
 {
-  private static final QParameterNamed1<CAItemLocationMatchType> LOCATION_MATCH =
-    new QParameterNamed1<>(
-      "--location-match",
-      List.of(),
-      new QConstant(
-        "Only include items in locations matching the given expression."),
-      Optional.of(new CAItemLocationsAll()),
-      CAItemLocationMatchType.class
-    );
-
   private static final QParameterNamed1<Integer> LIMIT =
     new QParameterNamed1<>(
       "--limit",
@@ -83,14 +69,14 @@ public final class CAShellCmdItemSearchBegin
       CATypeMatch.class
     );
 
-  private static final QParameterNamed1<CANameMatch> NAME_MATCH =
+  private static final QParameterNamed1<CANameMatchFuzzy> NAME_MATCH =
     new QParameterNamed1<>(
       "--name-match",
       List.of(),
       new QConstant(
         "Only include items that have names matching the given expression."),
-      Optional.of(new CANameMatch(new CAComparisonFuzzyType.Anything<>())),
-      CANameMatch.class
+      Optional.of(new CANameMatchFuzzy(new CAComparisonFuzzyType.Anything<>())),
+      CANameMatchFuzzy.class
     );
 
   private static final QParameterNamed1<CADescriptionMatch> DESCRIPTION_MATCH =
@@ -111,16 +97,6 @@ public final class CAShellCmdItemSearchBegin
         "Only include items with metadata matching the given expression."),
       Optional.of(ANYTHING),
       CAMetadataElementMatchType.class
-    );
-
-  private static final QParameterNamed1<CAItemSerialMatch> SERIAL_MATCH =
-    new QParameterNamed1<>(
-      "--serial-match",
-      List.of(),
-      new QConstant(
-        "Only include items with serial numbers matching the given expression."),
-      Optional.of(new CAItemSerialMatch(new CAComparisonExactType.Anything<>())),
-      CAItemSerialMatch.class
     );
 
   /**
@@ -148,9 +124,7 @@ public final class CAShellCmdItemSearchBegin
   {
     return List.of(
       LIMIT,
-      LOCATION_MATCH,
       DESCRIPTION_MATCH,
-      SERIAL_MATCH,
       METADATA_MATCH,
       NAME_MATCH,
       TYPE_MATCH
@@ -165,8 +139,6 @@ public final class CAShellCmdItemSearchBegin
     final var client =
       this.client();
 
-    final var locationMatch =
-      context.parameterValue(LOCATION_MATCH);
     final var nameMatch =
       context.parameterValue(NAME_MATCH);
     final var descriptionMatch =
@@ -175,26 +147,23 @@ public final class CAShellCmdItemSearchBegin
       context.parameterValue(TYPE_MATCH);
     final var metaMatch =
       context.parameterValue(METADATA_MATCH);
-    final var serialMatch =
-      context.parameterValue(SERIAL_MATCH);
 
     final var parameters =
       new CAItemSearchParameters(
-        locationMatch,
         nameMatch.expression(),
         descriptionMatch.expression(),
         typeMatch.expression(),
-        serialMatch.expression(),
         metaMatch,
+        CAIncludeDeleted.INCLUDE_ONLY_LIVE,
         new CAItemColumnOrdering(BY_NAME, true),
         context.parameterValue(LIMIT).longValue()
       );
 
     final var items =
-      ((CAIResponseItemSearch) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemSearchBegin(parameters),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItemsPage(items);
     return SUCCESS;

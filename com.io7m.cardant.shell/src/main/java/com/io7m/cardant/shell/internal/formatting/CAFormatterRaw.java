@@ -21,9 +21,13 @@ import com.io7m.cardant.client.preferences.api.CAPreferenceServerBookmark;
 import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockOccurrenceSerial;
+import com.io7m.cardant.model.CAStockOccurrenceSet;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.model.CATypeRecord;
 import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
@@ -40,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -114,8 +119,6 @@ public final class CAFormatterRaw implements CAFormatterType
     final var main = new TreeMap<String, String>();
     main.put("Item ID", item.id().displayId());
     main.put("Name", item.name());
-    main.put("Count (Here)", Long.toUnsignedString(item.countHere()));
-    main.put("Count (Total)", Long.toUnsignedString(item.countTotal()));
 
     w.printf("# Item %s%n", item.id().displayId());
     w.printf("#-----------------------------------------%n");
@@ -229,7 +232,7 @@ public final class CAFormatterRaw implements CAFormatterType
 
     final PrintWriter w = this.terminal.writer();
     for (final var type : typesSorted) {
-      w.printf("%s: %s%n", type.name().value(), type.description());
+      w.printf("%s: %s%n", type.name().toString(), type.description());
     }
   }
 
@@ -248,7 +251,7 @@ public final class CAFormatterRaw implements CAFormatterType
     );
 
     for (final var item : types.items()) {
-      w.printf("%s : %s%n", item.name().value(), item.description());
+      w.printf("%s : %s%n", item.name().toString(), item.description());
     }
   }
 
@@ -258,10 +261,10 @@ public final class CAFormatterRaw implements CAFormatterType
   {
     final PrintWriter w = this.terminal.writer();
     final var main = new TreeMap<String, String>();
-    main.put("Name", type.name().value());
+    main.put("Name", type.name().toString());
     main.put("Description", type.description());
 
-    w.printf("# Type %s%n", type.name().value());
+    w.printf("# Type %s%n", type.name());
     w.printf("#-----------------------------------------%n");
     w.println();
     paddedTable(w, main);
@@ -278,9 +281,9 @@ public final class CAFormatterRaw implements CAFormatterType
         new TreeMap<>(
           fields.entrySet()
             .stream()
-            .map(e -> Map.entry(e.getKey(), e.getValue().name().value()))
+            .map(e -> Map.entry(e.getKey(), e.getValue().name().toString()))
             .collect(Collectors.toMap(
-              e -> e.getKey().value(),
+              e -> e.getKey().toString(),
               Map.Entry::getValue))
         ));
     }
@@ -303,7 +306,7 @@ public final class CAFormatterRaw implements CAFormatterType
     );
 
     for (final var item : types.items()) {
-      w.printf("%s : %s%n", item.name().value(), item.description());
+      w.printf("%s : %s%n", item.name().toString(), item.description());
     }
   }
 
@@ -314,7 +317,8 @@ public final class CAFormatterRaw implements CAFormatterType
     final PrintWriter w = this.terminal.writer();
     final var main = new TreeMap<String, String>();
     main.put("Location ID", location.id().displayId());
-    main.put("Name", location.name());
+    main.put("Path", location.path().toString());
+    main.put("Name", location.name().value());
 
     w.printf("# Item %s%n", location.id().displayId());
     w.printf("#-----------------------------------------%n");
@@ -428,6 +432,73 @@ public final class CAFormatterRaw implements CAFormatterType
         item.identifier().version(),
         item.description()
       );
+    }
+  }
+
+  @Override
+  public void formatStringSet(
+    final SortedSet<String> set)
+  {
+    final PrintWriter w = this.terminal.writer();
+    for (final var s : set) {
+      w.printf("%s%n", s);
+    }
+  }
+
+  @Override
+  public void formatStockPage(
+    final CAPage<CAStockOccurrenceType> page)
+    throws Exception
+  {
+    final PrintWriter w = this.terminal.writer();
+    w.printf(
+      "# Search results: Page %d of %d%n",
+      Integer.valueOf(page.pageIndex()),
+      Integer.valueOf(page.pageCount())
+    );
+    w.println(
+      "#--------------------------------"
+    );
+
+    final var items = page.items();
+    for (final var item : items) {
+      formatStockOccurrence(item, w);
+    }
+  }
+
+  @Override
+  public void formatStock(final CAStockOccurrenceType item)
+    throws Exception
+  {
+    formatStockOccurrence(item, this.terminal.writer());
+  }
+
+  private static void formatStockOccurrence(
+    final CAStockOccurrenceType item,
+    final PrintWriter w)
+  {
+    switch (item) {
+      case final CAStockOccurrenceSerial serial -> {
+        w.printf(
+          "%s %s \"%s\" (Serials %s)%n",
+          serial.location().id(),
+          serial.item().id(),
+          serial.item().name(),
+          serial.serials()
+            .stream()
+            .map(CAItemSerial::toString)
+            .collect(Collectors.joining(", "))
+        );
+      }
+      case final CAStockOccurrenceSet set -> {
+        w.printf(
+          "%s %s \"%s\" (Count %s)%n",
+          set.location().id(),
+          set.item().id(),
+          set.item().name(),
+          Long.toUnsignedString(set.count())
+        );
+      }
     }
   }
 

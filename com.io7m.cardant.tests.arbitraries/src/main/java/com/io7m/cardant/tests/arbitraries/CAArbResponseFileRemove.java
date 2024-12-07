@@ -16,22 +16,22 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.protocol.inventory.CAIResponseFileRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileDelete;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
 import java.util.UUID;
 
-public final class CAArbResponseFileRemove extends CAArbAbstract<CAIResponseFileRemove>
+public final class CAArbResponseFileRemove extends CAArbAbstract<CAIResponseFileDelete>
 {
   public CAArbResponseFileRemove()
   {
     super(
-      CAIResponseFileRemove.class,
+      CAIResponseFileDelete.class,
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
         Arbitraries.defaultFor(CAFileID.class)
-      ).as(CAIResponseFileRemove::new)
+      ).as(CAIResponseFileDelete::new)
     );
   }
 }

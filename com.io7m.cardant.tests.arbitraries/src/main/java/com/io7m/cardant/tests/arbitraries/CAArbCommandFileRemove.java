@@ -16,17 +16,17 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CAFileID;
-import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
 import net.jqwik.api.Arbitraries;
 
-public final class CAArbCommandFileRemove extends CAArbAbstract<CAICommandFileRemove>
+public final class CAArbCommandFileRemove extends CAArbAbstract<CAICommandFileDelete>
 {
   public CAArbCommandFileRemove()
   {
     super(
-      CAICommandFileRemove.class,
+      CAICommandFileDelete.class,
       () -> Arbitraries.defaultFor(CAFileID.class)
-        .map(CAICommandFileRemove::new)
+        .map(CAICommandFileDelete::new)
     );
   }
 }

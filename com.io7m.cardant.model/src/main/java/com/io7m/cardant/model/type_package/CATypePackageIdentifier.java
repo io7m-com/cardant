@@ -49,6 +49,12 @@ public record CATypePackageIdentifier(
   }
 
   @Override
+  public String toString()
+  {
+    return "%s %s".formatted(this.name, this.version);
+  }
+
+  @Override
   public int compareTo(
     final CATypePackageIdentifier other)
   {

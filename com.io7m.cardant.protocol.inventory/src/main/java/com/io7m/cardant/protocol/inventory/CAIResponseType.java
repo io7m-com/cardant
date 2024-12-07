@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.hibiscus.api.HBResponseType;
-
 import java.util.UUID;
 
 /**
@@ -25,28 +23,27 @@ import java.util.UUID;
  */
 
 public sealed interface CAIResponseType
-  extends CAIMessageType, HBResponseType
+  extends CAIMessageType
   permits CAIResponseAuditSearch,
   CAIResponseError,
+  CAIResponseFileDelete,
   CAIResponseFileGet,
   CAIResponseFilePut,
-  CAIResponseFileRemove,
   CAIResponseFileSearch,
   CAIResponseItemAttachmentAdd,
   CAIResponseItemAttachmentRemove,
   CAIResponseItemCreate,
+  CAIResponseItemDelete,
   CAIResponseItemGet,
-  CAIResponseItemLocationsList,
   CAIResponseItemMetadataPut,
   CAIResponseItemMetadataRemove,
-  CAIResponseItemReposit,
   CAIResponseItemSearch,
   CAIResponseItemSetName,
   CAIResponseItemTypesAssign,
   CAIResponseItemTypesRevoke,
-  CAIResponseItemsRemove,
   CAIResponseLocationAttachmentAdd,
   CAIResponseLocationAttachmentRemove,
+  CAIResponseLocationDelete,
   CAIResponseLocationGet,
   CAIResponseLocationList,
   CAIResponseLocationMetadataPut,
@@ -58,15 +55,14 @@ public sealed interface CAIResponseType
   CAIResponseRolesAssign,
   CAIResponseRolesGet,
   CAIResponseRolesRevoke,
+  CAIResponseStockCount,
+  CAIResponseStockReposit,
+  CAIResponseStockSearch,
   CAIResponseTypePackageGetText,
   CAIResponseTypePackageInstall,
   CAIResponseTypePackageSearch,
   CAIResponseTypePackageUninstall,
-  CAIResponseTypePackageUpgrade,
-  CAIResponseTypeRecordGet,
-  CAIResponseTypeRecordSearch,
-  CAIResponseTypeScalarGet,
-  CAIResponseTypeScalarSearch
+  CAIResponseTypePackageUpgrade
 {
   /**
    * @return The ID of the request that yielded this response

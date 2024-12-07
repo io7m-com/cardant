@@ -110,8 +110,9 @@ public final class CAShellCmdLocationAttachmentAdd
       context.parameterValue(RELATION);
 
     final var location =
-      client.executeOrElseThrow(
-        new CAICommandLocationAttachmentAdd(locationID, fileID, relation)
+      client.sendAndWaitOrThrow(
+        new CAICommandLocationAttachmentAdd(locationID, fileID, relation),
+        this.commandTimeout()
       ).data();
 
     this.formatter().formatLocation(location);

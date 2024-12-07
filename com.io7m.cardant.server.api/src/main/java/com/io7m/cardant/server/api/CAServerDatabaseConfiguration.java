@@ -16,6 +16,8 @@
 
 package com.io7m.cardant.server.api;
 
+import com.io7m.cardant.database.api.CADatabaseLanguage;
+
 import java.util.Objects;
 import java.util.Optional;
 
@@ -33,6 +35,8 @@ import java.util.Optional;
  * @param kind               The underlying SQL database kind
  * @param port               The database port
  * @param upgrade            {@code true} if the database schema should be upgraded
+ * @param minimumConnections The minimum number of database connections in the pool
+ * @param maximumConnections The maximum number of database connections in the pool
  */
 
 public record CAServerDatabaseConfiguration(
@@ -44,9 +48,11 @@ public record CAServerDatabaseConfiguration(
   String address,
   int port,
   String databaseName,
-  String databaseLanguage,
+  CADatabaseLanguage databaseLanguage,
   boolean create,
-  boolean upgrade)
+  boolean upgrade,
+  int minimumConnections,
+  int maximumConnections)
 {
   /**
    * Configuration for the database.
@@ -62,6 +68,8 @@ public record CAServerDatabaseConfiguration(
    * @param kind               The underlying SQL database kind
    * @param port               The database port
    * @param upgrade            {@code true} if the database schema should be upgraded
+   * @param minimumConnections The minimum number of database connections in the pool
+   * @param maximumConnections The maximum number of database connections in the pool
    */
 
   public CAServerDatabaseConfiguration
@@ -74,5 +82,8 @@ public record CAServerDatabaseConfiguration(
     Objects.requireNonNull(address, "address");
     Objects.requireNonNull(databaseName, "databaseName");
     Objects.requireNonNull(databaseLanguage, "databaseLanguage");
+
+    minimumConnections = Math.max(0, minimumConnections);
+    maximumConnections = Math.max(minimumConnections, maximumConnections);
   }
 }

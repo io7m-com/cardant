@@ -30,12 +30,14 @@ import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryT
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
  * @see CAICommandItemTypesAssign
  */
 
-public final class CAICmdItemTypesAssign extends CAICmdAbstract<CAICommandItemTypesAssign>
+public final class CAICmdItemTypesAssign
+  extends CAICmdAbstract<CAICommandItemTypesAssign>
 {
   /**
    * @see CAICommandItemTypesAssign
@@ -65,6 +67,10 @@ public final class CAICmdItemTypesAssign extends CAICmdAbstract<CAICommandItemTy
       transaction.queries(ItemGetType.class);
     final var assign =
       transaction.queries(ItemTypesAssignType.class);
+
+    final var itemId = command.item();
+    context.setAttribute(ITEM_ID, itemId.displayId());
+    CAIChecks.checkItemExists(context, get, itemId);
 
     assign.execute(new Parameters(command.item(), command.types()));
 

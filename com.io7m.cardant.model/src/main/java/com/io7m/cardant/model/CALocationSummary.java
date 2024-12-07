@@ -16,34 +16,75 @@
 
 package com.io7m.cardant.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
+
+import static java.time.ZoneOffset.UTC;
 
 /**
  * A summary of a location.
  *
  * @param id     The id
  * @param parent The parent
- * @param name   The name
+ * @param path   The location path
+ * @param timeCreated The time the item was created
+ * @param timeUpdated The time the item was last updated
  */
 
 public record CALocationSummary(
   CALocationID id,
   Optional<CALocationID> parent,
-  String name)
+  CALocationPath path,
+  OffsetDateTime timeCreated,
+  OffsetDateTime timeUpdated)
 {
   /**
    * A summary of a location.
    *
    * @param id     The id
    * @param parent The parent
-   * @param name   The name
+   * @param path   The location path
+   * @param timeCreated The time the item was created
+   * @param timeUpdated The time the item was last updated
    */
 
   public CALocationSummary
   {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(parent, "parent");
-    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(path, "path");
+
+    timeCreated = timeCreated.withOffsetSameInstant(UTC);
+    timeUpdated = timeUpdated.withOffsetSameInstant(UTC);
+  }
+
+  /**
+   * @return The location name (the last path component)
+   */
+
+  public CALocationName name()
+  {
+    return this.path.last();
+  }
+
+  /**
+   * Adjust this location summary to have a new path.
+   *
+   * @param newPath The new path
+   *
+   * @return This location summary with a new path
+   */
+
+  public CALocationSummary withPath(
+    final CALocationPath newPath)
+  {
+    return new CALocationSummary(
+      this.id,
+      this.parent,
+      newPath,
+      this.timeCreated,
+      this.timeUpdated
+    );
   }
 }

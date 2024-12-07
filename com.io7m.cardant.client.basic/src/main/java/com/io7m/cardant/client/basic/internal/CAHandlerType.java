@@ -16,19 +16,19 @@
 
 package com.io7m.cardant.client.basic.internal;
 
-import com.io7m.cardant.client.api.CAClientCredentials;
-import com.io7m.cardant.client.api.CAClientEventType;
+import com.io7m.cardant.client.api.CAClientConnectionParameters;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.api.CAClientTransferStatistics;
-import com.io7m.cardant.client.api.CAClientUnit;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.hibiscus.api.HBResultType;
-import com.io7m.hibiscus.basic.HBClientHandlerType;
+import com.io7m.hibiscus.api.HBClientHandlerType;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -37,14 +37,16 @@ import java.util.function.Consumer;
 
 public interface CAHandlerType
   extends HBClientHandlerType<
-  CAClientException,
-  CAICommandType<?>,
-  CAIResponseType,
-  CAIResponseType,
-  CAIResponseError,
-  CAClientEventType,
-  CAClientCredentials>
+  CAIMessageType,
+  CAClientConnectionParameters,
+  CAClientException>
 {
+  /**
+   * @return The authenticated user ID
+   */
+
+  Optional<CAUserID> userId();
+
   /**
    * Download the data associated with the given file. The file will be
    * downloaded to a temporary file and then, if everything succeeds and the
@@ -62,9 +64,10 @@ public interface CAHandlerType
    * @return The result
    *
    * @throws InterruptedException On interruption
+   * @throws CAClientException    On errors
    */
 
-  HBResultType<Path, CAIResponseError> onExecuteFileDownload(
+  Path onExecuteFileDownload(
     CAFileID fileID,
     Path file,
     Path fileTmp,
@@ -72,7 +75,7 @@ public interface CAHandlerType
     String hashAlgorithm,
     String hashValue,
     Consumer<CAClientTransferStatistics> statistics)
-    throws InterruptedException;
+    throws InterruptedException, CAClientException;
 
   /**
    * Upload the data associated with the given file.
@@ -83,38 +86,30 @@ public interface CAHandlerType
    * @param description The file description
    * @param statistics  A receiver of transfer statistics
    *
-   * @return The result
-   *
    * @throws InterruptedException On interruption
+   * @throws CAClientException    On errors
    */
 
-  HBResultType<CAFileID, CAIResponseError> onExecuteFileUpload(
+  void onExecuteFileUpload(
     CAFileID fileID,
     Path file,
     String contentType,
     String description,
     Consumer<CAClientTransferStatistics> statistics)
-    throws InterruptedException;
+    throws InterruptedException, CAClientException;
 
   /**
-   * Send garbage to the server.
+   * Execute all the given commands in order, in a single transaction.
    *
-   * @return The result
+   * @param commands The commands
    *
-   * @throws InterruptedException On interruption
-   */
-
-  HBResultType<CAClientUnit, CAIResponseError> onExecuteGarbage()
-    throws InterruptedException;
-
-  /**
-   * Send a well-formed but invalid command to the server.
-   *
-   * @return The result
+   * @return The responses
    *
    * @throws InterruptedException On interruption
+   * @throws CAClientException    On errors
    */
 
-  HBResultType<CAClientUnit, CAIResponseError> onExecuteInvalid()
-    throws InterruptedException;
+  List<CAIResponseType> transaction(
+    List<CAICommandType<?>> commands)
+    throws InterruptedException, CAClientException;
 }

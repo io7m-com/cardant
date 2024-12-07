@@ -18,19 +18,19 @@
 package com.io7m.cardant.database.postgres.internal;
 
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationListType;
-import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import org.jooq.DSLContext;
-import org.jooq.Record3;
+import org.jooq.impl.DSL;
 
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.io7m.cardant.database.postgres.internal.CADBLocationPaths.LOCATION_PATH_NAME;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 
 /**
@@ -38,10 +38,10 @@ import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
  */
 
 public final class CADBQLocationList
-  extends CADBQAbstract<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>
+  extends CADBQAbstract<LocationListType.Parameters, SortedMap<CALocationID, CALocationSummary>>
   implements LocationListType
 {
-  private static final Service<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>, LocationListType> SERVICE =
+  private static final Service<Parameters, SortedMap<CALocationID, CALocationSummary>, LocationListType> SERVICE =
     new Service<>(LocationListType.class, CADBQLocationList::new);
 
   /**
@@ -68,20 +68,31 @@ public final class CADBQLocationList
   @Override
   protected SortedMap<CALocationID, CALocationSummary> onExecute(
     final DSLContext context,
-    final CADatabaseUnit parameters)
+    final Parameters parameters)
   {
-    return list(context);
+    return list(context, parameters);
   }
 
   static TreeMap<CALocationID, CALocationSummary> list(
-    final DSLContext context)
+    final DSLContext context,
+    final Parameters parameters)
   {
+    final var conditions =
+      switch (parameters.includeDeleted()) {
+        case INCLUDE_ONLY_LIVE -> LOCATIONS.LOCATION_DELETED.isNull();
+        case INCLUDE_ONLY_DELETED -> LOCATIONS.LOCATION_DELETED.isNotNull();
+        case INCLUDE_BOTH_LIVE_AND_DELETED -> DSL.trueCondition();
+      };
+
     return new TreeMap<>(
       context.select(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
-          LOCATIONS.LOCATION_NAME
+          CADBLocationPaths.locationPathFromColumnNamed(context, LOCATIONS.LOCATION_ID),
+          LOCATIONS.LOCATION_CREATED,
+          LOCATIONS.LOCATION_UPDATED
         ).from(LOCATIONS)
+        .where(conditions)
         .orderBy(LOCATIONS.LOCATION_NAME)
         .stream()
         .map(CADBQLocationList::mapRecord)
@@ -90,13 +101,15 @@ public final class CADBQLocationList
   }
 
   private static CALocationSummary mapRecord(
-    final Record3<UUID, UUID, String> rec)
+    final org.jooq.Record rec)
   {
     return new CALocationSummary(
       new CALocationID(rec.get(LOCATIONS.LOCATION_ID)),
       Optional.ofNullable(rec.get(LOCATIONS.LOCATION_PARENT))
         .map(CALocationID::new),
-      rec.get(LOCATIONS.LOCATION_NAME)
+      CALocationPath.ofArray(rec.get(LOCATION_PATH_NAME)),
+      rec.get(LOCATIONS.LOCATION_CREATED),
+      rec.get(LOCATIONS.LOCATION_UPDATED)
     );
   }
 }

@@ -19,9 +19,10 @@ package com.io7m.cardant.type_packages.checkers.internal;
 
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
-import com.io7m.cardant.model.type_package.CANameQualified;
-import com.io7m.cardant.model.type_package.CANameType;
 import com.io7m.cardant.model.type_package.CANameUnqualified;
 import com.io7m.cardant.model.type_package.CATypePackage;
 import com.io7m.cardant.model.type_package.CATypePackageDeclaration;
@@ -36,7 +37,6 @@ import com.io7m.lanark.core.RDottedName;
 import com.io7m.seltzer.api.SStructuredError;
 import com.io7m.verona.core.VersionRange;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,10 +66,10 @@ public final class CATypePackageChecker
   private final CATypePackageResolverType resolver;
   private final CATypePackageDeclaration declaration;
   private final LinkedList<SStructuredError<String>> errors;
-  private final HashMap<RDottedName, CATypeScalarType> typeScalars;
-  private final HashMap<RDottedName, CATypeRecord> typeRecords;
+  private final HashMap<CATypeScalarIdentifier, CATypeScalarType> typeScalars;
+  private final HashMap<CATypeRecordIdentifier, CATypeRecord> typeRecords;
   private final HashMap<CANameUnqualified, CATypeScalarType> typeScalarsUnqualified;
-  private final HashMap<RDottedName, CATypeField> typeRecordFields;
+  private final HashMap<CATypeRecordFieldIdentifier, CATypeField> typeRecordFields;
   private final HashMap<CANameUnqualified, CATypeField> typeRecordFieldsUnqualified;
 
   /**
@@ -124,14 +124,14 @@ public final class CATypePackageChecker
     this.typeRecords.clear();
 
     for (final var e : this.declaration.recordTypes().entrySet()) {
-      final var name = e.getKey();
+      final var typeNameUnqualified = e.getKey();
       final var type = e.getValue();
 
-      final RDottedName typeNameQual;
+      final CATypeRecordIdentifier typeNameQual;
       try {
-        typeNameQual = this.qualifyName(name);
+        typeNameQual = this.createQualifiedTypeName(typeNameUnqualified);
       } catch (final IllegalArgumentException ex) {
-        this.errors.add(this.errorNameQualifiedInvalid(name, ex));
+        this.errors.add(this.errorNameQualifiedInvalid(typeNameUnqualified, ex));
         continue;
       }
 
@@ -142,28 +142,31 @@ public final class CATypePackageChecker
         final var fName = fe.getKey();
         final var fDecl = fe.getValue();
 
-        final Optional<CATypeScalarType> fType =
-          switch (fDecl.type()) {
-            case final CANameQualified q -> {
-              yield this.resolver.findTypeScalar(q.value());
-            }
-            case final CANameUnqualified u -> {
-              yield Optional.ofNullable(this.typeScalarsUnqualified.get(u));
-            }
-          };
+        final var fTypePackage =
+          fDecl.type().packageName();
+        final var packageName =
+          this.declaration.identifier().name();
+
+        final Optional<CATypeScalarType> fType;
+        if (Objects.equals(fTypePackage, packageName)) {
+          final var u = new CANameUnqualified(fDecl.type().typeName().value());
+          fType = Optional.ofNullable(this.typeScalarsUnqualified.get(u));
+        } else {
+          fType = this.resolver.findTypeScalar(fDecl.type());
+        }
 
         if (fType.isEmpty()) {
           this.errors.add(
-            this.errorTypeFieldTypeNonexistent(name, fName, fDecl.type())
+            this.errorTypeFieldTypeNonexistent(typeNameUnqualified, fName, fDecl.type())
           );
           continue;
         }
 
-        final RDottedName fieldNameQual;
+        final CATypeRecordFieldIdentifier fieldNameQual;
         try {
-          fieldNameQual = CATypePackageChecker.qualifyNameWith(typeNameQual, fName);
+          fieldNameQual = createFieldName(typeNameQual, fName);
         } catch (final IllegalArgumentException ex) {
-          this.errors.add(this.errorNameQualifiedInvalid(name, ex));
+          this.errors.add(this.errorNameQualifiedInvalid(typeNameUnqualified, ex));
           continue;
         }
 
@@ -191,7 +194,6 @@ public final class CATypePackageChecker
 
       final var typeRecord =
         new CATypeRecord(
-          this.declaration.identifier(),
           typeNameQual,
           type.description(),
           Map.copyOf(this.typeRecordFields)
@@ -199,6 +201,34 @@ public final class CATypePackageChecker
 
       this.typeRecords.put(typeNameQual, typeRecord);
     }
+  }
+
+  private static CATypeRecordFieldIdentifier createFieldName(
+    final CATypeRecordIdentifier typeName,
+    final CANameUnqualified fName)
+  {
+    return new CATypeRecordFieldIdentifier(
+      typeName,
+      new RDottedName(fName.value())
+    );
+  }
+
+  private CATypeRecordIdentifier createQualifiedTypeName(
+    final CANameUnqualified name)
+  {
+    return new CATypeRecordIdentifier(
+      this.declaration.identifier().name(),
+      new RDottedName(name.value())
+    );
+  }
+
+  private CATypeScalarIdentifier createQualifiedTypeScalarName(
+    final CANameUnqualified name)
+  {
+    return new CATypeScalarIdentifier(
+      this.declaration.identifier().name(),
+      new RDottedName(name.value())
+    );
   }
 
   private SStructuredError<String> errorNameQualifiedInvalid(
@@ -223,7 +253,7 @@ public final class CATypePackageChecker
   private SStructuredError<String> errorTypeFieldTypeNonexistent(
     final CANameUnqualified typeName,
     final CANameUnqualified fieldName,
-    final CANameType fieldType)
+    final CATypeScalarIdentifier fieldType)
   {
     final var m = new HashMap<String, String>();
     m.put(this.strings.format(TYPE), typeName.value());
@@ -239,21 +269,6 @@ public final class CATypePackageChecker
     );
   }
 
-  private static RDottedName qualifyNameWith(
-    final RDottedName baseName,
-    final CANameUnqualified newName)
-  {
-    final var segments = new ArrayList<>(baseName.segments());
-    segments.add(newName.value());
-    return RDottedName.ofSegments(segments);
-  }
-
-  private RDottedName qualifyName(
-    final CANameUnqualified fName)
-  {
-    return qualifyNameWith(this.declaration.identifier().name(), fName);
-  }
-
   private void checkTypeScalars()
   {
     this.typeScalars.clear();
@@ -263,9 +278,9 @@ public final class CATypePackageChecker
       final var name = e.getKey();
       final var type = e.getValue();
 
-      final RDottedName typeNameQual;
+      final CATypeScalarIdentifier typeNameQual;
       try {
-        typeNameQual = this.qualifyName(name);
+        typeNameQual = this.createQualifiedTypeScalarName(name);
       } catch (final IllegalArgumentException ex) {
         this.errors.add(this.errorNameQualifiedInvalid(name, ex));
         continue;

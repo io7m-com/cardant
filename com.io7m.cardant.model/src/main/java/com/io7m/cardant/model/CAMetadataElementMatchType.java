@@ -16,7 +16,8 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
+import com.io7m.cardant.model.comparisons.CAComparisonExactType;
+import com.io7m.lanark.core.RDottedName;
 
 import java.util.Objects;
 
@@ -33,7 +34,12 @@ public sealed interface CAMetadataElementMatchType
    */
 
   CAMetadataElementMatchType ANYTHING =
-    new Specific(new CAComparisonFuzzyType.Anything<>(), ANY_VALUE);
+    new Specific(
+      new CAComparisonExactType.Anything<>(),
+      new CAComparisonExactType.Anything<>(),
+      new CAComparisonExactType.Anything<>(),
+      ANY_VALUE
+    );
 
   /**
    * The conjunction of {@code e0} and {@code e1}. The resulting set of
@@ -88,14 +94,18 @@ public sealed interface CAMetadataElementMatchType
   }
 
   /**
-   * Match a specific metadata element.
+   * Match a specific metadata field.
    *
-   * @param name  The metadata name
-   * @param value The value
+   * @param packageName The metadata type package name
+   * @param typeName    The metadata type record name
+   * @param fieldName   The metadata type record field name
+   * @param value       The value
    */
 
   record Specific(
-    CAComparisonFuzzyType<String> name,
+    CAComparisonExactType<RDottedName> packageName,
+    CAComparisonExactType<String> typeName,
+    CAComparisonExactType<String> fieldName,
     CAMetadataValueMatchType value)
     implements CAMetadataElementMatchType
   {
@@ -105,7 +115,9 @@ public sealed interface CAMetadataElementMatchType
 
     public Specific
     {
-      Objects.requireNonNull(name, "name");
+      Objects.requireNonNull(packageName, "packageName");
+      Objects.requireNonNull(typeName, "typeName");
+      Objects.requireNonNull(fieldName, "fieldName");
       Objects.requireNonNull(value, "value");
     }
   }

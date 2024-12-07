@@ -22,9 +22,10 @@ import com.io7m.idstore.user_client.IdUClients;
 import com.io7m.idstore.user_client.api.IdUClientConfiguration;
 import com.io7m.idstore.user_client.api.IdUClientException;
 import com.io7m.idstore.user_client.api.IdUClientFactoryType;
-import com.io7m.idstore.user_client.api.IdUClientSynchronousType;
+import com.io7m.idstore.user_client.api.IdUClientType;
 
 import java.net.URI;
+import java.time.Clock;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ import java.util.Objects;
 public final class CAIdstoreClients
   implements CAIdstoreClientsType
 {
+  private final Clock clock;
   private final CAServerIdstoreConfiguration idstore;
   private final CAServerTelemetryServiceType telemetry;
   private final IdUClientFactoryType clients;
@@ -42,12 +44,15 @@ public final class CAIdstoreClients
 
   private CAIdstoreClients(
     final Locale inLocale,
+    final Clock inClock,
     final CAServerIdstoreConfiguration inIdstore,
     final CAServerTelemetryServiceType inTelemetry,
     final IdUClientFactoryType inClients)
   {
     this.locale =
       Objects.requireNonNull(inLocale, "locale");
+    this.clock =
+      Objects.requireNonNull(inClock, "inClock");
     this.idstore =
       Objects.requireNonNull(inIdstore, "idstore");
     this.telemetry =
@@ -60,6 +65,7 @@ public final class CAIdstoreClients
    * Create an idstore client service.
    *
    * @param inLocale The locale
+   * @param inClock The clock
    * @param telemetry The telemetry service
    * @param idstore  The idstore server configuration
    *
@@ -68,14 +74,17 @@ public final class CAIdstoreClients
 
   public static CAIdstoreClientsType create(
     final Locale inLocale,
+    final Clock inClock,
     final CAServerTelemetryServiceType telemetry,
     final CAServerIdstoreConfiguration idstore)
   {
     Objects.requireNonNull(inLocale, "inLocale");
+    Objects.requireNonNull(inClock, "inClock");
     Objects.requireNonNull(idstore, "idstore");
 
     return new CAIdstoreClients(
       inLocale,
+      inClock,
       idstore,
       telemetry,
       new IdUClients()
@@ -83,13 +92,15 @@ public final class CAIdstoreClients
   }
 
   @Override
-  public IdUClientSynchronousType createClient()
+  public IdUClientType createClient()
     throws IdUClientException
   {
-    return this.clients.openSynchronousClient(
+    return this.clients.create(
       new IdUClientConfiguration(
         this.telemetry.openTelemetry(),
-        this.locale)
+        this.clock,
+        this.locale
+      )
     );
   }
 

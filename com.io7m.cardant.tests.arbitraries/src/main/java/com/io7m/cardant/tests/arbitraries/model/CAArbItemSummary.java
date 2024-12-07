@@ -23,6 +23,8 @@ import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
+import java.time.OffsetDateTime;
+
 public final class CAArbItemSummary extends CAArbAbstract<CAItemSummary>
 {
   public CAArbItemSummary()
@@ -31,7 +33,9 @@ public final class CAArbItemSummary extends CAArbAbstract<CAItemSummary>
       CAItemSummary.class,
       () -> Combinators.combine(
         Arbitraries.create(CAItemID::random),
-        Arbitraries.strings()
+        Arbitraries.strings(),
+        Arbitraries.create(OffsetDateTime::now),
+        Arbitraries.create(OffsetDateTime::now)
       ).as(CAItemSummary::new));
   }
 }

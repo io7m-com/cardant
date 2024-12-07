@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CADescriptionMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.type_package.CATypePackageSearchParameters;
@@ -106,15 +105,15 @@ public final class CAShellCmdTypePackageSearchBegin
       context.parameterValue(LIMIT);
 
     final var type =
-      ((CAIResponseTypePackageSearch) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandTypePackageSearchBegin(
           new CATypePackageSearchParameters(
             descriptionMatch.expression(),
             limit.longValue()
           )
         ),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatTypePackagePage(type);
     return SUCCESS;

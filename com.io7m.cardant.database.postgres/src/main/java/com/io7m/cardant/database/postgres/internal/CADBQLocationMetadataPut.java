@@ -34,6 +34,7 @@ import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
@@ -92,6 +93,12 @@ public final class CADBQLocationMetadataPut
       batches.add(setMetadataValue(context, location, meta));
     }
 
+    batches.add(
+      context.update(LOCATIONS)
+        .set(LOCATIONS.LOCATION_UPDATED, this.now())
+        .where(LOCATIONS.LOCATION_ID.eq(location.id()))
+    );
+
     final var transaction = this.transaction();
     batches.add(auditEvent(
       context,
@@ -136,7 +143,15 @@ public final class CADBQLocationMetadataPut
   {
     return context.insertInto(LOCATION_METADATA)
       .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
-      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_INTEGRAL)
       .set(
         LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL,
@@ -148,7 +163,9 @@ public final class CADBQLocationMetadataPut
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
       .onConflict(
         LOCATION_METADATA.LOCATION_META_LOCATION,
-        LOCATION_METADATA.LOCATION_META_NAME)
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD)
       .doUpdate()
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_INTEGRAL)
       .set(
@@ -168,7 +185,15 @@ public final class CADBQLocationMetadataPut
   {
     return context.insertInto(LOCATION_METADATA)
       .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
-      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TEXT)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
@@ -178,7 +203,9 @@ public final class CADBQLocationMetadataPut
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
       .onConflict(
         LOCATION_METADATA.LOCATION_META_LOCATION,
-        LOCATION_METADATA.LOCATION_META_NAME)
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD)
       .doUpdate()
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TEXT)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
@@ -196,7 +223,15 @@ public final class CADBQLocationMetadataPut
   {
     return context.insertInto(LOCATION_METADATA)
       .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
-      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TIME)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
@@ -206,7 +241,9 @@ public final class CADBQLocationMetadataPut
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, meta.value())
       .onConflict(
         LOCATION_METADATA.LOCATION_META_LOCATION,
-        LOCATION_METADATA.LOCATION_META_NAME)
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD)
       .doUpdate()
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_TIME)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
@@ -224,7 +261,15 @@ public final class CADBQLocationMetadataPut
   {
     return context.insertInto(LOCATION_METADATA)
       .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
-      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_REAL)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, (BigDecimal) null)
@@ -236,7 +281,9 @@ public final class CADBQLocationMetadataPut
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
       .onConflict(
         LOCATION_METADATA.LOCATION_META_LOCATION,
-        LOCATION_METADATA.LOCATION_META_NAME)
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD)
       .doUpdate()
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_REAL)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
@@ -256,7 +303,15 @@ public final class CADBQLocationMetadataPut
   {
     return context.insertInto(LOCATION_METADATA)
       .set(LOCATION_METADATA.LOCATION_META_LOCATION, locationID.id())
-      .set(LOCATION_METADATA.LOCATION_META_NAME, meta.name().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        meta.name().typeName().packageName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        meta.name().typeName().typeName().value())
+      .set(
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
+        meta.name().fieldName().value())
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_MONEY)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_MONEY, meta.value())
@@ -267,7 +322,9 @@ public final class CADBQLocationMetadataPut
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TIME, (OffsetDateTime) null)
       .onConflict(
         LOCATION_METADATA.LOCATION_META_LOCATION,
-        LOCATION_METADATA.LOCATION_META_NAME)
+        LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+        LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+        LOCATION_METADATA.LOCATION_META_TYPE_FIELD)
       .doUpdate()
       .set(LOCATION_METADATA.LOCATION_META_VALUE_TYPE, SCALAR_MONEY)
       .set(LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL, (Long) null)

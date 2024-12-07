@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_ATTACHMENTS;
 import static com.io7m.cardant.strings.CAStringConstants.FILE_ID;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
@@ -107,6 +108,11 @@ public final class CADBQLocationAttachmentRemove
         Map.entry("File", file.displayId())
       ).execute();
     }
+
+    context.update(LOCATIONS)
+      .set(LOCATIONS.LOCATION_UPDATED, this.now())
+      .where(LOCATIONS.LOCATION_ID.eq(location.id()))
+      .execute();
 
     return UNIT;
   }

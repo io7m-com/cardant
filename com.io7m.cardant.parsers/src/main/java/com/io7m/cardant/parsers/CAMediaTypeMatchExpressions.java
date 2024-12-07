@@ -25,7 +25,6 @@ import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsNotEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsNotSimilarTo;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType.IsSimilarTo;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -34,12 +33,19 @@ import com.io7m.jsx.SExpressionType.SListType;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_EXAMPLE_2;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_EXAMPLE_3;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO;
@@ -49,7 +55,6 @@ import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for mediatype match expressions.
@@ -57,24 +62,6 @@ import static java.util.Map.entry;
 
 public final class CAMediaTypeMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE_NAME,
-        SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE),
-      entry(
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO_NAME,
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO),
-      entry(
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO_NAME,
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO),
-      entry(
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO_NAME,
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO),
-      entry(
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO_NAME,
-        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO)
-    );
 
   /**
    * Expression parsers for mediatype match expressions.
@@ -86,12 +73,6 @@ public final class CAMediaTypeMatchExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -242,5 +223,73 @@ public final class CAMediaTypeMatchExpressions extends CAExpressions
         );
       }
     };
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_MEDIATYPE_MATCH_NAME,
+        List.of(
+          SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE_NAME,
+          SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO_NAME,
+          SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO_NAME,
+          SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO_NAME,
+          SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO_NAME
+        ),
+        List.of(
+          SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE,
+          SYNTAX_MEDIATYPE_MATCH_EXAMPLE_0,
+          SYNTAX_MEDIATYPE_MATCH_EXAMPLE_1,
+          SYNTAX_MEDIATYPE_MATCH_EXAMPLE_2,
+          SYNTAX_MEDIATYPE_MATCH_EXAMPLE_3
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE_NAME,
+        SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE,
+        List.of(SYNTAX_MEDIATYPE_MATCH_ANYMEDIATYPE)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_EQUAL_TO,
+        List.of(SYNTAX_MEDIATYPE_MATCH_EXAMPLE_0)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_EQUAL_TO,
+        List.of(SYNTAX_MEDIATYPE_MATCH_EXAMPLE_1)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_SIMILAR_TO,
+        List.of(SYNTAX_MEDIATYPE_MATCH_EXAMPLE_2)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO_NAME,
+        SYNTAX_MEDIATYPE_MATCH_WITH_MEDIATYPE_NOT_SIMILAR_TO,
+        List.of(SYNTAX_MEDIATYPE_MATCH_EXAMPLE_3)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

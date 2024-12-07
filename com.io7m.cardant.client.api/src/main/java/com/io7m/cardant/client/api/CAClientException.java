@@ -18,7 +18,9 @@ package com.io7m.cardant.client.api;
 
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.seltzer.api.SStructuredErrorExceptionType;
 
 import java.util.Map;
 import java.util.Objects;
@@ -104,5 +106,58 @@ public final class CAClientException extends CAException
       error.remediatingAction(),
       Optional.of(error.requestId())
     );
+  }
+
+  /**
+   * Construct an exception from an existing exception.
+   *
+   * @param ex The cause
+   *
+   * @return The new exception
+   */
+
+  public static CAClientException ofException(
+    final Throwable ex)
+  {
+    return switch (ex) {
+      case final CAClientException e -> {
+        yield e;
+      }
+
+      case final CAException e -> {
+        yield new CAClientException(
+          e.getMessage(),
+          e,
+          e.errorCode(),
+          e.attributes(),
+          e.remediatingAction(),
+          Optional.empty()
+        );
+      }
+
+      case final SStructuredErrorExceptionType<?> e -> {
+        yield new CAClientException(
+          e.getMessage(),
+          ex,
+          new CAErrorCode(e.errorCode().toString()),
+          e.attributes(),
+          e.remediatingAction(),
+          Optional.empty()
+        );
+      }
+
+      default -> {
+        yield new CAClientException(
+          Objects.requireNonNullElse(
+            ex.getMessage(),
+            ex.getClass().getSimpleName()),
+          ex,
+          CAStandardErrorCodes.errorIo(),
+          Map.of(),
+          Optional.empty(),
+          Optional.empty()
+        );
+      }
+    };
   }
 }

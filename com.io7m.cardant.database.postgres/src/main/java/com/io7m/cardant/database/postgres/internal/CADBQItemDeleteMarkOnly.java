@@ -21,28 +21,25 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemDeleteMarkOnlyType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType.Service;
-import com.io7m.cardant.model.CAItemID;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
-import static java.lang.Boolean.TRUE;
 
 /**
  * Mark the given items as deleted.
  */
 
 public final class CADBQItemDeleteMarkOnly
-  extends CADBQAbstract<Collection<CAItemID>, CADatabaseUnit>
+  extends CADBQAbstract<ItemDeleteMarkOnlyType.Parameters, CADatabaseUnit>
   implements ItemDeleteMarkOnlyType
 {
-  private static final Service<Collection<CAItemID>, CADatabaseUnit, ItemDeleteMarkOnlyType> SERVICE =
+  private static final Service<Parameters, CADatabaseUnit, ItemDeleteMarkOnlyType> SERVICE =
     new Service<>(ItemDeleteMarkOnlyType.class, CADBQItemDeleteMarkOnly::new);
 
   /**
@@ -69,16 +66,24 @@ public final class CADBQItemDeleteMarkOnly
   @Override
   protected CADatabaseUnit onExecute(
     final DSLContext context,
-    final Collection<CAItemID> items)
+    final Parameters parameters)
     throws CADatabaseException
   {
     final var transaction = this.transaction();
     final var updates =
-      new ArrayList<Query>(items.size());
-    for (final var item : items) {
+      new ArrayList<Query>(parameters.items().size());
+
+    final OffsetDateTime deleted;
+    if (parameters.deleted()) {
+      deleted = OffsetDateTime.now();
+    } else {
+      deleted = null;
+    }
+
+    for (final var item : parameters.items()) {
       updates.add(
         context.update(ITEMS)
-          .set(ITEMS.ITEM_DELETED, TRUE)
+          .set(ITEMS.ITEM_DELETED, deleted)
           .where(ITEMS.ITEM_ID.eq(item.id()))
       );
       updates.add(
@@ -86,7 +91,7 @@ public final class CADBQItemDeleteMarkOnly
           context,
           OffsetDateTime.now(transaction.clock()),
           transaction.userId(),
-          "ITEM_MARKED_DELETED",
+          parameters.deleted() ? "ITEM_MARKED_DELETED" : "ITEM_UNMARKED_DELETED",
           Map.entry("Item", item.displayId())
         )
       );

@@ -17,11 +17,13 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.Parameters;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -33,12 +35,15 @@ import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
@@ -46,6 +51,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -112,22 +118,24 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
+      mock(LocationGetType.class);
     final var locationAttachRemove =
-      mock(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
+      mock(LocationAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
+    when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class))
+    when(transaction.queries(LocationAttachmentRemoveType.class))
       .thenReturn(locationAttachRemove);
 
     when(locationGet.execute(any()))
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -160,14 +168,12 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Assert. */
 
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
+      .queries(LocationGetType.class);
     verify(transaction)
-      .queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
+      .queries(LocationAttachmentRemoveType.class);
     verify(locationAttachRemove)
       .execute(new Parameters(LOCATION_ID, FILE_ID, "x"));
-    verify(locationGet)
+    verify(locationGet, new Times(2))
       .execute(LOCATION_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -188,16 +194,28 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
+      mock(LocationGetType.class);
     final var locationAttachRemove =
-      mock(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
+      mock(LocationAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
+    when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class))
+    when(transaction.queries(LocationAttachmentRemoveType.class))
       .thenReturn(locationAttachRemove);
+
+    when(locationGet.execute(any()))
+      .thenReturn(Optional.of(new CALocation(
+        LOCATION_ID,
+        Optional.empty(),
+        CALocationPath.singleton("Location"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        new TreeSet<>()
+      )));
 
     doThrow(new CADatabaseException(
       "X",
@@ -253,15 +271,15 @@ public final class CAICmdLocationAttachmentRemoveTest
     /* Arrange. */
 
     final var locationGet =
-      mock(CADatabaseQueriesLocationsType.LocationGetType.class);
+      mock(LocationGetType.class);
     final var locationAttachRemove =
-      mock(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class);
+      mock(LocationAttachmentRemoveType.class);
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesLocationsType.LocationGetType.class))
+    when(transaction.queries(LocationGetType.class))
       .thenReturn(locationGet);
-    when(transaction.queries(CADatabaseQueriesLocationsType.LocationAttachmentRemoveType.class))
+    when(transaction.queries(LocationAttachmentRemoveType.class))
       .thenReturn(locationAttachRemove);
 
     when(locationGet.execute(any()))

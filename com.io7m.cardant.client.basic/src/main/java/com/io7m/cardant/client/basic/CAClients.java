@@ -16,13 +16,11 @@
 
 package com.io7m.cardant.client.basic;
 
-import com.io7m.cardant.client.api.CAClientAsynchronousType;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.client.api.CAClientFactoryType;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
-import com.io7m.cardant.client.basic.internal.CAClientAsynchronous;
-import com.io7m.cardant.client.basic.internal.CAClientSynchronous;
+import com.io7m.cardant.client.api.CAClientType;
+import com.io7m.cardant.client.basic.internal.CAClient;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.strings.CAStrings;
 
@@ -31,6 +29,8 @@ import java.net.http.HttpClient;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 /**
  * The default client factory.
@@ -63,46 +63,6 @@ public final class CAClients
     return "Inventory client service.";
   }
 
-  @Override
-  public CAClientAsynchronousType openAsynchronousClient(
-    final CAClientConfiguration configuration)
-    throws CAClientException
-  {
-    final var cookieJar =
-      new CookieManager();
-    final var locale =
-      configuration.locale();
-    final var strings =
-      openStrings(locale);
-
-    final var httpClient =
-      HttpClient.newBuilder()
-        .cookieHandler(cookieJar)
-        .build();
-
-    return new CAClientAsynchronous(configuration, strings, httpClient);
-  }
-
-  @Override
-  public CAClientSynchronousType openSynchronousClient(
-    final CAClientConfiguration configuration)
-    throws CAClientException
-  {
-    final var cookieJar =
-      new CookieManager();
-    final var locale =
-      configuration.locale();
-    final var strings =
-      openStrings(locale);
-
-    final var httpClient =
-      HttpClient.newBuilder()
-        .cookieHandler(cookieJar)
-        .build();
-
-    return new CAClientSynchronous(configuration, strings, httpClient);
-  }
-
   private static CAStrings openStrings(
     final Locale locale)
     throws CAClientException
@@ -119,5 +79,25 @@ public final class CAClients
         Optional.empty()
       );
     }
+  }
+
+  @Override
+  public CAClientType create(
+    final CAClientConfiguration configuration)
+    throws CAClientException
+  {
+    final var locale =
+      configuration.locale();
+    final var strings =
+      openStrings(locale);
+
+    final Supplier<HttpClient> clients = () -> {
+      return HttpClient.newBuilder()
+        .cookieHandler(new CookieManager())
+        .executor(Executors.newVirtualThreadPerTaskExecutor())
+        .build();
+    };
+
+    return new CAClient(configuration, strings, clients);
   }
 }

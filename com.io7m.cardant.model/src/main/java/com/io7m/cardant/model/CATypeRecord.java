@@ -17,8 +17,7 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.jaffirm.core.Preconditions;
 
 import java.util.Map;
 import java.util.Objects;
@@ -26,34 +25,38 @@ import java.util.Objects;
 /**
  * A record type.
  *
- * @param packageIdentifier The package that owns the type
- * @param name              The type name
- * @param description       The description
- * @param fields            The set of fields
+ * @param name        The type name
+ * @param description The description
+ * @param fields      The set of fields
  */
 
 public record CATypeRecord(
-  CATypePackageIdentifier packageIdentifier,
-  RDottedName name,
+  CATypeRecordIdentifier name,
   String description,
-  Map<RDottedName, CATypeField> fields)
+  Map<CATypeRecordFieldIdentifier, CATypeField> fields)
 {
   /**
    * A record type.
    *
-   * @param packageIdentifier The package that owns the type
-   * @param name              The type name
-   * @param description       The description
-   * @param fields            The set of fields
+   * @param name        The type name
+   * @param description The description
+   * @param fields      The set of fields
    */
 
   public CATypeRecord
   {
-    Objects.requireNonNull(packageIdentifier, "packageIdentifier");
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(description, "description");
     Objects.requireNonNull(fields, "fields");
 
     fields = Map.copyOf(fields);
+
+    for (final var field : fields.values()) {
+      final var fieldName = field.name();
+      Preconditions.checkPreconditionV(
+        Objects.equals(fieldName.typeName(), name),
+        "Record field type must match record type name."
+      );
+    }
   }
 }

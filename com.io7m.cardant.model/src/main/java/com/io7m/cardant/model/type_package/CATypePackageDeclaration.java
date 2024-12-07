@@ -62,14 +62,14 @@ public record CATypePackageDeclaration(
 
     for (final var e : scalarTypes.entrySet()) {
       Preconditions.checkPreconditionV(
-        Objects.equals(e.getKey().value(), e.getValue().name().value()),
+        Objects.equals(e.getKey().value(), e.getValue().name().typeName().value()),
         "Type names must match the names used in the type map."
       );
     }
 
     for (final var e : recordTypes.entrySet()) {
       Preconditions.checkPreconditionV(
-        Objects.equals(e.getKey().value(), e.getValue().name().value()),
+        Objects.equals(e.getKey(), e.getValue().name()),
         "Type names must match the names used in the type map."
       );
     }

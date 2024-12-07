@@ -26,16 +26,20 @@ import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CAIdType;
 import com.io7m.cardant.model.CAItem;
+import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CAMetadataType;
 import com.io7m.cardant.model.CAPage;
+import com.io7m.cardant.model.CAStockOccurrenceSerial;
+import com.io7m.cardant.model.CAStockOccurrenceSet;
+import com.io7m.cardant.model.CAStockOccurrenceType;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CATypeRecordSummary;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CATypePackageSummary;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.medrina.api.MRoleName;
 import com.io7m.tabla.core.TColumnWidthConstraint;
 import com.io7m.tabla.core.TColumnWidthConstraintMaximumAtMost;
@@ -56,6 +60,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.shell.internal.formatting.CAFormatterRaw.formatSize;
 import static com.io7m.tabla.core.TColumnWidthConstraint.atLeastContent;
@@ -227,12 +233,12 @@ public final class CAFormatterPretty implements CAFormatterType
   }
 
   private void formatMetadata(
-    final SortedMap<RDottedName, CAMetadataType> metadata)
+    final SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata)
     throws TException
   {
     if (!metadata.isEmpty()) {
       final var writer = this.terminal.writer();
-      writer.println(" metadata");
+      writer.println(" Metadata");
 
       final var tableBuilder =
         Tabla.builder()
@@ -242,7 +248,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
       for (final var entry : metadata.entrySet()) {
         tableBuilder.addRow()
-          .addCell(entry.getKey().value())
+          .addCell(entry.getKey().toString())
           .addCell(entry.getValue().valueString());
       }
 
@@ -291,14 +297,6 @@ public final class CAFormatterPretty implements CAFormatterType
     tableBuilder.addRow()
       .addCell("Name")
       .addCell(item.name());
-
-    tableBuilder.addRow()
-      .addCell("Count (Total)")
-      .addCell(Long.toUnsignedString(item.countTotal()));
-
-    tableBuilder.addRow()
-      .addCell("Count (Here)")
-      .addCell(Long.toUnsignedString(item.countHere()));
 
     this.renderTable(tableBuilder.build());
   }
@@ -416,7 +414,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     for (final var type : types) {
       tableBuilder.addRow()
-        .addCell(type.name().value())
+        .addCell(type.name().toString())
         .addCell(type.description())
         .addCell(type.kind().name())
         .addCell(type.showConstraint());
@@ -453,7 +451,7 @@ public final class CAFormatterPretty implements CAFormatterType
           .declareColumn("Description", atLeastContent());
 
       tableBuilder.addRow()
-        .addCell(type.name().value())
+        .addCell(type.name().toString())
         .addCell(type.description());
 
       this.renderTable(tableBuilder.build());
@@ -475,9 +473,9 @@ public final class CAFormatterPretty implements CAFormatterType
 
       for (final var field : fieldsSorted) {
         tableBuilder.addRow()
-          .addCell(field.name().value())
+          .addCell(field.name().toString())
           .addCell(field.description())
-          .addCell(field.type().name().value());
+          .addCell(field.type().name().toString());
       }
 
       this.renderTable(tableBuilder.build());
@@ -508,7 +506,7 @@ public final class CAFormatterPretty implements CAFormatterType
 
     for (final var type : types.items()) {
       tableBuilder.addRow()
-        .addCell(type.name().value())
+        .addCell(type.name().toString())
         .addCell(type.description());
     }
 
@@ -611,6 +609,161 @@ public final class CAFormatterPretty implements CAFormatterType
     this.renderTable(tableBuilder.build());
   }
 
+  @Override
+  public void formatStringSet(
+    final SortedSet<String> set)
+    throws Exception
+  {
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(1))
+        .declareColumn("Name", atLeastContentOrHeader());
+
+    for (final var item : set) {
+      tableBuilder.addRow().addCell(item);
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatStockPage(
+    final CAPage<CAStockOccurrenceType> page)
+    throws Exception
+  {
+    this.terminal.writer()
+      .printf(
+        "Search results: Page %d of %d%n",
+        Integer.valueOf(page.pageIndex()),
+        Integer.valueOf(page.pageCount())
+      );
+
+    if (page.items().isEmpty()) {
+      return;
+    }
+
+    final var tableBuilder =
+      Tabla.builder()
+        .setWidthConstraint(this.softTableWidth(4))
+        .declareColumn("Location", atLeastContentOrHeader())
+        .declareColumn("Item ID", atLeastContentOrHeader())
+        .declareColumn("Description", atLeastContentOrHeader())
+        .declareColumn("Count/Serial", atLeastContent());
+
+    for (final var item : page.items()) {
+      switch (item) {
+        case final CAStockOccurrenceSerial serial -> {
+          tableBuilder.addRow()
+            .addCell(serial.location().id().displayId())
+            .addCell(serial.item().id().displayId())
+            .addCell(serial.item().name())
+            .addCell("(Serials %s)".formatted(
+              serial.serials()
+                .stream()
+                .map(CAItemSerial::toString)
+                .collect(Collectors.joining(", ")))
+            );
+        }
+        case final CAStockOccurrenceSet set -> {
+          tableBuilder.addRow()
+            .addCell(set.location().id().displayId())
+            .addCell(set.item().id().displayId())
+            .addCell(set.item().name())
+            .addCell("(Count %s)".formatted(Long.toUnsignedString(set.count())));
+        }
+      }
+    }
+
+    this.renderTable(tableBuilder.build());
+  }
+
+  @Override
+  public void formatStock(
+    final CAStockOccurrenceType item)
+    throws Exception
+  {
+    switch (item) {
+      case final CAStockOccurrenceSerial serial -> {
+        {
+          final var tableBuilder =
+            Tabla.builder()
+              .setWidthConstraint(this.softTableWidth(2))
+              .declareColumn("Attribute", atLeastContentOrHeader())
+              .declareColumn("Value", atLeastContentOrHeader());
+
+          tableBuilder.addRow()
+            .addCell("Instance")
+            .addCell(item.instance().displayId());
+
+          tableBuilder.addRow()
+            .addCell("Location")
+            .addCell(item.location().id().displayId());
+
+          tableBuilder.addRow()
+            .addCell("Item ID")
+            .addCell(item.item().id().displayId());
+
+          tableBuilder.addRow()
+            .addCell("Item Name")
+            .addCell(item.item().name());
+
+          this.renderTable(tableBuilder.build());
+        }
+
+        if (!serial.serials().isEmpty()) {
+          this.terminal.writer()
+            .println("Serial Numbers");
+        }
+
+        {
+          final var tableBuilder =
+            Tabla.builder()
+              .setWidthConstraint(this.softTableWidth(2))
+              .declareColumn("Type", atLeastContentOrHeader())
+              .declareColumn("Value", atLeastContentOrHeader());
+
+          for (final var number : serial.serials()) {
+            tableBuilder.addRow()
+              .addCell(number.type().value())
+              .addCell(number.value());
+          }
+
+          this.renderTable(tableBuilder.build());
+        }
+      }
+
+      case final CAStockOccurrenceSet set -> {
+        final var tableBuilder =
+          Tabla.builder()
+            .setWidthConstraint(this.softTableWidth(2))
+            .declareColumn("Attribute", atLeastContentOrHeader())
+            .declareColumn("Value", atLeastContentOrHeader());
+
+        tableBuilder.addRow()
+          .addCell("Instance")
+          .addCell(item.instance().displayId());
+
+        tableBuilder.addRow()
+          .addCell("Location")
+          .addCell(item.location().id().displayId());
+
+        tableBuilder.addRow()
+          .addCell("Item ID")
+          .addCell(item.item().id().displayId());
+
+        tableBuilder.addRow()
+          .addCell("Item Name")
+          .addCell(item.item().name());
+
+        tableBuilder.addRow()
+          .addCell("Count")
+          .addCell(Long.toUnsignedString(set.count()));
+
+        this.renderTable(tableBuilder.build());
+      }
+    }
+  }
+
   private void formatLocationAttributes(
     final CALocation location)
     throws TException
@@ -626,15 +779,14 @@ public final class CAFormatterPretty implements CAFormatterType
       .addCell(location.id().displayId());
 
     tableBuilder.addRow()
-      .addCell("Name")
-      .addCell(location.name());
+      .addCell("Path")
+      .addCell(location.path().toString());
 
     tableBuilder.addRow()
       .addCell("Parent")
       .addCell(location.parent().map(CAIdType::displayId).orElse("None"));
 
     this.renderTable(tableBuilder.build());
-
   }
 
   @Override

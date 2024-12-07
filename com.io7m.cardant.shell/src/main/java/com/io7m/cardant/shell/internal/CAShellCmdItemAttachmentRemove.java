@@ -17,13 +17,11 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
-import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
 import com.io7m.quarrel.core.QCommandContextType;
 import com.io7m.quarrel.core.QCommandMetadata;
 import com.io7m.quarrel.core.QCommandStatus;
@@ -113,10 +111,10 @@ public final class CAShellCmdItemAttachmentRemove
       context.parameterValue(RELATION);
 
     final var item =
-      ((CAIResponseItemAttachmentRemove) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandItemAttachmentRemove(itemID, fileID, relation),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatItem(item);
     return SUCCESS;

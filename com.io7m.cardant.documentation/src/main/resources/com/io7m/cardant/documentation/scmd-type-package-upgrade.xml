@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns:xi="http://www.w3.org/2001/XInclude"
+         id="c3812a35-9ad7-314b-9618-f1d8942abb64"
+         title="type-package-upgrade"
+         xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">type-package-upgrade</Term>
+      - Upgrade a type package.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The
+      <Term type="command">type-package-upgrade</Term>
+      command upgrades (or optionally downgrades) an
+      <Link target="e91f0f3a-68c7-36e8-b256-15bf2a2974d6">installed</Link> type package.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-type-package-upgrade-parameters.xml"/>
+</Section>
+

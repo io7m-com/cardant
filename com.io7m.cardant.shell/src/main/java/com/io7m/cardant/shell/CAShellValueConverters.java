@@ -17,27 +17,33 @@
 
 package com.io7m.cardant.shell;
 
-import com.io7m.cardant.shell.internal.CADescriptionMatchConverter;
-import com.io7m.cardant.shell.internal.CAFileIdConverter;
-import com.io7m.cardant.shell.internal.CAItemIdConverter;
-import com.io7m.cardant.shell.internal.CAItemLocationMatchConverter;
-import com.io7m.cardant.shell.internal.CAItemSerialMatchConverter;
-import com.io7m.cardant.shell.internal.CALocationIdConverter;
-import com.io7m.cardant.shell.internal.CAMediaTypeMatchConverter;
-import com.io7m.cardant.shell.internal.CAMetadataConverter;
-import com.io7m.cardant.shell.internal.CAMetadataMatchConverter;
-import com.io7m.cardant.shell.internal.CAMonetaryRangeConverter;
-import com.io7m.cardant.shell.internal.CANameMatchConverter;
-import com.io7m.cardant.shell.internal.CAPatternConverter;
-import com.io7m.cardant.shell.internal.CARDottedNameConverter;
-import com.io7m.cardant.shell.internal.CARangeInclusiveDConverter;
-import com.io7m.cardant.shell.internal.CARangeInclusiveLConverter;
-import com.io7m.cardant.shell.internal.CARoleNameConverter;
-import com.io7m.cardant.shell.internal.CATimeRangeConverter;
-import com.io7m.cardant.shell.internal.CATypeMatchConverter;
-import com.io7m.cardant.shell.internal.CATypePackageUninstallBehaviorConverter;
-import com.io7m.cardant.shell.internal.CAUserIdConverter;
-import com.io7m.cardant.shell.internal.CAVersionConverter;
+import com.io7m.cardant.shell.internal.converters.CADescriptionMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CAFileIdConverter;
+import com.io7m.cardant.shell.internal.converters.CAItemIDMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CAItemIdConverter;
+import com.io7m.cardant.shell.internal.converters.CAItemSerialConverter;
+import com.io7m.cardant.shell.internal.converters.CAItemSerialMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CALocationIdConverter;
+import com.io7m.cardant.shell.internal.converters.CALocationMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CALocationNameConverter;
+import com.io7m.cardant.shell.internal.converters.CAMediaTypeMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CAMetadataConverter;
+import com.io7m.cardant.shell.internal.converters.CAMetadataMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CAMonetaryRangeConverter;
+import com.io7m.cardant.shell.internal.converters.CANameMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CAPatternConverter;
+import com.io7m.cardant.shell.internal.converters.CARDottedNameConverter;
+import com.io7m.cardant.shell.internal.converters.CARangeInclusiveDConverter;
+import com.io7m.cardant.shell.internal.converters.CARangeInclusiveLConverter;
+import com.io7m.cardant.shell.internal.converters.CARoleNameConverter;
+import com.io7m.cardant.shell.internal.converters.CAStockInstanceIdConverter;
+import com.io7m.cardant.shell.internal.converters.CATimeRangeConverter;
+import com.io7m.cardant.shell.internal.converters.CATypeMatchConverter;
+import com.io7m.cardant.shell.internal.converters.CATypePackageUninstallBehaviorConverter;
+import com.io7m.cardant.shell.internal.converters.CATypeRecordFieldIdentifierConverter;
+import com.io7m.cardant.shell.internal.converters.CATypeRecordIdentifierConverter;
+import com.io7m.cardant.shell.internal.converters.CAUserIdConverter;
+import com.io7m.cardant.shell.internal.converters.CAVersionConverter;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.quarrel.core.QValueConverterDirectory;
 import com.io7m.quarrel.core.QValueConverterDirectoryType;
@@ -63,14 +69,15 @@ public final class CAShellValueConverters
     final CAStrings strings)
   {
     return QValueConverterDirectory.core()
-      .with(new CATypePackageUninstallBehaviorConverter())
-      .with(new CAVersionConverter())
       .with(new CADescriptionMatchConverter(strings))
       .with(new CAFileIdConverter())
+      .with(new CAItemIDMatchConverter(strings))
       .with(new CAItemIdConverter())
-      .with(new CAItemLocationMatchConverter(strings))
+      .with(new CAItemSerialConverter())
       .with(new CAItemSerialMatchConverter(strings))
       .with(new CALocationIdConverter())
+      .with(new CALocationMatchConverter(strings))
+      .with(new CALocationNameConverter())
       .with(new CAMediaTypeMatchConverter(strings))
       .with(new CAMetadataConverter(strings))
       .with(new CAMetadataMatchConverter(strings))
@@ -81,8 +88,13 @@ public final class CAShellValueConverters
       .with(new CARangeInclusiveDConverter(strings))
       .with(new CARangeInclusiveLConverter(strings))
       .with(new CARoleNameConverter())
+      .with(new CAStockInstanceIdConverter())
       .with(new CATimeRangeConverter(strings))
       .with(new CATypeMatchConverter(strings))
-      .with(new CAUserIdConverter());
+      .with(new CATypePackageUninstallBehaviorConverter())
+      .with(new CATypeRecordFieldIdentifierConverter())
+      .with(new CATypeRecordIdentifierConverter())
+      .with(new CAUserIdConverter())
+      .with(new CAVersionConverter());
   }
 }

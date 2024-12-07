@@ -19,6 +19,7 @@ package com.io7m.cardant.type_packages.parsers.internal;
 
 import com.io7m.blackthorne.core.BTElementHandlerType;
 import com.io7m.blackthorne.core.BTElementParsingContextType;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.lanark.core.RDottedName;
@@ -75,8 +76,10 @@ public final class CATP1TypeScalarMonetary
     final BTElementParsingContextType context)
   {
     return new CATypeScalarType.Monetary(
-      this.packageIdentifier,
-      this.name,
+      new CATypeScalarIdentifier(
+        this.packageIdentifier.name(),
+        this.name
+      ),
       this.description,
       this.rangeLower,
       this.rangeUpper

@@ -17,10 +17,9 @@
 
 package com.io7m.cardant.tests.server.controller;
 
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageInstallType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
 import com.io7m.cardant.database.api.CADatabaseUnit;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
@@ -38,6 +37,7 @@ import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -183,8 +183,6 @@ public final class CAICmdTypePackageInstallTest
     /* Assert. */
 
     verify(transaction)
-      .setUserId(any());
-    verify(transaction)
       .queries(TypePackageInstallType.class);
     verify(transaction)
       .queries(TypePackageSatisfyingType.class);
@@ -261,9 +259,6 @@ public final class CAICmdTypePackageInstallTest
 
     /* Assert. */
 
-    verify(transaction)
-      .setUserId(any());
-
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(install);
     verifyNoMoreInteractions(satisfy);
@@ -285,10 +280,8 @@ public final class CAICmdTypePackageInstallTest
       mock(TypePackageInstallType.class);
     final var satisfy =
       mock(TypePackageSatisfyingType.class);
-    final var typeScalar =
-      mock(TypeScalarGetType.class);
-    final var typeRecord =
-      mock(TypeRecordGetType.class);
+    final var textGet =
+      mock(TypePackageGetTextType.class);
 
     final var transaction =
       this.transaction();
@@ -297,10 +290,11 @@ public final class CAICmdTypePackageInstallTest
       .thenReturn(satisfy);
     when(transaction.queries(TypePackageInstallType.class))
       .thenReturn(install);
-    when(transaction.queries(TypeScalarGetType.class))
-      .thenReturn(typeScalar);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeRecord);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(textGet);
+
+    when(textGet.execute(any()))
+      .thenReturn(Optional.empty());
 
     when(satisfy.execute(any()))
       .thenReturn(Optional.of(
@@ -309,9 +303,6 @@ public final class CAICmdTypePackageInstallTest
           Version.of(1,2,3)
         )
       ));
-
-    when(typeScalar.execute(any()))
-      .thenReturn(Optional.empty());
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -343,17 +334,18 @@ public final class CAICmdTypePackageInstallTest
 
     /* Assert. */
 
-    verify(transaction)
-      .setUserId(any());
-    verify(transaction)
+    verify(transaction, new Times(2))
       .queries(TypePackageSatisfyingType.class);
-    verify(transaction)
-      .queries(TypeScalarGetType.class);
-    verify(satisfy)
+    verify(transaction, new Times(1))
+      .queries(TypePackageGetTextType.class);
+    verify(satisfy, new Times(2))
+      .execute(any());
+    verify(textGet, new Times(1))
       .execute(any());
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(install);
     verifyNoMoreInteractions(satisfy);
+    verifyNoMoreInteractions(textGet);
   }
 }

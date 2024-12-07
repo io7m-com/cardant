@@ -18,14 +18,14 @@
 package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseException;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemTypesAssignType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.security.CASecurity;
@@ -40,7 +40,9 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,6 +79,19 @@ public final class CAICmdItemTypesAssignTest
       new RDottedName("com.io7m"),
       Version.of(1, 0, 0)
     );
+
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
 
   private static final CAItemID ITEM_ID = CAItemID.random();
 
@@ -104,7 +120,7 @@ public final class CAICmdItemTypesAssignTest
           context,
           new CAICommandItemTypesAssign(
             ITEM_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
         );
       });
 
@@ -125,41 +141,36 @@ public final class CAICmdItemTypesAssignTest
   {
     /* Arrange. */
 
-    final var itemTypeAssign =
-      mock(ItemTypesAssignType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
     final var itemGet =
       mock(ItemGetType.class);
+    final var itemTypeAssign =
+      mock(ItemTypesAssignType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(ItemTypesAssignType.class))
-      .thenReturn(itemTypeAssign);
     when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of()
-        )
-      ));
+    when(transaction.queries(ItemTypesAssignType.class))
+      .thenReturn(itemTypeAssign);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     when(itemGet.execute(any()))
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
-        0L,
-        0L,
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
+        new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
       )));
 
     CASecurity.setPolicy(new MPolicy(List.of(
@@ -178,6 +189,14 @@ public final class CAICmdItemTypesAssignTest
     final var context =
       this.createContext();
 
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
+
+    when(itemGet.execute(any()))
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
+
     /* Act. */
 
     final var handler = new CAICmdItemTypesAssign();
@@ -185,17 +204,15 @@ public final class CAICmdItemTypesAssignTest
       context,
       new CAICommandItemTypesAssign(
         ITEM_ID,
-        Set.of(new RDottedName("t"))));
+        Set.of(CATypeRecordIdentifier.of("com.io7m:t"))));
 
     /* Assert. */
 
     verify(transaction)
       .queries(ItemGetType.class);
     verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
       .queries(ItemTypesAssignType.class);
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -214,50 +231,26 @@ public final class CAICmdItemTypesAssignTest
   {
     /* Arrange. */
 
-    final var itemTypeAssign =
-      mock(ItemTypesAssignType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
     final var itemGet =
       mock(ItemGetType.class);
+    final var itemTypeAssign =
+      mock(ItemTypesAssignType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
+
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(ItemTypesAssignType.class))
-      .thenReturn(itemTypeAssign);
     when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CATypeRecord(
-          P,
-          new RDottedName("t"),
-          "A type",
-          Map.of(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "A field",
-              new Integral(P, new RDottedName("z"), "x", 23L, 1000L),
-              true
-            )
-          )
-        )
-      ));
-
-    when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        new TreeSet<>(Set.of(new RDottedName("t")))
-      )));
+    when(transaction.queries(ItemTypesAssignType.class))
+      .thenReturn(itemTypeAssign);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -275,6 +268,22 @@ public final class CAICmdItemTypesAssignTest
     final var context =
       this.createContext();
 
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
+
+    when(itemGet.execute(any()))
+      .thenReturn(Optional.of(new CAItem(
+        ITEM_ID,
+        "Item",
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t0")))
+      )));
+
     /* Act. */
 
     final var handler = new CAICmdItemTypesAssign();
@@ -285,7 +294,8 @@ public final class CAICmdItemTypesAssignTest
           context,
           new CAICommandItemTypesAssign(
             ITEM_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t0"))
+          )
         );
       });
 
@@ -296,14 +306,26 @@ public final class CAICmdItemTypesAssignTest
     verify(transaction)
       .queries(ItemGetType.class);
     verify(transaction)
-      .queries(TypeRecordGetType.class);
+      .queries(TypePackageGetTextType.class);
     verify(transaction)
-      .queries(ItemTypesAssignType.class);
-    verify(itemGet)
-      .execute(ITEM_ID);
+      .queries(TypePackageSatisfyingType.class);
+    verify(transaction)
+      .queries(CADatabaseQueriesItemsType.ItemTypesAssignType.class);
 
-    verifyNoMoreInteractions(transaction);
+    verify(itemGet, new Times(2))
+      .execute(ITEM_ID);
+    verify(itemTypeAssign)
+      .execute(any());
+    verify(typePackageSatisfying)
+      .execute(any());
+    verify(typePackageGetText)
+      .execute(P);
+
     verifyNoMoreInteractions(itemGet);
+    verifyNoMoreInteractions(itemTypeAssign);
+    verifyNoMoreInteractions(typePackageSatisfying);
+    verifyNoMoreInteractions(typePackageGetText);
+    verifyNoMoreInteractions(transaction);
   }
 
   /**
@@ -329,6 +351,9 @@ public final class CAICmdItemTypesAssignTest
       .thenReturn(itemTypeAssign);
     when(transaction.queries(ItemGetType.class))
       .thenReturn(itemGet);
+
+    when(itemGet.execute(any()))
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(
       new CADatabaseException(
@@ -365,7 +390,7 @@ public final class CAICmdItemTypesAssignTest
           context,
           new CAICommandItemTypesAssign(
             ITEM_ID,
-            Set.of(new RDottedName("t")))
+            Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
         );
       });
 

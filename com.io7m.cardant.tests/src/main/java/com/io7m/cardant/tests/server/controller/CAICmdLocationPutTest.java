@@ -20,6 +20,7 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationPut;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -32,6 +33,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +44,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -60,7 +63,9 @@ public final class CAICmdLocationPutTest
     new CALocation(
       CALocationID.random(),
       Optional.empty(),
-      "A",
+      CALocationPath.singleton("A"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -69,16 +74,9 @@ public final class CAICmdLocationPutTest
     new CALocation(
       CALocationID.random(),
       Optional.of(LOCATION_0.id()),
-      "B",
-      Collections.emptySortedMap(),
-      Collections.emptySortedMap(),
-      Collections.emptySortedSet()
-    );
-  private static final CALocation LOCATION_2 =
-    new CALocation(
-      CALocationID.random(),
-      Optional.of(LOCATION_1.id()),
-      "C",
+      CALocationPath.singleton("B"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -164,8 +162,6 @@ public final class CAICmdLocationPutTest
 
     verify(transaction)
       .queries(CADatabaseQueriesLocationsType.LocationPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(locPut)
       .execute(LOCATION_0);
 

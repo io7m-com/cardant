@@ -17,12 +17,16 @@
 package com.io7m.cardant.database.api;
 
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -57,14 +61,65 @@ public sealed interface CADatabaseQueriesLocationsType
   }
 
   /**
+   * Delete the given locations.
+   */
+
+  non-sealed interface LocationDeleteType
+    extends CADatabaseQueryType<Collection<CALocationID>, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+
+  }
+
+  /**
+   * Mark the given locations as deleted/undeleted.
+   */
+
+  non-sealed interface LocationDeleteMarkOnlyType
+    extends CADatabaseQueryType<LocationDeleteMarkOnlyType.Parameters, CADatabaseUnit>,
+    CADatabaseQueriesLocationsType
+  {
+    /**
+     * Parameters for the operation.
+     *
+     * @param locations The location IDs
+     * @param deleted   Whether the locations are deleted
+     */
+
+    record Parameters(
+      Collection<CALocationID> locations,
+      boolean deleted)
+    {
+
+    }
+  }
+
+  /**
    * List locations.
    */
 
   non-sealed interface LocationListType
-    extends CADatabaseQueryType<CADatabaseUnit, SortedMap<CALocationID, CALocationSummary>>,
+    extends CADatabaseQueryType<LocationListType.Parameters, SortedMap<CALocationID, CALocationSummary>>,
     CADatabaseQueriesLocationsType
   {
+    /**
+     * Parameters for the operation.
+     *
+     * @param includeDeleted The deleted state
+     */
 
+    record Parameters(
+      CAIncludeDeleted includeDeleted)
+    {
+      /**
+       * Parameters for the operation.
+       */
+
+      public Parameters
+      {
+        Objects.requireNonNull(includeDeleted, "includeDeleted");
+      }
+    }
   }
 
   /**
@@ -107,7 +162,7 @@ public sealed interface CADatabaseQueriesLocationsType
 
     record Parameters(
       CALocationID location,
-      Set<RDottedName> names)
+      Set<CATypeRecordFieldIdentifier> names)
     {
 
     }
@@ -180,7 +235,7 @@ public sealed interface CADatabaseQueriesLocationsType
 
     record Parameters(
       CALocationID location,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }
@@ -203,7 +258,7 @@ public sealed interface CADatabaseQueriesLocationsType
 
     record Parameters(
       CALocationID location,
-      Set<RDottedName> types)
+      Set<CATypeRecordIdentifier> types)
     {
 
     }

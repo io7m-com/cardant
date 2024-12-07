@@ -38,9 +38,7 @@ import java.util.Optional;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORD_FIELDS;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_SCALAR;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 
@@ -139,31 +137,17 @@ public final class CADBQTypePackageUninstall
         batch.add(
           context.deleteFrom(ITEM_TYPES)
             .where(ITEM_TYPES.IT_TYPE.in(
-              context.select(METADATA_TYPES_RECORDS.MTR_ID)
-                .from(METADATA_TYPES_RECORDS)
-                .where(METADATA_TYPES_RECORDS.MTR_PACKAGE.eq(packageDbID))
+              context.select(METADATA_TYPES.MT_ID)
+                .from(METADATA_TYPES)
+                .where(METADATA_TYPES.MT_PACKAGE.eq(packageDbID))
             ))
         );
       }
     }
 
     batch.add(
-      context.deleteFrom(METADATA_TYPES_RECORD_FIELDS)
-        .where(METADATA_TYPES_RECORD_FIELDS.MTRF_DECLARATION.in(
-          context.select(METADATA_TYPES_RECORDS.MTR_ID)
-            .from(METADATA_TYPES_RECORDS)
-            .where(METADATA_TYPES_RECORDS.MTR_PACKAGE.eq(packageDbID))
-        ))
-    );
-
-    batch.add(
-      context.deleteFrom(METADATA_TYPES_RECORDS)
-        .where(METADATA_TYPES_RECORDS.MTR_PACKAGE.eq(packageDbID))
-    );
-
-    batch.add(
-      context.deleteFrom(METADATA_TYPES_SCALAR)
-        .where(METADATA_TYPES_SCALAR.MTS_PACKAGE.eq(packageDbID))
+      context.deleteFrom(METADATA_TYPES)
+        .where(METADATA_TYPES.MT_PACKAGE.eq(packageDbID))
     );
 
     batch.add(

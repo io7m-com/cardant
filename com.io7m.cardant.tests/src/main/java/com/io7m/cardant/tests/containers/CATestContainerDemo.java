@@ -18,13 +18,13 @@
 package com.io7m.cardant.tests.containers;
 
 import com.io7m.ervilla.api.EContainerConfiguration;
+import com.io7m.ervilla.api.EContainerStop;
 import com.io7m.ervilla.api.EContainerSupervisorScope;
 import com.io7m.ervilla.native_exec.ENContainerSupervisors;
 import com.io7m.lanark.core.RDottedName;
 
 import java.nio.file.Files;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
+import java.time.Duration;
 
 public final class CATestContainerDemo
 {
@@ -41,25 +41,22 @@ public final class CATestContainerDemo
       new ENContainerSupervisors();
     final var configuration =
       new EContainerConfiguration(
-        new RDottedName("com.io7m.cardant"), "podman", 180L, SECONDS);
+        new RDottedName("com.io7m.cardant"),
+        "podman",
+        Duration.ofSeconds(180L),
+        Duration.ofMillis(250L),
+        true,
+        EContainerStop.STOP
+      );
 
     final var directory =
       Files.createTempDirectory("cardant-");
 
     try (var supervisor = supervisors.create(configuration, EContainerSupervisorScope.PER_SUITE)) {
       final var databaseFixture =
-        CATestContainers.createDatabase(supervisor, 25432);
-
+        CAFixtures.database(CAFixtures.pod(supervisor));
       final var idstoreFixture =
-        CATestContainers.createIdstore(
-          supervisor,
-          databaseFixture,
-          directory,
-          "idstore",
-          51000,
-          50000,
-          50001
-        );
+        CAFixtures.idstore(CAFixtures.pod(supervisor));
 
       while (true) {
         Thread.sleep(5000L);

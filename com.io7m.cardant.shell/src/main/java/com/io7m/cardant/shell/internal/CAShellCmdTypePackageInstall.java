@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -90,10 +89,10 @@ public final class CAShellCmdTypePackageInstall
       context.parameterValue(FILE);
 
     final var identifier =
-      ((CAIResponseTypePackageInstall) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandTypePackageInstall(Files.readString(inputFile)),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().printLine(identifier.toString());
     return SUCCESS;

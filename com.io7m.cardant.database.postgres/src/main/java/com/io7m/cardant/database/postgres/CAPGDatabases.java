@@ -202,12 +202,15 @@ public final class CAPGDatabases implements CADatabaseFactoryType
     config.setUsername("cardant");
     config.setPassword(configuration.workerRolePassword());
     config.setAutoCommit(false);
+    config.setMinimumIdle(configuration.minimumConnections());
+    config.setMaximumPoolSize(configuration.maximumConnections());
 
     final var dataSource =
       resources.add(new HikariDataSource(config));
 
     return new CADatabase(
       telemetry,
+      configuration.language(),
       configuration.strings(),
       configuration.clock(),
       dataSource,
@@ -237,7 +240,10 @@ public final class CAPGDatabases implements CADatabaseFactoryType
         .startSpan();
 
     final var argSearchLanguage =
-      new TrArgumentString("search.language", configuration.language());
+      new TrArgumentString(
+        "search.language",
+        configuration.language().value()
+      );
 
     final var arguments =
       new TrArguments(

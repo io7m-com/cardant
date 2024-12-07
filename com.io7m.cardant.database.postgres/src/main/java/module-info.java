@@ -17,6 +17,47 @@
 
 import com.io7m.cardant.database.api.CADatabaseFactoryType;
 import com.io7m.cardant.database.postgres.CAPGDatabases;
+import com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd;
+import com.io7m.cardant.database.postgres.internal.CADBQAuditEventSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQFileGet;
+import com.io7m.cardant.database.postgres.internal.CADBQFilePut;
+import com.io7m.cardant.database.postgres.internal.CADBQFileRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQFileSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQItemAttachmentAdd;
+import com.io7m.cardant.database.postgres.internal.CADBQItemAttachmentRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQItemCreate;
+import com.io7m.cardant.database.postgres.internal.CADBQItemDelete;
+import com.io7m.cardant.database.postgres.internal.CADBQItemDeleteMarkOnly;
+import com.io7m.cardant.database.postgres.internal.CADBQItemGet;
+import com.io7m.cardant.database.postgres.internal.CADBQItemMetadataPut;
+import com.io7m.cardant.database.postgres.internal.CADBQItemMetadataRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQItemSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQItemSetName;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypesAssign;
+import com.io7m.cardant.database.postgres.internal.CADBQItemTypesRevoke;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationAttachmentAdd;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationAttachmentRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationDelete;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationDeleteMarkOnly;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationGet;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationList;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataPut;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataRemove;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationPut;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationTypesAssign;
+import com.io7m.cardant.database.postgres.internal.CADBQLocationTypesRevoke;
+import com.io7m.cardant.database.postgres.internal.CADBQMaintenance;
+import com.io7m.cardant.database.postgres.internal.CADBQStockCount;
+import com.io7m.cardant.database.postgres.internal.CADBQStockGet;
+import com.io7m.cardant.database.postgres.internal.CADBQStockReposit;
+import com.io7m.cardant.database.postgres.internal.CADBQStockSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQTypePackageGetText;
+import com.io7m.cardant.database.postgres.internal.CADBQTypePackageInstall;
+import com.io7m.cardant.database.postgres.internal.CADBQTypePackageSatisfying;
+import com.io7m.cardant.database.postgres.internal.CADBQTypePackageSearch;
+import com.io7m.cardant.database.postgres.internal.CADBQTypePackageUninstall;
+import com.io7m.cardant.database.postgres.internal.CADBQUserGet;
+import com.io7m.cardant.database.postgres.internal.CADBQUserPut;
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType;
 
 /**
@@ -50,6 +91,8 @@ module com.io7m.cardant.database.postgres
   requires org.jooq;
   requires org.postgresql.jdbc;
   requires org.slf4j;
+  requires com.fasterxml.jackson.databind;
+  requires com.io7m.junreachable.core;
 
   exports com.io7m.cardant.database.postgres.internal.tables
     to org.jooq;
@@ -62,55 +105,47 @@ module com.io7m.cardant.database.postgres
   uses CADBQueryProviderType;
 
   provides CADBQueryProviderType with
-    com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd,
-    com.io7m.cardant.database.postgres.internal.CADBQAuditEventSearch,
-    com.io7m.cardant.database.postgres.internal.CADBQFileGet,
-    com.io7m.cardant.database.postgres.internal.CADBQFilePut,
-    com.io7m.cardant.database.postgres.internal.CADBQFileRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQFileSearch,
-    com.io7m.cardant.database.postgres.internal.CADBQItemAttachmentAdd,
-    com.io7m.cardant.database.postgres.internal.CADBQItemAttachmentRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQItemCreate,
-    com.io7m.cardant.database.postgres.internal.CADBQItemDelete,
-    com.io7m.cardant.database.postgres.internal.CADBQItemDeleteMarkOnly,
-    com.io7m.cardant.database.postgres.internal.CADBQItemGet,
-    com.io7m.cardant.database.postgres.internal.CADBQItemLocations,
-    com.io7m.cardant.database.postgres.internal.CADBQItemMetadataPut,
-    com.io7m.cardant.database.postgres.internal.CADBQItemMetadataRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQItemReposit,
-    com.io7m.cardant.database.postgres.internal.CADBQItemSearch,
-    com.io7m.cardant.database.postgres.internal.CADBQItemSetName,
-    com.io7m.cardant.database.postgres.internal.CADBQItemTypesAssign,
-    com.io7m.cardant.database.postgres.internal.CADBQItemTypesRevoke,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationAttachmentAdd,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationAttachmentRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationGet,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationList,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataPut,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationMetadataRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationPut,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationTypesAssign,
-    com.io7m.cardant.database.postgres.internal.CADBQLocationTypesRevoke,
-    com.io7m.cardant.database.postgres.internal.CADBQMaintenance,
-    com.io7m.cardant.database.postgres.internal.CADBQTypePackageGetText,
-    com.io7m.cardant.database.postgres.internal.CADBQTypePackageInstall,
-    com.io7m.cardant.database.postgres.internal.CADBQTypePackageSatisfying,
-    com.io7m.cardant.database.postgres.internal.CADBQTypePackageSearch,
-    com.io7m.cardant.database.postgres.internal.CADBQTypePackageSetVersion,
-    com.io7m.cardant.database.postgres.internal.CADBQTypePackageUninstall,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordFieldRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordFieldUpdate,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordGet,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordPut,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordsReferencingScalar,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeRecordsSearch,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeScalarGet,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeScalarPut,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeScalarRemove,
-    com.io7m.cardant.database.postgres.internal.CADBQTypeScalarSearch,
-    com.io7m.cardant.database.postgres.internal.CADBQUserGet,
-    com.io7m.cardant.database.postgres.internal.CADBQUserPut
+CADBQAuditEventAdd,
+CADBQAuditEventSearch,
+CADBQFileGet,
+CADBQFilePut,
+CADBQFileRemove,
+CADBQFileSearch,
+CADBQItemAttachmentAdd,
+CADBQItemAttachmentRemove,
+CADBQItemCreate,
+CADBQItemDelete,
+CADBQItemDeleteMarkOnly,
+CADBQItemGet,
+CADBQItemMetadataPut,
+CADBQItemMetadataRemove,
+CADBQItemSearch,
+CADBQItemSetName,
+CADBQItemTypesAssign,
+CADBQItemTypesRevoke,
+CADBQLocationAttachmentAdd,
+CADBQLocationAttachmentRemove,
+CADBQLocationDelete,
+CADBQLocationDeleteMarkOnly,
+CADBQLocationGet,
+CADBQLocationList,
+CADBQLocationMetadataPut,
+CADBQLocationMetadataRemove,
+CADBQLocationPut,
+CADBQLocationTypesAssign,
+CADBQLocationTypesRevoke,
+CADBQMaintenance,
+CADBQStockCount,
+CADBQStockGet,
+CADBQStockReposit,
+CADBQStockSearch,
+CADBQTypePackageGetText,
+CADBQTypePackageInstall,
+CADBQTypePackageSatisfying,
+CADBQTypePackageSearch,
+CADBQTypePackageUninstall,
+CADBQUserGet,
+CADBQUserPut
     ;
 
   exports com.io7m.cardant.database.postgres;

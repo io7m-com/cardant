@@ -21,14 +21,14 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationMetadataRemoveType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
-import com.io7m.cardant.model.CATypeScalarType.Text;
+import com.io7m.cardant.model.CALocationPath;
+import com.io7m.cardant.model.CAMetadataType.Text;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
 import com.io7m.cardant.security.CASecurity;
@@ -43,7 +43,9 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,6 +83,19 @@ public final class CAICmdLocationMetadataRemoveTest
       new RDottedName("com.io7m"),
       Version.of(1, 0, 0)
     );
+
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
 
   private static final CALocationID LOCATION_ID = CALocationID.random();
 
@@ -108,7 +124,12 @@ public final class CAICmdLocationMetadataRemoveTest
           context,
           new CAICommandLocationMetadataRemove(
             LOCATION_ID,
-            Set.of(new RDottedName("x"))));
+            Set.of(
+              CATypeRecordFieldIdentifier.of("com.z:t.x"),
+              CATypeRecordFieldIdentifier.of("com.z:t.y"),
+              CATypeRecordFieldIdentifier.of("com.z:t.z")
+            )
+          ));
       });
 
     /* Assert. */
@@ -145,7 +166,9 @@ public final class CAICmdLocationMetadataRemoveTest
       .thenReturn(Optional.of(new CALocation(
         LOCATION_ID,
         Optional.empty(),
-        "Location",
+        CALocationPath.singleton("Location"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -174,7 +197,11 @@ public final class CAICmdLocationMetadataRemoveTest
       context,
       new CAICommandLocationMetadataRemove(
         LOCATION_ID,
-        Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
+        Set.of(
+          CATypeRecordFieldIdentifier.of("com.z:t.x"),
+          CATypeRecordFieldIdentifier.of("com.z:t.y"),
+          CATypeRecordFieldIdentifier.of("com.z:t.z")
+        )
       ));
 
     /* Assert. */
@@ -183,21 +210,19 @@ public final class CAICmdLocationMetadataRemoveTest
       .queries(LocationGetType.class);
     verify(transaction)
       .queries(LocationMetadataRemoveType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(locationMetaRemove)
       .execute(
         new Parameters(
           LOCATION_ID,
           Set.of(
-            new RDottedName("a"),
-            new RDottedName("b"),
-            new RDottedName("c")
+            CATypeRecordFieldIdentifier.of("com.z:t.x"),
+            CATypeRecordFieldIdentifier.of("com.z:t.y"),
+            CATypeRecordFieldIdentifier.of("com.z:t.z")
           )
 
         )
       );
-    verify(locationGet)
+    verify(locationGet, new Times(2))
       .execute(LOCATION_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -221,6 +246,18 @@ public final class CAICmdLocationMetadataRemoveTest
       mock(LocationGetType.class);
     final var locationMetaRemove =
       mock(LocationMetadataRemoveType.class);
+
+    when(locationGet.execute(any()))
+      .thenReturn(Optional.of(new CALocation(
+        LOCATION_ID,
+        Optional.empty(),
+        CALocationPath.singleton("Location"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
+        Collections.emptySortedMap(),
+        Collections.emptySortedMap(),
+        Collections.emptySortedSet()
+      )));
 
     doThrow(
       new CADatabaseException(
@@ -273,7 +310,11 @@ public final class CAICmdLocationMetadataRemoveTest
           context,
           new CAICommandLocationMetadataRemove(
             LOCATION_ID,
-            Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
+            Set.of(
+              CATypeRecordFieldIdentifier.of("com.z:t.x"),
+              CATypeRecordFieldIdentifier.of("com.z:t.y"),
+              CATypeRecordFieldIdentifier.of("com.z:t.z")
+            )
           ));
       });
 
@@ -345,7 +386,11 @@ public final class CAICmdLocationMetadataRemoveTest
           context,
           new CAICommandLocationMetadataRemove(
             LOCATION_ID,
-            Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
+            Set.of(
+              CATypeRecordFieldIdentifier.of("com.z:t.x"),
+              CATypeRecordFieldIdentifier.of("com.z:t.y"),
+              CATypeRecordFieldIdentifier.of("com.z:t.z")
+            )
           ));
       });
 
@@ -370,8 +415,10 @@ public final class CAICmdLocationMetadataRemoveTest
       mock(LocationGetType.class);
     final var locationMetaRemove =
       mock(LocationMetadataRemoveType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
 
     final var transaction =
       this.transaction();
@@ -380,8 +427,10 @@ public final class CAICmdLocationMetadataRemoveTest
       .thenReturn(locationGet);
     when(transaction.queries(LocationMetadataRemoveType.class))
       .thenReturn(locationMetaRemove);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -400,62 +449,36 @@ public final class CAICmdLocationMetadataRemoveTest
       this.createContext();
 
     final var meta0 =
-      new CAMetadataType.Text(new RDottedName("a"), "x");
+      new Text(
+        CATypeRecordFieldIdentifier.of("com.z:t.x"),
+        "x"
+      );
+
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
 
     when(locationGet.execute(any()))
       .thenReturn(Optional.of(
         new CALocation(
           CALocationID.random(),
           Optional.empty(),
-          "Location",
+          CALocationPath.singleton("x"),
+          OffsetDateTime.now(UTC),
+          OffsetDateTime.now(UTC),
           new TreeMap<>(Map.of(meta0.name(), meta0)),
           Collections.emptySortedMap(),
           new TreeSet<>(
-            Set.of(new RDottedName("t"))
+            List.of(
+              new CATypeRecordIdentifier(
+                new RDottedName("com.io7m"),
+                new RDottedName("t0")
+              )
+            )
           )
         )
       ));
-
-    final var type =
-      new CATypeRecord(
-        P,
-        new RDottedName("t"),
-        "T",
-        Map.ofEntries(
-          Map.entry(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "Field A",
-              new Integral(
-                P,
-                new RDottedName("ts0"),
-                "Number",
-                23L,
-                1000L
-              ),
-              true
-            )
-          ),
-          Map.entry(
-            new RDottedName("b"),
-            new CATypeField(
-              new RDottedName("b"),
-              "Field B",
-              new Text(
-                P,
-                new RDottedName("ts0"),
-                "Anything",
-                ".*"
-              ),
-              true
-            )
-          )
-        )
-      );
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(type));
 
     /* Act. */
 
@@ -478,19 +501,25 @@ public final class CAICmdLocationMetadataRemoveTest
     verify(transaction)
       .queries(LocationGetType.class);
     verify(transaction)
+      .queries(TypePackageGetTextType.class);
+    verify(transaction)
+      .queries(TypePackageSatisfyingType.class);
+    verify(transaction)
       .queries(LocationMetadataRemoveType.class);
-    verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
-    verify(locationGet)
+    verify(locationGet, new Times(2))
       .execute(LOCATION_ID);
     verify(locationMetaRemove)
       .execute(new Parameters(LOCATION_ID, Set.of(meta0.name())));
+    verify(typePackageSatisfying)
+      .execute(any());
+    verify(typePackageGetText)
+      .execute(P);
 
     verifyNoMoreInteractions(locationGet);
     verifyNoMoreInteractions(locationMetaRemove);
+    verifyNoMoreInteractions(typePackageSatisfying);
+    verifyNoMoreInteractions(typePackageGetText);
     verifyNoMoreInteractions(transaction);
   }
 }

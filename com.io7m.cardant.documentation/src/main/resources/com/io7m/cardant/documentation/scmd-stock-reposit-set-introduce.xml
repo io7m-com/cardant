@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="1b83a27f-2771-3b54-a65d-c4fd39969d0d" title="stock-reposit-set-introduce" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-reposit-set-introduce</Term>
+       - Introduces instances of items to locations.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-reposit-set-introduce</Term>
+       command creates set stock instances.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-reposit-set-introduce-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-reposit-set-introduce \
+  --instance 3cb641ac-182f-4f44-98f6-a3e0fe752297 \
+  --location 55311cea-052f-4f72-9e34-bc01d0e43fee \
+  --item 102c2df9-bbb4-4e5d-948f-0d8620704b97 \
+  --count 100
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

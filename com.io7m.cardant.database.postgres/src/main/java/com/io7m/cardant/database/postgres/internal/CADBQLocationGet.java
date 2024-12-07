@@ -25,13 +25,17 @@ import com.io7m.cardant.model.CAFileID;
 import com.io7m.cardant.model.CAFileType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.lanark.core.RDottedName;
 import org.joda.money.CurrencyUnit;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -41,7 +45,8 @@ import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_ATTACHMENTS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
-import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES_RECORDS;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
+import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
 
 /**
  * Retrieve a location.
@@ -84,9 +89,16 @@ public final class CADBQLocationGet
       context.select(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
-          LOCATIONS.LOCATION_NAME,
-          DSL.arrayAgg(METADATA_TYPES_RECORDS.MTR_NAME),
-          LOCATION_METADATA.LOCATION_META_NAME,
+          LOCATIONS.LOCATION_CREATED,
+          LOCATIONS.LOCATION_UPDATED,
+          CADBLocationPaths.locationPathNamed(context, id),
+          DSL.multisetAgg(
+            METADATA_TYPE_PACKAGES.MTP_NAME,
+            METADATA_TYPES.MT_NAME
+          ),
+          LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+          LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+          LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
           LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL,
           LOCATION_METADATA.LOCATION_META_VALUE_MONEY,
           LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY,
@@ -104,20 +116,26 @@ public final class CADBQLocationGet
         ).from(LOCATIONS)
         .leftJoin(LOCATION_TYPES)
         .on(LOCATION_TYPES.LT_LOCATION.eq(LOCATIONS.LOCATION_ID))
-        .leftJoin(METADATA_TYPES_RECORDS)
-        .on(METADATA_TYPES_RECORDS.MTR_ID.eq(LOCATION_TYPES.LT_TYPE))
+        .leftJoin(METADATA_TYPES)
+        .on(METADATA_TYPES.MT_ID.eq(LOCATION_TYPES.LT_TYPE))
+        .leftJoin(METADATA_TYPE_PACKAGES)
+        .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES.MT_PACKAGE))
         .leftJoin(LOCATION_METADATA)
         .on(LOCATION_METADATA.LOCATION_META_LOCATION.eq(LOCATIONS.LOCATION_ID))
         .leftJoin(LOCATION_ATTACHMENTS)
         .on(LOCATION_ATTACHMENTS.LA_LOCATION_ID.eq(LOCATIONS.LOCATION_ID))
         .leftJoin(FILES)
         .on(FILES.FILE_ID.eq(LOCATION_ATTACHMENTS.LA_FILE_ID))
-        .where(LOCATIONS.LOCATION_ID.eq(id.id()))
+        .where(LOCATIONS.LOCATION_ID.eq(id.id()).and(LOCATIONS.LOCATION_DELETED.isNull()))
         .groupBy(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
-          LOCATIONS.LOCATION_NAME,
-          LOCATION_METADATA.LOCATION_META_NAME,
+          LOCATIONS.LOCATION_CREATED,
+          LOCATIONS.LOCATION_UPDATED,
+          CADBLocationPaths.LOCATION_PATH_NAME,
+          LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
+          LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
+          LOCATION_METADATA.LOCATION_META_TYPE_FIELD,
           LOCATION_METADATA.LOCATION_META_VALUE_INTEGRAL,
           LOCATION_METADATA.LOCATION_META_VALUE_MONEY,
           LOCATION_METADATA.LOCATION_META_VALUE_MONEY_CURRENCY,
@@ -140,15 +158,15 @@ public final class CADBQLocationGet
     }
 
     final var meta =
-      new TreeMap<RDottedName, CAMetadataType>();
-    final var types =
-      new TreeSet<RDottedName>();
+      new TreeMap<CATypeRecordFieldIdentifier, CAMetadataType>();
     final var attachments =
       new TreeMap<CAAttachmentKey, CAAttachment>();
 
     CALocationID locationId = null;
     Optional<CALocationID> parent = Optional.empty();
-    String name = null;
+    CALocationPath path = null;
+    OffsetDateTime created = null;
+    OffsetDateTime updated = null;
 
     for (final var rec : results) {
       locationId =
@@ -156,14 +174,35 @@ public final class CADBQLocationGet
       parent =
         Optional.ofNullable(rec.get(LOCATIONS.LOCATION_PARENT))
           .map(CALocationID::new);
-      name =
-        rec.get(LOCATIONS.LOCATION_NAME);
+      path =
+        CALocationPath.ofArray(
+          rec.get(CADBLocationPaths.LOCATION_PATH_NAME)
+        );
+      created =
+        rec.get(LOCATIONS.LOCATION_CREATED);
+      updated =
+        rec.get(LOCATIONS.LOCATION_UPDATED);
 
-      Optional.ofNullable(rec.get(LOCATION_METADATA.LOCATION_META_NAME))
-        .ifPresent(s -> {
-          final var metaName = new RDottedName(s);
-          meta.put(metaName, mapLocationMetadataRecord(metaName, rec));
-        });
+      final var typePack =
+        rec.get(LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE);
+
+      if (typePack != null) {
+        final var typeRec =
+          rec.get(LOCATION_METADATA.LOCATION_META_TYPE_RECORD);
+        final var typeField =
+          rec.get(LOCATION_METADATA.LOCATION_META_TYPE_FIELD);
+
+        final var metaName =
+          new CATypeRecordFieldIdentifier(
+            new CATypeRecordIdentifier(
+              new RDottedName(typePack),
+              new RDottedName(typeRec)
+            ),
+            new RDottedName(typeField)
+          );
+
+        meta.put(metaName, mapLocationMetadataRecord(metaName, rec));
+      }
 
       Optional.ofNullable(rec.get(LOCATION_ATTACHMENTS.LA_RELATION))
         .ifPresent(f -> {
@@ -182,11 +221,37 @@ public final class CADBQLocationGet
         });
     }
 
+    final var types =
+      new TreeSet<CATypeRecordIdentifier>();
+
+    final var typeRecords =
+      context.select(
+          METADATA_TYPES.MT_NAME,
+          METADATA_TYPE_PACKAGES.MTP_NAME
+        ).from(LOCATION_TYPES)
+        .join(METADATA_TYPES)
+        .on(METADATA_TYPES.MT_ID.eq(LOCATION_TYPES.LT_TYPE))
+        .join(METADATA_TYPE_PACKAGES)
+        .on(METADATA_TYPE_PACKAGES.MTP_ID.eq(METADATA_TYPES.MT_PACKAGE))
+        .where(LOCATION_TYPES.LT_LOCATION.eq(locationId.id()))
+        .fetch();
+
+    for (final var typeRecord : typeRecords) {
+      types.add(
+        new CATypeRecordIdentifier(
+          new RDottedName(typeRecord.get(METADATA_TYPE_PACKAGES.MTP_NAME)),
+          new RDottedName(typeRecord.get(METADATA_TYPES.MT_NAME))
+        )
+      );
+    }
+
     return Optional.of(
       new CALocation(
         locationId,
         parent,
-        name,
+        path,
+        created,
+        updated,
         meta,
         attachments,
         types
@@ -195,7 +260,7 @@ public final class CADBQLocationGet
   }
 
   static CAMetadataType mapLocationMetadataRecord(
-    final RDottedName name,
+    final CATypeRecordFieldIdentifier name,
     final Record rec)
   {
     final var typeCode =

@@ -87,7 +87,7 @@
       <Row>
         <Cell>Type</Cell>
         <Cell>
-          <Term type="class">com.io7m.cardant.model.CAItemLocationMatchType</Term>
+          <Term type="class">com.io7m.cardant.model.CALocationMatchType</Term>
         </Cell>
       </Row>
       <Row>
@@ -159,7 +159,7 @@
       <Row>
         <Cell>Type</Cell>
         <Cell>
-          <Term type="class">com.io7m.cardant.model.CANameMatch</Term>
+          <Term type="class">com.io7m.cardant.model.CANameMatchFuzzy</Term>
         </Cell>
       </Row>
       <Row>

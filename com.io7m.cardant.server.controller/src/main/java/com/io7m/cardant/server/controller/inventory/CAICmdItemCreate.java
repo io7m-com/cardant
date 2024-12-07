@@ -51,9 +51,8 @@ public final class CAICmdItemCreate extends CAICmdAbstract<CAICommandItemCreate>
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var create =
       transaction.queries(CADatabaseQueriesItemsType.ItemCreateType.class);
     final var setName =

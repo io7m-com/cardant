@@ -18,23 +18,29 @@
 package com.io7m.cardant.tests.integration;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
-import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.client.api.CAClientConnectionParameters;
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.model.CAAttachment;
 import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CAMetadataType;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageSearchParameters;
 import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
+import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
+import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
@@ -52,10 +58,13 @@ import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.containers.CATestContainers;
+import com.io7m.cardant.tests.containers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CAFixtures;
+import com.io7m.cardant.tests.containers.CAIdstoreFixture;
+import com.io7m.cardant.tests.containers.CAServerFixture;
 import com.io7m.cardant.tests.server.controller.CAICmdTypePackageInstallTest;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
@@ -78,17 +87,20 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
+import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -101,38 +113,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CAClientIT
 {
+  private static final Duration TIMEOUT =
+    Duration.ofSeconds(30L);
+
   private static CAUserID USER_ADMIN;
   private static CAUserID USER;
-  private static CATestContainers.CAIdstoreFixture IDSTORE;
-  private static CATestContainers.CADatabaseFixture DATABASE;
+  private static CAIdstoreFixture IDSTORE;
+  private static CADatabaseFixture DATABASE;
   private static Path DIRECTORY;
-  private CATestContainers.CAServerFixture server;
+  private CAServerFixture server;
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterClass EContainerSupervisorType supervisor,
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
     DIRECTORY =
       Files.createTempDirectory("cardant-");
     DATABASE =
-      CATestContainers.createDatabase(supervisor, 15433);
+      CAFixtures.database(CAFixtures.pod(supervisor));
     IDSTORE =
-      CATestContainers.createIdstore(
-        supervisor,
-        DATABASE,
-        DIRECTORY,
-        "idstore",
-        51000,
-        50000,
-        50001
-      );
+      CAFixtures.idstore(CAFixtures.pod(supervisor));
 
     USER_ADMIN =
-      IDSTORE.createUser("someone-admin");
+      new CAUserID(IDSTORE.userWithAdmin().id());
     USER =
-      IDSTORE.createUser("someone");
+      new CAUserID(IDSTORE.userWithLogin().id());
 
     closeables.addPerTestClassResource(
       () -> CATestDirectories.deleteDirectory(DIRECTORY)
@@ -141,6 +148,7 @@ public final class CAClientIT
 
   @BeforeEach
   public void setupEach(
+    final @ErvillaCloseAfterSuite EContainerSupervisorType supervisor,
     final CloseableResourcesType closeables)
     throws Exception
   {
@@ -155,20 +163,17 @@ public final class CAClientIT
       new CAClients();
     this.client =
       closeables.addPerTestResource(
-        this.clients.openSynchronousClient(
+        this.clients.create(
           new CAClientConfiguration(Locale.ROOT, Clock.systemUTC())
         )
       );
 
     this.server =
       closeables.addPerTestResource(
-        CATestContainers.createServer(
-          IDSTORE,
-          DATABASE,
-          30000
-        )
+        CAFixtures.server(CAFixtures.pod(supervisor))
       );
 
+    this.server.server().start();
     this.server.setUserAsAdmin(USER_ADMIN, "someone-admin");
 
     closeables.addPerTestResource(
@@ -177,7 +182,7 @@ public final class CAClientIT
   }
 
   private CAClients clients;
-  private CAClientSynchronousType client;
+  private CAClientType client;
   private Path directory;
   private Path downloads;
 
@@ -259,7 +264,7 @@ public final class CAClientIT
     Files.writeString(file, "HELLO!");
 
     final var fileId = CAFileID.random();
-    this.client.fileUploadOrThrow(
+    this.client.fileUpload(
       fileId,
       file,
       "text/plain",
@@ -271,7 +276,7 @@ public final class CAClientIT
 
     final var response =
       (CAIResponseFileGet)
-        this.client.executeOrElseThrow(new CAICommandFileGet(fileId));
+        this.client.sendAndWaitOrThrow(new CAICommandFileGet(fileId), TIMEOUT);
 
     final var data = response.data();
     assertEquals(
@@ -284,7 +289,7 @@ public final class CAClientIT
     );
     assertEquals(6L, data.size());
 
-    this.client.fileDownloadOrThrow(
+    this.client.fileDownload(
       fileId,
       this.directory.resolve("data2.txt"),
       this.directory.resolve("data2.txt.tmp"),
@@ -321,7 +326,7 @@ public final class CAClientIT
 
     final var ex =
       assertThrows(CAClientException.class, () -> {
-        this.client.fileUploadOrThrow(
+        this.client.fileUpload(
           fileId,
           file,
           "text/plain",
@@ -352,7 +357,7 @@ public final class CAClientIT
     Files.writeString(file, "HELLO!");
 
     final var fileId = CAFileID.random();
-    this.client.fileUploadOrThrow(
+    this.client.fileUpload(
       fileId,
       file,
       "text/plain",
@@ -367,7 +372,9 @@ public final class CAClientIT
     {
       final var ex =
         assertThrows(CAClientException.class, () -> {
-          this.client.executeOrElseThrow(new CAICommandFileGet(fileId));
+          this.client.sendAndWaitOrThrow(
+            new CAICommandFileGet(fileId),
+            TIMEOUT);
         });
 
       assertEquals(errorSecurityPolicyDenied(), ex.errorCode());
@@ -376,7 +383,7 @@ public final class CAClientIT
     {
       final var ex =
         assertThrows(CAClientException.class, () -> {
-          this.client.fileDownloadOrThrow(
+          this.client.fileDownload(
             fileId,
             file,
             fileTmp,
@@ -391,46 +398,6 @@ public final class CAClientIT
 
       assertEquals(errorSecurityPolicyDenied(), ex.errorCode());
     }
-  }
-
-  /**
-   * Sending garbage results in errors.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testGarbage()
-    throws Exception
-  {
-    this.login(new IdName("someone-admin"));
-
-    final var ex =
-      assertThrows(CAClientException.class, () -> {
-        this.client.garbageOrElseThrow();
-      });
-
-    assertEquals(errorIo(), ex.errorCode());
-  }
-
-  /**
-   * Sending invalid messages results in errors.
-   *
-   * @throws Exception On errors
-   */
-
-  @Test
-  public void testInvalid()
-    throws Exception
-  {
-    this.login(new IdName("someone-admin"));
-
-    final var ex =
-      assertThrows(CAClientException.class, () -> {
-        this.client.invalidOrElseThrow();
-      });
-
-    assertEquals(errorApiMisuse(), ex.errorCode());
   }
 
   /**
@@ -451,16 +418,16 @@ public final class CAClientIT
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+        this.client.sendAndWaitOrThrow(new CAICommandRolesGet(USER), TIMEOUT);
       assertFalse(r.roles().contains(role));
     }
 
-    this.client.executeOrElseThrow(
-      new CAICommandRolesAssign(USER, Set.of(role)));
+    this.client.sendAndWaitOrThrow(
+      new CAICommandRolesAssign(USER, Set.of(role)), TIMEOUT);
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+        this.client.sendAndWaitOrThrow(new CAICommandRolesGet(USER), TIMEOUT);
       assertTrue(r.roles().contains(role));
     }
   }
@@ -483,25 +450,25 @@ public final class CAClientIT
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+        this.client.sendAndWaitOrThrow(new CAICommandRolesGet(USER), TIMEOUT);
       assertFalse(r.roles().contains(role));
     }
 
-    this.client.executeOrElseThrow(
-      new CAICommandRolesAssign(USER, Set.of(role)));
+    this.client.sendAndWaitOrThrow(
+      new CAICommandRolesAssign(USER, Set.of(role)), TIMEOUT);
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+        this.client.sendAndWaitOrThrow(new CAICommandRolesGet(USER), TIMEOUT);
       assertTrue(r.roles().contains(role));
     }
 
-    this.client.executeOrElseThrow(
-      new CAICommandRolesRevoke(USER, Set.of(role)));
+    this.client.sendAndWaitOrThrow(
+      new CAICommandRolesRevoke(USER, Set.of(role)), TIMEOUT);
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandRolesGet(USER));
+        this.client.sendAndWaitOrThrow(new CAICommandRolesGet(USER), TIMEOUT);
       assertFalse(r.roles().contains(role));
     }
   }
@@ -519,44 +486,51 @@ public final class CAClientIT
     this.login(new IdName("someone-admin"));
 
     final var id = CALocationID.random();
-    this.client.executeOrElseThrow(new CAICommandLocationPut(
+    this.client.sendAndWaitOrThrow(new CAICommandLocationPut(
       new CALocation(
         id,
         Optional.empty(),
-        "Location 0",
+        CALocationPath.singleton("Location 0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
       )
-    ));
+    ), TIMEOUT);
 
     final var meta0 =
-      new CAMetadataType.Text(new RDottedName("a.b0"), "x");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("z:a.b0"), "x");
     final var meta1 =
-      new CAMetadataType.Text(new RDottedName("a.b1"), "y");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("z:a.b1"), "y");
     final var meta2 =
-      new CAMetadataType.Text(new RDottedName("a.b2"), "z");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("z:a.b2"), "z");
 
-    this.client.executeOrElseThrow(
-      new CAICommandLocationMetadataPut(id, Set.of(meta0, meta1, meta2))
+    this.client.sendAndWaitOrThrow(
+      new CAICommandLocationMetadataPut(id, Set.of(meta0, meta1, meta2)),
+      TIMEOUT
     );
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+        this.client.sendAndWaitOrThrow(new CAICommandLocationGet(id), TIMEOUT);
       final var m = r.data().metadata();
       assertEquals(meta0, m.get(meta0.name()));
       assertEquals(meta1, m.get(meta1.name()));
       assertEquals(meta2, m.get(meta2.name()));
     }
 
-    this.client.executeOrElseThrow(
-      new CAICommandLocationMetadataRemove(id, Set.of(meta1.name()))
+    this.client.sendAndWaitOrThrow(
+      new CAICommandLocationMetadataRemove(id, Set.of(meta1.name())),
+      TIMEOUT
     );
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+        this.client.sendAndWaitOrThrow(new CAICommandLocationGet(id), TIMEOUT);
       final var m = r.data().metadata();
       assertEquals(meta0, m.get(meta0.name()));
       assertNull(m.get(meta1.name()));
@@ -586,50 +560,56 @@ public final class CAClientIT
       );
 
     final var fileId =
-      this.client.fileUploadOrThrow(
-        CAFileID.random(),
-        file,
-        "text/plain",
-        "A file",
-        stats -> {
-        }
-      );
+      CAFileID.random();
+
+    this.client.fileUpload(
+      fileId,
+      file,
+      "text/plain",
+      "A file",
+      stats -> {
+      }
+    );
 
     final var fileData =
-      this.client.executeOrElseThrow(new CAICommandFileGet(fileId))
+      this.client.sendAndWaitOrThrow(new CAICommandFileGet(fileId), TIMEOUT)
         .data();
 
     final var id = CALocationID.random();
-    this.client.executeOrElseThrow(new CAICommandLocationPut(
+    this.client.sendAndWaitOrThrow(new CAICommandLocationPut(
       new CALocation(
         id,
         Optional.empty(),
-        "Location 0",
+        CALocationPath.singleton("Location 0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
       )
-    ));
+    ), TIMEOUT);
 
-    this.client.executeOrElseThrow(
-      new CAICommandLocationAttachmentAdd(id, fileId, "text")
+    this.client.sendAndWaitOrThrow(
+      new CAICommandLocationAttachmentAdd(id, fileId, "text"),
+      TIMEOUT
     );
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+        this.client.sendAndWaitOrThrow(new CAICommandLocationGet(id), TIMEOUT);
       final var m = r.data().attachments();
       final var attach0 = new CAAttachment(fileData, "text");
       assertEquals(attach0, m.get(attach0.key()));
     }
 
-    this.client.executeOrElseThrow(
-      new CAICommandLocationAttachmentRemove(id, fileId, "text")
+    this.client.sendAndWaitOrThrow(
+      new CAICommandLocationAttachmentRemove(id, fileId, "text"),
+      TIMEOUT
     );
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandLocationGet(id));
+        this.client.sendAndWaitOrThrow(new CAICommandLocationGet(id), TIMEOUT);
       final var m = r.data().attachments();
       assertEquals(0, m.size());
     }
@@ -656,51 +636,151 @@ public final class CAClientIT
         StandardCharsets.UTF_8
       );
 
-    this.client.executeOrElseThrow(new CAICommandTypePackageInstall(text));
+    this.client.sendAndWaitOrThrow(
+      new CAICommandTypePackageInstall(text), TIMEOUT);
 
     {
       final var r =
-        this.client.executeOrElseThrow(new CAICommandTypePackageGetText(
+        this.client.sendAndWaitOrThrow(new CAICommandTypePackageGetText(
           new CATypePackageIdentifier(
             new RDottedName("com.io7m.example"),
-            Version.of(1,0,0)
+            Version.of(1, 0, 0)
           )
-        ));
+        ), TIMEOUT);
     }
 
     {
-      this.client.executeOrElseThrow(new CAICommandTypePackageSearchBegin(
+      this.client.sendAndWaitOrThrow(new CAICommandTypePackageSearchBegin(
         new CATypePackageSearchParameters(
           new CAComparisonFuzzyType.Anything<>(),
           100L
         )
-      ));
-      this.client.executeOrElseThrow(new CAICommandTypePackageSearchNext());
-      this.client.executeOrElseThrow(new CAICommandTypePackageSearchPrevious());
+      ), TIMEOUT);
+      this.client.sendAndWaitOrThrow(
+        new CAICommandTypePackageSearchNext(), TIMEOUT);
+      this.client.sendAndWaitOrThrow(
+        new CAICommandTypePackageSearchPrevious(), TIMEOUT);
     }
 
     {
       final var r =
-        this.client.executeOrElseThrow(
+        this.client.sendAndWaitOrThrow(
           new CAICommandTypePackageUninstall(
             new CATypePackageUninstall(
               CATypePackageTypeRemovalBehavior.TYPE_REMOVAL_FAIL_IF_TYPES_REFERENCED,
               new CATypePackageIdentifier(
                 new RDottedName("com.io7m.example"),
-                Version.of(1,0,0)
+                Version.of(1, 0, 0)
               )
             )
-          )
+          ), TIMEOUT
         );
     }
+  }
+
+  /**
+   * Transactions are transactional.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTransactionWorkflow0(
+    final @TempDir Path directory)
+    throws Exception
+  {
+    this.login(new IdName("someone-admin"));
+
+    final var id0 = CAItemID.random();
+    final var id1 = CAItemID.random();
+    final var id2 = CAItemID.random();
+    final var id3 = CAItemID.random();
+    final var id4 = CAItemID.random();
+    final var id5 = CAItemID.random();
+
+    /*
+     * The first three items exist as the transaction completes.
+     */
+
+    this.client.transaction(
+      List.of(
+        new CAICommandItemCreate(id0, "Item 0"),
+        new CAICommandItemCreate(id1, "Item 1"),
+        new CAICommandItemCreate(id2, "Item 2")
+      )
+    );
+
+    this.client.sendAndWaitOrThrow(new CAICommandItemGet(id0), TIMEOUT);
+    this.client.sendAndWaitOrThrow(new CAICommandItemGet(id1), TIMEOUT);
+    this.client.sendAndWaitOrThrow(new CAICommandItemGet(id2), TIMEOUT);
+
+    /*
+     * None of the other items exist.
+     */
+
+    assertEquals(
+      errorNonexistent(),
+      assertThrows(CAClientException.class, () -> {
+        this.client.sendAndWaitOrThrow(new CAICommandItemGet(id3), TIMEOUT);
+      }).errorCode()
+    );
+
+    assertEquals(
+      errorNonexistent(),
+      assertThrows(CAClientException.class, () -> {
+        this.client.sendAndWaitOrThrow(new CAICommandItemGet(id4), TIMEOUT);
+      }).errorCode()
+    );
+
+    assertEquals(
+      errorNonexistent(),
+      assertThrows(CAClientException.class, () -> {
+        this.client.sendAndWaitOrThrow(new CAICommandItemGet(id5), TIMEOUT);
+      }).errorCode()
+    );
+
+    /*
+     * The next three items aren't created because the last command in
+     * the transaction fails.
+     */
+
+    this.client.transaction(
+      List.of(
+        new CAICommandItemCreate(id3, "Item 3"),
+        new CAICommandItemCreate(id4, "Item 4"),
+        new CAICommandItemCreate(id5, "Item 5"),
+        new CAICommandDebugInvalid()
+      )
+    );
+
+    assertEquals(
+      errorNonexistent(),
+      assertThrows(CAClientException.class, () -> {
+        this.client.sendAndWaitOrThrow(new CAICommandItemGet(id3), TIMEOUT);
+      }).errorCode()
+    );
+
+    assertEquals(
+      errorNonexistent(),
+      assertThrows(CAClientException.class, () -> {
+        this.client.sendAndWaitOrThrow(new CAICommandItemGet(id4), TIMEOUT);
+      }).errorCode()
+    );
+
+    assertEquals(
+      errorNonexistent(),
+      assertThrows(CAClientException.class, () -> {
+        this.client.sendAndWaitOrThrow(new CAICommandItemGet(id5), TIMEOUT);
+      }).errorCode()
+    );
   }
 
   private void login(
     final IdName userName)
     throws CAClientException, InterruptedException
   {
-    this.client.loginOrElseThrow(
-      new CAClientCredentials(
+    this.client.connectOrThrow(
+      new CAClientConnectionParameters(
         this.server.server()
           .inventoryAPI()
           .getHost(),
@@ -710,9 +790,10 @@ public final class CAClientIT
         false,
         userName,
         "12345678",
-        Map.of()
-      ),
-      CAClientException::ofError
+        Map.of(),
+        Duration.ofSeconds(30L),
+        Duration.ofSeconds(30L)
+      )
     );
   }
 }

@@ -17,15 +17,18 @@
 package com.io7m.cardant.protocol.inventory;
 
 import com.io7m.cardant.protocol.api.CAProtocolMessageType;
+import com.io7m.hibiscus.api.HBMessageType;
 
 /**
  * The type of messages in the Inventory protocol.
  */
 
 public sealed interface CAIMessageType
-  extends CAProtocolMessageType permits CAICommandType,
+  extends CAProtocolMessageType, HBMessageType
+  permits CAICommandType,
   CAIEventType,
-  CAIResponseType
+  CAIResponseType,
+  CAITransactionResponse
 {
 
 }

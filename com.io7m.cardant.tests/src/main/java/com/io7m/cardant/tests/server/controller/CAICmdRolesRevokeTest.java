@@ -189,8 +189,6 @@ public final class CAICmdRolesRevokeTest
     /* Assert. */
 
     verify(transaction)
-      .setUserId(any());
-    verify(transaction)
       .queries(CADatabaseQueriesUsersType.GetType.class);
     verify(transaction)
       .queries(CADatabaseQueriesUsersType.PutType.class);
@@ -258,8 +256,6 @@ public final class CAICmdRolesRevokeTest
 
     /* Assert. */
 
-    verify(transaction)
-      .setUserId(any());
     verify(transaction)
       .queries(CADatabaseQueriesUsersType.GetType.class);
     verify(transaction)

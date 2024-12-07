@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="6a5e17a4-ad0b-30d1-b643-41e8cc15f317" title="stock-reposit-set-add" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-reposit-set-add</Term>
+       - Add stock instances to locations.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-reposit-set-add</Term>
+       command adds more items to existing set stock instances.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-reposit-set-add-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-reposit-set-add \
+  --instance 3cb641ac-182f-4f44-98f6-a3e0fe752297 \
+  --count 100
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

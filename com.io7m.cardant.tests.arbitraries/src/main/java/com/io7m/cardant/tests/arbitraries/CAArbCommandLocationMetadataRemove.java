@@ -16,12 +16,13 @@
 package com.io7m.cardant.tests.arbitraries;
 
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataRemove;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
-public final class CAArbCommandLocationMetadataRemove extends CAArbAbstract<CAICommandLocationMetadataRemove>
+public final class CAArbCommandLocationMetadataRemove
+  extends CAArbAbstract<CAICommandLocationMetadataRemove>
 {
   public CAArbCommandLocationMetadataRemove()
   {
@@ -29,7 +30,7 @@ public final class CAArbCommandLocationMetadataRemove extends CAArbAbstract<CAIC
       CAICommandLocationMetadataRemove.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.defaultFor(RDottedName.class).set()
+        Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class).set()
       ).as(CAICommandLocationMetadataRemove::new)
     );
   }

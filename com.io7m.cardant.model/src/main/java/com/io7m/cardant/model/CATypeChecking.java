@@ -21,7 +21,6 @@ import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.strings.CAStringConstants;
 import com.io7m.cardant.strings.CAStrings;
-import com.io7m.lanark.core.RDottedName;
 import com.io7m.seltzer.api.SStructuredError;
 
 import java.util.ArrayList;
@@ -117,7 +116,12 @@ public final class CATypeChecking
         continue;
       }
 
-      this.checkTypeValue(errors, field.type(), foundMetaOpt.get());
+      this.checkTypeValue(
+        errors,
+        typeDeclaration,
+        field.type(),
+        foundMetaOpt.get()
+      );
     }
 
     return errors;
@@ -125,15 +129,16 @@ public final class CATypeChecking
 
   private void checkTypeValue(
     final ArrayList<SStructuredError<CAErrorCode>> errors,
+    final CATypeRecord recordType,
     final CATypeScalarType type,
     final CAMetadataType meta)
   {
     if (type instanceof final CATypeScalarType.Integral typeT
-      && meta instanceof final CAMetadataType.Integral metaT) {
+        && meta instanceof final CAMetadataType.Integral metaT) {
       if (!typeT.isValid(metaT.value())) {
         errors.add(
           this.errorFieldInvalid(
-            type.name(),
+            recordType.name(),
             meta.name(),
             type.name(),
             type.showConstraint(),
@@ -145,11 +150,11 @@ public final class CATypeChecking
     }
 
     if (type instanceof final CATypeScalarType.Monetary typeT
-      && meta instanceof final CAMetadataType.Monetary metaT) {
+        && meta instanceof final CAMetadataType.Monetary metaT) {
       if (!typeT.isValid(metaT.value())) {
         errors.add(
           this.errorFieldInvalid(
-            type.name(),
+            recordType.name(),
             meta.name(),
             type.name(),
             type.showConstraint(),
@@ -161,11 +166,11 @@ public final class CATypeChecking
     }
 
     if (type instanceof final CATypeScalarType.Real typeT
-      && meta instanceof final CAMetadataType.Real metaT) {
+        && meta instanceof final CAMetadataType.Real metaT) {
       if (!typeT.isValid(metaT.value())) {
         errors.add(
           this.errorFieldInvalid(
-            type.name(),
+            recordType.name(),
             meta.name(),
             type.name(),
             type.showConstraint(),
@@ -177,11 +182,11 @@ public final class CATypeChecking
     }
 
     if (type instanceof final CATypeScalarType.Time typeT
-      && meta instanceof final CAMetadataType.Time metaT) {
+        && meta instanceof final CAMetadataType.Time metaT) {
       if (!typeT.isValid(metaT.value())) {
         errors.add(
           this.errorFieldInvalid(
-            type.name(),
+            recordType.name(),
             meta.name(),
             type.name(),
             type.showConstraint(),
@@ -193,11 +198,11 @@ public final class CATypeChecking
     }
 
     if (type instanceof final CATypeScalarType.Text typeT
-      && meta instanceof final CAMetadataType.Text metaT) {
+        && meta instanceof final CAMetadataType.Text metaT) {
       if (!typeT.isValid(metaT.value())) {
         errors.add(
           this.errorFieldInvalid(
-            type.name(),
+            recordType.name(),
             meta.name(),
             type.name(),
             type.showConstraint(),
@@ -210,7 +215,7 @@ public final class CATypeChecking
 
     errors.add(
       this.errorFieldInvalidUnknown(
-        type.name(),
+        recordType.name(),
         meta.name(),
         type.showConstraint(),
         meta.valueString()
@@ -219,8 +224,8 @@ public final class CATypeChecking
   }
 
   private SStructuredError<CAErrorCode> errorFieldInvalidUnknown(
-    final RDottedName typeName,
-    final RDottedName fieldName,
+    final CATypeRecordIdentifier typeName,
+    final CATypeRecordFieldIdentifier fieldName,
     final String constraint,
     final String value)
   {
@@ -228,8 +233,8 @@ public final class CATypeChecking
       CAStandardErrorCodes.errorTypeCheckFieldInvalid(),
       this.strings.format(CAStringConstants.ERROR_TYPE_FIELD_INVALID),
       Map.ofEntries(
-        Map.entry("Type", typeName.value()),
-        Map.entry("Field", fieldName.value()),
+        Map.entry("Type", typeName.toString()),
+        Map.entry("Field", fieldName.toString()),
         Map.entry("Constraint", constraint),
         Map.entry("Value", value)
       ),
@@ -239,9 +244,9 @@ public final class CATypeChecking
   }
 
   private SStructuredError<CAErrorCode> errorFieldInvalid(
-    final RDottedName typeName,
-    final RDottedName fieldName,
-    final RDottedName fieldTypeName,
+    final CATypeRecordIdentifier typeName,
+    final CATypeRecordFieldIdentifier fieldName,
+    final CATypeScalarIdentifier fieldTypeName,
     final String constraint,
     final String value)
   {
@@ -249,9 +254,9 @@ public final class CATypeChecking
       CAStandardErrorCodes.errorTypeCheckFieldInvalid(),
       this.strings.format(CAStringConstants.ERROR_TYPE_FIELD_INVALID),
       Map.ofEntries(
-        Map.entry("Type", typeName.value()),
-        Map.entry("Field", fieldName.value()),
-        Map.entry("Field Type", fieldTypeName.value()),
+        Map.entry("Type", typeName.toString()),
+        Map.entry("Field", fieldName.toString()),
+        Map.entry("Field Type", fieldTypeName.toString()),
         Map.entry("Constraint", constraint),
         Map.entry("Value", value)
       ),
@@ -261,15 +266,15 @@ public final class CATypeChecking
   }
 
   private SStructuredError<CAErrorCode> errorFieldRequiredMissing(
-    final RDottedName typeName,
-    final RDottedName fieldName)
+    final CATypeRecordIdentifier typeName,
+    final CATypeRecordFieldIdentifier fieldName)
   {
     return new SStructuredError<>(
       CAStandardErrorCodes.errorTypeCheckFieldRequiredMissing(),
       this.strings.format(CAStringConstants.ERROR_TYPE_MISSING_REQUIRED_FIELD),
       Map.ofEntries(
-        Map.entry("Type", typeName.value()),
-        Map.entry("Field", fieldName.value())
+        Map.entry("Type", typeName.toString()),
+        Map.entry("Field", fieldName.toString())
       ),
       Optional.empty(),
       Optional.empty()

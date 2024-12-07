@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="95637586-2fab-3b1e-883b-46f825e298da" title="stock-reposit-serial-number-add" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-reposit-serial-number-add</Term>
+       - Add a serial number to a stock instance.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-reposit-serial-number-add</Term>
+       command adds serial numbers to a serial stock instance.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-reposit-serial-number-add-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-reposit-serial-number-add \
+  --instance 3cb641ac-182f-4f44-98f6-a3e0fe752297 \
+  --serial manufacturer_serial:33CBE10A
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

@@ -33,8 +33,8 @@ import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -118,21 +118,13 @@ public final class CAICmdItemAttachmentAddTest
     final var transaction =
       this.transaction();
 
-    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
-      .thenReturn(itemGet);
     when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class))
       .thenReturn(itemAdd);
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+      .thenReturn(itemGet);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -164,11 +156,9 @@ public final class CAICmdItemAttachmentAddTest
       .queries(CADatabaseQueriesItemsType.ItemGetType.class);
     verify(transaction)
       .queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(itemAdd)
       .execute(new Parameters(ITEM_ID, FILE_ID, "x"));
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -190,11 +180,19 @@ public final class CAICmdItemAttachmentAddTest
 
     final var items =
       mock(CADatabaseQueriesItemsType.ItemAttachmentAddType.class);
+    final var get =
+      mock(CADatabaseQueriesItemsType.ItemGetType.class);
+
     final var transaction =
       this.transaction();
 
+    when(transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class))
+      .thenReturn(get);
     when(transaction.queries(CADatabaseQueriesItemsType.ItemAttachmentAddType.class))
       .thenReturn(items);
+
+    when(get.execute(any()))
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(new CADatabaseException(
       "X",

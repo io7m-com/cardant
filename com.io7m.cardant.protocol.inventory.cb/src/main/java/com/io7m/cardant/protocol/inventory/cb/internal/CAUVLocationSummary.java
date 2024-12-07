@@ -18,12 +18,15 @@
 package com.io7m.cardant.protocol.inventory.cb.internal;
 
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationName;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1LocationSummary;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
-import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
+import com.io7m.cedarbridge.runtime.convenience.CBLists;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 /**
  * A validator.
@@ -45,7 +48,15 @@ public enum CAUVLocationSummary
     return new CAI1LocationSummary(
       new CBUUID(message.id().id()),
       CBOptionType.fromOptional(message.parent().map(x -> new CBUUID(x.id()))),
-      new CBString(message.name())
+      CBLists.ofCollectionString(
+        message.path()
+          .path()
+          .stream()
+          .map(CALocationName::value)
+          .toList()
+      ),
+      new CBOffsetDateTime(message.timeCreated()),
+      new CBOffsetDateTime(message.timeUpdated())
     );
   }
 
@@ -58,7 +69,14 @@ public enum CAUVLocationSummary
       message.fieldParent()
         .asOptional()
         .map(x -> new CALocationID(x.value())),
-      message.fieldName().value()
+      new CALocationPath(
+        CBLists.toList(
+          message.fieldPath(),
+          s -> new CALocationName(s.value())
+        )
+      ),
+      message.fieldCreated().value(),
+      message.fieldUpdated().value()
     );
   }
 }

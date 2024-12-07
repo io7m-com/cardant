@@ -38,9 +38,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_PARSE;
 import static com.io7m.cardant.strings.CAStringConstants.OFFSET;
@@ -50,7 +52,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * The base type of expression parsers.
  */
 
-public abstract class CAExpressions
+public abstract class CAExpressions implements CASyntaxType
 {
   private static final JSXLexerConfiguration LEXER_CONFIG =
     new JSXLexerConfiguration(
@@ -65,6 +67,11 @@ public abstract class CAExpressions
     new JSXParserConfiguration(true);
 
   private final CAStrings strings;
+
+  protected final CAStrings strings()
+  {
+    return this.strings;
+  }
 
   protected CAExpressions(
     final CAStrings inStrings)
@@ -155,18 +162,10 @@ public abstract class CAExpressions
     }
   }
 
-  protected abstract Map<CAStringConstantType, CAStringConstantType> syntax();
-
   protected final CAException createParseError(
     final SExpressionType expression)
   {
     final var m = new HashMap<String, String>();
-    for (final var entry : this.syntax().entrySet()) {
-      m.put(
-        this.strings.format(entry.getKey()),
-        this.strings.format(entry.getValue())
-      );
-    }
     m.put(
       this.strings.format(OFFSET),
       Integer.toString(expression.lexical().column())
@@ -185,12 +184,6 @@ public abstract class CAExpressions
     final Exception e)
   {
     final var m = new HashMap<String, String>();
-    for (final var entry : this.syntax().entrySet()) {
-      m.put(
-        this.strings.format(entry.getKey()),
-        this.strings.format(entry.getValue())
-      );
-    }
     m.put(
       this.strings.format(OFFSET),
       Integer.toString(expression.lexical().column())
@@ -202,6 +195,47 @@ public abstract class CAExpressions
       CAStandardErrorCodes.errorParse(),
       m,
       Optional.empty()
+    );
+  }
+
+  protected final CASyntaxRuleType ruleLeaf(
+    final CAStringConstantType name,
+    final CAStringConstantType text)
+  {
+    return new CASyntaxRuleLeaf(
+      this.strings.format(name),
+      this.strings.format(text),
+      List.of()
+    );
+  }
+
+  protected final CASyntaxRuleType ruleLeafWithExamples(
+    final CAStringConstantType name,
+    final CAStringConstantType text,
+    final List<CAStringConstantType> examples)
+  {
+    return new CASyntaxRuleLeaf(
+      this.strings.format(name),
+      this.strings.format(text),
+      examples.stream()
+        .map(this.strings::format)
+        .collect(Collectors.toList())
+    );
+  }
+
+  protected final CASyntaxRuleType ruleBranch(
+    final CAStringConstantType name,
+    final List<CAStringConstantType> subRules,
+    final List<CAStringConstantType> examples)
+  {
+    return new CASyntaxRuleBranch(
+      this.strings.format(name),
+      subRules.stream()
+        .map(this.strings::format)
+        .collect(Collectors.toList()),
+      examples.stream()
+        .map(this.strings::format)
+        .collect(Collectors.toList())
     );
   }
 }

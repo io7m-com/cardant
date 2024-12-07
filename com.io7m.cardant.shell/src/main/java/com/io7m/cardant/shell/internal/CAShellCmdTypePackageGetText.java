@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageGetText;
@@ -117,12 +116,12 @@ public final class CAShellCmdTypePackageGetText
       context.parameterValue(OUTPUT);
 
     final var text =
-      ((CAIResponseTypePackageGetText) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandTypePackageGetText(
           new CATypePackageIdentifier(packName, packVersion)
         ),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     if (outputFile.isEmpty()) {
       this.formatter().printLine(text);

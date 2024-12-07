@@ -21,29 +21,28 @@ import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
+import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
 import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
-import com.io7m.cardant.protocol.inventory.CAICommandFileRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandItemAttachmentRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
+import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
-import com.io7m.cardant.protocol.inventory.CAICommandItemLocationsList;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.CAICommandItemReposit;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
-import com.io7m.cardant.protocol.inventory.CAICommandItemsRemove;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentAdd;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.CAICommandLocationDelete;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationMetadataPut;
@@ -55,6 +54,11 @@ import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesAssign;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesGet;
 import com.io7m.cardant.protocol.inventory.CAICommandRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAICommandStockCount;
+import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchBegin;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchNext;
+import com.io7m.cardant.protocol.inventory.CAICommandStockSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageGetText;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageInstall;
@@ -63,14 +67,6 @@ import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchNext;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUpgrade;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordGet;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordSearchNext;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeRecordSearchPrevious;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarGet;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchNext;
-import com.io7m.cardant.protocol.inventory.CAICommandTypeScalarSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutorType;
@@ -106,6 +102,7 @@ public final class CAICommandExecutor
         .startSpan();
 
     try (var ignored = span.makeCurrent()) {
+      context.transaction().setUserId(context.session().userId());
       return executeCommand(context, command);
     } catch (final Throwable e) {
       span.recordException(e);
@@ -124,8 +121,8 @@ public final class CAICommandExecutor
       case final CAICommandFilePut m -> {
         yield new CAICmdFilePut().execute(context, m);
       }
-      case final CAICommandFileRemove m -> {
-        yield new CAICmdFileRemove().execute(context, m);
+      case final CAICommandFileDelete m -> {
+        yield new CAICmdFileDelete().execute(context, m);
       }
       case final CAICommandItemAttachmentAdd m -> {
         yield new CAICmdItemAttachmentAdd().execute(context, m);
@@ -139,20 +136,14 @@ public final class CAICommandExecutor
       case final CAICommandItemGet m -> {
         yield new CAICmdItemGet().execute(context, m);
       }
-      case final CAICommandItemLocationsList m -> {
-        yield new CAICmdItemLocationsList().execute(context, m);
-      }
       case final CAICommandItemMetadataPut m -> {
         yield new CAICmdItemMetadataPut().execute(context, m);
       }
       case final CAICommandItemMetadataRemove m -> {
         yield new CAICmdItemMetadataRemove().execute(context, m);
       }
-      case final CAICommandItemReposit m -> {
-        yield new CAICmdItemReposit().execute(context, m);
-      }
-      case final CAICommandItemsRemove m -> {
-        yield new CAICmdItemsRemove().execute(context, m);
+      case final CAICommandStockReposit m -> {
+        yield new CAICmdStockReposit().execute(context, m);
       }
       case final CAICommandItemSetName m -> {
         yield new CAICmdItemSetName().execute(context, m);
@@ -195,30 +186,6 @@ public final class CAICommandExecutor
       }
       case final CAICommandFileGet m -> {
         yield new CAICmdFileGet().execute(context, m);
-      }
-      case final CAICommandTypeScalarSearchNext m -> {
-        yield new CAICmdTypeScalarSearchNext().execute(context, m);
-      }
-      case final CAICommandTypeScalarSearchPrevious m -> {
-        yield new CAICmdTypeScalarSearchPrevious().execute(context, m);
-      }
-      case final CAICommandTypeScalarSearchBegin m -> {
-        yield new CAICmdTypeScalarSearchBegin().execute(context, m);
-      }
-      case final CAICommandTypeScalarGet m -> {
-        yield new CAICmdTypeScalarGet().execute(context, m);
-      }
-      case final CAICommandTypeRecordSearchNext m -> {
-        yield new CAICmdTypeRecordSearchNext().execute(context, m);
-      }
-      case final CAICommandTypeRecordSearchPrevious m -> {
-        yield new CAICmdTypeRecordSearchPrevious().execute(context, m);
-      }
-      case final CAICommandTypeRecordSearchBegin m -> {
-        yield new CAICmdTypeRecordSearchBegin().execute(context, m);
-      }
-      case final CAICommandTypeRecordGet m -> {
-        yield new CAICmdTypeRecordGet().execute(context, m);
       }
       case final CAICommandItemTypesAssign m -> {
         yield new CAICmdItemTypesAssign().execute(context, m);
@@ -282,6 +249,24 @@ public final class CAICommandExecutor
       }
       case final CAICommandTypePackageUpgrade m -> {
         yield new CAICmdTypePackageUpgrade().execute(context, m);
+      }
+      case final CAICommandItemDelete m -> {
+        yield new CAICmdItemDelete().execute(context, m);
+      }
+      case final CAICommandLocationDelete m -> {
+        yield new CAICmdLocationDelete().execute(context, m);
+      }
+      case final CAICommandStockCount m -> {
+        yield new CAICmdStockCount().execute(context, m);
+      }
+      case final CAICommandStockSearchBegin m -> {
+        yield new CAICmdStockSearchBegin().execute(context, m);
+      }
+      case final CAICommandStockSearchNext m -> {
+        yield new CAICmdStockSearchNext().execute(context, m);
+      }
+      case final CAICommandStockSearchPrevious m -> {
+        yield new CAICmdStockSearchPrevious().execute(context, m);
       }
     };
   }

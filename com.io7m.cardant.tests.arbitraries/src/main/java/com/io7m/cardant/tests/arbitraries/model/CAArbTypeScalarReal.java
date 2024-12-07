@@ -17,10 +17,9 @@
 
 package com.io7m.cardant.tests.arbitraries.model;
 
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType;
-import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -32,8 +31,7 @@ public final class CAArbTypeScalarReal
     super(
       CATypeScalarType.Real.class,
       () -> Combinators.combine(
-        Arbitraries.defaultFor(CATypePackageIdentifier.class),
-        Arbitraries.defaultFor(RDottedName.class),
+        Arbitraries.defaultFor(CATypeScalarIdentifier.class),
         Arbitraries.strings(),
         Arbitraries.doubles().lessOrEqual(0.0),
         Arbitraries.doubles().greaterOrEqual(0.0)

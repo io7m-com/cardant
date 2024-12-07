@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+  IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<Package xmlns="com.io7m.cardant:type_packages:1">
+
+  <PackageInfo Name="cardant.computer"
+               Version="${project.version}"
+               Description="Computers and parts."/>
+
+  <TypeScalarIntegral Name="bytes"
+                      Description="A size in bytes."
+                      RangeLower="0"
+                      RangeUpper="1000000000000000000"/>
+
+  <TypeScalarIntegral Name="hz"
+                      Description="A rate in hz."
+                      RangeLower="0"
+                      RangeUpper="1000000000000000000"/>
+
+  <TypeScalarReal Name="voltage"
+                  Description="A voltage requirement for memory."
+                  RangeLower="0"
+                  RangeUpper="1000"/>
+
+  <TypeScalarText Name="dram_cas_latency"
+                  Description="The column address strobe latency of DRAM."
+                  Pattern="([0-9]+)(-[0-9]+)*"/>
+
+  <TypeScalarText Name="dram_type"
+                  Description="The DRAM type."
+                  Pattern="[A-Z]+[0-9]+"/>
+
+  <TypeScalarText Name="cpu_socket_type"
+                  Description="The CPU socket type."
+                  Pattern=".*"/>
+
+  <TypeScalarText Name="disk_interface"
+                  Description="The disk interface."
+                  Pattern="SATA|M.2"/>
+
+  <TypeScalarText Name="disk_type"
+                  Description="The disk type."
+                  Pattern="Magnetic|SSD|NVMe"/>
+
+  <TypeScalarText Name="psu_form_factor"
+                  Description="The PSU form factor."
+                  Pattern="ATX|ATX_2U"/>
+
+  <TypeScalarIntegral Name="watts"
+                      Description="A watt rating."
+                      RangeLower="50"
+                      RangeUpper="10000"/>
+
+  <TypeRecord Name="dram"
+              Description="A DRAM module.">
+    <Field Name="size"
+           Description="The size of the DRAM."
+           Type="bytes"/>
+    <Field Name="speed"
+           Description="The speed of the DRAM."
+           Type="hz"/>
+    <Field Name="voltage"
+           Description="The voltage requirement for the DRAM."
+           Type="voltage"/>
+    <Field Name="cas_latency"
+           Description="The CAS latency for the DRAM."
+           Type="dram_cas_latency"
+           Required="false"/>
+    <Field Name="type"
+           Description="The DRAM type."
+           Type="dram_type"/>
+  </TypeRecord>
+
+  <TypeRecord Name="cpu"
+              Description="A CPU.">
+    <Field Name="speed"
+           Description="The speed of the CPU."
+           Type="hz"/>
+    <Field Name="voltage"
+           Description="The voltage requirement for the CPU."
+           Type="voltage"/>
+    <Field Name="socket_type"
+           Description="The CPU socket type."
+           Type="cpu_socket_type"/>
+  </TypeRecord>
+
+  <TypeRecord Name="disk"
+              Description="A disk.">
+    <Field Name="size"
+           Description="The size of the disk."
+           Type="bytes"/>
+    <Field Name="type"
+           Description="The type of the disk."
+           Type="disk_type"/>
+    <Field Name="interface"
+           Description="The interface of the disk."
+           Type="disk_interface"/>
+  </TypeRecord>
+
+  <TypeRecord Name="psu"
+              Description="A PSU.">
+    <Field Name="watts"
+           Description="The PSU wattage."
+           Type="watts"/>
+    <Field Name="psu_form_factor"
+           Description="The form factor of the PSU."
+           Type="psu_form_factor"/>
+  </TypeRecord>
+
+  <TypeRecord Name="gpu"
+              Description="A GPU.">
+    <Field Name="vram_size"
+           Description="The size of the VRAM."
+           Type="bytes"/>
+  </TypeRecord>
+
+</Package>

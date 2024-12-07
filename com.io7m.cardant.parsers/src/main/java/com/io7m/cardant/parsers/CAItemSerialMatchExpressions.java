@@ -21,7 +21,6 @@ import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.cardant.model.CAItemSerialMatch;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -30,18 +29,22 @@ import com.io7m.jsx.SExpressionType.SListType;
 import com.io7m.jsx.SExpressionType.SQuotedString;
 import com.io7m.jsx.SExpressionType.SSymbol;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_ANYSERIAL;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_ANYSERIAL_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_WITH_SERIAL_EQUAL_TO;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_WITH_SERIAL_EQUAL_TO_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_WITH_SERIAL_NOT_EQUAL_TO;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_SERIAL_MATCH_WITH_SERIAL_NOT_EQUAL_TO_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for name match expressions.
@@ -49,19 +52,6 @@ import static java.util.Map.entry;
 
 public final class CAItemSerialMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_SERIAL_MATCH_ANYSERIAL_NAME,
-        SYNTAX_SERIAL_MATCH_ANYSERIAL),
-      entry(
-        SYNTAX_SERIAL_MATCH_WITH_SERIAL_EQUAL_TO_NAME,
-        SYNTAX_SERIAL_MATCH_WITH_SERIAL_EQUAL_TO),
-      entry(
-        SYNTAX_SERIAL_MATCH_WITH_SERIAL_NOT_EQUAL_TO_NAME,
-        SYNTAX_SERIAL_MATCH_WITH_SERIAL_NOT_EQUAL_TO)
-    );
-
   /**
    * Expression parsers for name match expressions.
    *
@@ -72,12 +62,6 @@ public final class CAItemSerialMatchExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -130,12 +114,12 @@ public final class CAItemSerialMatchExpressions extends CAExpressions
         yield switch (head.text().toUpperCase(Locale.ROOT)) {
           case "WITH-SERIAL-EQUAL-TO" -> {
             yield new CAComparisonExactType.IsEqualTo<>(
-              new CAItemSerial(value.text())
+              CAItemSerial.parse(value.text())
             );
           }
           case "WITH-SERIAL-NOT-EQUAL-TO" -> {
             yield new CAComparisonExactType.IsNotEqualTo<>(
-              new CAItemSerial(value.text())
+              CAItemSerial.parse(value.text())
             );
           }
           default -> {
@@ -189,7 +173,7 @@ public final class CAItemSerialMatchExpressions extends CAExpressions
           true,
           List.of(
             new SSymbol(zero(), "with-serial-equal-to"),
-            new SQuotedString(zero(), e.value().value())
+            new SQuotedString(zero(), e.value().toString())
           )
         );
       }
@@ -199,10 +183,56 @@ public final class CAItemSerialMatchExpressions extends CAExpressions
           true,
           List.of(
             new SSymbol(zero(), "with-serial-not-equal-to"),
-            new SQuotedString(zero(), e.value().value())
+            new SQuotedString(zero(), e.value().toString())
           )
         );
       }
     };
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_SERIAL_MATCH_NAME,
+        List.of(
+          SYNTAX_SERIAL_MATCH_ANYSERIAL_NAME,
+          SYNTAX_SERIAL_MATCH_WITH_SERIAL_EQUAL_TO_NAME,
+          SYNTAX_SERIAL_MATCH_WITH_SERIAL_NOT_EQUAL_TO_NAME
+        ),
+        List.of(
+          SYNTAX_SERIAL_MATCH_ANYSERIAL
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_SERIAL_MATCH_ANYSERIAL_NAME,
+        SYNTAX_SERIAL_MATCH_ANYSERIAL,
+        List.of(SYNTAX_SERIAL_MATCH_ANYSERIAL)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_SERIAL_MATCH_WITH_SERIAL_EQUAL_TO_NAME,
+        SYNTAX_SERIAL_MATCH_WITH_SERIAL_EQUAL_TO,
+        List.of(SYNTAX_SERIAL_MATCH_EXAMPLE_0)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_SERIAL_MATCH_WITH_SERIAL_NOT_EQUAL_TO_NAME,
+        SYNTAX_SERIAL_MATCH_WITH_SERIAL_NOT_EQUAL_TO,
+        List.of(SYNTAX_SERIAL_MATCH_EXAMPLE_1)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

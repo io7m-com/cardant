@@ -51,8 +51,6 @@ module com.io7m.cardant.server.basic
   requires com.io7m.cardant.type_packages.compilers;
   requires com.io7m.cardant.type_packages.parser.api;
   requires com.io7m.cardant.type_packages.parsers;
-  requires com.io7m.cardant.type_packages.upgrades.api;
-  requires com.io7m.cardant.type_packages.upgrades;
 
   requires com.io7m.jmulticlose.core;
   requires io.helidon.webserver;

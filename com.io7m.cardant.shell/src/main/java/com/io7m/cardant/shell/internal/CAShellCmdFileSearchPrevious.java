@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
@@ -75,10 +74,10 @@ public final class CAShellCmdFileSearchPrevious
       this.client();
 
     final var files =
-      ((CAIResponseFileSearch) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandFileSearchPrevious(),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatFilesPage(files);
     return SUCCESS;

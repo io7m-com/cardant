@@ -16,16 +16,19 @@
 
 package com.io7m.cardant.client.preferences.api;
 
+import java.time.Duration;
 import java.util.Objects;
 
 /**
  * A server bookmark.
  *
- * @param name        The bookmark name
- * @param host        The server host
- * @param port        The server port
- * @param isHTTPs     {@code true} if https is to be enabled
- * @param credentials The credentials
+ * @param name           The bookmark name
+ * @param host           The server host
+ * @param port           The server port
+ * @param isHTTPs        {@code true} if https is to be enabled
+ * @param credentials    The credentials
+ * @param loginTimeout   The login timeout
+ * @param commandTimeout The command timeout
  */
 
 public record CAPreferenceServerBookmark(
@@ -33,6 +36,8 @@ public record CAPreferenceServerBookmark(
   String host,
   int port,
   boolean isHTTPs,
+  Duration loginTimeout,
+  Duration commandTimeout,
   CAPreferenceServerCredentialsType credentials)
 {
   /**
@@ -44,5 +49,7 @@ public record CAPreferenceServerBookmark(
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(host, "host");
     Objects.requireNonNull(credentials, "credentials");
+    Objects.requireNonNull(loginTimeout, "loginTimeout");
+    Objects.requireNonNull(commandTimeout, "commandTimeout");
   }
 }

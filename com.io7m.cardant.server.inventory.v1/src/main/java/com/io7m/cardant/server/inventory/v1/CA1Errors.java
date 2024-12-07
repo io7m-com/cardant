@@ -18,15 +18,20 @@
 package com.io7m.cardant.server.inventory.v1;
 
 import com.io7m.cardant.error_codes.CAException;
+import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
 import com.io7m.cardant.server.http.CAHTTPRequestInformation;
 import com.io7m.cardant.server.http.CAHTTPResponseFixedSize;
 import com.io7m.cardant.server.http.CAHTTPResponseType;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,6 +67,33 @@ public final class CA1Errors
       exception.errorCode(),
       exception.attributes(),
       exception.remediatingAction(),
+      Optional.of(exception),
+      blame,
+      List.of()
+    );
+  }
+
+  /**
+   * Transform an exception into an error response.
+   *
+   * @param information The request information
+   * @param blame       The blame assignment
+   * @param exception   The exception
+   *
+   * @return An error response
+   */
+
+  static CAIResponseError errorOf(
+    final CAHTTPRequestInformation information,
+    final CAIResponseBlame blame,
+    final IOException exception)
+  {
+    return new CAIResponseError(
+      information.requestID(),
+      Objects.requireNonNullElse(exception.getMessage(), exception.getClass().getName()),
+      CAStandardErrorCodes.errorIo(),
+      Map.of(),
+      Optional.empty(),
       Optional.of(exception),
       blame,
       List.of()
@@ -123,6 +155,35 @@ public final class CA1Errors
       Set.of(),
       CAI1Messages.contentType(),
       messages.serialize(errorOf(information, blame, exception))
+    );
+  }
+
+  /**
+   * Produce a transaction response type.
+   *
+   * @param messages A message serializer
+   * @param response The transaction response
+   *
+   * @return An error response
+   */
+
+  public static CAHTTPResponseType transactionResponseOf(
+    final CAI1Messages messages,
+    final CAITransactionResponse response)
+  {
+    return new CAHTTPResponseFixedSize(
+      response.firstError()
+        .map(e -> {
+          return switch (e.blame()) {
+            case BLAME_CLIENT -> Integer.valueOf(400);
+            case BLAME_SERVER -> Integer.valueOf(500);
+          };
+        })
+        .orElseGet(() -> Integer.valueOf(200))
+        .intValue(),
+      Set.of(),
+      CAI1Messages.contentTypeForSequence(),
+      messages.serialize(response)
     );
   }
 }

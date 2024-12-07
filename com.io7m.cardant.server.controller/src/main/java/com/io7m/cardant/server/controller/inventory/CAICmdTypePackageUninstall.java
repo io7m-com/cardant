@@ -60,9 +60,6 @@ public final class CAICmdTypePackageUninstall
 
     final var transaction =
       context.transaction();
-
-    transaction.setUserId(context.session().userId());
-
     final var uninstall =
       transaction.queries(TypePackageUninstallType.class);
     final var identifier =

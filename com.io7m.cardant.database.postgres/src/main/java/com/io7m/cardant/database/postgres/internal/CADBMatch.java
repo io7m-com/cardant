@@ -17,15 +17,16 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetCondition;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetIntersection;
 import com.io7m.cardant.database.postgres.internal.CADBMatch.QuerySetType.QuerySetUnion;
 import com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT;
-import com.io7m.cardant.model.CAItemLocationMatchType;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CAItemSerial;
+import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
+import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
+import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.IntegralMatchType;
@@ -34,9 +35,12 @@ import com.io7m.cardant.model.CAMetadataValueMatchType.RealMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TextMatchType;
 import com.io7m.cardant.model.CAMetadataValueMatchType.TimeMatchType;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
+import com.io7m.lanark.core.RDottedName;
 import org.jooq.Condition;
 import org.jooq.EnumType;
 import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
 import java.math.BigDecimal;
@@ -135,18 +139,22 @@ public final class CADBMatch
 
   static Condition ofLocationMatch(
     final LocationFields fields,
-    final CAItemLocationMatchType match)
+    final CALocationMatchType match)
   {
     return switch (match) {
-      case final CAItemLocationsAll e -> {
+      case final CALocationsAll e -> {
         yield DSL.trueCondition();
       }
-      case final CAItemLocationExact exact -> {
-        yield fields.locationId.eq(DSL.array(exact.location().id()));
-      }
-      case final CAItemLocationWithDescendants descendants -> {
+      case final CALocationExact exact -> {
         yield DSL.condition(
-          "? && (select array(select location_descendants(?)))",
+          "ARRAY[?] && ?",
+          exact.location().id(),
+          fields.locationId
+        );
+      }
+      case final CALocationWithDescendants descendants -> {
+        yield DSL.condition(
+          "? && (SELECT ARRAY(SELECT location_descendants(?)))",
           fields.locationId,
           descendants.location().id()
         );
@@ -154,14 +162,10 @@ public final class CADBMatch
     };
   }
 
-  record TypeFields(
-    Field<String[]> types)
-  {
-
-  }
-
   record MetaFields(
-    NameFields nameFields,
+    TableField<Record, String> packageNameField,
+    TableField<Record, String> typeNameField,
+    TableField<Record, String> fieldNameField,
     Field<EnumType> metaValueType,
     Field<Long> metaValueInteger,
     Field<Double> metaValueReal,
@@ -174,14 +178,8 @@ public final class CADBMatch
 
   }
 
-  record NameFields(
-    Field<String> name,
-    Field<?> nameSearch)
-  {
-
-  }
-
   static Condition ofMetaValueMatch(
+    final CADatabaseLanguage language,
     final MetaFields fields,
     final CAMetadataValueMatchType match)
   {
@@ -199,7 +197,7 @@ public final class CADBMatch
         yield ofMetaValueMatchReal(fields, realM);
       }
       case final TextMatchType textM -> {
-        yield ofMetaValueMatchText(fields, textM);
+        yield ofMetaValueMatchText(language, fields, textM);
       }
       case final TimeMatchType timeM -> {
         yield ofMetaValueMatchTime(fields, timeM);
@@ -208,30 +206,38 @@ public final class CADBMatch
   }
 
   static QuerySetType ofMetaElementMatch(
+    final CADatabaseLanguage language,
     final MetaFields fields,
     final CAMetadataElementMatchType match)
   {
     return switch (match) {
       case final CAMetadataElementMatchType.And and -> {
         yield new QuerySetIntersection(
-          ofMetaElementMatch(fields, and.e0()),
-          ofMetaElementMatch(fields, and.e1())
+          ofMetaElementMatch(language, fields, and.e0()),
+          ofMetaElementMatch(language, fields, and.e1())
         );
       }
       case final CAMetadataElementMatchType.Or or -> {
         yield new QuerySetUnion(
-          ofMetaElementMatch(fields, or.e0()),
-          ofMetaElementMatch(fields, or.e1())
+          ofMetaElementMatch(language, fields, or.e0()),
+          ofMetaElementMatch(language, fields, or.e1())
         );
       }
       case final CAMetadataElementMatchType.Specific specific -> {
         yield new QuerySetCondition(DSL.and(
-          CADBComparisons.createFuzzyMatchQuery(
-            specific.name(),
-            fields.nameFields.name,
-            fields.nameFields.nameSearch.getName()
+          CADBComparisons.createExactMatchQuery(
+            specific.packageName().map(RDottedName::value),
+            fields.packageNameField
           ),
-          ofMetaValueMatch(fields, specific.value())
+          CADBComparisons.createExactMatchQuery(
+            specific.typeName(),
+            fields.typeNameField
+          ),
+          CADBComparisons.createExactMatchQuery(
+            specific.fieldName(),
+            fields.fieldNameField
+          ),
+          ofMetaValueMatch(language, fields, specific.value())
         ));
       }
     };
@@ -260,6 +266,7 @@ public final class CADBMatch
   }
 
   private static Condition ofMetaValueMatchText(
+    final CADatabaseLanguage language,
     final MetaFields fields,
     final TextMatchType match)
   {
@@ -279,7 +286,7 @@ public final class CADBMatch
       return DSL.and(
         isType,
         DSL.condition(
-          "? @@ websearch_to_tsquery(?)",
+          "? @@ websearch_to_tsquery('%s', ?)".formatted(language),
           fields.metaValueTextSearch,
           DSL.inline(search.query())
         )

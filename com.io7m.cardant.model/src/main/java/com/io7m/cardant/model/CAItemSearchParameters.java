@@ -16,33 +16,29 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
-import com.io7m.lanark.core.RDottedName;
 
 import java.util.Objects;
 
 /**
  * The immutable parameters required to search items.
  *
- * @param locationMatch    The item location search behaviour
  * @param nameMatch        The name match expression
  * @param descriptionMatch The description match expression
  * @param typeMatch        The type match expression
- * @param serialMatch      The serial number match expression
  * @param metadataMatch    The metadata match expression
  * @param ordering         The ordering specification
+ * @param includeDeleted   Whether to include deleted data
  * @param pageSize         The page size
  */
 
 public record CAItemSearchParameters(
-  CAItemLocationMatchType locationMatch,
   CAComparisonFuzzyType<String> nameMatch,
   CAComparisonFuzzyType<String> descriptionMatch,
-  CAComparisonSetType<RDottedName> typeMatch,
-  CAComparisonExactType<CAItemSerial> serialMatch,
+  CAComparisonSetType<CATypeRecordIdentifier> typeMatch,
   CAMetadataElementMatchType metadataMatch,
+  CAIncludeDeleted includeDeleted,
   CAItemColumnOrdering ordering,
   long pageSize)
   implements CASearchParametersType
@@ -50,24 +46,22 @@ public record CAItemSearchParameters(
   /**
    * The immutable parameters required to search items.
    *
-   * @param locationMatch    The location match expression
    * @param nameMatch        The name match expression
    * @param descriptionMatch The description match expression
    * @param typeMatch        The type match expression
-   * @param serialMatch      The serial number match expression
    * @param metadataMatch    The metadata match expression
+   * @param includeDeleted   Whether to include deleted data
    * @param ordering         The ordering specification
    * @param pageSize         The page size
    */
 
   public CAItemSearchParameters
   {
-    Objects.requireNonNull(locationMatch, "locationMatch");
     Objects.requireNonNull(typeMatch, "typeMatch");
     Objects.requireNonNull(nameMatch, "nameMatch");
     Objects.requireNonNull(descriptionMatch, "descriptionMatch");
     Objects.requireNonNull(metadataMatch, "metadataMatch");
-    Objects.requireNonNull(serialMatch, "serialMatch");
+    Objects.requireNonNull(includeDeleted, "includeDeleted");
     Objects.requireNonNull(ordering, "ordering");
     pageSize = CAPageSizes.clampPageSize(pageSize);
   }

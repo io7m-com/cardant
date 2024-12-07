@@ -1,0 +1,16 @@
+[cardant]$ syntax-show --rule metadata-type-match
+metadata-type-match :=
+  metadata-type-any
+  | metadata-type-equal-to
+  | metadata-type-not-equal-to
+metadata-type-any :=
+  with-any-type
+metadata-type-equal-to :=
+  (with-type-equal-to <type>)
+metadata-type-not-equal-to :=
+  (with-type-not-equal-to <type>)
+
+[cardant]$ syntax-show --rule metadata-type-match --example true
+[with-type-equal-to "com.io7m:t"]
+
+[with-type-not-equal-to "com.io7m:t"]

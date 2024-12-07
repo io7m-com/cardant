@@ -17,7 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType.LocationGetType;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -57,7 +57,7 @@ public final class CAICmdLocationGet extends CAICmdAbstract<CAICommandLocationGe
 
     final var get =
       context.transaction()
-        .queries(CADatabaseQueriesLocationsType.LocationGetType.class);
+        .queries(LocationGetType.class);
 
     final var locationID =
       command.id();

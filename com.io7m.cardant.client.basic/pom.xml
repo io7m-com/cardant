@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.cardant</artifactId>
     <groupId>com.io7m.cardant</groupId>
-    <version>0.0.2</version>
+    <version>1.0.0-beta0001</version>
   </parent>
   <artifactId>com.io7m.cardant.client.basic</artifactId>
 
@@ -64,16 +64,8 @@
       <artifactId>com.io7m.hibiscus.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.io7m.hibiscus</groupId>
-      <artifactId>com.io7m.hibiscus.basic</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.junreachable</groupId>
-      <artifactId>com.io7m.junreachable.core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.io7m.genevan</groupId>

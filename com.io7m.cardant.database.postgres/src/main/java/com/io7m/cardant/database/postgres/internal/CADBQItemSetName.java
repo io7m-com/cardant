@@ -80,6 +80,7 @@ public final class CADBQItemSetName
     final var updated =
       context.update(ITEMS)
         .set(ITEMS.ITEM_NAME, parameters.name())
+        .set(ITEMS.ITEM_UPDATED, this.now())
         .where(ITEMS.ITEM_ID.eq(parameters.item().id()))
         .execute();
 

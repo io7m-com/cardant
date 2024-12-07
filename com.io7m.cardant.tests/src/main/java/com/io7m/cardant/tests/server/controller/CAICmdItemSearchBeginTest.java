@@ -19,15 +19,14 @@ package com.io7m.cardant.tests.server.controller;
 
 import com.io7m.cardant.database.api.CADatabaseItemSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.model.CAIncludeDeleted;
 import com.io7m.cardant.model.CAItemColumn;
 import com.io7m.cardant.model.CAItemColumnOrdering;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemLocationMatchType;
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.model.CAMetadataElementMatchType;
 import com.io7m.cardant.model.CAPage;
-import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
@@ -42,6 +41,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +50,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_READER;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,12 +70,11 @@ public final class CAICmdItemSearchBeginTest
 
   private static final CAItemSearchParameters PARAMETERS =
     new CAItemSearchParameters(
-      new CAItemLocationMatchType.CAItemLocationsAll(),
       new CAComparisonFuzzyType.Anything<>(),
       new CAComparisonFuzzyType.Anything<>(),
       new CAComparisonSetType.Anything<>(),
-      new CAComparisonExactType.Anything<>(),
       CAMetadataElementMatchType.ANYTHING,
+      CAIncludeDeleted.INCLUDE_ONLY_LIVE,
       new CAItemColumnOrdering(CAItemColumn.BY_ID, true),
       100L
     );
@@ -132,7 +132,12 @@ public final class CAICmdItemSearchBeginTest
 
     final var page =
       new CAPage<>(
-        List.of(new CAItemSummary(ITEM_ID, "Item")),
+        List.of(new CAItemSummary(
+          ITEM_ID,
+          "Item",
+          OffsetDateTime.now(UTC),
+          OffsetDateTime.now(UTC))
+        ),
         1,
         1,
         0L

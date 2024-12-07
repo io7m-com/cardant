@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="e18e8058-ffb9-373c-b2a9-f83a6829c04b" title="stock-search-next" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-search-next</Term>
+       - Go to the next page of stock.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-search-next</Term>
+       command returns the next page of search results.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-search-next
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

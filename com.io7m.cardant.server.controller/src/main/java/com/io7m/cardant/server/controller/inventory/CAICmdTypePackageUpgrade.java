@@ -16,22 +16,19 @@
 
 package com.io7m.cardant.server.controller.inventory;
 
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageInstallType;
 import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
-import com.io7m.cardant.database.api.CADatabaseTypePackageUpgradeExecutor;
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.type_package.CATypePackageUpgrade;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUpgrade;
 import com.io7m.cardant.protocol.inventory.CAIResponseBlame;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUpgrade;
-import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileCheckingFailed;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileOK;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileParsingFailed;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileResultType;
 import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
-import com.io7m.cardant.type_packages.upgrades.CATypePackageUpgradePlanner;
 
 import java.io.IOException;
 
@@ -66,14 +63,11 @@ public final class CAICmdTypePackageUpgrade
 
     final var services =
       context.services();
-    final var strings =
-      services.requireService(CAStrings.class);
     final var compilers =
       services.requireService(CATypePackageCompilerFactoryType.class);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var resolver =
       CADatabaseTypePackageResolver.create(compilers, transaction);
     final var compiler =
@@ -94,21 +88,8 @@ public final class CAICmdTypePackageUpgrade
 
     return switch (compileResult) {
       case final CATypePackageCompileOK ok -> {
-        final var upgrade =
-          new CATypePackageUpgrade(
-            command.typeRemovalBehavior(),
-            command.versionBehavior(),
-            ok.typePackage()
-          );
-
-        final var planner =
-          CATypePackageUpgradePlanner.create(strings, resolver, upgrade);
-        final var operations =
-          planner.plan();
-        final var executor =
-          CADatabaseTypePackageUpgradeExecutor.create(transaction);
-
-        executor.execute(operations);
+        transaction.queries(TypePackageInstallType.class)
+          .execute(ok.typePackage());
 
         yield new CAIResponseTypePackageUpgrade(
           context.requestId(),

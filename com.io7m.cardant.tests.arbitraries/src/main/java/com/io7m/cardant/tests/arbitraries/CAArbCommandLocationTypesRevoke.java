@@ -17,8 +17,8 @@ package com.io7m.cardant.tests.arbitraries;
 
 
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationTypesRevoke;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -31,7 +31,7 @@ public final class CAArbCommandLocationTypesRevoke
       CAICommandLocationTypesRevoke.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(CALocationID.class),
-        Arbitraries.defaultFor(RDottedName.class).set()
+        Arbitraries.defaultFor(CATypeRecordIdentifier.class).set()
       ).as(CAICommandLocationTypesRevoke::new)
     );
   }

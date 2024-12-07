@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import static com.io7m.cardant.client.preferences.api.CAPreferencesDebuggingEnab
 import static com.io7m.cardant.client.preferences.api.CAPreferencesDebuggingEnabled.DEBUGGING_ENABLED;
 import static com.io7m.jproperties.JProperties.getBoolean;
 import static com.io7m.jproperties.JProperties.getBooleanWithDefault;
+import static com.io7m.jproperties.JProperties.getDurationWithDefault;
 import static com.io7m.jproperties.JProperties.getInteger;
 import static com.io7m.jproperties.JProperties.getString;
 
@@ -162,12 +164,32 @@ public final class CAPreferencesLoader
     throws JPropertyNonexistent, JPropertyIncorrectType
   {
     return new CAPreferenceServerBookmark(
-      getString(this.properties, String.format("server.bookmarks.%s.name", i)),
-      getString(this.properties, String.format("server.bookmarks.%s.host", i)),
-      getInteger(this.properties, String.format("server.bookmarks.%s.port", i)),
+      getString(
+        this.properties,
+        String.format("server.bookmarks.%s.name", i)
+      ),
+      getString(
+        this.properties,
+        String.format("server.bookmarks.%s.host", i)
+      ),
+      getInteger(
+        this.properties,
+        String.format("server.bookmarks.%s.port", i)
+      ),
       getBoolean(
         this.properties,
-        String.format("server.bookmarks.%s.https", i)),
+        String.format("server.bookmarks.%s.https", i)
+      ),
+      getDurationWithDefault(
+        this.properties,
+        String.format("server.bookmarks.%s.loginTimeout", i),
+        Duration.ofSeconds(30L)
+      ),
+      getDurationWithDefault(
+        this.properties,
+        String.format("server.bookmarks.%s.commandTimeout", i),
+        Duration.ofSeconds(30L)
+      ),
       this.loadServerBookmarkCredentials(i)
     );
   }

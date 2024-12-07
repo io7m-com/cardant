@@ -17,7 +17,7 @@
 package com.io7m.cardant.shell;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
-import com.io7m.cardant.client.api.CAClientSynchronousType;
+import com.io7m.cardant.client.api.CAClientType;
 import com.io7m.cardant.client.basic.CAClients;
 import com.io7m.cardant.client.preferences.api.CAPreferencesServiceType;
 import com.io7m.cardant.error_codes.CAException;
@@ -39,22 +39,19 @@ import com.io7m.cardant.shell.internal.CAShellCmdHelp;
 import com.io7m.cardant.shell.internal.CAShellCmdItemAttachmentAdd;
 import com.io7m.cardant.shell.internal.CAShellCmdItemAttachmentRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemCreate;
+import com.io7m.cardant.shell.internal.CAShellCmdItemDelete;
 import com.io7m.cardant.shell.internal.CAShellCmdItemGet;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataPut;
 import com.io7m.cardant.shell.internal.CAShellCmdItemMetadataRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialMove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSerialRemove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetAdd;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetMove;
-import com.io7m.cardant.shell.internal.CAShellCmdItemRepositSetRemove;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdItemSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdItemSetName;
 import com.io7m.cardant.shell.internal.CAShellCmdItemTypesAssign;
 import com.io7m.cardant.shell.internal.CAShellCmdItemTypesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentAdd;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationAttachmentRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdLocationDelete;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationGet;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationList;
 import com.io7m.cardant.shell.internal.CAShellCmdLocationPut;
@@ -65,6 +62,20 @@ import com.io7m.cardant.shell.internal.CAShellCmdRolesGet;
 import com.io7m.cardant.shell.internal.CAShellCmdRolesRevoke;
 import com.io7m.cardant.shell.internal.CAShellCmdSelf;
 import com.io7m.cardant.shell.internal.CAShellCmdSet;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialIntroduce;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialMove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialNumberAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSerialNumberRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetAdd;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetIntroduce;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetMove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockRepositSetRemove;
+import com.io7m.cardant.shell.internal.CAShellCmdStockSearchBegin;
+import com.io7m.cardant.shell.internal.CAShellCmdStockSearchNext;
+import com.io7m.cardant.shell.internal.CAShellCmdStockSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdSyntaxList;
+import com.io7m.cardant.shell.internal.CAShellCmdSyntaxShow;
 import com.io7m.cardant.shell.internal.CAShellCmdType;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageGetText;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageInstall;
@@ -73,14 +84,7 @@ import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchBegin;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchNext;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageSearchPrevious;
 import com.io7m.cardant.shell.internal.CAShellCmdTypePackageUninstall;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordGet;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchBegin;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchNext;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeRecordSearchPrevious;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarGet;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchBegin;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchNext;
-import com.io7m.cardant.shell.internal.CAShellCmdTypeScalarSearchPrevious;
+import com.io7m.cardant.shell.internal.CAShellCmdTypePackageUpgrade;
 import com.io7m.cardant.shell.internal.CAShellCmdVersion;
 import com.io7m.cardant.shell.internal.CAShellLoginTracker;
 import com.io7m.cardant.shell.internal.CAShellOptions;
@@ -123,7 +127,7 @@ public final class CAShells implements CAShellFactoryType
   {
     final var client =
       new CAClients()
-        .openSynchronousClient(
+        .create(
           new CAClientConfiguration(
             configuration.locale(),
             configuration.clock()
@@ -142,9 +146,23 @@ public final class CAShells implements CAShellFactoryType
       terminal.writer();
 
     final var services = new RPServiceDirectory();
-    services.register(CAClientSynchronousType.class, client);
-    services.register(CAShellOptions.class, new CAShellOptions(terminal));
-    services.register(CAShellLoginTracker.class, new CAShellLoginTracker());
+    final var strings = CAStrings.create(configuration.locale());
+    services.register(
+      CAStrings.class,
+      strings
+    );
+    services.register(
+      CAClientType.class,
+      client
+    );
+    services.register(
+      CAShellOptions.class,
+      new CAShellOptions(terminal)
+    );
+    services.register(
+      CAShellLoginTracker.class,
+      new CAShellLoginTracker()
+    );
     services.register(
       CAPreferencesServiceType.class,
       configuration.preferences()
@@ -152,10 +170,6 @@ public final class CAShells implements CAShellFactoryType
     services.register(
       CAShellTerminalHolder.class,
       new CAShellTerminalHolder(terminal)
-    );
-    services.register(
-      CAStrings.class,
-      CAStrings.create(configuration.locale())
     );
 
     final List<CAShellCmdType> commands =
@@ -177,22 +191,19 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdItemAttachmentAdd(services),
         new CAShellCmdItemAttachmentRemove(services),
         new CAShellCmdItemCreate(services),
+        new CAShellCmdItemDelete(services),
         new CAShellCmdItemGet(services),
         new CAShellCmdItemMetadataPut(services),
         new CAShellCmdItemMetadataRemove(services),
-        new CAShellCmdItemRepositSerialAdd(services),
-        new CAShellCmdItemRepositSerialMove(services),
-        new CAShellCmdItemRepositSerialRemove(services),
-        new CAShellCmdItemRepositSetAdd(services),
-        new CAShellCmdItemRepositSetMove(services),
-        new CAShellCmdItemRepositSetRemove(services),
         new CAShellCmdItemSearchBegin(services),
         new CAShellCmdItemSearchNext(services),
         new CAShellCmdItemSearchPrevious(services),
+        new CAShellCmdItemSetName(services),
         new CAShellCmdItemTypesAssign(services),
         new CAShellCmdItemTypesRevoke(services),
         new CAShellCmdLocationAttachmentAdd(services),
         new CAShellCmdLocationAttachmentRemove(services),
+        new CAShellCmdLocationDelete(services),
         new CAShellCmdLocationGet(services),
         new CAShellCmdLocationList(services),
         new CAShellCmdLocationPut(services),
@@ -203,6 +214,20 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdRolesRevoke(services),
         new CAShellCmdSelf(services),
         new CAShellCmdSet(services),
+        new CAShellCmdStockRepositRemove(services),
+        new CAShellCmdStockRepositSerialIntroduce(services),
+        new CAShellCmdStockRepositSerialMove(services),
+        new CAShellCmdStockRepositSerialNumberAdd(services),
+        new CAShellCmdStockRepositSerialNumberRemove(services),
+        new CAShellCmdStockRepositSetAdd(services),
+        new CAShellCmdStockRepositSetIntroduce(services),
+        new CAShellCmdStockRepositSetMove(services),
+        new CAShellCmdStockRepositSetRemove(services),
+        new CAShellCmdStockSearchBegin(services),
+        new CAShellCmdStockSearchNext(services),
+        new CAShellCmdStockSearchPrevious(services),
+        new CAShellCmdSyntaxList(services),
+        new CAShellCmdSyntaxShow(services),
         new CAShellCmdTypePackageGetText(services),
         new CAShellCmdTypePackageInstall(services),
         new CAShellCmdTypePackageSchema(services),
@@ -210,14 +235,7 @@ public final class CAShells implements CAShellFactoryType
         new CAShellCmdTypePackageSearchNext(services),
         new CAShellCmdTypePackageSearchPrevious(services),
         new CAShellCmdTypePackageUninstall(services),
-        new CAShellCmdTypeRecordGet(services),
-        new CAShellCmdTypeRecordSearchBegin(services),
-        new CAShellCmdTypeRecordSearchNext(services),
-        new CAShellCmdTypeRecordSearchPrevious(services),
-        new CAShellCmdTypeScalarGet(services),
-        new CAShellCmdTypeScalarSearchBegin(services),
-        new CAShellCmdTypeScalarSearchNext(services),
-        new CAShellCmdTypeScalarSearchPrevious(services),
+        new CAShellCmdTypePackageUpgrade(services),
         new CAShellCmdVersion(services)
       );
 

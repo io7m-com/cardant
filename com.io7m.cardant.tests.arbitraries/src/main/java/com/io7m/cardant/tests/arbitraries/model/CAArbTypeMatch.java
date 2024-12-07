@@ -18,8 +18,8 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CATypeMatch;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 
 public final class CAArbTypeMatch extends CAArbAbstract<CATypeMatch>
@@ -29,7 +29,8 @@ public final class CAArbTypeMatch extends CAArbAbstract<CATypeMatch>
     super(
       CATypeMatch.class,
       () -> {
-        return CAArbComparisons.set(Arbitraries.defaultFor(RDottedName.class))
+        return CAArbComparisons.set(
+          Arbitraries.defaultFor(CATypeRecordIdentifier.class))
           .map(CATypeMatch::new);
       }
     );

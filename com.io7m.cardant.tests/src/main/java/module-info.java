@@ -15,6 +15,7 @@
  */
 
 import com.io7m.cardant.database.postgres.internal.CADBQueryProviderType;
+import com.io7m.cardant.parsers.CASyntaxFactoryType;
 import net.jqwik.api.providers.ArbitraryProvider;
 
 /**
@@ -61,11 +62,17 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.type_packages.parser.api;
   requires com.io7m.cardant.type_packages.parsers;
   requires com.io7m.cardant.type_packages.resolver.api;
-  requires com.io7m.cardant.type_packages.upgrades.api;
-  requires com.io7m.cardant.type_packages.upgrades;
+  requires com.io7m.cardant.type_packages.standard;
+
+  requires org.junit.jupiter.api;
+  requires org.junit.jupiter.engine;
+  requires org.junit.platform.commons;
+  requires org.junit.platform.engine;
+  requires org.junit.platform.launcher;
 
   uses ArbitraryProvider;
   uses CADBQueryProviderType;
+  uses CASyntaxFactoryType;
 
   requires com.io7m.anethum.api;
   requires com.io7m.anethum.slf4j;
@@ -75,8 +82,10 @@ open module com.io7m.cardant.tests
   requires com.io7m.ervilla.test_extension;
   requires com.io7m.idstore.admin_client.api;
   requires com.io7m.idstore.admin_client;
+  requires com.io7m.idstore.protocol.admin;
   requires com.io7m.idstore.server.api;
   requires com.io7m.idstore.server.service.configuration;
+  requires com.io7m.idstore.tls;
   requires com.io7m.junreachable.core;
   requires com.io7m.quarrel.ext.xstructural;
   requires com.io7m.repetoir.core;
@@ -94,10 +103,4 @@ open module com.io7m.cardant.tests
   requires org.mockito;
   requires org.postgresql.jdbc;
   requires org.slf4j;
-
-  requires transitive org.junit.jupiter.api;
-  requires transitive org.junit.jupiter.engine;
-  requires transitive org.junit.platform.commons;
-  requires transitive org.junit.platform.engine;
-  requires com.io7m.idstore.tls;
 }

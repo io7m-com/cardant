@@ -1,8 +1,8 @@
 match_type ::=
     "with-any-type"
-  | "(" "with-types-equal-to" <type> [<type>, ...] ")"
-  | "(" "with-types-not-equal-to" <type> [<type>, ...] ")"
-  | "(" "with-types-superset-of" <type> [<type>, ...] ")"
-  | "(" "with-types-subset-of" <type> [<type>, ...] ")"
-  | "(" "with-types-overlapping" <type> [<type>, ...] ")"
+  | "(" "with-types-equal-to" <type-record-identifier> [<type-record-identifier>, ...] ")"
+  | "(" "with-types-not-equal-to" <type-record-identifier> [<type-record-identifier>, ...] ")"
+  | "(" "with-types-superset-of" <type-record-identifier> [<type-record-identifier>, ...] ")"
+  | "(" "with-types-subset-of" <type-record-identifier> [<type-record-identifier>, ...] ")"
+  | "(" "with-types-overlapping" <type-record-identifier> [<type-record-identifier>, ...] ")"
   ;

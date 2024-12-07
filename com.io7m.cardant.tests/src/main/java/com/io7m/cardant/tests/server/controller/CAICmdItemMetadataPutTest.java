@@ -21,14 +21,13 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataPutType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
-import com.io7m.cardant.model.CATypeScalarType.Text;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataPut;
 import com.io7m.cardant.security.CASecurity;
@@ -43,7 +42,9 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,6 +83,19 @@ public final class CAICmdItemMetadataPutTest
       Version.of(1, 0, 0)
     );
 
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
+
   private static final CAItemID ITEM_ID = CAItemID.random();
 
   /**
@@ -101,7 +116,7 @@ public final class CAICmdItemMetadataPutTest
     /* Act. */
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
 
     final var handler =
       new CAICmdItemMetadataPut();
@@ -135,8 +150,6 @@ public final class CAICmdItemMetadataPutTest
       mock(ItemGetType.class);
     final var itemMetaPut =
       mock(ItemMetadataPutType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
 
     final var transaction =
       this.transaction();
@@ -147,15 +160,7 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -176,11 +181,11 @@ public final class CAICmdItemMetadataPutTest
     /* Act. */
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
     final var name1 =
-      new RDottedName("com.io7m.name1");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name1");
     final var name2 =
-      new RDottedName("com.io7m.name2");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name2");
 
     final var handler = new CAICmdItemMetadataPut();
     handler.execute(
@@ -200,8 +205,6 @@ public final class CAICmdItemMetadataPutTest
       .queries(ItemGetType.class);
     verify(transaction)
       .queries(ItemMetadataPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(itemMetaPut)
       .execute(new Parameters(
         ITEM_ID,
@@ -210,7 +213,7 @@ public final class CAICmdItemMetadataPutTest
           new CAMetadataType.Text(name1, "y"),
           new CAMetadataType.Text(name2, "z")))
       );
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -252,16 +255,7 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemMetaPut);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CAItem(
-          ITEM_ID,
-          "x",
-          0L,
-          0L,
-          Collections.emptySortedMap(),
-          Collections.emptySortedMap(),
-          Collections.emptySortedSet())
-      ));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(new CADatabaseException(
       "X",
@@ -292,11 +286,11 @@ public final class CAICmdItemMetadataPutTest
     final var handler = new CAICmdItemMetadataPut();
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
     final var name1 =
-      new RDottedName("com.io7m.name1");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name1");
     final var name2 =
-      new RDottedName("com.io7m.name2");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name2");
 
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
@@ -333,8 +327,6 @@ public final class CAICmdItemMetadataPutTest
       mock(ItemGetType.class);
     final var itemMetaPut =
       mock(ItemMetadataPutType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
 
     doThrow(
       new CADatabaseException(
@@ -352,11 +344,9 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemGet);
     when(transaction.queries(ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.empty());
+      .thenReturn(Optional.of(CAItem.create()));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -379,11 +369,11 @@ public final class CAICmdItemMetadataPutTest
     final var handler = new CAICmdItemMetadataPut();
 
     final var name0 =
-      new RDottedName("com.io7m.name0");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name0");
     final var name1 =
-      new RDottedName("com.io7m.name1");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name1");
     final var name2 =
-      new RDottedName("com.io7m.name2");
+      CATypeRecordFieldIdentifier.of("com.io7m:t.name2");
 
     final var ex =
       assertThrows(CACommandExecutionFailure.class, () -> {
@@ -407,8 +397,6 @@ public final class CAICmdItemMetadataPutTest
       .queries(ItemGetType.class);
     verify(transaction)
       .queries(ItemMetadataPutType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
     verify(itemMetaPut)
       .execute(
@@ -422,7 +410,9 @@ public final class CAICmdItemMetadataPutTest
         )
       );
 
-    verifyNoMoreInteractions(itemGet);
+    verify(itemGet)
+      .execute(ITEM_ID);
+
     verifyNoMoreInteractions(itemMetaPut);
     verifyNoMoreInteractions(transaction);
   }
@@ -443,8 +433,10 @@ public final class CAICmdItemMetadataPutTest
       mock(ItemGetType.class);
     final var itemMetaPut =
       mock(ItemMetadataPutType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
 
     final var transaction =
       this.transaction();
@@ -453,8 +445,10 @@ public final class CAICmdItemMetadataPutTest
       .thenReturn(itemGet);
     when(transaction.queries(ItemMetadataPutType.class))
       .thenReturn(itemMetaPut);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -473,62 +467,37 @@ public final class CAICmdItemMetadataPutTest
       this.createContext();
 
     final var meta0 =
-      new CAMetadataType.Text(new RDottedName("a"), "x");
+      new CAMetadataType.Text(
+        CATypeRecordFieldIdentifier.of("com.q:z.b"),
+        "x"
+      );
+
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CAItem(
-          CAItemID.random(),
-          "Item",
-          0L,
-          0L,
-          new TreeMap<>(Map.of(meta0.name(), meta0)),
-          Collections.emptySortedMap(),
-          new TreeSet<>(
-            Set.of(new RDottedName("t"))
-          )
-        )
-      ));
-
-    final var type =
-      new CATypeRecord(
-        P,
-        new RDottedName("t"),
-        "T",
-        Map.ofEntries(
-          Map.entry(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "Field A",
-              new Integral(
-                P,
-                new RDottedName("ts0"),
-                "Number",
-                23L, 1000L
-              ),
-              true
-            )
-          ),
-          Map.entry(
-            new RDottedName("b"),
-            new CATypeField(
-              new RDottedName("b"),
-              "Field B",
-              new Text(
-                P,
-                new RDottedName("ts0"),
-                "Anything",
-                ".*"
-              ),
-              true
+      .thenReturn(
+        Optional.of(
+          new CAItem(
+            CAItemID.random(),
+            "Item",
+            OffsetDateTime.now(UTC),
+            OffsetDateTime.now(UTC),
+            new TreeMap<>(Map.of(meta0.name(), meta0)),
+            Collections.emptySortedMap(),
+            new TreeSet<>(
+              List.of(
+                new CATypeRecordIdentifier(
+                  new RDottedName("com.io7m"),
+                  new RDottedName("t0")
+                )
+              )
             )
           )
         )
       );
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(type));
 
     /* Act. */
 
@@ -551,19 +520,25 @@ public final class CAICmdItemMetadataPutTest
     verify(transaction)
       .queries(ItemGetType.class);
     verify(transaction)
+      .queries(TypePackageGetTextType.class);
+    verify(transaction)
+      .queries(TypePackageSatisfyingType.class);
+    verify(transaction)
       .queries(ItemMetadataPutType.class);
-    verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
     verify(itemMetaPut)
       .execute(new Parameters(ITEM_ID, Set.of(meta0)));
+    verify(typePackageSatisfying)
+      .execute(any());
+    verify(typePackageGetText)
+      .execute(P);
 
     verifyNoMoreInteractions(itemGet);
     verifyNoMoreInteractions(itemMetaPut);
+    verifyNoMoreInteractions(typePackageSatisfying);
+    verifyNoMoreInteractions(typePackageGetText);
     verifyNoMoreInteractions(transaction);
   }
 }

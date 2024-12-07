@@ -17,7 +17,7 @@
 package com.io7m.cardant.server.controller.inventory;
 
 import com.io7m.cardant.database.api.CADatabaseException;
-import com.io7m.cardant.database.api.CADatabaseQueriesItemsType;
+import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseItemGet;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
@@ -57,7 +57,7 @@ public final class CAICmdItemGet extends CAICmdAbstract<CAICommandItemGet>
 
     final var get =
       context.transaction()
-        .queries(CADatabaseQueriesItemsType.ItemGetType.class);
+        .queries(ItemGetType.class);
 
     final var itemID = command.id();
     final var itemOpt = get.execute(itemID);

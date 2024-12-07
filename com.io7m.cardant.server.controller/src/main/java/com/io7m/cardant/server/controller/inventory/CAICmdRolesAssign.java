@@ -102,8 +102,6 @@ public final class CAICmdRolesAssign extends CAICmdAbstract<CAICommandRolesAssig
     final var get =
       transaction.queries(CADatabaseQueriesUsersType.GetType.class);
 
-    transaction.setUserId(context.session().userId());
-
     final var targetUser =
       get.execute(command.user())
         .orElseThrow(() -> {

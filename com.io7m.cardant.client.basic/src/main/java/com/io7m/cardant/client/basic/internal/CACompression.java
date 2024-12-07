@@ -19,6 +19,7 @@ package com.io7m.cardant.client.basic.internal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.http.HttpHeaders;
+import java.net.http.HttpResponse;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
@@ -37,7 +38,7 @@ public final class CACompression
   /**
    * Decompress the response if necessary.
    *
-   * @param data The possibly-compressed data
+   * @param response        The response
    * @param responseHeaders The response headers
    *
    * @return The decompressed bytes
@@ -46,7 +47,37 @@ public final class CACompression
    */
 
   public static byte[] decompressResponse(
-    final byte[] data,
+    final HttpResponse<byte[]> response,
+    final HttpHeaders responseHeaders)
+    throws IOException
+  {
+    final var encoding =
+      responseHeaders.firstValue("Content-Encoding");
+
+    final byte[] body;
+    if (Objects.equals(encoding, Optional.of("gzip"))) {
+      try (var s = new GZIPInputStream(new ByteArrayInputStream(response.body()))) {
+        body = s.readAllBytes();
+      }
+    } else {
+      body = response.body();
+    }
+    return body;
+  }
+
+  /**
+   * Decompress the response if necessary.
+   *
+   * @param response        The response
+   * @param responseHeaders The response headers
+   *
+   * @return The decompressed bytes
+   *
+   * @throws IOException On errors
+   */
+
+  public static byte[] decompressResponse(
+    final byte[] response,
     final HttpHeaders responseHeaders)
     throws IOException
   {
@@ -54,10 +85,10 @@ public final class CACompression
       responseHeaders.firstValue("Content-Encoding");
 
     if (Objects.equals(encoding, Optional.of("gzip"))) {
-      try (var s = new GZIPInputStream(new ByteArrayInputStream(data))) {
+      try (var s = new GZIPInputStream(new ByteArrayInputStream(response))) {
         return s.readAllBytes();
       }
     }
-    return data;
+    return response;
   }
 }

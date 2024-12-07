@@ -180,6 +180,13 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           attempting to seek before the first page of results with a <Term type="term">previous</Term> command
           will simply return the first page of results, repeatedly.
         </Paragraph>
+        <Paragraph>
+          The search commands typically accept different <Term type="term">filtering expressions</Term>
+          to allow for very rich search capabilities. The syntactic forms of all the different expression
+          types are listed in the following sections of the documentation, and can also be inspected using
+          the <Link target="3f6c51bb-7e5c-36c8-9c27-6ff6d1e4f18e">syntax-list</Link> and
+          <Link target="94818bba-e0be-3e82-866a-48fb59e3329d">syntax-show</Link> shell commands.
+        </Paragraph>
       </Subsection>
 
       <Subsection title="Name Matching" id="733cf6a3-dedc-4a3c-ae1c-b8301066ece3">
@@ -189,7 +196,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           if the expression evaluates to <Term type="constant">true</Term>.
         </Paragraph>
         <Paragraph>
-          A name match expression takes one of the following forms:
+          An expression takes one of the following forms:
         </Paragraph>
         <FormalItem title="Forms">
           <ListUnordered>
@@ -267,7 +274,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           if the expression evaluates to <Term type="constant">true</Term>.
         </Paragraph>
         <Paragraph>
-          A type match expression takes one of the following forms:
+          An expression takes one of the following forms:
         </Paragraph>
         <FormalItem title="Forms">
           <ListUnordered>
@@ -350,7 +357,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           if the expression evaluates to <Term type="constant">true</Term>.
         </Paragraph>
         <Paragraph>
-          A description match expression takes one of the following forms:
+          An expression takes one of the following forms:
         </Paragraph>
         <FormalItem title="Forms">
           <ListUnordered>
@@ -431,7 +438,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           if the expression evaluates to <Term type="constant">true</Term>.
         </Paragraph>
         <Paragraph>
-          A media type match expression takes one of the following forms:
+          An expression takes one of the following forms:
         </Paragraph>
         <FormalItem title="Forms">
           <ListUnordered>
@@ -512,7 +519,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           if the expression evaluates to <Term type="constant">true</Term>.
         </Paragraph>
         <Paragraph>
-          A description match expression takes one of the following forms:
+          An expression takes one of the following forms:
         </Paragraph>
         <FormalItem title="Forms">
           <ListUnordered>
@@ -529,7 +536,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
         </FormalItem>
         <Paragraph>
           Expressions have the following semantics, given in terms of a
-          <Term type="expression">match_description_evaluate</Term>
+          <Term type="expression">match_serial_evaluate</Term>
           function:
         </Paragraph>
         <FormalItem title="Semantics">
@@ -565,6 +572,120 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
           <Verbatim><xi:include href="syn-match-serial.txt" parse="text"/></Verbatim>
         </FormalItem>
       </Subsection>
+
+      <Subsection title="Package Matching" id="dc415d83-0a24-467f-9191-3471245c36b4">
+        <Paragraph>
+          A <Term type="term">package match expression</Term> is an expression used to filter search results. The
+          expression is evaluated using the object's
+          <Link target="0f4b9332-c2d2-4460-9fb5-f2594b854219">type package</Link>
+          as input and the object is included in search results
+          if the expression evaluates to <Term type="constant">true</Term>.
+        </Paragraph>
+        <Paragraph>
+          An expression takes one of the following forms:
+        </Paragraph>
+        <FormalItem title="Forms">
+          <ListUnordered>
+            <Item>
+              <Term type="expression">with-any-package</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-package-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-package-not-equal-to n)</Term>
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Expressions have the following semantics, given in terms of a
+          <Term type="expression">match_package_evaluate</Term>
+          function:
+        </Paragraph>
+        <FormalItem title="Semantics">
+          <Verbatim><xi:include href="sem-match-package.txt" parse="text"/></Verbatim>
+        </FormalItem>
+        <FormalItem title="Semantics Explanation">
+          <ListUnordered>
+            <Item>
+              An expression <Term type="expression">with-any-package</Term> always evaluates to
+              <Term type="constant">true</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-package-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m = n</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-package-not-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m ≠ n</Term>.
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <FormalItem title="Syntax">
+          <Verbatim><xi:include href="syn-match-package.txt" parse="text"/></Verbatim>
+        </FormalItem>
+      </Subsection>
+
+      <Subsection title="Field Matching" id="6c5d39bc-a28d-4432-955a-a76fa41d5cf1">
+        <Paragraph>
+          A <Term type="term">field match expression</Term> is an expression used to filter search results. The
+          expression is evaluated using the object's
+          <Link target="0f4b9332-c2d2-4460-9fb5-f2594b854219">field name</Link>
+          as input and the object is included in search results
+          if the expression evaluates to <Term type="constant">true</Term>.
+        </Paragraph>
+        <Paragraph>
+          An expression takes one of the following forms:
+        </Paragraph>
+        <FormalItem title="Forms">
+          <ListUnordered>
+            <Item>
+              <Term type="expression">with-any-field</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-field-equal-to n)</Term>
+            </Item>
+            <Item>
+              <Term type="expression">(with-field-not-equal-to n)</Term>
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <Paragraph>
+          Expressions have the following semantics, given in terms of a
+          <Term type="expression">match_field_evaluate</Term>
+          function:
+        </Paragraph>
+        <FormalItem title="Semantics">
+          <Verbatim><xi:include href="sem-match-field.txt" parse="text"/></Verbatim>
+        </FormalItem>
+        <FormalItem title="Semantics Explanation">
+          <ListUnordered>
+            <Item>
+              An expression <Term type="expression">with-any-field</Term> always evaluates to
+              <Term type="constant">true</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-field-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m = n</Term>.
+            </Item>
+            <Item>
+              For all descriptions <Term type="expression">m</Term>,
+              <Term type="expression">(with-field-not-equal-to n) m</Term> evaluates to
+              <Term type="constant">true</Term>
+              iff <Term type="constant">m ≠ n</Term>.
+            </Item>
+          </ListUnordered>
+        </FormalItem>
+        <FormalItem title="Syntax">
+          <Verbatim><xi:include href="syn-match-field.txt" parse="text"/></Verbatim>
+        </FormalItem>
+      </Subsection>
     </Subsection>
   </Section>
 
@@ -589,12 +710,6 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-item-get.xml"/>
     <xi:include href="scmd-item-metadata-put.xml"/>
     <xi:include href="scmd-item-metadata-remove.xml"/>
-    <xi:include href="scmd-item-reposit-serial-add.xml"/>
-    <xi:include href="scmd-item-reposit-serial-move.xml"/>
-    <xi:include href="scmd-item-reposit-serial-remove.xml"/>
-    <xi:include href="scmd-item-reposit-set-add.xml"/>
-    <xi:include href="scmd-item-reposit-set-move.xml"/>
-    <xi:include href="scmd-item-reposit-set-remove.xml"/>
     <xi:include href="scmd-item-search-begin.xml"/>
     <xi:include href="scmd-item-search-next.xml"/>
     <xi:include href="scmd-item-search-previous.xml"/>
@@ -612,6 +727,20 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-roles-revoke.xml"/>
     <xi:include href="scmd-self.xml"/>
     <xi:include href="scmd-set.xml"/>
+    <xi:include href="scmd-stock-reposit-remove.xml"/>
+    <xi:include href="scmd-stock-reposit-serial-introduce.xml"/>
+    <xi:include href="scmd-stock-reposit-serial-move.xml"/>
+    <xi:include href="scmd-stock-reposit-serial-number-add.xml"/>
+    <xi:include href="scmd-stock-reposit-serial-number-remove.xml"/>
+    <xi:include href="scmd-stock-reposit-set-add.xml"/>
+    <xi:include href="scmd-stock-reposit-set-introduce.xml"/>
+    <xi:include href="scmd-stock-reposit-set-move.xml"/>
+    <xi:include href="scmd-stock-reposit-set-remove.xml"/>
+    <xi:include href="scmd-stock-search-begin.xml"/>
+    <xi:include href="scmd-stock-search-next.xml"/>
+    <xi:include href="scmd-stock-search-previous.xml"/>
+    <xi:include href="scmd-syntax-list.xml"/>
+    <xi:include href="scmd-syntax-show.xml"/>
     <xi:include href="scmd-type-package-get-text.xml"/>
     <xi:include href="scmd-type-package-install.xml"/>
     <xi:include href="scmd-type-package-schema.xml"/>
@@ -619,14 +748,7 @@ User ID: c5574d46-7413-43c8-b6db-31001c382ca3
     <xi:include href="scmd-type-package-search-next.xml"/>
     <xi:include href="scmd-type-package-search-previous.xml"/>
     <xi:include href="scmd-type-package-uninstall.xml"/>
-    <xi:include href="scmd-type-record-get.xml"/>
-    <xi:include href="scmd-type-record-search-begin.xml"/>
-    <xi:include href="scmd-type-record-search-next.xml"/>
-    <xi:include href="scmd-type-record-search-previous.xml"/>
-    <xi:include href="scmd-type-scalar-get.xml"/>
-    <xi:include href="scmd-type-scalar-search-begin.xml"/>
-    <xi:include href="scmd-type-scalar-search-next.xml"/>
-    <xi:include href="scmd-type-scalar-search-previous.xml"/>
+    <xi:include href="scmd-type-package-upgrade.xml"/>
     <xi:include href="scmd-version.xml"/>
   </Section>
 

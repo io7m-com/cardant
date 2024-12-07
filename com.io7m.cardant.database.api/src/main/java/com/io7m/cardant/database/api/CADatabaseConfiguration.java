@@ -39,6 +39,8 @@ import java.util.Optional;
  * @param strings                The string resources
  * @param language               The language used for databases (such as 'english')
  * @param typePackageSerializers The type package serializers
+ * @param minimumConnections     The minimum number of database connections in the pool
+ * @param maximumConnections     The maximum number of database connections in the pool
  */
 
 public record CADatabaseConfiguration(
@@ -51,10 +53,12 @@ public record CADatabaseConfiguration(
   String databaseName,
   CADatabaseCreate create,
   CADatabaseUpgrade upgrade,
-  String language,
+  CADatabaseLanguage language,
   Clock clock,
   CAStrings strings,
-  CATypePackageSerializerFactoryType typePackageSerializers)
+  CATypePackageSerializerFactoryType typePackageSerializers,
+  int minimumConnections,
+  int maximumConnections)
 {
   /**
    * The server database configuration.
@@ -76,6 +80,8 @@ public record CADatabaseConfiguration(
    * @param language               The language used for databases
    *                               (such as 'english')
    * @param typePackageSerializers The type package serializers
+   * @param minimumConnections     The minimum number of database connections in the pool
+   * @param maximumConnections     The maximum number of database connections in the pool
    */
 
   public CADatabaseConfiguration
@@ -92,6 +98,9 @@ public record CADatabaseConfiguration(
     Objects.requireNonNull(strings, "strings");
     Objects.requireNonNull(language, "language");
     Objects.requireNonNull(typePackageSerializers, "typePackageSerializers");
+
+    minimumConnections = Math.max(0, minimumConnections);
+    maximumConnections = Math.max(minimumConnections, maximumConnections);
   }
 
   /**
@@ -114,7 +123,9 @@ public record CADatabaseConfiguration(
       this.language,
       this.clock,
       this.strings,
-      this.typePackageSerializers
+      this.typePackageSerializers,
+      this.minimumConnections,
+      this.maximumConnections
     );
   }
 }

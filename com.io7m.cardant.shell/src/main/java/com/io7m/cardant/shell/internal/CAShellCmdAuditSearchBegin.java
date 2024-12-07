@@ -16,7 +16,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.model.CAAuditSearchParameters;
 import com.io7m.cardant.model.CATimeRange;
 import com.io7m.cardant.model.CAUserID;
@@ -166,10 +165,10 @@ public final class CAShellCmdAuditSearchBegin
       );
 
     final var page =
-      ((CAIResponseAuditSearch) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandAuditSearchBegin(parameters),
-        CAClientException::ofError
-      )).results();
+        this.commandTimeout()
+      ).results();
 
     this.formatter().formatAuditPage(page);
     return SUCCESS;

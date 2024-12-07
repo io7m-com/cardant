@@ -18,10 +18,13 @@
 package com.io7m.cardant.tests.arbitraries.model;
 
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
+
+import java.time.OffsetDateTime;
 
 public final class CAArbLocationSummary extends CAArbAbstract<CALocationSummary>
 {
@@ -32,7 +35,9 @@ public final class CAArbLocationSummary extends CAArbAbstract<CALocationSummary>
       () -> Combinators.combine(
         Arbitraries.create(CALocationID::random),
         Arbitraries.create(CALocationID::random).optional(),
-        Arbitraries.strings()
+        Arbitraries.defaultFor(CALocationPath.class),
+        Arbitraries.create(OffsetDateTime::now),
+        Arbitraries.create(OffsetDateTime::now)
       ).as(CALocationSummary::new));
   }
 }

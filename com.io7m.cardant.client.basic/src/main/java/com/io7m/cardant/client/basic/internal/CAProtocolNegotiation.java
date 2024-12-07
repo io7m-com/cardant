@@ -17,7 +17,7 @@
 package com.io7m.cardant.client.basic.internal;
 
 import com.io7m.cardant.client.api.CAClientConfiguration;
-import com.io7m.cardant.client.api.CAClientCredentials;
+import com.io7m.cardant.client.api.CAClientConnectionParameters;
 import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
 import com.io7m.cardant.strings.CAStrings;
@@ -74,7 +74,7 @@ public final class CAProtocolNegotiation
     final CAStrings strings)
     throws InterruptedException, CAClientException
   {
-    LOG.debug("retrieving supported server protocols");
+    LOG.debug("Retrieving supported server protocols");
 
     final var request =
       HttpRequest.newBuilder(base)
@@ -100,7 +100,7 @@ public final class CAProtocolNegotiation
       );
     }
 
-    LOG.debug("server: status {}", response.statusCode());
+    LOG.debug("Server: Status {}", response.statusCode());
 
     if (response.statusCode() >= 400) {
       throw new CAClientException(
@@ -119,7 +119,9 @@ public final class CAProtocolNegotiation
 
     final VProtocols message;
     try {
-      final var body = decompressResponse(response.body(), response.headers());
+      final var body =
+        decompressResponse(response, response.headers());
+
       message = protocols.parse(base, body);
     } catch (final VProtocolException e) {
       throw new CAClientException(
@@ -177,22 +179,22 @@ public final class CAProtocolNegotiation
   }
 
   /**
-   * Negotiate a protocol handler.
+   * Negotiate a transport.
    *
    * @param configuration The configuration
    * @param credentials   The credentials
    * @param httpClient    The HTTP client
    * @param strings       The string resources
    *
-   * @return The protocol handler
+   * @return The transport
    *
    * @throws CAClientException    On errors
    * @throws InterruptedException On interruption
    */
 
-  public static CAHandlerType negotiateProtocolHandler(
+  public static CATransportType negotiateTransport(
     final CAClientConfiguration configuration,
-    final CAClientCredentials credentials,
+    final CAClientConnectionParameters credentials,
     final HttpClient httpClient,
     final CAStrings strings)
     throws CAClientException, InterruptedException
@@ -204,19 +206,19 @@ public final class CAProtocolNegotiation
 
     final var clientSupports =
       List.of(
-        new CAHandlers1()
+        new CATransports1()
       );
 
     final var serverProtocols =
       fetchSupportedVersions(credentials.baseURI(), httpClient, strings);
 
-    LOG.debug("server supports {} protocols", serverProtocols.size());
+    LOG.debug("Server supports {} protocols", serverProtocols.size());
 
     final var solver =
-      GenProtocolSolver.<CAHandlerFactoryType, CAServerEndpoint>
+      GenProtocolSolver.<CATransportFactoryType, CAServerEndpoint>
         create(configuration.locale());
 
-    final GenProtocolSolved<CAHandlerFactoryType, CAServerEndpoint> solved;
+    final GenProtocolSolved<CATransportFactoryType, CAServerEndpoint> solved;
     try {
       solved = solver.solve(
         serverProtocols,
@@ -243,14 +245,14 @@ public final class CAProtocolNegotiation
 
     final var protocol = serverEndpoint.supported();
     LOG.debug(
-      "using protocol {} {}.{} at endpoint {}",
+      "Using protocol {} {}.{} at endpoint {}",
       protocol.identifier(),
       protocol.version().versionMajor(),
       protocol.version().versionMinor(),
       target
     );
 
-    return solved.clientHandler().createHandler(
+    return solved.clientHandler().createTransport(
       configuration,
       httpClient,
       strings,

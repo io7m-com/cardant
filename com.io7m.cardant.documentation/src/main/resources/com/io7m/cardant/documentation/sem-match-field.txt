@@ -1,0 +1,3 @@
+match_field_evaluate with-any-field n                 ⇒ true
+match_field_evaluate (with-field-equal-to m) n        ⇒ n = m
+match_field_evaluate (with-field-not-equal-to m) n    ⇒ n ≠ m

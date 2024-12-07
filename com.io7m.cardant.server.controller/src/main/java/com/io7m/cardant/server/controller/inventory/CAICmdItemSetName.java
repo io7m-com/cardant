@@ -27,6 +27,7 @@ import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure
 
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
+import static com.io7m.cardant.strings.CAStringConstants.ITEM_ID;
 
 /**
  * @see CAICommandItemSetName
@@ -59,6 +60,9 @@ public final class CAICmdItemSetName extends CAICmdAbstract<CAICommandItemSetNam
       transaction.queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemId = command.id();
+    context.setAttribute(ITEM_ID, itemId.displayId());
+    CAIChecks.checkItemExists(context, get, itemId);
+
     setName.execute(new Parameters(command.id(), command.name()));
     final var updated = get.execute(itemId).orElseThrow();
     return new CAIResponseItemSetName(context.requestId(), updated);

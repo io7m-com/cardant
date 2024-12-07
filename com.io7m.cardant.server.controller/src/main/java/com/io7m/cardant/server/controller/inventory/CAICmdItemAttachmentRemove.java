@@ -57,9 +57,8 @@ public final class CAICmdItemAttachmentRemove
   {
     context.securityCheck(INVENTORY_ITEMS, WRITE);
 
-    final var transaction = context.transaction();
-    transaction.setUserId(context.session().userId());
-
+    final var transaction =
+      context.transaction();
     final var attachRemove =
       transaction
         .queries(CADatabaseQueriesItemsType.ItemAttachmentRemoveType.class);
@@ -68,6 +67,9 @@ public final class CAICmdItemAttachmentRemove
         .queries(CADatabaseQueriesItemsType.ItemGetType.class);
 
     final var itemID = command.item();
+    context.setAttribute(ITEM_ID, itemID.displayId());
+    CAIChecks.checkItemExists(context, get, itemID);
+
     attachRemove.execute(
       new Parameters(itemID, command.file(), command.relation())
     );

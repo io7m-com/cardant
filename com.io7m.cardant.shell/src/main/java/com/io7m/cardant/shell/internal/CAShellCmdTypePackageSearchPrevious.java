@@ -17,7 +17,6 @@
 
 package com.io7m.cardant.shell.internal;
 
-import com.io7m.cardant.client.api.CAClientException;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageSearchPrevious;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageSearch;
 import com.io7m.quarrel.core.QCommandContextType;
@@ -75,10 +74,10 @@ public final class CAShellCmdTypePackageSearchPrevious
       this.client();
 
     final var items =
-      ((CAIResponseTypePackageSearch) client.executeOrElseThrow(
+      client.sendAndWaitOrThrow(
         new CAICommandTypePackageSearchPrevious(),
-        CAClientException::ofError
-      )).data();
+        this.commandTimeout()
+      ).data();
 
     this.formatter().formatTypePackagePage(items);
     return SUCCESS;

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Section xmlns:xi="http://www.w3.org/2001/XInclude" id="d9ab705c-f71f-3a42-99a3-d2a868699014" title="stock-search-begin" xmlns="urn:com.io7m.structural:8:0">
+  <Subsection title="Name">
+    <Paragraph>
+      <Term type="command">stock-search-begin</Term>
+       - Start searching for stock.
+    </Paragraph>
+  </Subsection>
+  <Subsection title="Description">
+    <Paragraph>
+      The 
+      <Term type="command">stock-search-begin</Term>
+       command begins searching for stock.
+    </Paragraph>
+  </Subsection>
+  <xi:include href="scmd-stock-search-begin-parameters.xml"/>
+  <Subsection title="Examples">
+    <FormalItem title="Example" type="example">
+      <Verbatim><![CDATA[
+[cardant]$ stock-search-begin
+]]></Verbatim>
+    </FormalItem>
+  </Subsection>
+</Section>
+

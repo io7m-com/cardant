@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeCheckFailed;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_INDEXED;
+import static com.io7m.cardant.strings.CAStringConstants.ERROR_INDEXED_ATTRIBUTE;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_TYPE_CHECKING;
 
 final class CAITypeChecking
@@ -61,10 +62,27 @@ final class CAITypeChecking
     final var errors = checker.execute();
     if (!errors.isEmpty()) {
       for (int index = 0; index < errors.size(); ++index) {
+        final var error = errors.get(index);
         context.setAttribute(
-          new CAStringConstantApplied(ERROR_INDEXED, Integer.valueOf(index)),
-          errors.get(index).message()
+          new CAStringConstantApplied(
+            ERROR_INDEXED,
+            Integer.valueOf(index)
+          ),
+          error.message()
         );
+
+        for (final var attributeEntry : error.attributes().entrySet()) {
+          context.setAttribute(
+            new CAStringConstantApplied(
+              ERROR_INDEXED_ATTRIBUTE,
+              new Object[]{
+                Integer.valueOf(index),
+                attributeEntry.getKey(),
+              }
+            ),
+            attributeEntry.getValue()
+          );
+        }
       }
       throw context.failFormatted(
         400,
@@ -97,10 +115,27 @@ final class CAITypeChecking
     final var errors = checker.execute();
     if (!errors.isEmpty()) {
       for (int index = 0; index < errors.size(); ++index) {
+        final var error = errors.get(index);
         context.setAttribute(
-          new CAStringConstantApplied(ERROR_INDEXED, Integer.valueOf(index)),
-          errors.get(index).message()
+          new CAStringConstantApplied(
+            ERROR_INDEXED,
+            Integer.valueOf(index)
+          ),
+          error.message()
         );
+
+        for (final var attributeEntry : error.attributes().entrySet()) {
+          context.setAttribute(
+            new CAStringConstantApplied(
+              ERROR_INDEXED_ATTRIBUTE,
+              new Object[]{
+                Integer.valueOf(index),
+                attributeEntry.getKey(),
+              }
+            ),
+            attributeEntry.getValue()
+          );
+        }
       }
       throw context.failFormatted(
         400,

@@ -22,7 +22,9 @@ import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1MetadataElementMatch;
 import com.io7m.cedarbridge.runtime.api.CBString;
+import com.io7m.lanark.core.RDottedName;
 
+import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVDottedNames.DOTTED_NAMES;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVMetadataValueMatch.METADATA_VALUE_MATCH;
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVStrings.STRINGS;
 
@@ -39,8 +41,10 @@ public enum CAUVMetadataElementMatch
 
   METADATA_MATCH;
 
-  private static final CAUVComparisonsFuzzy<String, CBString> FUZZY_VALIDATOR =
-    new CAUVComparisonsFuzzy<>(STRINGS);
+  private static final CAUVComparisonsExact<String, CBString> UNQUALIFIED_VALIDATOR =
+    new CAUVComparisonsExact<>(STRINGS);
+  private static final CAUVComparisonsExact<RDottedName, CBString> QUALIFIED_VALIDATOR =
+    new CAUVComparisonsExact<>(DOTTED_NAMES);
 
   @Override
   public CAI1MetadataElementMatch convertToWire(
@@ -50,7 +54,9 @@ public enum CAUVMetadataElementMatch
     return switch (message) {
       case final CAMetadataElementMatchType.Specific specific -> {
         yield new CAI1MetadataElementMatch.Specific(
-          FUZZY_VALIDATOR.convertToWire(specific.name()),
+          QUALIFIED_VALIDATOR.convertToWire(specific.packageName()),
+          UNQUALIFIED_VALIDATOR.convertToWire(specific.typeName()),
+          UNQUALIFIED_VALIDATOR.convertToWire(specific.fieldName()),
           METADATA_VALUE_MATCH.convertToWire(specific.value())
         );
       }
@@ -89,7 +95,9 @@ public enum CAUVMetadataElementMatch
       }
       case final CAI1MetadataElementMatch.Specific specific -> {
         yield new CAMetadataElementMatchType.Specific(
-          FUZZY_VALIDATOR.convertFromWire(specific.fieldName()),
+          QUALIFIED_VALIDATOR.convertFromWire(specific.fieldPackageName()),
+          UNQUALIFIED_VALIDATOR.convertFromWire(specific.fieldTypeName()),
+          UNQUALIFIED_VALIDATOR.convertFromWire(specific.fieldFieldName()),
           METADATA_VALUE_MATCH.convertFromWire(specific.fieldValue())
         );
       }

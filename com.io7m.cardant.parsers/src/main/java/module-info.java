@@ -14,6 +14,8 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.cardant.parsers.CASyntaxFactoryType;
+
 /**
  * Inventory system (Parsers).
  */
@@ -26,10 +28,29 @@ module com.io7m.cardant.parsers
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.strings;
 
+  requires com.io7m.jaffirm.core;
+  requires com.io7m.jeucreader.core;
   requires com.io7m.jsx.core;
   requires com.io7m.jsx.parser.api;
   requires com.io7m.jsx.parser;
-  requires com.io7m.jeucreader.core;
+
+  uses CASyntaxFactoryType;
+
+  provides CASyntaxFactoryType with
+    com.io7m.cardant.parsers.CADescriptionMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAItemLocationMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAItemSerialMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAMediaTypeMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAMetadataConstraintExpressionsSyntax,
+    com.io7m.cardant.parsers.CAMetadataExpressionsSyntax,
+    com.io7m.cardant.parsers.CAMetadataFieldMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAMetadataMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAMetadataPackageMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAMetadataTypeMatchExpressionsSyntax,
+    com.io7m.cardant.parsers.CAModelSyntaxFactory,
+    com.io7m.cardant.parsers.CANameMatchFuzzyExpressionsSyntax,
+    com.io7m.cardant.parsers.CATypeMatchExpressionsSyntax
+    ;
 
   exports com.io7m.cardant.parsers;
 }

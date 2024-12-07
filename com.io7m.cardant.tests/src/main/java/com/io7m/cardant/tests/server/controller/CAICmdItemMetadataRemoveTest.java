@@ -21,14 +21,13 @@ import com.io7m.cardant.database.api.CADatabaseException;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemGetType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType;
 import com.io7m.cardant.database.api.CADatabaseQueriesItemsType.ItemMetadataRemoveType.Parameters;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageGetTextType;
+import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.model.CAItem;
 import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAMetadataType;
-import com.io7m.cardant.model.CATypeField;
-import com.io7m.cardant.model.CATypeRecord;
-import com.io7m.cardant.model.CATypeScalarType.Integral;
-import com.io7m.cardant.model.CATypeScalarType.Text;
+import com.io7m.cardant.model.CAMetadataType.Text;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.type_package.CATypePackageIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemMetadataRemove;
 import com.io7m.cardant.security.CASecurity;
@@ -43,7 +42,9 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,6 +82,19 @@ public final class CAICmdItemMetadataRemoveTest
       new RDottedName("com.io7m"),
       Version.of(1, 0, 0)
     );
+
+  private static final String P_TEXT = """
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <p:Package xmlns:p="com.io7m.cardant:type_packages:1">
+      <p:PackageInfo Name="com.io7m"
+                     Version="1.0.0"
+                     Description="An example."/>
+      <p:TypeScalarText Name="s" Description="A text type." Pattern=".*"/>
+      <p:TypeRecord Name="t0" Description="A record type.">
+        <p:Field Name="q" Description="A Q field." Type="s"/>
+      </p:TypeRecord>
+    </p:Package>
+    """;
 
   private static final CAItemID ITEM_ID = CAItemID.random();
 
@@ -108,7 +123,9 @@ public final class CAICmdItemMetadataRemoveTest
           context,
           new CAICommandItemMetadataRemove(
             ITEM_ID,
-            Set.of(new RDottedName("x"))));
+            Set.of(CATypeRecordFieldIdentifier.of("com.io7m:x.y"))
+          )
+        );
       });
 
     /* Assert. */
@@ -132,8 +149,6 @@ public final class CAICmdItemMetadataRemoveTest
       mock(ItemGetType.class);
     final var itemMetaRemove =
       mock(ItemMetadataRemoveType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
 
     final var transaction =
       this.transaction();
@@ -144,15 +159,7 @@ public final class CAICmdItemMetadataRemoveTest
       .thenReturn(itemMetaRemove);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -177,7 +184,11 @@ public final class CAICmdItemMetadataRemoveTest
       context,
       new CAICommandItemMetadataRemove(
         ITEM_ID,
-        Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
+        Set.of(
+          CATypeRecordFieldIdentifier.of("com.io7m:a.x"),
+          CATypeRecordFieldIdentifier.of("com.io7m:a.y"),
+          CATypeRecordFieldIdentifier.of("com.io7m:a.z")
+        )
       ));
 
     /* Assert. */
@@ -186,21 +197,19 @@ public final class CAICmdItemMetadataRemoveTest
       .queries(ItemGetType.class);
     verify(transaction)
       .queries(ItemMetadataRemoveType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
     verify(itemMetaRemove)
       .execute(
         new Parameters(
           ITEM_ID,
           Set.of(
-            new RDottedName("a"),
-            new RDottedName("b"),
-            new RDottedName("c")
+            CATypeRecordFieldIdentifier.of("com.io7m:a.x"),
+            CATypeRecordFieldIdentifier.of("com.io7m:a.y"),
+            CATypeRecordFieldIdentifier.of("com.io7m:a.z")
           )
 
         )
       );
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -224,6 +233,9 @@ public final class CAICmdItemMetadataRemoveTest
       mock(ItemGetType.class);
     final var itemMetaRemove =
       mock(ItemMetadataRemoveType.class);
+
+    when(itemGet.execute(any()))
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(
       new CADatabaseException(
@@ -276,7 +288,11 @@ public final class CAICmdItemMetadataRemoveTest
           context,
           new CAICommandItemMetadataRemove(
             ITEM_ID,
-            Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
+            Set.of(
+              CATypeRecordFieldIdentifier.of("com.io7m:a.x"),
+              CATypeRecordFieldIdentifier.of("com.io7m:a.y"),
+              CATypeRecordFieldIdentifier.of("com.io7m:a.z")
+            )
           ));
       });
 
@@ -348,7 +364,11 @@ public final class CAICmdItemMetadataRemoveTest
           context,
           new CAICommandItemMetadataRemove(
             ITEM_ID,
-            Set.of(new RDottedName("a"), new RDottedName("b"), new RDottedName("c"))
+            Set.of(
+              CATypeRecordFieldIdentifier.of("com.io7m:a.x"),
+              CATypeRecordFieldIdentifier.of("com.io7m:a.y"),
+              CATypeRecordFieldIdentifier.of("com.io7m:a.z")
+            )
           ));
       });
 
@@ -373,8 +393,10 @@ public final class CAICmdItemMetadataRemoveTest
       mock(ItemGetType.class);
     final var itemMetaRemove =
       mock(ItemMetadataRemoveType.class);
-    final var typeGet =
-      mock(TypeRecordGetType.class);
+    final var typePackageSatisfying =
+      mock(TypePackageSatisfyingType.class);
+    final var typePackageGetText =
+      mock(TypePackageGetTextType.class);
 
     final var transaction =
       this.transaction();
@@ -383,8 +405,10 @@ public final class CAICmdItemMetadataRemoveTest
       .thenReturn(itemGet);
     when(transaction.queries(ItemMetadataRemoveType.class))
       .thenReturn(itemMetaRemove);
-    when(transaction.queries(TypeRecordGetType.class))
-      .thenReturn(typeGet);
+    when(transaction.queries(TypePackageSatisfyingType.class))
+      .thenReturn(typePackageSatisfying);
+    when(transaction.queries(TypePackageGetTextType.class))
+      .thenReturn(typePackageGetText);
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -403,63 +427,37 @@ public final class CAICmdItemMetadataRemoveTest
       this.createContext();
 
     final var meta0 =
-      new CAMetadataType.Text(new RDottedName("a"), "x");
+      new Text(
+        CATypeRecordFieldIdentifier.of("com.io7m:a.x"),
+        "x"
+      );
+
+    when(typePackageSatisfying.execute(any()))
+      .thenReturn(Optional.of(P));
+    when(typePackageGetText.execute(any()))
+      .thenReturn(Optional.of(P_TEXT));
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(
-        new CAItem(
-          CAItemID.random(),
-          "Item",
-          0L,
-          0L,
-          new TreeMap<>(Map.of(meta0.name(), meta0)),
-          Collections.emptySortedMap(),
-          new TreeSet<>(
-            Set.of(new RDottedName("t"))
-          )
-        )
-      ));
-
-    final var type =
-      new CATypeRecord(
-        P,
-        new RDottedName("t"),
-        "T",
-        Map.ofEntries(
-          Map.entry(
-            new RDottedName("a"),
-            new CATypeField(
-              new RDottedName("a"),
-              "Field A",
-              new Integral(
-                P,
-                new RDottedName("ts0"),
-                "Number",
-                23L,
-                1000L
-              ),
-              true
-            )
-          ),
-          Map.entry(
-            new RDottedName("b"),
-            new CATypeField(
-              new RDottedName("b"),
-              "Field B",
-              new Text(
-                P,
-                new RDottedName("ts0"),
-                "Anything",
-                ".*"
-              ),
-              true
+      .thenReturn(
+        Optional.of(
+          new CAItem(
+            CAItemID.random(),
+            "Item",
+            OffsetDateTime.now(UTC),
+            OffsetDateTime.now(UTC),
+            new TreeMap<>(Map.of(meta0.name(), meta0)),
+            Collections.emptySortedMap(),
+            new TreeSet<>(
+              List.of(
+                new CATypeRecordIdentifier(
+                  new RDottedName("com.io7m"),
+                  new RDottedName("t0")
+                )
+              )
             )
           )
         )
       );
-
-    when(typeGet.execute(any()))
-      .thenReturn(Optional.of(type));
 
     /* Act. */
 
@@ -482,19 +480,25 @@ public final class CAICmdItemMetadataRemoveTest
     verify(transaction)
       .queries(ItemGetType.class);
     verify(transaction)
+      .queries(TypePackageGetTextType.class);
+    verify(transaction)
+      .queries(TypePackageSatisfyingType.class);
+    verify(transaction)
       .queries(ItemMetadataRemoveType.class);
-    verify(transaction)
-      .queries(TypeRecordGetType.class);
-    verify(transaction)
-      .setUserId(context.session().userId());
 
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
     verify(itemMetaRemove)
-      .execute(new Parameters(ITEM_ID, Set.of(meta0.name())));
+      .execute(new ItemMetadataRemoveType.Parameters(ITEM_ID, Set.of(meta0.name())));
+    verify(typePackageSatisfying)
+      .execute(any());
+    verify(typePackageGetText)
+      .execute(P);
 
     verifyNoMoreInteractions(itemGet);
     verifyNoMoreInteractions(itemMetaRemove);
+    verifyNoMoreInteractions(typePackageSatisfying);
+    verifyNoMoreInteractions(typePackageGetText);
     verifyNoMoreInteractions(transaction);
   }
 }

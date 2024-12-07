@@ -101,7 +101,11 @@ public final class CAShellCmdFileGet
 
     final var fileDefinition =
       (CAIResponseFileGet)
-        this.client().executeOrElseThrow(new CAICommandFileGet(fileId));
+        this.client()
+          .sendAndWaitOrThrow(
+            new CAICommandFileGet(fileId),
+            this.commandTimeout()
+          );
 
     final var fileInfo = fileDefinition.data();
     this.formatter().formatFile(fileInfo);
@@ -117,7 +121,7 @@ public final class CAShellCmdFileGet
     }
 
     final var newFileName = outFileName + ".tmp";
-    this.client().fileDownloadOrThrow(
+    this.client().fileDownload(
       fileId,
       file,
       file.resolveSibling(newFileName),

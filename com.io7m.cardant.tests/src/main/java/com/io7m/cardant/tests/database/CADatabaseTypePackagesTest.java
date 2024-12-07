@@ -25,15 +25,6 @@ import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePacka
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSatisfyingType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesTypePackagesType.TypePackageUninstallType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsReferencingScalarType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeRecordsSearchType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarGetType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarPutType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarRemoveType;
-import com.io7m.cardant.database.api.CADatabaseQueriesTypesType.TypeScalarSearchType;
 import com.io7m.cardant.database.api.CADatabaseQueriesUsersType.PutType;
 import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.database.api.CADatabaseType;
@@ -41,6 +32,9 @@ import com.io7m.cardant.database.api.CADatabaseTypePackageResolver;
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CATypeField;
 import com.io7m.cardant.model.CATypeRecord;
+import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.model.CATypeScalarIdentifier;
 import com.io7m.cardant.model.CATypeScalarType.Integral;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
@@ -53,15 +47,20 @@ import com.io7m.cardant.model.type_package.CATypePackageTypeRemovalBehavior;
 import com.io7m.cardant.model.type_package.CATypePackageUninstall;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.tests.CATestDirectories;
-import com.io7m.cardant.tests.containers.CATestContainers;
-import com.io7m.cardant.tests.containers.CATestContainers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CADatabaseFixture;
+import com.io7m.cardant.tests.containers.CAFixtures;
 import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileOK;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompileResultType;
+import com.io7m.cardant.type_packages.compiler.api.CATypePackageCompilerFactoryType;
 import com.io7m.cardant.type_packages.compilers.CATypePackageCompilers;
 import com.io7m.cardant.type_packages.parsers.CATypePackageParsers;
 import com.io7m.cardant.type_packages.parsers.CATypePackageSerializers;
 import com.io7m.cardant.type_packages.resolver.api.CATypePackageResolverType;
+import com.io7m.cardant.type_packages.standard.CATPComputer;
+import com.io7m.cardant.type_packages.standard.CATPProduct;
 import com.io7m.ervilla.api.EContainerSupervisorType;
-import com.io7m.ervilla.test_extension.ErvillaCloseAfterClass;
+import com.io7m.ervilla.test_extension.ErvillaCloseAfterSuite;
 import com.io7m.ervilla.test_extension.ErvillaConfiguration;
 import com.io7m.ervilla.test_extension.ErvillaExtension;
 import com.io7m.idstore.model.IdName;
@@ -76,6 +75,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -91,9 +92,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorDuplicate;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorTypeReferenced;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -101,9 +102,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ErvillaConfiguration(projectName = "com.io7m.cardant", disabledIfUnsupported = true)
 public final class CADatabaseTypePackagesTest
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(CADatabaseTypePackagesTest.class);
+
   private static final CATypePackageIdentifier P =
     new CATypePackageIdentifier(
-      new RDottedName("x"),
+      new RDottedName("com.io7m"),
       Version.of(1, 0, 0)
     );
 
@@ -111,15 +115,6 @@ public final class CADatabaseTypePackagesTest
   private CADatabaseConnectionType connection;
   private CADatabaseTransactionType transaction;
   private CADatabaseType database;
-  private TypeScalarPutType tsPut;
-  private TypeRecordPutType tdPut;
-  private TypeRecordsSearchType tdSearch;
-  private TypeRecordGetType tdGet;
-  private TypeRecordRemoveType tdRemove;
-  private TypeRecordsReferencingScalarType tdRefSearch;
-  private TypeScalarRemoveType tsRemove;
-  private TypeScalarSearchType tsSearch;
-  private TypeScalarGetType tsGet;
   private ItemCreateType iCreate;
   private ItemTypesAssignType tAssign;
   private ItemTypesRevokeType tRevoke;
@@ -132,14 +127,15 @@ public final class CADatabaseTypePackagesTest
   private TypePackageSatisfyingType tpSatisfying;
   private TypePackageSearchType tpSearch;
   private ItemTypesAssignType iTypeAssign;
+  private CATypePackageCompilerFactoryType compilers;
 
   @BeforeAll
   public static void setupOnce(
-    final @ErvillaCloseAfterClass EContainerSupervisorType containers)
+    final @ErvillaCloseAfterSuite EContainerSupervisorType containers)
     throws Exception
   {
     DATABASE_FIXTURE =
-      CATestContainers.createDatabase(containers, 15432);
+      CAFixtures.database(CAFixtures.pod(containers));
   }
 
   @BeforeEach
@@ -174,26 +170,6 @@ public final class CADatabaseTypePackagesTest
     this.iTypeAssign =
       this.transaction.queries(ItemTypesAssignType.class);
 
-    this.tsPut =
-      this.transaction.queries(TypeScalarPutType.class);
-    this.tsGet =
-      this.transaction.queries(TypeScalarGetType.class);
-    this.tsRemove =
-      this.transaction.queries(TypeScalarRemoveType.class);
-    this.tsSearch =
-      this.transaction.queries(TypeScalarSearchType.class);
-
-    this.tdPut =
-      this.transaction.queries(TypeRecordPutType.class);
-    this.tdGet =
-      this.transaction.queries(TypeRecordGetType.class);
-    this.tdRemove =
-      this.transaction.queries(TypeRecordRemoveType.class);
-    this.tdSearch =
-      this.transaction.queries(TypeRecordsSearchType.class);
-    this.tdRefSearch =
-      this.transaction.queries(TypeRecordsReferencingScalarType.class);
-
     this.tpInstall =
       this.transaction.queries(TypePackageInstallType.class);
     this.tpUninstall =
@@ -208,15 +184,14 @@ public final class CADatabaseTypePackagesTest
     this.tRevoke =
       this.transaction.queries(ItemTypesRevokeType.class);
 
-    this.resolver =
-      CADatabaseTypePackageResolver.create(
-        CATypePackageCompilers.create(
-          CAStrings.create(Locale.ROOT),
-          new CATypePackageParsers(),
-          new CATypePackageCheckers()
-        ),
-        this.transaction
+    this.compilers =
+      CATypePackageCompilers.create(
+        CAStrings.create(Locale.ROOT),
+        new CATypePackageParsers(),
+        new CATypePackageCheckers()
       );
+    this.resolver =
+      CADatabaseTypePackageResolver.create(this.compilers, this.transaction);
   }
 
   /**
@@ -231,8 +206,11 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var p0 =
       new CATypePackage(
@@ -248,11 +226,6 @@ public final class CADatabaseTypePackagesTest
     this.tpInstall.execute(p0);
     this.assertIsInstalled(p0);
     this.transaction.commit();
-
-    {
-      final var t0r = this.tsGet.execute(t0.name());
-      assertEquals(Optional.of(t0), t0r);
-    }
 
     {
       assertEquals(
@@ -284,8 +257,11 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var p0 =
       new CATypePackage(
@@ -314,10 +290,6 @@ public final class CADatabaseTypePackagesTest
 
     this.tpInstall.execute(p0);
     this.assertIsInstalled(p0);
-
-    final var ex =
-      assertThrows(CADatabaseException.class, () -> this.tpInstall.execute(p1));
-    assertEquals(errorDuplicate(), ex.errorCode());
   }
 
   /**
@@ -332,8 +304,11 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var p0 =
       new CATypePackage(
@@ -387,19 +362,21 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:x"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var t1 =
       new CATypeRecord(
-        P,
-        new RDottedName("x.t1"),
+        CATypeRecordIdentifier.of("com.io7m:t1"),
         "T1",
         Map.ofEntries(
           Map.entry(
-            new RDottedName("x.t1.f"),
+            CATypeRecordFieldIdentifier.of("com.io7m:t1.f"),
             new CATypeField(
-              new RDottedName("x.t1.f"),
+              CATypeRecordFieldIdentifier.of("com.io7m:t1.f"),
               "F0",
               t0,
               true
@@ -454,19 +431,21 @@ public final class CADatabaseTypePackagesTest
   {
     final var t0 =
       new Integral(
-        P,
-        new RDottedName("x.t0"), "T0", 0L, 100L);
+        CATypeScalarIdentifier.of("com.io7m:s"),
+        "T0",
+        0L,
+        100L
+      );
 
     final var t1 =
       new CATypeRecord(
-        P,
-        new RDottedName("x.t1"),
+        CATypeRecordIdentifier.of("com.io7m:x"),
         "T1",
         Map.ofEntries(
           Map.entry(
-            new RDottedName("x.t1.f"),
+            CATypeRecordFieldIdentifier.of("com.io7m:x.f"),
             new CATypeField(
-              new RDottedName("x.t1.f"),
+              CATypeRecordFieldIdentifier.of("com.io7m:x.f"),
               "F0",
               t0,
               true
@@ -619,5 +598,44 @@ public final class CADatabaseTypePackagesTest
 
     this.transaction.commit();
     return List.copyOf(results);
+  }
+
+  /**
+   * Installing type packages works.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testTypePackageInstallStandard()
+    throws Exception
+  {
+    final var r0 =
+      this.compilers.createCompiler(this.resolver)
+        .execute(new String(new CATPProduct().packageText().readAllBytes()));
+
+    final var r1 =
+      this.compilers.createCompiler(this.resolver)
+        .execute(new String(new CATPComputer().packageText().readAllBytes()));
+
+    dumpResult(r0);
+    dumpResult(r1);
+
+    final var p0 =
+      assertInstanceOf(CATypePackageCompileOK.class, r0);
+    final var p1 =
+      assertInstanceOf(CATypePackageCompileOK.class, r1);
+
+    this.tpInstall.execute(p0.typePackage());
+    this.assertIsInstalled(p0.typePackage());
+    this.tpInstall.execute(p1.typePackage());
+    this.assertIsInstalled(p1.typePackage());
+    this.transaction.commit();
+  }
+
+  private static void dumpResult(
+    final CATypePackageCompileResultType r)
+  {
+    LOG.debug("{}", r);
   }
 }

@@ -17,8 +17,8 @@ package com.io7m.cardant.tests.arbitraries;
 
 
 import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.protocol.inventory.CAICommandItemTypesRevoke;
-import com.io7m.lanark.core.RDottedName;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
@@ -31,7 +31,7 @@ public final class CAArbCommandItemTypesRevoke
       CAICommandItemTypesRevoke.class,
       () -> Combinators.combine(
         Arbitraries.defaultFor(CAItemID.class),
-        Arbitraries.defaultFor(RDottedName.class).set()
+        Arbitraries.defaultFor(CATypeRecordIdentifier.class).set()
       ).as(CAICommandItemTypesRevoke::new)
     );
   }

@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -78,14 +79,20 @@ public final class CAClientPreferencesTest
         List.of(
           new CAPreferenceServerBookmark(
             "name1", "host", 1000, true,
+            Duration.ofSeconds(15L),
+            Duration.ofSeconds(30L),
             new CAPreferenceServerUsernamePassword("user", "pass")
           ),
           new CAPreferenceServerBookmark(
             "name2", "host", 1000, true,
+            Duration.ofSeconds(45L),
+            Duration.ofSeconds(60L),
             new CAPreferenceServerUsernamePassword("user", "pass")
           ),
           new CAPreferenceServerBookmark(
             "name3", "host", 1000, true,
+            Duration.ofSeconds(75L),
+            Duration.ofSeconds(90L),
             new CAPreferenceServerUsernamePassword("user", "pass")
           )
         ),
@@ -114,14 +121,20 @@ public final class CAClientPreferencesTest
         List.of(
           new CAPreferenceServerBookmark(
             "name1", "host", 1000, true,
+            Duration.ofSeconds(15L),
+            Duration.ofSeconds(30L),
             new CAPreferenceServerUsernamePassword("user", "pass")
           ),
           new CAPreferenceServerBookmark(
             "name2", "host", 1000, true,
+            Duration.ofSeconds(45L),
+            Duration.ofSeconds(60L),
             new CAPreferenceServerUsernamePassword("user", "pass")
           ),
           new CAPreferenceServerBookmark(
             "name3", "host", 1000, true,
+            Duration.ofSeconds(75L),
+            Duration.ofSeconds(90L),
             new CAPreferenceServerUsernamePassword("user", "pass")
           )
         ),

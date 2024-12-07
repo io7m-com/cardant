@@ -33,8 +33,8 @@ import com.io7m.medrina.api.MPolicy;
 import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -121,15 +121,7 @@ public final class CAICmdItemSetNameTest
       .thenReturn(setName);
 
     when(itemGet.execute(any()))
-      .thenReturn(Optional.of(new CAItem(
-        ITEM_ID,
-        "Item",
-        0L,
-        0L,
-        Collections.emptySortedMap(),
-        Collections.emptySortedMap(),
-        Collections.emptySortedSet()
-      )));
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     CASecurity.setPolicy(new MPolicy(List.of(
       new MRule(
@@ -160,7 +152,7 @@ public final class CAICmdItemSetNameTest
       .queries(CADatabaseQueriesItemsType.ItemSetNameType.class);
     verify(setName)
       .execute(new Parameters(ITEM_ID, "Item"));
-    verify(itemGet)
+    verify(itemGet, new Times(2))
       .execute(ITEM_ID);
 
     verifyNoMoreInteractions(transaction);
@@ -191,6 +183,9 @@ public final class CAICmdItemSetNameTest
       .thenReturn(itemGet);
     when(transaction.queries(CADatabaseQueriesItemsType.ItemSetNameType.class))
       .thenReturn(setName);
+
+    when(itemGet.execute(any()))
+      .thenReturn(Optional.of(CAItem.createWith(ITEM_ID)));
 
     doThrow(new CADatabaseException("X", errorNonexistent(), Map.of(), Optional.empty()))
       .when(setName)

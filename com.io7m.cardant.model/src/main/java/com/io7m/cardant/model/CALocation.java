@@ -16,19 +16,22 @@
 
 package com.io7m.cardant.model;
 
-import com.io7m.lanark.core.RDottedName;
-
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
+import static java.time.ZoneOffset.UTC;
+
 /**
  * A location.
  *
  * @param id          The location ID
+ * @param timeCreated The time the location was created
+ * @param timeUpdated The time the location was last updated
  * @param parent      The location parent, if any
- * @param name        The location name
+ * @param path        The location path
  * @param metadata    The metadata associated with the location
  * @param types       The types associated with the location
  * @param attachments The attachments associated with the location
@@ -37,28 +40,38 @@ import java.util.SortedSet;
 public record CALocation(
   CALocationID id,
   Optional<CALocationID> parent,
-  String name,
-  SortedMap<RDottedName, CAMetadataType> metadata,
+  CALocationPath path,
+  OffsetDateTime timeCreated,
+  OffsetDateTime timeUpdated,
+  SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
-  SortedSet<RDottedName> types)
+  SortedSet<CATypeRecordIdentifier> types)
   implements CAInventoryObjectType<CALocationSummary>
 {
   /**
    * Construct a location.
    *
    * @param id          The location ID
+   * @param timeCreated The time the location was created
+   * @param timeUpdated The time the location was last updated
    * @param parent      The location parent, if any
-   * @param name        The location name
+   * @param path        The location path
+   * @param metadata    The metadata associated with the location
+   * @param types       The types associated with the location
+   * @param attachments The attachments associated with the location
    */
 
   public CALocation
   {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(parent, "parent");
-    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(path, "path");
     Objects.requireNonNull(metadata, "metadata");
     Objects.requireNonNull(attachments, "attachments");
     Objects.requireNonNull(types, "types");
+
+    timeCreated = timeCreated.withOffsetSameInstant(UTC);
+    timeUpdated = timeUpdated.withOffsetSameInstant(UTC);
 
     parent.ifPresent(parentId -> {
       if (id.equals(parentId)) {
@@ -80,6 +93,21 @@ public record CALocation(
   @Override
   public CALocationSummary summary()
   {
-    return new CALocationSummary(this.id, this.parent, this.name);
+    return new CALocationSummary(
+      this.id,
+      this.parent,
+      this.path,
+      this.timeCreated,
+      this.timeUpdated
+    );
+  }
+
+  /**
+   * @return The location name (the last path component)
+   */
+
+  public CALocationName name()
+  {
+    return this.path.last();
   }
 }

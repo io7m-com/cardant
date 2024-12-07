@@ -20,6 +20,7 @@ package com.io7m.cardant.tests.server.controller;
 import com.io7m.cardant.database.api.CADatabaseQueriesLocationsType;
 import com.io7m.cardant.model.CALocation;
 import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.protocol.inventory.CAICommandLocationList;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -32,6 +33,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +41,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_READER;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -63,7 +66,9 @@ public final class CAICmdLocationsListTest
     new CALocation(
       CALocationID.random(),
       Optional.empty(),
-      "A",
+      CALocationPath.singleton("A"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -73,7 +78,9 @@ public final class CAICmdLocationsListTest
     new CALocation(
       CALocationID.random(),
       Optional.of(LOCATION_0.id()),
-      "B",
+      CALocationPath.singleton("B"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -83,7 +90,9 @@ public final class CAICmdLocationsListTest
     new CALocation(
       CALocationID.random(),
       Optional.of(LOCATION_1.id()),
-      "C",
+      CALocationPath.singleton("C"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -144,7 +153,7 @@ public final class CAICmdLocationsListTest
     when(transaction.queries(CADatabaseQueriesLocationsType.LocationListType.class))
       .thenReturn(locList);
 
-    when(locList.execute(UNIT))
+    when(locList.execute(any()))
       .thenReturn(new TreeMap<>(
         Map.ofEntries(
           Map.entry(LOCATION_0.id(), LOCATION_0.summary()),
@@ -181,7 +190,7 @@ public final class CAICmdLocationsListTest
     verify(transaction)
       .queries(CADatabaseQueriesLocationsType.LocationListType.class);
     verify(locList)
-      .execute(UNIT);
+      .execute(any());
 
     verifyNoMoreInteractions(transaction);
     verifyNoMoreInteractions(locList);

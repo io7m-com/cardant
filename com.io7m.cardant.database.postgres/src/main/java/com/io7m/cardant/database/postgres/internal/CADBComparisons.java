@@ -18,6 +18,7 @@
 package com.io7m.cardant.database.postgres.internal;
 
 
+import com.io7m.cardant.database.api.CADatabaseLanguage;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
@@ -40,6 +41,7 @@ public final class CADBComparisons
   /**
    * Create a fuzzy match expression.
    *
+   * @param language The database language
    * @param query       The query
    * @param fieldExact  The "exact" field
    * @param fieldSearch The search field
@@ -49,6 +51,7 @@ public final class CADBComparisons
    */
 
   public static <T> Condition createFuzzyMatchQuery(
+    final CADatabaseLanguage language,
     final CAComparisonFuzzyType<T> query,
     final Field<T> fieldExact,
     final String fieldSearch)
@@ -65,13 +68,15 @@ public final class CADBComparisons
       }
       case final CAComparisonFuzzyType.IsSimilarTo<T> isSimilarTo -> {
         yield DSL.condition(
-          "%s @@ websearch_to_tsquery(?)".formatted(fieldSearch),
+          "%s @@ websearch_to_tsquery('%s', ?)"
+            .formatted(fieldSearch, language),
           isSimilarTo.value()
         );
       }
       case final CAComparisonFuzzyType.IsNotSimilarTo<T> isNotSimilarTo -> {
         yield DSL.condition(
-          "NOT (%s @@ websearch_to_tsquery(?))".formatted(fieldSearch),
+          "NOT (%s @@ websearch_to_tsquery('%s', ?))"
+            .formatted(fieldSearch, language),
           isNotSimilarTo.value()
         );
       }
@@ -184,6 +189,85 @@ public final class CADBComparisons
     }
   }
 
+  /**
+   * Create a set match expression.
+   *
+   * @param query The query
+   * @param field The array-typed field
+   *
+   * @return An exact match condition
+   */
+
+  public static Condition createSetMatchQueryInteger(
+    final CAComparisonSetType<Integer> query,
+    final TableField<org.jooq.Record, Integer[]> field)
+  {
+    switch (query) {
+      case CAComparisonSetType.Anything<Integer> e -> {
+        return DSL.trueCondition();
+      }
+      case final CAComparisonSetType.IsEqualTo<Integer> isEqualTo -> {
+        final var set = isEqualTo.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "(cast (? as integer[]) <@ cast (? as integer[])) AND (cast (? as integer[]) @> cast (? as integer[]))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsNotEqualTo<Integer> isNotEqualTo -> {
+        final var set = isNotEqualTo.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "NOT ((cast (? as integer[]) <@ cast (? as integer[])) AND (cast (? as integer[]) @> cast (? as integer[])))",
+          field,
+          DSL.array(values),
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsSubsetOf<Integer> isSubsetOf -> {
+        final var set = isSubsetOf.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as integer[]) <@ cast (? as integer[])",
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsSupersetOf<Integer> isSupersetOf -> {
+        final var set = isSupersetOf.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as integer[]) @> cast (? as integer[])",
+          field,
+          DSL.array(values)
+        );
+      }
+      case final CAComparisonSetType.IsOverlapping<Integer> isOverlapping -> {
+        final var set = isOverlapping.value();
+        final var values = new Integer[set.size()];
+        set.toArray(values);
+
+        return DSL.condition(
+          "cast (? as integer[]) && cast (? as integer[])",
+          field,
+          DSL.array(values)
+        );
+      }
+    }
+  }
+  
   /**
    * Create a set match expression.
    *

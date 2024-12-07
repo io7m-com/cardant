@@ -18,33 +18,34 @@
 package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
-import com.io7m.cardant.model.CAItemLocationMatchType;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationExact;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationWithDescendants;
-import com.io7m.cardant.model.CAItemLocationMatchType.CAItemLocationsAll;
 import com.io7m.cardant.model.CALocationID;
-import com.io7m.cardant.strings.CAStringConstantType;
+import com.io7m.cardant.model.CALocationMatchType;
+import com.io7m.cardant.model.CALocationMatchType.CALocationExact;
+import com.io7m.cardant.model.CALocationMatchType.CALocationWithDescendants;
+import com.io7m.cardant.model.CALocationMatchType.CALocationsAll;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
 import com.io7m.jsx.SExpressionType.SList;
 import com.io7m.jsx.SExpressionType.SSymbol;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_ANYNAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_ANYNAME_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_DESC;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_DESC_NAME;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXACT;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXACT_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_EXAMPLE_1;
 import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_LOCATION_MATCH_NAME;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for location match expressions.
@@ -52,22 +53,6 @@ import static java.util.Map.entry;
 
 public final class CAItemLocationMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_LOCATION_MATCH_NAME,
-        SYNTAX_LOCATION_MATCH),
-      entry(
-        SYNTAX_LOCATION_MATCH_EXACT_NAME,
-        SYNTAX_LOCATION_MATCH_EXACT),
-      entry(
-        SYNTAX_LOCATION_MATCH_DESC_NAME,
-        SYNTAX_LOCATION_MATCH_DESC),
-      entry(
-        SYNTAX_LOCATION_MATCH_ANYNAME_NAME,
-        SYNTAX_LOCATION_MATCH_ANYNAME)
-    );
-
   /**
    * Expression parsers for location match expressions.
    *
@@ -80,12 +65,6 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
     super(inStrings);
   }
 
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
-  }
-
   /**
    * Parse a match expression for locations.
    *
@@ -96,21 +75,21 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
    * @throws CAException On errors
    */
 
-  public CAItemLocationMatchType locationMatch(
+  public CALocationMatchType locationMatch(
     final String text)
     throws CAException
   {
     return this.locationMatchExpr(CAExpressions.parse(text));
   }
 
-  private CAItemLocationMatchType locationMatchExpr(
+  private CALocationMatchType locationMatchExpr(
     final SExpressionType expression)
     throws CAException
   {
     if (expression instanceof final SAtomType atom) {
       return switch (atom.text().toUpperCase(Locale.ROOT)) {
         case "ANY-LOCATION" -> {
-          yield new CAItemLocationsAll();
+          yield new CALocationsAll();
         }
         default -> {
           throw this.createParseError(expression);
@@ -136,24 +115,24 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
     throw this.createParseError(expression);
   }
 
-  private CAItemLocationMatchType locationMatchExact(
+  private CALocationMatchType locationMatchExact(
     final SList list)
     throws CAException
   {
     if (list.size() == 2) {
-      return new CAItemLocationExact(
+      return new CALocationExact(
         this.location(list.get(1))
       );
     }
     throw this.createParseError(list);
   }
 
-  private CAItemLocationMatchType locationMatchWithDescendants(
+  private CALocationMatchType locationMatchWithDescendants(
     final SList list)
     throws CAException
   {
     if (list.size() == 2) {
-      return new CAItemLocationWithDescendants(
+      return new CALocationWithDescendants(
         this.location(list.get(1))
       );
     }
@@ -185,13 +164,13 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
    */
 
   public SExpressionType locationMatchSerialize(
-    final CAItemLocationMatchType match)
+    final CALocationMatchType match)
   {
-    if (match instanceof CAItemLocationsAll) {
+    if (match instanceof CALocationsAll) {
       return new SSymbol(zero(), "any-location");
     }
 
-    if (match instanceof final CAItemLocationExact w) {
+    if (match instanceof final CALocationExact w) {
       return new SList(
         zero(),
         true,
@@ -202,7 +181,7 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
       );
     }
 
-    if (match instanceof final CAItemLocationWithDescendants w) {
+    if (match instanceof final CALocationWithDescendants w) {
       return new SList(
         zero(),
         true,
@@ -227,9 +206,59 @@ public final class CAItemLocationMatchExpressions extends CAExpressions
    */
 
   public String locationMatchSerializeToString(
-    final CAItemLocationMatchType match)
+    final CALocationMatchType match)
     throws CAException
   {
     return CAExpressions.serialize(this.locationMatchSerialize(match));
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_LOCATION_MATCH_NAME,
+        List.of(
+          SYNTAX_LOCATION_MATCH_ANYNAME_NAME,
+          SYNTAX_LOCATION_MATCH_EXACT_NAME,
+          SYNTAX_LOCATION_MATCH_DESC_NAME
+        ),
+        List.of(
+          SYNTAX_LOCATION_MATCH_ANYNAME,
+          SYNTAX_LOCATION_MATCH_EXAMPLE_0,
+          SYNTAX_LOCATION_MATCH_EXAMPLE_1
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_LOCATION_MATCH_ANYNAME_NAME,
+        SYNTAX_LOCATION_MATCH_ANYNAME,
+        List.of(
+          SYNTAX_LOCATION_MATCH_ANYNAME
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_LOCATION_MATCH_EXACT_NAME,
+        SYNTAX_LOCATION_MATCH_EXACT,
+        List.of(SYNTAX_LOCATION_MATCH_EXAMPLE_0)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_LOCATION_MATCH_DESC_NAME,
+        SYNTAX_LOCATION_MATCH_DESC,
+        List.of(SYNTAX_LOCATION_MATCH_EXAMPLE_1)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

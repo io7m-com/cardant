@@ -19,6 +19,7 @@ package com.io7m.cardant.parsers;
 
 import com.io7m.cardant.error_codes.CAException;
 import com.io7m.cardant.model.CATypeMatch;
+import com.io7m.cardant.model.CATypeRecordIdentifier;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.Anything;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsEqualTo;
@@ -26,7 +27,6 @@ import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsNotEqualTo;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsOverlapping;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsSubsetOf;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType.IsSupersetOf;
-import com.io7m.cardant.strings.CAStringConstantType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.SExpressionType.SAtomType;
@@ -35,24 +35,34 @@ import com.io7m.jsx.SExpressionType.SListType;
 import com.io7m.jsx.SExpressionType.SSymbol;
 import com.io7m.lanark.core.RDottedName;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_ANYNAME_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO;
-import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_ANYTYPE;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_ANYTYPE_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_0;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_1;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_2;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_3;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_EXAMPLE_4;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_NOT_EQUAL_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_NOT_EQUAL_TO_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_OVERLAPPING_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_OVERLAPPING_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUBSETOF_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUBSETOF_TO;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUPERSETOF_NAME;
+import static com.io7m.cardant.strings.CAStringConstants.SYNTAX_TYPE_MATCH_SUPERSETOF_TO;
 import static com.io7m.jlexing.core.LexicalPositions.zero;
-import static java.util.Map.entry;
 
 /**
  * Expression parsers for type match expressions.
@@ -60,25 +70,6 @@ import static java.util.Map.entry;
 
 public final class CATypeMatchExpressions extends CAExpressions
 {
-  private static final Map<CAStringConstantType, CAStringConstantType> SYNTAX =
-    Map.ofEntries(
-      entry(
-        SYNTAX_NAME_MATCH_ANYNAME_NAME,
-        SYNTAX_NAME_MATCH_ANYNAME),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_EQUAL_TO),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_EQUAL_TO),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_SIMILAR_TO),
-      entry(
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO_NAME,
-        SYNTAX_NAME_MATCH_WITH_NAME_NOT_SIMILAR_TO)
-    );
-
   /**
    * Expression parsers for type match expressions.
    *
@@ -89,12 +80,6 @@ public final class CATypeMatchExpressions extends CAExpressions
     final CAStrings inStrings)
   {
     super(inStrings);
-  }
-
-  @Override
-  protected Map<CAStringConstantType, CAStringConstantType> syntax()
-  {
-    return SYNTAX;
   }
 
   /**
@@ -131,7 +116,7 @@ public final class CATypeMatchExpressions extends CAExpressions
     return new CATypeMatch(this.typeMatchExpr(e));
   }
 
-  private CAComparisonSetType<RDottedName> typeMatchExpr(
+  private CAComparisonSetType<CATypeRecordIdentifier> typeMatchExpr(
     final SExpressionType e)
     throws CAException
   {
@@ -145,19 +130,19 @@ public final class CATypeMatchExpressions extends CAExpressions
           && xs.get(0) instanceof final SAtomType head -> {
         yield switch (head.text().toUpperCase(Locale.ROOT)) {
           case "WITH-TYPES-EQUAL-TO" -> {
-            yield new IsEqualTo<>(this.dottedNamesAfterHead(xs));
+            yield new IsEqualTo<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-NOT-EQUAL-TO" -> {
-            yield new IsNotEqualTo<>(this.dottedNamesAfterHead(xs));
+            yield new IsNotEqualTo<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-SUBSET-OF" -> {
-            yield new IsSubsetOf<>(this.dottedNamesAfterHead(xs));
+            yield new IsSubsetOf<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-SUPERSET-OF" -> {
-            yield new IsSupersetOf<>(this.dottedNamesAfterHead(xs));
+            yield new IsSupersetOf<>(this.identifiersAfterHead(xs));
           }
           case "WITH-TYPES-OVERLAPPING" -> {
-            yield new IsOverlapping<>(this.dottedNamesAfterHead(xs));
+            yield new IsOverlapping<>(this.identifiersAfterHead(xs));
           }
           default -> {
             throw this.createParseError(e);
@@ -170,7 +155,7 @@ public final class CATypeMatchExpressions extends CAExpressions
     };
   }
 
-  private Set<RDottedName> dottedNamesAfterHead(
+  private Set<CATypeRecordIdentifier> identifiersAfterHead(
     final SListType xs)
     throws CAException
   {
@@ -178,11 +163,11 @@ public final class CATypeMatchExpressions extends CAExpressions
       return Set.of();
     }
 
-    final var results = new HashSet<RDottedName>();
+    final var results = new HashSet<CATypeRecordIdentifier>();
     for (var index = 1; index < xs.size(); ++index) {
       switch (xs.get(index)) {
         case final SAtomType a -> {
-          results.add(new RDottedName(a.text()));
+          results.add(this.identifier(a, a.text()));
         }
         case final SListType ys -> {
           throw this.createParseError(ys);
@@ -190,6 +175,21 @@ public final class CATypeMatchExpressions extends CAExpressions
       }
     }
     return Set.copyOf(results);
+  }
+
+  private CATypeRecordIdentifier identifier(
+    final SExpressionType e,
+    final String text)
+    throws CAException
+  {
+    final var segments = List.of(text.split(":"));
+    if (segments.size() == 2) {
+      return new CATypeRecordIdentifier(
+        new RDottedName(segments.get(0)),
+        new RDottedName(segments.get(1))
+      );
+    }
+    throw this.createParseError(e);
   }
 
   /**
@@ -218,13 +218,13 @@ public final class CATypeMatchExpressions extends CAExpressions
    */
 
   public SExpressionType typeMatchSerialize(
-    final CAComparisonSetType<RDottedName> expression)
+    final CAComparisonSetType<CATypeRecordIdentifier> expression)
   {
     return switch (expression) {
-      case final Anything<RDottedName> e -> {
+      case final Anything<CATypeRecordIdentifier> e -> {
         yield new SSymbol(zero(), "with-any-type");
       }
-      case final IsEqualTo<RDottedName> e -> {
+      case final IsEqualTo<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -236,7 +236,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsNotEqualTo<RDottedName> e -> {
+      case final IsNotEqualTo<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -248,7 +248,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsOverlapping<RDottedName> e -> {
+      case final IsOverlapping<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -260,7 +260,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsSubsetOf<RDottedName> e -> {
+      case final IsSubsetOf<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -272,7 +272,7 @@ public final class CATypeMatchExpressions extends CAExpressions
           ).toList()
         );
       }
-      case final IsSupersetOf<RDottedName> e -> {
+      case final IsSupersetOf<CATypeRecordIdentifier> e -> {
         yield new SList(
           zero(),
           true,
@@ -288,8 +288,85 @@ public final class CATypeMatchExpressions extends CAExpressions
   }
 
   private static SExpressionType nameToSymbol(
-    final RDottedName n)
+    final CATypeRecordIdentifier n)
   {
-    return new SSymbol(zero(), n.value());
+    return new SSymbol(zero(), n.toString());
+  }
+
+  @Override
+  public SortedSet<CASyntaxRuleType> syntaxRules()
+  {
+    final var results = new TreeSet<CASyntaxRuleType>();
+
+    results.add(
+      this.ruleBranch(
+        SYNTAX_TYPE_MATCH_NAME,
+        List.of(
+          SYNTAX_TYPE_MATCH_ANYTYPE_NAME,
+          SYNTAX_TYPE_MATCH_EQUAL_TO_NAME,
+          SYNTAX_TYPE_MATCH_NOT_EQUAL_TO_NAME,
+          SYNTAX_TYPE_MATCH_SUPERSETOF_NAME,
+          SYNTAX_TYPE_MATCH_SUBSETOF_NAME,
+          SYNTAX_TYPE_MATCH_OVERLAPPING_NAME
+        ),
+        List.of(
+          SYNTAX_TYPE_MATCH_EXAMPLE_0,
+          SYNTAX_TYPE_MATCH_EXAMPLE_1,
+          SYNTAX_TYPE_MATCH_EXAMPLE_2,
+          SYNTAX_TYPE_MATCH_EXAMPLE_3,
+          SYNTAX_TYPE_MATCH_EXAMPLE_4
+        )
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_ANYTYPE_NAME,
+        SYNTAX_TYPE_MATCH_ANYTYPE,
+        List.of(SYNTAX_TYPE_MATCH_ANYTYPE)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_EQUAL_TO_NAME,
+        SYNTAX_TYPE_MATCH_EQUAL_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_0)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_NOT_EQUAL_TO_NAME,
+        SYNTAX_TYPE_MATCH_NOT_EQUAL_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_1)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_SUPERSETOF_NAME,
+        SYNTAX_TYPE_MATCH_SUPERSETOF_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_4)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_SUBSETOF_NAME,
+        SYNTAX_TYPE_MATCH_SUBSETOF_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_3)
+      )
+    );
+
+    results.add(
+      this.ruleLeafWithExamples(
+        SYNTAX_TYPE_MATCH_OVERLAPPING_NAME,
+        SYNTAX_TYPE_MATCH_OVERLAPPING_TO,
+        List.of(SYNTAX_TYPE_MATCH_EXAMPLE_2)
+      )
+    );
+
+    return Collections.unmodifiableSortedSet(results);
   }
 }

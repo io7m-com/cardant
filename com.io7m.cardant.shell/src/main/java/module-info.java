@@ -14,6 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.cardant.parsers.CASyntaxFactoryType;
 import com.io7m.cardant.shell.CAShellFactoryType;
 import com.io7m.cardant.shell.CAShells;
 
@@ -35,7 +36,6 @@ module com.io7m.cardant.shell
 
   requires com.io7m.jeucreader.core;
   requires com.io7m.jmulticlose.core;
-  requires com.io7m.junreachable.core;
   requires com.io7m.jxe.core;
   requires com.io7m.lanark.core;
   requires com.io7m.quarrel.core;
@@ -45,8 +45,13 @@ module com.io7m.cardant.shell
   requires org.apache.tika.core;
   requires org.jline;
 
+  uses CASyntaxFactoryType;
+
   provides CAShellFactoryType
     with CAShells;
 
   exports com.io7m.cardant.shell;
+
+  exports com.io7m.cardant.shell.internal.converters
+    to com.io7m.cardant.tests;
 }
