@@ -1078,11 +1078,6 @@ CREATE VIEW location_search_view AS
       GRANT SELECT ON location_search_view TO cardant_read_only
     </Statement>
 
-    <Statement><![CDATA[
-
-]]>
-    </Statement>
-
     <Comment>
       The audit table stores a list of auditable events. Who did it? What did they do? When did they do it?
     </Comment>
