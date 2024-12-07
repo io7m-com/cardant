@@ -158,7 +158,9 @@ public final class CAICmdStockRepositTest
           LOCATION_0.summary(),
           new CAItemSummary(
             ITEM_ID,
-            "Item"
+            "Item",
+            OffsetDateTime.now(UTC),
+            OffsetDateTime.now(UTC)
           ),
           23L
         )

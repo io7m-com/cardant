@@ -48,16 +48,13 @@ import io.opentelemetry.api.trace.Span;
 import org.jooq.DSLContext;
 import org.jooq.EnumType;
 import org.jooq.Field;
-import org.jooq.Record7;
 import org.jooq.Select;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
-import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.io7m.cardant.database.postgres.internal.CADatabaseExceptions.handleDatabaseException;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_SEARCH_VIEW;
@@ -185,6 +182,8 @@ public final class CADBQItemSearch
         .addWhereCondition(simpleConditions)
         .addGroupByField(ITEM_SEARCH_VIEW.ITEM_ID)
         .addGroupByField(ITEM_SEARCH_VIEW.ITEM_NAME)
+        .addGroupByField(ITEM_SEARCH_VIEW.ITEM_CREATED)
+        .addGroupByField(ITEM_SEARCH_VIEW.ITEM_UPDATED)
         .setPageSize(parameters.pageSize())
         .setStatementListener(statement -> {
           Span.current().setAttribute(DB_STATEMENT, statement.toString());
@@ -247,7 +246,8 @@ public final class CADBQItemSearch
     return Set.copyOf(results);
   }
 
-  private static Select<Record7<UUID, String, Object, OffsetDateTime, UUID[], Integer[], Object>>
+  @SuppressWarnings("unchecked")
+  private static Select
   generateQuerySetFor(
     final DSLContext context,
     final QuerySetType metaQuerySet)
@@ -258,6 +258,8 @@ public final class CADBQItemSearch
             ITEM_SEARCH_VIEW.ITEM_ID,
             ITEM_SEARCH_VIEW.ITEM_NAME,
             ITEM_NAME_SEARCH,
+            ITEM_SEARCH_VIEW.ITEM_CREATED,
+            ITEM_SEARCH_VIEW.ITEM_UPDATED,
             ITEM_SEARCH_VIEW.ITEM_DELETED,
             ITEM_SEARCH_VIEW.ISV_ITEM_LOCATIONS,
             ITEM_SEARCH_VIEW.ISV_METADATA_TYPE_IDS,
@@ -323,7 +325,9 @@ public final class CADBQItemSearch
         final var query =
           page.queryFields(context, List.of(
             ITEM_SEARCH_VIEW.ITEM_ID,
-            ITEM_SEARCH_VIEW.ITEM_NAME
+            ITEM_SEARCH_VIEW.ITEM_NAME,
+            ITEM_SEARCH_VIEW.ITEM_CREATED,
+            ITEM_SEARCH_VIEW.ITEM_UPDATED
           ));
 
         querySpan.setAttribute(DB_STATEMENT, query.toString());
@@ -332,7 +336,9 @@ public final class CADBQItemSearch
           query.fetch().map(record -> {
             return new CAItemSummary(
               new CAItemID(record.get(ITEM_SEARCH_VIEW.ITEM_ID)),
-              record.get(ITEM_SEARCH_VIEW.ITEM_NAME)
+              record.get(ITEM_SEARCH_VIEW.ITEM_NAME),
+              record.get(ITEM_SEARCH_VIEW.ITEM_CREATED),
+              record.get(ITEM_SEARCH_VIEW.ITEM_UPDATED)
             );
           });
 

@@ -253,7 +253,9 @@ public final class CADBQStockSearch
       final var itemSummary =
         new CAItemSummary(
           new CAItemID(r.get(ITEMS.ITEM_ID)),
-          r.get(ITEMS.ITEM_NAME)
+          r.get(ITEMS.ITEM_NAME),
+          r.get(ITEMS.ITEM_CREATED),
+          r.get(ITEMS.ITEM_UPDATED)
         );
 
       final var locationSummary =
@@ -261,7 +263,9 @@ public final class CADBQStockSearch
           new CALocationID(r.get(STOCK.STOCK_LOCATION)),
           Optional.ofNullable(r.get(LOCATIONS.LOCATION_PARENT))
             .map(CALocationID::new),
-          CALocationPath.ofArray(r.get(LOCATION_PATH_NAME))
+          CALocationPath.ofArray(r.get(LOCATION_PATH_NAME)),
+          r.get(LOCATIONS.LOCATION_CREATED),
+          r.get(LOCATIONS.LOCATION_UPDATED)
         );
 
       if (isSerial) {
@@ -310,6 +314,8 @@ public final class CADBQStockSearch
           page.queryFields(context, List.of(
             ITEMS.ITEM_ID,
             ITEMS.ITEM_NAME,
+            ITEMS.ITEM_CREATED,
+            ITEMS.ITEM_UPDATED,
             STOCK.STOCK_INSTANCE,
             STOCK.STOCK_LOCATION,
             STOCK.STOCK_SERIALS,
@@ -318,7 +324,9 @@ public final class CADBQStockSearch
               context,
               LOCATIONS.LOCATION_ID
             ),
-            LOCATIONS.LOCATION_PARENT
+            LOCATIONS.LOCATION_PARENT,
+            LOCATIONS.LOCATION_CREATED,
+            LOCATIONS.LOCATION_UPDATED
           ));
 
         querySpan.setAttribute(DB_STATEMENT, query.toString());

@@ -26,6 +26,7 @@ import com.io7m.cardant.protocol.inventory.cb.CAI1LocationSummary;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBLists;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 /**
  * A validator.
@@ -53,7 +54,9 @@ public enum CAUVLocationSummary
           .stream()
           .map(CALocationName::value)
           .toList()
-      )
+      ),
+      new CBOffsetDateTime(message.timeCreated()),
+      new CBOffsetDateTime(message.timeUpdated())
     );
   }
 
@@ -71,7 +74,9 @@ public enum CAUVLocationSummary
           message.fieldPath(),
           s -> new CALocationName(s.value())
         )
-      )
+      ),
+      message.fieldCreated().value(),
+      message.fieldUpdated().value()
     );
   }
 }

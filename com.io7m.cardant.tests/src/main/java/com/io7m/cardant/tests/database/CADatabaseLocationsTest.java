@@ -50,6 +50,8 @@ import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.model.CATypeRecordFieldIdentifier;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.tests.CAFixedClock;
+import com.io7m.cardant.tests.containers.CAClockFixture;
 import com.io7m.cardant.tests.containers.CADatabaseFixture;
 import com.io7m.cardant.tests.containers.CAFixtures;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -157,8 +159,7 @@ public final class CADatabaseLocationsTest
 
   private static OffsetDateTime now()
   {
-    return OffsetDateTime.now(UTC)
-      .withNano(0);
+    return OffsetDateTime.now(CAClockFixture.get());
   }
 
   /**

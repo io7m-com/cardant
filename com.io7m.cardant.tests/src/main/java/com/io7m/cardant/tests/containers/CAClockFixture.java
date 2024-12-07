@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2024 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,27 +15,30 @@
  */
 
 
-package com.io7m.cardant.tests.arbitraries.model;
+package com.io7m.cardant.tests.containers;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
+import com.io7m.cardant.tests.CAFixedClock;
 
-import java.time.OffsetDateTime;
+/**
+ * A clock fixture.
+ */
 
-public final class CAArbItemSummary extends CAArbAbstract<CAItemSummary>
+public final class CAClockFixture
 {
-  public CAArbItemSummary()
+  private static final CAFixedClock FAKE_CLOCK =
+    new CAFixedClock();
+
+  private CAClockFixture()
   {
-    super(
-      CAItemSummary.class,
-      () -> Combinators.combine(
-        Arbitraries.create(CAItemID::random),
-        Arbitraries.strings(),
-        Arbitraries.create(OffsetDateTime::now),
-        Arbitraries.create(OffsetDateTime::now)
-      ).as(CAItemSummary::new));
+
+  }
+
+  /**
+   * @return A clock fixture.
+   */
+
+  public static CAFixedClock get()
+  {
+    return FAKE_CLOCK;
   }
 }

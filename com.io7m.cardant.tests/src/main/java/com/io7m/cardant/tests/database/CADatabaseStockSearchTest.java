@@ -50,6 +50,7 @@ import com.io7m.cardant.model.CAStockSearchParameters;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
+import com.io7m.cardant.tests.containers.CAClockFixture;
 import com.io7m.cardant.tests.containers.CADatabaseFixture;
 import com.io7m.cardant.tests.containers.CAFixtures;
 import com.io7m.ervilla.api.EContainerSupervisorType;
@@ -92,8 +93,8 @@ public final class CADatabaseStockSearchTest
       CALocationID.random(),
       empty(),
       CALocationPath.singleton("Loc0"),
-      OffsetDateTime.now(UTC),
-      OffsetDateTime.now(UTC),
+      now(),
+      now(),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -104,8 +105,8 @@ public final class CADatabaseStockSearchTest
       CALocationID.random(),
       Optional.of(L0.id()),
       CALocationPath.singleton("Loc1"),
-      OffsetDateTime.now(UTC),
-      OffsetDateTime.now(UTC),
+      now(),
+      now(),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -116,8 +117,8 @@ public final class CADatabaseStockSearchTest
       CALocationID.random(),
       Optional.of(L1.id()),
       CALocationPath.singleton("Loc2"),
-      OffsetDateTime.now(UTC),
-      OffsetDateTime.now(UTC),
+      now(),
+      now(),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -244,7 +245,12 @@ public final class CADatabaseStockSearchTest
         new CAStockOccurrenceSet(
           STOCK_IDS.get(0),
           L0.summary(),
-          new CAItemSummary(item0, ""),
+          new CAItemSummary(
+            item0,
+            "",
+            now(),
+            now()
+          ),
           20L
         ),
         occ.get(0)
@@ -294,7 +300,12 @@ public final class CADatabaseStockSearchTest
         new CAStockOccurrenceSet(
           STOCK_IDS.get(2),
           L0.summary(),
-          new CAItemSummary(item2, ""),
+          new CAItemSummary(
+            item2,
+            "",
+            now(),
+            now()
+          ),
           30L
         ),
         occ.get(0)
@@ -303,7 +314,12 @@ public final class CADatabaseStockSearchTest
         new CAStockOccurrenceSet(
           STOCK_IDS.get(1),
           L0.summary(),
-          new CAItemSummary(item1, ""),
+          new CAItemSummary(
+            item1,
+            "",
+            now(),
+            now()
+          ),
           5L
         ),
         occ.get(1)
@@ -353,13 +369,23 @@ public final class CADatabaseStockSearchTest
         new CAStockOccurrenceSet(
           STOCK_IDS.get(0),
           L0.summary(),
-          new CAItemSummary(item0, ""),
+          new CAItemSummary(
+            item0,
+            "",
+            now(),
+            now()
+          ),
           20L
         ),
         occ.get(0)
       );
       assertEquals(1, occ.size());
     }
+  }
+
+  private static OffsetDateTime now()
+  {
+    return OffsetDateTime.now(CAClockFixture.get());
   }
 
   /**
@@ -402,7 +428,12 @@ public final class CADatabaseStockSearchTest
         new CAStockOccurrenceSerial(
           STOCK_IDS.get(1),
           L0.summary(),
-          new CAItemSummary(item0, ""),
+          new CAItemSummary(
+            item0,
+            "",
+            now(),
+            now()
+          ),
           List.of(new CAItemSerial(TYPE0, "A"))
         ),
         occ.get(0)
@@ -456,12 +487,19 @@ public final class CADatabaseStockSearchTest
           new CALocationSummary(
             L1.id(),
             Optional.of(L0.id()),
-            CALocationPath.ofArray(new String[] {
+            CALocationPath.ofArray(new String[]{
               "Loc0",
               "Loc1"
-            })
+            }),
+            now(),
+            now()
           ),
-          new CAItemSummary(item1, ""),
+          new CAItemSummary(
+            item1,
+            "",
+            now(),
+            now()
+          ),
           5
         ),
         occ.get(0)
@@ -515,13 +553,20 @@ public final class CADatabaseStockSearchTest
           new CALocationSummary(
             L2.id(),
             Optional.of(L1.id()),
-            CALocationPath.ofArray(new String[] {
+            CALocationPath.ofArray(new String[]{
               "Loc0",
               "Loc1",
               "Loc2"
-            })
+            }),
+            now(),
+            now()
           ),
-          new CAItemSummary(item2, ""),
+          new CAItemSummary(
+            item2,
+            "",
+            now(),
+            now()
+          ),
           30L
         ),
         occ.get(0)
@@ -533,12 +578,19 @@ public final class CADatabaseStockSearchTest
           new CALocationSummary(
             L1.id(),
             Optional.of(L0.id()),
-            CALocationPath.ofArray(new String[] {
+            CALocationPath.ofArray(new String[]{
               "Loc0",
               "Loc1"
-            })
+            }),
+            now(),
+            now()
           ),
-          new CAItemSummary(item1, ""),
+          new CAItemSummary(
+            item1,
+            "",
+            now(),
+            now()
+          ),
           5
         ),
         occ.get(1)

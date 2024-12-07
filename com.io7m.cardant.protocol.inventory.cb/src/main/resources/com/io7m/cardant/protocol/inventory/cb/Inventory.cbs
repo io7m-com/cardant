@@ -275,6 +275,10 @@
   [field id cb:UUID]
   [field parent [cb:Option cb:UUID]]
   [field path [cb:List cb:String]]
+  [documentation created "The creation time"]
+  [field created ct:OffsetDateTime]
+  [documentation updated "The updated time"]
+  [field updated ct:OffsetDateTime]
 ]
 
 [documentation CAI1Location "A location."]
@@ -446,6 +450,10 @@
 [record CAI1ItemSummary
   [field id cb:UUID]
   [field name cb:String]
+  [documentation created "The creation time"]
+  [field created ct:OffsetDateTime]
+  [documentation updated "The updated time"]
+  [field updated ct:OffsetDateTime]
 ]
 
 [record CAI1TypeRecordFieldIdentifier

@@ -22,6 +22,7 @@ import com.io7m.cardant.model.CAItemSummary;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ItemSummary;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 import static com.io7m.cedarbridge.runtime.api.CBCore.string;
 
@@ -44,7 +45,9 @@ public enum CAUVItemSummary
   {
     return new CAI1ItemSummary(
       new CBUUID(message.id().id()),
-      string(message.name())
+      string(message.name()),
+      new CBOffsetDateTime(message.timeCreated()),
+      new CBOffsetDateTime(message.timeUpdated())
     );
   }
 
@@ -54,7 +57,9 @@ public enum CAUVItemSummary
   {
     return new CAItemSummary(
       new CAItemID(message.fieldId().value()),
-      message.fieldName().value()
+      message.fieldName().value(),
+      message.fieldCreated().value(),
+      message.fieldUpdated().value()
     );
   }
 }

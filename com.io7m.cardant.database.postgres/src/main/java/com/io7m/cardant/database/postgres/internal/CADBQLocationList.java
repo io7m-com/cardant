@@ -23,13 +23,11 @@ import com.io7m.cardant.model.CALocationID;
 import com.io7m.cardant.model.CALocationPath;
 import com.io7m.cardant.model.CALocationSummary;
 import org.jooq.DSLContext;
-import org.jooq.Record3;
 import org.jooq.impl.DSL;
 
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.io7m.cardant.database.postgres.internal.CADBLocationPaths.LOCATION_PATH_NAME;
@@ -90,7 +88,9 @@ public final class CADBQLocationList
       context.select(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
-          CADBLocationPaths.locationPathFromColumnNamed(context, LOCATIONS.LOCATION_ID)
+          CADBLocationPaths.locationPathFromColumnNamed(context, LOCATIONS.LOCATION_ID),
+          LOCATIONS.LOCATION_CREATED,
+          LOCATIONS.LOCATION_UPDATED
         ).from(LOCATIONS)
         .where(conditions)
         .orderBy(LOCATIONS.LOCATION_NAME)
@@ -101,13 +101,15 @@ public final class CADBQLocationList
   }
 
   private static CALocationSummary mapRecord(
-    final Record3<UUID, UUID, String[]> rec)
+    final org.jooq.Record rec)
   {
     return new CALocationSummary(
       new CALocationID(rec.get(LOCATIONS.LOCATION_ID)),
       Optional.ofNullable(rec.get(LOCATIONS.LOCATION_PARENT))
         .map(CALocationID::new),
-      CALocationPath.ofArray(rec.get(LOCATION_PATH_NAME))
+      CALocationPath.ofArray(rec.get(LOCATION_PATH_NAME)),
+      rec.get(LOCATIONS.LOCATION_CREATED),
+      rec.get(LOCATIONS.LOCATION_UPDATED)
     );
   }
 }

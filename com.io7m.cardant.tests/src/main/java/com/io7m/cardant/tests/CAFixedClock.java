@@ -15,27 +15,43 @@
  */
 
 
-package com.io7m.cardant.tests.arbitraries.model;
+package com.io7m.cardant.tests;
 
-import com.io7m.cardant.model.CAItemID;
-import com.io7m.cardant.model.CAItemSummary;
-import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Combinators;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
-import java.time.OffsetDateTime;
-
-public final class CAArbItemSummary extends CAArbAbstract<CAItemSummary>
+public final class CAFixedClock extends Clock
 {
-  public CAArbItemSummary()
+  private long time;
+
+  public CAFixedClock()
   {
-    super(
-      CAItemSummary.class,
-      () -> Combinators.combine(
-        Arbitraries.create(CAItemID::random),
-        Arbitraries.strings(),
-        Arbitraries.create(OffsetDateTime::now),
-        Arbitraries.create(OffsetDateTime::now)
-      ).as(CAItemSummary::new));
+    this.time = 0L;
+  }
+
+  @Override
+  public ZoneId getZone()
+  {
+    return ZoneId.of("UTC");
+  }
+
+  @Override
+  public Clock withZone(
+    final ZoneId zone)
+  {
+    return this;
+  }
+
+  @Override
+  public Instant instant()
+  {
+    return Instant.ofEpochSecond(this.time);
+  }
+
+  public void setTime(
+    final Instant newTime)
+  {
+    this.time = newTime.getEpochSecond();
   }
 }

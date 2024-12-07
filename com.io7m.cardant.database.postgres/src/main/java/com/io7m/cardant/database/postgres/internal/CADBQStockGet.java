@@ -101,6 +101,8 @@ public final class CADBQStockGet
       context.select(
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
+          ITEMS.ITEM_CREATED,
+          ITEMS.ITEM_UPDATED,
           STOCK.STOCK_ITEM,
           STOCK.STOCK_INSTANCE,
           STOCK.STOCK_LOCATION,
@@ -111,7 +113,9 @@ public final class CADBQStockGet
             context,
             LOCATIONS.LOCATION_ID
           ),
-          LOCATIONS.LOCATION_PARENT
+          LOCATIONS.LOCATION_PARENT,
+          LOCATIONS.LOCATION_CREATED,
+          LOCATIONS.LOCATION_UPDATED
         ).from(tableSource)
         .where(STOCK.STOCK_INSTANCE.eq(parameters.id()))
         .fetchOptional();
@@ -130,13 +134,17 @@ public final class CADBQStockGet
         new CALocationID(r.get(LOCATIONS.LOCATION_ID)),
         Optional.ofNullable(r.get(LOCATIONS.LOCATION_PARENT))
           .map(CALocationID::new),
-        CALocationPath.ofArray(r.get(LOCATION_PATH_NAME))
+        CALocationPath.ofArray(r.get(LOCATION_PATH_NAME)),
+        r.get(LOCATIONS.LOCATION_CREATED),
+        r.get(LOCATIONS.LOCATION_UPDATED)
       );
 
     final var item =
       new CAItemSummary(
         new CAItemID(r.get(STOCK.STOCK_ITEM)),
-        r.get(ITEMS.ITEM_NAME)
+        r.get(ITEMS.ITEM_NAME),
+        r.get(ITEMS.ITEM_CREATED),
+        r.get(ITEMS.ITEM_UPDATED)
       );
 
     if (serialsJSON == null) {

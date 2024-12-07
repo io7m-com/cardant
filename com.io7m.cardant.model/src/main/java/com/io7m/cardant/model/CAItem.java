@@ -107,6 +107,11 @@ public record CAItem(
   @Override
   public CAItemSummary summary()
   {
-    return new CAItemSummary(this.id, this.name);
+    return new CAItemSummary(
+      this.id,
+      this.name,
+      this.timeCreated,
+      this.timeUpdated
+    );
   }
 }

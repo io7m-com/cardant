@@ -293,7 +293,9 @@ public final class CADBQLocationPut
     return context.select(
         LOCATIONS.LOCATION_PARENT,
         LOCATIONS.LOCATION_NAME,
-        CADBLocationPaths.locationPathNamed(context, id)
+        CADBLocationPaths.locationPathNamed(context, id),
+        LOCATIONS.LOCATION_CREATED,
+        LOCATIONS.LOCATION_UPDATED
       ).from(LOCATIONS)
       .where(LOCATIONS.LOCATION_ID.eq(id.id()))
       .fetchOptional()
@@ -304,7 +306,9 @@ public final class CADBQLocationPut
             .map(CALocationID::new),
           CALocationPath.ofArray(
             r.get(CADBLocationPaths.LOCATION_PATH_NAME)
-          )
+          ),
+          r.get(LOCATIONS.LOCATION_CREATED),
+          r.get(LOCATIONS.LOCATION_UPDATED)
         );
       });
   }

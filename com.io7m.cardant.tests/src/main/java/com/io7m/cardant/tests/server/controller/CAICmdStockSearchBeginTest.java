@@ -45,6 +45,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,6 +55,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_STOCK;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_STOCK_READER;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,13 +80,35 @@ public final class CAICmdStockSearchBeginTest
   static final CALocationID L1 = CALocationID.random();
 
   static final CAItemSummary I0 =
-    new CAItemSummary(ITEM0, "I0");
+    new CAItemSummary(
+      ITEM0,
+      "I0",
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC)
+    );
   static final CAItemSummary I1 =
-    new CAItemSummary(ITEM1, "I1");
+    new CAItemSummary(
+      ITEM1,
+      "I1",
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC)
+    );
   static final CALocationSummary L0S =
-    new CALocationSummary(L0, Optional.empty(), CALocationPath.singleton("Loc0"));
+    new CALocationSummary(
+      L0,
+      Optional.empty(),
+      CALocationPath.singleton("Loc0"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC)
+    );
   static final CALocationSummary L1S =
-    new CALocationSummary(L1, Optional.empty(), CALocationPath.singleton("Loc1"));
+    new CALocationSummary(
+      L1,
+      Optional.empty(),
+      CALocationPath.singleton("Loc1"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC)
+    );
 
   static final CAStockSearchParameters PARAMETERS =
     new CAStockSearchParameters(

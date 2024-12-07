@@ -16,29 +16,41 @@
 
 package com.io7m.cardant.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
+
+import static java.time.ZoneOffset.UTC;
 
 /**
  * A summary of an item.
  *
- * @param id   The id
- * @param name The name
+ * @param id          The id
+ * @param name        The name
+ * @param timeCreated The time the item was created
+ * @param timeUpdated The time the item was last updated
  */
 
 public record CAItemSummary(
   CAItemID id,
-  String name)
+  String name,
+  OffsetDateTime timeCreated,
+  OffsetDateTime timeUpdated)
 {
   /**
    * A summary of an item.
    *
-   * @param id   The id
-   * @param name The name
+   * @param id          The id
+   * @param name        The name
+   * @param timeCreated The time the item was created
+   * @param timeUpdated The time the item was last updated
    */
 
   public CAItemSummary
   {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(name, "name");
+
+    timeCreated = timeCreated.withOffsetSameInstant(UTC);
+    timeUpdated = timeUpdated.withOffsetSameInstant(UTC);
   }
 }

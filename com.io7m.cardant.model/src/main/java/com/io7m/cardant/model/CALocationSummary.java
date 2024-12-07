@@ -16,8 +16,11 @@
 
 package com.io7m.cardant.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
+
+import static java.time.ZoneOffset.UTC;
 
 /**
  * A summary of a location.
@@ -25,12 +28,16 @@ import java.util.Optional;
  * @param id     The id
  * @param parent The parent
  * @param path   The location path
+ * @param timeCreated The time the item was created
+ * @param timeUpdated The time the item was last updated
  */
 
 public record CALocationSummary(
   CALocationID id,
   Optional<CALocationID> parent,
-  CALocationPath path)
+  CALocationPath path,
+  OffsetDateTime timeCreated,
+  OffsetDateTime timeUpdated)
 {
   /**
    * A summary of a location.
@@ -38,6 +45,8 @@ public record CALocationSummary(
    * @param id     The id
    * @param parent The parent
    * @param path   The location path
+   * @param timeCreated The time the item was created
+   * @param timeUpdated The time the item was last updated
    */
 
   public CALocationSummary
@@ -45,6 +54,9 @@ public record CALocationSummary(
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(parent, "parent");
     Objects.requireNonNull(path, "path");
+
+    timeCreated = timeCreated.withOffsetSameInstant(UTC);
+    timeUpdated = timeUpdated.withOffsetSameInstant(UTC);
   }
 
   /**
@@ -70,7 +82,9 @@ public record CALocationSummary(
     return new CALocationSummary(
       this.id,
       this.parent,
-      newPath
+      newPath,
+      this.timeCreated,
+      this.timeUpdated
     );
   }
 }

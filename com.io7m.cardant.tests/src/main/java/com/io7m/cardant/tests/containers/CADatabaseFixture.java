@@ -70,7 +70,7 @@ public record CADatabaseFixture(
         CADatabaseCreate.CREATE_DATABASE,
         CADatabaseUpgrade.UPGRADE_DATABASE,
         new CADatabaseLanguage("english"),
-        Clock.systemUTC(),
+        CAClockFixture.get(),
         CAStrings.create(Locale.ROOT),
         new CATypePackageSerializers(),
         0,

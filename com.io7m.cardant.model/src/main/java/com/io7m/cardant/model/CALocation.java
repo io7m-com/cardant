@@ -93,7 +93,13 @@ public record CALocation(
   @Override
   public CALocationSummary summary()
   {
-    return new CALocationSummary(this.id, this.parent, this.path);
+    return new CALocationSummary(
+      this.id,
+      this.parent,
+      this.path,
+      this.timeCreated,
+      this.timeUpdated
+    );
   }
 
   /**

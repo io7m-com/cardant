@@ -34,6 +34,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_READER;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,7 +115,12 @@ public final class CAICmdItemSearchPreviousTest
 
     final var page =
       new CAPage<>(
-        List.of(new CAItemSummary(ITEM_ID, "Item")),
+        List.of(new CAItemSummary(
+          ITEM_ID,
+          "Item",
+          OffsetDateTime.now(UTC),
+          OffsetDateTime.now(UTC))
+        ),
         1,
         1,
         0L
