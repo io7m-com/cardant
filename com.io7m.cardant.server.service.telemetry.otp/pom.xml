@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.cardant</artifactId>
     <groupId>com.io7m.cardant</groupId>
-    <version>1.0.0-beta0001</version>
+    <version>1.0.0-beta0001-SNAPSHOT</version>
   </parent>
 
   <artifactId>com.io7m.cardant.server.service.telemetry.otp</artifactId>
