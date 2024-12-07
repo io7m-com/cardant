@@ -68,6 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -78,6 +79,7 @@ import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNonDeletedChildren;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorLocationNotEmpty;
 import static com.io7m.cardant.model.CAIncludeDeleted.INCLUDE_ONLY_LIVE;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -153,6 +155,12 @@ public final class CADatabaseLocationsTest
       this.transaction.queries(LocationMetadataRemoveType.class);
   }
 
+  private static OffsetDateTime now()
+  {
+    return OffsetDateTime.now(UTC)
+      .withNano(0);
+  }
+
   /**
    * Creating locations works.
    *
@@ -168,6 +176,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -177,6 +187,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc1"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -186,6 +198,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc2"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -247,6 +261,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -256,6 +272,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.of(loc0.id()),
         CALocationPath.singleton("Loc1"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -265,6 +283,8 @@ public final class CADatabaseLocationsTest
         loc1with.id(),
         Optional.empty(),
         CALocationPath.singleton("Loc1"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -301,6 +321,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -310,6 +332,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.of(loc0.id()),
         CALocationPath.singleton("Loc1"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -319,6 +343,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.of(loc1.id()),
         CALocationPath.singleton("Loc2"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -328,6 +354,8 @@ public final class CADatabaseLocationsTest
         loc0.id(),
         Optional.of(loc2.id()),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -362,6 +390,8 @@ public final class CADatabaseLocationsTest
         id0,
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -436,6 +466,8 @@ public final class CADatabaseLocationsTest
         id0,
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -521,6 +553,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -547,6 +581,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -586,6 +622,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -630,6 +668,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -640,6 +680,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.of(loc0.id()),
         CALocationPath.singleton("Loc1"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -676,6 +718,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -686,6 +730,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.of(loc0.id()),
         CALocationPath.singleton("Loc1"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -717,6 +763,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.empty(),
         CALocationPath.singleton("Loc0"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -726,6 +774,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.of(loc0.id()),
         CALocationPath.singleton("Loc1"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -735,6 +785,8 @@ public final class CADatabaseLocationsTest
         CALocationID.random(),
         Optional.of(loc1.id()),
         CALocationPath.singleton("Loc2"),
+        now(),
+        now(),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()

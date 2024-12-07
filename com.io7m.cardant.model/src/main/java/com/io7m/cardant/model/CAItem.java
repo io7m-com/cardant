@@ -16,15 +16,20 @@
 
 package com.io7m.cardant.model;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
+import static java.time.ZoneOffset.UTC;
+
 /**
  * An item in the inventory.
  *
  * @param id          The item ID
+ * @param timeCreated The time the item was created
+ * @param timeUpdated The time the item was last updated
  * @param name        The item name
  * @param metadata    The item metadata
  * @param attachments The item attachments
@@ -34,6 +39,8 @@ import java.util.SortedSet;
 public record CAItem(
   CAItemID id,
   String name,
+  OffsetDateTime timeCreated,
+  OffsetDateTime timeUpdated,
   SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
   SortedSet<CATypeRecordIdentifier> types)
@@ -43,19 +50,24 @@ public record CAItem(
    * Construct an item.
    *
    * @param id          The item ID
+   * @param timeCreated The time the item was created
+   * @param timeUpdated The time the item was last updated
    * @param name        The item name
    * @param metadata    The item metadata
    * @param attachments The item attachments
-   * @param types       The types assigned to the item
+   * @param types       The item types
    */
 
   public CAItem
   {
-    Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(name, "name");
-    Objects.requireNonNull(metadata, "metadata");
     Objects.requireNonNull(attachments, "attachments");
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(metadata, "metadata");
+    Objects.requireNonNull(name, "name");
     Objects.requireNonNull(types, "types");
+
+    timeCreated = timeCreated.withOffsetSameInstant(UTC);
+    timeUpdated = timeUpdated.withOffsetSameInstant(UTC);
     name = name.trim();
   }
 
@@ -84,6 +96,8 @@ public record CAItem(
     return new CAItem(
       id,
       "",
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()

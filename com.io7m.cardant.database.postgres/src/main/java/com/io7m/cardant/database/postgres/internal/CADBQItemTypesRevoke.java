@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.ITEMS;
 import static com.io7m.cardant.database.postgres.internal.Tables.ITEM_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
@@ -101,6 +102,12 @@ public final class CADBQItemTypesRevoke
 
       batches.add(query);
     }
+
+    batches.add(
+      context.update(ITEMS)
+        .set(ITEMS.ITEM_UPDATED, this.now())
+        .where(ITEMS.ITEM_ID.eq(itemID.id()))
+    );
 
     final var transaction = this.transaction();
     batches.add(

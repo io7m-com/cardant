@@ -33,6 +33,7 @@ import com.io7m.cedarbridge.runtime.api.CBList;
 import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBString;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -94,6 +95,8 @@ public enum CAUVItem
     return new CAI1Item(
       new CBUUID(item.id().id()),
       new CBString(item.name()),
+      new CBOffsetDateTime(item.timeCreated()),
+      new CBOffsetDateTime(item.timeUpdated()),
       new CBMap<>(metadata),
       new CBMap<>(attachments),
       new CBList<>(
@@ -142,6 +145,8 @@ public enum CAUVItem
     return new CAItem(
       new CAItemID(item.fieldId().value()),
       item.fieldName().value(),
+      item.fieldCreated().value(),
+      item.fieldUpdated().value(),
       new TreeMap<>(metadata),
       new TreeMap<>(attachments),
       new TreeSet<>(

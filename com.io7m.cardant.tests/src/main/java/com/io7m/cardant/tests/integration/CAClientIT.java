@@ -88,6 +88,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -99,6 +100,7 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorSecurityPolicyDenied;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -489,6 +491,8 @@ public final class CAClientIT
         id,
         Optional.empty(),
         CALocationPath.singleton("Location 0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -577,6 +581,8 @@ public final class CAClientIT
         id,
         Optional.empty(),
         CALocationPath.singleton("Location 0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()

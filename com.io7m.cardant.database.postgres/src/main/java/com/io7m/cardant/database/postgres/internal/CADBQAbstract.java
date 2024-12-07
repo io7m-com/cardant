@@ -27,6 +27,8 @@ import io.opentelemetry.api.trace.StatusCode;
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -119,5 +121,12 @@ abstract class CADBQAbstract<P, R>
   protected CADatabaseLanguage language()
   {
     return this.language;
+  }
+
+  protected final OffsetDateTime now()
+  {
+    return OffsetDateTime.now(this.transaction.clock())
+      .withOffsetSameInstant(ZoneOffset.UTC)
+      .withNano(0);
   }
 }

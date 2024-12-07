@@ -70,6 +70,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Set;
 
@@ -79,6 +80,7 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorRemoveTooManyItems;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorStockIsNotSerial;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorStockIsNotSet;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -190,6 +192,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -260,6 +264,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -337,6 +343,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -405,6 +413,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -504,6 +514,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -558,6 +570,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -614,6 +628,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -624,6 +640,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc1"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -712,6 +730,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -722,6 +742,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc1"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -781,6 +803,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -791,6 +815,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc1"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -868,6 +894,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -878,6 +906,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc1"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -944,6 +974,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1001,6 +1033,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1058,6 +1092,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1134,6 +1170,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1235,6 +1273,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1309,6 +1349,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1383,6 +1425,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1393,6 +1437,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc1"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1463,6 +1509,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1473,6 +1521,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc1"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1528,6 +1578,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc0"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -1538,6 +1590,8 @@ public final class CADatabaseStockTest
         CALocationID.random(),
         empty(),
         CALocationPath.singleton("Loc1"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()

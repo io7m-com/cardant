@@ -42,6 +42,7 @@ import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.verification.Times;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_ITEMS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_ITEMS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -164,6 +166,8 @@ public final class CAICmdItemTypesAssignTest
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t")))
@@ -273,6 +277,8 @@ public final class CAICmdItemTypesAssignTest
       .thenReturn(Optional.of(new CAItem(
         ITEM_ID,
         "Item",
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         new TreeSet<>(Set.of(CATypeRecordIdentifier.of("com.io7m:t0")))

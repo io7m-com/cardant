@@ -34,6 +34,7 @@ import com.io7m.quarrel.core.QParameterNamedType;
 import com.io7m.quarrel.core.QStringType.QConstant;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorApiMisuse;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNonexistent;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_SHELL_OPTIONS_COMBINATION;
 import static com.io7m.quarrel.core.QCommandStatus.SUCCESS;
+import static java.time.ZoneOffset.UTC;
 
 /**
  * "location-put"
@@ -177,6 +179,8 @@ public final class CAShellCmdLocationPut
         newLocation.id(),
         newLocation.parent(),
         CALocationPath.singleton(newName.get()),
+        newLocation.timeCreated(),
+        newLocation.timeUpdated(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -191,6 +195,8 @@ public final class CAShellCmdLocationPut
         newLocation.id(),
         newParent,
         newLocation.path(),
+        newLocation.timeCreated(),
+        newLocation.timeUpdated(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -206,6 +212,8 @@ public final class CAShellCmdLocationPut
         newLocation.id(),
         Optional.empty(),
         newLocation.path(),
+        newLocation.timeCreated(),
+        newLocation.timeUpdated(),
         newLocation.metadata(),
         newLocation.attachments(),
         newLocation.types()
@@ -240,6 +248,8 @@ public final class CAShellCmdLocationPut
         locationID,
         newParent,
         CALocationPath.singleton(newName),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()

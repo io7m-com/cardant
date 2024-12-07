@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPES;
 import static com.io7m.cardant.database.postgres.internal.Tables.METADATA_TYPE_PACKAGES;
@@ -101,6 +102,12 @@ public final class CADBQLocationTypesRevoke
 
       batches.add(query);
     }
+
+    batches.add(
+      context.update(LOCATIONS)
+        .set(LOCATIONS.LOCATION_UPDATED, this.now())
+        .where(LOCATIONS.LOCATION_ID.eq(locationID.id()))
+    );
 
     final var transaction = this.transaction();
     batches.add(

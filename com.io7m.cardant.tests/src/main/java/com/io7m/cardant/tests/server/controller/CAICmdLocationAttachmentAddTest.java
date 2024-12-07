@@ -37,6 +37,7 @@ import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.verification.Times;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_WRITER;
 import static com.io7m.cardant.security.CASecurityPolicy.WRITE;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -133,6 +135,8 @@ public final class CAICmdLocationAttachmentAddTest
         LOCATION_ID,
         Optional.empty(),
         CALocationPath.singleton("Location"),
+        OffsetDateTime.now(UTC),
+        OffsetDateTime.now(UTC),
         Collections.emptySortedMap(),
         Collections.emptySortedMap(),
         Collections.emptySortedSet()
@@ -208,6 +212,8 @@ public final class CAICmdLocationAttachmentAddTest
           CALocationID.random(),
           Optional.empty(),
           CALocationPath.singleton("X"),
+          OffsetDateTime.now(UTC),
+          OffsetDateTime.now(UTC),
           new TreeMap<>(),
           new TreeMap<>(),
           new TreeSet<>()

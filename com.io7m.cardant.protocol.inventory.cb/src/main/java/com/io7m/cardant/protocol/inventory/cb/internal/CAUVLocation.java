@@ -36,6 +36,7 @@ import com.io7m.cedarbridge.runtime.api.CBMap;
 import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 import com.io7m.cedarbridge.runtime.convenience.CBLists;
+import com.io7m.cedarbridge.runtime.time.CBOffsetDateTime;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -104,6 +105,8 @@ public enum CAUVLocation
           .map(CALocationName::value)
           .toList()
       ),
+      new CBOffsetDateTime(location.timeCreated()),
+      new CBOffsetDateTime(location.timeUpdated()),
       new CBMap<>(metadata),
       new CBMap<>(attachments),
       new CBList<>(
@@ -159,6 +162,8 @@ public enum CAUVLocation
           c.fieldPath(),
           s -> new CALocationName(s.value()))
       ),
+      c.fieldCreated().value(),
+      c.fieldUpdated().value(),
       new TreeMap<>(metadata),
       new TreeMap<>(attachments),
       new TreeSet<>(

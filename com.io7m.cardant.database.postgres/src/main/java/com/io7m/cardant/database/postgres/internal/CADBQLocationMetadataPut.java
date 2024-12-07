@@ -34,6 +34,7 @@ import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_INTEGRAL;
 import static com.io7m.cardant.database.postgres.internal.enums.MetadataScalarBaseTypeT.SCALAR_MONEY;
@@ -91,6 +92,12 @@ public final class CADBQLocationMetadataPut
     for (final var meta : metadata) {
       batches.add(setMetadataValue(context, location, meta));
     }
+
+    batches.add(
+      context.update(LOCATIONS)
+        .set(LOCATIONS.LOCATION_UPDATED, this.now())
+        .where(LOCATIONS.LOCATION_ID.eq(location.id()))
+    );
 
     final var transaction = this.transaction();
     batches.add(auditEvent(

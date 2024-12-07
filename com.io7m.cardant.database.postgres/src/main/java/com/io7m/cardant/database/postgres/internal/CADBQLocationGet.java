@@ -35,6 +35,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -88,6 +89,8 @@ public final class CADBQLocationGet
       context.select(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
+          LOCATIONS.LOCATION_CREATED,
+          LOCATIONS.LOCATION_UPDATED,
           CADBLocationPaths.locationPathNamed(context, id),
           DSL.multisetAgg(
             METADATA_TYPE_PACKAGES.MTP_NAME,
@@ -127,6 +130,8 @@ public final class CADBQLocationGet
         .groupBy(
           LOCATIONS.LOCATION_ID,
           LOCATIONS.LOCATION_PARENT,
+          LOCATIONS.LOCATION_CREATED,
+          LOCATIONS.LOCATION_UPDATED,
           CADBLocationPaths.LOCATION_PATH_NAME,
           LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE,
           LOCATION_METADATA.LOCATION_META_TYPE_RECORD,
@@ -160,6 +165,8 @@ public final class CADBQLocationGet
     CALocationID locationId = null;
     Optional<CALocationID> parent = Optional.empty();
     CALocationPath path = null;
+    OffsetDateTime created = null;
+    OffsetDateTime updated = null;
 
     for (final var rec : results) {
       locationId =
@@ -171,6 +178,10 @@ public final class CADBQLocationGet
         CALocationPath.ofArray(
           rec.get(CADBLocationPaths.LOCATION_PATH_NAME)
         );
+      created =
+        rec.get(LOCATIONS.LOCATION_CREATED);
+      updated =
+        rec.get(LOCATIONS.LOCATION_UPDATED);
 
       final var typePack =
         rec.get(LOCATION_METADATA.LOCATION_META_TYPE_PACKAGE);
@@ -239,6 +250,8 @@ public final class CADBQLocationGet
         locationId,
         parent,
         path,
+        created,
+        updated,
         meta,
         attachments,
         types

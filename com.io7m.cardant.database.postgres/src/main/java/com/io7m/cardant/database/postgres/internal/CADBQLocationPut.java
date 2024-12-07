@@ -121,6 +121,12 @@ public final class CADBQLocationPut
           LOCATIONS.LOCATION_NAME,
           location.name().value())
         .set(
+          LOCATIONS.LOCATION_CREATED,
+          this.now())
+        .set(
+          LOCATIONS.LOCATION_UPDATED,
+          this.now())
+        .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))
         .onDuplicateKeyUpdate()
@@ -130,6 +136,10 @@ public final class CADBQLocationPut
         .set(
           LOCATIONS.LOCATION_NAME,
           location.name().value())
+        .set(
+          LOCATIONS.LOCATION_UPDATED,
+          this.now()
+        )
         .set(
           LOCATIONS.LOCATION_PARENT,
           location.parent().map(CALocationID::id).orElse(null))

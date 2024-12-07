@@ -270,6 +270,9 @@ CREATE TABLE items (
   -- A non-null timestamp means the item was deleted at that time.
   item_deleted TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 
+  item_created TIMESTAMP WITH TIME ZONE NOT NULL,
+  item_updated TIMESTAMP WITH TIME ZONE NOT NULL,
+
   CONSTRAINT items_primary_key
     PRIMARY KEY (item_id)
 )
@@ -551,6 +554,9 @@ CREATE TABLE locations (
 
   -- A non-null timestamp means the location was deleted at that time.
   location_deleted TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+
+  location_created TIMESTAMP WITH TIME ZONE NOT NULL,
+  location_updated TIMESTAMP WITH TIME ZONE NOT NULL,
 
   CONSTRAINT locations_primary_key
     PRIMARY KEY (location_id),
@@ -958,6 +964,8 @@ CREATE VIEW item_search_view AS
     items.item_name_search,
     -- [jooq ignore stop]
     items.item_deleted,
+    items.item_created,
+    items.item_updated,
     item_metadata.item_meta_type_package,
     item_metadata.item_meta_type_record,
     item_metadata.item_meta_type_field,
@@ -993,6 +1001,8 @@ CREATE VIEW item_search_view AS
     items.item_name_search,
     -- [jooq ignore stop]
     items.item_deleted,
+    items.item_created,
+    items.item_updated,
     item_metadata.item_meta_type_package,
     item_metadata.item_meta_type_record,
     item_metadata.item_meta_type_field,
@@ -1022,6 +1032,8 @@ CREATE VIEW location_search_view AS
     locations.location_id,
     locations.location_name,
     locations.location_deleted,
+    locations.location_created,
+    locations.location_updated,
     location_metadata.location_meta_type_package,
     location_metadata.location_meta_type_record,
     location_metadata.location_meta_type_field,
@@ -1045,6 +1057,8 @@ CREATE VIEW location_search_view AS
     locations.location_id,
     locations.location_name,
     locations.location_deleted,
+    locations.location_created,
+    locations.location_updated,
     location_metadata.location_meta_type_package,
     location_metadata.location_meta_type_record,
     location_metadata.location_meta_type_field,

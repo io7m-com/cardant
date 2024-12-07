@@ -28,8 +28,11 @@ import com.io7m.cardant.tests.arbitraries.CAArbAbstract;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
+import java.time.OffsetDateTime;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import static java.time.ZoneOffset.UTC;
 
 public final class CAArbItem extends CAArbAbstract<CAItem>
 {
@@ -40,6 +43,8 @@ public final class CAArbItem extends CAArbAbstract<CAItem>
       () -> Combinators.combine(
         Arbitraries.defaultFor(CAItemID.class),
         Arbitraries.strings(),
+        Arbitraries.create(() -> OffsetDateTime.now(UTC)),
+        Arbitraries.create(() -> OffsetDateTime.now(UTC)),
         Arbitraries.maps(
           Arbitraries.defaultFor(CATypeRecordFieldIdentifier.class),
           Arbitraries.defaultFor(CAMetadataType.class)

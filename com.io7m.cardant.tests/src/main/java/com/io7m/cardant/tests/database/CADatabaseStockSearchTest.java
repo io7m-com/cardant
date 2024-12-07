@@ -68,6 +68,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,6 +76,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.io7m.cardant.database.api.CADatabaseRole.CARDANT;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -90,6 +92,8 @@ public final class CADatabaseStockSearchTest
       CALocationID.random(),
       empty(),
       CALocationPath.singleton("Loc0"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -100,6 +104,8 @@ public final class CADatabaseStockSearchTest
       CALocationID.random(),
       Optional.of(L0.id()),
       CALocationPath.singleton("Loc1"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -110,6 +116,8 @@ public final class CADatabaseStockSearchTest
       CALocationID.random(),
       Optional.of(L1.id()),
       CALocationPath.singleton("Loc2"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()

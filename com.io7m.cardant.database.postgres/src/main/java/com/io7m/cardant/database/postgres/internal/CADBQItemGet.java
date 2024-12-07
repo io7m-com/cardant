@@ -34,6 +34,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -87,6 +88,8 @@ public final class CADBQItemGet
       context.select(
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
+          ITEMS.ITEM_CREATED,
+          ITEMS.ITEM_UPDATED,
           DSL.multisetAgg(
             METADATA_TYPE_PACKAGES.MTP_NAME,
             METADATA_TYPES.MT_NAME
@@ -125,6 +128,8 @@ public final class CADBQItemGet
         .groupBy(
           ITEMS.ITEM_ID,
           ITEMS.ITEM_NAME,
+          ITEMS.ITEM_CREATED,
+          ITEMS.ITEM_UPDATED,
           ITEM_METADATA.ITEM_META_TYPE_PACKAGE,
           ITEM_METADATA.ITEM_META_TYPE_RECORD,
           ITEM_METADATA.ITEM_META_TYPE_FIELD,
@@ -156,10 +161,14 @@ public final class CADBQItemGet
 
     CAItemID itemId = null;
     String name = null;
+    OffsetDateTime created = null;
+    OffsetDateTime updated = null;
 
     for (final var rec : results) {
       itemId = new CAItemID(rec.get(ITEMS.ITEM_ID));
       name = rec.get(ITEMS.ITEM_NAME);
+      created = rec.get(ITEMS.ITEM_CREATED);
+      updated = rec.get(ITEMS.ITEM_UPDATED);
 
       final var typePack =
         rec.get(ITEM_METADATA.ITEM_META_TYPE_PACKAGE);
@@ -227,6 +236,8 @@ public final class CADBQItemGet
       new CAItem(
         itemId,
         name,
+        created,
+        updated,
         meta,
         attachments,
         types

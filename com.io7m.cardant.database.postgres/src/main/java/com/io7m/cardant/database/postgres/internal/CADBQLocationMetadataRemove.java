@@ -32,6 +32,7 @@ import java.util.Map;
 
 import static com.io7m.cardant.database.api.CADatabaseUnit.UNIT;
 import static com.io7m.cardant.database.postgres.internal.CADBQAuditEventAdd.auditEvent;
+import static com.io7m.cardant.database.postgres.internal.Tables.LOCATIONS;
 import static com.io7m.cardant.database.postgres.internal.Tables.LOCATION_METADATA;
 import static com.io7m.cardant.strings.CAStringConstants.LOCATION_ID;
 
@@ -103,6 +104,12 @@ public final class CADBQLocationMetadataRemove
 
       queries.add(context.deleteFrom(LOCATION_METADATA).where(matches));
     }
+
+    queries.add(
+      context.update(LOCATIONS)
+        .set(LOCATIONS.LOCATION_UPDATED, this.now())
+        .where(LOCATIONS.LOCATION_ID.eq(location.id()))
+    );
 
     final var transaction = this.transaction();
     queries.add(auditEvent(

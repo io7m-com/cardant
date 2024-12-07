@@ -16,15 +16,20 @@
 
 package com.io7m.cardant.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
+import static java.time.ZoneOffset.UTC;
+
 /**
  * A location.
  *
  * @param id          The location ID
+ * @param timeCreated The time the location was created
+ * @param timeUpdated The time the location was last updated
  * @param parent      The location parent, if any
  * @param path        The location path
  * @param metadata    The metadata associated with the location
@@ -36,6 +41,8 @@ public record CALocation(
   CALocationID id,
   Optional<CALocationID> parent,
   CALocationPath path,
+  OffsetDateTime timeCreated,
+  OffsetDateTime timeUpdated,
   SortedMap<CATypeRecordFieldIdentifier, CAMetadataType> metadata,
   SortedMap<CAAttachmentKey, CAAttachment> attachments,
   SortedSet<CATypeRecordIdentifier> types)
@@ -45,8 +52,13 @@ public record CALocation(
    * Construct a location.
    *
    * @param id          The location ID
+   * @param timeCreated The time the location was created
+   * @param timeUpdated The time the location was last updated
    * @param parent      The location parent, if any
    * @param path        The location path
+   * @param metadata    The metadata associated with the location
+   * @param types       The types associated with the location
+   * @param attachments The attachments associated with the location
    */
 
   public CALocation
@@ -57,6 +69,9 @@ public record CALocation(
     Objects.requireNonNull(metadata, "metadata");
     Objects.requireNonNull(attachments, "attachments");
     Objects.requireNonNull(types, "types");
+
+    timeCreated = timeCreated.withOffsetSameInstant(UTC);
+    timeUpdated = timeUpdated.withOffsetSameInstant(UTC);
 
     parent.ifPresent(parentId -> {
       if (id.equals(parentId)) {

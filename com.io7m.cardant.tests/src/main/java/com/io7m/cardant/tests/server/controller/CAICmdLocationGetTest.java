@@ -33,6 +33,7 @@ import com.io7m.medrina.api.MRule;
 import com.io7m.medrina.api.MRuleName;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,7 @@ import static com.io7m.cardant.security.CASecurityPolicy.INVENTORY_LOCATIONS;
 import static com.io7m.cardant.security.CASecurityPolicy.READ;
 import static com.io7m.cardant.security.CASecurityPolicy.ROLE_INVENTORY_LOCATIONS_READER;
 import static com.io7m.medrina.api.MRuleConclusion.ALLOW;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,6 +66,8 @@ public final class CAICmdLocationGetTest
       CALocationID.random(),
       Optional.empty(),
       CALocationPath.singleton("A"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
@@ -73,15 +77,8 @@ public final class CAICmdLocationGetTest
       CALocationID.random(),
       Optional.of(LOCATION_0.id()),
       CALocationPath.singleton("B"),
-      Collections.emptySortedMap(),
-      Collections.emptySortedMap(),
-      Collections.emptySortedSet()
-    );
-  private static final CALocation LOCATION_2 =
-    new CALocation(
-      CALocationID.random(),
-      Optional.of(LOCATION_1.id()),
-      CALocationPath.singleton("C"),
+      OffsetDateTime.now(UTC),
+      OffsetDateTime.now(UTC),
       Collections.emptySortedMap(),
       Collections.emptySortedMap(),
       Collections.emptySortedSet()
