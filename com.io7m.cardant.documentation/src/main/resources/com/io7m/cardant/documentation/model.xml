@@ -24,7 +24,8 @@
         An <Term type="term">item</Term> is an object that is tracked by the inventory system. When the
         <Term type="package">cardant</Term>
         package refers to items, it should more accurately be understood to be referring to
-        <Term type="term">classes</Term> of items. That is, the inventory system tracks sets of items of a given class
+        <Term type="term">classes</Term>
+        of items. That is, the inventory system tracks sets of items of a given class
         within <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>. An item has
         associated <Link target="64b850d6-ee2a-4e44-bc8a-7a04da7530fc">metadata</Link>, an identifier that uniquely
         identifies the item class, zero or more
@@ -139,10 +140,9 @@
         </Table>
       </FormalItem>
       <Paragraph>
-        Typically, a named scalar type will augment an existing scalar base type with further constraints such as a <Term type="term">
-        bound
-      </Term> on the range of allowed values. For example, an inventory manager supervising a stock of computer
-        keyboards might define a
+        Typically, a named scalar type will augment an existing scalar base type with further constraints such as a
+        <Term type="term">bound</Term> on the range of allowed values. For example, an inventory manager supervising
+        a stock of computer keyboards might define a
         <Term type="type">keyboard</Term>
         <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">type</Link>
         with a <Term type="type">keys</Term> field of a scalar type <Term type="type">keyboard.keys</Term>. The
@@ -169,14 +169,15 @@
     </Subsection>
   </Subsection>
 
-  <Subsection title="Stock" id="774506e9-7bfc-44a7-9d0c-f2ba9efbfa23">
+  <Subsection title="Stock"
+              id="774506e9-7bfc-44a7-9d0c-f2ba9efbfa23">
     <Subsection title="Overview">
       <Paragraph>
         A <Term type="term">stock instance</Term> is an object that associates
         <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">items</Link>
         with
-        <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>. A stock instance effectively
-        says "this item is present in this location". A stock instance may be a
+        <Link target="d5fa706f-6150-4c71-b5be-311e2680b89a">locations</Link>. A stock instance effectively says "this
+        item is present in this location". A stock instance may be a
         <Link target="4f802611-7049-4b3f-b723-d77c43255d47">set instance</Link>
         or a
         <Link target="b2244c01-6445-4cc8-97e2-9e387e4c99e3">serial instance</Link>.
@@ -185,44 +186,58 @@
         Stock instances have globally-unique UUID identifier values.
       </Paragraph>
     </Subsection>
-    <Subsection title="Set Instance" id="4f802611-7049-4b3f-b723-d77c43255d47">
+    <Subsection title="Set Instance"
+                id="4f802611-7049-4b3f-b723-d77c43255d47">
       <Paragraph>
-        A <Term type="term">set instance</Term> is a stock instance that describes a set of items that,
-        by themselves, do not have any kind of unique identities.
+        A <Term type="term">set instance</Term> is a stock instance that describes a set of items that, by themselves,
+        do not have any kind of unique identities.
       </Paragraph>
       <Paragraph>
-        For example, an inventory manager that is managing
-        an inventory that contains rolls of passive electronics components such as
-        <LinkExternal target="https://en.wikipedia.org/wiki/Resistor">resistors</LinkExternal> would use set
-        instances to describe sets of resistors in the inventory. The resistors
-        themselves do not have serial numbers or any kind of individual identity and therefore there is no reason
-        to (or, in fact, any way to) track the individual resistors; only the <Term type="term">count</Term> of
-        resistors has any meaning.
+        For example, an inventory manager that is managing an inventory that contains rolls of passive electronics
+        components such as
+        <LinkExternal target="https://en.wikipedia.org/wiki/Resistor">resistors</LinkExternal>
+        would use set instances to describe sets of resistors in the inventory. The resistors themselves do not have
+        serial numbers or any kind of individual identity and therefore there is no reason to (or, in fact, any way to)
+        track the individual resistors; only the <Term type="term">count</Term> of resistors has any meaning.
       </Paragraph>
       <Paragraph>
-        A set instance always has a count ≥ 0. Attempting to remove items from a set instance such that the
-        count would become negative is an error.
+        A set instance always has a count ≥ 0. Attempting to remove items from a set instance such that the count would
+        become negative is an error.
       </Paragraph>
     </Subsection>
-    <Subsection title="Serial Instance" id="b2244c01-6445-4cc8-97e2-9e387e4c99e3">
+    <Subsection title="Serial Instance"
+                id="b2244c01-6445-4cc8-97e2-9e387e4c99e3">
       <Paragraph>
-        A <Term type="term">serial instance</Term> is a stock instance that describes a single item that may
-        have one or more identities associated with it.
+        A <Term type="term">serial instance</Term> is a stock instance that describes a single item that may have one or
+        more <Link target="58344d2a-9af1-46cf-bfc6-c9f01968fe97">serial numbers</Link> associated with it.
       </Paragraph>
       <Paragraph>
-        For example, an inventory manager that is managing an inventory that
-        contains musical instruments would use serial instances to identify individual instruments in
-        the inventory. Instruments of each type are distinguished from other instruments of the
-        same type by way of <Term type="term">serial numbers</Term>. A <Term type="term">serial number</Term>
-        in the <Term type="package">cardant</Term> package is an arbitrary string. Serial numbers are unique for a
-        given <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">item class</Link> but are not assumed be globally
-        unique. After all, two manufacturers of completely different products might coincidentally manage to use
-        the same serial numbers for their products. Within a single manufacturer's product range, however, serial
-        numbers will most assuredly be unique.
+        For example, an inventory manager that is managing an inventory that contains musical instruments would use
+        serial instances to identify individual instruments in the inventory. Instruments of each type are distinguished
+        from other instruments of the same type by way of <Term type="term">serial numbers</Term>.
       </Paragraph>
       <Paragraph>
         As mentioned, stock instances do have a guaranteed-unique identifier, so this can be used as a system-enforced
         unique identifier for an item if required.
+      </Paragraph>
+      <Paragraph id="58344d2a-9af1-46cf-bfc6-c9f01968fe97">
+        A
+        <Term type="term">serial number</Term>
+        in the <Term type="package">cardant</Term> package is a pair consisting of a
+        <Term type="term">type</Term>
+        and an arbitrary string <Term type="term">value</Term>.
+        The <Term type="term">type</Term> categorizes the serial number. For example, a purchased product might
+        include the manufacturer-assigned serial number, and the inventory manager might choose to categorize
+        serial numbers of this type by setting the type of the serial number to
+        <Term type="constant">manufacturer_serial</Term>. The <Term type="package">cardant</Term> package does
+        not ascribe any particular semantics to serial number types, and types may be freely chosen by the
+        inventory manager and do not need to be declared in any form ahead of time.
+        Serial numbers are assumed to be unique for a given
+        <Link target="98e6044d-2cd6-4646-be40-cf57695ee9e7">item class</Link> but are not assumed be globally unique,
+        and uniqueness is not enforced by the system.
+        After all, two manufacturers of completely different products
+        might coincidentally manage to use the same serial numbers for their products. Within a single manufacturer's
+        product range, however, serial numbers will most assuredly be unique.
       </Paragraph>
     </Subsection>
     <Subsection title="Repositing"
@@ -232,31 +247,35 @@
         <Paragraph>
           Stock is added to and removed from locations by <Term type="term">repositing</Term>. Intuitively, a
           <Term type="term">reposit</Term>
-          operation atomically adds zero or more instances of an item to a location, and removes zero or more items
-          from another location in a single step. A reposit operation is either a
-          <Link target="764872ee-f8dc-4020-a2dd-644b196a0e72">set</Link> reposit or
-          a <Link target="911f1d39-b69a-4e98-ac79-63305762126f">serial</Link> reposit.
+          operation atomically adds zero or more instances of an item to a location, and removes zero or more items from
+          another location in a single step. A reposit operation is either a
+          <Link target="764872ee-f8dc-4020-a2dd-644b196a0e72">set</Link>
+          reposit or a <Link target="911f1d39-b69a-4e98-ac79-63305762126f">serial</Link> reposit.
         </Paragraph>
       </Subsection>
 
-      <Subsection title="Set Reposit" id="764872ee-f8dc-4020-a2dd-644b196a0e72">
+      <Subsection title="Set Reposit"
+                  id="764872ee-f8dc-4020-a2dd-644b196a0e72">
         <Paragraph>
           A <Term type="term">set reposit</Term> is an operation used to move sets of items that do not, themselves,
           have useful individual identities.
         </Paragraph>
       </Subsection>
 
-      <Subsection title="Serial Reposit" id="911f1d39-b69a-4e98-ac79-63305762126f">
+      <Subsection title="Serial Reposit"
+                  id="911f1d39-b69a-4e98-ac79-63305762126f">
         <Paragraph>
           A <Term type="term">serial reposit</Term> is an operation used to move items that have individual identities.
         </Paragraph>
       </Subsection>
 
-      <Subsection title="Definitions And Invariants" id="b8ca9349-2947-4fa9-9434-1198c65fc153">
+      <Subsection title="Definitions And Invariants"
+                  id="b8ca9349-2947-4fa9-9434-1198c65fc153">
         <Paragraph>
           Reposit operations are described by the following algebraic datatype:
         </Paragraph>
-        <FormalItem title="Reposit" id="dbb0cef2-fc59-4f83-a9c5-2668ddad500d">
+        <FormalItem title="Reposit"
+                    id="dbb0cef2-fc59-4f83-a9c5-2668ddad500d">
           <Verbatim><![CDATA[
 type StockReposit =
   | CAStockRepositRemove CAStockInstanceID
@@ -271,8 +290,8 @@ type StockReposit =
   ]]></Verbatim>
         </FormalItem>
         <Paragraph>
-          A reposit <Term type="expression">(CAStockRepositSerialIntroduce i t l s)</Term> introduces a
-          new serial stock instance <Term type="expression">i</Term> of item
+          A reposit <Term type="expression">(CAStockRepositSerialIntroduce i t l s)</Term> introduces a new serial stock
+          instance <Term type="expression">i</Term> of item
           <Term type="expression">t</Term>, placing it in location
           <Term type="expression">l</Term>, and using the initial serial number
           <Term type="expression">s</Term>.
@@ -282,39 +301,42 @@ type StockReposit =
           <Term type="expression">i</Term>.
         </Paragraph>
         <Paragraph>
-          A reposit <Term type="expression">(CAStockRepositSerialMove i l)</Term> moves an existing
-          serial stock instance <Term type="expression">i</Term> from the location it is currently in
-          to the new location <Term type="expression">l</Term>.
+          A reposit <Term type="expression">(CAStockRepositSerialMove i l)</Term> moves an existing serial stock
+          instance <Term type="expression">i</Term> from the location it is currently in to the new
+          location <Term type="expression">l</Term>.
         </Paragraph>
         <Paragraph>
-          A reposit <Term type="expression">(CAStockRepositSerialNumberAdd i s)</Term> adds a new serial
-          number <Term type="expression">s</Term> to an existing
-          serial stock instance <Term type="expression">i</Term>.
+          A reposit <Term type="expression">(CAStockRepositSerialNumberAdd i s)</Term> adds a new serial number
+          <Term type="expression">s</Term> to an existing serial stock instance <Term type="expression">i</Term>.
         </Paragraph>
         <Paragraph>
-          A reposit <Term type="expression">(CAStockRepositSerialNumberRemove i s)</Term> removes a serial
-          number <Term type="expression">s</Term> from an existing
-          serial stock instance <Term type="expression">i</Term>.
+          A reposit <Term type="expression">(CAStockRepositSerialNumberRemove i s)</Term> removes a serial number
+          <Term type="expression">s</Term> from an existing serial stock instance
+          <Term type="expression">i</Term>.
         </Paragraph>
         <Paragraph>
-          A reposit <Term type="expression">(CAStockRepositSetIntroduce i t l c)</Term> introduces a
-          new set stock instance <Term type="expression">i</Term> of item
+          A reposit <Term type="expression">(CAStockRepositSetIntroduce i t l c)</Term> introduces a new set stock
+          instance <Term type="expression">i</Term> of item
           <Term type="expression">t</Term>, placing it in location
           <Term type="expression">l</Term>, and using the initial count
           <Term type="expression">c</Term>.
         </Paragraph>
         <Paragraph>
           A reposit <Term type="expression">(CAStockRepositSetAdd i c)</Term> adds
-          <Term type="expression">c</Term> items to an existing set stock instance <Term type="expression">i</Term>.
+          <Term type="expression">c</Term>
+          items to an existing set stock instance <Term type="expression">i</Term>.
         </Paragraph>
         <Paragraph>
           A reposit <Term type="expression">(CAStockRepositSetMove i0 i1 l c)</Term> moves
-          <Term type="expression">c</Term> items from an existing set stock instance <Term type="expression">i0</Term>
+          <Term type="expression">c</Term>
+          items from an existing set stock instance
+          <Term type="expression">i0</Term>
           to the set stock instance <Term type="expression">i1</Term>.
         </Paragraph>
         <Paragraph>
           A reposit <Term type="expression">(CAStockRepositSetRemove i c)</Term> removes
-          <Term type="expression">c</Term> items from an existing set stock instance <Term type="expression">i</Term>.
+          <Term type="expression">c</Term>
+          items from an existing set stock instance <Term type="expression">i</Term>.
         </Paragraph>
       </Subsection>
     </Subsection>
@@ -385,43 +407,50 @@ type StockReposit =
     </Subsection>
   </Subsection>
 
-  <Subsection title="Type Packages" id="0f4b9332-c2d2-4460-9fb5-f2594b854219">
+  <Subsection title="Type Packages"
+              id="0f4b9332-c2d2-4460-9fb5-f2594b854219">
     <Subsection title="Overview">
       <Paragraph>
-        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">Types</Link> are introduced into
-        a running <Term type="package">cardant</Term> server using <Term type="term">type packages</Term>.
-        A <Term type="term">type package</Term> is simply a named, versioned container of types that can
-        be uploaded and installed into the server's database atomically.
+        <Link target="32d947cf-5f95-4576-b5f7-104a5a3b82f6">Types</Link>
+        are introduced into a running <Term type="package">cardant</Term> server using <Term type="term">type
+        packages</Term>. A <Term type="term">type package</Term> is simply a named, versioned container of types that
+        can be uploaded and installed into the server's database atomically.
       </Paragraph>
     </Subsection>
-    <Subsection title="Names" id="56df9b58-93ac-4444-b76e-aacacd0e88ce">
+    <Subsection title="Names"
+                id="56df9b58-93ac-4444-b76e-aacacd0e88ce">
       <Paragraph>
-        Type packages are identified by their <Term type="term">name</Term> and <Term type="term">version</Term>.
-        It is not permitted to have two packages with the same name but different versions installed at the same
-        time. A type package name is a
-        <LinkExternal target="https://www.io7m.com/software/lanark/">Lanark</LinkExternal> dotted name (such
-        as <Term type="expression">com.io7m.example</Term>) and the types declared within the package have their
-        names derived by concatenating their unqualified names onto the end of the package name. So, for example,
-        a package <Term type="expression">com.io7m.example</Term> that contains a scalar type named
-        <Term type="expression">t</Term> will cause the scalar type <Term type="expression">com.io7m.example:t</Term>
+        Type packages are identified by their <Term type="term">name</Term> and <Term type="term">version</Term>. It is
+        not permitted to have two packages with the same name but different versions installed at the same time. A type
+        package name is a
+        <LinkExternal target="https://www.io7m.com/software/lanark/">Lanark</LinkExternal>
+        dotted name (such as <Term type="expression">com.io7m.example</Term>) and the types declared within the package
+        have their names derived by concatenating their unqualified names onto the end of the package name. So, for
+        example, a package <Term type="expression">com.io7m.example</Term> that contains a scalar type named
+        <Term type="expression">t</Term>
+        will cause the scalar type
+        <Term type="expression">com.io7m.example:t</Term>
         to be created on the server when the package is installed.
       </Paragraph>
     </Subsection>
     <Subsection title="Imports">
       <Paragraph>
-        A type package may <Term type="term">import</Term> other type packages. An <Term type="term">import</Term>
-        consists of a <Link target="56df9b58-93ac-4444-b76e-aacacd0e88ce">package name</Link> and
-        a <Term type="term">version range</Term>. When a user tries to install a type package
+        A type package may <Term type="term">import</Term> other type packages. An
+        <Term type="term">import</Term>
+        consists of a <Link target="56df9b58-93ac-4444-b76e-aacacd0e88ce">package name</Link> and a <Term type="term">
+        version range</Term>. When a user tries to install a type package
         <Term type="expression">p</Term>, each import <Term type="expression">i</Term> declared by
-        <Term type="expression">p</Term> is examined, and the server inspects its own set of installed
-        packages and verifies that a package is installed with both a name that matches <Term type="expression">i</Term>
+        <Term type="expression">p</Term>
+        is examined, and the server inspects its own set of installed packages and verifies that a package is installed
+        with both a name that matches
+        <Term type="expression">i</Term>
         and a version that falls within the range declared by <Term type="expression">i</Term>. If no such package
         exists, the type package installation is rejected and the system is left untouched.
       </Paragraph>
       <Paragraph>
-        For the sake of simplicity, and because the number of installed type packages is expected to be small
-        and not change particularly often, imports are merely an install-time check. It is possible (but heavily
-        discouraged) for type packages to refer to types in packages that they have not imported.
+        For the sake of simplicity, and because the number of installed type packages is expected to be small and not
+        change particularly often, imports are merely an install-time check. It is possible (but heavily discouraged)
+        for type packages to refer to types in packages that they have not imported.
       </Paragraph>
     </Subsection>
     <Subsection title="Serialization">
