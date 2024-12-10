@@ -102,7 +102,7 @@
     <helidon.version>4.1.4</helidon.version>
     <jackson.version>2.14.2</jackson.version>
     <javafx.version>20.0.1</javafx.version>
-    <jooq.version>3.19.15</jooq.version>
+    <jooq.version>3.19.16</jooq.version>
     <jqwik.version>1.9.2</jqwik.version>
     <junit.version>5.11.3</junit.version>
     <net.byte-buddy.version>1.15.10</net.byte-buddy.version>
