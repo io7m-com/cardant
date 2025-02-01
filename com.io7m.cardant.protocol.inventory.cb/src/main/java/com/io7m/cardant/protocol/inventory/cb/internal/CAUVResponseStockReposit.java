@@ -20,6 +20,7 @@ package com.io7m.cardant.protocol.inventory.cb.internal;
 import com.io7m.cardant.protocol.api.CAProtocolMessageValidatorType;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 import com.io7m.cardant.protocol.inventory.cb.CAI1ResponseStockReposit;
+import com.io7m.cedarbridge.runtime.api.CBOptionType;
 import com.io7m.cedarbridge.runtime.api.CBUUID;
 
 import static com.io7m.cardant.protocol.inventory.cb.internal.CAUVStockOccurrence.STOCK_OCCURRENCE;
@@ -43,7 +44,7 @@ public enum CAUVResponseStockReposit
   {
     return new CAI1ResponseStockReposit(
       new CBUUID(c.requestId()),
-      STOCK_OCCURRENCE.convertToWire(c.data())
+      CBOptionType.fromOptional(c.data().map(STOCK_OCCURRENCE::convertToWire))
     );
   }
 
@@ -53,7 +54,7 @@ public enum CAUVResponseStockReposit
   {
     return new CAIResponseStockReposit(
       m.fieldRequestId().value(),
-      STOCK_OCCURRENCE.convertFromWire(m.fieldStock())
+      m.fieldStock().asOptional().map(STOCK_OCCURRENCE::convertFromWire)
     );
   }
 }

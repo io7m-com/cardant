@@ -644,7 +644,8 @@ public final class CAFormatterPretty implements CAFormatterType
 
     final var tableBuilder =
       Tabla.builder()
-        .setWidthConstraint(this.softTableWidth(4))
+        .setWidthConstraint(this.softTableWidth(5))
+        .declareColumn("Instance", atLeastContentOrHeader())
         .declareColumn("Location", atLeastContentOrHeader())
         .declareColumn("Item ID", atLeastContentOrHeader())
         .declareColumn("Description", atLeastContentOrHeader())
@@ -654,6 +655,7 @@ public final class CAFormatterPretty implements CAFormatterType
       switch (item) {
         case final CAStockOccurrenceSerial serial -> {
           tableBuilder.addRow()
+            .addCell(serial.instance().displayId())
             .addCell(serial.location().id().displayId())
             .addCell(serial.item().id().displayId())
             .addCell(serial.item().name())
@@ -666,6 +668,7 @@ public final class CAFormatterPretty implements CAFormatterType
         }
         case final CAStockOccurrenceSet set -> {
           tableBuilder.addRow()
+            .addCell(set.instance().displayId())
             .addCell(set.location().id().displayId())
             .addCell(set.item().id().displayId())
             .addCell(set.item().name())

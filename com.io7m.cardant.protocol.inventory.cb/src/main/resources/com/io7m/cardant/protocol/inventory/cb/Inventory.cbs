@@ -1107,7 +1107,7 @@
   [documentation requestId "The ID of the request that yielded this response."]
   [field requestId cb:UUID]
   [documentation stock "The stock."]
-  [field stock CAI1StockOccurrence]
+  [field stock [cb:Option CAI1StockOccurrence]]
 ]
 
 [documentation CAI1ResponseItemDelete "A response to CAI1CommandItemDelete."]

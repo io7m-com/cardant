@@ -64,10 +64,9 @@ public final class CAICmdStockReposit
 
     repositQuery.execute(reposit);
 
-    final var item =
+    return new CAIResponseStockReposit(
+      context.requestId(),
       get.execute(reposit.instance())
-        .orElseThrow();
-
-    return new CAIResponseStockReposit(context.requestId(), item);
+    );
   }
 }
