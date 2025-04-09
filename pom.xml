@@ -105,7 +105,7 @@
     <jooq.version>3.19.18</jooq.version>
     <jqwik.version>1.9.2</jqwik.version>
     <junit.version>5.12.1</junit.version>
-    <net.byte-buddy.version>1.17.2</net.byte-buddy.version>
+    <net.byte-buddy.version>1.17.5</net.byte-buddy.version>
     <opentelemetry.version>1.47.0</opentelemetry.version>
     <org.apache.tika.version>2.9.2</org.apache.tika.version>
     <org.jline.version>3.28.0</org.jline.version>
