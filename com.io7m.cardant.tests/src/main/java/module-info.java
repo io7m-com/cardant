@@ -103,4 +103,5 @@ open module com.io7m.cardant.tests
   requires org.mockito;
   requires org.postgresql.jdbc;
   requires org.slf4j;
+  requires com.io7m.cardant.protocol.inventory.json;
 }

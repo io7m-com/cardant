@@ -68,6 +68,8 @@ public sealed interface CAComparisonExactType<T>
   {
     /**
      * Match a value exactly.
+     *
+     * @param value The value
      */
 
     public IsEqualTo
@@ -95,6 +97,8 @@ public sealed interface CAComparisonExactType<T>
   {
     /**
      * Match a value exactly.
+     *
+     * @param value The value
      */
 
     public IsNotEqualTo

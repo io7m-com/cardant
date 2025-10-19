@@ -53,6 +53,9 @@ public interface CADBQueryProviderType
   {
     /**
      * The query provider information.
+     *
+     * @param interfaceClass The interface registry class
+     * @param constructor    The constructor for the query
      */
 
     public Service

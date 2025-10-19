@@ -113,6 +113,9 @@ public sealed interface CAMetadataValueMatchType
       /**
        * Match metadata of a time type with values within the given
        * inclusive range.
+       *
+       * @param lower The lower bound
+       * @param upper The upper bound
        */
 
       public WithinRange
@@ -144,6 +147,8 @@ public sealed interface CAMetadataValueMatchType
       /**
        * Match metadata of a monetary type with values with the given
        * currency.
+       *
+       * @param currency The currency value
        */
 
       public WithCurrency
@@ -168,6 +173,9 @@ public sealed interface CAMetadataValueMatchType
       /**
        * Match metadata of a monetary type with values within the given
        * inclusive range.
+       *
+       * @param lower The lower bound
+       * @param upper The upper bound
        */
 
       public WithinRange
@@ -196,6 +204,8 @@ public sealed interface CAMetadataValueMatchType
     {
       /**
        * Match metadata of a text type with the exact value.
+       *
+       * @param text The text value
        */
 
       public ExactTextValue
@@ -215,6 +225,8 @@ public sealed interface CAMetadataValueMatchType
     {
       /**
        * Match metadata of a text type that matches the given search query.
+       *
+       * @param query The search query
        */
 
       public Search

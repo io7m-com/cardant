@@ -62,6 +62,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.cardant.protocol.inventory.json</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.cardant.server.basic</artifactId>
       <version>${project.version}</version>
     </dependency>
