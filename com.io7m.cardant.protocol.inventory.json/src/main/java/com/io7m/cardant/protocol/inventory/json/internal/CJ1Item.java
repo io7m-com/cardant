@@ -16,27 +16,31 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
 
-import java.io.IOException;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+public record CJ1Item(
+  @JsonProperty(value = "id", required = true)
+  UUID id,
+  @JsonProperty(value = "name", required = true)
+  String name,
+  @JsonProperty(value = "timeCreated", required = true)
+  OffsetDateTime timeCreated,
+  @JsonProperty(value = "timeUpdated", required = true)
+  OffsetDateTime timeUpdated,
+  @JsonProperty("metadata")
+  Map<CJ1TypeRecordFieldIdentifier, CJ1MetadataType> metadata,
+  @JsonProperty("attachments")
+  List<CJ1AttachmentItem> attachments,
+  @JsonProperty("types")
+  Set<CJ1TypeRecordIdentifier> types)
+  implements CJ1ValueType
 {
-  public CJ1DottedNameDeserializer()
-  {
 
-  }
-
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
 }

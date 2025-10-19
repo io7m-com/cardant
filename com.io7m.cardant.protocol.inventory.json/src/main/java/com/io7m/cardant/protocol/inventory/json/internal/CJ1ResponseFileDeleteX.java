@@ -16,27 +16,34 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CAFileID;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileDelete;
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseFileDeleteX
+  implements CJ1SerialBijectionType<CJ1ResponseFileDelete, CAIResponseFileDelete>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_FILE_DELETE;
 
+  @Override
+  public CAIResponseFileDelete toCore(
+    final CJ1ResponseFileDelete m)
+    throws CAProtocolException
+  {
+    return new CAIResponseFileDelete(
+      m.requestId(),
+      CAFileID.of(m.file())
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseFileDelete toCJ1(
+    final CAIResponseFileDelete m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseFileDelete(
+      m.requestId(),
+      m.data().id()
+    );
   }
 }

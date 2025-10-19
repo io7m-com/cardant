@@ -16,27 +16,38 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.error_codes.CAErrorCode;
+import com.io7m.seltzer.api.SStructuredError;
 
-import java.io.IOException;
+import java.util.Optional;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1StructuredErrorX
+  implements CJ1SerialBijectionType<CJ1StructuredError, SStructuredError<CAErrorCode>>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  STRUCTURED_ERROR;
 
+  @Override
+  public SStructuredError<CAErrorCode> toCore(
+    final CJ1StructuredError m)
+  {
+    return new SStructuredError<>(
+      new CAErrorCode(m.errorCode()),
+      m.message(),
+      m.attributes(),
+      m.remediatingAction(),
+      Optional.empty()
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1StructuredError toCJ1(
+    final SStructuredError<CAErrorCode> m)
   {
-    return new RDottedName(p.getText());
+    return new CJ1StructuredError(
+      m.errorCode().id(),
+      m.message(),
+      m.attributes(),
+      m.remediatingAction()
+    );
   }
 }

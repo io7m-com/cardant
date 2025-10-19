@@ -16,27 +16,35 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
 
-import java.io.IOException;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemX.ITEM;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseItemSetNameX
+  implements CJ1SerialBijectionType<CJ1ResponseItemSetName, CAIResponseItemSetName>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_ITEM_SET_NAME;
 
+  @Override
+  public CAIResponseItemSetName toCore(
+    final CJ1ResponseItemSetName m)
+    throws CAProtocolException
+  {
+    return new CAIResponseItemSetName(
+      m.requestId(),
+      ITEM.toCore(m.item())
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseItemSetName toCJ1(
+    final CAIResponseItemSetName m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseItemSetName(
+      m.requestId(),
+      ITEM.toCJ1(m.data())
+    );
   }
 }

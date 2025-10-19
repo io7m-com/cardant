@@ -16,27 +16,35 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
 
-import java.io.IOException;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurrenceX.STOCK_OCCURRENCE_TYPE;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseStockRepositX
+  implements CJ1SerialBijectionType<CJ1ResponseStockReposit, CAIResponseStockReposit>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_STOCK_REPOSIT;
 
+  @Override
+  public CAIResponseStockReposit toCore(
+    final CJ1ResponseStockReposit m)
+    throws CAProtocolException
+  {
+    return new CAIResponseStockReposit(
+      m.requestId(),
+      m.data().map(STOCK_OCCURRENCE_TYPE::toCore)
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseStockReposit toCJ1(
+    final CAIResponseStockReposit m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseStockReposit(
+      m.requestId(),
+      m.data().map(STOCK_OCCURRENCE_TYPE::toCJ1)
+    );
   }
 }

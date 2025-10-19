@@ -14,29 +14,18 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import java.util.List;
+import java.util.UUID;
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public record CJ1StockOccurrenceSerial(
+  UUID instance,
+  CJ1LocationSummary location,
+  CJ1ItemSummary item,
+  List<CJ1ItemSerial> serials)
+  implements CJ1StockOccurrenceType
 {
-  public CJ1DottedNameDeserializer()
-  {
 
-  }
-
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
 }

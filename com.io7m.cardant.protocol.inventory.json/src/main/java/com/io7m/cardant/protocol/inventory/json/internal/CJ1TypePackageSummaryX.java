@@ -16,27 +16,35 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
 
-import java.io.IOException;
+import com.io7m.cardant.model.type_package.CATypePackageSummary;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifierX.TYPE_PACKAGE_IDENTIFIER;
+
+public enum CJ1TypePackageSummaryX
+  implements CJ1SerialBijectionType<CJ1TypePackageSummary, CATypePackageSummary>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  TYPE_PACKAGE_SUMMARY;
 
+  @Override
+  public CATypePackageSummary toCore(
+    final CJ1TypePackageSummary m)
+    throws CAProtocolException
+  {
+    return new CATypePackageSummary(
+      TYPE_PACKAGE_IDENTIFIER.toCore(m.identifier()),
+      m.description()
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1TypePackageSummary toCJ1(
+    final CATypePackageSummary m)
   {
-    return new RDottedName(p.getText());
+    return new CJ1TypePackageSummary(
+      TYPE_PACKAGE_IDENTIFIER.toCJ1(m.identifier()),
+      m.description()
+    );
   }
 }

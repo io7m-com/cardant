@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessagesType;
@@ -65,6 +66,8 @@ import com.io7m.cardant.protocol.inventory.json.internal.CJ1CurrencyUnitDeserial
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1CurrencyUnitSerializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1DottedNameDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1DottedNameSerializer;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1ErrorCodeDeserializer;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1ErrorCodeSerializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileColumn;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileColumnOrdering;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileSearchParameters;
@@ -224,6 +227,15 @@ public final class CAIJ1Messages
     simpleModule.addDeserializer(
       RDottedName.class,
       new CJ1DottedNameDeserializer()
+    );
+
+    simpleModule.addSerializer(
+      CAErrorCode.class,
+      new CJ1ErrorCodeSerializer()
+    );
+    simpleModule.addDeserializer(
+      CAErrorCode.class,
+      new CJ1ErrorCodeDeserializer()
     );
 
     this.mapper.registerModule(simpleModule);

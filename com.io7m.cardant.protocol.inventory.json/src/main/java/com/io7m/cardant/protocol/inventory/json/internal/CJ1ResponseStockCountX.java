@@ -16,27 +16,33 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockCount;
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseStockCountX
+  implements CJ1SerialBijectionType<CJ1ResponseStockCount, CAIResponseStockCount>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_STOCK_COUNT;
 
+  @Override
+  public CAIResponseStockCount toCore(
+    final CJ1ResponseStockCount m)
+    throws CAProtocolException
+  {
+    return new CAIResponseStockCount(
+      m.requestId(),
+      m.count()
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseStockCount toCJ1(
+    final CAIResponseStockCount m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseStockCount(
+      m.requestId(),
+      m.count()
+    );
   }
 }

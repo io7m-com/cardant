@@ -18,11 +18,6 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.io7m.cardant.model.type_package.CATypePackageUninstall;
-import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUninstall;
-
-import java.util.Objects;
 
 @JsonTypeName("TypePackageUninstall")
 public record CJ1CommandTypePackageUninstall(

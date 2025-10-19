@@ -16,27 +16,34 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseLoginX
+  implements CJ1SerialBijectionType<CJ1ResponseLogin, CAIResponseLogin>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_LOGIN;
 
+  @Override
+  public CAIResponseLogin toCore(
+    final CJ1ResponseLogin m)
+    throws CAProtocolException
+  {
+    return new CAIResponseLogin(
+      m.requestId(),
+      new CAUserID(m.userId())
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseLogin toCJ1(
+    final CAIResponseLogin m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseLogin(
+      m.requestId(),
+      m.userId().id()
+    );
   }
 }

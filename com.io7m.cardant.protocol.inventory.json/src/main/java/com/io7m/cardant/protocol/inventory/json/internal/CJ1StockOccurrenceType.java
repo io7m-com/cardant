@@ -16,27 +16,40 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.io.IOException;
+import java.util.UUID;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+
+@JsonTypeInfo(
+  use = JsonTypeInfo.Id.NAME,
+  include = JsonTypeInfo.As.PROPERTY,
+  property = "@type"
+)
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = CJ1StockOccurrenceSerial.class, name = "Serial"),
+  @JsonSubTypes.Type(value = CJ1StockOccurrenceSet.class, name = "Set"),
+})
+public sealed interface CJ1StockOccurrenceType
+  extends CJ1ValueType
+  permits CJ1StockOccurrenceSerial, CJ1StockOccurrenceSet
 {
-  public CJ1DottedNameDeserializer()
-  {
+  /**
+   * @return The instance
+   */
 
-  }
+  UUID instance();
 
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
+  /**
+   * @return The location
+   */
+
+  CJ1LocationSummary location();
+
+  /**
+   * @return The item
+   */
+
+  CJ1ItemSummary item();
 }

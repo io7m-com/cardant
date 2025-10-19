@@ -16,27 +16,19 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+@JsonTypeName("ResponseRolesGet")
+public record CJ1ResponseRolesGet(
+  @JsonProperty(value = "requestId", required = true)
+  UUID requestId,
+  @JsonProperty("roles")
+  Set<String> roles)
+  implements CJ1ResponseType
 {
-  public CJ1DottedNameDeserializer()
-  {
 
-  }
-
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
 }

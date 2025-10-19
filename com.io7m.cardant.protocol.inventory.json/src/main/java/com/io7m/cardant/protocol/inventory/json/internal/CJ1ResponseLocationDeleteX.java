@@ -16,27 +16,34 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CALocationID;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationDelete;
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseLocationDeleteX
+  implements CJ1SerialBijectionType<CJ1ResponseLocationDelete, CAIResponseLocationDelete>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_LOCATION_DELETE;
 
+  @Override
+  public CAIResponseLocationDelete toCore(
+    final CJ1ResponseLocationDelete m)
+    throws CAProtocolException
+  {
+    return new CAIResponseLocationDelete(
+      m.requestId(),
+      CALocationID.of(m.location())
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseLocationDelete toCJ1(
+    final CAIResponseLocationDelete m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseLocationDelete(
+      m.requestId(),
+      m.data().id()
+    );
   }
 }

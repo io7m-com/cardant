@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,27 +16,25 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public record CJ1LocationSummary(
+  @JsonProperty(value = "id", required = true)
+  UUID id,
+  @JsonProperty("parent")
+  Optional<UUID> parent,
+  @JsonProperty("path")
+  List<String> path,
+  @JsonProperty(value = "timeCreated", required = true)
+  OffsetDateTime timeCreated,
+  @JsonProperty(value = "timeUpdated", required = true)
+  OffsetDateTime timeUpdated)
+  implements CJ1ValueType
 {
-  public CJ1DottedNameDeserializer()
-  {
 
-  }
-
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
 }

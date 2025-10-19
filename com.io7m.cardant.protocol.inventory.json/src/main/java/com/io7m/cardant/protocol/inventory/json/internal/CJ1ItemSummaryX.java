@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,29 +14,38 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CAItemID;
+import com.io7m.cardant.model.CAItemSummary;
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ItemSummaryX
+  implements CJ1SerialBijectionType<CJ1ItemSummary, CAItemSummary>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  ITEM_SUMMARY;
 
+  @Override
+  public CAItemSummary toCore(
+    final CJ1ItemSummary m)
+  {
+    return new CAItemSummary(
+      CAItemID.of(m.id()),
+      m.name(),
+      m.timeCreated(),
+      m.timeUpdated()
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ItemSummary toCJ1(
+    final CAItemSummary m)
   {
-    return new RDottedName(p.getText());
+    return new CJ1ItemSummary(
+      m.id().id(),
+      m.name(),
+      m.timeCreated(),
+      m.timeUpdated()
+    );
   }
 }

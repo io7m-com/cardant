@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,29 +14,32 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+package com.io7m.cardant.protocol.api;
 
-import java.io.IOException;
+import java.util.Objects;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+/**
+ * An exception encountered whilst handling a protocol.
+ */
+
+public final class CAProtocolUncheckedException extends RuntimeException
 {
-  public CJ1DottedNameDeserializer()
-  {
+  /**
+   * An exception encountered whilst handling a protocol.
+   *
+   * @param cause The cause
+   */
 
+  public CAProtocolUncheckedException(
+    final CAProtocolException cause)
+  {
+    super(Objects.requireNonNull(cause));
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public synchronized CAProtocolException getCause()
   {
-    return new RDottedName(p.getText());
+    return (CAProtocolException) super.getCause();
   }
 }

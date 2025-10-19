@@ -16,27 +16,35 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
 
-import java.io.IOException;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1LocationX.LOCATION;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseLocationPutX
+  implements CJ1SerialBijectionType<CJ1ResponseLocationPut, CAIResponseLocationPut>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_LOCATION_PUT;
 
+  @Override
+  public CAIResponseLocationPut toCore(
+    final CJ1ResponseLocationPut m)
+    throws CAProtocolException
+  {
+    return new CAIResponseLocationPut(
+      m.requestId(),
+      LOCATION.toCore(m.location())
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseLocationPut toCJ1(
+    final CAIResponseLocationPut m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseLocationPut(
+      m.requestId(),
+      LOCATION.toCJ1(m.data())
+    );
   }
 }

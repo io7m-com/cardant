@@ -16,27 +16,33 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.io7m.cardant.error_codes.CAErrorCode;
 
 import java.io.IOException;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public final class CJ1ErrorCodeSerializer extends JsonSerializer<CAErrorCode>
 {
-  public CJ1DottedNameDeserializer()
+  public CJ1ErrorCodeSerializer()
   {
 
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
+  public Class<CAErrorCode> handledType()
+  {
+    return CAErrorCode.class;
+  }
+
+  @Override
+  public void serialize(
+    final CAErrorCode value,
+    final JsonGenerator gen,
+    final SerializerProvider serializers)
     throws IOException
   {
-    return new RDottedName(p.getText());
+    gen.writeString(value.id());
   }
 }

@@ -16,22 +16,6 @@
 
 package com.io7m.cardant.tests.protocol.json;
 
-import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchNext;
-import com.io7m.cardant.protocol.inventory.CAICommandAuditSearchPrevious;
-import com.io7m.cardant.protocol.inventory.CAICommandFileDelete;
-import com.io7m.cardant.protocol.inventory.CAICommandFileGet;
-import com.io7m.cardant.protocol.inventory.CAICommandFilePut;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchNext;
-import com.io7m.cardant.protocol.inventory.CAICommandFileSearchPrevious;
-import com.io7m.cardant.protocol.inventory.CAICommandItemCreate;
-import com.io7m.cardant.protocol.inventory.CAICommandItemDelete;
-import com.io7m.cardant.protocol.inventory.CAICommandItemGet;
-import com.io7m.cardant.protocol.inventory.CAICommandItemSetName;
-import com.io7m.cardant.protocol.inventory.CAICommandLocationDelete;
-import com.io7m.cardant.protocol.inventory.CAICommandLocationGet;
-import com.io7m.cardant.protocol.inventory.CAICommandLogin;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import net.jqwik.api.Arbitraries;
@@ -46,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public final class CJ1ProtocolTest
 {
   @TestFactory
-  public Stream<DynamicTest> testRoundTrip()
+  public Stream<DynamicTest> testRoundTripCommands()
   {
     return Stream.of(
 com.io7m.cardant.protocol.inventory.CAICommandAuditSearchBegin.class,
@@ -118,5 +102,51 @@ com.io7m.cardant.protocol.inventory.CAICommandTypePackageUpgrade.class
         final var parsed = messages.parse(output);
         assertEquals(inputMessage, parsed);
       });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testRoundTripResponses()
+  {
+    return Stream.of(
+com.io7m.cardant.protocol.inventory.CAIResponseAuditSearch.class,
+com.io7m.cardant.protocol.inventory.CAIResponseError.class,
+com.io7m.cardant.protocol.inventory.CAIResponseFileDelete.class,
+com.io7m.cardant.protocol.inventory.CAIResponseFileGet.class,
+com.io7m.cardant.protocol.inventory.CAIResponseFilePut.class,
+com.io7m.cardant.protocol.inventory.CAIResponseFileSearch.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemCreate.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemDelete.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemGet.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemSearch.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemSetName.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign.class,
+com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentAdd.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentRemove.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationDelete.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationGet.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationList.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataPut.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataRemove.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationPut.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesAssign.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesRevoke.class,
+com.io7m.cardant.protocol.inventory.CAIResponseLogin.class,
+com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign.class,
+com.io7m.cardant.protocol.inventory.CAIResponseRolesGet.class,
+com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke.class,
+com.io7m.cardant.protocol.inventory.CAIResponseStockCount.class,
+com.io7m.cardant.protocol.inventory.CAIResponseStockReposit.class,
+com.io7m.cardant.protocol.inventory.CAIResponseStockSearch.class,
+com.io7m.cardant.protocol.inventory.CAIResponseTypePackageGetText.class,
+com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall.class,
+com.io7m.cardant.protocol.inventory.CAIResponseTypePackageSearch.class,
+com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUninstall.class,
+com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUpgrade.class
+    ).map(CJ1ProtocolTest::roundTrip);
   }
 }

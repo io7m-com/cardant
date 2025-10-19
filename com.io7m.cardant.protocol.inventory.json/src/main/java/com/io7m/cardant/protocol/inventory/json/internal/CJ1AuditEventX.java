@@ -16,27 +16,37 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.model.CAAuditEvent;
+import com.io7m.cardant.model.CAUserID;
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1AuditEventX
+  implements CJ1SerialBijectionType<CJ1AuditEvent, CAAuditEvent>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  AUDIT_EVENT;
 
+  @Override
+  public CAAuditEvent toCore(
+    final CJ1AuditEvent m)
+  {
+    return new CAAuditEvent(
+      m.id(),
+      m.time(),
+      CAUserID.of(m.owner()),
+      m.type(),
+      m.data()
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1AuditEvent toCJ1(
+    final CAAuditEvent m)
   {
-    return new RDottedName(p.getText());
+    return new CJ1AuditEvent(
+      m.id(),
+      m.time(),
+      m.owner().id(),
+      m.type(),
+      m.data()
+    );
   }
 }

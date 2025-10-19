@@ -16,27 +16,21 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+/**
+ * A notion of whether the client is to blame for an error response, or the server.
+ */
 
-import java.io.IOException;
-
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseBlame
 {
-  public CJ1DottedNameDeserializer()
-  {
+  /**
+   * The client sent a bad response.
+   */
 
-  }
+  BLAME_CLIENT,
 
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
+  /**
+   * Something went wrong on the server.
+   */
+
+  BLAME_SERVER
 }

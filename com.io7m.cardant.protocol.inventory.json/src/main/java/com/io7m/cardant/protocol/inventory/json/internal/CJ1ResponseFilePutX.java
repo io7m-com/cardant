@@ -16,27 +16,35 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
 
-import java.io.IOException;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1FileTypeX.FILE;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseFilePutX
+  implements CJ1SerialBijectionType<CJ1ResponseFilePut, CAIResponseFilePut>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_FILE_PUT;
 
+  @Override
+  public CAIResponseFilePut toCore(
+    final CJ1ResponseFilePut m)
+    throws CAProtocolException
+  {
+    return new CAIResponseFilePut(
+      m.requestId(),
+      FILE.toCore(m.file())
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseFilePut toCJ1(
+    final CAIResponseFilePut m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseFilePut(
+      m.requestId(),
+      FILE.toCJ1(m.data())
+    );
   }
 }

@@ -73,6 +73,46 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   @JsonSubTypes.Type(value = CJ1CommandTypePackageSearchPrevious.class, name = "TypePackageSearchPrevious"),
   @JsonSubTypes.Type(value = CJ1CommandTypePackageUninstall.class, name = "TypePackageUninstall"),
   @JsonSubTypes.Type(value = CJ1CommandTypePackageUpgrade.class, name = "TypePackageUpgrade"),
+
+  @JsonSubTypes.Type(value = CJ1ResponseAuditSearch.class, name = "ResponseAuditSearch"),
+  @JsonSubTypes.Type(value = CJ1ResponseError.class, name = "ResponseError"),
+  @JsonSubTypes.Type(value = CJ1ResponseFileDelete.class, name = "ResponseFileDelete"),
+  @JsonSubTypes.Type(value = CJ1ResponseFileGet.class, name = "ResponseFileGet"),
+  @JsonSubTypes.Type(value = CJ1ResponseFilePut.class, name = "ResponseFilePut"),
+  @JsonSubTypes.Type(value = CJ1ResponseFileSearch.class, name = "ResponseFileSearch"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemAttachmentAdd.class, name = "ResponseItemAttachmentAdd"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemAttachmentRemove.class, name = "ResponseItemAttachmentRemove"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemCreate.class, name = "ResponseItemCreate"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemDelete.class, name = "ResponseItemDelete"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemGet.class, name = "ResponseItemGet"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemMetadataPut.class, name = "ResponseItemMetadataPut"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemMetadataRemove.class, name = "ResponseItemMetadataRemove"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemSearch.class, name = "ResponseItemSearch"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemSetName.class, name = "ResponseItemSetName"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemTypesAssign.class, name = "ResponseItemTypesAssign"),
+  @JsonSubTypes.Type(value = CJ1ResponseItemTypesRevoke.class, name = "ResponseItemTypesRevoke"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationAttachmentAdd.class, name = "ResponseLocationAttachmentAdd"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationAttachmentRemove.class, name = "ResponseLocationAttachmentRemove"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationDelete.class, name = "ResponseLocationDelete"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationGet.class, name = "ResponseLocationGet"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationList.class, name = "ResponseLocationList"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationMetadataPut.class, name = "ResponseLocationMetadataPut"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationMetadataRemove.class, name = "ResponseLocationMetadataRemove"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationPut.class, name = "ResponseLocationPut"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationTypesAssign.class, name = "ResponseLocationTypesAssign"),
+  @JsonSubTypes.Type(value = CJ1ResponseLocationTypesRevoke.class, name = "ResponseLocationTypesRevoke"),
+  @JsonSubTypes.Type(value = CJ1ResponseLogin.class, name = "ResponseLogin"),
+  @JsonSubTypes.Type(value = CJ1ResponseRolesAssign.class, name = "ResponseRolesAssign"),
+  @JsonSubTypes.Type(value = CJ1ResponseRolesGet.class, name = "ResponseRolesGet"),
+  @JsonSubTypes.Type(value = CJ1ResponseRolesRevoke.class, name = "ResponseRolesRevoke"),
+  @JsonSubTypes.Type(value = CJ1ResponseStockCount.class, name = "ResponseStockCount"),
+  @JsonSubTypes.Type(value = CJ1ResponseStockReposit.class, name = "ResponseStockReposit"),
+  @JsonSubTypes.Type(value = CJ1ResponseStockSearch.class, name = "ResponseStockSearch"),
+  @JsonSubTypes.Type(value = CJ1ResponseTypePackageGetText.class, name = "ResponseTypePackageGetText"),
+  @JsonSubTypes.Type(value = CJ1ResponseTypePackageInstall.class, name = "ResponseTypePackageInstall"),
+  @JsonSubTypes.Type(value = CJ1ResponseTypePackageSearch.class, name = "ResponseTypePackageSearch"),
+  @JsonSubTypes.Type(value = CJ1ResponseTypePackageUninstall.class, name = "ResponseTypePackageUninstall"),
+  @JsonSubTypes.Type(value = CJ1ResponseTypePackageUpgrade.class, name = "ResponseTypePackageUpgrade"),
 })
 public sealed interface CJ1MessageType
   extends CJ1ValueType
@@ -123,7 +163,8 @@ public sealed interface CJ1MessageType
   CJ1CommandTypePackageSearchNext,
   CJ1CommandTypePackageSearchPrevious,
   CJ1CommandTypePackageUninstall,
-  CJ1CommandTypePackageUpgrade
+  CJ1CommandTypePackageUpgrade,
+  CJ1ResponseType
 {
 
 }

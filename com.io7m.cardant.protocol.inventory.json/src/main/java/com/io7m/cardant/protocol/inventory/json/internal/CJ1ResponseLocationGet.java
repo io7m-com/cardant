@@ -14,29 +14,21 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import java.io.IOException;
+import java.util.UUID;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+@JsonTypeName("ResponseLocationGet")
+public record CJ1ResponseLocationGet(
+  @JsonProperty(value = "requestId", required = true)
+  UUID requestId,
+  @JsonProperty(value = "location", required = true)
+  CJ1Location location)
+  implements CJ1ResponseType
 {
-  public CJ1DottedNameDeserializer()
-  {
 
-  }
-
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
 }

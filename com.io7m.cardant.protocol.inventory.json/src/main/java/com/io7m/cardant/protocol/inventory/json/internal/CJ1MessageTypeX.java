@@ -70,7 +70,46 @@ import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAICommandTypePackageUpgrade;
 import com.io7m.cardant.protocol.inventory.CAIEventType;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIResponseAuditSearch;
+import com.io7m.cardant.protocol.inventory.CAIResponseError;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileDelete;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseFilePut;
+import com.io7m.cardant.protocol.inventory.CAIResponseFileSearch;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemCreate;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemDelete;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemMetadataRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemSearch;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemSetName;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemTypesRevoke;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentAdd;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationAttachmentRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationDelete;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationList;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationMetadataRemove;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationPut;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseLocationTypesRevoke;
+import com.io7m.cardant.protocol.inventory.CAIResponseLogin;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesAssign;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesGet;
+import com.io7m.cardant.protocol.inventory.CAIResponseRolesRevoke;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockCount;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockReposit;
+import com.io7m.cardant.protocol.inventory.CAIResponseStockSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageGetText;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageSearch;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUninstall;
+import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUpgrade;
 import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import com.io7m.junreachable.UnimplementedCodeException;
 
@@ -122,7 +161,45 @@ import static com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandTypePa
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandTypePackageSearchPreviousX.TYPE_PACKAGE_SEARCH_PREVIOUS;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandTypePackageUninstallX.TYPE_PACKAGE_UNINSTALL;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandTypePackageUpgradeX.TYPE_PACKAGE_UPGRADE;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageUninstallX.TYPE_PACKAGE_UNINSTALL_TYPE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseAuditSearchX.RESPONSE_AUDIT_SEARCH;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseErrorX.RESPONSE_ERROR;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseFileDeleteX.RESPONSE_FILE_DELETE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseFileGetX.RESPONSE_FILE_GET;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseFilePutX.RESPONSE_FILE_PUT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseFileSearchX.RESPONSE_FILE_SEARCH;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemAttachmentAddX.RESPONSE_ITEM_ATTACHMENT_ADD;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemAttachmentRemoveX.RESPONSE_ITEM_ATTACHMENT_REMOVE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemCreateX.RESPONSE_ITEM_CREATE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemDeleteX.RESPONSE_ITEM_DELETE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemGetX.RESPONSE_ITEM_GET;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemMetadataPutX.RESPONSE_ITEM_METADATA_PUT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemMetadataRemoveX.RESPONSE_ITEM_METADATA_REMOVE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemSearchX.RESPONSE_ITEM_SEARCH;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemSetNameX.RESPONSE_ITEM_SET_NAME;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemTypesAssignX.RESPONSE_ITEM_TYPES_ASSIGN;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseItemTypesRevokeX.RESPONSE_ITEM_TYPES_REVOKE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationAttachmentAddX.RESPONSE_LOCATION_ATTACHMENT_ADD;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationAttachmentRemoveX.RESPONSE_LOCATION_ATTACHMENT_REMOVE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationDeleteX.RESPONSE_LOCATION_DELETE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationGetX.RESPONSE_LOCATION_GET;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationListX.RESPONSE_LOCATION_LIST;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationMetadataPutX.RESPONSE_LOCATION_METADATA_PUT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationMetadataRemoveX.RESPONSE_LOCATION_METADATA_REMOVE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationPutX.RESPONSE_LOCATION_PUT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationTypesAssignX.RESPONSE_LOCATION_TYPES_ASSIGN;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLocationTypesRevokeX.RESPONSE_LOCATION_TYPES_REVOKE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseLoginX.RESPONSE_LOGIN;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseRolesAssignX.RESPONSE_ROLES_ASSIGN;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseRolesGetX.RESPONSE_ROLES_GET;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseRolesRevokeX.RESPONSE_ROLES_REVOKE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseStockCountX.RESPONSE_STOCK_COUNT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseStockRepositX.RESPONSE_STOCK_REPOSIT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseStockSearchX.RESPONSE_STOCK_SEARCH;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageGetTextX.RESPONSE_TYPE_PACKAGE_GET_TEXT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageInstallX.RESPONSE_TYPE_PACKAGE_INSTALL;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageSearchX.RESPONSE_TYPE_PACKAGE_SEARCH;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUninstallX.RESPONSE_TYPE_PACKAGE_UNINSTALL;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUpgradeX.RESPONSE_TYPE_PACKAGE_UPGRADE;
 
 public enum CJ1MessageTypeX
   implements CJ1SerialBijectionType<CJ1MessageType, CAIMessageType>
@@ -279,6 +356,123 @@ public enum CJ1MessageTypeX
       case final CJ1CommandTypePackageUpgrade mm -> {
         yield TYPE_PACKAGE_UPGRADE.toCore(mm);
       }
+      case final CJ1ResponseError mm -> {
+        yield RESPONSE_ERROR.toCore(mm);
+      }
+      case final CJ1ResponseLogin mm -> {
+        yield RESPONSE_LOGIN.toCore(mm);
+      }
+      case final CJ1ResponseAuditSearch mm -> {
+        yield RESPONSE_AUDIT_SEARCH.toCore(mm);
+      }
+      case final CJ1ResponseFileDelete mm -> {
+        yield RESPONSE_FILE_DELETE.toCore(mm);
+      }
+      case final CJ1ResponseFileGet mm -> {
+        yield RESPONSE_FILE_GET.toCore(mm);
+      }
+      case final CJ1ResponseFilePut mm -> {
+        yield RESPONSE_FILE_PUT.toCore(mm);
+      }
+      case final CJ1ResponseFileSearch mm -> {
+        yield RESPONSE_FILE_SEARCH.toCore(mm);
+      }
+      case final CJ1ResponseItemAttachmentAdd mm -> {
+        yield RESPONSE_ITEM_ATTACHMENT_ADD.toCore(mm);
+      }
+      case final CJ1ResponseItemAttachmentRemove mm -> {
+        yield RESPONSE_ITEM_ATTACHMENT_REMOVE.toCore(mm);
+      }
+      case final CJ1ResponseItemCreate mm -> {
+        yield RESPONSE_ITEM_CREATE.toCore(mm);
+      }
+      case final CJ1ResponseItemDelete mm -> {
+        yield RESPONSE_ITEM_DELETE.toCore(mm);
+      }
+      case final CJ1ResponseItemGet mm -> {
+        yield RESPONSE_ITEM_GET.toCore(mm);
+      }
+      case final CJ1ResponseItemMetadataPut mm -> {
+        yield RESPONSE_ITEM_METADATA_PUT.toCore(mm);
+      }
+      case final CJ1ResponseItemMetadataRemove mm -> {
+        yield RESPONSE_ITEM_METADATA_REMOVE.toCore(mm);
+      }
+      case final CJ1ResponseItemSearch mm -> {
+        yield RESPONSE_ITEM_SEARCH.toCore(mm);
+      }
+      case final CJ1ResponseItemSetName mm -> {
+        yield RESPONSE_ITEM_SET_NAME.toCore(mm);
+      }
+      case final CJ1ResponseItemTypesAssign mm -> {
+        yield RESPONSE_ITEM_TYPES_ASSIGN.toCore(mm);
+      }
+      case final CJ1ResponseItemTypesRevoke mm -> {
+        yield RESPONSE_ITEM_TYPES_REVOKE.toCore(mm);
+      }
+      case final CJ1ResponseLocationAttachmentAdd mm -> {
+        yield RESPONSE_LOCATION_ATTACHMENT_ADD.toCore(mm);
+      }
+      case final CJ1ResponseLocationAttachmentRemove mm -> {
+        yield RESPONSE_LOCATION_ATTACHMENT_REMOVE.toCore(mm);
+      }
+      case final CJ1ResponseLocationDelete mm -> {
+        yield RESPONSE_LOCATION_DELETE.toCore(mm);
+      }
+      case final CJ1ResponseLocationGet mm -> {
+        yield RESPONSE_LOCATION_GET.toCore(mm);
+      }
+      case final CJ1ResponseLocationList mm -> {
+        yield RESPONSE_LOCATION_LIST.toCore(mm);
+      }
+      case final CJ1ResponseLocationMetadataPut mm -> {
+        yield RESPONSE_LOCATION_METADATA_PUT.toCore(mm);
+      }
+      case final CJ1ResponseLocationMetadataRemove mm -> {
+        yield RESPONSE_LOCATION_METADATA_REMOVE.toCore(mm);
+      }
+      case final CJ1ResponseLocationPut mm -> {
+        yield RESPONSE_LOCATION_PUT.toCore(mm);
+      }
+      case final CJ1ResponseLocationTypesAssign mm -> {
+        yield RESPONSE_LOCATION_TYPES_ASSIGN.toCore(mm);
+      }
+      case final CJ1ResponseLocationTypesRevoke mm -> {
+        yield RESPONSE_LOCATION_TYPES_REVOKE.toCore(mm);
+      }
+      case final CJ1ResponseRolesAssign mm -> {
+        yield RESPONSE_ROLES_ASSIGN.toCore(mm);
+      }
+      case final CJ1ResponseRolesGet mm -> {
+        yield RESPONSE_ROLES_GET.toCore(mm);
+      }
+      case final CJ1ResponseRolesRevoke mm -> {
+        yield RESPONSE_ROLES_REVOKE.toCore(mm);
+      }
+      case final CJ1ResponseStockCount mm -> {
+        yield RESPONSE_STOCK_COUNT.toCore(mm);
+      }
+      case final CJ1ResponseStockReposit mm -> {
+        yield RESPONSE_STOCK_REPOSIT.toCore(mm);
+      }
+      case final CJ1ResponseStockSearch mm -> {
+        yield RESPONSE_STOCK_SEARCH.toCore(mm);
+      }
+      case final CJ1ResponseTypePackageGetText mm -> {
+        yield RESPONSE_TYPE_PACKAGE_GET_TEXT.toCore(mm);
+      }
+      case final CJ1ResponseTypePackageInstall mm -> {
+        yield RESPONSE_TYPE_PACKAGE_INSTALL.toCore(mm);
+      }
+      case final CJ1ResponseTypePackageSearch mm -> {
+        yield RESPONSE_TYPE_PACKAGE_SEARCH.toCore(mm);
+      }
+      case final CJ1ResponseTypePackageUninstall mm -> {
+        yield RESPONSE_TYPE_PACKAGE_UNINSTALL.toCore(mm);
+      }
+      case final CJ1ResponseTypePackageUpgrade mm -> {
+        yield RESPONSE_TYPE_PACKAGE_UPGRADE.toCore(mm);
+      }
     };
   }
 
@@ -295,10 +489,135 @@ public enum CJ1MessageTypeX
         throw new UnimplementedCodeException();
       }
       case final CAIResponseType mm -> {
-        throw new UnimplementedCodeException();
+        yield this.toCJ1Response(mm);
       }
       case final CAITransactionResponse mm -> {
         throw new UnimplementedCodeException();
+      }
+    };
+  }
+
+  private CJ1MessageType toCJ1Response(
+    final CAIResponseType m)
+    throws CAProtocolException
+  {
+    return switch (m) {
+      case final CAIResponseAuditSearch mm -> {
+        yield RESPONSE_AUDIT_SEARCH.toCJ1(mm);
+      }
+      case final CAIResponseError mm -> {
+        yield RESPONSE_ERROR.toCJ1(mm);
+      }
+      case final CAIResponseFileDelete mm -> {
+        yield RESPONSE_FILE_DELETE.toCJ1(mm);
+      }
+      case final CAIResponseFileGet mm -> {
+        yield RESPONSE_FILE_GET.toCJ1(mm);
+      }
+      case final CAIResponseFilePut mm -> {
+        yield RESPONSE_FILE_PUT.toCJ1(mm);
+      }
+      case final CAIResponseFileSearch mm -> {
+        yield RESPONSE_FILE_SEARCH.toCJ1(mm);
+      }
+      case final CAIResponseItemAttachmentAdd mm -> {
+        yield RESPONSE_ITEM_ATTACHMENT_ADD.toCJ1(mm);
+      }
+      case final CAIResponseItemAttachmentRemove mm -> {
+        yield RESPONSE_ITEM_ATTACHMENT_REMOVE.toCJ1(mm);
+      }
+      case final CAIResponseItemCreate mm -> {
+        yield RESPONSE_ITEM_CREATE.toCJ1(mm);
+      }
+      case final CAIResponseItemDelete mm -> {
+        yield RESPONSE_ITEM_DELETE.toCJ1(mm);
+      }
+      case final CAIResponseItemGet mm -> {
+        yield RESPONSE_ITEM_GET.toCJ1(mm);
+      }
+      case final CAIResponseItemMetadataPut mm -> {
+        yield RESPONSE_ITEM_METADATA_PUT.toCJ1(mm);
+      }
+      case final CAIResponseItemMetadataRemove mm -> {
+        yield RESPONSE_ITEM_METADATA_REMOVE.toCJ1(mm);
+      }
+      case final CAIResponseItemSearch mm -> {
+        yield RESPONSE_ITEM_SEARCH.toCJ1(mm);
+      }
+      case final CAIResponseItemSetName mm -> {
+        yield RESPONSE_ITEM_SET_NAME.toCJ1(mm);
+      }
+      case final CAIResponseItemTypesAssign mm -> {
+        yield RESPONSE_ITEM_TYPES_ASSIGN.toCJ1(mm);
+      }
+      case final CAIResponseItemTypesRevoke mm -> {
+        yield RESPONSE_ITEM_TYPES_REVOKE.toCJ1(mm);
+      }
+      case final CAIResponseLocationAttachmentAdd mm -> {
+        yield RESPONSE_LOCATION_ATTACHMENT_ADD.toCJ1(mm);
+      }
+      case final CAIResponseLocationAttachmentRemove mm -> {
+        yield RESPONSE_LOCATION_ATTACHMENT_REMOVE.toCJ1(mm);
+      }
+      case final CAIResponseLocationDelete mm -> {
+        yield RESPONSE_LOCATION_DELETE.toCJ1(mm);
+      }
+      case final CAIResponseLocationGet mm -> {
+        yield RESPONSE_LOCATION_GET.toCJ1(mm);
+      }
+      case final CAIResponseLocationList mm -> {
+        yield RESPONSE_LOCATION_LIST.toCJ1(mm);
+      }
+      case final CAIResponseLocationMetadataPut mm -> {
+        yield RESPONSE_LOCATION_METADATA_PUT.toCJ1(mm);
+      }
+      case final CAIResponseLocationMetadataRemove mm -> {
+        yield RESPONSE_LOCATION_METADATA_REMOVE.toCJ1(mm);
+      }
+      case final CAIResponseLocationPut mm -> {
+        yield RESPONSE_LOCATION_PUT.toCJ1(mm);
+      }
+      case final CAIResponseLocationTypesAssign mm -> {
+        yield RESPONSE_LOCATION_TYPES_ASSIGN.toCJ1(mm);
+      }
+      case final CAIResponseLocationTypesRevoke mm -> {
+        yield RESPONSE_LOCATION_TYPES_REVOKE.toCJ1(mm);
+      }
+      case final CAIResponseLogin mm -> {
+        yield RESPONSE_LOGIN.toCJ1(mm);
+      }
+      case final CAIResponseRolesAssign mm -> {
+        yield RESPONSE_ROLES_ASSIGN.toCJ1(mm);
+      }
+      case final CAIResponseRolesGet mm -> {
+        yield RESPONSE_ROLES_GET.toCJ1(mm);
+      }
+      case final CAIResponseRolesRevoke mm -> {
+        yield RESPONSE_ROLES_REVOKE.toCJ1(mm);
+      }
+      case final CAIResponseStockCount mm -> {
+        yield RESPONSE_STOCK_COUNT.toCJ1(mm);
+      }
+      case final CAIResponseStockReposit mm -> {
+        yield RESPONSE_STOCK_REPOSIT.toCJ1(mm);
+      }
+      case final CAIResponseStockSearch mm -> {
+        yield RESPONSE_STOCK_SEARCH.toCJ1(mm);
+      }
+      case final CAIResponseTypePackageGetText mm -> {
+        yield RESPONSE_TYPE_PACKAGE_GET_TEXT.toCJ1(mm);
+      }
+      case final CAIResponseTypePackageInstall mm -> {
+        yield RESPONSE_TYPE_PACKAGE_INSTALL.toCJ1(mm);
+      }
+      case final CAIResponseTypePackageSearch mm -> {
+        yield RESPONSE_TYPE_PACKAGE_SEARCH.toCJ1(mm);
+      }
+      case final CAIResponseTypePackageUninstall mm -> {
+        yield RESPONSE_TYPE_PACKAGE_UNINSTALL.toCJ1(mm);
+      }
+      case final CAIResponseTypePackageUpgrade mm -> {
+        yield RESPONSE_TYPE_PACKAGE_UPGRADE.toCJ1(mm);
       }
     };
   }

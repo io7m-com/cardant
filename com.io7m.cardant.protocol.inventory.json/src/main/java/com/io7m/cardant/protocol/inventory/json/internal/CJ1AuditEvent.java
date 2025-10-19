@@ -16,27 +16,24 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.UUID;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public record CJ1AuditEvent(
+  @JsonProperty(value = "id", required = true)
+  long id,
+  @JsonProperty(value = "time", required = true)
+  OffsetDateTime time,
+  @JsonProperty(value = "owner", required = true)
+  UUID owner,
+  @JsonProperty(value = "type", required = true)
+  String type,
+  @JsonProperty(value = "data", required = true)
+  Map<String, String> data)
+  implements CJ1ValueType
 {
-  public CJ1DottedNameDeserializer()
-  {
 
-  }
-
-  @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
-  {
-    return new RDottedName(p.getText());
-  }
 }

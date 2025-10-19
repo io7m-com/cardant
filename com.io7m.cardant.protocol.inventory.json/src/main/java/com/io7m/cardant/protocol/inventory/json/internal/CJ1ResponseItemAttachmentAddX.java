@@ -16,27 +16,35 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.io7m.lanark.core.RDottedName;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.inventory.CAIResponseItemAttachmentAdd;
 
-import java.io.IOException;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemX.ITEM;
 
-public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+public enum CJ1ResponseItemAttachmentAddX
+  implements CJ1SerialBijectionType<CJ1ResponseItemAttachmentAdd, CAIResponseItemAttachmentAdd>
 {
-  public CJ1DottedNameDeserializer()
-  {
+  RESPONSE_ITEM_ATTACHMENT_ADD;
 
+  @Override
+  public CAIResponseItemAttachmentAdd toCore(
+    final CJ1ResponseItemAttachmentAdd m)
+    throws CAProtocolException
+  {
+    return new CAIResponseItemAttachmentAdd(
+      m.requestId(),
+      ITEM.toCore(m.item())
+    );
   }
 
   @Override
-  public RDottedName deserialize(
-    final JsonParser p,
-    final DeserializationContext ctxt)
-    throws IOException
+  public CJ1ResponseItemAttachmentAdd toCJ1(
+    final CAIResponseItemAttachmentAdd m)
+    throws CAProtocolException
   {
-    return new RDottedName(p.getText());
+    return new CJ1ResponseItemAttachmentAdd(
+      m.requestId(),
+      ITEM.toCJ1(m.data())
+    );
   }
 }
