@@ -96,7 +96,7 @@ public final class CAIJ1Messages
   }
 
   private static final UUID PROTOCOL_ID =
-    UUID.fromString("0135d8f5-2dad-4ca7-85db-614ba435300e");
+    UUID.fromString("8ee23158-f8db-317a-a58b-45bd9d702040");
 
   /**
    * The content type for the protocol.

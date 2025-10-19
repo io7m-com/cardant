@@ -9,11 +9,11 @@
     <Paragraph>
       The <Link target="3dff8219-1792-41a3-bd8b-797efe61348c">Inventory API</Link> service exposes one or more versions
       of the <Term type="term">Inventory</Term> protocol. The service uses the
-      <LinkExternal target="https://www.github.com/io7m-com/verdant">verdant</LinkExternal>
+      <LinkExternal target="https://www.github.com/io7m-com/ventrad">ventrad</LinkExternal>
       protocol to advertise which versions of the <Term type="term">Inventory</Term> protocol are available. Executing a
       <Term type="function">GET</Term>
       request to the root endpoint will yield a
-      <Term type="package">verdant</Term>
+      <Term type="package">ventrad</Term>
       message showing which versions of the <Term type="term">Inventory</Term> protocol are available. The
       <Term type="term">Inventory</Term>
       protocol is assigned the protocol identifier <Term type="constant">8ee23158-f8db-317a-a58b-45bd9d702040</Term>.
@@ -22,12 +22,20 @@
       As an example, the following shows that the <Term type="term">Inventory</Term> protocol version 1 is available at
       <Term type="expression">/inventory/1/0/</Term>:
     </Paragraph>
-    <FormalItem title="Verdant Example">
-      <Verbatim><![CDATA[$ curl https://cardant.example.com:30000/ | hexdump
-0000:0000  00 00 00 01 00 00 00 01  8e e2 31 58 f8 db 31 7a  |..........1X..1z|
-0000:0010  a5 8b 45 bd 9d 70 20 40  00 00 00 01 00 00 00 00  |..E..p @........|
-0000:0020  00 00 00 0f 2f 69 6e 76  65 6e 74 6f 72 79 2f 31  |..../inventory/1|
-0000:0030  2f 30 2f                                          |/0/|
+    <FormalItem title="Ventrad Example">
+      <Verbatim><![CDATA[$ curl https://cardant.example.com:30000/ | jq
+{
+  "%Schema": "urn:com.io7m.ventrad:1",
+  "Protocols": [
+    {
+      "Id": "8ee23158-f8db-317a-a58b-45bd9d702040",
+      "VersionMajor": 1,
+      "VersionMinor": 0,
+      "Endpoint": "/inventory/1/0/",
+      "Description": "Cardant Inventory v1.0"
+    }
+  ]
+}
 ]]></Verbatim>
     </FormalItem>
   </Subsection>
@@ -96,15 +104,6 @@
         was rolled back by the server and not committed.
       </Paragraph>
     </Subsection>
-  </Subsection>
-
-  <Subsection title="Schemas">
-    <FormalItem title="Schemas">
-      <Verbatim>
-        <xi:include href="com/io7m/cardant/protocol/inventory/cb/Inventory.cbs"
-                    parse="text"/>
-      </Verbatim>
-    </FormalItem>
   </Subsection>
 
 </Section>
