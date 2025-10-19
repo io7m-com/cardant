@@ -36,7 +36,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.protocol.inventory.cb</artifactId>
+      <artifactId>com.io7m.cardant.protocol.inventory.json</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -72,16 +72,16 @@
       <artifactId>com.io7m.genevan.core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.io7m.verdant</groupId>
-      <artifactId>com.io7m.verdant.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.verdant</groupId>
-      <artifactId>com.io7m.verdant.core.cb</artifactId>
+      <groupId>com.io7m.ventrad</groupId>
+      <artifactId>com.io7m.ventrad.core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
 
     <dependency>

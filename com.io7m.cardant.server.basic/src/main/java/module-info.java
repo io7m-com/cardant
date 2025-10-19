@@ -19,7 +19,7 @@ import com.io7m.cardant.server.basic.CAServers;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFactoryType;
 
 /**
- * Identity server (Server basic implementation)
+ * Inventory server (Server basic implementation)
  */
 
 module com.io7m.cardant.server.basic
@@ -30,7 +30,7 @@ module com.io7m.cardant.server.basic
   uses CAServerTelemetryServiceFactoryType;
 
   requires com.io7m.cardant.database.api;
-  requires com.io7m.cardant.protocol.inventory.cb;
+  requires com.io7m.cardant.protocol.inventory.json;
   requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.api;
@@ -44,7 +44,6 @@ module com.io7m.cardant.server.basic
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.tls;
-  requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.type_packages.checker.api;
   requires com.io7m.cardant.type_packages.checkers;
   requires com.io7m.cardant.type_packages.compiler.api;

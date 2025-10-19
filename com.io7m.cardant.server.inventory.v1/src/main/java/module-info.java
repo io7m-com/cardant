@@ -25,7 +25,7 @@ module com.io7m.cardant.server.inventory.v1
 
   requires com.io7m.cardant.database.api;
   requires com.io7m.cardant.protocol.api;
-  requires com.io7m.cardant.protocol.inventory.cb;
+  requires com.io7m.cardant.protocol.inventory.json;
   requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.api;
@@ -39,16 +39,17 @@ module com.io7m.cardant.server.inventory.v1
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.tls;
-  requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.tls;
 
-  requires com.io7m.verdant.core;
+  requires com.fasterxml.jackson.databind;
+  requires com.io7m.idstore.protocol.user;
+  requires com.io7m.idstore.user_client.api;
+  requires com.io7m.jmulticlose.core;
+  requires com.io7m.jvindicator.core;
+  requires com.io7m.ventrad.core;
   requires io.helidon.webserver;
   requires io.opentelemetry.api;
   requires org.slf4j;
-  requires com.io7m.jvindicator.core;
-  requires com.io7m.idstore.protocol.user;
-  requires com.io7m.idstore.user_client.api;
 
   exports com.io7m.cardant.server.inventory.v1;
 }

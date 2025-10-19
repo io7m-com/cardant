@@ -118,6 +118,11 @@ public sealed interface CATypeScalarType
   {
     /**
      * An integer type.
+     *
+     * @param name        The type name
+     * @param description A humanly-readable description of the type
+     * @param rangeLower  The lower bound (inclusive)
+     * @param rangeUpper  The upper bound (inclusive)
      */
 
     public Integral
@@ -184,6 +189,10 @@ public sealed interface CATypeScalarType
   {
     /**
      * A text type.
+     *
+     * @param name        The type name
+     * @param description A humanly-readable description of the type
+     * @param pattern     The pattern that constrains text values
      */
 
     public Text
@@ -251,6 +260,11 @@ public sealed interface CATypeScalarType
   {
     /**
      * A time type.
+     *
+     * @param name        The type name
+     * @param description A humanly-readable description of the type
+     * @param rangeLower  The lower bound (inclusive)
+     * @param rangeUpper  The upper bound (inclusive)
      */
 
     public Time
@@ -321,6 +335,11 @@ public sealed interface CATypeScalarType
   {
     /**
      * A monetary type.
+     *
+     * @param name        The type name
+     * @param description A humanly-readable description of the type
+     * @param rangeLower  The lower bound (inclusive)
+     * @param rangeUpper  The upper bound (inclusive)
      */
 
     public Monetary
@@ -391,6 +410,11 @@ public sealed interface CATypeScalarType
   {
     /**
      * A real type.
+     *
+     * @param name        The type name
+     * @param description A humanly-readable description of the type
+     * @param rangeLower  The lower bound (inclusive)
+     * @param rangeUpper  The upper bound (inclusive)
      */
 
     public Real

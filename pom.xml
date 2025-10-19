@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>8.4.0</version>
+    <version>9.0.0-beta0003</version>
   </parent>
 
   <groupId>com.io7m.cardant</groupId>
@@ -34,7 +34,7 @@
     <module>com.io7m.cardant.oci</module>
     <module>com.io7m.cardant.parsers</module>
     <module>com.io7m.cardant.protocol.api</module>
-    <module>com.io7m.cardant.protocol.inventory.cb</module>
+    <module>com.io7m.cardant.protocol.inventory.json</module>
     <module>com.io7m.cardant.protocol.inventory</module>
     <module>com.io7m.cardant.security</module>
     <module>com.io7m.cardant.server.api</module>
@@ -52,7 +52,6 @@
     <module>com.io7m.cardant.server.service.telemetry.api</module>
     <module>com.io7m.cardant.server.service.telemetry.otp</module>
     <module>com.io7m.cardant.server.service.tls</module>
-    <module>com.io7m.cardant.server.service.verdant</module>
     <module>com.io7m.cardant.shell</module>
     <module>com.io7m.cardant.strings</module>
     <module>com.io7m.cardant.tests.arbitraries</module>
@@ -91,7 +90,7 @@
     <com.io7m.seltzer.version>1.1.0</com.io7m.seltzer.version>
     <com.io7m.tabla.version>0.0.2</com.io7m.tabla.version>
     <com.io7m.trasco.version>2.0.1</com.io7m.trasco.version>
-    <com.io7m.verdant.version>1.0.1</com.io7m.verdant.version>
+    <com.io7m.ventrad.version>1.0.0</com.io7m.ventrad.version>
     <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
     <com.io7m.zelador.version>1.0.0</com.io7m.zelador.version>
 
@@ -146,14 +145,9 @@
       <name>io7m.com</name>
       <url>https://www.io7m.com/software/cardant</url>
     </site>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/
-      </url>
-    </repository>
     <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -282,14 +276,16 @@
 
       <!-- JSON -->
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
         <version>${com.fasterxml.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${com.fasterxml.jackson.version}</version>
+        <groupId>com.io7m.dixmont</groupId>
+        <artifactId>com.io7m.dixmont.core</artifactId>
+        <version>2.1.0</version>
       </dependency>
 
       <!-- Server security -->
@@ -330,7 +326,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>8.4.0</version>
+        <version>9.0.0-beta0003</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -513,14 +509,9 @@
         <version>${com.io7m.jbssio.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.verdant</groupId>
-        <artifactId>com.io7m.verdant.core</artifactId>
-        <version>${com.io7m.verdant.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.verdant</groupId>
-        <artifactId>com.io7m.verdant.core.cb</artifactId>
-        <version>${com.io7m.verdant.version}</version>
+        <groupId>com.io7m.ventrad</groupId>
+        <artifactId>com.io7m.ventrad.core</artifactId>
+        <version>${com.io7m.ventrad.version}</version>
       </dependency>
 
       <dependency>

@@ -55,6 +55,9 @@ public sealed interface CAMetadataType
   {
     /**
      * An integral value.
+     *
+     * @param name  The metadata name
+     * @param value The value
      */
 
     public Integral
@@ -83,6 +86,9 @@ public sealed interface CAMetadataType
   {
     /**
      * A text value.
+     *
+     * @param name  The metadata name
+     * @param value The value
      */
 
     public Text
@@ -112,6 +118,9 @@ public sealed interface CAMetadataType
   {
     /**
      * A time value.
+     *
+     * @param name  The metadata name
+     * @param value The value
      */
 
     public Time
@@ -143,6 +152,10 @@ public sealed interface CAMetadataType
   {
     /**
      * A monetary value.
+     *
+     * @param name     The metadata name
+     * @param value    The value
+     * @param currency The currency unit
      */
 
     public Monetary
@@ -172,7 +185,10 @@ public sealed interface CAMetadataType
     implements CAMetadataType
   {
     /**
-     * An real value.
+     * A real value.
+     *
+     * @param name  The metadata name
+     * @param value The value
      */
 
     public Real

@@ -96,6 +96,13 @@ public sealed interface CAFileType extends Comparable<CAFileType>
   {
     /**
      * A file without data.
+     *
+     * @param id            The ID
+     * @param description   The description
+     * @param mediaType     The media type
+     * @param size          The size in bytes
+     * @param hashAlgorithm The hash algorithm
+     * @param hashValue     The hash value
      */
 
     public CAFileWithoutData
@@ -142,6 +149,13 @@ public sealed interface CAFileType extends Comparable<CAFileType>
   {
     /**
      * A file with data.
+     *
+     * @param id            The ID
+     * @param description   The description
+     * @param mediaType     The media type
+     * @param hashAlgorithm The hash algorithm
+     * @param hashValue     The hash value
+     * @param data          The data
      */
 
     public CAFileWithData
