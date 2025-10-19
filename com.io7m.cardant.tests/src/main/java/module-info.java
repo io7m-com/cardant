@@ -35,7 +35,7 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.parsers;
   requires com.io7m.cardant.protocol.api;
-  requires com.io7m.cardant.protocol.inventory.cb;
+  requires com.io7m.cardant.protocol.inventory.json;
   requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.security;
   requires com.io7m.cardant.server.api;
@@ -51,7 +51,6 @@ open module com.io7m.cardant.tests
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.telemetry.otp;
-  requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
   requires com.io7m.cardant.tests.arbitraries;
   requires com.io7m.cardant.tls;
@@ -103,5 +102,4 @@ open module com.io7m.cardant.tests
   requires org.mockito;
   requires org.postgresql.jdbc;
   requires org.slf4j;
-  requires com.io7m.cardant.protocol.inventory.json;
 }

@@ -34,7 +34,6 @@
     <module>com.io7m.cardant.oci</module>
     <module>com.io7m.cardant.parsers</module>
     <module>com.io7m.cardant.protocol.api</module>
-    <module>com.io7m.cardant.protocol.inventory.cb</module>
     <module>com.io7m.cardant.protocol.inventory.json</module>
     <module>com.io7m.cardant.protocol.inventory</module>
     <module>com.io7m.cardant.security</module>
@@ -53,7 +52,6 @@
     <module>com.io7m.cardant.server.service.telemetry.api</module>
     <module>com.io7m.cardant.server.service.telemetry.otp</module>
     <module>com.io7m.cardant.server.service.tls</module>
-    <module>com.io7m.cardant.server.service.verdant</module>
     <module>com.io7m.cardant.shell</module>
     <module>com.io7m.cardant.strings</module>
     <module>com.io7m.cardant.tests.arbitraries</module>
@@ -92,7 +90,7 @@
     <com.io7m.seltzer.version>1.1.0</com.io7m.seltzer.version>
     <com.io7m.tabla.version>0.0.2</com.io7m.tabla.version>
     <com.io7m.trasco.version>2.0.1</com.io7m.trasco.version>
-    <com.io7m.verdant.version>1.0.1</com.io7m.verdant.version>
+    <com.io7m.ventrad.version>1.0.0</com.io7m.ventrad.version>
     <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
     <com.io7m.zelador.version>1.0.0</com.io7m.zelador.version>
 
@@ -511,14 +509,9 @@
         <version>${com.io7m.jbssio.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.verdant</groupId>
-        <artifactId>com.io7m.verdant.core</artifactId>
-        <version>${com.io7m.verdant.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.verdant</groupId>
-        <artifactId>com.io7m.verdant.core.cb</artifactId>
-        <version>${com.io7m.verdant.version}</version>
+        <groupId>com.io7m.ventrad</groupId>
+        <artifactId>com.io7m.ventrad.core</artifactId>
+        <version>${com.io7m.ventrad.version}</version>
       </dependency>
 
       <dependency>

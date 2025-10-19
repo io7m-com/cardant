@@ -27,7 +27,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import com.io7m.cardant.strings.CAStringConstants;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.hibiscus.api.HBReadNothing;
@@ -100,7 +100,7 @@ public final class CATransport1
   private static final Logger LOG =
     LoggerFactory.getLogger(CATransport1.class);
 
-  private final CAI1Messages messages;
+  private final CAIJ1Messages messages;
   private final CAStrings strings;
   private final Clock clock;
   private final HttpClient http;
@@ -144,7 +144,7 @@ public final class CATransport1
       new LinkedBlockingQueue<>();
 
     this.messages =
-      new CAI1Messages();
+      new CAIJ1Messages();
     this.loginURI =
       baseURI.resolve("login")
         .normalize();
@@ -230,7 +230,7 @@ public final class CATransport1
       responseHeaders.firstValue("content-type")
         .orElse("application/octet-stream");
 
-    final var expectedContentType = CAI1Messages.contentType();
+    final var expectedContentType = CAIJ1Messages.contentType();
     if (!contentType.equals(expectedContentType)) {
       throw this.errorContentType(contentType, expectedContentType);
     }

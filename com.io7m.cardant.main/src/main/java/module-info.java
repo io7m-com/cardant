@@ -34,7 +34,7 @@ open module com.io7m.cardant.main
   requires com.io7m.cardant.error_codes;
   requires com.io7m.cardant.model;
   requires com.io7m.cardant.protocol.api;
-  requires com.io7m.cardant.protocol.inventory.cb;
+  requires com.io7m.cardant.protocol.inventory.json;
   requires com.io7m.cardant.protocol.inventory;
   requires com.io7m.cardant.server.api;
   requires com.io7m.cardant.server.controller;
@@ -46,7 +46,6 @@ open module com.io7m.cardant.main
   requires com.io7m.cardant.server.service.sessions;
   requires com.io7m.cardant.server.service.telemetry.api;
   requires com.io7m.cardant.server.service.telemetry.otp;
-  requires com.io7m.cardant.server.service.verdant;
   requires com.io7m.cardant.shell;
   requires com.io7m.cardant.type_packages.parsers;
   requires com.io7m.cardant.type_packages.standard;

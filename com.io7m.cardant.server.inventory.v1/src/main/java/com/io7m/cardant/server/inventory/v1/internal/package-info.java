@@ -15,29 +15,10 @@
  */
 
 /**
- * Inventory system (Client basic implementation)
+ * Inventory system (Server V1 Inventory endpoints)
  */
 
-module com.io7m.cardant.client.basic
-{
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+@Version("1.0.0")
+package com.io7m.cardant.server.inventory.v1.internal;
 
-  requires com.io7m.cardant.client.api;
-  requires com.io7m.cardant.protocol.inventory.json;
-  requires com.io7m.cardant.strings;
-
-  requires com.io7m.genevan.core;
-  requires com.io7m.hibiscus.api;
-  requires com.io7m.idstore.model;
-  requires com.io7m.jxtrand.api;
-  requires com.io7m.ventrad.core;
-  requires commons.math3;
-  requires java.net.http;
-  requires org.slf4j;
-
-  requires transitive com.io7m.repetoir.core;
-  requires com.fasterxml.jackson.databind;
-
-  exports com.io7m.cardant.client.basic;
-}
+import org.osgi.annotation.versioning.Version;

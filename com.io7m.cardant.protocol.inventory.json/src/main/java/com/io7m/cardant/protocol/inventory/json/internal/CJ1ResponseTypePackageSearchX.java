@@ -20,8 +20,6 @@ import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolUncheckedException;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageSearch;
 
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurrenceX.STOCK_OCCURRENCE_TYPE;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifierX.TYPE_PACKAGE_IDENTIFIER;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageSummaryX.TYPE_PACKAGE_SUMMARY;
 
 public enum CJ1ResponseTypePackageSearchX

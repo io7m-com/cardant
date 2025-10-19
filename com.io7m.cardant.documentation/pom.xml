@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.cardant.protocol.inventory.cb</artifactId>
+      <artifactId>com.io7m.cardant.protocol.inventory.json</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -214,38 +214,6 @@
           </execution>
 
           <execution>
-            <id>unpack-cedarbridge-schemas</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <excludes>module-info.java</excludes>
-              <includeGroupIds>${project.groupId}</includeGroupIds>
-              <includes>**/*.cbs</includes>
-              <classifier>sources</classifier>
-              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
-              <outputDirectory>${project.build.directory}/documentation</outputDirectory>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>unpack-cedarbridge-schemas-epub</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <excludes>module-info.java</excludes>
-              <includeGroupIds>${project.groupId}</includeGroupIds>
-              <includes>**/*.cbs</includes>
-              <classifier>sources</classifier>
-              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
-              <outputDirectory>${project.build.directory}/epub</outputDirectory>
-            </configuration>
-          </execution>
-
-          <execution>
             <id>make-classpath</id>
             <phase>package</phase>
             <goals>
@@ -253,29 +221,6 @@
             </goals>
             <configuration>
               <outputFile>${project.build.directory}/javadoc-classpath</outputFile>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Generate Cedarbridge documentation. -->
-      <plugin>
-        <groupId>com.io7m.cedarbridge</groupId>
-        <artifactId>com.io7m.cedarbridge.maven_plugin</artifactId>
-        <version>${com.io7m.cedarbridge.version}</version>
-        <executions>
-          <execution>
-            <id>documentation-inventory</id>
-            <goals>
-              <goal>document</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <outputDirectory>${project.build.directory}/documentation</outputDirectory>
-              <languageName>XHTML</languageName>
-              <files>
-                <file>${project.build.directory}/documentation/com/io7m/cardant/protocol/inventory/cb/Inventory.cbs</file>
-              </files>
             </configuration>
           </execution>
         </executions>

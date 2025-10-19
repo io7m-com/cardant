@@ -29,61 +29,15 @@ import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessagesType;
+import com.io7m.cardant.protocol.api.CAProtocolUncheckedException;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1AuditSearchParameters;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandAuditSearchBegin;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandAuditSearchNext;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandAuditSearchPrevious;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandFileDelete;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandFileGet;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandFilePut;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandFileSearchBegin;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandFileSearchNext;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandFileSearchPrevious;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemAttachmentAdd;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemAttachmentRemove;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemCreate;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemDelete;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemGet;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemMetadataPut;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemMetadataRemove;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemSearchBegin;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemSearchNext;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemSearchPrevious;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandItemSetName;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLocationAttachmentAdd;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLocationAttachmentRemove;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLocationDelete;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLocationGet;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLocationMetadataPut;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLocationMetadataRemove;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLocationPut;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandLogin;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonExactType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonFuzzyType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonSetType;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1CurrencyUnitDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1CurrencyUnitSerializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1DottedNameDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1DottedNameSerializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1ErrorCodeDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1ErrorCodeSerializer;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileColumn;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileColumnOrdering;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileSearchParameters;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1IncludeDeleted;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemColumn;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemColumnOrdering;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemSearchParameters;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1Location;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1MessageType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MessageTypeX;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataElementMatchType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1SizeRange;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1TimeRange;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFieldIdentifierDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFieldIdentifierKeyDeserializer;
@@ -102,8 +56,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -111,7 +63,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MessageTypeX.*;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MessageTypeX.MESSAGE;
 
 /**
  * The protocol messages for Inventory JSON.
@@ -295,18 +247,23 @@ public final class CAIJ1Messages
   @Override
   public byte[] serialize(
     final CAIMessageType message)
-    throws CAProtocolException
   {
     try {
       return this.mapper.writeValueAsBytes(MESSAGE.toCJ1(message));
     } catch (final JsonProcessingException e) {
-      throw new CAProtocolException(
-        e.getMessage(),
-        e,
-        CAStandardErrorCodes.errorProtocol(),
-        Map.of(),
-        Optional.empty()
-      );
+      try {
+        throw new CAProtocolException(
+          e.getMessage(),
+          e,
+          CAStandardErrorCodes.errorProtocol(),
+          Map.of(),
+          Optional.empty()
+        );
+      } catch (final CAProtocolException ex) {
+        throw new CAProtocolUncheckedException(ex);
+      }
+    } catch (final CAProtocolException e) {
+      throw new CAProtocolUncheckedException(e);
     }
   }
 
