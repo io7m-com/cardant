@@ -145,7 +145,12 @@ com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseRolesRevoke
 com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseStockCount
 com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseStockReposit
 com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseStockSearch
+com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseType
 com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageGetText
+com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageInstall
+com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageSearch
+com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUninstall
+com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUpgrade
 com.io7m.cardant.protocol.inventory.json.internal.CJ1SizeRange
 com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurrenceKind
 com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurrenceSerial
@@ -165,8 +170,10 @@ com.io7m.cardant.protocol.inventory.json.internal.CJ1StockRepositType
 com.io7m.cardant.protocol.inventory.json.internal.CJ1StockSearchParameters
 com.io7m.cardant.protocol.inventory.json.internal.CJ1StructuredError
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TimeRange
+com.io7m.cardant.protocol.inventory.json.internal.CJ1TransactionResponse
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifier
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageSearchParameters
+com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageSummary
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageTypeRemovalBehavior
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageUninstall
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageVersionBehavior
@@ -182,8 +189,10 @@ java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1AuditEvent>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1FileType$CJ1FileWithoutData>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemSerial>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemSummary>
+java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseType>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurrenceType>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1StructuredError>
+java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageSummary>
 java.util.List<com.io7m.seltzer.api.SStructuredError<com.io7m.cardant.error_codes.CAErrorCode>>
 java.util.List<java.lang.String>
 java.util.Map
@@ -200,9 +209,3 @@ java.util.Set<java.lang.String>
 java.util.UUID
 long
 org.joda.money.CurrencyUnit
-com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageInstall
-com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUninstall
-com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUpgrade
-com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageSearch
-java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageSummary>
-com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageSummary

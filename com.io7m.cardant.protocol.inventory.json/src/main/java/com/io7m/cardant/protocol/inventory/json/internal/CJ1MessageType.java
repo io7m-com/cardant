@@ -74,6 +74,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   @JsonSubTypes.Type(value = CJ1CommandTypePackageUninstall.class, name = "TypePackageUninstall"),
   @JsonSubTypes.Type(value = CJ1CommandTypePackageUpgrade.class, name = "TypePackageUpgrade"),
 
+  @JsonSubTypes.Type(value = CJ1TransactionResponse.class, name = "TransactionResponse"),
+
   @JsonSubTypes.Type(value = CJ1ResponseAuditSearch.class, name = "ResponseAuditSearch"),
   @JsonSubTypes.Type(value = CJ1ResponseError.class, name = "ResponseError"),
   @JsonSubTypes.Type(value = CJ1ResponseFileDelete.class, name = "ResponseFileDelete"),
@@ -164,7 +166,8 @@ public sealed interface CJ1MessageType
   CJ1CommandTypePackageSearchPrevious,
   CJ1CommandTypePackageUninstall,
   CJ1CommandTypePackageUpgrade,
-  CJ1ResponseType
+  CJ1ResponseType,
+  CJ1TransactionResponse
 {
 
 }

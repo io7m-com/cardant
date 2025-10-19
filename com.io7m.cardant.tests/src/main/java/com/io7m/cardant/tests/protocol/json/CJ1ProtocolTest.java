@@ -149,4 +149,12 @@ com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUninstall.class,
 com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUpgrade.class
     ).map(CJ1ProtocolTest::roundTrip);
   }
+
+  @TestFactory
+  public Stream<DynamicTest> testRoundTripTransactionResponses()
+  {
+    return Stream.of(
+      com.io7m.cardant.protocol.inventory.CAITransactionResponse.class
+    ).map(CJ1ProtocolTest::roundTrip);
+  }
 }

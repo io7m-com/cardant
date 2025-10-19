@@ -200,6 +200,7 @@ import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypeP
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageSearchX.RESPONSE_TYPE_PACKAGE_SEARCH;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUninstallX.RESPONSE_TYPE_PACKAGE_UNINSTALL;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUpgradeX.RESPONSE_TYPE_PACKAGE_UPGRADE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TransactionResponseX.TRANSACTION_RESPONSE;
 
 public enum CJ1MessageTypeX
   implements CJ1SerialBijectionType<CJ1MessageType, CAIMessageType>
@@ -473,6 +474,9 @@ public enum CJ1MessageTypeX
       case final CJ1ResponseTypePackageUpgrade mm -> {
         yield RESPONSE_TYPE_PACKAGE_UPGRADE.toCore(mm);
       }
+      case final CJ1TransactionResponse mm -> {
+        yield TRANSACTION_RESPONSE.toCore(mm);
+      }
     };
   }
 
@@ -483,21 +487,28 @@ public enum CJ1MessageTypeX
   {
     return switch (m) {
       case final CAICommandType<?> mm -> {
-        yield this.toCJ1Command(mm);
+        yield CJ1MessageTypeX.toCJ1Command(mm);
       }
       case final CAIEventType mm -> {
         throw new UnimplementedCodeException();
       }
       case final CAIResponseType mm -> {
-        yield this.toCJ1Response(mm);
+        yield toCJ1Response(mm);
       }
       case final CAITransactionResponse mm -> {
-        throw new UnimplementedCodeException();
+        yield toCJ1TransactionResponse(mm);
       }
     };
   }
 
-  private CJ1MessageType toCJ1Response(
+  private static CJ1TransactionResponse toCJ1TransactionResponse(
+    final CAITransactionResponse mm)
+    throws CAProtocolException
+  {
+    return TRANSACTION_RESPONSE.toCJ1(mm);
+  }
+
+  private static CJ1MessageType toCJ1Response(
     final CAIResponseType m)
     throws CAProtocolException
   {
@@ -622,7 +633,7 @@ public enum CJ1MessageTypeX
     };
   }
 
-  private CJ1MessageType toCJ1Command(
+  private static CJ1MessageType toCJ1Command(
     final CAICommandType<?> m)
     throws CAProtocolException
   {
