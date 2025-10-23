@@ -17,22 +17,30 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Set;
 import java.util.UUID;
 
+@JsonClassDescription("Parameters to search for stock.")
 public record CJ1StockSearchParameters(
+  @JsonPropertyDescription("Include stock with locations matching the given expression.")
   @JsonProperty(value = "matchLocation", required = true)
   CJ1LocationMatchType locationMatch,
+  @JsonPropertyDescription("Include stock with items matching the given expression.")
   @JsonProperty(value = "matchItem", required = true)
   CJ1ComparisonExactType<UUID> itemMatch,
+  @JsonPropertyDescription("Include stock of the given occurrence kinds.")
   @JsonProperty(value = "includeOccurrences", required = true)
   Set<CJ1StockOccurrenceKind> includeOccurrences,
+  @JsonPropertyDescription("Include deleted stock.")
   @JsonProperty(value = "includeDeleted", required = true)
   CJ1IncludeDeleted includeDeleted,
+  @JsonPropertyDescription("The maximum number of results per page.")
   @JsonProperty(value = "pageSize", required = true)
-  long pageSize)
+  CJ1UnsignedLong pageSize)
   implements CJ1ValueType
 {
 

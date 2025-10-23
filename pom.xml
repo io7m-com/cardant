@@ -34,6 +34,7 @@
     <module>com.io7m.cardant.oci</module>
     <module>com.io7m.cardant.parsers</module>
     <module>com.io7m.cardant.protocol.api</module>
+    <module>com.io7m.cardant.protocol.inventory.json.schemagen</module>
     <module>com.io7m.cardant.protocol.inventory.json</module>
     <module>com.io7m.cardant.protocol.inventory</module>
     <module>com.io7m.cardant.security</module>
@@ -733,6 +734,25 @@
         <groupId>com.io7m.jxe</groupId>
         <artifactId>com.io7m.jxe.core</artifactId>
         <version>1.1.0</version>
+      </dependency>
+
+      <!-- Schema generation. -->
+      <dependency>
+        <groupId>com.github.victools</groupId>
+        <artifactId>jsonschema-generator-bom</artifactId>
+        <version>4.38.0</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>com.networknt</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>1.5.9</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml</groupId>
+        <artifactId>classmate</artifactId>
+        <version>1.7.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

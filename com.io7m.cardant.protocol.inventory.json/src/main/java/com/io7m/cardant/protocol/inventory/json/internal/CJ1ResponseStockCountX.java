@@ -19,6 +19,8 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAIResponseStockCount;
 
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
+
 public enum CJ1ResponseStockCountX
   implements CJ1SerialBijectionType<CJ1ResponseStockCount, CAIResponseStockCount>
 {
@@ -31,7 +33,7 @@ public enum CJ1ResponseStockCountX
   {
     return new CAIResponseStockCount(
       m.requestId(),
-      m.count()
+      UNSIGNED_LONG.toCore(m.count())
     );
   }
 
@@ -42,7 +44,7 @@ public enum CJ1ResponseStockCountX
   {
     return new CJ1ResponseStockCount(
       m.requestId(),
-      m.count()
+      UNSIGNED_LONG.toCJ1(m.count())
     );
   }
 }

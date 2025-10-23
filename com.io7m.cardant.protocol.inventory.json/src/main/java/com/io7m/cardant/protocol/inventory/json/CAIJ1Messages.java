@@ -38,6 +38,10 @@ import com.io7m.cardant.protocol.inventory.json.internal.CJ1DottedNameSerializer
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1ErrorCodeDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1ErrorCodeSerializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1MessageType;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifier;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifierDeserializer;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifierKeyDeserializer;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifierSerializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFieldIdentifier;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFieldIdentifierDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFieldIdentifierKeyDeserializer;
@@ -47,6 +51,9 @@ import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordIdentifier
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordIdentifierDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordIdentifierKeyDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordIdentifierSerializer;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLong;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongDeserializer;
+import com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongSerializer;
 import com.io7m.dixmont.core.DmJsonRestrictedDeserializers;
 import com.io7m.lanark.core.RDottedName;
 import com.io7m.repetoir.core.RPServiceType;
@@ -164,6 +171,19 @@ public final class CAIJ1Messages
     );
 
     simpleModule.addSerializer(
+      CJ1TypePackageIdentifier.class,
+      new CJ1TypePackageIdentifierSerializer()
+    );
+    simpleModule.addDeserializer(
+      CJ1TypePackageIdentifier.class,
+      new CJ1TypePackageIdentifierDeserializer()
+    );
+    simpleModule.addKeyDeserializer(
+      CJ1TypePackageIdentifier.class,
+      new CJ1TypePackageIdentifierKeyDeserializer()
+    );
+
+    simpleModule.addSerializer(
       CurrencyUnit.class,
       new CJ1CurrencyUnitSerializer()
     );
@@ -188,6 +208,15 @@ public final class CAIJ1Messages
     simpleModule.addDeserializer(
       CAErrorCode.class,
       new CJ1ErrorCodeDeserializer()
+    );
+
+    simpleModule.addSerializer(
+      CJ1UnsignedLong.class,
+      new CJ1UnsignedLongSerializer()
+    );
+    simpleModule.addDeserializer(
+      CJ1UnsignedLong.class,
+      new CJ1UnsignedLongDeserializer()
     );
 
     this.mapper.registerModule(simpleModule);
@@ -233,6 +262,8 @@ public final class CAIJ1Messages
       return MESSAGE.toCore(
         this.mapper.readValue(data, CJ1MessageType.class)
       );
+    } catch (final CAProtocolUncheckedException e) {
+      throw e.getCause();
     } catch (final IOException e) {
       throw new CAProtocolException(
         e.getMessage(),
@@ -249,9 +280,9 @@ public final class CAIJ1Messages
     final CAIMessageType message)
   {
     try {
-      return this.mapper.writeValueAsBytes(MESSAGE.toCJ1(message));
-    } catch (final JsonProcessingException e) {
       try {
+        return this.mapper.writeValueAsBytes(MESSAGE.toCJ1(message));
+      } catch (final JsonProcessingException e) {
         throw new CAProtocolException(
           e.getMessage(),
           e,
@@ -259,8 +290,6 @@ public final class CAIJ1Messages
           Map.of(),
           Optional.empty()
         );
-      } catch (final CAProtocolException ex) {
-        throw new CAProtocolUncheckedException(ex);
       }
     } catch (final CAProtocolException e) {
       throw new CAProtocolUncheckedException(e);

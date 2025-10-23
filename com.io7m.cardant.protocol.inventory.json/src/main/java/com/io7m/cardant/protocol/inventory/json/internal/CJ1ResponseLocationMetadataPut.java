@@ -17,12 +17,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseLocationMetadataPut")
+@JsonClassDescription("A response to LocationMetadataPut.")
 public record CJ1ResponseLocationMetadataPut(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

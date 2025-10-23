@@ -16,21 +16,28 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
+@JsonClassDescription("Introduce a new set stock occurrence.")
 @JsonTypeName("SetIntroduce")
 public record CJ1StockRepositSetIntroduce(
+  @JsonPropertyDescription("The stock occurrence.")
   @JsonProperty(value = "instance", required = true)
   UUID instance,
+  @JsonPropertyDescription("The item.")
   @JsonProperty(value = "item", required = true)
   UUID item,
+  @JsonPropertyDescription("The location.")
   @JsonProperty(value = "location", required = true)
   UUID location,
+  @JsonPropertyDescription("The number of items to introduce.")
   @JsonProperty(value = "count", required = true)
-  long count)
+  CJ1UnsignedLong count)
   implements CJ1StockRepositType
 {
 

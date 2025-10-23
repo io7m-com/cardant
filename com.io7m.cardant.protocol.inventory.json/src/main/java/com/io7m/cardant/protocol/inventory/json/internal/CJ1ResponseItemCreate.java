@@ -17,12 +17,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseItemCreate")
+@JsonClassDescription("A response to ItemCreate.")
 public record CJ1ResponseItemCreate(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

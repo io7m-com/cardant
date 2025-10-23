@@ -16,11 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.io7m.lanark.core.RDottedName;
 
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
@@ -28,47 +25,15 @@ import com.io7m.lanark.core.RDottedName;
   property = "@type"
 )
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = CJ1MetadataElementMatchType.And.class, name = "And"),
-  @JsonSubTypes.Type(value = CJ1MetadataElementMatchType.Or.class, name = "Or"),
-  @JsonSubTypes.Type(value = CJ1MetadataElementMatchType.Specific.class, name = "Specific"),
+  @JsonSubTypes.Type(value = CJ1MetadataElementMatchAnd.class, name = "And"),
+  @JsonSubTypes.Type(value = CJ1MetadataElementMatchOr.class, name = "Or"),
+  @JsonSubTypes.Type(value = CJ1MetadataElementMatchSpecific.class, name = "Specific"),
 })
 public sealed interface CJ1MetadataElementMatchType
   extends CJ1ValueType
+  permits CJ1MetadataElementMatchAnd,
+  CJ1MetadataElementMatchOr,
+  CJ1MetadataElementMatchSpecific
 {
-  @JsonTypeName("And")
-  record And(
-    @JsonProperty(value = "expression0", required = true)
-    CJ1MetadataElementMatchType e0,
-    @JsonProperty(value = "expression1", required = true)
-    CJ1MetadataElementMatchType e1)
-    implements CJ1MetadataElementMatchType
-  {
 
-  }
-
-  @JsonTypeName("Or")
-  record Or(
-    @JsonProperty(value = "expression0", required = true)
-    CJ1MetadataElementMatchType e0,
-    @JsonProperty(value = "expression1", required = true)
-    CJ1MetadataElementMatchType e1)
-    implements CJ1MetadataElementMatchType
-  {
-
-  }
-
-  @JsonTypeName("Specific")
-  record Specific(
-    @JsonProperty(value = "packageName", required = true)
-    CJ1ComparisonExactType<RDottedName> packageName,
-    @JsonProperty(value = "typeName", required = true)
-    CJ1ComparisonExactType<String> typeName,
-    @JsonProperty(value = "fieldName", required = true)
-    CJ1ComparisonExactType<String> fieldName,
-    @JsonProperty(value = "value", required = true)
-    CJ1MetadataValueMatchType value)
-    implements CJ1MetadataElementMatchType
-  {
-
-  }
 }

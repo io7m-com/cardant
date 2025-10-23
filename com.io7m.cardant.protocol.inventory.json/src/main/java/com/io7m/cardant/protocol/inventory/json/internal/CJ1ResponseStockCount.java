@@ -17,17 +17,17 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseStockCount")
+@JsonClassDescription("A response to StockCount.")
 public record CJ1ResponseStockCount(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,
   @JsonProperty(value = "count", required = true)
-  long count)
+  CJ1UnsignedLong count)
   implements CJ1ResponseType
 {
 

@@ -18,6 +18,7 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.model.CAItemSearchParameters;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import static com.io7m.cardant.protocol.inventory.json.internal.CJ1IncludeDelete
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemColumnOrderingX.ITEM_COLUMN_ORDERING;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataElementMatchX.METADATA_MATCH;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordIdentifierX.TYPE_RECORD_IDENTIFIER;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
 
 public enum CJ1ItemSearchParametersX
   implements CJ1SerialBijectionType<CJ1ItemSearchParameters, CAItemSearchParameters>
@@ -35,6 +37,7 @@ public enum CJ1ItemSearchParametersX
   @Override
   public CAItemSearchParameters toCore(
     final CJ1ItemSearchParameters m)
+    throws CAProtocolException
   {
     return new CAItemSearchParameters(
       new CJ1ComparisonFuzzyX<String>().toCore(m.nameMatch()),
@@ -46,13 +49,14 @@ public enum CJ1ItemSearchParametersX
       METADATA_MATCH.toCore(m.metadataMatch()),
       INCLUDE_DELETED.toCore(m.includeDeleted()),
       ITEM_COLUMN_ORDERING.toCore(m.ordering()),
-      m.pageSize()
+      UNSIGNED_LONG.toCore(m.pageSize())
     );
   }
 
   @Override
   public CJ1ItemSearchParameters toCJ1(
     final CAItemSearchParameters m)
+    throws CAProtocolException
   {
     return new CJ1ItemSearchParameters(
       new CJ1ComparisonFuzzyX<String>().toCJ1(m.nameMatch()),
@@ -64,7 +68,7 @@ public enum CJ1ItemSearchParametersX
       METADATA_MATCH.toCJ1(m.metadataMatch()),
       INCLUDE_DELETED.toCJ1(m.includeDeleted()),
       ITEM_COLUMN_ORDERING.toCJ1(m.ordering()),
-      m.pageSize()
+      UNSIGNED_LONG.toCJ1(m.pageSize())
     );
   }
 

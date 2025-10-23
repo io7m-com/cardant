@@ -17,6 +17,9 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.model.CASizeRange;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
 
 public enum CJ1SizeRangeX
   implements CJ1SerialBijectionType<CJ1SizeRange, CASizeRange>
@@ -24,14 +27,24 @@ public enum CJ1SizeRangeX
   SIZE_RANGE;
 
   @Override
-  public CASizeRange toCore(final CJ1SizeRange m)
+  public CASizeRange toCore(
+    final CJ1SizeRange m)
+    throws CAProtocolException
   {
-    return new CASizeRange(m.sizeMinimum(), m.sizeMaximum());
+    return new CASizeRange(
+      UNSIGNED_LONG.toCore(m.sizeMinimum()),
+      UNSIGNED_LONG.toCore(m.sizeMaximum())
+    );
   }
 
   @Override
-  public CJ1SizeRange toCJ1(final CASizeRange m)
+  public CJ1SizeRange toCJ1(
+    final CASizeRange m)
+    throws CAProtocolException
   {
-    return new CJ1SizeRange(m.sizeMinimum(), m.sizeMaximum());
+    return new CJ1SizeRange(
+      UNSIGNED_LONG.toCJ1(m.sizeMinimum()),
+      UNSIGNED_LONG.toCJ1(m.sizeMaximum())
+    );
   }
 }

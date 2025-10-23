@@ -16,11 +16,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+@JsonClassDescription("An attachment.")
 public record CJ1AttachmentItem(
+  @JsonPropertyDescription("The attachment key.")
   @JsonProperty(value = "key", required = true)
   CJ1AttachmentKey key,
+  @JsonPropertyDescription("The attachment.")
   @JsonProperty(value = "attachment", required = true)
   CJ1Attachment attachment)
   implements CJ1ValueType

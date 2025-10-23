@@ -16,21 +16,29 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+@JsonClassDescription("An audit event.")
 public record CJ1AuditEvent(
+  @JsonPropertyDescription("The event ID.")
   @JsonProperty(value = "id", required = true)
-  long id,
+  CJ1UnsignedLong id,
+  @JsonPropertyDescription("The event time.")
   @JsonProperty(value = "time", required = true)
   OffsetDateTime time,
+  @JsonPropertyDescription("The event owner.")
   @JsonProperty(value = "owner", required = true)
   UUID owner,
+  @JsonPropertyDescription("The event type.")
   @JsonProperty(value = "type", required = true)
   String type,
+  @JsonPropertyDescription("The event data.")
   @JsonProperty(value = "data", required = true)
   Map<String, String> data)
   implements CJ1ValueType

@@ -17,8 +17,10 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 public record CJ1FileColumnOrdering(
+  @JsonPropertyDescription("The column used to order results.")
   @JsonProperty(value = "column", required = true)
   CJ1FileColumn column,
   @JsonProperty(value = "ascending", required = true)

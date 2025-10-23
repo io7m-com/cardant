@@ -16,10 +16,19 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import java.time.OffsetDateTime;
 
+@JsonClassDescription("A range of time.")
 public record CJ1TimeRange(
+  @JsonPropertyDescription("The inclusive lower bound.")
+  @JsonProperty(value = "lower", required = true)
   OffsetDateTime lower,
+  @JsonPropertyDescription("The inclusive upper bound.")
+  @JsonProperty(value = "upper", required = true)
   OffsetDateTime upper)
   implements CJ1ValueType
 {

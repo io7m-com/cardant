@@ -17,7 +17,6 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.io7m.cardant.error_codes.CAErrorCode;
 
 import java.util.List;
@@ -37,7 +36,7 @@ import java.util.UUID;
  * @param extras            The extra error messages
  */
 
-@JsonTypeName("ResponseError")
+
 public record CJ1ResponseError(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

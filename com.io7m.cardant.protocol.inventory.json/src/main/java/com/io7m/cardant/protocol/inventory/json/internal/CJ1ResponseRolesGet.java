@@ -16,13 +16,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.Set;
 import java.util.UUID;
 
-@JsonTypeName("ResponseRolesGet")
+@JsonClassDescription("A response to RolesGet.")
 public record CJ1ResponseRolesGet(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

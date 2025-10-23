@@ -16,11 +16,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+@JsonClassDescription("Parameters to search for type packages.")
 public record CJ1TypePackageSearchParameters(
+  @JsonPropertyDescription("Include packages with descriptions matching the given expression.")
   @JsonProperty(value = "matchDescription", required = true)
   CJ1ComparisonFuzzyType<String> descriptionMatch,
+  @JsonPropertyDescription("The maximum number of results per page.")
   @JsonProperty(value = "pageSize", required = true)
   long pageSize)
   implements CJ1ValueType

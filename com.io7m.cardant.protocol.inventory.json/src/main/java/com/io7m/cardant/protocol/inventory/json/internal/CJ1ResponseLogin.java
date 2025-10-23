@@ -16,12 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseLogin")
+@JsonClassDescription("A response to Login.")
 public record CJ1ResponseLogin(
   @JsonProperty(value = "requestId",required = true)
   UUID requestId,

@@ -17,19 +17,22 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Set;
 import java.util.UUID;
 
-@JsonTypeName("LocationMetadataPut")
+@JsonClassDescription("Create or update metadata on a location.")
 public record CJ1CommandLocationMetadataPut(
+  @JsonPropertyDescription("The location ID.")
   @JsonProperty(value = "location", required = true)
   UUID location,
+  @JsonPropertyDescription("The location metadata values.")
   @JsonProperty(value = "metadatas", required = true)
   Set<CJ1MetadataType> metadatas)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

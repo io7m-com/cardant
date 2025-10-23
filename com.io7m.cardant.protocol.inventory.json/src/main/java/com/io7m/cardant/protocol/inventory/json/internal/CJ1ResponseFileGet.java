@@ -16,13 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1FileType.CJ1FileWithoutData;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseFileGet")
+@JsonClassDescription("A response to FileGet.")
 public record CJ1ResponseFileGet(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

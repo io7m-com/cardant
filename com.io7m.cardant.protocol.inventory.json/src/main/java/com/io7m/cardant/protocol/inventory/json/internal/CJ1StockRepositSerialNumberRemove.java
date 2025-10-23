@@ -16,15 +16,20 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
+@JsonClassDescription("Remove a serial number from a stock occurrence.")
 @JsonTypeName("SerialNumberRemove")
 public record CJ1StockRepositSerialNumberRemove(
+  @JsonPropertyDescription("The stock occurrence.")
   @JsonProperty(value = "instance", required = true)
   UUID instance,
+  @JsonPropertyDescription("The serial number.")
   @JsonProperty(value = "serial", required = true)
   CJ1ItemSerial serial)
   implements CJ1StockRepositType

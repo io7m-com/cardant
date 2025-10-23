@@ -34,6 +34,7 @@ module com.io7m.cardant.protocol.inventory.json
   requires com.io7m.junreachable.core;
   requires com.io7m.lanark.core;
   requires com.io7m.repetoir.core;
+  requires com.io7m.jaffirm.core;
 
   exports com.io7m.cardant.protocol.inventory.json;
 

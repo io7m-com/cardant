@@ -16,18 +16,25 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@JsonClassDescription("An item summary.")
 public record CJ1ItemSummary(
+  @JsonPropertyDescription("The item ID.")
   @JsonProperty(value = "id", required = true)
   UUID id,
+  @JsonPropertyDescription("The item name.")
   @JsonProperty(value = "name", required = true)
   String name,
+  @JsonPropertyDescription("The item creation time.")
   @JsonProperty(value = "timeCreated", required = true)
   OffsetDateTime timeCreated,
+  @JsonPropertyDescription("The item most recent update time.")
   @JsonProperty(value = "timeUpdated", required = true)
   OffsetDateTime timeUpdated)
   implements CJ1ValueType

@@ -17,12 +17,15 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 public record CJ1SizeRange(
+  @JsonPropertyDescription("The inclusive lower bound.")
   @JsonProperty(value = "sizeMinimum", required = true)
-  long sizeMinimum,
+  CJ1UnsignedLong sizeMinimum,
+  @JsonPropertyDescription("The inclusive upper bound.")
   @JsonProperty(value = "sizeMaximum", required = true)
-  long sizeMaximum)
+  CJ1UnsignedLong sizeMaximum)
   implements CJ1ValueType
 {
 

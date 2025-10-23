@@ -16,11 +16,11 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 
-@JsonTypeName("FileSearchPrevious")
+@JsonClassDescription("Get the previous page of files.")
 public record CJ1CommandFileSearchPrevious()
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

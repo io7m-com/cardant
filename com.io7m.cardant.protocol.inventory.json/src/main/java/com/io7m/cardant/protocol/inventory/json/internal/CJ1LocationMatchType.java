@@ -16,16 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import java.util.UUID;
-
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1LocationMatchType.All;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1LocationMatchType.Exact;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1LocationMatchType.WithDescendants;
 
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
@@ -33,34 +25,14 @@ import static com.io7m.cardant.protocol.inventory.json.internal.CJ1LocationMatch
   property = "@type"
 )
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = Exact.class, name = "Exact"),
-  @JsonSubTypes.Type(value = WithDescendants.class, name = "WithDescendants"),
-  @JsonSubTypes.Type(value = All.class, name = "All"),
+  @JsonSubTypes.Type(value = CJ1LocationMatchExact.class, name = "Exact"),
+  @JsonSubTypes.Type(value = CJ1LocationMatchWithDescendants.class, name = "WithDescendants"),
+  @JsonSubTypes.Type(value = CJ1LocationMatchAll.class, name = "All"),
 })
 public sealed interface CJ1LocationMatchType
+  permits CJ1LocationMatchAll,
+  CJ1LocationMatchExact,
+  CJ1LocationMatchWithDescendants
 {
-  @JsonTypeName("Exact")
-  record Exact(
-    @JsonProperty(value = "location", required = true)
-    UUID location)
-    implements CJ1LocationMatchType
-  {
 
-  }
-
-  @JsonTypeName("WithDescendants")
-  record WithDescendants(
-    @JsonProperty(value = "location", required = true)
-    UUID location)
-    implements CJ1LocationMatchType
-  {
-
-  }
-
-  @JsonTypeName("All")
-  record All()
-    implements CJ1LocationMatchType
-  {
-
-  }
 }

@@ -16,20 +16,24 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Map;
 
-@JsonTypeName("Login")
+@JsonClassDescription("Log in.")
 public record CJ1CommandLogin(
+  @JsonPropertyDescription("The user name.")
   @JsonProperty(value = "userName", required = true)
   String userName,
+  @JsonPropertyDescription("The password.")
   @JsonProperty(value = "password", required = true)
   String password,
+  @JsonPropertyDescription("The extra metadata.")
   @JsonProperty(value = "metadata", required = true)
   Map<String, String> metadata)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

@@ -40,26 +40,26 @@ public final class CJ1ComparisonSetX<W, C>
     final CJ1ComparisonSetType<W> m)
   {
     return switch (m) {
-      case final CJ1ComparisonSetType.Anything<W> v -> {
+      case final CJ1ComparisonSetAnything<W> v -> {
         yield new CAComparisonSetType.Anything<>();
       }
-      case final CJ1ComparisonSetType.IsEqualTo<W> v -> {
+      case final CJ1ComparisonSetIsEqualTo<W> v -> {
         yield new CAComparisonSetType.IsEqualTo<>(
           this.wireToCore.apply(v.value()));
       }
-      case final CJ1ComparisonSetType.IsNotEqualTo<W> v -> {
+      case final CJ1ComparisonSetIsNotEqualTo<W> v -> {
         yield new CAComparisonSetType.IsNotEqualTo<>(
           this.wireToCore.apply(v.value()));
       }
-      case final CJ1ComparisonSetType.IsOverlapping<W> v -> {
+      case final CJ1ComparisonSetIsOverlapping<W> v -> {
         yield new CAComparisonSetType.IsOverlapping<>(
           this.wireToCore.apply(v.value()));
       }
-      case final CJ1ComparisonSetType.IsSubsetOf<W> v -> {
+      case final CJ1ComparisonSetIsSubsetOf<W> v -> {
         yield new CAComparisonSetType.IsSubsetOf<>(
           this.wireToCore.apply(v.value()));
       }
-      case final CJ1ComparisonSetType.IsSupersetOf<W> v -> {
+      case final CJ1ComparisonSetIsSupersetOf<W> v -> {
         yield new CAComparisonSetType.IsSupersetOf<>(
           this.wireToCore.apply(v.value()));
       }
@@ -72,26 +72,26 @@ public final class CJ1ComparisonSetX<W, C>
   {
     return switch (m) {
       case final CAComparisonSetType.Anything<C> v -> {
-        yield new CJ1ComparisonSetType.Anything<>();
+        yield new CJ1ComparisonSetAnything<>();
       }
       case final CAComparisonSetType.IsEqualTo<C> v -> {
-        yield new CJ1ComparisonSetType.IsEqualTo<>(
+        yield new CJ1ComparisonSetIsEqualTo<>(
           this.coreToWire.apply(v.value()));
       }
       case final CAComparisonSetType.IsNotEqualTo<C> v -> {
-        yield new CJ1ComparisonSetType.IsNotEqualTo<>(
+        yield new CJ1ComparisonSetIsNotEqualTo<>(
           this.coreToWire.apply(v.value()));
       }
       case final CAComparisonSetType.IsOverlapping<C> v -> {
-        yield new CJ1ComparisonSetType.IsOverlapping<>(
+        yield new CJ1ComparisonSetIsOverlapping<>(
           this.coreToWire.apply(v.value()));
       }
       case final CAComparisonSetType.IsSubsetOf<C> v -> {
-        yield new CJ1ComparisonSetType.IsSubsetOf<>(
+        yield new CJ1ComparisonSetIsSubsetOf<>(
           this.coreToWire.apply(v.value()));
       }
       case final CAComparisonSetType.IsSupersetOf<C> v -> {
-        yield new CJ1ComparisonSetType.IsSupersetOf<>(
+        yield new CJ1ComparisonSetIsSupersetOf<>(
           this.coreToWire.apply(v.value()));
       }
     };

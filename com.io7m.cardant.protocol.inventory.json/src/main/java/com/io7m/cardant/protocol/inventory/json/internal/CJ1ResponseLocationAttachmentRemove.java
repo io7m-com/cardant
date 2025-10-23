@@ -17,12 +17,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseLocationAttachmentRemove")
+@JsonClassDescription("A response to LocationAttachmentRemove.")
 public record CJ1ResponseLocationAttachmentRemove(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

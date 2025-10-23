@@ -17,12 +17,8 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import java.util.Set;
 
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
@@ -30,60 +26,21 @@ import java.util.Set;
   property = "@type"
 )
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = CJ1ComparisonSetType.Anything.class, name = "Anything"),
-  @JsonSubTypes.Type(value = CJ1ComparisonSetType.IsEqualTo.class, name = "IsEqualTo"),
-  @JsonSubTypes.Type(value = CJ1ComparisonSetType.IsNotEqualTo.class, name = "IsNotEqualTo"),
-  @JsonSubTypes.Type(value = CJ1ComparisonSetType.IsOverlapping.class, name = "IsOverlapping"),
-  @JsonSubTypes.Type(value = CJ1ComparisonSetType.IsSubsetOf.class, name = "IsSubsetOf"),
-  @JsonSubTypes.Type(value = CJ1ComparisonSetType.IsSupersetOf.class, name = "IsSupersetOf"),
+  @JsonSubTypes.Type(value = CJ1ComparisonSetAnything.class, name = "Anything"),
+  @JsonSubTypes.Type(value = CJ1ComparisonSetIsEqualTo.class, name = "IsEqualTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonSetIsNotEqualTo.class, name = "IsNotEqualTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonSetIsOverlapping.class, name = "IsOverlapping"),
+  @JsonSubTypes.Type(value = CJ1ComparisonSetIsSubsetOf.class, name = "IsSubsetOf"),
+  @JsonSubTypes.Type(value = CJ1ComparisonSetIsSupersetOf.class, name = "IsSupersetOf"),
 })
 public sealed interface CJ1ComparisonSetType<T>
   extends CJ1ValueType
+  permits CJ1ComparisonSetAnything,
+  CJ1ComparisonSetIsEqualTo,
+  CJ1ComparisonSetIsNotEqualTo,
+  CJ1ComparisonSetIsOverlapping,
+  CJ1ComparisonSetIsSubsetOf,
+  CJ1ComparisonSetIsSupersetOf
 {
-  @JsonTypeName("Anything")
-  record Anything<T>()
-    implements CJ1ComparisonSetType<T>
-  {
 
-  }
-
-  @JsonTypeName("IsSubsetOf")
-  record IsSubsetOf<T>(
-    @JsonProperty(value = "value", required = true) Set<T> value)
-    implements CJ1ComparisonSetType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsSupersetOf")
-  record IsSupersetOf<T>(
-    @JsonProperty(value = "value", required = true) Set<T> value)
-    implements CJ1ComparisonSetType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsOverlapping")
-  record IsOverlapping<T>(
-    @JsonProperty(value = "value", required = true) Set<T> value)
-    implements CJ1ComparisonSetType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsEqualTo")
-  record IsEqualTo<T>(
-    @JsonProperty(value = "value", required = true) Set<T> value)
-    implements CJ1ComparisonSetType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsNotEqualTo")
-  record IsNotEqualTo<T>(
-    @JsonProperty(value = "value", required = true) Set<T> value)
-    implements CJ1ComparisonSetType<T>
-  {
-
-  }
 }

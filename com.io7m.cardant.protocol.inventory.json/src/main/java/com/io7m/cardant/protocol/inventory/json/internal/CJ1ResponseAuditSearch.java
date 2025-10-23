@@ -18,10 +18,12 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.UUID;
 
+@JsonClassDescription("A response to AuditSearch.")
 public record CJ1ResponseAuditSearch(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

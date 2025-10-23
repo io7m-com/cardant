@@ -17,9 +17,11 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.model.CAFileSearchParameters;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1FileColumnOrderingX.FILE_COLUMN_ORDERING;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1SizeRangeX.SIZE_RANGE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
 
 public enum CJ1FileSearchParametersX
   implements CJ1SerialBijectionType<CJ1FileSearchParameters, CAFileSearchParameters>
@@ -29,26 +31,28 @@ public enum CJ1FileSearchParametersX
   @Override
   public CAFileSearchParameters toCore(
     final CJ1FileSearchParameters m)
+    throws CAProtocolException
   {
     return new CAFileSearchParameters(
       new CJ1ComparisonFuzzyX<String>().toCore(m.description()),
       new CJ1ComparisonFuzzyX<String>().toCore(m.mediaType()),
       SIZE_RANGE.toCore(m.sizeRange()),
       FILE_COLUMN_ORDERING.toCore(m.ordering()),
-      m.pageSize()
+      UNSIGNED_LONG.toCore(m.pageSize())
     );
   }
 
   @Override
   public CJ1FileSearchParameters toCJ1(
     final CAFileSearchParameters m)
+    throws CAProtocolException
   {
     return new CJ1FileSearchParameters(
       new CJ1ComparisonFuzzyX<String>().toCJ1(m.description()),
       new CJ1ComparisonFuzzyX<String>().toCJ1(m.mediaType()),
       SIZE_RANGE.toCJ1(m.sizeRange()),
       FILE_COLUMN_ORDERING.toCJ1(m.ordering()),
-      m.pageSize()
+      UNSIGNED_LONG.toCJ1(m.pageSize())
     );
   }
 }

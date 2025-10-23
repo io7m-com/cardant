@@ -18,6 +18,10 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.model.CAAuditEvent;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.protocol.api.CAProtocolException;
+import com.io7m.cardant.protocol.api.CAProtocolUncheckedException;
+
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
 
 public enum CJ1AuditEventX
   implements CJ1SerialBijectionType<CJ1AuditEvent, CAAuditEvent>
@@ -28,25 +32,33 @@ public enum CJ1AuditEventX
   public CAAuditEvent toCore(
     final CJ1AuditEvent m)
   {
-    return new CAAuditEvent(
-      m.id(),
-      m.time(),
-      CAUserID.of(m.owner()),
-      m.type(),
-      m.data()
-    );
+    try {
+      return new CAAuditEvent(
+        UNSIGNED_LONG.toCore(m.id()),
+        m.time(),
+        CAUserID.of(m.owner()),
+        m.type(),
+        m.data()
+      );
+    } catch (final CAProtocolException e) {
+      throw new CAProtocolUncheckedException(e);
+    }
   }
 
   @Override
   public CJ1AuditEvent toCJ1(
     final CAAuditEvent m)
   {
-    return new CJ1AuditEvent(
-      m.id(),
-      m.time(),
-      m.owner().id(),
-      m.type(),
-      m.data()
-    );
+    try {
+      return new CJ1AuditEvent(
+        UNSIGNED_LONG.toCJ1(m.id()),
+        m.time(),
+        m.owner().id(),
+        m.type(),
+        m.data()
+      );
+    } catch (final CAProtocolException e) {
+      throw new CAProtocolUncheckedException(e);
+    }
   }
 }

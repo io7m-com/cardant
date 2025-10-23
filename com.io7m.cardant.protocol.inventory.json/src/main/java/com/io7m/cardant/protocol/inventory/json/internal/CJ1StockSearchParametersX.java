@@ -18,6 +18,7 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.model.CAItemID;
 import com.io7m.cardant.model.CAStockSearchParameters;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1IncludeDeletedX.INCLUDE_DELETED;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1LocationMatchX.LOCATION_MATCH;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurenceKindX.STOCK_OCCURENCE_KIND;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
 
 public enum CJ1StockSearchParametersX
   implements CJ1SerialBijectionType<CJ1StockSearchParameters, CAStockSearchParameters>
@@ -34,6 +36,7 @@ public enum CJ1StockSearchParametersX
   @Override
   public CAStockSearchParameters toCore(
     final CJ1StockSearchParameters m)
+    throws CAProtocolException
   {
     return new CAStockSearchParameters(
       LOCATION_MATCH.toCore(m.locationMatch()),
@@ -43,13 +46,14 @@ public enum CJ1StockSearchParametersX
         .stream().map(STOCK_OCCURENCE_KIND::toCore)
         .collect(Collectors.toSet()),
       INCLUDE_DELETED.toCore(m.includeDeleted()),
-      m.pageSize()
+      UNSIGNED_LONG.toCore(m.pageSize())
     );
   }
 
   @Override
   public CJ1StockSearchParameters toCJ1(
     final CAStockSearchParameters m)
+    throws CAProtocolException
   {
     return new CJ1StockSearchParameters(
       LOCATION_MATCH.toCJ1(m.locationMatch()),
@@ -58,7 +62,7 @@ public enum CJ1StockSearchParametersX
         .stream().map(STOCK_OCCURENCE_KIND::toCJ1)
         .collect(Collectors.toSet()),
       INCLUDE_DELETED.toCJ1(m.includeDeleted()),
-      m.pageSize()
+      UNSIGNED_LONG.toCJ1(m.pageSize())
     );
   }
 }

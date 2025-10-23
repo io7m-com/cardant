@@ -16,13 +16,18 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.UUID;
 
+@JsonClassDescription("An attachment key.")
 public record CJ1AttachmentKey(
+  @JsonPropertyDescription("The attachment file.")
   @JsonProperty(value = "file", required = true)
   UUID fileID,
+  @JsonPropertyDescription("The attachment relation.")
   @JsonProperty(value = "relation", required = true)
   String relation)
   implements CJ1ValueType

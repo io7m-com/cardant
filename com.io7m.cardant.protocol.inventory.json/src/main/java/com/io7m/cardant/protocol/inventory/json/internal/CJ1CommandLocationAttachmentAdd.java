@@ -16,20 +16,24 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.UUID;
 
-@JsonTypeName("LocationAttachmentAdd")
+@JsonClassDescription("Add an attachment to a location.")
 public record CJ1CommandLocationAttachmentAdd(
+  @JsonPropertyDescription("The location ID.")
   @JsonProperty(value = "location", required = true)
   UUID location,
+  @JsonPropertyDescription("The file ID.")
   @JsonProperty(value = "file", required = true)
   UUID file,
+  @JsonPropertyDescription("The attachment relation.")
   @JsonProperty(value = "relation", required = true)
   String relation)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

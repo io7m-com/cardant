@@ -16,14 +16,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("StockCount")
+@JsonClassDescription("Count stock matching the given search parameters.")
 public record CJ1CommandStockCount(
+  @JsonPropertyDescription("The stock search parameters.")
   @JsonProperty(value = "parameters", required = true)
   CJ1StockSearchParameters searchParameters)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

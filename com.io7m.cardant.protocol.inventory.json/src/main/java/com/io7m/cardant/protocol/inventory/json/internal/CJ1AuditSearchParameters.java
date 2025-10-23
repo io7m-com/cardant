@@ -17,20 +17,27 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@JsonClassDescription("Parameters to search for audit events.")
 public record CJ1AuditSearchParameters(
+  @JsonPropertyDescription("Include audit results for the given user.")
   @JsonProperty("matchOwner")
   Optional<UUID> owner,
+  @JsonPropertyDescription("Include events with types matching the given expression.")
   @JsonProperty(value = "matchEventType", required = true)
   CJ1ComparisonExactType<String> type,
+  @JsonPropertyDescription("Include events within the given time range.")
   @JsonProperty(value = "matchTimeRange", required = true)
   CJ1TimeRange timeRange,
+  @JsonPropertyDescription("The maximum number of events per page.")
   @JsonProperty(value = "pageSize", required = true)
-  long pageSize)
+  CJ1UnsignedLong pageSize)
   implements CJ1ValueType
 {
 

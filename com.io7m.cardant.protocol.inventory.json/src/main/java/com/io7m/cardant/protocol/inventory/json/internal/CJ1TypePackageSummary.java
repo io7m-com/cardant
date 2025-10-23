@@ -17,11 +17,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+@JsonClassDescription("A type package summary.")
 public record CJ1TypePackageSummary(
+  @JsonPropertyDescription("The package identifier.")
   @JsonProperty(value = "identifier", required = true)
   CJ1TypePackageIdentifier identifier,
+  @JsonPropertyDescription("The package description.")
   @JsonProperty(value = "description", required = true)
   String description)
   implements CJ1ValueType

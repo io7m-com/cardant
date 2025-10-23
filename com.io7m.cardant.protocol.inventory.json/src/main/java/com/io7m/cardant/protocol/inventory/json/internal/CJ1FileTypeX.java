@@ -30,7 +30,7 @@ public enum CJ1FileTypeX
     final CJ1FileType file)
   {
     return switch (file) {
-      case final CJ1FileType.CJ1FileWithData ff -> {
+      case final CJ1FileWithData ff -> {
         yield new CAFileType.CAFileWithData(
           CAFileID.of(ff.id()),
           ff.description(),
@@ -40,7 +40,7 @@ public enum CJ1FileTypeX
           new CAByteArray(ff.data())
         );
       }
-      case final CJ1FileType.CJ1FileWithoutData ff -> {
+      case final CJ1FileWithoutData ff -> {
         yield new CAFileType.CAFileWithoutData(
           CAFileID.of(ff.id()),
           ff.description(),
@@ -67,10 +67,10 @@ public enum CJ1FileTypeX
     };
   }
 
-  private static CJ1FileType.CJ1FileWithoutData serializeFileWithoutData(
+  private static CJ1FileWithoutData serializeFileWithoutData(
     final CAFileType.CAFileWithoutData ff)
   {
-    return new CJ1FileType.CJ1FileWithoutData(
+    return new CJ1FileWithoutData(
       ff.id().id(),
       ff.description(),
       ff.mediaType(),
@@ -80,10 +80,10 @@ public enum CJ1FileTypeX
     );
   }
 
-  private static CJ1FileType.CJ1FileWithData serializeFileWithData(
+  private static CJ1FileWithData serializeFileWithData(
     final CAFileType.CAFileWithData ff)
   {
-    return new CJ1FileType.CJ1FileWithData(
+    return new CJ1FileWithData(
       ff.id().id(),
       ff.description(),
       ff.mediaType(),

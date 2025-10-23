@@ -17,18 +17,17 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-
-@JsonTypeName("ResponseFileSearch")
+@JsonClassDescription("A response to FileSearch.")
 public record CJ1ResponseFileSearch(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,
   @JsonProperty(value = "results", required = true)
-  CJ1Page<CJ1FileType.CJ1FileWithoutData> results)
+  CJ1Page<CJ1FileWithoutData> results)
   implements CJ1ResponseType
 {
 

@@ -16,19 +16,22 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Set;
 import java.util.UUID;
 
-@JsonTypeName("ItemTypesAssign")
+@JsonClassDescription("Assign types to an item.")
 public record CJ1CommandItemTypesAssign(
+  @JsonPropertyDescription("The item ID.")
   @JsonProperty(value = "item", required = true)
   UUID item,
+  @JsonPropertyDescription("The types.")
   @JsonProperty("types")
   Set<CJ1TypeRecordIdentifier> types)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

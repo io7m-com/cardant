@@ -29,8 +29,10 @@ import com.io7m.cardant.model.CAStockRepositSetIntroduce;
 import com.io7m.cardant.model.CAStockRepositSetMove;
 import com.io7m.cardant.model.CAStockRepositSetRemove;
 import com.io7m.cardant.model.CAStockRepositType;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemSerialX.ITEM_SERIAL;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
 
 public enum CJ1StockRepositTypeX
   implements CJ1SerialBijectionType<CJ1StockRepositType, CAStockRepositType>
@@ -40,6 +42,7 @@ public enum CJ1StockRepositTypeX
   @Override
   public CAStockRepositType toCore(
     final CJ1StockRepositType m)
+    throws CAProtocolException
   {
     return switch (m) {
       case final CJ1StockRepositRemove mm -> {
@@ -76,7 +79,7 @@ public enum CJ1StockRepositTypeX
       case final CJ1StockRepositSetAdd mm -> {
         yield new CAStockRepositSetAdd(
           new CAStockInstanceID(mm.instance()),
-          mm.count()
+          UNSIGNED_LONG.toCore(mm.count())
         );
       }
       case final CJ1StockRepositSetIntroduce mm -> {
@@ -84,7 +87,7 @@ public enum CJ1StockRepositTypeX
           new CAStockInstanceID(mm.instance()),
           new CAItemID(mm.item()),
           new CALocationID(mm.location()),
-          mm.count()
+          UNSIGNED_LONG.toCore(mm.count())
         );
       }
       case final CJ1StockRepositSetMove mm -> {
@@ -92,13 +95,13 @@ public enum CJ1StockRepositTypeX
           new CAStockInstanceID(mm.instanceSource()),
           new CAStockInstanceID(mm.instanceTarget()),
           new CALocationID(mm.toLocation()),
-          mm.count()
+          UNSIGNED_LONG.toCore(mm.count())
         );
       }
       case final CJ1StockRepositSetRemove mm -> {
         yield new CAStockRepositSetRemove(
           new CAStockInstanceID(mm.instance()),
-          mm.count()
+          UNSIGNED_LONG.toCore(mm.count())
         );
       }
     };
@@ -107,6 +110,7 @@ public enum CJ1StockRepositTypeX
   @Override
   public CJ1StockRepositType toCJ1(
     final CAStockRepositType m)
+    throws CAProtocolException
   {
     return switch (m) {
       case final CAStockRepositRemove mm -> {
@@ -143,7 +147,7 @@ public enum CJ1StockRepositTypeX
       case final CAStockRepositSetAdd mm -> {
         yield new CJ1StockRepositSetAdd(
           mm.instance().id(),
-          mm.count()
+          UNSIGNED_LONG.toCJ1(mm.count())
         );
       }
       case final CAStockRepositSetIntroduce mm -> {
@@ -151,7 +155,7 @@ public enum CJ1StockRepositTypeX
           mm.instance().id(),
           mm.item().id(),
           mm.location().id(),
-          mm.count()
+          UNSIGNED_LONG.toCJ1(mm.count())
         );
       }
       case final CAStockRepositSetMove mm -> {
@@ -159,13 +163,13 @@ public enum CJ1StockRepositTypeX
           mm.instanceSource().id(),
           mm.instanceTarget().id(),
           mm.toLocation().id(),
-          mm.count()
+          UNSIGNED_LONG.toCJ1(mm.count())
         );
       }
       case final CAStockRepositSetRemove mm -> {
         yield new CJ1StockRepositSetRemove(
           mm.instance().id(),
-          mm.count()
+          UNSIGNED_LONG.toCJ1(mm.count())
         );
       }
     };

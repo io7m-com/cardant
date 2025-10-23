@@ -29,17 +29,17 @@ public enum CJ1LocationMatchX
     final CJ1LocationMatchType m)
   {
     return switch (m) {
-      case final CJ1LocationMatchType.Exact mm -> {
+      case final CJ1LocationMatchExact mm -> {
         yield new CALocationMatchType.CALocationExact(
           CALocationID.of(mm.location())
         );
       }
-      case final CJ1LocationMatchType.WithDescendants mm -> {
+      case final CJ1LocationMatchWithDescendants mm -> {
         yield new CALocationMatchType.CALocationWithDescendants(
           CALocationID.of(mm.location())
         );
       }
-      case final CJ1LocationMatchType.All mm -> {
+      case final CJ1LocationMatchAll mm -> {
         yield new CALocationMatchType.CALocationsAll();
       }
     };
@@ -51,13 +51,13 @@ public enum CJ1LocationMatchX
   {
     return switch (m) {
       case final CALocationMatchType.CALocationExact mm -> {
-        yield new CJ1LocationMatchType.Exact(mm.location().id());
+        yield new CJ1LocationMatchExact(mm.location().id());
       }
       case final CALocationMatchType.CALocationWithDescendants mm -> {
-        yield new CJ1LocationMatchType.WithDescendants(mm.location().id());
+        yield new CJ1LocationMatchWithDescendants(mm.location().id());
       }
       case final CALocationMatchType.CALocationsAll mm -> {
-        yield new CJ1LocationMatchType.All();
+        yield new CJ1LocationMatchAll();
       }
     };
   }

@@ -16,14 +16,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("FilePut")
+@JsonClassDescription("Create or update a file.")
 public record CJ1CommandFilePut(
+  @JsonPropertyDescription("The file.")
   @JsonProperty(value = "file", required = true)
   CJ1FileType file)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

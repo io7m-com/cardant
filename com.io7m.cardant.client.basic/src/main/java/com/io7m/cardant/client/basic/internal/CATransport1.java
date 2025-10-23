@@ -428,7 +428,7 @@ public final class CATransport1
         );
 
       LOG.debug("Send: Status {}", Integer.valueOf(response.statusCode()));
-    } catch (final IOException e) {
+    } catch (final Exception e) {
       throw CAClientException.ofException(e);
     }
   }

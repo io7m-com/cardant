@@ -16,19 +16,26 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.List;
 
+@JsonClassDescription("A page of results.")
 public record CJ1Page<T>(
+  @JsonPropertyDescription("The results.")
   @JsonProperty(value = "items", required = true)
   List<T> items,
+  @JsonPropertyDescription("The page number.")
   @JsonProperty(value = "pageIndex", required = true)
-  int pageIndex,
+  CJ1UnsignedInt pageIndex,
+  @JsonPropertyDescription("The total number of pages.")
   @JsonProperty(value = "pageCount", required = true)
-  int pageCount,
+  CJ1UnsignedInt pageCount,
+  @JsonPropertyDescription("The offset of the first result in the page.")
   @JsonProperty(value = "pageFirstOffset", required = true)
-  long pageFirstOffset)
+  CJ1UnsignedLong pageFirstOffset)
   implements CJ1ValueType
 {
 

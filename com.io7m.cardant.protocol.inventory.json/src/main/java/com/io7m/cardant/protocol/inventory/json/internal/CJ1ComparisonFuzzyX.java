@@ -31,19 +31,19 @@ public final class CJ1ComparisonFuzzyX<T>
     final CJ1ComparisonFuzzyType<T> m)
   {
     return switch (m) {
-      case final CJ1ComparisonFuzzyType.Anything<T> v -> {
+      case final CJ1ComparisonFuzzyAnything<T> v -> {
         yield new CAComparisonFuzzyType.Anything<>();
       }
-      case final CJ1ComparisonFuzzyType.IsEqualTo<T> v -> {
+      case final CJ1ComparisonFuzzyIsEqualTo<T> v -> {
         yield new CAComparisonFuzzyType.IsEqualTo<>(v.value());
       }
-      case final CJ1ComparisonFuzzyType.IsNotEqualTo<T> v -> {
+      case final CJ1ComparisonFuzzyIsNotEqualTo<T> v -> {
         yield new CAComparisonFuzzyType.IsNotEqualTo<>(v.value());
       }
-      case final CJ1ComparisonFuzzyType.IsNotSimilarTo<T> v -> {
+      case final CJ1ComparisonFuzzyIsNotSimilarTo<T> v -> {
         yield new CAComparisonFuzzyType.IsNotSimilarTo<>(v.value());
       }
-      case final CJ1ComparisonFuzzyType.IsSimilarTo<T> v -> {
+      case final CJ1ComparisonFuzzyIsSimilarTo<T> v -> {
         yield new CAComparisonFuzzyType.IsSimilarTo<>(v.value());
       }
     };
@@ -55,19 +55,19 @@ public final class CJ1ComparisonFuzzyX<T>
   {
     return switch (m) {
       case final CAComparisonFuzzyType.Anything<T> v -> {
-        yield new CJ1ComparisonFuzzyType.Anything<>();
+        yield new CJ1ComparisonFuzzyAnything<>();
       }
       case final CAComparisonFuzzyType.IsEqualTo<T> v -> {
-        yield new CJ1ComparisonFuzzyType.IsEqualTo<>(v.value());
+        yield new CJ1ComparisonFuzzyIsEqualTo<>(v.value());
       }
       case final CAComparisonFuzzyType.IsNotEqualTo<T> v -> {
-        yield new CJ1ComparisonFuzzyType.IsNotEqualTo<>(v.value());
+        yield new CJ1ComparisonFuzzyIsNotEqualTo<>(v.value());
       }
       case final CAComparisonFuzzyType.IsNotSimilarTo<T> v -> {
-        yield new CJ1ComparisonFuzzyType.IsNotSimilarTo<>(v.value());
+        yield new CJ1ComparisonFuzzyIsNotSimilarTo<>(v.value());
       }
       case final CAComparisonFuzzyType.IsSimilarTo<T> v -> {
-        yield new CJ1ComparisonFuzzyType.IsSimilarTo<>(v.value());
+        yield new CJ1ComparisonFuzzyIsSimilarTo<>(v.value());
       }
     };
   }

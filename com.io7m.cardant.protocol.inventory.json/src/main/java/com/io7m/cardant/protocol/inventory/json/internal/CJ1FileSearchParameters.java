@@ -16,19 +16,27 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+@JsonClassDescription("Parameters to search for files.")
 public record CJ1FileSearchParameters(
+  @JsonPropertyDescription("Include files with descriptions matching the given expression.")
   @JsonProperty(value = "matchDescription", required = true)
   CJ1ComparisonFuzzyType<String> description,
+  @JsonPropertyDescription("Include files with media types matching the given expression.")
   @JsonProperty(value = "matchMediaType", required = true)
   CJ1ComparisonFuzzyType<String> mediaType,
+  @JsonPropertyDescription("Include files with sizes matching the given expression.")
   @JsonProperty(value = "matchSizeRange", required = true)
   CJ1SizeRange sizeRange,
+  @JsonPropertyDescription("The result ordering.")
   @JsonProperty(value = "orderBy", required = true)
   CJ1FileColumnOrdering ordering,
+  @JsonPropertyDescription("The maximum number of results per page.")
   @JsonProperty(value = "pageSize", required = true)
-  long pageSize)
+  CJ1UnsignedLong pageSize)
   implements CJ1ValueType
 {
 

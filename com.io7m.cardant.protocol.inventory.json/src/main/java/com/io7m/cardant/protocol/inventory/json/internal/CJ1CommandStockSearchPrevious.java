@@ -16,11 +16,11 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 
-@JsonTypeName("StockSearchPrevious")
+@JsonClassDescription("Get the previous page of stock.")
 public record CJ1CommandStockSearchPrevious()
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

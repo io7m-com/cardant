@@ -21,6 +21,9 @@ import com.io7m.cardant.protocol.api.CAProtocolException;
 
 import java.util.function.Function;
 
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedIntX.UNSIGNED_INT;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
+
 public final class CJ1PageX<W, C>
   implements CJ1SerialBijectionType<CJ1Page<W>, CAPage<C>>
 {
@@ -50,9 +53,9 @@ public final class CJ1PageX<W, C>
         .stream()
         .map(this.wireToCore)
         .toList(),
-      m.pageIndex(),
-      m.pageCount(),
-      m.pageFirstOffset()
+      UNSIGNED_INT.toCore(m.pageIndex()),
+      UNSIGNED_INT.toCore(m.pageCount()),
+      UNSIGNED_LONG.toCore(m.pageFirstOffset())
     );
   }
 
@@ -66,9 +69,9 @@ public final class CJ1PageX<W, C>
         .stream()
         .map(this.coreToWire)
         .toList(),
-      m.pageIndex(),
-      m.pageCount(),
-      m.pageFirstOffset()
+      UNSIGNED_INT.toCJ1(m.pageIndex()),
+      UNSIGNED_INT.toCJ1(m.pageCount()),
+      UNSIGNED_LONG.toCJ1(m.pageFirstOffset())
     );
   }
 }

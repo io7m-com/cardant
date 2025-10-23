@@ -16,23 +16,33 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+@JsonClassDescription("Parameters to search for items.")
 public record CJ1ItemSearchParameters(
+  @JsonPropertyDescription("Include items with names matching the given expression.")
   @JsonProperty(value = "matchName", required = true)
   CJ1ComparisonFuzzyType<String> nameMatch,
+  @JsonPropertyDescription("Include items with descriptions matching the given expression.")
   @JsonProperty(value = "matchDescription", required = true)
   CJ1ComparisonFuzzyType<String> descriptionMatch,
+  @JsonPropertyDescription("Include items with types matching the given expression.")
   @JsonProperty(value = "matchTypes", required = true)
   CJ1ComparisonSetType<CJ1TypeRecordIdentifier> typeMatch,
+  @JsonPropertyDescription("Include items with metadata matching the given expression.")
   @JsonProperty(value = "matchMetadata", required = true)
   CJ1MetadataElementMatchType metadataMatch,
+  @JsonPropertyDescription("Include deleted items.")
   @JsonProperty(value = "includeDeleted", required = true)
   CJ1IncludeDeleted includeDeleted,
+  @JsonPropertyDescription("The result ordering.")
   @JsonProperty(value = "orderBy", required = true)
   CJ1ItemColumnOrdering ordering,
+  @JsonPropertyDescription("The maximum number of results per page.")
   @JsonProperty(value = "pageSize", required = true)
-  long pageSize)
+  CJ1UnsignedLong pageSize)
   implements CJ1ValueType
 {
 

@@ -17,14 +17,17 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("LocationPut")
+
+@JsonClassDescription("Create or update a location.")
 public record CJ1CommandLocationPut(
+  @JsonPropertyDescription("The location.")
   @JsonProperty(value = "location", required = true)
   CJ1Location location)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

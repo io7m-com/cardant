@@ -18,8 +18,10 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.model.CAAuditSearchParameters;
 import com.io7m.cardant.model.CAUserID;
+import com.io7m.cardant.protocol.api.CAProtocolException;
 
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TimeRangeX.TIME_RANGE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1UnsignedLongX.UNSIGNED_LONG;
 
 public enum CJ1AuditSearchParametersX
   implements CJ1SerialBijectionType<CJ1AuditSearchParameters, CAAuditSearchParameters>
@@ -29,24 +31,26 @@ public enum CJ1AuditSearchParametersX
   @Override
   public CAAuditSearchParameters toCore(
     final CJ1AuditSearchParameters m)
+    throws CAProtocolException
   {
     return new CAAuditSearchParameters(
       m.owner().map(CAUserID::of),
       new CJ1ComparisonExactX<String>().toCore(m.type()),
       TIME_RANGE.toCore(m.timeRange()),
-      m.pageSize()
+      UNSIGNED_LONG.toCore(m.pageSize())
     );
   }
 
   @Override
   public CJ1AuditSearchParameters toCJ1(
     final CAAuditSearchParameters m)
+    throws CAProtocolException
   {
     return new CJ1AuditSearchParameters(
       m.owner().map(CAUserID::id),
       new CJ1ComparisonExactX<String>().toCJ1(m.type()),
       TIME_RANGE.toCJ1(m.timeRange()),
-      m.pageSize()
+      UNSIGNED_LONG.toCJ1(m.pageSize())
     );
   }
 }

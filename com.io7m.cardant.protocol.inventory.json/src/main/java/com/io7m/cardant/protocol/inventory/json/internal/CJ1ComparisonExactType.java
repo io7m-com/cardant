@@ -16,14 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonExactType.Anything;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonExactType.IsEqualTo;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonExactType.IsNotEqualTo;
 
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
@@ -31,33 +25,14 @@ import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonExa
   property = "@type"
 )
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = Anything.class, name = "Anything"),
-  @JsonSubTypes.Type(value = IsEqualTo.class, name = "IsEqualTo"),
-  @JsonSubTypes.Type(value = IsNotEqualTo.class, name = "IsNotEqualTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonExactAnything.class, name = "Anything"),
+  @JsonSubTypes.Type(value = CJ1ComparisonExactIsEqualTo.class, name = "IsEqualTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonExactIsNotEqualTo.class, name = "IsNotEqualTo"),
 })
 public sealed interface CJ1ComparisonExactType<T>
-  extends CJ1ValueType
+  extends CJ1ValueType permits CJ1ComparisonExactAnything,
+  CJ1ComparisonExactIsEqualTo,
+  CJ1ComparisonExactIsNotEqualTo
 {
-  @JsonTypeName("Anything")
-  record Anything<T>()
-    implements CJ1ComparisonExactType<T>
-  {
 
-  }
-
-  @JsonTypeName("IsEqualTo")
-  record IsEqualTo<T>(
-    @JsonProperty(value = "value", required = true) T value)
-    implements CJ1ComparisonExactType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsNotEqualTo")
-  record IsNotEqualTo<T>(
-    @JsonProperty(value = "value", required = true) T value)
-    implements CJ1ComparisonExactType<T>
-  {
-
-  }
 }

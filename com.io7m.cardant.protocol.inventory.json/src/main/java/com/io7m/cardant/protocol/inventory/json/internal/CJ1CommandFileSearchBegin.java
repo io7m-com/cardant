@@ -16,14 +16,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("FileSearchBegin")
+@JsonClassDescription("Start searching for files.")
 public record CJ1CommandFileSearchBegin(
+  @JsonPropertyDescription("The search parameters.")
   @JsonProperty(value = "parameters", required = true)
   CJ1FileSearchParameters parameters)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

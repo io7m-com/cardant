@@ -16,12 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseRolesRevoke")
+@JsonClassDescription("A response to RolesRevoke.")
 public record CJ1ResponseRolesRevoke(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId)

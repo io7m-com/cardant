@@ -16,21 +16,28 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
+@JsonClassDescription("Move between stock occurrences.")
 @JsonTypeName("SetMove")
 public record CJ1StockRepositSetMove(
+  @JsonPropertyDescription("The source stock occurrence.")
   @JsonProperty(value = "instanceSource", required = true)
   UUID instanceSource,
+  @JsonPropertyDescription("The target stock occurrence.")
   @JsonProperty(value = "instanceTarget", required = true)
   UUID instanceTarget,
+  @JsonPropertyDescription("The new location.")
   @JsonProperty(value = "toLocation", required = true)
   UUID toLocation,
+  @JsonPropertyDescription("The number of items to move.")
   @JsonProperty(value = "count", required = true)
-  long count)
+  CJ1UnsignedLong count)
   implements CJ1StockRepositType
 {
 

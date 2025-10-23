@@ -17,18 +17,22 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("TypePackageUpgrade")
+@JsonClassDescription("Upgrade a type package.")
 public record CJ1CommandTypePackageUpgrade(
+  @JsonPropertyDescription("The type removal behavior.")
   @JsonProperty(value = "typeRemovalBehavior", required = true)
   CJ1TypePackageTypeRemovalBehavior typeRemovalBehavior,
+  @JsonPropertyDescription("The type version behavior.")
   @JsonProperty(value = "versionBehavior", required = true)
   CJ1TypePackageVersionBehavior versionBehavior,
+  @JsonPropertyDescription("The type package text.")
   @JsonProperty(value = "text", required = true)
   String text)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

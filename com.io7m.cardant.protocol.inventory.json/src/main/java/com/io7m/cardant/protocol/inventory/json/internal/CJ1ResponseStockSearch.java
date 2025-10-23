@@ -17,11 +17,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
+@JsonClassDescription("A response to StockSearch.")
 @JsonTypeName("ResponseStockSearch")
 public record CJ1ResponseStockSearch(
   @JsonProperty(value = "requestId", required = true)

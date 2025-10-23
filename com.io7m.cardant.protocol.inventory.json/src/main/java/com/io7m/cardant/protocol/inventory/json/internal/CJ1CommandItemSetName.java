@@ -16,18 +16,21 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.UUID;
 
-@JsonTypeName("ItemSetName")
+@JsonClassDescription("Set the name of an item.")
 public record CJ1CommandItemSetName(
+  @JsonPropertyDescription("The item ID.")
   @JsonProperty(value = "id", required = true)
   UUID id,
+  @JsonPropertyDescription("The item name.")
   @JsonProperty(value = "name", required = true)
   String name)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

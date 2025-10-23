@@ -17,10 +17,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+
 /**
  * The type removal behavior for package upgrades/uninstalls.
  */
 
+@JsonClassDescription("Type package version behavior.")
 public enum CJ1TypePackageVersionBehavior
 {
   /**

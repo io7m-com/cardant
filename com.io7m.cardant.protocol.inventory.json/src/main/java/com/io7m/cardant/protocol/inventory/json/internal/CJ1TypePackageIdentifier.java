@@ -17,12 +17,17 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.io7m.lanark.core.RDottedName;
 
+@JsonClassDescription("A type package identifier.")
 public record CJ1TypePackageIdentifier(
+  @JsonPropertyDescription("The package name.")
   @JsonProperty(value = "name", required = true)
   RDottedName name,
+  @JsonPropertyDescription("The package version.")
   @JsonProperty(value = "version", required = true)
   String version)
   implements CJ1ValueType

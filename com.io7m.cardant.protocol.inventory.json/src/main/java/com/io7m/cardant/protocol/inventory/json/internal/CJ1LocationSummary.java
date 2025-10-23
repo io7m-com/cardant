@@ -16,22 +16,30 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@JsonClassDescription("A location summary.")
 public record CJ1LocationSummary(
+  @JsonPropertyDescription("The location ID.")
   @JsonProperty(value = "id", required = true)
   UUID id,
+  @JsonPropertyDescription("The location parent.")
   @JsonProperty("parent")
   Optional<UUID> parent,
+  @JsonPropertyDescription("The location path.")
   @JsonProperty("path")
   List<String> path,
+  @JsonPropertyDescription("The location creation time.")
   @JsonProperty(value = "timeCreated", required = true)
   OffsetDateTime timeCreated,
+  @JsonPropertyDescription("The location most recent update time.")
   @JsonProperty(value = "timeUpdated", required = true)
   OffsetDateTime timeUpdated)
   implements CJ1ValueType

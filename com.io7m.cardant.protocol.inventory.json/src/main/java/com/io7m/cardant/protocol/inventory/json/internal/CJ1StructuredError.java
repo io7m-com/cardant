@@ -16,18 +16,25 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Map;
 import java.util.Optional;
 
+@JsonClassDescription("A structured error value.")
 public record CJ1StructuredError(
+  @JsonPropertyDescription("The error code.")
   @JsonProperty(value = "errorCode", required = true)
   String errorCode,
+  @JsonPropertyDescription("The error message.")
   @JsonProperty(value = "message", required = true)
   String message,
+  @JsonPropertyDescription("The error attributes.")
   @JsonProperty("attributes")
   Map<String, String> attributes,
+  @JsonPropertyDescription("The remediating action.")
   @JsonProperty("remediatingAction")
   Optional<String> remediatingAction)
   implements CJ1ValueType

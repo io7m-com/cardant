@@ -16,12 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseFileDelete")
+@JsonClassDescription("A response to FileDelete.")
 public record CJ1ResponseFileDelete(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

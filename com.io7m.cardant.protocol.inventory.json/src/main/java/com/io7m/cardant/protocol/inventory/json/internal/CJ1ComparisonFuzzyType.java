@@ -16,16 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonFuzzyType.Anything;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonFuzzyType.IsEqualTo;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonFuzzyType.IsNotEqualTo;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonFuzzyType.IsNotSimilarTo;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonFuzzyType.IsSimilarTo;
 
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
@@ -33,51 +25,19 @@ import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ComparisonFuz
   property = "@type"
 )
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = Anything.class, name = "Anything"),
-  @JsonSubTypes.Type(value = IsEqualTo.class, name = "IsEqualTo"),
-  @JsonSubTypes.Type(value = IsNotEqualTo.class, name = "IsNotEqualTo"),
-  @JsonSubTypes.Type(value = IsSimilarTo.class, name = "IsSimilarTo"),
-  @JsonSubTypes.Type(value = IsNotSimilarTo.class, name = "IsNotSimilarTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonFuzzyAnything.class, name = "Anything"),
+  @JsonSubTypes.Type(value = CJ1ComparisonFuzzyIsEqualTo.class, name = "IsEqualTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonFuzzyIsNotEqualTo.class, name = "IsNotEqualTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonFuzzyIsSimilarTo.class, name = "IsSimilarTo"),
+  @JsonSubTypes.Type(value = CJ1ComparisonFuzzyIsNotSimilarTo.class, name = "IsNotSimilarTo"),
 })
 public sealed interface CJ1ComparisonFuzzyType<T>
   extends CJ1ValueType
+  permits CJ1ComparisonFuzzyAnything,
+  CJ1ComparisonFuzzyIsEqualTo,
+  CJ1ComparisonFuzzyIsNotEqualTo,
+  CJ1ComparisonFuzzyIsNotSimilarTo,
+  CJ1ComparisonFuzzyIsSimilarTo
 {
-  @JsonTypeName("Anything")
-  record Anything<T>()
-    implements CJ1ComparisonFuzzyType<T>
-  {
 
-  }
-
-  @JsonTypeName("IsEqualTo")
-  record IsEqualTo<T>(
-    @JsonProperty(value = "value", required = true) T value)
-    implements CJ1ComparisonFuzzyType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsNotEqualTo")
-  record IsNotEqualTo<T>(
-    @JsonProperty(value = "value", required = true) T value)
-    implements CJ1ComparisonFuzzyType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsSimilarTo")
-  record IsSimilarTo<T>(
-    @JsonProperty(value = "value", required = true) T value)
-    implements CJ1ComparisonFuzzyType<T>
-  {
-
-  }
-
-  @JsonTypeName("IsNotSimilarTo")
-  record IsNotSimilarTo<T>(
-    @JsonProperty(value = "value", required = true) T value)
-    implements CJ1ComparisonFuzzyType<T>
-  {
-
-  }
 }

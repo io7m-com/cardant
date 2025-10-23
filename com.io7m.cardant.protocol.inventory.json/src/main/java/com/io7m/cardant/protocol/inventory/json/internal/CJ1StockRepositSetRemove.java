@@ -16,17 +16,22 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
+@JsonClassDescription("Remove from a set stock occurrence.")
 @JsonTypeName("SetRemove")
 public record CJ1StockRepositSetRemove(
-  @JsonProperty(value = "instance",required = true)
+  @JsonPropertyDescription("The stock occurrence.")
+  @JsonProperty(value = "instance", required = true)
   UUID instance,
-  @JsonProperty(value = "count",required = true)
-  long count)
+  @JsonPropertyDescription("The number of items to remove.")
+  @JsonProperty(value = "count", required = true)
+  CJ1UnsignedLong count)
   implements CJ1StockRepositType
 {
 

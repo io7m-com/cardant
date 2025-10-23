@@ -17,11 +17,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
+@JsonClassDescription("A response to TypePackageUninstall.")
 @JsonTypeName("ResponseTypePackageUninstall")
 public record CJ1ResponseTypePackageUninstall(
   @JsonProperty(value = "requestId", required = true)

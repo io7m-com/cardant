@@ -16,16 +16,18 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.UUID;
 
-@JsonTypeName("ItemGet")
+@JsonClassDescription("Retrieve an item.")
 public record CJ1CommandItemGet(
+  @JsonPropertyDescription("The item ID.")
   @JsonProperty(value = "id", required = true)
   UUID id)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

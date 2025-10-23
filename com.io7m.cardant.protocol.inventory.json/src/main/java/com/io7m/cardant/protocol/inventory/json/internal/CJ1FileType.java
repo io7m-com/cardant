@@ -16,16 +16,8 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * The type of files.
@@ -37,106 +29,12 @@ import java.util.UUID;
   property = "@type"
 )
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = CJ1FileType.CJ1FileWithoutData.class, name = "FileWithoutData"),
-  @JsonSubTypes.Type(value = CJ1FileType.CJ1FileWithData.class, name = "FileWithData")
+  @JsonSubTypes.Type(value = CJ1FileWithoutData.class, name = "FileWithoutData"),
+  @JsonSubTypes.Type(value = CJ1FileWithData.class, name = "FileWithData")
 })
 public sealed interface CJ1FileType
-  extends Comparable<CJ1FileType>, CJ1ValueType
+  extends CJ1ValueType
+  permits CJ1FileWithData, CJ1FileWithoutData
 {
-  UUID id();
 
-  String description();
-
-  String mediaType();
-
-  long size();
-
-  String hashAlgorithm();
-
-  String hashValue();
-
-  Optional<byte[]> dataOptional();
-
-  CJ1FileWithoutData withoutData();
-
-  @JsonDeserialize
-  @JsonSerialize
-  @JsonTypeName("FileWithoutData")
-  record CJ1FileWithoutData(
-    @JsonProperty(value = "id", required = true)
-    UUID id,
-    @JsonProperty(value = "description", required = true)
-    String description,
-    @JsonProperty(value = "mediaType", required = true)
-    String mediaType,
-    @JsonProperty(value = "size", required = true)
-    long size,
-    @JsonProperty(value = "hashAlgorithm", required = true)
-    String hashAlgorithm,
-    @JsonProperty(value = "hashValue", required = true)
-    String hashValue)
-    implements CJ1FileType
-  {
-    @Override
-    public Optional<byte[]> dataOptional()
-    {
-      return Optional.empty();
-    }
-
-    @Override
-    public CJ1FileWithoutData withoutData()
-    {
-      return this;
-    }
-  }
-
-  @JsonDeserialize
-  @JsonSerialize
-  @JsonTypeName("FileWithData")
-  record CJ1FileWithData(
-    @JsonProperty(value = "id", required = true)
-    UUID id,
-    @JsonProperty(value = "description", required = true)
-    String description,
-    @JsonProperty(value = "mediaType", required = true)
-    String mediaType,
-    @JsonProperty(value = "hashAlgorithm", required = true)
-    String hashAlgorithm,
-    @JsonProperty(value = "hashValue", required = true)
-    String hashValue,
-    @JsonProperty(value = "data", required = true)
-    byte[] data)
-    implements CJ1FileType
-  {
-    @Override
-    public long size()
-    {
-      return Integer.toUnsignedLong(this.data.length);
-    }
-
-    @Override
-    public Optional<byte[]> dataOptional()
-    {
-      return Optional.of(this.data);
-    }
-
-    @Override
-    public CJ1FileWithoutData withoutData()
-    {
-      return new CJ1FileWithoutData(
-        this.id,
-        this.description,
-        this.mediaType,
-        this.size(),
-        this.hashAlgorithm,
-        this.hashValue);
-    }
-  }
-
-  @Override
-  default int compareTo(
-    final CJ1FileType other)
-  {
-    return Comparator.comparing(CJ1FileType::id).compare(this, other);
-  }
 }

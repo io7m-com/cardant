@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandFileSearchBegin;
 
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1FileSearchParametersX.FILE_SEARCH_PARAMETERS;
@@ -28,6 +29,7 @@ public enum CJ1CommandFileSearchBeginX
   @Override
   public CAICommandFileSearchBegin toCore(
     final CJ1CommandFileSearchBegin m)
+    throws CAProtocolException
   {
     return new CAICommandFileSearchBegin(
       FILE_SEARCH_PARAMETERS.toCore(m.parameters())
@@ -37,6 +39,7 @@ public enum CJ1CommandFileSearchBeginX
   @Override
   public CJ1CommandFileSearchBegin toCJ1(
     final CAICommandFileSearchBegin m)
+    throws CAProtocolException
   {
     return new CJ1CommandFileSearchBegin(
       FILE_SEARCH_PARAMETERS.toCJ1(m.parameters())

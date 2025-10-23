@@ -17,13 +17,19 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 import java.util.UUID;
 
 public record CJ1StockOccurrenceSerial(
+  @JsonProperty(value = "instance", required = true)
   UUID instance,
+  @JsonProperty(value = "location", required = true)
   CJ1LocationSummary location,
+  @JsonProperty(value = "item", required = true)
   CJ1ItemSummary item,
+  @JsonProperty(value = "serials")
   List<CJ1ItemSerial> serials)
   implements CJ1StockOccurrenceType
 {

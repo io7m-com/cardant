@@ -34,8 +34,8 @@ public enum CJ1ResponseFileSearchX
   {
     return new CAIResponseFileSearch(
       m.requestId(),
-      new CJ1PageX<CJ1FileType.CJ1FileWithoutData, CAFileType.CAFileWithoutData>(
-        c -> (CJ1FileType.CJ1FileWithoutData) FILE.toCJ1(c),
+      new CJ1PageX<CJ1FileWithoutData, CAFileType.CAFileWithoutData>(
+        c -> (CJ1FileWithoutData) FILE.toCJ1(c),
         c -> (CAFileType.CAFileWithoutData) FILE.toCore(c)
       ).toCore(m.results())
     );
@@ -48,8 +48,8 @@ public enum CJ1ResponseFileSearchX
   {
     return new CJ1ResponseFileSearch(
       m.requestId(),
-      new CJ1PageX<CJ1FileType.CJ1FileWithoutData, CAFileType.CAFileWithoutData>(
-        c -> (CJ1FileType.CJ1FileWithoutData) FILE.toCJ1(c),
+      new CJ1PageX<CJ1FileWithoutData, CAFileType.CAFileWithoutData>(
+        c -> (CJ1FileWithoutData) FILE.toCJ1(c),
         c -> (CAFileType.CAFileWithoutData) FILE.toCore(c)
       ).toCJ1(m.data())
     );

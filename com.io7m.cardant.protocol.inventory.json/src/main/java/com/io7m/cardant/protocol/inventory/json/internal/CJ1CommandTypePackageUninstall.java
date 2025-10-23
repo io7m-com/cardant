@@ -16,14 +16,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("TypePackageUninstall")
+@JsonClassDescription("Uninstall a type package.")
 public record CJ1CommandTypePackageUninstall(
+  @JsonPropertyDescription("The type package uninstall parameters.")
   @JsonProperty(value = "uninstall", required = true)
   CJ1TypePackageUninstall uninstall)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

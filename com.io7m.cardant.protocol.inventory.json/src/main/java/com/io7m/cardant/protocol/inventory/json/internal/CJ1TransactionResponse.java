@@ -16,13 +16,17 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.List;
 
+@JsonClassDescription("A transaction response.")
 @JsonTypeName("TransactionResponse")
 public record CJ1TransactionResponse(
+  @JsonPropertyDescription("The command responses.")
   @JsonProperty(value = "responses", required = true)
   List<CJ1ResponseType> responses)
   implements CJ1MessageType

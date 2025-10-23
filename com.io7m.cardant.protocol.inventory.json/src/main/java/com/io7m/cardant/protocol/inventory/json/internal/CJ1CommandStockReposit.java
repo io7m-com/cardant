@@ -16,14 +16,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("StockReposit")
+@JsonClassDescription("Execute a stock reposition.")
 public record CJ1CommandStockReposit(
+  @JsonPropertyDescription("The stock reposition.")
   @JsonProperty(value = "reposit", required = true)
   CJ1StockRepositType reposit)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

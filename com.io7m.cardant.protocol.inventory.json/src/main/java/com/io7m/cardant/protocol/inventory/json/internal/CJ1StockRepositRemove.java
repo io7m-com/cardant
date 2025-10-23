@@ -16,11 +16,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
+@JsonClassDescription("Remove the given stock occurrence.")
 @JsonTypeName("Remove")
 public record CJ1StockRepositRemove(
   @JsonProperty(value = "instance", required = true)

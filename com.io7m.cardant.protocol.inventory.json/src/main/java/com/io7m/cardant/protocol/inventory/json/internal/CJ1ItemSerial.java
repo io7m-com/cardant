@@ -17,10 +17,18 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.io7m.lanark.core.RDottedName;
 
+@JsonClassDescription("A serial number.")
 public record CJ1ItemSerial(
+  @JsonPropertyDescription("The serial number type.")
+  @JsonProperty(value = "type", required = true)
   RDottedName type,
+  @JsonPropertyDescription("The serial number value.")
+  @JsonProperty(value = "value", required = true)
   String value)
 {
 

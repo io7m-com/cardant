@@ -16,16 +16,18 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.UUID;
 
-@JsonTypeName("RolesGet")
+@JsonClassDescription("Get roles assigned to a user.")
 public record CJ1CommandRolesGet(
+  @JsonPropertyDescription("The user ID.")
   @JsonProperty(value = "user", required = true)
   UUID user)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

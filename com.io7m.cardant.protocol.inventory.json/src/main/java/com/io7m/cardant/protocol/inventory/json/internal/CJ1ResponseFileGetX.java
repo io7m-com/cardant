@@ -45,7 +45,7 @@ public enum CJ1ResponseFileGetX
   {
     return new CJ1ResponseFileGet(
       m.requestId(),
-      (CJ1FileType.CJ1FileWithoutData) FILE.toCJ1(m.data())
+      (CJ1FileWithoutData) FILE.toCJ1(m.data())
     );
   }
 }

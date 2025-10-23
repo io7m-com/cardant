@@ -17,19 +17,22 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Set;
 import java.util.UUID;
 
-@JsonTypeName("ItemMetadataRemove")
+@JsonClassDescription("Remove metadata from an item.")
 public record CJ1CommandItemMetadataRemove(
+  @JsonPropertyDescription("The item ID.")
   @JsonProperty(value = "item", required = true)
   UUID item,
+  @JsonPropertyDescription("The item metadata names.")
   @JsonProperty(value = "metadataNames", required = true)
   Set<CJ1TypeRecordFieldIdentifier> metadataNames)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

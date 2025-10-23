@@ -17,8 +17,10 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.io7m.lanark.core.RDottedName;
 
+@JsonClassDescription("A type record identifier.")
 public record CJ1TypeRecordIdentifier(
   RDottedName packageName,
   RDottedName typeName)

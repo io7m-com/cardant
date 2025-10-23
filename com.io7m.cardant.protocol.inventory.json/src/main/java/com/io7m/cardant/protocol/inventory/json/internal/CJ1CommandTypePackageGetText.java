@@ -17,14 +17,16 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@JsonTypeName("TypePackageGetText")
+@JsonClassDescription("Get the text of a type package.")
 public record CJ1CommandTypePackageGetText(
+  @JsonPropertyDescription("The type package identifier.")
   @JsonProperty(value = "identifier", required = true)
   CJ1TypePackageIdentifier identifier)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

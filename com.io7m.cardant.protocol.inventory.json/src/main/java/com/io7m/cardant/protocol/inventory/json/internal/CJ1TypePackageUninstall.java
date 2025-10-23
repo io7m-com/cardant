@@ -17,11 +17,16 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+@JsonClassDescription("Parameters for uninstalling type packages.")
 public record CJ1TypePackageUninstall(
+  @JsonPropertyDescription("The type removal behavior.")
   @JsonProperty(value = "typeRemovalBehavior", required = true)
   CJ1TypePackageTypeRemovalBehavior typeRemovalBehavior,
+  @JsonPropertyDescription("The type package identifier.")
   @JsonProperty(value = "packageIdentifier", required = true)
   CJ1TypePackageIdentifier packageIdentifier)
   implements CJ1ValueType

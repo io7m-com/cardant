@@ -16,8 +16,6 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import java.util.UUID;
-
 /**
  * The type of responses in the Inventory protocol.
  */
@@ -64,9 +62,5 @@ public sealed interface CJ1ResponseType
   CJ1ResponseTypePackageUninstall,
   CJ1ResponseTypePackageUpgrade
 {
-  /**
-   * @return The ID of the request that yielded this response
-   */
 
-  UUID requestId();
 }

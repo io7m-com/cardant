@@ -17,17 +17,6 @@
 package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.model.CAMetadataValueMatchType;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.MonetaryMatchType.WithCurrency;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.TextMatchType.ExactTextValue;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.TextMatchType.Search;
-import com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.TimeMatchType.WithinRange;
-
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.AnyValue;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.IntegralMatchType;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.MonetaryMatchType;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.RealMatchType;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.TextMatchType;
-import static com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataValueMatchType.TimeMatchType;
 
 public enum CJ1MetadataValueMatchX
   implements CJ1SerialBijectionType<CJ1MetadataValueMatchType, CAMetadataValueMatchType>
@@ -52,32 +41,32 @@ public enum CJ1MetadataValueMatchX
     final CJ1MetadataValueMatchType m)
   {
     return switch (m) {
-      case final AnyValue ignored -> {
+      case final CJ1MetadataValueMatchAnyValue ignored -> {
         yield CAMetadataValueMatchType.AnyValue.ANY_VALUE;
       }
-      case final IntegralMatchType mm -> {
+      case final CJ1MetadataValueMatchIntegralType mm -> {
         yield validateMetadataValueMatchIntegral(mm);
       }
-      case final MonetaryMatchType mm -> {
+      case final CJ1MetadataValueMatchMonetaryType mm -> {
         yield validateMetadataValueMatchMonetary(mm);
       }
-      case final RealMatchType mm -> {
+      case final CJ1MetadataValueMatchRealType mm -> {
         yield validateMetadataValueMatchReal(mm);
       }
-      case final TextMatchType mm -> {
+      case final CJ1MetadataValueMatchTextType mm -> {
         yield validateMetadataValueMatchText(mm);
       }
-      case final TimeMatchType mm -> {
+      case final CJ1MetadataValueMatchTimeType mm -> {
         yield validateMetadataValueMatchTime(mm);
       }
     };
   }
 
   private static CAMetadataValueMatchType validateMetadataValueMatchTime(
-    final TimeMatchType mm)
+    final CJ1MetadataValueMatchTimeType mm)
   {
     return switch (mm) {
-      case final WithinRange withinRange -> {
+      case final CJ1MetadataValueMatchTimeWithinRange withinRange -> {
         yield new CAMetadataValueMatchType.TimeMatchType.WithinRange(
           withinRange.lower(),
           withinRange.upper()
@@ -87,25 +76,25 @@ public enum CJ1MetadataValueMatchX
   }
 
   private static CAMetadataValueMatchType validateMetadataValueMatchText(
-    final TextMatchType mm)
+    final CJ1MetadataValueMatchTextType mm)
   {
     return switch (mm) {
-      case final ExactTextValue exactTextValue -> {
+      case final CJ1MetadataValueMatchTextExact exactTextValue -> {
         yield new CAMetadataValueMatchType.TextMatchType.ExactTextValue(
           exactTextValue.text()
         );
       }
-      case final Search search -> {
+      case final CJ1MetadataValueMatchTextSearch search -> {
         yield new CAMetadataValueMatchType.TextMatchType.Search(search.query());
       }
     };
   }
 
   private static CAMetadataValueMatchType validateMetadataValueMatchReal(
-    final RealMatchType mm)
+    final CJ1MetadataValueMatchRealType mm)
   {
     return switch (mm) {
-      case final RealMatchType.WithinRange withinRange -> {
+      case final CJ1MetadataValueMatchRealWithinRange withinRange -> {
         yield new CAMetadataValueMatchType.RealMatchType.WithinRange(
           withinRange.lower(),
           withinRange.upper()
@@ -115,14 +104,14 @@ public enum CJ1MetadataValueMatchX
   }
 
   private static CAMetadataValueMatchType validateMetadataValueMatchMonetary(
-    final MonetaryMatchType mm)
+    final CJ1MetadataValueMatchMonetaryType mm)
   {
     return switch (mm) {
-      case final WithCurrency withCurrency -> {
+      case final CJ1MetadataValueMatchMonetaryWithCurrency withCurrency -> {
         yield new CAMetadataValueMatchType.MonetaryMatchType.WithCurrency(
           withCurrency.currency());
       }
-      case final MonetaryMatchType.WithinRange withinRange -> {
+      case final CJ1MetadataValueMatchMonetaryWithinRange withinRange -> {
         yield new CAMetadataValueMatchType.MonetaryMatchType.WithinRange(
           withinRange.lower(),
           withinRange.upper()
@@ -132,10 +121,10 @@ public enum CJ1MetadataValueMatchX
   }
 
   private static CAMetadataValueMatchType validateMetadataValueMatchIntegral(
-    final IntegralMatchType mm)
+    final CJ1MetadataValueMatchIntegralType mm)
   {
     return switch (mm) {
-      case final IntegralMatchType.WithinRange withinRange -> {
+      case final CJ1MetadataValueMatchIntegralWithinRange withinRange -> {
         yield new CAMetadataValueMatchType.IntegralMatchType.WithinRange(
           withinRange.lower(),
           withinRange.upper());
@@ -173,12 +162,12 @@ public enum CJ1MetadataValueMatchX
   {
     return switch (m) {
       case final CAMetadataValueMatchType.TextMatchType.ExactTextValue exactTextValue -> {
-        yield new ExactTextValue(
+        yield new CJ1MetadataValueMatchTextExact(
           exactTextValue.text()
         );
       }
       case final CAMetadataValueMatchType.TextMatchType.Search search -> {
-        yield new Search(
+        yield new CJ1MetadataValueMatchTextSearch(
           search.query()
         );
       }
@@ -190,12 +179,12 @@ public enum CJ1MetadataValueMatchX
   {
     return switch (m) {
       case final CAMetadataValueMatchType.MonetaryMatchType.WithCurrency withCurrency -> {
-        yield new WithCurrency(
+        yield new CJ1MetadataValueMatchMonetaryWithCurrency(
           withCurrency.currency()
         );
       }
       case final CAMetadataValueMatchType.MonetaryMatchType.WithinRange withinRange -> {
-        yield new MonetaryMatchType.WithinRange(
+        yield new CJ1MetadataValueMatchMonetaryWithinRange(
           withinRange.lower(),
           withinRange.upper()
         );
@@ -208,7 +197,7 @@ public enum CJ1MetadataValueMatchX
   {
     return switch (m) {
       case final CAMetadataValueMatchType.IntegralMatchType.WithinRange withinRange -> {
-        yield new IntegralMatchType.WithinRange(
+        yield new CJ1MetadataValueMatchIntegralWithinRange(
           withinRange.lower(),
           withinRange.upper());
       }
@@ -220,7 +209,7 @@ public enum CJ1MetadataValueMatchX
   {
     return switch (m) {
       case final CAMetadataValueMatchType.RealMatchType.WithinRange withinRange -> {
-        yield new RealMatchType.WithinRange(
+        yield new CJ1MetadataValueMatchRealWithinRange(
           withinRange.lower(),
           withinRange.upper());
       }
@@ -232,7 +221,7 @@ public enum CJ1MetadataValueMatchX
   {
     return switch (m) {
       case final CAMetadataValueMatchType.TimeMatchType.WithinRange withinRange -> {
-        yield new WithinRange(
+        yield new CJ1MetadataValueMatchTimeWithinRange(
           withinRange.lower(),
           withinRange.upper());
       }
@@ -244,7 +233,7 @@ public enum CJ1MetadataValueMatchX
   {
     return switch (m) {
       case ANY_VALUE -> {
-        yield AnyValue.ANY_VALUE;
+        yield CJ1MetadataValueMatchAnyValue.ANY_VALUE;
       }
     };
   }

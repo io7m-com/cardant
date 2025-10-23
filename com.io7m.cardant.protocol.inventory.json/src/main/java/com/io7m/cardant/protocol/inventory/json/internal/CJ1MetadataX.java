@@ -31,29 +31,29 @@ public enum CJ1MetadataX
     final CJ1MetadataType m)
   {
     return switch (m) {
-      case final CJ1MetadataType.Integral integral -> {
+      case final CJ1MetadataIntegral integral -> {
         yield new CAMetadataType.Integral(
           TYPE_RECORD_FIELD_IDENTIFIER.toCore(integral.name()), integral.value()
         );
       }
-      case final CJ1MetadataType.Monetary monetary -> {
+      case final CJ1MetadataMonetary monetary -> {
         yield new CAMetadataType.Monetary(
           TYPE_RECORD_FIELD_IDENTIFIER.toCore(monetary.name()),
           monetary.value(),
           monetary.currency()
         );
       }
-      case final CJ1MetadataType.Real real -> {
+      case final CJ1MetadataReal real -> {
         yield new CAMetadataType.Real(
           TYPE_RECORD_FIELD_IDENTIFIER.toCore(real.name()), real.value()
         );
       }
-      case final CJ1MetadataType.Text text -> {
+      case final CJ1MetadataText text -> {
         yield new CAMetadataType.Text(
           TYPE_RECORD_FIELD_IDENTIFIER.toCore(text.name()), text.value()
         );
       }
-      case final CJ1MetadataType.Time time -> {
+      case final CJ1MetadataTime time -> {
         yield new CAMetadataType.Time(
           TYPE_RECORD_FIELD_IDENTIFIER.toCore(time.name()), time.value()
         );
@@ -67,32 +67,32 @@ public enum CJ1MetadataX
   {
     return switch (m) {
       case final CAMetadataType.Integral integral -> {
-        yield new CJ1MetadataType.Integral(
+        yield new CJ1MetadataIntegral(
           TYPE_RECORD_FIELD_IDENTIFIER.toCJ1(integral.name()),
           integral.value()
         );
       }
       case final CAMetadataType.Monetary monetary -> {
-        yield new CJ1MetadataType.Monetary(
+        yield new CJ1MetadataMonetary(
           TYPE_RECORD_FIELD_IDENTIFIER.toCJ1(monetary.name()),
           monetary.value(),
           monetary.currency()
         );
       }
       case final CAMetadataType.Real real -> {
-        yield new CJ1MetadataType.Real(
+        yield new CJ1MetadataReal(
           TYPE_RECORD_FIELD_IDENTIFIER.toCJ1(real.name()),
           real.value()
         );
       }
       case final CAMetadataType.Text text -> {
-        yield new CJ1MetadataType.Text(
+        yield new CJ1MetadataText(
           TYPE_RECORD_FIELD_IDENTIFIER.toCJ1(text.name()),
           text.value()
         );
       }
       case final CAMetadataType.Time time -> {
-        yield new CJ1MetadataType.Time(
+        yield new CJ1MetadataTime(
           TYPE_RECORD_FIELD_IDENTIFIER.toCJ1(time.name()),
           time.value()
         );

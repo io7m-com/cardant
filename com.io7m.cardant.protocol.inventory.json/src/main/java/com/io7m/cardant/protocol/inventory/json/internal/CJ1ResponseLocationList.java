@@ -17,13 +17,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.Map;
 import java.util.UUID;
 
-@JsonTypeName("ResponseLocationList")
+@JsonClassDescription("A response to LocationList.")
 public record CJ1ResponseLocationList(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

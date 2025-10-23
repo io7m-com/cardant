@@ -16,12 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.UUID;
 
-@JsonTypeName("ResponseFilePut")
+@JsonClassDescription("A response to FilePut.")
 public record CJ1ResponseFilePut(
   @JsonProperty(value = "requestId", required = true)
   UUID requestId,

@@ -16,19 +16,22 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.Set;
 import java.util.UUID;
 
-@JsonTypeName("RolesRevoke")
+@JsonClassDescription("Revoke roles from a user.")
 public record CJ1CommandRolesRevoke(
+  @JsonPropertyDescription("The user ID.")
   @JsonProperty(value = "user", required = true)
   UUID user,
+  @JsonPropertyDescription("The roles.")
   @JsonProperty("roles")
   Set<String> roles)
-  implements CJ1MessageType
+  implements CJ1CommandType
 {
 
 }

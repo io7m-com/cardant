@@ -31,19 +31,19 @@ public enum CJ1MetadataElementMatchX
     final CJ1MetadataElementMatchType m)
   {
     return switch (m) {
-      case final CJ1MetadataElementMatchType.And and -> {
+      case final CJ1MetadataElementMatchAnd and -> {
         yield new CAMetadataElementMatchType.And(
           METADATA_MATCH.toCore(and.e0()),
           METADATA_MATCH.toCore(and.e1())
         );
       }
-      case final CJ1MetadataElementMatchType.Or or -> {
+      case final CJ1MetadataElementMatchOr or -> {
         yield new CAMetadataElementMatchType.Or(
           METADATA_MATCH.toCore(or.e0()),
           METADATA_MATCH.toCore(or.e1())
         );
       }
-      case final CJ1MetadataElementMatchType.Specific specific -> {
+      case final CJ1MetadataElementMatchSpecific specific -> {
         yield new CAMetadataElementMatchType.Specific(
           new CJ1ComparisonExactX<RDottedName>().toCore(specific.packageName()),
           new CJ1ComparisonExactX<String>().toCore(specific.typeName()),
@@ -60,19 +60,19 @@ public enum CJ1MetadataElementMatchX
   {
     return switch (m) {
       case final CAMetadataElementMatchType.And and -> {
-        yield new CJ1MetadataElementMatchType.And(
+        yield new CJ1MetadataElementMatchAnd(
           METADATA_MATCH.toCJ1(and.e0()),
           METADATA_MATCH.toCJ1(and.e1())
         );
       }
       case final CAMetadataElementMatchType.Or or -> {
-        yield new CJ1MetadataElementMatchType.Or(
+        yield new CJ1MetadataElementMatchOr(
           METADATA_MATCH.toCJ1(or.e0()),
           METADATA_MATCH.toCJ1(or.e1())
         );
       }
       case final CAMetadataElementMatchType.Specific specific -> {
-        yield new CJ1MetadataElementMatchType.Specific(
+        yield new CJ1MetadataElementMatchSpecific(
           new CJ1ComparisonExactX<RDottedName>().toCJ1(specific.packageName()),
           new CJ1ComparisonExactX<String>().toCJ1(specific.typeName()),
           new CJ1ComparisonExactX<String>().toCJ1(specific.fieldName()),

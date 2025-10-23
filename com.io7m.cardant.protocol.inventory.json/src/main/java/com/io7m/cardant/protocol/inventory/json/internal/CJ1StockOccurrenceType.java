@@ -19,8 +19,6 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.util.UUID;
-
 
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
@@ -35,21 +33,5 @@ public sealed interface CJ1StockOccurrenceType
   extends CJ1ValueType
   permits CJ1StockOccurrenceSerial, CJ1StockOccurrenceSet
 {
-  /**
-   * @return The instance
-   */
 
-  UUID instance();
-
-  /**
-   * @return The location
-   */
-
-  CJ1LocationSummary location();
-
-  /**
-   * @return The item
-   */
-
-  CJ1ItemSummary item();
 }

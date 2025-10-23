@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandStockReposit;
 
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1StockRepositTypeX.STOCK_REPOSIT_TYPE;
@@ -28,6 +29,7 @@ public enum CJ1CommandStockRepositX
   @Override
   public CAICommandStockReposit toCore(
     final CJ1CommandStockReposit m)
+    throws CAProtocolException
   {
     return new CAICommandStockReposit(
       STOCK_REPOSIT_TYPE.toCore(m.reposit())
@@ -37,6 +39,7 @@ public enum CJ1CommandStockRepositX
   @Override
   public CJ1CommandStockReposit toCJ1(
     final CAICommandStockReposit m)
+    throws CAProtocolException
   {
     return new CJ1CommandStockReposit(
       STOCK_REPOSIT_TYPE.toCJ1(m.reposit())

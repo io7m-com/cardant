@@ -16,6 +16,7 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
+import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemSearchParametersX.ITEM_SEARCH_PARAMETERS;
@@ -28,6 +29,7 @@ public enum CJ1CommandItemSearchBeginX
   @Override
   public CAICommandItemSearchBegin toCore(
     final CJ1CommandItemSearchBegin m)
+    throws CAProtocolException
   {
     return new CAICommandItemSearchBegin(
       ITEM_SEARCH_PARAMETERS.toCore(m.parameters())
@@ -37,6 +39,7 @@ public enum CJ1CommandItemSearchBeginX
   @Override
   public CJ1CommandItemSearchBegin toCJ1(
     final CAICommandItemSearchBegin m)
+    throws CAProtocolException
   {
     return new CJ1CommandItemSearchBegin(
       ITEM_SEARCH_PARAMETERS.toCJ1(m.parameters())

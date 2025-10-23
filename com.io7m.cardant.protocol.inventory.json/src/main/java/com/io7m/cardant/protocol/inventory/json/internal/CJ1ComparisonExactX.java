@@ -31,13 +31,13 @@ public final class CJ1ComparisonExactX<T>
     final CJ1ComparisonExactType<T> m)
   {
     return switch (m) {
-      case final CJ1ComparisonExactType.Anything<T> v -> {
+      case final CJ1ComparisonExactAnything<T> v -> {
         yield new CAComparisonExactType.Anything<>();
       }
-      case final CJ1ComparisonExactType.IsEqualTo<T> v -> {
+      case final CJ1ComparisonExactIsEqualTo<T> v -> {
         yield new CAComparisonExactType.IsEqualTo<>(v.value());
       }
-      case final CJ1ComparisonExactType.IsNotEqualTo<T> v -> {
+      case final CJ1ComparisonExactIsNotEqualTo<T> v -> {
         yield new CAComparisonExactType.IsNotEqualTo<>(v.value());
       }
     };
@@ -49,13 +49,13 @@ public final class CJ1ComparisonExactX<T>
   {
     return switch (m) {
       case final CAComparisonExactType.Anything<T> v -> {
-        yield new CJ1ComparisonExactType.Anything<>();
+        yield new CJ1ComparisonExactAnything<>();
       }
       case final CAComparisonExactType.IsEqualTo<T> v -> {
-        yield new CJ1ComparisonExactType.IsEqualTo<>(v.value());
+        yield new CJ1ComparisonExactIsEqualTo<>(v.value());
       }
       case final CAComparisonExactType.IsNotEqualTo<T> v -> {
-        yield new CJ1ComparisonExactType.IsNotEqualTo<>(v.value());
+        yield new CJ1ComparisonExactIsNotEqualTo<>(v.value());
       }
     };
   }
