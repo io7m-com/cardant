@@ -59,6 +59,9 @@ public sealed interface CAMetadataElementMatchType
      * The conjunction of {@code e0} and {@code e1}. The resulting set of
      * metadata elements is the intersection of those matched by both
      * {@code e0} and {@code e1}.
+     *
+     * @param e0 The left match expression
+     * @param e1 The right match expression
      */
 
     public And
@@ -84,6 +87,9 @@ public sealed interface CAMetadataElementMatchType
     /**
      * The disjunction of {@code e0} and {@code e1}. The resulting set of
      * metadata elements is the union of those matched by {@code e0} or {@code e1}.
+     *
+     * @param e0 The left match expression
+     * @param e1 The right match expression
      */
 
     public Or
@@ -111,6 +117,11 @@ public sealed interface CAMetadataElementMatchType
   {
     /**
      * Match a specific metadata element.
+     *
+     * @param packageName The metadata type package name
+     * @param typeName    The metadata type record name
+     * @param fieldName   The metadata type record field name
+     * @param value       The value
      */
 
     public Specific

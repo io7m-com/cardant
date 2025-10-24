@@ -17,6 +17,15 @@
 package com.io7m.cardant.server.inventory.v1;
 
 import com.io7m.cardant.server.http.CAHTTPRequestTimeFilter;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerCommand;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerFallback;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerFileDownload;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerFileUpload;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerHealth;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerLogin;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerTransaction;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerVersion;
+import com.io7m.cardant.server.inventory.v1.internal.CA1HandlerVersions;
 import com.io7m.cardant.server.service.clock.CAServerClock;
 import com.io7m.cardant.server.service.configuration.CAConfigurationServiceType;
 import com.io7m.cardant.server.service.telemetry.api.CAMetricsServiceType;
@@ -102,7 +111,8 @@ public final class CA1Server
           "/inventory/1/0/file-download",
           new CA1HandlerFileDownload(services))
         .get("/version", new CA1HandlerVersion(services))
-        .get("/health", new CA1HandlerHealth(services));
+        .get("/health", new CA1HandlerHealth(services))
+        .any("/*", new CA1HandlerFallback(services));
 
     final var webServerBuilder =
       WebServerConfig.builder();

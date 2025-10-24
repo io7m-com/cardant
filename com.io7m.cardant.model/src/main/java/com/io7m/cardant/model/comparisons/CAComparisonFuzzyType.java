@@ -51,6 +51,8 @@ public sealed interface CAComparisonFuzzyType<T>
   {
     /**
      * Match a value exactly.
+     *
+     * @param value The value
      */
 
     public IsEqualTo
@@ -71,6 +73,8 @@ public sealed interface CAComparisonFuzzyType<T>
   {
     /**
      * Match a value exactly.
+     *
+     * @param value The value
      */
 
     public IsNotEqualTo
@@ -91,6 +95,8 @@ public sealed interface CAComparisonFuzzyType<T>
   {
     /**
      * Match similar values.
+     *
+     * @param value The value
      */
 
     public IsSimilarTo
@@ -111,6 +117,8 @@ public sealed interface CAComparisonFuzzyType<T>
   {
     /**
      * Match similar values.
+     *
+     * @param value The value
      */
 
     public IsNotSimilarTo

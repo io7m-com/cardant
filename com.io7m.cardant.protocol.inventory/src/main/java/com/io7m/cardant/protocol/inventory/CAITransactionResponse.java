@@ -20,14 +20,17 @@ package com.io7m.cardant.protocol.inventory;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * A response to a transaction.
  *
+ * @param requestId The request ID
  * @param responses The response for each executed command
  */
 
 public record CAITransactionResponse(
+  UUID requestId,
   List<CAIResponseType> responses)
   implements CAIMessageType
 {
@@ -39,6 +42,7 @@ public record CAITransactionResponse(
 
   public CAITransactionResponse
   {
+    Objects.requireNonNull(requestId, "requestId");
     Objects.requireNonNull(responses, "responses");
   }
 

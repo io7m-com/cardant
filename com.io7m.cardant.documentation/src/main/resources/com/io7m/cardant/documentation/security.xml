@@ -13,6 +13,5 @@
   </Section>
 
   <xi:include href="sec-monitoring.xml"/>
-  <xi:include href="sec-general.xml"/>
 
 </Section>

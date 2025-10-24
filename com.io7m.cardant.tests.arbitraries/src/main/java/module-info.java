@@ -105,6 +105,8 @@ import com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageInstall;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageSearch;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageUninstall;
 import com.io7m.cardant.tests.arbitraries.CAArbResponseTypePackageUpgrade;
+import com.io7m.cardant.tests.arbitraries.CAArbTransaction;
+import com.io7m.cardant.tests.arbitraries.CAArbTransactionResponse;
 import com.io7m.cardant.tests.arbitraries.CAArbTypePackageUninstall;
 import com.io7m.cardant.tests.arbitraries.model.CAArbAttachment;
 import com.io7m.cardant.tests.arbitraries.model.CAArbAttachmentKey;
@@ -220,6 +222,8 @@ module com.io7m.cardant.tests.arbitraries
   uses ArbitraryProvider;
 
   provides ArbitraryProvider with
+    CAArbTransaction,
+    CAArbTransactionResponse,
     CAArbStockInstanceID,
     CAArbLocationName,
     CAArbLocationPath,

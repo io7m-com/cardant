@@ -20,7 +20,7 @@ import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
 import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
-import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ public final class CAMessageServicesV1Test
   @Test
   public void testIdentifier()
   {
-    LOG.debug("{}", CAI1Messages.protocolId());
+    LOG.debug("{}", CAIJ1Messages.protocolId());
   }
 
   @Property(tries = 3_000)
@@ -52,7 +52,7 @@ public final class CAMessageServicesV1Test
     LOG.debug("Check {}", command.getClass().getCanonicalName());
 
     final var messages =
-      new CAI1Messages();
+      new CAIJ1Messages();
     final var serialized =
       messages.serialize(command);
     final var result =
@@ -70,7 +70,7 @@ public final class CAMessageServicesV1Test
     LOG.debug("Check {}", response.getClass().getCanonicalName());
 
     final var messages =
-      new CAI1Messages();
+      new CAIJ1Messages();
     final var serialized =
       messages.serialize(response);
     final var result =

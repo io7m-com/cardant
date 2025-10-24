@@ -113,6 +113,8 @@ public sealed interface CADatabaseQueriesLocationsType
     {
       /**
        * Parameters for the operation.
+       *
+       * @param includeDeleted The deleted state
        */
 
       public Parameters

@@ -9,11 +9,11 @@
     <Paragraph>
       The <Link target="3dff8219-1792-41a3-bd8b-797efe61348c">Inventory API</Link> service exposes one or more versions
       of the <Term type="term">Inventory</Term> protocol. The service uses the
-      <LinkExternal target="https://www.github.com/io7m-com/verdant">verdant</LinkExternal>
+      <LinkExternal target="https://www.github.com/io7m-com/ventrad">ventrad</LinkExternal>
       protocol to advertise which versions of the <Term type="term">Inventory</Term> protocol are available. Executing a
       <Term type="function">GET</Term>
       request to the root endpoint will yield a
-      <Term type="package">verdant</Term>
+      <Term type="package">ventrad</Term>
       message showing which versions of the <Term type="term">Inventory</Term> protocol are available. The
       <Term type="term">Inventory</Term>
       protocol is assigned the protocol identifier <Term type="constant">8ee23158-f8db-317a-a58b-45bd9d702040</Term>.
@@ -22,12 +22,20 @@
       As an example, the following shows that the <Term type="term">Inventory</Term> protocol version 1 is available at
       <Term type="expression">/inventory/1/0/</Term>:
     </Paragraph>
-    <FormalItem title="Verdant Example">
-      <Verbatim><![CDATA[$ curl https://cardant.example.com:30000/ | hexdump
-0000:0000  00 00 00 01 00 00 00 01  8e e2 31 58 f8 db 31 7a  |..........1X..1z|
-0000:0010  a5 8b 45 bd 9d 70 20 40  00 00 00 01 00 00 00 00  |..E..p @........|
-0000:0020  00 00 00 0f 2f 69 6e 76  65 6e 74 6f 72 79 2f 31  |..../inventory/1|
-0000:0030  2f 30 2f                                          |/0/|
+    <FormalItem title="Ventrad Example">
+      <Verbatim><![CDATA[$ curl https://cardant.example.com:30000/ | jq
+{
+  "%Schema": "urn:com.io7m.ventrad:1",
+  "Protocols": [
+    {
+      "Id": "8ee23158-f8db-317a-a58b-45bd9d702040",
+      "VersionMajor": 1,
+      "VersionMinor": 0,
+      "Endpoint": "/inventory/1/0/",
+      "Description": "Cardant Inventory v1.0"
+    }
+  ]
+}
 ]]></Verbatim>
     </FormalItem>
   </Subsection>
@@ -50,29 +58,134 @@
   <Subsection title="Version 1.0">
     <Subsection title="Encoding">
       <Paragraph>
-        The version 1 Inventory protocol uses
-        <LinkExternal target="https://www.io7m.com/software/cedarbridge">cedarbridge</LinkExternal>
-        encoded messages over HTTP(s).
+        The version 1 Inventory protocol uses JSON-encoded messages over HTTP(s).
       </Paragraph>
     </Subsection>
 
     <Subsection title="Login"
                 id="5c7f8022-1270-4f31-921e-843d91b58fc8">
       <Paragraph>
-        Send an <Term type="type">CAI1CommandLogin</Term> command to <Term type="expression">/inventory/1/0/login</Term>.
+        Send a <Term type="type">CJ1CommandLogin</Term> command to <Term type="expression">/inventory/1/0/login</Term>.
         If the login succeeds, a cookie named <Term type="expression">CARDANT_INVENTORY_SESSION</Term> will be set. This
         cookie must be included with all subsequent requests.
       </Paragraph>
+      <FormalItem title="Login Example">
+        <Verbatim><![CDATA[
+$ cat message.json
+{
+  "@type": "Login",
+  "userName": "example",
+  "password": "validpassword"
+}
+
+$ curl -c cookies.txt -d @message.json http://cardant.example.com:30000/inventory/1/0/login | jq
+{
+  "@type": "ResponseLogin",
+  "requestId": "23d56c39-9582-42af-a3a3-7d94bf944f35",
+  "userId": "57733ee9-2c62-4b62-bd7f-b5bbc9cd915a"
+}
+
+$ cat cookies.txt
+cardant.example.com FALSE /inventory/1/0/ FALSE 1761297157 CARDANT_INVENTORY_SESSION 47E3D6E4133D04FD33125F5A3598B79089F7A7DA3AC507ADB13DAEF12934B88C
+]]></Verbatim>
+      </FormalItem>
     </Subsection>
 
     <Subsection title="Commands">
       <Paragraph>
         After <Link target="5c7f8022-1270-4f31-921e-843d91b58fc8">logging in successfully</Link>, send commands of type
-        <Term type="type">CAI1Command*</Term>
+        <Term type="type">CJ1CommandType</Term>
         to <Term type="expression">/inventory/1/0/command</Term>. Failed commands will yield a value of
-        type <Term type="type">CAI1ResponseError</Term>, whilst successful results will yield values of
-        type <Term type="type">CAI1Response*</Term>.
+        type <Term type="type">CJ1ResponseError</Term>, whilst successful results will yield values of
+        type <Term type="type">CJ1Response*</Term>.
       </Paragraph>
+      <FormalItem title="Command Example">
+        <Verbatim><![CDATA[
+$ cat message.json
+{
+  "@type": "ItemSearchBegin",
+  "parameters": {
+    "matchName": {
+      "@type": "Anything"
+    },
+    "matchDescription": {
+      "@type": "Anything"
+    },
+    "matchTypes": {
+      "@type": "Anything"
+    },
+    "matchMetadata": {
+      "@type": "Specific",
+      "packageName": {
+        "@type": "Anything"
+      },
+      "typeName": {
+        "@type": "Anything"
+      },
+      "fieldName": {
+        "@type": "Anything"
+      },
+      "value": {
+        "@type": "Anything"
+      }
+    },
+    "includeDeleted": "INCLUDE_ONLY_LIVE",
+    "orderBy": {
+      "column": "BY_ID",
+      "ascending": true
+    },
+    "pageSize": 5
+  }
+}
+
+$ curl -b cookies.txt -d @message.json http://cardant.example.com:30000/inventory/1/0/command | jq
+{
+  "@type": "ResponseItemSearch",
+  "requestId": "cf47d6f4-1441-4b79-9cd5-f80e21f1bc11",
+  "results": {
+    "items": [
+      {
+        "id": "0214d4fa-1fbb-47b9-bb57-f12d9bf2735e",
+        "name": "Siglent SPD1305X DC Power Supply",
+        "timeCreated": "2024-07-22T19:34:52.954587Z",
+        "timeUpdated": "2024-07-22T19:34:52.954587Z"
+      },
+      {
+        "id": "02f63b7e-4c0a-4f1c-81d6-862da8d2e5ac",
+        "name": "Western Digital SN570 1TB",
+        "timeCreated": "2024-01-12T21:01:15.973701Z",
+        "timeUpdated": "2024-01-12T21:01:15.973701Z"
+      },
+      {
+        "id": "0556121f-9aab-4e89-a413-08214d8ae74d",
+        "name": "Seagate Exos X16 16TB",
+        "timeCreated": "2024-01-12T21:05:33.547416Z",
+        "timeUpdated": "2025-03-09T18:22:22Z"
+      },
+      {
+        "id": "06946960-e508-4eeb-b297-715e1bcec843",
+        "name": "Samsung 870 EVO 1TB",
+        "timeCreated": "2024-05-18T12:28:43.607659Z",
+        "timeUpdated": "2024-05-18T12:28:43.607659Z"
+      },
+      {
+        "id": "0adb8f6a-ed35-479d-baf9-2e2f9a50b622",
+        "name": "AMD Ryzen 5 3600",
+        "timeCreated": "2024-01-12T21:02:01.738558Z",
+        "timeUpdated": "2024-12-07T17:41:22Z"
+      }
+    ],
+    "pageIndex": {
+      "value": 1
+    },
+    "pageCount": {
+      "value": 23
+    },
+    "pageFirstOffset": 0
+  }
+}
+]]></Verbatim>
+      </FormalItem>
     </Subsection>
 
     <Subsection title="Transactions">
@@ -81,30 +194,186 @@
         set fails, it must be as if none of the commands were executed.
       </Paragraph>
       <Paragraph>
-        After <Link target="5c7f8022-1270-4f31-921e-843d91b58fc8">logging in successfully</Link>, a sequence of commands
-        of type <Term type="type">CAI1Command*</Term> can be sent to
-        <Term type="expression">/inventory/1/0/transaction</Term>. Each command must be prefixed with its serialized
-        length as a 32-bit unsigned big-endian integer, and the sequence of commands must be terminated with a 32-bit
-        unsigned big-endian value of zero.
+        After <Link target="5c7f8022-1270-4f31-921e-843d91b58fc8">logging in successfully</Link>, a value
+        of type <Term type="type">CJ1Transaction</Term> can be sent to
+        <Term type="expression">/inventory/1/0/transaction</Term>.
       </Paragraph>
       <Paragraph>
         The response from the
-        <Term type="expression">/inventory/1/0 /transaction</Term>
-        endpoint will be formatted in the same manner, where each element in the sequence is a value
-        of type <Term type="type">CAI1Response</Term> for the corresponding command in the original sequence.
-        If any of the values in the sequence are <Term type="type">CAI1ResponseError</Term> values, the transaction
+        <Term type="expression">/inventory/1/0/transaction</Term>
+        endpoint will be a value
+        of type <Term type="type">CJ1TransactionResponse</Term> with a response for each command in the original sequence.
+        If any of the values in the sequence are <Term type="type">CJ1ResponseError</Term> values, the transaction
         was rolled back by the server and not committed.
       </Paragraph>
-    </Subsection>
-  </Subsection>
+      <FormalItem title="Transaction Example">
+        <Verbatim><![CDATA[
+$ cat transaction.json
+{
+  "@type": "Transaction",
+  "commands": [
+    {
+      "@type": "ItemSearchBegin",
+      "parameters": {
+        "matchName": {
+          "@type": "Anything"
+        },
+        "matchDescription": {
+          "@type": "Anything"
+        },
+        "matchTypes": {
+          "@type": "Anything"
+        },
+        "matchMetadata": {
+          "@type": "Specific",
+          "packageName": {
+            "@type": "Anything"
+          },
+          "typeName": {
+            "@type": "Anything"
+          },
+          "fieldName": {
+            "@type": "Anything"
+          },
+          "value": {
+            "@type": "Anything"
+          }
+        },
+        "includeDeleted": "INCLUDE_ONLY_LIVE",
+        "orderBy": {
+          "column": "BY_ID",
+          "ascending": true
+        },
+        "pageSize": 3
+      }
+    },
+    {
+      "@type": "ItemSearchNext"
+    },
+    {
+      "@type": "ItemSearchNext"
+    }
+  ]
+}
 
-  <Subsection title="Schemas">
-    <FormalItem title="Schemas">
-      <Verbatim>
-        <xi:include href="com/io7m/cardant/protocol/inventory/cb/Inventory.cbs"
-                    parse="text"/>
-      </Verbatim>
-    </FormalItem>
+$ curl -b cookies.txt -d @message.json http://cardant.example.com:30000/inventory/1/0/transaction | jq
+{
+  "@type": "TransactionResponse",
+  "requestId": "7c411039-7ca0-4e53-a9d1-0f7fd1b33919",
+  "responses": [
+    {
+      "@type": "ResponseItemSearch",
+      "requestId": "7c411039-7ca0-4e53-a9d1-0f7fd1b33919",
+      "results": {
+        "items": [
+          {
+            "id": "16208353-0cd6-4082-89b9-170b87e31000",
+            "name": "AMD Radeon RX 5700",
+            "timeCreated": "2024-01-12T21:02:28.13536Z",
+            "timeUpdated": "2024-12-07T17:37:16Z"
+          },
+          {
+            "id": "c1ef2558-9b2f-4a84-ba75-8a9fe5276e80",
+            "name": "AMD Ryzen 3 3200G",
+            "timeCreated": "2024-01-12T21:03:44.878024Z",
+            "timeUpdated": "2024-12-07T17:38:49Z"
+          },
+          {
+            "id": "0d5e8aca-0826-4e85-8a71-ffd26f4137c1",
+            "name": "AMD Ryzen 5 1400",
+            "timeCreated": "2024-01-12T21:06:34.568583Z",
+            "timeUpdated": "2024-12-07T17:39:31Z"
+          }
+        ],
+        "pageIndex": {
+          "value": 1
+        },
+        "pageCount": {
+          "value": 37
+        },
+        "pageFirstOffset": 0
+      }
+    },
+    {
+      "@type": "ResponseItemSearch",
+      "requestId": "7c411039-7ca0-4e53-a9d1-0f7fd1b33919",
+      "results": {
+        "items": [
+          {
+            "id": "d9e12864-7411-43a4-9030-ebfaf94cd0bf",
+            "name": "AMD Ryzen 5 3400G",
+            "timeCreated": "2024-01-12T21:02:43.436395Z",
+            "timeUpdated": "2024-12-07T17:40:46Z"
+          },
+          {
+            "id": "0adb8f6a-ed35-479d-baf9-2e2f9a50b622",
+            "name": "AMD Ryzen 5 3600",
+            "timeCreated": "2024-01-12T21:02:01.738558Z",
+            "timeUpdated": "2024-12-07T17:41:22Z"
+          },
+          {
+            "id": "a92f27cf-aacc-48fb-aeb9-5afa92af8f46",
+            "name": "AMD Ryzen 5 5600G",
+            "timeCreated": "2024-01-12T21:03:57.892137Z",
+            "timeUpdated": "2024-12-07T17:41:56Z"
+          }
+        ],
+        "pageIndex": {
+          "value": 2
+        },
+        "pageCount": {
+          "value": 37
+        },
+        "pageFirstOffset": 3
+      }
+    },
+    {
+      "@type": "ResponseItemSearch",
+      "requestId": "7c411039-7ca0-4e53-a9d1-0f7fd1b33919",
+      "results": {
+        "items": [
+          {
+            "id": "58794e07-532d-4143-905c-bcb65bdbd1e4",
+            "name": "AMD Ryzen 7 3700X",
+            "timeCreated": "2024-04-04T16:27:38.009937Z",
+            "timeUpdated": "2024-12-07T17:42:35Z"
+          },
+          {
+            "id": "922af91f-761e-438a-aaa9-055efa5d4360",
+            "name": "Antec Neo ECO 520",
+            "timeCreated": "2025-03-07T11:18:42Z",
+            "timeUpdated": "2025-03-07T11:20:40Z"
+          },
+          {
+            "id": "c75b8537-2725-452e-adb1-eaa3dfd5a286",
+            "name": "Antec VP450P 450W",
+            "timeCreated": "2025-03-07T11:15:24Z",
+            "timeUpdated": "2025-03-07T11:16:58Z"
+          }
+        ],
+        "pageIndex": {
+          "value": 3
+        },
+        "pageCount": {
+          "value": 37
+        },
+        "pageFirstOffset": 6
+      }
+    }
+  ]
+}
+]]></Verbatim>
+      </FormalItem>
+    </Subsection>
+
+    <Subsection title="Schema">
+      <Paragraph>
+        The JSON schema for the protocol is as follows:
+      </Paragraph>
+      <FormalItem title="Schema">
+        <Verbatim><xi:include href="schema.json" parse="text"/></Verbatim>
+      </FormalItem>
+    </Subsection>
   </Subsection>
 
 </Section>

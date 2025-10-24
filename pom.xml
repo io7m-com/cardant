@@ -8,12 +8,12 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>8.4.0</version>
+    <version>9.0.0-beta0003</version>
   </parent>
 
   <groupId>com.io7m.cardant</groupId>
   <artifactId>com.io7m.cardant</artifactId>
-  <version>1.0.0-beta0001</version>
+  <version>1.0.0-beta0002</version>
 
   <packaging>pom</packaging>
   <name>com.io7m.cardant</name>
@@ -34,7 +34,8 @@
     <module>com.io7m.cardant.oci</module>
     <module>com.io7m.cardant.parsers</module>
     <module>com.io7m.cardant.protocol.api</module>
-    <module>com.io7m.cardant.protocol.inventory.cb</module>
+    <module>com.io7m.cardant.protocol.inventory.json.schemagen</module>
+    <module>com.io7m.cardant.protocol.inventory.json</module>
     <module>com.io7m.cardant.protocol.inventory</module>
     <module>com.io7m.cardant.security</module>
     <module>com.io7m.cardant.server.api</module>
@@ -52,7 +53,6 @@
     <module>com.io7m.cardant.server.service.telemetry.api</module>
     <module>com.io7m.cardant.server.service.telemetry.otp</module>
     <module>com.io7m.cardant.server.service.tls</module>
-    <module>com.io7m.cardant.server.service.verdant</module>
     <module>com.io7m.cardant.shell</module>
     <module>com.io7m.cardant.strings</module>
     <module>com.io7m.cardant.tests.arbitraries</module>
@@ -70,7 +70,7 @@
 
   <properties>
     <!-- Configuration. -->
-    <io7m.api.previousVersion>1.0.0-beta0001</io7m.api.previousVersion>
+    <io7m.api.previousVersion>0.0.0</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
 
     <!-- io7m dependencies. -->
@@ -87,29 +87,29 @@
     <com.io7m.jwheatsheaf.version>4.0.0</com.io7m.jwheatsheaf.version>
     <com.io7m.jxtrand.version>2.1.0</com.io7m.jxtrand.version>
     <com.io7m.medrina.version>1.0.0</com.io7m.medrina.version>
-    <com.io7m.quarrel.version>1.6.1</com.io7m.quarrel.version>
+    <com.io7m.quarrel.version>1.8.0</com.io7m.quarrel.version>
     <com.io7m.seltzer.version>1.1.0</com.io7m.seltzer.version>
     <com.io7m.tabla.version>0.0.2</com.io7m.tabla.version>
     <com.io7m.trasco.version>2.0.1</com.io7m.trasco.version>
-    <com.io7m.verdant.version>1.0.1</com.io7m.verdant.version>
+    <com.io7m.ventrad.version>1.0.0</com.io7m.ventrad.version>
     <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
     <com.io7m.zelador.version>1.0.0</com.io7m.zelador.version>
 
     <!-- Third-party dependencies. -->
-    <com.fasterxml.jackson.version>2.18.2</com.fasterxml.jackson.version>
+    <com.fasterxml.jackson.version>2.19.1</com.fasterxml.jackson.version>
     <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
     <containers.postgresql.version>17.0-bookworm</containers.postgresql.version>
-    <helidon.version>4.1.4</helidon.version>
+    <helidon.version>4.3.1</helidon.version>
     <jackson.version>2.14.2</jackson.version>
     <javafx.version>20.0.1</javafx.version>
-    <jooq.version>3.19.15</jooq.version>
+    <jooq.version>3.20.5</jooq.version>
     <jqwik.version>1.9.2</jqwik.version>
-    <junit.version>5.11.3</junit.version>
-    <net.byte-buddy.version>1.15.10</net.byte-buddy.version>
-    <opentelemetry.version>1.45.0</opentelemetry.version>
-    <org.apache.tika.version>2.9.2</org.apache.tika.version>
-    <org.jline.version>3.27.1</org.jline.version>
-    <slf4j.version>2.0.16</slf4j.version>
+    <junit.version>5.12.1</junit.version>
+    <net.byte-buddy.version>1.17.5</net.byte-buddy.version>
+    <opentelemetry.version>1.47.0</opentelemetry.version>
+    <org.apache.tika.version>2.9.4</org.apache.tika.version>
+    <org.jline.version>3.29.0</org.jline.version>
+    <slf4j.version>2.0.17</slf4j.version>
   </properties>
 
   <licenses>
@@ -146,14 +146,9 @@
       <name>io7m.com</name>
       <url>https://www.io7m.com/software/cardant</url>
     </site>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/
-      </url>
-    </repository>
     <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -192,7 +187,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.17.0</version>
+        <version>3.19.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.jproperties</groupId>
@@ -207,7 +202,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.18.0</version>
+        <version>2.19.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -227,7 +222,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.12.0</version>
+        <version>1.13.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.hibiscus</groupId>
@@ -272,7 +267,7 @@
       <dependency>
         <groupId>org.joda</groupId>
         <artifactId>joda-money</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.6</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.verona</groupId>
@@ -282,14 +277,16 @@
 
       <!-- JSON -->
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
         <version>${com.fasterxml.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${com.fasterxml.jackson.version}</version>
+        <groupId>com.io7m.dixmont</groupId>
+        <artifactId>com.io7m.dixmont.core</artifactId>
+        <version>2.1.0</version>
       </dependency>
 
       <!-- Server security -->
@@ -330,7 +327,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>8.4.0</version>
+        <version>9.0.0-beta0003</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
@@ -357,7 +354,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.12</version>
+        <version>1.5.18</version>
       </dependency>
 
       <!-- jxstrand string resources -->
@@ -513,20 +510,15 @@
         <version>${com.io7m.jbssio.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.verdant</groupId>
-        <artifactId>com.io7m.verdant.core</artifactId>
-        <version>${com.io7m.verdant.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.verdant</groupId>
-        <artifactId>com.io7m.verdant.core.cb</artifactId>
-        <version>${com.io7m.verdant.version}</version>
+        <groupId>com.io7m.ventrad</groupId>
+        <artifactId>com.io7m.ventrad.core</artifactId>
+        <version>${com.io7m.ventrad.version}</version>
       </dependency>
 
       <dependency>
         <groupId>com.github.ben-manes.caffeine</groupId>
         <artifactId>caffeine</artifactId>
-        <version>3.1.8</version>
+        <version>3.2.0</version>
         <exclusions>
           <exclusion>
             <groupId>org.checkerframework</groupId>
@@ -560,14 +552,14 @@
       <dependency>
         <groupId>com.squareup.okio</groupId>
         <artifactId>okio-jvm</artifactId>
-        <version>3.9.1</version>
+        <version>3.10.2</version>
       </dependency>
 
       <!-- Database -->
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.4</version>
+        <version>42.7.8</version>
         <exclusions>
           <exclusion>
             <groupId>org.checkerframework</groupId>
@@ -682,7 +674,7 @@
       <dependency>
         <groupId>nl.jqno.equalsverifier</groupId>
         <artifactId>equalsverifier</artifactId>
-        <version>3.17.4</version>
+        <version>3.18.1</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.ervilla</groupId>
@@ -714,7 +706,7 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.14.2</version>
+        <version>5.15.2</version>
       </dependency>
       <dependency>
         <groupId>net.bytebuddy</groupId>
@@ -742,6 +734,25 @@
         <groupId>com.io7m.jxe</groupId>
         <artifactId>com.io7m.jxe.core</artifactId>
         <version>1.1.0</version>
+      </dependency>
+
+      <!-- Schema generation. -->
+      <dependency>
+        <groupId>com.github.victools</groupId>
+        <artifactId>jsonschema-generator-bom</artifactId>
+        <version>4.38.0</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>com.networknt</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>1.5.9</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml</groupId>
+        <artifactId>classmate</artifactId>
+        <version>1.7.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -36,6 +36,8 @@ public sealed interface CALocationMatchType
   {
     /**
      * Only list items within the exact given location.
+     *
+     * @param location The location
      */
 
     public CALocationExact
@@ -58,6 +60,8 @@ public sealed interface CALocationMatchType
     /**
      * List items within the given location and all descendants of the given
      * location.
+     *
+     * @param location The location
      */
 
     public CALocationWithDescendants

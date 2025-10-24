@@ -23,7 +23,7 @@ import com.io7m.cardant.database.api.CADatabaseType;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.model.CAUser;
 import com.io7m.cardant.model.CAUserID;
-import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import com.io7m.cardant.security.CASecurity;
 import com.io7m.cardant.security.CASecurityPolicy;
 import com.io7m.cardant.server.api.CAServerConfiguration;
@@ -46,8 +46,6 @@ import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceFac
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
 import com.io7m.cardant.server.service.tls.CATLSContextService;
 import com.io7m.cardant.server.service.tls.CATLSContextServiceType;
-import com.io7m.cardant.server.service.verdant.CAVerdantMessages;
-import com.io7m.cardant.server.service.verdant.CAVerdantMessagesType;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.cardant.type_packages.checker.api.CATypePackageCheckerFactoryType;
 import com.io7m.cardant.type_packages.checkers.CATypePackageCheckers;
@@ -207,9 +205,6 @@ public final class CAServer implements CAServerType
     services.register(CAServerTelemetryServiceType.class, this.telemetry);
     services.register(CADatabaseType.class, newDatabase);
 
-    final var verdant = new CAVerdantMessages();
-    services.register(CAVerdantMessagesType.class, verdant);
-
     final var metrics = new CAMetricsService(this.telemetry);
     services.register(CAMetricsServiceType.class, metrics);
 
@@ -254,11 +249,8 @@ public final class CAServer implements CAServerType
     final var clock = new CAServerClock(this.configuration.clock());
     services.register(CAServerClock.class, clock);
 
-    final var vMessages = new CAVerdantMessages();
-    services.register(CAVerdantMessagesType.class, vMessages);
-
-    final var idA1Messages = new CAI1Messages();
-    services.register(CAI1Messages.class, idA1Messages);
+    final var idA1Messages = new CAIJ1Messages();
+    services.register(CAIJ1Messages.class, idA1Messages);
 
     final var tls = CATLSContextService.createService(services);
     services.register(CATLSContextServiceType.class, tls);

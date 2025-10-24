@@ -86,6 +86,8 @@ public sealed interface CAComparisonSetType<T>
   {
     /**
      * Match values that are subsets of the given set.
+     *
+     * @param value The value
      */
 
     public IsSubsetOf
@@ -122,6 +124,8 @@ public sealed interface CAComparisonSetType<T>
   {
     /**
      * Match values that are supersets of the given set.
+     *
+     * @param value The value
      */
 
     public IsSupersetOf
@@ -158,6 +162,8 @@ public sealed interface CAComparisonSetType<T>
   {
     /**
      * Match values that overlap the given set.
+     *
+     * @param value The value
      */
 
     public IsOverlapping
@@ -196,6 +202,8 @@ public sealed interface CAComparisonSetType<T>
   {
     /**
      * Match a value exactly.
+     *
+     * @param value The value
      */
 
     public IsEqualTo
@@ -232,6 +240,8 @@ public sealed interface CAComparisonSetType<T>
   {
     /**
      * Match a value exactly.
+     *
+     * @param value The value
      */
 
     public IsNotEqualTo

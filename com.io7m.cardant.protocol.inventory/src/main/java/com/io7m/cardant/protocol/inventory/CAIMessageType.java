@@ -26,9 +26,10 @@ import com.io7m.hibiscus.api.HBMessageType;
 public sealed interface CAIMessageType
   extends CAProtocolMessageType, HBMessageType
   permits CAICommandType,
+  CAITransaction,
+  CAITransactionResponse,
   CAIEventType,
-  CAIResponseType,
-  CAITransactionResponse
+  CAIResponseType
 {
 
 }

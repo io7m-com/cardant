@@ -31,6 +31,7 @@ public final class CAArbResponseStockReposit extends CAArbAbstract<CAIResponseSt
       () -> Combinators.combine(
         Arbitraries.create(UUID::randomUUID),
         Arbitraries.defaultFor(CAStockOccurrenceType.class)
+          .optional()
       ).as(CAIResponseStockReposit::new)
     );
   }

@@ -77,6 +77,9 @@ public sealed interface CADatabaseQueriesTypePackagesType
     {
       /**
        * The parameters.
+       *
+       * @param name         The package name
+       * @param versionRange The package version range
        */
 
       public Parameters

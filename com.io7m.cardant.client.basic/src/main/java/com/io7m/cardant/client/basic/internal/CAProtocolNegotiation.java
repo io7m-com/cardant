@@ -16,10 +16,11 @@
 
 package com.io7m.cardant.client.basic.internal;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientConnectionParameters;
 import com.io7m.cardant.client.api.CAClientException;
-import com.io7m.cardant.protocol.inventory.cb.CAI1Messages;
+import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.genevan.core.GenProtocolException;
 import com.io7m.genevan.core.GenProtocolIdentifier;
@@ -27,14 +28,11 @@ import com.io7m.genevan.core.GenProtocolServerEndpointType;
 import com.io7m.genevan.core.GenProtocolSolved;
 import com.io7m.genevan.core.GenProtocolSolver;
 import com.io7m.genevan.core.GenProtocolVersion;
-import com.io7m.verdant.core.VProtocolException;
-import com.io7m.verdant.core.VProtocols;
-import com.io7m.verdant.core.cb.VProtocolMessages;
+import com.io7m.ventrad.core.VProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -48,7 +46,6 @@ import static com.io7m.cardant.client.basic.internal.CACompression.decompressRes
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorHttpMethod;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorIo;
 import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorNoSupportedProtocols;
-import static com.io7m.cardant.error_codes.CAStandardErrorCodes.errorProtocol;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_HTTP;
 import static com.io7m.cardant.strings.CAStringConstants.ERROR_SERVER_CONNECT;
 import static com.io7m.cardant.strings.CAStringConstants.URI;
@@ -62,6 +59,10 @@ public final class CAProtocolNegotiation
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(CAProtocolNegotiation.class);
+
+  private static final JsonMapper MAPPER =
+    JsonMapper.builder()
+      .build();
 
   private CAProtocolNegotiation()
   {
@@ -114,26 +115,10 @@ public final class CAProtocolNegotiation
       );
     }
 
-    final var protocols =
-      VProtocolMessages.create();
-
     final VProtocols message;
     try {
-      final var body =
-        decompressResponse(response, response.headers());
-
-      message = protocols.parse(base, body);
-    } catch (final VProtocolException e) {
-      throw new CAClientException(
-        e.getMessage(),
-        e,
-        errorProtocol(),
-        Map.ofEntries(
-          Map.entry(strings.format(URI), base.toString())
-        ),
-        Optional.empty(),
-        Optional.empty()
-      );
+      final var body = decompressResponse(response, response.headers());
+      message = MAPPER.readValue(body, VProtocols.class);
     } catch (final IOException e) {
       throw new CAClientException(
         Objects.requireNonNullElse(
@@ -155,20 +140,17 @@ public final class CAProtocolNegotiation
       .map(v -> {
         return new CAServerEndpoint(
           new GenProtocolIdentifier(
-            v.id().toString(),
-            new GenProtocolVersion(
-              new BigInteger(Long.toUnsignedString(v.versionMajor())),
-              new BigInteger(Long.toUnsignedString(v.versionMinor()))
-            )
+            v.identifier(),
+            new GenProtocolVersion(v.versionMajor(), v.versionMinor())
           ),
-          v.endpointPath()
+          v.endpoint()
         );
       }).toList();
   }
 
   private record CAServerEndpoint(
     GenProtocolIdentifier supported,
-    String endpoint)
+    URI endpoint)
     implements GenProtocolServerEndpointType
   {
     CAServerEndpoint
@@ -223,7 +205,7 @@ public final class CAProtocolNegotiation
       solved = solver.solve(
         serverProtocols,
         clientSupports,
-        List.of(CAI1Messages.protocolId().toString())
+        List.of(CAIJ1Messages.protocolId().toString())
       );
     } catch (final GenProtocolException e) {
       throw new CAClientException(

@@ -136,7 +136,9 @@ public final class CAShellCmdStockRepositSerialIntroduce
         this.commandTimeout()
       ).data();
 
-    this.formatter().formatStock(item);
+    if (item.isPresent()) {
+      this.formatter().formatStock(item.get());
+    }
     return SUCCESS;
   }
 }
