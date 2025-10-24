@@ -46,6 +46,7 @@ com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandStockReposit
 com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandStockSearchBegin
 com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandStockSearchNext
 com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandStockSearchPrevious
+com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandType
 com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandTypePackageGetText
 com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandTypePackageInstall
 com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandTypePackageSearchBegin
@@ -205,6 +206,7 @@ com.io7m.cardant.protocol.inventory.json.internal.CJ1StockRepositType
 com.io7m.cardant.protocol.inventory.json.internal.CJ1StockSearchParameters
 com.io7m.cardant.protocol.inventory.json.internal.CJ1StructuredError
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TimeRange
+com.io7m.cardant.protocol.inventory.json.internal.CJ1Transaction
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TransactionResponse
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageIdentifier
 com.io7m.cardant.protocol.inventory.json.internal.CJ1TypePackageSearchParameters
@@ -224,6 +226,7 @@ java.math.BigDecimal
 java.math.BigInteger
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1AttachmentItem>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1AuditEvent>
+java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandType>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1FileType$CJ1FileWithoutData>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1FileWithoutData>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1ItemSerial>

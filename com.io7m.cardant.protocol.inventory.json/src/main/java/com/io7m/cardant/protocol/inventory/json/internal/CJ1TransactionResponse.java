@@ -22,10 +22,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.List;
+import java.util.UUID;
 
 @JsonClassDescription("A transaction response.")
 @JsonTypeName("TransactionResponse")
 public record CJ1TransactionResponse(
+  @JsonProperty(value = "requestId", required = true)
+  UUID requestId,
   @JsonPropertyDescription("The command responses.")
   @JsonProperty(value = "responses", required = true)
   List<CJ1ResponseType> responses)

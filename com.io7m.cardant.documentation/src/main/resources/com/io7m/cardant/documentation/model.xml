@@ -527,8 +527,7 @@ type StockReposit =
               id="3dff8219-1792-41a3-bd8b-797efe61348c">
     <Paragraph>
       The <Term type="term">inventory API</Term> is the interface exposed to user clients. It exposes
-      a <LinkExternal target="https://www.io7m.com/software/cedarbridge">Cedarbridge</LinkExternal>-based API over HTTP,
-      using the included
+      a JSON-based API over HTTP, using the included
       <Link target="18b8c54d-2127-4a9f-9321-980ea59a568e">schema</Link>.
     </Paragraph>
     <Paragraph>

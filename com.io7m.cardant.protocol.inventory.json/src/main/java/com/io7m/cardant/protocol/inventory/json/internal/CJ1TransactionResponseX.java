@@ -33,6 +33,7 @@ public enum CJ1TransactionResponseX
   {
     try {
       return new CAITransactionResponse(
+        m.requestId(),
         m.responses()
           .stream()
           .map(x -> {
@@ -57,6 +58,7 @@ public enum CJ1TransactionResponseX
   {
     try {
       return new CJ1TransactionResponse(
+        m.requestId(),
         m.responses()
           .stream()
           .map(x -> {

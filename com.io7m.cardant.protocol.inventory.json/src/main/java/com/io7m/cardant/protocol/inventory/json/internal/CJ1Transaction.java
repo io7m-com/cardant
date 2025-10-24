@@ -20,23 +20,14 @@ import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.List;
 
-@JsonClassDescription("Log in.")
-public record CJ1CommandLogin(
-  @JsonPropertyDescription("The user name.")
-  @JsonProperty(value = "userName", required = true)
-  String userName,
-  @JsonPropertyDescription("The password.")
-  @JsonProperty(value = "password", required = true)
-  String password,
-  @JsonPropertyDescription("The extra metadata.")
-  @JsonProperty(value = "metadata")
-  Map<String, String> metadata)
-  implements CJ1CommandType
+@JsonClassDescription("A set of commands to execute in a single transaction.")
+public record CJ1Transaction(
+  @JsonPropertyDescription("The commands that will be executed in the given order.")
+  @JsonProperty("commands")
+  List<CJ1CommandType> commands)
+  implements CJ1MessageType
 {
-  public CJ1CommandLogin {
-    metadata = Objects.requireNonNullElse(metadata, Map.of());
-  }
+
 }

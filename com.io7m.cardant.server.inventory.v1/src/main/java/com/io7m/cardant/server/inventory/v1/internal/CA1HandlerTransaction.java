@@ -22,9 +22,10 @@ import com.io7m.cardant.database.api.CADatabaseTransactionType;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIEventType;
 import com.io7m.cardant.protocol.inventory.CAIResponseError;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAITransaction;
 import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import com.io7m.cardant.server.controller.command_exec.CACommandExecutionFailure;
@@ -38,17 +39,13 @@ import com.io7m.cardant.server.service.reqlimit.CARequestLimitExceeded;
 import com.io7m.cardant.server.service.reqlimit.CARequestLimits;
 import com.io7m.cardant.server.service.sessions.CASession;
 import com.io7m.cardant.server.service.telemetry.api.CAServerTelemetryServiceType;
-import com.io7m.cardant.strings.CAStringConstants;
 import com.io7m.cardant.strings.CAStrings;
 import com.io7m.repetoir.core.RPServiceDirectoryType;
 import io.helidon.webserver.http.ServerRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -125,10 +122,10 @@ public final class CA1HandlerTransaction extends CAHTTPHandlerFunctional
   {
     final var results = new ArrayList<CAIResponseType>(16);
     try (var input = limits.boundedMaximumInput(request, 1048576L)) {
-      final var messagesParsed =
-        parseMessages(telemetry, strings, messages, input);
+      final var transactionCommand =
+        parseMessage(telemetry, strings, messages, input);
 
-      for (final var message : messagesParsed) {
+      for (final var message : transactionCommand.commands()) {
         if (message instanceof final CAICommandType<?> command) {
           final var r =
             executeCommand(
@@ -141,7 +138,7 @@ public final class CA1HandlerTransaction extends CAHTTPHandlerFunctional
 
           results.add(r);
           if (r instanceof CAIResponseError) {
-            return respond(messages, results);
+            return respond(messages, information, results);
           }
           continue;
         }
@@ -156,117 +153,35 @@ public final class CA1HandlerTransaction extends CAHTTPHandlerFunctional
             Optional.empty()
           )));
 
-        return respond(messages, results);
+        return respond(messages, information, results);
       }
 
       commit(telemetry, transaction);
-      return respond(messages, results);
+      return respond(messages, information, results);
     } catch (final IOException e) {
       setSpanErrorCode(CAStandardErrorCodes.errorIo());
       results.add(errorOf(information, BLAME_SERVER, e));
-      return respond(messages, results);
+      return respond(messages, information, results);
     } catch (final CARequestLimitExceeded | CAProtocolException e) {
       setSpanErrorCode(e.errorCode());
       results.add(errorOf(information, BLAME_CLIENT, e));
-      return respond(messages, results);
+      return respond(messages, information, results);
     } catch (final CADatabaseException e) {
       setSpanErrorCode(e.errorCode());
       results.add(errorOf(information, BLAME_SERVER, e));
-      return respond(messages, results);
+      return respond(messages, information, results);
     }
   }
 
   private static CAHTTPResponseType respond(
     final CAIJ1Messages messages,
+    final CAHTTPRequestInformation info,
     final ArrayList<CAIResponseType> results)
   {
     return transactionResponseOf(
       messages,
-      new CAITransactionResponse(results)
+      new CAITransactionResponse(info.requestID(), results)
     );
-  }
-
-  private static List<CAIMessageType> parseMessages(
-    final CAServerTelemetryServiceType telemetry,
-    final CAStrings strings,
-    final CAIJ1Messages messages,
-    final InputStream input)
-    throws IOException, CAProtocolException
-  {
-    final var parseSpan =
-      telemetry.tracer()
-        .spanBuilder("ParseMessages")
-        .startSpan();
-
-    try (var ignored = parseSpan.makeCurrent()) {
-      final var data = parseMessageReadData(telemetry, strings, input);
-      return parseMessagesDeserialize(telemetry, messages, data);
-    } finally {
-      parseSpan.end();
-    }
-  }
-
-  private static List<CAIMessageType> parseMessagesDeserialize(
-    final CAServerTelemetryServiceType telemetry,
-    final CAIJ1Messages messages,
-    final List<byte[]> data)
-    throws CAProtocolException
-  {
-    final var readSpan =
-      telemetry.tracer()
-        .spanBuilder("Deserialize")
-        .startSpan();
-
-    final var results = new ArrayList<CAIMessageType>(data.size());
-    try (var ignored = readSpan.makeCurrent()) {
-      for (final var item : data) {
-        results.add(messages.parse(item));
-      }
-      return List.copyOf(results);
-    } finally {
-      readSpan.end();
-    }
-  }
-
-  private static List<byte[]> parseMessageReadData(
-    final CAServerTelemetryServiceType telemetry,
-    final CAStrings strings,
-    final InputStream input)
-    throws IOException, CAProtocolException
-  {
-    final var readSpan =
-      telemetry.tracer()
-        .spanBuilder("Read")
-        .startSpan();
-
-    final var results = new ArrayList<byte[]>();
-    try (var ignored = readSpan.makeCurrent()) {
-      while (true) {
-        final var size =
-          input.readNBytes(4);
-
-        if (size.length != 4) {
-          throw new CAProtocolException(
-            strings.format(CAStringConstants.ERROR_IO),
-            CAStandardErrorCodes.errorApiMisuse(),
-            Map.of(),
-            Optional.empty()
-          );
-        }
-
-        final var sizeBuffer = ByteBuffer.wrap(size);
-        sizeBuffer.order(ByteOrder.BIG_ENDIAN);
-
-        final var messageSize = sizeBuffer.getInt(0);
-        if (messageSize == 0) {
-          return List.copyOf(results);
-        }
-
-        results.add(input.readNBytes(messageSize));
-      }
-    } finally {
-      readSpan.end();
-    }
   }
 
   private static CAIResponseType executeCommand(
@@ -312,6 +227,89 @@ public final class CA1HandlerTransaction extends CAHTTPHandlerFunctional
       transaction.commit();
     } finally {
       commitSpan.end();
+    }
+  }
+
+  private static CAITransaction parseMessage(
+    final CAServerTelemetryServiceType telemetry,
+    final CAStrings strings,
+    final CAIJ1Messages messages,
+    final InputStream input)
+    throws IOException, CAProtocolException
+  {
+    final var parseSpan =
+      telemetry.tracer()
+        .spanBuilder("ParseMessage")
+        .startSpan();
+
+    try (var ignored = parseSpan.makeCurrent()) {
+      final var data = parseMessageReadData(telemetry, input);
+      return parseMessageDeserialize(telemetry, strings, messages, data);
+    } finally {
+      parseSpan.end();
+    }
+  }
+
+  private static CAITransaction parseMessageDeserialize(
+    final CAServerTelemetryServiceType telemetry,
+    final CAStrings strings,
+    final CAIJ1Messages messages,
+    final byte[] data)
+    throws CAProtocolException
+  {
+    final var readSpan =
+      telemetry.tracer()
+        .spanBuilder("Deserialize")
+        .startSpan();
+
+    try (var ignored = readSpan.makeCurrent()) {
+      return switch (messages.parse(data)) {
+        case final CAITransaction t -> {
+          yield t;
+        }
+        case final CAICommandType<?> mm -> {
+          throw errorExpectedTransaction(strings);
+        }
+        case final CAIEventType mm -> {
+          throw errorExpectedTransaction(strings);
+        }
+        case final CAIResponseType mm -> {
+          throw errorExpectedTransaction(strings);
+        }
+        case final CAITransactionResponse mm -> {
+          throw errorExpectedTransaction(strings);
+        }
+      };
+    } finally {
+      readSpan.end();
+    }
+  }
+
+  private static CAProtocolException errorExpectedTransaction(
+    final CAStrings strings)
+  {
+    return new CAProtocolException(
+      strings.format(ERROR_COMMAND_NOT_HERE),
+      CAStandardErrorCodes.errorApiMisuse(),
+      Map.of(),
+      Optional.empty()
+    );
+  }
+
+  private static byte[] parseMessageReadData(
+    final CAServerTelemetryServiceType telemetry,
+    final InputStream input)
+    throws IOException
+  {
+    final var readSpan =
+      telemetry.tracer()
+        .spanBuilder("Read")
+        .startSpan();
+
+    try (var ignored = readSpan.makeCurrent()) {
+      return input.readAllBytes();
+    } finally {
+      readSpan.end();
     }
   }
 }

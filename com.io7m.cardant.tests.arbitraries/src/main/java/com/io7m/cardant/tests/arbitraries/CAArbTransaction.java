@@ -15,27 +15,34 @@
  */
 package com.io7m.cardant.tests.arbitraries;
 
+import com.io7m.cardant.protocol.inventory.CAICommandType;
 import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAITransaction;
 import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Combinators;
 
+import java.util.List;
 import java.util.UUID;
 
-public final class CAArbTransactionResponse extends CAArbAbstract<CAITransactionResponse>
+public final class CAArbTransaction extends CAArbAbstract<CAITransaction>
 {
-  public CAArbTransactionResponse()
+  public CAArbTransaction()
   {
     super(
-      CAITransactionResponse.class,
+      CAITransaction.class,
       () ->
-        Combinators.combine(
-          Arbitraries.create(UUID::randomUUID),
-          Arbitraries.defaultFor(CAIResponseType.class)
-            .list()
-            .ofMaxSize(10)
-            .ofMinSize(0)
-        ).as(CAITransactionResponse::new)
+        Arbitraries.defaultFor(CAICommandType.class)
+          .list()
+          .ofMaxSize(10)
+          .ofMinSize(0)
+          .map(CAArbTransaction::create)
     );
+  }
+
+  private static CAITransaction create(
+    final List<CAICommandType> c)
+  {
+    return new CAITransaction((List<CAICommandType<?>>) (Object) c);
   }
 }

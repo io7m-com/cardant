@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
   property = "@type"
 )
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = CJ1MetadataValueMatchAnyValue.class, name = "AnyValue"),
+  @JsonSubTypes.Type(value = CJ1MetadataValueMatchAnyValue.class, name = "Anything"),
   @JsonSubTypes.Type(value = CJ1MetadataValueMatchIntegralWithinRange.class, name = "IntegralWithinRange"),
   @JsonSubTypes.Type(value = CJ1MetadataValueMatchRealWithinRange.class, name = "RealWithinRange"),
   @JsonSubTypes.Type(value = CJ1MetadataValueMatchTimeWithinRange.class, name = "TimeWithinRange"),

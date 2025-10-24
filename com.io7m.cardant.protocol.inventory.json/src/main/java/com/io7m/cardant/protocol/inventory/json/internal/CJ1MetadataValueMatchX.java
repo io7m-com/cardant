@@ -233,7 +233,7 @@ public enum CJ1MetadataValueMatchX
   {
     return switch (m) {
       case ANY_VALUE -> {
-        yield CJ1MetadataValueMatchAnyValue.ANY_VALUE;
+        yield new CJ1MetadataValueMatchAnyValue();
       }
     };
   }

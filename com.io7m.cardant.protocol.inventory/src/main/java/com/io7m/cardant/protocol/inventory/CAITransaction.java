@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2025 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,20 +16,26 @@
 
 package com.io7m.cardant.protocol.inventory;
 
-import com.io7m.cardant.protocol.api.CAProtocolMessageType;
-import com.io7m.hibiscus.api.HBMessageType;
+import java.util.List;
 
 /**
- * The type of messages in the Inventory protocol.
+ * A transaction.
+ *
+ * @param commands The commands to execute in the given order, atomically
  */
 
-public sealed interface CAIMessageType
-  extends CAProtocolMessageType, HBMessageType
-  permits CAICommandType,
-  CAITransaction,
-  CAITransactionResponse,
-  CAIEventType,
-  CAIResponseType
+public record CAITransaction(
+  List<CAICommandType<?>> commands)
+  implements CAIMessageType
 {
+  /**
+   * A transaction.
+   *
+   * @param commands The commands to execute in the given order, atomically
+   */
 
+  public CAITransaction
+  {
+    commands = List.copyOf(commands);
+  }
 }

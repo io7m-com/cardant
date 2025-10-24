@@ -110,6 +110,7 @@ import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageInstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageSearch;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUninstall;
 import com.io7m.cardant.protocol.inventory.CAIResponseTypePackageUpgrade;
+import com.io7m.cardant.protocol.inventory.CAITransaction;
 import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import com.io7m.junreachable.UnimplementedCodeException;
 
@@ -201,6 +202,7 @@ import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypeP
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUninstallX.RESPONSE_TYPE_PACKAGE_UNINSTALL;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1ResponseTypePackageUpgradeX.RESPONSE_TYPE_PACKAGE_UPGRADE;
 import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TransactionResponseX.TRANSACTION_RESPONSE;
+import static com.io7m.cardant.protocol.inventory.json.internal.CJ1TransactionX.TRANSACTION;
 
 public enum CJ1MessageTypeX
   implements CJ1SerialBijectionType<CJ1MessageType, CAIMessageType>
@@ -477,6 +479,9 @@ public enum CJ1MessageTypeX
       case final CJ1TransactionResponse mm -> {
         yield TRANSACTION_RESPONSE.toCore(mm);
       }
+      case final CJ1Transaction mm -> {
+        yield TRANSACTION.toCore(mm);
+      }
     };
   }
 
@@ -495,17 +500,13 @@ public enum CJ1MessageTypeX
       case final CAIResponseType mm -> {
         yield toCJ1Response(mm);
       }
+      case final CAITransaction mm -> {
+        yield TRANSACTION.toCJ1(mm);
+      }
       case final CAITransactionResponse mm -> {
-        yield toCJ1TransactionResponse(mm);
+        yield TRANSACTION_RESPONSE.toCJ1(mm);
       }
     };
-  }
-
-  private static CJ1TransactionResponse toCJ1TransactionResponse(
-    final CAITransactionResponse mm)
-    throws CAProtocolException
-  {
-    return TRANSACTION_RESPONSE.toCJ1(mm);
   }
 
   private static CJ1MessageType toCJ1Response(

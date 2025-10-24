@@ -19,8 +19,8 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 
 @JsonClassDescription("Match any metadata value.")
-public enum CJ1MetadataValueMatchAnyValue
+public record CJ1MetadataValueMatchAnyValue()
   implements CJ1MetadataValueMatchType
 {
-  ANY_VALUE
+
 }
