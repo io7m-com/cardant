@@ -30,7 +30,14 @@ import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.api.CAProtocolMessagesType;
 import com.io7m.cardant.protocol.api.CAProtocolUncheckedException;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
+import com.io7m.cardant.protocol.inventory.CAICommandType;
+import com.io7m.cardant.protocol.inventory.CAIEventType;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAIResponseType;
+import com.io7m.cardant.protocol.inventory.CAITransaction;
+import com.io7m.cardant.protocol.inventory.CAITransactionResponse;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1CurrencyUnitDeserializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1CurrencyUnitSerializer;
 import com.io7m.cardant.protocol.inventory.json.internal.CJ1DottedNameDeserializer;
@@ -63,9 +70,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -253,6 +264,16 @@ public final class CAIJ1Messages
     return PROTOCOL_ID;
   }
 
+  private static final Random RNG;
+
+  static {
+    try {
+      RNG = SecureRandom.getInstanceStrong();
+    } catch (final NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
   public CAIMessageType parse(
     final byte[] data)
@@ -281,7 +302,29 @@ public final class CAIJ1Messages
   {
     try {
       try {
-        return this.mapper.writeValueAsBytes(MESSAGE.toCJ1(message));
+        return switch (message) {
+          case final CAICommandDebugInvalid e -> {
+            yield CAIJ1Messages.serializeInvalid();
+          }
+          case final CAICommandDebugRandom e -> {
+            yield CAIJ1Messages.serializeRandom();
+          }
+          case final CAICommandType<?> ignored -> {
+            yield this.serialize0(message);
+          }
+          case final CAIEventType ignored -> {
+            yield this.serialize0(message);
+          }
+          case final CAIResponseType ignored -> {
+            yield this.serialize0(message);
+          }
+          case final CAITransaction ignored -> {
+            yield this.serialize0(message);
+          }
+          case final CAITransactionResponse ignored -> {
+            yield this.serialize0(message);
+          }
+        };
       } catch (final JsonProcessingException e) {
         throw new CAProtocolException(
           e.getMessage(),
@@ -294,6 +337,25 @@ public final class CAIJ1Messages
     } catch (final CAProtocolException e) {
       throw new CAProtocolUncheckedException(e);
     }
+  }
+
+  private static byte[] serializeInvalid()
+  {
+    return "{invalid}".getBytes(StandardCharsets.UTF_8);
+  }
+
+  private static byte[] serializeRandom()
+  {
+    final var data = new byte[32];
+    RNG.nextBytes(data);
+    return data;
+  }
+
+  private byte[] serialize0(
+    final CAIMessageType message)
+    throws JsonProcessingException, CAProtocolException
+  {
+    return this.mapper.writeValueAsBytes(MESSAGE.toCJ1(message));
   }
 
   @Override
