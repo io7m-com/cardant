@@ -25,8 +25,11 @@ import com.io7m.cardant.model.CAMetadataValueMatchType;
 import com.io7m.cardant.model.comparisons.CAComparisonExactType;
 import com.io7m.cardant.model.comparisons.CAComparisonFuzzyType;
 import com.io7m.cardant.model.comparisons.CAComparisonSetType;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugInvalid;
+import com.io7m.cardant.protocol.inventory.CAICommandDebugRandom;
 import com.io7m.cardant.protocol.inventory.CAICommandItemSearchBegin;
 import com.io7m.cardant.protocol.inventory.CAIMessageType;
+import com.io7m.cardant.protocol.inventory.CAITransaction;
 import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import net.jqwik.api.Arbitraries;
 import org.junit.jupiter.api.DynamicTest;
@@ -102,7 +105,8 @@ public final class CJ1ProtocolTest
       "testRoundTrip_%s".formatted(c),
       () -> {
         final var inputMessage =
-          Arbitraries.defaultFor(c).sample();
+          scrub(Arbitraries.defaultFor(c).sample());
+
         final var messages =
           new CAIJ1Messages();
         final var output =
@@ -113,6 +117,21 @@ public final class CJ1ProtocolTest
         final var parsed = messages.parse(output);
         assertEquals(inputMessage, parsed);
       });
+  }
+
+  private static CAIMessageType scrub(
+    final CAIMessageType sample)
+  {
+    if (sample instanceof final CAITransaction transaction) {
+      return new CAITransaction(
+        transaction.commands()
+          .stream()
+          .filter(c -> !(c instanceof CAICommandDebugInvalid))
+          .filter(c -> !(c instanceof CAICommandDebugRandom))
+          .toList()
+      );
+    }
+    return sample;
   }
 
   @TestFactory
