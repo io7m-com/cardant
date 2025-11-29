@@ -27,9 +27,7 @@ module com.io7m.cardant.protocol.inventory.json
   requires com.io7m.cardant.protocol.inventory;
 
   requires com.fasterxml.jackson.annotation;
-  requires com.fasterxml.jackson.databind;
-  requires com.fasterxml.jackson.datatype.jdk8;
-  requires com.fasterxml.jackson.datatype.jsr310;
+  requires tools.jackson.databind;
   requires com.io7m.dixmont.core;
   requires com.io7m.junreachable.core;
   requires com.io7m.lanark.core;
@@ -39,7 +37,7 @@ module com.io7m.cardant.protocol.inventory.json
   exports com.io7m.cardant.protocol.inventory.json;
 
   opens com.io7m.cardant.protocol.inventory.json.internal
-    to com.fasterxml.jackson.databind;
+    to tools.jackson.databind;
   exports com.io7m.cardant.protocol.inventory.json.internal
     to com.io7m.cardant.tests;
 }

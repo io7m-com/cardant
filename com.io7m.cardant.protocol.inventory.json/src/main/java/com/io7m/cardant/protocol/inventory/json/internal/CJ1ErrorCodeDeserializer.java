@@ -16,15 +16,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.io7m.cardant.error_codes.CAErrorCode;
-
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
 public final class CJ1ErrorCodeDeserializer
-  extends JsonDeserializer<CAErrorCode>
+  extends ValueDeserializer<CAErrorCode>
 {
   public CJ1ErrorCodeDeserializer()
   {
@@ -35,8 +33,7 @@ public final class CJ1ErrorCodeDeserializer
   public CAErrorCode deserialize(
     final JsonParser p,
     final DeserializationContext ctxt)
-    throws IOException
   {
-    return new CAErrorCode(p.getText());
+    return new CAErrorCode(p.getString());
   }
 }

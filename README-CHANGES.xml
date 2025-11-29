@@ -4,8 +4,13 @@
     <c:release date="2024-12-07T00:00:00+00:00" is-open="false" ticket-system="com.github.io7m.cardant" version="1.0.0-beta0001">
       <c:changes/>
     </c:release>
-    <c:release date="2025-10-24T11:48:49+00:00" is-open="false" ticket-system="com.github.io7m.cardant" version="1.0.0-beta0002">
+    <c:release date="2025-10-24T00:00:00+00:00" is-open="false" ticket-system="com.github.io7m.cardant" version="1.0.0-beta0002">
       <c:changes/>
+    </c:release>
+    <c:release date="2025-11-29T12:20:02+00:00" is-open="true" ticket-system="com.github.io7m.cardant" version="1.0.0-beta0003">
+      <c:changes>
+        <c:change compatible="false" date="2025-11-29T12:20:02+00:00" summary="Upgrade to Jackson 3.0.2."/>
+      </c:changes>
     </c:release>
   </c:releases>
   <c:ticket-systems>

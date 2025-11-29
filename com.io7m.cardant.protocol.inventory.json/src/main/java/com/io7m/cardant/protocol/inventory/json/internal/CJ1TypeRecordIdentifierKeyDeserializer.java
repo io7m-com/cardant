@@ -16,11 +16,9 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.io7m.cardant.model.CATypeRecordIdentifier;
-
-import java.io.IOException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.KeyDeserializer;
 
 public final class CJ1TypeRecordIdentifierKeyDeserializer
   extends KeyDeserializer
@@ -34,7 +32,6 @@ public final class CJ1TypeRecordIdentifierKeyDeserializer
   public CJ1TypeRecordIdentifier deserializeKey(
     final String key,
     final DeserializationContext ctxt)
-    throws IOException
   {
     final var strict = CATypeRecordIdentifier.of(key);
     return new CJ1TypeRecordIdentifier(

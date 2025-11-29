@@ -18,13 +18,10 @@
 package com.io7m.cardant.protocol.inventory.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleDeserializers;
+import tools.jackson.databind.module.SimpleModule;
 import com.io7m.cardant.error_codes.CAErrorCode;
 import com.io7m.cardant.error_codes.CAStandardErrorCodes;
 import com.io7m.cardant.protocol.api.CAProtocolException;
@@ -144,10 +141,6 @@ public final class CAIJ1Messages
         .allowClassNames(SERIALIZATION_WHITELIST)
         .build();
 
-    this.mapper =
-      JsonMapper.builder()
-        .build();
-
     final var simpleModule = new SimpleModule();
     simpleModule.setDeserializers(this.serializers);
 
@@ -230,11 +223,10 @@ public final class CAIJ1Messages
       new CJ1UnsignedLongDeserializer()
     );
 
-    this.mapper.registerModule(simpleModule);
-    this.mapper.registerModule(new Jdk8Module());
-    this.mapper.registerModule(new JavaTimeModule());
-    this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    this.mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
+    this.mapper =
+      JsonMapper.builder()
+        .addModule(simpleModule)
+        .build();
   }
 
   /**
@@ -285,7 +277,7 @@ public final class CAIJ1Messages
       );
     } catch (final CAProtocolUncheckedException e) {
       throw e.getCause();
-    } catch (final IOException e) {
+    } catch (final Exception e) {
       throw new CAProtocolException(
         e.getMessage(),
         e,
@@ -325,7 +317,7 @@ public final class CAIJ1Messages
             yield this.serialize0(message);
           }
         };
-      } catch (final JsonProcessingException e) {
+      } catch (final Exception e) {
         throw new CAProtocolException(
           e.getMessage(),
           e,
@@ -353,7 +345,7 @@ public final class CAIJ1Messages
 
   private byte[] serialize0(
     final CAIMessageType message)
-    throws JsonProcessingException, CAProtocolException
+    throws CAProtocolException
   {
     return this.mapper.writeValueAsBytes(MESSAGE.toCJ1(message));
   }

@@ -16,15 +16,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.io7m.lanark.core.RDottedName;
-
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
 public final class CJ1DottedNameDeserializer
-  extends JsonDeserializer<RDottedName>
+  extends ValueDeserializer<RDottedName>
 {
   public CJ1DottedNameDeserializer()
   {
@@ -35,8 +33,7 @@ public final class CJ1DottedNameDeserializer
   public RDottedName deserialize(
     final JsonParser p,
     final DeserializationContext ctxt)
-    throws IOException
   {
-    return new RDottedName(p.getText());
+    return new RDottedName(p.getString());
   }
 }

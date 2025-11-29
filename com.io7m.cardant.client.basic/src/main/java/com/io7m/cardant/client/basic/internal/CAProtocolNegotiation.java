@@ -16,7 +16,7 @@
 
 package com.io7m.cardant.client.basic.internal;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.io7m.cardant.client.api.CAClientConfiguration;
 import com.io7m.cardant.client.api.CAClientConnectionParameters;
 import com.io7m.cardant.client.api.CAClientException;

@@ -41,7 +41,6 @@ module com.io7m.cardant.server.inventory.v1
   requires com.io7m.cardant.server.service.tls;
   requires com.io7m.cardant.tls;
 
-  requires com.fasterxml.jackson.databind;
   requires com.io7m.idstore.protocol.user;
   requires com.io7m.idstore.user_client.api;
   requires com.io7m.jmulticlose.core;
@@ -50,6 +49,7 @@ module com.io7m.cardant.server.inventory.v1
   requires io.helidon.webserver;
   requires io.opentelemetry.api;
   requires org.slf4j;
+  requires tools.jackson.databind;
 
   exports com.io7m.cardant.server.inventory.v1;
 }

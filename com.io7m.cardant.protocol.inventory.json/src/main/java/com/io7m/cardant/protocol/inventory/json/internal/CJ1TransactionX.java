@@ -18,10 +18,8 @@ package com.io7m.cardant.protocol.inventory.json.internal;
 
 import com.io7m.cardant.protocol.api.CAProtocolException;
 import com.io7m.cardant.protocol.inventory.CAICommandType;
-import com.io7m.cardant.protocol.inventory.CAIMessageType;
 import com.io7m.cardant.protocol.inventory.CAITransaction;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 public enum CJ1TransactionX

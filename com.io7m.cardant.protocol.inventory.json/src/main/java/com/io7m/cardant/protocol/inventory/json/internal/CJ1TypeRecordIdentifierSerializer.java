@@ -16,14 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-
-import java.io.IOException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 public final class CJ1TypeRecordIdentifierSerializer
-  extends JsonSerializer<CJ1TypeRecordIdentifier>
+  extends ValueSerializer<CJ1TypeRecordIdentifier>
 {
   public CJ1TypeRecordIdentifierSerializer()
   {
@@ -40,8 +38,7 @@ public final class CJ1TypeRecordIdentifierSerializer
   public void serialize(
     final CJ1TypeRecordIdentifier value,
     final JsonGenerator gen,
-    final SerializerProvider serializers)
-    throws IOException
+    final SerializationContext serializers)
   {
     gen.writeString(
       String.format(

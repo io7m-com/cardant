@@ -78,6 +78,7 @@ module com.io7m.cardant.database.postgres
   requires com.io7m.anethum.api;
   requires com.io7m.jmulticlose.core;
   requires com.io7m.jqpage.core;
+  requires com.io7m.junreachable.core;
   requires com.io7m.lanark.core;
   requires com.io7m.trasco.api;
   requires com.io7m.trasco.vanilla;
@@ -91,8 +92,7 @@ module com.io7m.cardant.database.postgres
   requires org.jooq;
   requires org.postgresql.jdbc;
   requires org.slf4j;
-  requires com.fasterxml.jackson.databind;
-  requires com.io7m.junreachable.core;
+  requires tools.jackson.databind;
 
   exports com.io7m.cardant.database.postgres.internal.tables
     to org.jooq;

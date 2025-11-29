@@ -17,15 +17,15 @@
 
 package com.io7m.cardant.database.postgres.internal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.io7m.cardant.model.CAItemSerial;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.lanark.core.RDottedName;
 import org.jooq.JSON;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,8 +37,9 @@ import java.util.List;
 
 public final class CADBSerialsJSON
 {
-  private static final ObjectMapper OBJECT_MAPPER =
-    new ObjectMapper();
+  private static final JsonMapper OBJECT_MAPPER =
+    JsonMapper.builder()
+      .build();
 
   private CADBSerialsJSON()
   {
@@ -66,7 +67,7 @@ public final class CADBSerialsJSON
 
     try {
       return JSON.json(OBJECT_MAPPER.writeValueAsString(array));
-    } catch (final JsonProcessingException e) {
+    } catch (final JacksonException e) {
       throw new UnreachableCodeException(e);
     }
   }
@@ -98,8 +99,8 @@ public final class CADBSerialsJSON
     switch (jsonNode) {
       case final ObjectNode o -> {
         output.add(new CAItemSerial(
-          new RDottedName(o.get("Type").textValue()),
-          o.get("Value").textValue()
+          new RDottedName(o.get("Type").asString()),
+          o.get("Value").asString()
         ));
       }
       case final ArrayNode a -> {

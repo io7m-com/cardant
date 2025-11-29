@@ -16,14 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.io7m.cardant.error_codes.CAErrorCode;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
-
-public final class CJ1ErrorCodeSerializer extends JsonSerializer<CAErrorCode>
+public final class CJ1ErrorCodeSerializer extends ValueSerializer<CAErrorCode>
 {
   public CJ1ErrorCodeSerializer()
   {
@@ -40,8 +38,7 @@ public final class CJ1ErrorCodeSerializer extends JsonSerializer<CAErrorCode>
   public void serialize(
     final CAErrorCode value,
     final JsonGenerator gen,
-    final SerializerProvider serializers)
-    throws IOException
+    final SerializationContext serializers)
   {
     gen.writeString(value.id());
   }

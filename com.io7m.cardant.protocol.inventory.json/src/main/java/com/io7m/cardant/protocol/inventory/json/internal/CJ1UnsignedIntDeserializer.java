@@ -16,15 +16,14 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 public final class CJ1UnsignedIntDeserializer
-  extends JsonDeserializer<CJ1UnsignedInt>
+  extends ValueDeserializer<CJ1UnsignedInt>
 {
   public CJ1UnsignedIntDeserializer()
   {
@@ -35,7 +34,6 @@ public final class CJ1UnsignedIntDeserializer
   public CJ1UnsignedInt deserialize(
     final JsonParser p,
     final DeserializationContext ctxt)
-    throws IOException
   {
     return new CJ1UnsignedInt(p.readValueAs(BigInteger.class));
   }

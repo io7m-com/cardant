@@ -17,7 +17,7 @@
 
 package com.io7m.cardant.server.inventory.v1.internal;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.io7m.cardant.protocol.inventory.json.CAIJ1Messages;
 import com.io7m.cardant.server.http.CAHTTPHandlerFunctional;
 import com.io7m.cardant.server.http.CAHTTPHandlerFunctionalCoreType;

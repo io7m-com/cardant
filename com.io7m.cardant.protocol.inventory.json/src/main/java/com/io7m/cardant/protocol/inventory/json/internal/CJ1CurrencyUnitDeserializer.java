@@ -16,15 +16,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import org.joda.money.CurrencyUnit;
-
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
 public final class CJ1CurrencyUnitDeserializer
-  extends JsonDeserializer<CurrencyUnit>
+  extends ValueDeserializer<CurrencyUnit>
 {
   public CJ1CurrencyUnitDeserializer()
   {
@@ -35,7 +33,6 @@ public final class CJ1CurrencyUnitDeserializer
   public CurrencyUnit deserialize(
     final JsonParser p,
     final DeserializationContext ctxt)
-    throws IOException
   {
     return CurrencyUnit.of(p.getValueAsString());
   }

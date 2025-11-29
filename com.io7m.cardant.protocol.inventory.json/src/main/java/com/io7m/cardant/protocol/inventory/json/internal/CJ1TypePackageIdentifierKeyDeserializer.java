@@ -16,11 +16,9 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.io7m.lanark.core.RDottedName;
-
-import java.io.IOException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.KeyDeserializer;
 
 public final class CJ1TypePackageIdentifierKeyDeserializer
   extends KeyDeserializer
@@ -34,7 +32,6 @@ public final class CJ1TypePackageIdentifierKeyDeserializer
   public Object deserializeKey(
     final String text,
     final DeserializationContext deserializationContext)
-    throws IOException
   {
     final var segments = text.split("\\w+");
     if (segments.length != 2) {

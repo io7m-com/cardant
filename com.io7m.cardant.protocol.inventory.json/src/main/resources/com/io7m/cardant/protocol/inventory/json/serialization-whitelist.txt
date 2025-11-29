@@ -224,6 +224,7 @@ int
 java.lang.String
 java.math.BigDecimal
 java.math.BigInteger
+java.time.OffsetDateTime
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1AttachmentItem>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1AuditEvent>
 java.util.List<com.io7m.cardant.protocol.inventory.json.internal.CJ1CommandType>
@@ -243,6 +244,9 @@ java.util.Map<com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFie
 java.util.Map<java.lang.String,java.lang.String>
 java.util.Map<java.util.UUID,com.io7m.cardant.protocol.inventory.json.internal.CJ1LocationSummary>
 java.util.Optional
+java.util.Optional<com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurrenceType>
+java.util.Optional<java.lang.String>
+java.util.Optional<java.util.UUID>
 java.util.Set<com.io7m.cardant.protocol.inventory.json.internal.CJ1MetadataType>
 java.util.Set<com.io7m.cardant.protocol.inventory.json.internal.CJ1StockOccurrenceKind>
 java.util.Set<com.io7m.cardant.protocol.inventory.json.internal.CJ1TypeRecordFieldIdentifier>

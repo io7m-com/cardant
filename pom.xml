@@ -91,12 +91,12 @@
     <com.io7m.seltzer.version>1.2.0</com.io7m.seltzer.version>
     <com.io7m.tabla.version>0.0.2</com.io7m.tabla.version>
     <com.io7m.trasco.version>2.0.1</com.io7m.trasco.version>
-    <com.io7m.ventrad.version>1.0.0</com.io7m.ventrad.version>
+    <com.io7m.ventrad.version>2.0.0</com.io7m.ventrad.version>
     <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
     <com.io7m.zelador.version>1.0.0</com.io7m.zelador.version>
 
     <!-- Third-party dependencies. -->
-    <com.fasterxml.jackson.version>2.20.1</com.fasterxml.jackson.version>
+    <tools.jackson.version>3.0.2</tools.jackson.version>
     <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
     <containers.postgresql.version>17.0-bookworm</containers.postgresql.version>
     <helidon.version>4.3.1</helidon.version>
@@ -277,16 +277,16 @@
 
       <!-- JSON -->
       <dependency>
-        <groupId>com.fasterxml.jackson</groupId>
+        <groupId>tools.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
-        <version>${com.fasterxml.jackson.version}</version>
+        <version>${tools.jackson.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.io7m.dixmont</groupId>
         <artifactId>com.io7m.dixmont.core</artifactId>
-        <version>2.1.0</version>
+        <version>3.0.0</version>
       </dependency>
 
       <!-- Server security -->

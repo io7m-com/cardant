@@ -37,7 +37,7 @@ module com.io7m.cardant.client.basic
   requires org.slf4j;
 
   requires transitive com.io7m.repetoir.core;
-  requires com.fasterxml.jackson.databind;
+  requires tools.jackson.databind;
 
   exports com.io7m.cardant.client.basic;
 }

@@ -16,15 +16,13 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.io7m.lanark.core.RDottedName;
-
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
 public final class CJ1TypePackageIdentifierDeserializer
-  extends JsonDeserializer<CJ1TypePackageIdentifier>
+  extends ValueDeserializer<CJ1TypePackageIdentifier>
 {
   public CJ1TypePackageIdentifierDeserializer()
   {
@@ -35,9 +33,8 @@ public final class CJ1TypePackageIdentifierDeserializer
   public CJ1TypePackageIdentifier deserialize(
     final JsonParser p,
     final DeserializationContext ctxt)
-    throws IOException
   {
-    final var text = p.getText();
+    final var text = p.getString();
     final var segments = text.split("\\s+");
     if (segments.length != 2) {
       throw new IllegalArgumentException(

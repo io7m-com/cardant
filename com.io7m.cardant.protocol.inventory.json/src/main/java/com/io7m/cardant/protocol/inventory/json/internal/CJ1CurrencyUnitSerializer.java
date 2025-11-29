@@ -16,14 +16,12 @@
 
 package com.io7m.cardant.protocol.inventory.json.internal;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import org.joda.money.CurrencyUnit;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
-
-public final class CJ1CurrencyUnitSerializer extends JsonSerializer<CurrencyUnit>
+public final class CJ1CurrencyUnitSerializer extends ValueSerializer<CurrencyUnit>
 {
   public CJ1CurrencyUnitSerializer()
   {
@@ -40,8 +38,7 @@ public final class CJ1CurrencyUnitSerializer extends JsonSerializer<CurrencyUnit
   public void serialize(
     final CurrencyUnit value,
     final JsonGenerator gen,
-    final SerializerProvider serializers)
-    throws IOException
+    final SerializationContext serializers)
   {
     gen.writeString(value.getCode());
   }
