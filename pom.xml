@@ -97,7 +97,7 @@
     <com.io7m.zelador.version>1.0.0</com.io7m.zelador.version>
 
     <!-- Third-party dependencies. -->
-    <tools.jackson.version>3.0.2</tools.jackson.version>
+    <tools.jackson.version>3.0.3</tools.jackson.version>
     <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
     <containers.postgresql.version>17.0-bookworm</containers.postgresql.version>
     <helidon.version>4.3.3</helidon.version>
