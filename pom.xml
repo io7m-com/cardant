@@ -100,7 +100,7 @@
     <tools.jackson.version>3.0.3</tools.jackson.version>
     <containers.idstore.version>${com.io7m.idstore.version}</containers.idstore.version>
     <containers.postgresql.version>17.0-bookworm</containers.postgresql.version>
-    <helidon.version>4.3.3</helidon.version>
+    <helidon.version>4.3.4</helidon.version>
     <jackson.version>2.14.2</jackson.version>
     <javafx.version>20.0.1</javafx.version>
     <jooq.version>3.20.8</jooq.version>
